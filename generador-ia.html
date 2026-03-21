@@ -6,7 +6,6 @@
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
 <script id="tailwind-config">
       tailwind.config = {
         darkMode: "class",
@@ -88,10 +87,10 @@
         }
     </style>
 <style>
-    body {
-      min-height: max(884px, 100dvh);
-    }
-  </style>
+        body {
+          min-height: max(884px, 100dvh);
+        }
+    </style>
 </head>
 <body class="bg-background text-on-surface font-body selection:bg-primary/30 min-h-screen">
 <!-- TopAppBar -->
@@ -106,7 +105,7 @@
 <div class="flex items-center gap-6">
 <nav class="hidden md:flex items-center gap-8 text-sm font-medium tracking-tight">
 <a class="text-[#95AAFF] font-['Plus_Jakarta_Sans']" href="dashboard.html">Workspace</a>
-<a class="text-[#ADAAAA] hover:text-[#95AAFF] transition-all duration-400 ease-[cubic-bezier(0.16,1,0.3,1)]" href="#">Quizzes</a>
+<a class="text-[#ADAAAA] hover:text-[#95AAFF] transition-all duration-400 ease-[cubic-bezier(0.16,1,0.3,1)]" href="plantillas.html">Quizzes</a>
 <a class="text-[#ADAAAA] hover:text-[#95AAFF] transition-all duration-400 ease-[cubic-bezier(0.16,1,0.3,1)]" href="#">Mini-Apps</a>
 </nav>
 <button class="material-symbols-outlined text-[#95AAFF] scale-95 opacity-80 transition-transform">settings</button>
@@ -124,7 +123,7 @@
 <span class="material-symbols-outlined">dashboard</span>
 <span class="font-['Plus_Jakarta_Sans'] text-sm uppercase tracking-widest">Workspace</span>
 </a>
-<a class="flex items-center gap-3 px-4 py-3 text-[#ADAAAA] hover:bg-[#20201F] hover:text-[#95AAFF] rounded-lg transition-all duration-400 ease-[cubic-bezier(0.16,1,0.3,1)]" href="#">
+<a class="flex items-center gap-3 px-4 py-3 text-[#ADAAAA] hover:bg-[#20201F] hover:text-[#95AAFF] rounded-lg transition-all duration-400 ease-[cubic-bezier(0.16,1,0.3,1)]" href="plantillas.html">
 <span class="material-symbols-outlined">quiz</span>
 <span class="font-['Plus_Jakarta_Sans'] text-sm uppercase tracking-widest">Quizzes</span>
 </a>
@@ -132,7 +131,7 @@
 <span class="material-symbols-outlined">extension</span>
 <span class="font-['Plus_Jakarta_Sans'] text-sm uppercase tracking-widest">Mini-Apps</span>
 </a>
-<a class="flex items-center gap-3 px-4 py-3 text-[#ADAAAA] hover:bg-[#20201F] hover:text-[#95AAFF] rounded-lg transition-all duration-400 ease-[cubic-bezier(0.16,1,0.3,1)]" href="#">
+<a class="flex items-center gap-3 px-4 py-3 text-[#ADAAAA] hover:bg-[#20201F] hover:text-[#95AAFF] rounded-lg transition-all duration-400 ease-[cubic-bezier(0.16,1,0.3,1)]" href="dashboard.html">
 <span class="material-symbols-outlined">insights</span>
 <span class="font-['Plus_Jakarta_Sans'] text-sm uppercase tracking-widest">Analytics</span>
 </a>
@@ -157,7 +156,7 @@
 <input class="w-full bg-surface-container-lowest border-none focus:ring-2 focus:ring-primary rounded-lg py-4 px-5 text-on-surface font-medium placeholder:text-outline/50 transition-all duration-400" placeholder="Nombre del producto..." type="text" value="eBook Finanzas Pro"/>
 <span class="absolute right-4 top-1/2 -translate-y-1/2 material-symbols-outlined text-outline-variant">edit</span>
 </div>
-<button class="w-full primary-gradient text-on-primary-fixed font-bold py-4 rounded-xl flex items-center justify-center gap-2 group hover:shadow-[0_0_20px_rgba(149,170,255,0.4)] transition-all duration-400">
+<button class="w-full primary-gradient text-on-primary-fixed font-bold py-4 rounded-xl flex items-center justify-center gap-2 group hover:shadow-[0_0_20px_rgba(149,170,255,0.4)] transition-all duration-400" onclick="window.location.href='resultado-quiz.html'">
 <span class="material-symbols-outlined">auto_awesome</span>
                             Generar Preguntas con IA
                         </button>
@@ -249,10 +248,10 @@
 <span class="px-3 py-1 bg-secondary/20 text-secondary text-[10px] font-bold rounded-full uppercase mb-4 inline-block">Perfil: Ahorrador Novato</span>
 <h5 class="text-lg font-bold mb-3 text-on-surface">Oferta: Módulo de Ahorro Automático</h5>
 <p class="text-sm text-on-surface-variant mb-6 leading-relaxed">Ideal para quienes están empezando y necesitan estructura. Incluye la plantilla de presupuesto.</p>
-<div class="flex items-center gap-2 text-secondary text-xs font-bold tracking-widest uppercase">
+<a class="flex items-center gap-2 text-secondary text-xs font-bold tracking-widest uppercase cursor-pointer" href="resultado-quiz.html">
 <span>Ver Página de Éxito</span>
 <span class="material-symbols-outlined text-sm">arrow_forward</span>
-</div>
+</a>
 </div>
 <!-- Recommendation Card 2 -->
 <div class="glass-panel p-8 rounded-2xl border border-outline-variant/10 relative group overflow-hidden md:translate-y-4">
@@ -260,10 +259,10 @@
 <span class="px-3 py-1 bg-primary/20 text-primary text-[10px] font-bold rounded-full uppercase mb-4 inline-block">Perfil: El Inversionista</span>
 <h5 class="text-lg font-bold mb-3 text-on-surface">Oferta: Masterclass de Bolsa</h5>
 <p class="text-sm text-on-surface-variant mb-6 leading-relaxed">Para usuarios con capital disponible que buscan multiplicar sus activos de forma segura.</p>
-<div class="flex items-center gap-2 text-primary text-xs font-bold tracking-widest uppercase">
+<a class="flex items-center gap-2 text-primary text-xs font-bold tracking-widest uppercase cursor-pointer" href="resultado-quiz.html">
 <span>Ver Página de Éxito</span>
 <span class="material-symbols-outlined text-sm">arrow_forward</span>
-</div>
+</a>
 </div>
 <!-- Recommendation Card 3 -->
 <div class="glass-panel p-8 rounded-2xl border border-outline-variant/10 relative group overflow-hidden md:translate-y-8">
@@ -271,10 +270,10 @@
 <span class="px-3 py-1 bg-tertiary/20 text-tertiary text-[10px] font-bold rounded-full uppercase mb-4 inline-block">Perfil: Deuda Zero</span>
 <h5 class="text-lg font-bold mb-3 text-on-surface">Oferta: Plan de Choque Financiero</h5>
 <p class="text-sm text-on-surface-variant mb-6 leading-relaxed">Contenido enfocado en la liberación de deudas y limpieza de historial crediticio.</p>
-<div class="flex items-center gap-2 text-tertiary text-xs font-bold tracking-widest uppercase">
+<a class="flex items-center gap-2 text-tertiary text-xs font-bold tracking-widest uppercase cursor-pointer" href="resultado-quiz.html">
 <span>Ver Página de Éxito</span>
 <span class="material-symbols-outlined text-sm">arrow_forward</span>
-</div>
+</a>
 </div>
 </div>
 </div>
@@ -285,19 +284,19 @@
 <!-- BottomNavBar (Mobile Only) -->
 <div class="md:hidden">
 <nav class="fixed bottom-8 left-1/2 -translate-x-1/2 w-[90%] max-w-md rounded-2xl bg-[#262626]/60 backdrop-blur-xl border border-[#484847]/10 z-50 flex justify-around items-center p-2 shadow-[0_20px_50px_rgba(0,0,0,0.5)]">
-<a class="flex flex-col items-center gap-1 text-[#ADAAAA] hover:scale-110 active:scale-90 transition-all duration-200" href="#">
+<a class="flex flex-col items-center gap-1 text-[#95AAFF] bg-[#2C2C2C] rounded-xl px-4 py-1 active:scale-90 transition-all duration-200" href="generador-ia.html">
 <span class="material-symbols-outlined">add_circle</span>
 <span class="font-['Plus_Jakarta_Sans'] text-[10px] font-medium">Build</span>
 </a>
-<a class="flex flex-col items-center gap-1 text-[#95AAFF] bg-[#2C2C2C] rounded-xl px-4 py-1 active:scale-90 transition-all duration-200" href="#">
+<a class="flex flex-col items-center gap-1 text-[#ADAAAA] hover:scale-110 active:scale-90 transition-all duration-200" href="plantillas.html">
 <span class="material-symbols-outlined">auto_stories</span>
 <span class="font-['Plus_Jakarta_Sans'] text-[10px] font-medium">Library</span>
 </a>
-<a class="flex flex-col items-center gap-1 text-[#ADAAAA] hover:scale-110 active:scale-90 transition-all duration-200" href="#">
+<a class="flex flex-col items-center gap-1 text-[#ADAAAA] hover:scale-110 active:scale-90 transition-all duration-200" href="dashboard.html">
 <span class="material-symbols-outlined">payments</span>
 <span class="font-['Plus_Jakarta_Sans'] text-[10px] font-medium">Sales</span>
 </a>
-<a class="flex flex-col items-center gap-1 text-[#ADAAAA] hover:scale-110 active:scale-90 transition-all duration-200" href="#">
+<a class="flex flex-col items-center gap-1 text-[#ADAAAA] hover:scale-110 active:scale-90 transition-all duration-200" href="precios.html">
 <span class="material-symbols-outlined">account_circle</span>
 <span class="font-['Plus_Jakarta_Sans'] text-[10px] font-medium">Account</span>
 </a>
