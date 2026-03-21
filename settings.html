@@ -4,6 +4,8 @@
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
 <title>Settings | Luminous Studio</title>
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="./supabase-config.js"></script>
 <script src="./app.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
@@ -98,10 +100,10 @@
       <span class="material-symbols-outlined text-sm">settings</span>
       Settings
     </a>
-    <a class="flex items-center gap-3 text-[#ADAAAA] px-4 py-3 hover:bg-[#20201F] hover:text-primary text-[0.875rem] transition-all duration-400 mt-4" href="./index.html">
+    <button onclick="Auth.signOut()" class="flex items-center gap-3 text-[#ADAAAA] px-4 py-3 hover:bg-[#20201F] hover:text-primary text-[0.875rem] transition-all duration-400 mt-4 w-full text-left">
       <span class="material-symbols-outlined text-sm">logout</span>
       Cerrar sesión
-    </a>
+    </button>
   </nav>
   <div class="px-6 pt-4 border-t border-outline-variant/10">
     <a class="w-full block text-center bg-gradient-to-r from-primary to-primary-dim text-on-primary py-2.5 rounded-lg text-sm font-bold shadow-lg shadow-primary/10 hover:scale-[0.98] active:scale-95 transition-transform" href="./generador-ia.html">New Quiz</a>
@@ -298,38 +300,61 @@
 </div>
 
 <script>
+  let _settingsUser = null;
+
   // ── Load saved settings on page load ──────────────────
-  document.addEventListener('DOMContentLoaded', () => {
-    const s = Settings.get();
-    document.getElementById('input-name').value  = s.name  || '';
-    document.getElementById('input-email').value = s.email || '';
-    document.getElementById('input-bio').value   = s.bio   || '';
-    if (s.claudeApiKey) {
-      document.getElementById('input-api-key').value = s.claudeApiKey;
-      showApiStatus('API key guardada ✓', true);
+  document.addEventListener('DOMContentLoaded', async () => {
+    _settingsUser = await Auth.requireAuth();
+    if (!_settingsUser) return;
+
+    // Load from Supabase profile
+    try {
+      const profile = await DB.profiles.get(_settingsUser.id);
+      document.getElementById('input-name').value  = profile?.name  || '';
+      document.getElementById('input-email').value = profile?.email || _settingsUser.email || '';
+      document.getElementById('input-bio').value   = profile?.bio   || '';
+      if (profile?.claude_api_key) {
+        document.getElementById('input-api-key').value = profile.claude_api_key;
+        Settings.save({ claudeApiKey: profile.claude_api_key }); // sync to localStorage
+        showApiStatus('API key guardada ✓', true);
+      }
+      const plan = profile?.plan || 'free';
+      const planLimits = { free: 'Quizzes básicos', pro: 'Quizzes ilimitados', business: 'Proyectos ilimitados' };
+      document.getElementById('plan-name').textContent = plan.charAt(0).toUpperCase() + plan.slice(1);
+      const quizzes = await DB.quizzes.getAll(_settingsUser.id);
+      document.getElementById('plan-desc').textContent = `${quizzes.length} quizzes creados · ${planLimits[plan] || planLimits.free}`;
+    } catch {
+      // Fallback to localStorage
+      const s = Settings.get();
+      document.getElementById('input-name').value  = s.name  || '';
+      document.getElementById('input-email').value = s.email || '';
+      document.getElementById('input-bio').value   = s.bio   || '';
+      if (s.claudeApiKey) {
+        document.getElementById('input-api-key').value = s.claudeApiKey;
+        showApiStatus('API key guardada ✓', true);
+      }
     }
-    const quizCount = Quizzes.getAll().length;
-    const planLimits = { free: '3 quizzes activos', pro: 'Quizzes ilimitados', business: 'Proyectos ilimitados' };
-    document.getElementById('plan-name').textContent = s.plan.charAt(0).toUpperCase() + s.plan.slice(1);
-    document.getElementById('plan-desc').textContent = planLimits[s.plan] || planLimits.free;
-    // Show real quiz count
-    document.getElementById('plan-desc').textContent = `${quizCount} quizzes creados · ${planLimits[s.plan] || planLimits.free}`;
   });
 
-  function saveProfile() {
-    Settings.save({
-      name:  document.getElementById('input-name').value.trim(),
-      email: document.getElementById('input-email').value.trim(),
-      bio:   document.getElementById('input-bio').value.trim(),
-    });
+  async function saveProfile() {
+    const name  = document.getElementById('input-name').value.trim();
+    const email = document.getElementById('input-email').value.trim();
+    const bio   = document.getElementById('input-bio').value.trim();
+    Settings.save({ name, email, bio });
+    try {
+      await DB.profiles.upsert(_settingsUser.id, { name, email, bio });
+    } catch {}
     showToast('Perfil guardado correctamente ✓');
   }
 
-  function saveApiKey() {
+  async function saveApiKey() {
     const key = document.getElementById('input-api-key').value.trim();
     if (!key) { showToast('Introduce tu API key', 'error'); return; }
     if (!key.startsWith('sk-ant-')) { showToast('Formato incorrecto. Debe empezar con sk-ant-', 'error'); return; }
     Settings.save({ claudeApiKey: key });
+    try {
+      await DB.profiles.upsert(_settingsUser.id, { claude_api_key: key });
+    } catch {}
     showApiStatus('API key guardada ✓', true);
     showToast('API key guardada correctamente ✓');
   }

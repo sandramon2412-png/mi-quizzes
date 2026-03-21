@@ -5,6 +5,8 @@
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
 <title>Dashboard | Luminous Studio</title>
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="./supabase-config.js"></script>
 <script src="./app.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
@@ -62,12 +64,16 @@
     <a class="text-primary font-semibold" href="./dashboard.html">Dashboard</a>
     <a class="text-on-surface-variant hover:text-primary transition-colors" href="./generador-ia.html">Crear Quiz</a>
     <a class="text-on-surface-variant hover:text-primary transition-colors" href="./plantillas.html">Plantillas</a>
+    <a class="text-on-surface-variant hover:text-primary transition-colors" href="./leads.html">Leads</a>
     <a class="text-on-surface-variant hover:text-primary transition-colors" href="./precios.html">Plan</a>
     <a class="text-on-surface-variant hover:text-primary transition-colors" href="./settings.html">Ajustes</a>
   </nav>
   <div class="flex items-center gap-3">
     <span id="plan-badge" class="text-xs font-bold px-3 py-1 rounded-full border border-primary/40 text-primary hidden md:block">Free</span>
     <a href="./settings.html" class="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary text-xs font-bold border border-primary/20" id="user-avatar">U</a>
+    <button onclick="Auth.signOut()" class="hidden md:flex items-center gap-1 text-xs text-on-surface-variant hover:text-on-surface transition-colors" title="Cerrar sesión">
+      <span class="material-symbols-outlined text-base">logout</span>
+    </button>
   </div>
 </header>
 
@@ -93,6 +99,10 @@
         <p class="text-lg font-extrabold text-on-surface" id="stat-views">0</p>
         <p class="text-[10px] text-on-surface-variant uppercase tracking-wider">Vistas</p>
       </div>
+      <a href="./leads.html" class="bg-surface-container rounded-xl px-4 py-2 text-center min-w-[80px] hover:border hover:border-secondary/30 transition-all block">
+        <p class="text-lg font-extrabold text-secondary" id="stat-leads">0</p>
+        <p class="text-[10px] text-on-surface-variant uppercase tracking-wider">Leads</p>
+      </a>
     </div>
   </div>
 
@@ -141,9 +151,9 @@
     <span class="material-symbols-outlined text-xl">apps</span>
     <span class="text-[9px] font-bold uppercase tracking-tighter">Plantillas</span>
   </a>
-  <a class="flex flex-col items-center gap-0.5 text-on-surface-variant hover:text-primary transition-colors" href="./precios.html">
-    <span class="material-symbols-outlined text-xl">workspace_premium</span>
-    <span class="text-[9px] font-bold uppercase tracking-tighter">Plan</span>
+  <a class="flex flex-col items-center gap-0.5 text-on-surface-variant hover:text-primary transition-colors" href="./leads.html">
+    <span class="material-symbols-outlined text-xl">group</span>
+    <span class="text-[9px] font-bold uppercase tracking-tighter">Leads</span>
   </a>
   <a class="flex flex-col items-center gap-0.5 text-on-surface-variant hover:text-primary transition-colors" href="./settings.html">
     <span class="material-symbols-outlined text-xl">person</span>
@@ -266,65 +276,63 @@
 
 <!-- ══════════════ SCRIPTS ══════════════ -->
 <script>
-document.addEventListener('DOMContentLoaded', () => {
-  loadUserInfo();
-  renderMiniApps();
-  renderQuizzes();
-  updateStats();
+let _currentUser = null;
+
+document.addEventListener('DOMContentLoaded', async () => {
+  _currentUser = await Auth.requireAuth();
+  if (!_currentUser) return;
+  await Promise.all([loadUserInfo(), renderMiniApps(), renderQuizzes()]);
+  loadLeadsCount();
 });
 
 // ── User info ────────────────────────────────────────────
-function loadUserInfo() {
-  const s = Settings.get();
-  const nameEl = document.getElementById('user-name');
-  const avatarEl = document.getElementById('user-avatar');
-  const badgeEl = document.getElementById('plan-badge');
-  if (s.name) nameEl.textContent = s.name;
-  if (s.name) avatarEl.textContent = s.name.charAt(0).toUpperCase();
-  const b = getPlanBadge(s.plan);
-  badgeEl.textContent = b.label;
-  badgeEl.className = `text-xs font-bold px-3 py-1 rounded-full border hidden md:block ${b.color}`;
+async function loadUserInfo() {
+  try {
+    const profile = await DB.profiles.get(_currentUser.id);
+    const name = profile?.name || _currentUser.email.split('@')[0];
+    const plan = profile?.plan || 'free';
+    document.getElementById('user-name').textContent = name;
+    document.getElementById('user-avatar').textContent = name.charAt(0).toUpperCase();
+    const b = getPlanBadge(plan);
+    const badge = document.getElementById('plan-badge');
+    badge.textContent = b.label;
+    badge.className = `text-xs font-bold px-3 py-1 rounded-full border hidden md:block ${b.color}`;
+  } catch {}
+}
+
+// ── Leads count ──────────────────────────────────────────
+async function loadLeadsCount() {
+  try {
+    const leads = await DB.leads.getAll(_currentUser.id);
+    document.getElementById('stat-leads').textContent = leads.length;
+  } catch {}
 }
 
 // ── Stats ────────────────────────────────────────────────
-function updateStats() {
-  const quizzes = Quizzes.getAll();
-  const apps = MiniApps.getAll();
-  const allA = Analytics.getAll();
-  let views = 0;
-  quizzes.forEach(q => { views += (allA[q.id]?.views || 0); });
-
+async function updateStats(quizzes, apps) {
   document.getElementById('stat-quizzes').textContent = quizzes.length;
-  document.getElementById('stat-apps').textContent = apps.length + 1; // +1 for MANNA DIARIO
-  document.getElementById('stat-views').textContent = views;
+  document.getElementById('stat-apps').textContent = apps.length;
+  try {
+    const statsMap = await DB.analytics.summaryAll(_currentUser.id);
+    let views = 0;
+    quizzes.forEach(q => { views += (statsMap[q.id]?.views || 0); });
+    document.getElementById('stat-views').textContent = views;
+  } catch {}
 }
 
 // ── Mini-Apps ────────────────────────────────────────────
-function renderMiniApps() {
+async function renderMiniApps() {
   const container = document.getElementById('mini-apps-grid');
-  const apps = MiniApps.getAll();
-
-  // Hardcoded MANNA DIARIO card + dynamic apps
-  const mannaCard = `
-    <div class="rounded-2xl p-5 flex flex-col gap-3" style="background:linear-gradient(135deg,#fdf6e9,#f5e6c8);border:1px solid #f59e0b;">
-      <div class="flex items-start justify-between">
-        <div class="w-11 h-11 rounded-xl flex items-center justify-center text-2xl" style="background:linear-gradient(135deg,#f59e0b,#d97706);">🕊️</div>
-        <span class="text-[10px] font-extrabold uppercase px-2 py-0.5 rounded-full" style="background:#d1fae5;color:#065f46;">Activa</span>
-      </div>
-      <div>
-        <h4 class="font-extrabold text-sm" style="color:#3d2b0f;">MANNA DIARIO</h4>
-        <p class="text-xs mt-0.5" style="color:#92400e;">Devocional bíblico 40 días · Versículo + Quiz + IA</p>
-      </div>
-      <div class="flex gap-2 mt-auto">
-        <a href="./manna-acceso.html" target="_blank" class="flex-1 py-2 text-white text-xs font-bold rounded-xl text-center" style="background:linear-gradient(90deg,#f59e0b,#d97706);">Abrir App</a>
-        <button onclick="copyToClipboard(window.location.origin+'/manna-acceso.html')" class="w-9 h-9 rounded-xl flex items-center justify-center" style="background:#fff4;border:1px solid #f59e0b;" title="Copiar enlace">
-          <span class="material-symbols-outlined text-sm" style="color:#d97706;">share</span>
-        </button>
-      </div>
-    </div>`;
+  container.innerHTML = '<p class="text-xs text-on-surface-variant col-span-3 py-6 text-center animate-pulse">Cargando...</p>';
+  let apps = [];
+  try {
+    apps = await DB.miniApps.getAll(_currentUser.id);
+  } catch (err) {
+    container.innerHTML = `<p class="text-xs text-error col-span-3 py-4">Error al cargar mini-apps: ${esc(err.message)}</p>`;
+    return;
+  }
 
   const dynamicCards = apps.map(app => buildAppCard(app)).join('');
-
   const addCard = `
     <div onclick="openCreateModal()" class="rounded-2xl p-5 flex flex-col items-center justify-center text-center gap-3 cursor-pointer border-2 border-dashed border-outline-variant/30 hover:border-primary/40 hover:bg-primary/5 transition-all min-h-[160px]">
       <div class="w-11 h-11 rounded-xl bg-surface-container flex items-center justify-center">
@@ -336,7 +344,86 @@ function renderMiniApps() {
       </div>
     </div>`;
 
-  container.innerHTML = mannaCard + dynamicCards + addCard;
+  container.innerHTML = dynamicCards + addCard;
+
+  // Also update quizzes stat (already loaded)
+  try {
+    const quizzes = await DB.quizzes.getAll(_currentUser.id);
+    await updateStats(quizzes, apps);
+  } catch {}
+}
+
+// ── Quizzes ──────────────────────────────────────────────
+async function renderQuizzes() {
+  const container = document.getElementById('quizzes-list');
+  container.innerHTML = '<p class="text-xs text-on-surface-variant py-6 text-center animate-pulse">Cargando quizzes...</p>';
+  let quizzes = [];
+  try {
+    quizzes = await DB.quizzes.getAll(_currentUser.id);
+  } catch (err) {
+    container.innerHTML = `<p class="text-xs text-error py-4">Error: ${esc(err.message)}</p>`;
+    return;
+  }
+  document.getElementById('stat-quizzes').textContent = quizzes.length;
+
+  if (!quizzes.length) {
+    container.innerHTML = `
+      <div class="text-center py-12 bg-surface-container rounded-2xl border border-outline-variant/10">
+        <span class="material-symbols-outlined text-4xl text-on-surface-variant/20">quiz</span>
+        <p class="text-on-surface-variant text-sm mt-3">Aún no tienes quizzes.</p>
+        <a href="./generador-ia.html" class="inline-block mt-4 px-5 py-2.5 bg-primary text-white rounded-xl text-xs font-bold hover:opacity-90 transition-opacity">
+          Crear mi primer quiz con IA
+        </a>
+      </div>`;
+    return;
+  }
+
+  let statsMap = {};
+  try { statsMap = await DB.analytics.summaryAll(_currentUser.id); } catch {}
+
+  container.innerHTML = quizzes.map(q => {
+    const s = statsMap[q.id] || { views: 0, completions: 0 };
+    const cr = s.views > 0 ? Math.round((s.completions / s.views) * 100) : 0;
+    return `
+      <div class="group flex items-center justify-between p-4 rounded-2xl bg-surface-container border border-outline-variant/10 hover:border-primary/20 transition-all gap-3">
+        <div class="flex items-center gap-3 min-w-0 flex-1">
+          <div class="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
+            <span class="material-symbols-outlined text-primary text-lg">quiz</span>
+          </div>
+          <div class="min-w-0">
+            <h4 class="text-on-surface font-semibold text-sm truncate">${esc(q.title || 'Sin título')}</h4>
+            <p class="text-xs text-on-surface-variant">${esc(q.product || q.niche || '')} · ${formatDate(q.created)}</p>
+          </div>
+        </div>
+        <div class="hidden md:flex items-center gap-4 text-right shrink-0">
+          <div>
+            <p class="text-xs font-bold text-on-surface">${s.views} vistas</p>
+            <p class="text-[10px] ${cr >= 50 ? 'text-secondary' : 'text-on-surface-variant'}">${cr}% conv.</p>
+          </div>
+          <span class="text-[10px] font-bold uppercase px-2 py-1 rounded-full ${q.status === 'active' ? 'bg-secondary/10 text-secondary' : 'bg-surface-container-high text-on-surface-variant'}">
+            ${q.status === 'active' ? 'Activo' : 'Borrador'}
+          </span>
+        </div>
+        <div class="flex gap-1 shrink-0">
+          <a href="./quiz.html?quiz=${q.id}" target="_blank"
+            class="w-8 h-8 rounded-xl bg-surface-container-high flex items-center justify-center hover:bg-primary/10 transition-colors" title="Ver quiz">
+            <span class="material-symbols-outlined text-on-surface-variant text-sm">open_in_new</span>
+          </a>
+          <a href="./generador-ia.html?id=${q.id}"
+            class="w-8 h-8 rounded-xl bg-surface-container-high flex items-center justify-center hover:bg-primary/10 transition-colors" title="Editar">
+            <span class="material-symbols-outlined text-on-surface-variant text-sm">edit</span>
+          </a>
+          <button onclick="copyLink('${q.id}')"
+            class="w-8 h-8 rounded-xl bg-surface-container-high flex items-center justify-center hover:bg-secondary/10 transition-colors" title="Copiar enlace">
+            <span class="material-symbols-outlined text-on-surface-variant text-sm">share</span>
+          </button>
+          <button onclick="deleteQuiz('${q.id}')"
+            class="w-8 h-8 rounded-xl bg-surface-container-high flex items-center justify-center hover:bg-error/10 transition-colors" title="Eliminar">
+            <span class="material-symbols-outlined text-on-surface-variant text-sm">delete</span>
+          </button>
+        </div>
+      </div>`;
+  }).join('');
 }
 
 function buildAppCard(app) {
@@ -371,86 +458,30 @@ function buildAppCard(app) {
     </div>`;
 }
 
-function deleteApp(id) {
+async function deleteApp(id) {
   if (!confirm('¿Eliminar esta mini-app? No se puede deshacer.')) return;
-  MiniApps.delete(id);
-  renderMiniApps();
-  updateStats();
-  showToast('Mini-App eliminada.');
-}
-
-// ── Quizzes ──────────────────────────────────────────────
-function renderQuizzes() {
-  const container = document.getElementById('quizzes-list');
-  const quizzes = Quizzes.getAll();
-
-  if (!quizzes.length) {
-    container.innerHTML = `
-      <div class="text-center py-12 bg-surface-container rounded-2xl border border-outline-variant/10">
-        <span class="material-symbols-outlined text-4xl text-on-surface-variant/20">quiz</span>
-        <p class="text-on-surface-variant text-sm mt-3">Aún no tienes quizzes.</p>
-        <a href="./generador-ia.html" class="inline-block mt-4 px-5 py-2.5 bg-primary text-white rounded-xl text-xs font-bold hover:opacity-90 transition-opacity">
-          Crear mi primer quiz con IA
-        </a>
-      </div>`;
-    return;
+  try {
+    await DB.miniApps.delete(id);
+    renderMiniApps();
+    showToast('Mini-App eliminada.');
+  } catch (err) {
+    showToast('Error al eliminar: ' + err.message, 'error');
   }
-
-  container.innerHTML = quizzes.map(q => {
-    const stats = Analytics.get(q.id);
-    const cr = Analytics.conversionRate(q.id);
-    return `
-      <div class="group flex items-center justify-between p-4 rounded-2xl bg-surface-container border border-outline-variant/10 hover:border-primary/20 transition-all gap-3">
-        <div class="flex items-center gap-3 min-w-0 flex-1">
-          <div class="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
-            <span class="material-symbols-outlined text-primary text-lg">quiz</span>
-          </div>
-          <div class="min-w-0">
-            <h4 class="text-on-surface font-semibold text-sm truncate">${esc(q.title || 'Sin título')}</h4>
-            <p class="text-xs text-on-surface-variant">${esc(q.product || q.niche || '')} · ${formatDate(q.created)}</p>
-          </div>
-        </div>
-        <div class="hidden md:flex items-center gap-4 text-right shrink-0">
-          <div>
-            <p class="text-xs font-bold text-on-surface">${stats.views} vistas</p>
-            <p class="text-[10px] ${cr >= 50 ? 'text-secondary' : 'text-on-surface-variant'}">${cr}% conv.</p>
-          </div>
-          <span class="text-[10px] font-bold uppercase px-2 py-1 rounded-full ${q.status === 'active' ? 'bg-secondary/10 text-secondary' : 'bg-surface-container-high text-on-surface-variant'}">
-            ${q.status === 'active' ? 'Activo' : 'Borrador'}
-          </span>
-        </div>
-        <div class="flex gap-1 shrink-0">
-          <a href="./quiz.html?quiz=${q.id}" target="_blank"
-            class="w-8 h-8 rounded-xl bg-surface-container-high flex items-center justify-center hover:bg-primary/10 transition-colors" title="Ver quiz">
-            <span class="material-symbols-outlined text-on-surface-variant text-sm">open_in_new</span>
-          </a>
-          <a href="./generador-ia.html?id=${q.id}"
-            class="w-8 h-8 rounded-xl bg-surface-container-high flex items-center justify-center hover:bg-primary/10 transition-colors" title="Editar">
-            <span class="material-symbols-outlined text-on-surface-variant text-sm">edit</span>
-          </a>
-          <button onclick="copyLink('${q.id}')"
-            class="w-8 h-8 rounded-xl bg-surface-container-high flex items-center justify-center hover:bg-secondary/10 transition-colors" title="Copiar enlace">
-            <span class="material-symbols-outlined text-on-surface-variant text-sm">share</span>
-          </button>
-          <button onclick="deleteQuiz('${q.id}')"
-            class="w-8 h-8 rounded-xl bg-surface-container-high flex items-center justify-center hover:bg-error/10 transition-colors" title="Eliminar">
-            <span class="material-symbols-outlined text-on-surface-variant text-sm">delete</span>
-          </button>
-        </div>
-      </div>`;
-  }).join('');
 }
 
 function copyLink(quizId) {
   copyToClipboard(buildQuizUrl(quizId));
 }
 
-function deleteQuiz(id) {
+async function deleteQuiz(id) {
   if (!confirm('¿Eliminar este quiz? Esta acción no se puede deshacer.')) return;
-  Quizzes.delete(id);
-  renderQuizzes();
-  updateStats();
-  showToast('Quiz eliminado.');
+  try {
+    await DB.quizzes.delete(id);
+    renderQuizzes();
+    showToast('Quiz eliminado.');
+  } catch (err) {
+    showToast('Error al eliminar: ' + err.message, 'error');
+  }
 }
 
 // ── Modal ────────────────────────────────────────────────
@@ -471,7 +502,7 @@ function handleOverlayClick(e) {
 }
 
 // ── Create Mini-App ──────────────────────────────────────
-function handleCreateMiniApp(e) {
+async function handleCreateMiniApp(e) {
   e.preventDefault();
   const name = document.getElementById('ma-name').value.trim();
   const type = document.getElementById('ma-type').value;
@@ -487,11 +518,14 @@ function handleCreateMiniApp(e) {
     return;
   }
 
-  MiniApps.create({ name, type, niche, product, description, icon, accessCodes });
-  closeModal();
-  renderMiniApps();
-  updateStats();
-  showToast('Mini-App creada correctamente ✨');
+  try {
+    await DB.miniApps.save({ name, type, niche, product, description, icon, accessCodes }, _currentUser.id);
+    closeModal();
+    renderMiniApps();
+    showToast('Mini-App creada correctamente ✨');
+  } catch (err) {
+    showToast('Error al crear: ' + err.message, 'error');
+  }
 }
 
 // ── AI Ideas ─────────────────────────────────────────────

@@ -5,6 +5,8 @@
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
 <title>Generador de Quiz | Luminous Studio</title>
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="./supabase-config.js"></script>
 <script src="./app.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
@@ -260,14 +262,28 @@
 <script>
 let currentQuiz = null;
 let editingQuizId = null;
+let _currentUser = null;
 
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
+  _currentUser = await Auth.requireAuth();
+  if (!_currentUser) return;
+
+  // Load API key from Supabase profile first, then localStorage fallback
+  try {
+    const profile = await DB.profiles.get(_currentUser.id);
+    if (profile?.claude_api_key) {
+      Settings.save({ claudeApiKey: profile.claude_api_key });
+    }
+  } catch {}
+
   if (!Settings.getApiKey()) {
     document.getElementById('no-api-warning').classList.remove('hidden');
   }
   const id = getParam('id');
   if (id) {
-    const q = Quizzes.get(id);
+    let q = null;
+    try { q = await DB.quizzes.get(id); } catch {}
+    if (!q) q = Quizzes.get(id);
     if (q) {
       editingQuizId = id;
       document.getElementById('input-product').value = q.product || '';
@@ -464,7 +480,7 @@ function syncMeta(q) {
 }
 
 // ── Save ──────────────────────────────────────────────────
-function saveQuiz() {
+async function saveQuiz() {
   if (!currentQuiz) { showToast('Genera o crea un quiz primero', 'error'); return; }
   currentQuiz.title       = document.getElementById('quiz-title').value.trim()    || currentQuiz.title;
   currentQuiz.subtitle    = document.getElementById('quiz-subtitle').value.trim() || currentQuiz.subtitle;
@@ -472,20 +488,16 @@ function saveQuiz() {
   currentQuiz.niche       = document.getElementById('input-niche').value.trim()   || currentQuiz.niche;
   currentQuiz.description = document.getElementById('input-desc').value.trim()    || currentQuiz.description;
 
-  if (!editingQuizId && !Quizzes.canCreate()) {
-    showToast('Límite del plan alcanzado. Ve a Pricing para hacer upgrade.', 'error');
-    setTimeout(() => window.location.href = './precios.html', 2000);
-    return;
-  }
-  if (editingQuizId) {
-    currentQuiz.id = editingQuizId;
-    Quizzes.save(currentQuiz);
-  } else {
-    const saved = Quizzes.create(currentQuiz);
+  if (editingQuizId) currentQuiz.id = editingQuizId;
+
+  try {
+    const saved = await DB.quizzes.save(currentQuiz, _currentUser.id);
     editingQuizId = saved.id;
     currentQuiz.id = saved.id;
+    showToast('¡Quiz guardado exitosamente! ✓');
+  } catch (err) {
+    showToast('Error al guardar: ' + err.message, 'error');
   }
-  showToast('¡Quiz guardado exitosamente! ✓');
 }
 
 function copyShareLink() {

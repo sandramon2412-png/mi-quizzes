@@ -5,6 +5,8 @@
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
 <title>Resultado Quiz - Luminous Studio</title>
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="./supabase-config.js"></script>
 <script src="./app.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
@@ -201,12 +203,18 @@
 </main>
 
 <script>
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
   // Load quiz and answers from session
   const quizId  = getParam('quiz') || Session.getCurrentQuizId();
   const answers = Session.getAnswers();
 
-  let quiz    = quizId === 'demo' ? DEMO_QUIZ : (quizId ? Quizzes.get(quizId) : null);
+  let quiz = null;
+  if (quizId === 'demo') {
+    quiz = DEMO_QUIZ;
+  } else if (quizId) {
+    try { quiz = await DB.quizzes.get(quizId); } catch {}
+    if (!quiz) quiz = Quizzes.get(quizId);
+  }
   if (!quiz) quiz = DEMO_QUIZ;
 
   let profile;

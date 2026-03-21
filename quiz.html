@@ -4,6 +4,8 @@
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
 <title>Quiz | Luminous Studio</title>
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="./supabase-config.js"></script>
 <script src="./app.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
@@ -141,36 +143,93 @@
       <div id="loading-status" class="text-sm text-on-surface-variant"></div>
     </div>
 
+    <!-- Lead Capture Screen -->
+    <div id="screen-lead" class="hidden space-y-8 slide-in">
+      <div class="text-center space-y-3">
+        <div class="w-16 h-16 mx-auto rounded-full primary-gradient flex items-center justify-center">
+          <span class="material-symbols-outlined text-white text-3xl" style="font-variation-settings:'FILL' 1;">auto_awesome</span>
+        </div>
+        <h2 class="text-2xl md:text-3xl font-extrabold tracking-tight">¡Tu perfil está listo!</h2>
+        <p class="text-on-surface-variant max-w-sm mx-auto leading-relaxed">
+          Escribe tu nombre y correo para ver tu resultado personalizado y la recomendación exacta para ti.
+        </p>
+      </div>
+
+      <form id="lead-form" onsubmit="submitLead(event)" class="space-y-4 max-w-md mx-auto">
+        <div class="space-y-1.5">
+          <label class="text-sm font-semibold text-on-surface-variant" for="lead-name">Tu nombre</label>
+          <div class="relative">
+            <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-xl">person</span>
+            <input id="lead-name" type="text" required placeholder="¿Cómo te llaman?"
+              class="w-full bg-surface-container border border-outline-variant/40 rounded-xl pl-10 pr-4 py-3.5 text-sm text-on-surface placeholder:text-on-surface-variant/50 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors"/>
+          </div>
+        </div>
+        <div class="space-y-1.5">
+          <label class="text-sm font-semibold text-on-surface-variant" for="lead-email">Tu correo electrónico</label>
+          <div class="relative">
+            <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-xl">mail</span>
+            <input id="lead-email" type="email" required placeholder="tu@email.com"
+              class="w-full bg-surface-container border border-outline-variant/40 rounded-xl pl-10 pr-4 py-3.5 text-sm text-on-surface placeholder:text-on-surface-variant/50 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors"/>
+          </div>
+        </div>
+        <p class="text-xs text-on-surface-variant/60 text-center">
+          🔒 Tu información está segura. Sin spam, prometido.
+        </p>
+        <button type="submit" id="lead-submit-btn"
+          class="w-full primary-gradient py-4 rounded-xl font-bold text-white hover:brightness-110 active:scale-[0.98] transition-all duration-300 flex items-center justify-center gap-2">
+          <span id="lead-btn-text">Ver mi resultado</span>
+          <span class="material-symbols-outlined text-base" id="lead-btn-icon">arrow_forward</span>
+          <span id="lead-btn-spinner" class="hidden w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
+        </button>
+      </form>
+
+      <p class="text-center text-xs text-on-surface-variant/60">
+        <button onclick="skipLead()" class="hover:text-on-surface-variant transition-colors underline underline-offset-2">
+          Prefiero no compartir mis datos
+        </button>
+      </p>
+    </div>
+
   </div>
 </main>
 
 <script>
-  // ── Load quiz: from URL param or fallback to DEMO_QUIZ ─
+  // ── State ────────────────────────────────────────────────
   let QUIZ = null;
   let currentQ = 0;
   let answers  = []; // [{questionId, optionIndex}]
   let selectedOption = null;
+  let _calculatedProfile = null;
 
-  document.addEventListener('DOMContentLoaded', () => {
+  document.addEventListener('DOMContentLoaded', async () => {
     const quizId = getParam('quiz');
-    if (quizId) {
-      QUIZ = quizId === 'demo' ? DEMO_QUIZ : Quizzes.get(quizId);
+
+    if (quizId === 'demo') {
+      QUIZ = DEMO_QUIZ;
+    } else if (quizId) {
+      // Try Supabase first, fallback to localStorage
+      try {
+        QUIZ = await DB.quizzes.get(quizId);
+      } catch {}
+      if (!QUIZ) QUIZ = Quizzes.get(quizId);
     }
     if (!QUIZ) QUIZ = DEMO_QUIZ;
 
-    // Track view
-    if (QUIZ.id) Analytics.trackView(QUIZ.id);
+    // Track view via Supabase (if quiz has a real owner)
+    if (QUIZ.id && QUIZ.userId) {
+      DB.analytics.track(QUIZ.id, QUIZ.userId, 'view').catch(() => {});
+    } else if (QUIZ.id) {
+      Analytics.trackView(QUIZ.id); // fallback localStorage
+    }
 
     // Set session
     Session.setCurrentQuiz(QUIZ.id || 'demo');
     Session.setAnswers([]);
 
     // Populate intro screen
-    document.getElementById('intro-title').innerHTML =
-      QUIZ.title.replace(/\b(\w)/g, c => c) || 'Descubre tu <span class="text-transparent bg-clip-text primary-gradient">perfil ideal</span>';
+    document.getElementById('intro-title').textContent = QUIZ.title || 'Descubre tu perfil ideal';
     document.getElementById('intro-subtitle').textContent = QUIZ.subtitle || '';
-    document.getElementById('intro-time').textContent =
-      `~${QUIZ.estimatedMinutes || 2} minutos · Gratis`;
+    document.getElementById('intro-time').textContent = `~${QUIZ.estimatedMinutes || 2} minutos · Gratis`;
     document.title = (QUIZ.title || 'Quiz') + ' | Luminous Studio';
   });
 
@@ -263,7 +322,6 @@
       'Analizando tus respuestas...',
       'Identificando tu perfil...',
       'Preparando tu recomendación personalizada...',
-      '¡Listo! Redirigiendo...',
     ];
     let i = 0;
     const bar    = document.getElementById('loading-bar');
@@ -276,17 +334,71 @@
       i++;
       if (i >= steps.length) {
         clearInterval(interval);
-        // Track completion
-        const profile = calculateProfile(QUIZ, answers);
-        if (QUIZ.id) Analytics.trackCompletion(QUIZ.id, profile.id);
-        setTimeout(() => {
-          const dest = QUIZ.id
-            ? `./resultado-quiz.html?quiz=${QUIZ.id}`
-            : `./resultado-quiz.html`;
-          window.location.href = dest;
-        }, 500);
+        _calculatedProfile = calculateProfile(QUIZ, answers);
+        setTimeout(showLeadCapture, 400);
       }
-    }, 650);
+    }, 700);
+  }
+
+  function showLeadCapture() {
+    // If quiz has no real Supabase owner, skip lead capture
+    if (!QUIZ.userId) {
+      redirectToResult();
+      return;
+    }
+    document.getElementById('screen-loading').classList.add('hidden');
+    document.getElementById('screen-lead').classList.remove('hidden');
+    document.getElementById('lead-name').focus();
+  }
+
+  async function submitLead(e) {
+    e.preventDefault();
+    const name  = document.getElementById('lead-name').value.trim();
+    const email = document.getElementById('lead-email').value.trim();
+    setLeadLoading(true);
+
+    try {
+      if (QUIZ.userId && QUIZ.id) {
+        await DB.leads.create({
+          quiz_id:       QUIZ.id,
+          user_id:       QUIZ.userId,
+          name,
+          email,
+          profile_id:    _calculatedProfile?.id || null,
+          profile_name:  _calculatedProfile?.name || null,
+          profile_emoji: _calculatedProfile?.emoji || null,
+          answers,
+        });
+        // Track completion analytics
+        DB.analytics.track(QUIZ.id, QUIZ.userId, 'completion', _calculatedProfile?.id || null).catch(() => {});
+      }
+    } catch (err) {
+      console.warn('Lead save error:', err.message);
+    }
+
+    redirectToResult();
+  }
+
+  function skipLead() {
+    if (QUIZ.id && QUIZ.userId) {
+      DB.analytics.track(QUIZ.id, QUIZ.userId, 'completion', _calculatedProfile?.id || null).catch(() => {});
+    }
+    redirectToResult();
+  }
+
+  function redirectToResult() {
+    Session.setAnswers(answers);
+    const dest = QUIZ.id
+      ? `./resultado-quiz.html?quiz=${QUIZ.id}`
+      : `./resultado-quiz.html`;
+    window.location.href = dest;
+  }
+
+  function setLeadLoading(on) {
+    document.getElementById('lead-submit-btn').disabled = on;
+    document.getElementById('lead-btn-text').textContent = on ? 'Un momento...' : 'Ver mi resultado';
+    document.getElementById('lead-btn-icon').classList.toggle('hidden', on);
+    document.getElementById('lead-btn-spinner').classList.toggle('hidden', !on);
   }
 </script>
 </body></html>
