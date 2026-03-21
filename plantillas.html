@@ -5,6 +5,7 @@
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
 <title>The Luminous Studio - Library</title>
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script src="./app.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
 <script id="tailwind-config">
@@ -166,87 +167,17 @@
 </section>
 <!-- Templates Grid Section -->
 <section class="space-y-12">
-<!-- Lead Magnets -->
 <div>
 <div class="flex items-center justify-between mb-8">
 <h4 class="text-xl font-bold flex items-center gap-3">
 <span class="w-1 h-6 bg-secondary rounded-full"></span>
-                    Lead Magnets
-                </h4>
-<a class="text-on-surface-variant text-sm hover:text-primary transition-colors" href="./generador-ia.html">View all 12</a>
+Plantillas de Quiz
+</h4>
+<a class="text-on-surface-variant text-sm hover:text-primary transition-colors" href="./generador-ia.html">+ Crear desde cero</a>
 </div>
-<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-<!-- Template Card 1 -->
-<a class="group bg-surface-container-low rounded-xl overflow-hidden border border-outline-variant/5 hover:border-primary/20 transition-all duration-400" href="./generador-ia.html">
-<div class="aspect-video relative overflow-hidden bg-surface-container-highest">
-<img alt="Abstract deep blue and violet gradient mesh pattern" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCfRSmylB892NPAvHn0Z3w9W4Mx9KU9GgSasB7H6VDIEM_b3clN9OXv_wvaH31wTG0tV9rq18ClRVvMfzOukAbwVjARpswtrs5gaSrp7FozjIEzZcDjsiG0YETbWPbpI80hhuVzLG6rSgqZ-bgiJzNueOHnrwe_Rr6HBLAcJIuM_GKP4-TF6K9w2vfzS7edYwiL3NfgbXXHTqLFCwaY4ffby1rBlX94geQpL5pTp-iqvB7zpnXj92bu5i9_IrfpYmA7bsrA2Vwi5zc"/>
-<div class="absolute inset-0 bg-gradient-to-t from-surface-container-low/80 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-4">
-<div class="primary-gradient w-full py-2 rounded-lg text-xs font-bold text-on-primary text-center">Use Template</div>
+<div id="templates-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+<!-- Populated by JS -->
 </div>
-</div>
-<div class="p-5">
-<div class="flex justify-between items-start mb-2">
-<h5 class="font-semibold text-on-surface">E-book Sales Funnel</h5>
-<span class="material-symbols-outlined text-on-surface-variant text-sm" data-icon="star">star</span>
-</div>
-<p class="text-xs text-on-surface-variant">Multi-step opt-in with high-conversion landing page.</p>
-</div>
-</a>
-<!-- Template Card 2 -->
-<a class="group bg-surface-container-low rounded-xl overflow-hidden border border-outline-variant/5 hover:border-primary/20 transition-all duration-400" href="./generador-ia.html">
-<div class="aspect-video relative overflow-hidden bg-surface-container-highest">
-<img alt="Dark abstract glowing tech lines on black background" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAXa-mTqkVBMmwpcjx4JvQY3UbFKN1o8idY4QgYyHSn7QZ_zV-llrdON769y3D89_GM5OaxheRApG9idLGNCHEkSGelklH7kxuVkJcC8g47vQtZox2nultjDdI0C6fixNezYl3CaRetJNMaDFrPF61Tbifb2qL6zySChjfGYOxKYT_QrMd6BE55j2wku3_9H31x0nM-5dU799TtYGrGWAS9Wjqz5PWg-ZwbjYls9BA0wXwv1KVX3xnPdoztqp6Nc1SVJXKkVgSO9zc"/>
-<div class="absolute inset-0 bg-gradient-to-t from-surface-container-low/80 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-4">
-<div class="primary-gradient w-full py-2 rounded-lg text-xs font-bold text-on-primary text-center">Use Template</div>
-</div>
-</div>
-<div class="p-5">
-<div class="flex justify-between items-start mb-2">
-<h5 class="font-semibold text-on-surface">Webinar Registration</h5>
-<span class="material-symbols-outlined text-on-surface-variant text-sm" data-icon="star">star</span>
-</div>
-<p class="text-xs text-on-surface-variant">Clean, focus-driven layout for high-ticket events.</p>
-</div>
-</a>
-<!-- Template Card 3 -->
-<a class="group bg-surface-container-low rounded-xl overflow-hidden border border-outline-variant/5 hover:border-primary/20 transition-all duration-400" href="./generador-ia.html">
-<div class="aspect-video relative overflow-hidden bg-surface-container-highest">
-<img alt="Geometric emerald green abstract shapes on dark surface" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBFuiZxYyl_Hqd8E94mRBwyTIDiH7kdexKS_wriBhYuFal29qm8Rw2WZ3Drn13R0_jNP_NELCLey0qT0pdrqXlIeUyJuWQi2WRyG8RXk-5U98X0-tU4VfTEbjpsm_9FK081Ojy7HDcTM-xRblJK8jFVn9UQPChWQ36YZIzogY245tcH0rbLGDP4WIAzlK2i6gH8_1kPYg90YridjX7zQoz3ngMWgdvkfZj9HKQgPS4eT3NoB_lDj24T88lfjpwMDbuFkNtxh2ZUosk"/>
-<div class="absolute inset-0 bg-gradient-to-t from-surface-container-low/80 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-4">
-<div class="primary-gradient w-full py-2 rounded-lg text-xs font-bold text-on-primary text-center">Use Template</div>
-</div>
-</div>
-<div class="p-5">
-<div class="flex justify-between items-start mb-2">
-<h5 class="font-semibold text-on-surface">SaaS ROI Calculator</h5>
-<span class="material-symbols-outlined text-on-surface-variant text-sm" data-icon="star">star</span>
-</div>
-<p class="text-xs text-on-surface-variant">Help prospects visualize the value of your software.</p>
-</div>
-</a>
-<!-- Template Card 4 -->
-<a class="group bg-surface-container-low rounded-xl overflow-hidden border border-outline-variant/5 hover:border-primary/20 transition-all duration-400" href="./generador-ia.html">
-<div class="aspect-video relative overflow-hidden bg-surface-container-highest">
-<img alt="Vibrant magenta and blue ethereal light waves" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCDN99sPx9JshwbDzhESpguWiCFLBCQOfGpOpRXOvRB6YF1mvQEbXXm_DCNcfeJcE9zYacfgfqKVR0fPzemaj2oVU09G30XNFXO38U1x_dbCmoVbD7rADGqBQKgQ9FhfFg-RQi2e3wvIlPHHj_GBmJP6u5S1EaMY8aPRDzsvHx_yFu4MKpV58swQlwAV3KlGVj2j92uad0Uz9boteEgrc74Vqa0I0patcRcQ3GWe9sO52MUe831vUPcaPsAWmBVgiUT7LnaITEHC7Y"/>
-<div class="absolute inset-0 bg-gradient-to-t from-surface-container-low/80 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-4">
-<div class="primary-gradient w-full py-2 rounded-lg text-xs font-bold text-on-primary text-center">Use Template</div>
-</div>
-</div>
-<div class="p-5">
-<div class="flex justify-between items-start mb-2">
-<h5 class="font-semibold text-on-surface">Founder Archetype Quiz</h5>
-<span class="material-symbols-outlined text-on-surface-variant text-sm" data-icon="star">star</span>
-</div>
-<p class="text-xs text-on-surface-variant">Viral-style personality test for list building.</p>
-</div>
-</a>
-</div>
-</div>
-<!-- More categories indicator -->
-<div class="flex justify-center pt-8">
-<a class="px-8 py-3 rounded-xl border border-outline-variant/30 text-primary text-sm font-bold tracking-widest uppercase hover:bg-surface-container-high transition-all" href="./generador-ia.html">
-                Load More Categories
-            </a>
 </div>
 </section>
 </main>
@@ -276,26 +207,62 @@
 </div>
 </nav>
 <script>
-  function filterTemplates(query) {
-    const q = query.toLowerCase().trim();
-    const cards = document.querySelectorAll('.grid .group');
-    let visibleCount = 0;
-    cards.forEach(card => {
-      const title = card.querySelector('h5')?.textContent.toLowerCase() || '';
-      const desc = card.querySelector('p')?.textContent.toLowerCase() || '';
-      const match = !q || title.includes(q) || desc.includes(q);
-      card.style.display = match ? '' : 'none';
-      if (match) visibleCount++;
-    });
-    let noResultsEl = document.getElementById('no-results');
-    if (!noResultsEl) {
-      noResultsEl = document.createElement('p');
-      noResultsEl.id = 'no-results';
-      noResultsEl.className = 'text-on-surface-variant text-center py-12 col-span-4';
-      noResultsEl.textContent = 'No se encontraron plantillas.';
-      document.querySelector('.grid.grid-cols-1.sm\\:grid-cols-2')?.appendChild(noResultsEl);
-    }
-    noResultsEl.style.display = visibleCount === 0 ? '' : 'none';
+const CATEGORY_COLORS = {
+  'Finanzas':           'text-secondary bg-secondary/10',
+  'Marketing Digital':  'text-primary bg-primary/10',
+  'Productividad':      'text-tertiary bg-tertiary/10',
+  'Salud & Bienestar':  'text-emerald-400 bg-emerald-400/10',
+};
+
+document.addEventListener('DOMContentLoaded', () => {
+  renderTemplates(getBuiltinTemplates());
+});
+
+function renderTemplates(templates) {
+  const grid = document.getElementById('templates-grid');
+  grid.innerHTML = templates.map(t => `
+    <div class="group bg-surface-container-low rounded-xl overflow-hidden border border-outline-variant/5 hover:border-primary/20 transition-all duration-400 flex flex-col">
+      <div class="aspect-video relative overflow-hidden bg-surface-container-highest flex items-center justify-center">
+        <span class="text-6xl">${t.icon}</span>
+        <div class="absolute inset-0 bg-gradient-to-t from-surface-container-low/80 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-4">
+          <a href="./generador-ia.html?template=${t.id}" class="primary-gradient w-full py-2 rounded-lg text-xs font-bold text-white text-center block">
+            Usar Plantilla
+          </a>
+        </div>
+      </div>
+      <div class="p-5 flex-1 flex flex-col">
+        <div class="flex justify-between items-start mb-2">
+          <h5 class="font-semibold text-on-surface text-sm">${esc(t.title)}</h5>
+        </div>
+        <p class="text-xs text-on-surface-variant flex-1">${esc(t.product)}</p>
+        <div class="flex items-center justify-between mt-3">
+          <span class="text-[10px] font-bold px-2 py-0.5 rounded-full ${CATEGORY_COLORS[t.category] || 'text-primary bg-primary/10'}">${esc(t.category)}</span>
+          <span class="text-[10px] text-on-surface-variant">${t.questions.length} preguntas</span>
+        </div>
+        <a href="./generador-ia.html?template=${t.id}"
+          class="mt-3 w-full py-2 rounded-lg border border-primary/20 text-primary text-xs font-bold text-center hover:bg-primary/5 transition-colors block">
+          Usar esta plantilla
+        </a>
+      </div>
+    </div>`).join('');
+}
+
+function filterTemplates(query) {
+  const q = query.toLowerCase().trim();
+  const all = getBuiltinTemplates();
+  const filtered = !q ? all : all.filter(t =>
+    t.title.toLowerCase().includes(q) ||
+    t.product.toLowerCase().includes(q) ||
+    t.category.toLowerCase().includes(q) ||
+    t.niche.toLowerCase().includes(q)
+  );
+  renderTemplates(filtered);
+  if (!filtered.length) {
+    document.getElementById('templates-grid').innerHTML =
+      `<p class="text-on-surface-variant text-center py-12 col-span-4">No se encontraron plantillas para "${query}".</p>`;
   }
+}
+
+function esc(s) { return String(s||'').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 </script>
 </body></html>

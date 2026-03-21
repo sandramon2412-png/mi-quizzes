@@ -4,6 +4,7 @@
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
 <title>Settings | Luminous Studio</title>
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script src="./app.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
 <script id="tailwind-config">
@@ -137,19 +138,53 @@
         <div class="space-y-4">
           <div>
             <label class="block text-xs font-bold text-on-surface-variant uppercase tracking-widest mb-2">Nombre</label>
-            <input type="text" value="The Curator" class="w-full bg-surface-container-lowest border border-outline-variant/20 rounded-lg px-4 py-3 text-on-surface focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all"/>
+            <input id="input-name" type="text" class="w-full bg-surface-container-lowest border border-outline-variant/20 rounded-lg px-4 py-3 text-on-surface focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all"/>
           </div>
           <div>
             <label class="block text-xs font-bold text-on-surface-variant uppercase tracking-widest mb-2">Email</label>
-            <input type="email" value="curator@luminousstudio.com" class="w-full bg-surface-container-lowest border border-outline-variant/20 rounded-lg px-4 py-3 text-on-surface focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all"/>
+            <input id="input-email" type="email" class="w-full bg-surface-container-lowest border border-outline-variant/20 rounded-lg px-4 py-3 text-on-surface focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all"/>
           </div>
           <div>
             <label class="block text-xs font-bold text-on-surface-variant uppercase tracking-widest mb-2">Bio</label>
-            <textarea rows="3" class="w-full bg-surface-container-lowest border border-outline-variant/20 rounded-lg px-4 py-3 text-on-surface focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all resize-none" placeholder="Cuéntanos sobre ti...">Creador de contenido digital y quizzes interactivos.</textarea>
+            <textarea id="input-bio" rows="3" class="w-full bg-surface-container-lowest border border-outline-variant/20 rounded-lg px-4 py-3 text-on-surface focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all resize-none" placeholder="Cuéntanos sobre ti..."></textarea>
           </div>
-          <button onclick="showToast('Perfil guardado correctamente')" class="px-6 py-3 bg-primary text-on-primary rounded-lg font-bold text-sm hover:bg-primary-dim transition-colors">
+          <button onclick="saveProfile()" class="px-6 py-3 bg-primary text-on-primary rounded-lg font-bold text-sm hover:bg-primary-dim transition-colors">
             Guardar Cambios
           </button>
+        </div>
+      </section>
+
+      <!-- Claude API Key -->
+      <section class="bg-surface-container-low rounded-xl p-8 border border-outline-variant/5">
+        <div class="flex items-start gap-4 mb-6">
+          <div class="w-10 h-10 rounded-lg bg-secondary/10 flex items-center justify-center shrink-0">
+            <span class="material-symbols-outlined text-secondary">psychology</span>
+          </div>
+          <div>
+            <h2 class="text-lg font-bold text-on-surface">Integración con IA (Claude)</h2>
+            <p class="text-sm text-on-surface-variant mt-1">Conecta tu API key de Anthropic Claude para generar quizzes y mini-app ideas con inteligencia artificial.</p>
+          </div>
+        </div>
+        <div class="space-y-4">
+          <div>
+            <label class="block text-xs font-bold text-on-surface-variant uppercase tracking-widest mb-2">Claude API Key</label>
+            <div class="relative">
+              <input id="input-api-key" type="password" placeholder="sk-ant-api03-..." class="w-full bg-surface-container-lowest border border-outline-variant/20 rounded-lg px-4 py-3 pr-12 text-on-surface focus:ring-2 focus:ring-secondary focus:border-transparent outline-none transition-all font-mono text-sm"/>
+              <button onclick="toggleApiKeyVisibility()" class="absolute right-3 top-1/2 -translate-y-1/2 text-on-surface-variant hover:text-on-surface transition-colors">
+                <span id="eye-icon" class="material-symbols-outlined text-lg">visibility</span>
+              </button>
+            </div>
+            <p class="text-xs text-on-surface-variant mt-2">Obtén tu API key en <a href="https://console.anthropic.com" target="_blank" class="text-secondary hover:underline">console.anthropic.com</a>. Se guarda solo en tu navegador, nunca en nuestros servidores.</p>
+          </div>
+          <div id="api-key-status" class="hidden flex items-center gap-2 p-3 rounded-lg text-sm font-medium"></div>
+          <div class="flex gap-3">
+            <button onclick="saveApiKey()" class="px-6 py-3 bg-secondary text-on-secondary rounded-lg font-bold text-sm hover:opacity-90 transition-opacity" style="color:#00452d">
+              Guardar API Key
+            </button>
+            <button onclick="testApiKey()" class="px-6 py-3 border border-secondary/30 text-secondary rounded-lg font-bold text-sm hover:bg-secondary/5 transition-colors">
+              Probar Conexión
+            </button>
+          </div>
         </div>
       </section>
 
@@ -198,11 +233,11 @@
             <span class="material-symbols-outlined text-primary">workspace_premium</span>
           </div>
           <div>
-            <p class="font-bold text-on-surface">Free</p>
-            <p class="text-xs text-on-surface-variant">3 quizzes activos</p>
+            <p id="plan-name" class="font-bold text-on-surface">Free</p>
+            <p id="plan-desc" class="text-xs text-on-surface-variant">3 quizzes activos</p>
           </div>
         </div>
-        <a href="./precios.html" class="block w-full text-center py-2.5 bg-primary text-on-primary rounded-lg text-sm font-bold hover:bg-primary-dim transition-colors">Upgrade a Pro</a>
+        <a href="./precios.html" class="block w-full text-center py-2.5 bg-primary text-on-primary rounded-lg text-sm font-bold hover:bg-primary-dim transition-colors">Ver Planes</a>
       </section>
 
       <!-- Security -->
@@ -263,12 +298,91 @@
 </div>
 
 <script>
-  function showToast(msg) {
+  // ── Load saved settings on page load ──────────────────
+  document.addEventListener('DOMContentLoaded', () => {
+    const s = Settings.get();
+    document.getElementById('input-name').value  = s.name  || '';
+    document.getElementById('input-email').value = s.email || '';
+    document.getElementById('input-bio').value   = s.bio   || '';
+    if (s.claudeApiKey) {
+      document.getElementById('input-api-key').value = s.claudeApiKey;
+      showApiStatus('API key guardada ✓', true);
+    }
+    const quizCount = Quizzes.getAll().length;
+    const planLimits = { free: '3 quizzes activos', pro: 'Quizzes ilimitados', business: 'Proyectos ilimitados' };
+    document.getElementById('plan-name').textContent = s.plan.charAt(0).toUpperCase() + s.plan.slice(1);
+    document.getElementById('plan-desc').textContent = planLimits[s.plan] || planLimits.free;
+    // Show real quiz count
+    document.getElementById('plan-desc').textContent = `${quizCount} quizzes creados · ${planLimits[s.plan] || planLimits.free}`;
+  });
+
+  function saveProfile() {
+    Settings.save({
+      name:  document.getElementById('input-name').value.trim(),
+      email: document.getElementById('input-email').value.trim(),
+      bio:   document.getElementById('input-bio').value.trim(),
+    });
+    showToast('Perfil guardado correctamente ✓');
+  }
+
+  function saveApiKey() {
+    const key = document.getElementById('input-api-key').value.trim();
+    if (!key) { showToast('Introduce tu API key', 'error'); return; }
+    if (!key.startsWith('sk-ant-')) { showToast('Formato incorrecto. Debe empezar con sk-ant-', 'error'); return; }
+    Settings.save({ claudeApiKey: key });
+    showApiStatus('API key guardada ✓', true);
+    showToast('API key guardada correctamente ✓');
+  }
+
+  async function testApiKey() {
+    const key = document.getElementById('input-api-key').value.trim();
+    if (!key) { showToast('Introduce tu API key primero', 'error'); return; }
+    Settings.save({ claudeApiKey: key });
+    showApiStatus('Probando conexión...', null);
+    try {
+      await Claude._call([{ role: 'user', content: 'Di "OK" solamente.' }], 10);
+      showApiStatus('¡Conexión exitosa! La IA está lista ✓', true);
+      showToast('¡Conexión con Claude exitosa!');
+    } catch (e) {
+      showApiStatus('Error: ' + e.message, false);
+      showToast('Error de conexión: ' + e.message, 'error');
+    }
+  }
+
+  function showApiStatus(msg, success) {
+    const el = document.getElementById('api-key-status');
+    el.classList.remove('hidden');
+    if (success === true) {
+      el.className = 'flex items-center gap-2 p-3 rounded-lg text-sm font-medium bg-secondary/10 text-secondary';
+      el.innerHTML = `<span class="material-symbols-outlined text-base">check_circle</span>${msg}`;
+    } else if (success === false) {
+      el.className = 'flex items-center gap-2 p-3 rounded-lg text-sm font-medium bg-error/10 text-error';
+      el.innerHTML = `<span class="material-symbols-outlined text-base">error</span>${msg}`;
+    } else {
+      el.className = 'flex items-center gap-2 p-3 rounded-lg text-sm font-medium bg-surface-container text-on-surface-variant';
+      el.innerHTML = `<span class="material-symbols-outlined text-base animate-spin">progress_activity</span>${msg}`;
+    }
+  }
+
+  function toggleApiKeyVisibility() {
+    const input = document.getElementById('input-api-key');
+    const icon  = document.getElementById('eye-icon');
+    if (input.type === 'password') {
+      input.type = 'text';
+      icon.textContent = 'visibility_off';
+    } else {
+      input.type = 'password';
+      icon.textContent = 'visibility';
+    }
+  }
+
+  function showToast(msg, type) {
     const t = document.getElementById('toast');
     t.textContent = msg;
     t.style.opacity = '1';
-    setTimeout(() => t.style.opacity = '0', 2500);
+    setTimeout(() => t.style.opacity = '0', 2800);
   }
+
   function toggleSwitch(btn) {
     const isActive = btn.classList.contains('active-toggle');
     const knob = btn.querySelector('span');

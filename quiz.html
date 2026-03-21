@@ -4,6 +4,7 @@
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
 <title>Quiz | Luminous Studio</title>
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script src="./app.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
 <script id="tailwind-config">
@@ -78,17 +79,17 @@
         <span class="w-2 h-2 rounded-full bg-secondary animate-pulse"></span>
         <span class="text-xs font-semibold tracking-widest uppercase text-on-surface-variant">Quiz de Recomendación</span>
       </div>
-      <h1 class="text-4xl md:text-5xl font-extrabold tracking-tighter leading-tight">
-        Descubre tu <span class="text-transparent bg-clip-text primary-gradient">plan financiero</span> ideal
+      <h1 id="intro-title" class="text-4xl md:text-5xl font-extrabold tracking-tighter leading-tight">
+        Descubre tu <span class="text-transparent bg-clip-text primary-gradient">perfil ideal</span>
       </h1>
-      <p class="text-on-surface-variant text-lg max-w-lg mx-auto leading-relaxed">
-        Responde 4 preguntas rápidas y nuestra IA te recomendará el producto perfecto para tu situación.
+      <p id="intro-subtitle" class="text-on-surface-variant text-lg max-w-lg mx-auto leading-relaxed">
+        Responde unas preguntas rápidas y descubre qué producto es perfecto para ti.
       </p>
       <div class="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
         <button onclick="startQuiz()" class="primary-gradient px-10 py-4 rounded-lg font-bold text-white hover:scale-[1.02] active:scale-95 transition-all duration-300 shadow-lg shadow-primary/20">
           Empezar Quiz
         </button>
-        <span class="text-on-surface-variant text-sm">~2 minutos · Gratis</span>
+        <span id="intro-time" class="text-on-surface-variant text-sm">~2 minutos · Gratis</span>
       </div>
       <div class="flex items-center justify-center gap-8 pt-4 text-sm text-on-surface-variant">
         <div class="flex items-center gap-2">
@@ -144,51 +145,34 @@
 </main>
 
 <script>
-  const QUESTIONS = [
-    {
-      category: "Situación actual",
-      text: "¿Cuál es tu principal objetivo financiero para este año?",
-      options: [
-        { text: "Empezar a ahorrar por primera vez", icon: "savings", value: "beginner" },
-        { text: "Invertir mi dinero en bolsa o activos", icon: "trending_up", value: "investor" },
-        { text: "Eliminar mis deudas definitivamente", icon: "money_off", value: "debt" },
-        { text: "Planear mi retiro y jubilación", icon: "elderly", value: "retirement" },
-      ]
-    },
-    {
-      category: "Tu nivel",
-      text: "¿Cuánto sabes sobre finanzas personales?",
-      options: [
-        { text: "Soy principiante, apenas empiezo", icon: "school", value: "novice" },
-        { text: "Tengo conocimientos básicos", icon: "menu_book", value: "basic" },
-        { text: "Tengo experiencia intermedia", icon: "bar_chart", value: "intermediate" },
-        { text: "Soy avanzado o experto", icon: "workspace_premium", value: "advanced" },
-      ]
-    },
-    {
-      category: "Tiempo disponible",
-      text: "¿Cuánto tiempo puedes dedicar a gestionar tus finanzas?",
-      options: [
-        { text: "Menos de 30 minutos a la semana", icon: "timer", value: "low" },
-        { text: "1-2 horas a la semana", icon: "schedule", value: "medium" },
-        { text: "Varias horas, me gusta el detalle", icon: "manage_history", value: "high" },
-      ]
-    },
-    {
-      category: "Tus metas",
-      text: "¿Cuál de estas afirmaciones describe mejor tu situación?",
-      options: [
-        { text: "Gasto más de lo que ingreso", icon: "trending_down", value: "negative" },
-        { text: "Llego justo a fin de mes", icon: "balance", value: "breakeven" },
-        { text: "Ahorro algo pero sin estrategia", icon: "savings", value: "casual" },
-        { text: "Tengo capital disponible para invertir", icon: "account_balance", value: "ready" },
-      ]
-    },
-  ];
-
+  // ── Load quiz: from URL param or fallback to DEMO_QUIZ ─
+  let QUIZ = null;
   let currentQ = 0;
-  let answers = [];
+  let answers  = []; // [{questionId, optionIndex}]
   let selectedOption = null;
+
+  document.addEventListener('DOMContentLoaded', () => {
+    const quizId = getParam('quiz');
+    if (quizId) {
+      QUIZ = quizId === 'demo' ? DEMO_QUIZ : Quizzes.get(quizId);
+    }
+    if (!QUIZ) QUIZ = DEMO_QUIZ;
+
+    // Track view
+    if (QUIZ.id) Analytics.trackView(QUIZ.id);
+
+    // Set session
+    Session.setCurrentQuiz(QUIZ.id || 'demo');
+    Session.setAnswers([]);
+
+    // Populate intro screen
+    document.getElementById('intro-title').innerHTML =
+      QUIZ.title.replace(/\b(\w)/g, c => c) || 'Descubre tu <span class="text-transparent bg-clip-text primary-gradient">perfil ideal</span>';
+    document.getElementById('intro-subtitle').textContent = QUIZ.subtitle || '';
+    document.getElementById('intro-time').textContent =
+      `~${QUIZ.estimatedMinutes || 2} minutos · Gratis`;
+    document.title = (QUIZ.title || 'Quiz') + ' | Luminous Studio';
+  });
 
   function startQuiz() {
     document.getElementById('screen-intro').classList.add('hidden');
@@ -197,45 +181,43 @@
   }
 
   function renderQuestion() {
-    const q = QUESTIONS[currentQ];
-    const total = QUESTIONS.length;
-    const pct = (currentQ / total) * 100;
+    const q     = QUIZ.questions[currentQ];
+    const total = QUIZ.questions.length;
+    const pct   = (currentQ / total) * 100;
 
     document.getElementById('progress-bar').style.width = pct + '%';
     document.getElementById('q-counter').textContent = `Pregunta ${currentQ + 1} de ${total}`;
-    document.getElementById('q-category').textContent = q.category;
+    document.getElementById('q-category').textContent = q.category || '';
 
     const qText = document.getElementById('q-text');
     qText.textContent = q.text;
-    qText.classList.remove('slide-in');
-    void qText.offsetWidth;
-    qText.classList.add('slide-in');
+    qText.classList.remove('slide-in'); void qText.offsetWidth; qText.classList.add('slide-in');
 
     const container = document.getElementById('q-options');
     container.innerHTML = '';
-    container.classList.remove('slide-in');
-    void container.offsetWidth;
-    container.classList.add('slide-in');
+    container.classList.remove('slide-in'); void container.offsetWidth; container.classList.add('slide-in');
+
+    const prevAnswer = answers.find(a => a.questionId === q.id);
+    const prevIdx    = prevAnswer ? prevAnswer.optionIndex : null;
 
     q.options.forEach((opt, i) => {
       const div = document.createElement('div');
       div.className = 'option-card flex items-center gap-4 p-4 rounded-xl border border-outline-variant/20 bg-surface-container-low';
-      if (answers[currentQ] === i) div.classList.add('selected');
+      if (prevIdx === i) div.classList.add('selected');
       div.innerHTML = `
         <div class="w-10 h-10 rounded-lg bg-surface-container-highest flex items-center justify-center shrink-0">
-          <span class="material-symbols-outlined text-on-surface-variant">${opt.icon}</span>
+          <span class="material-symbols-outlined text-on-surface-variant">${opt.icon || 'radio_button_unchecked'}</span>
         </div>
         <span class="font-medium text-on-surface flex-1">${opt.text}</span>
-        <span class="material-symbols-outlined text-primary option-check" style="opacity:${answers[currentQ] === i ? 1 : 0}; font-variation-settings: 'FILL' 1;">check_circle</span>
+        <span class="material-symbols-outlined text-primary option-check" style="opacity:${prevIdx===i?1:0}; font-variation-settings:'FILL' 1;">check_circle</span>
       `;
       div.addEventListener('click', () => selectOption(i));
       container.appendChild(div);
     });
 
-    selectedOption = answers[currentQ] !== undefined ? answers[currentQ] : null;
+    selectedOption = prevIdx;
     document.getElementById('btn-next').disabled = selectedOption === null;
     document.getElementById('btn-back').style.visibility = currentQ === 0 ? 'hidden' : 'visible';
-
     const nextBtn = document.getElementById('btn-next');
     nextBtn.innerHTML = currentQ === total - 1
       ? `Ver mi resultado <span class="material-symbols-outlined text-base">auto_awesome</span>`
@@ -244,37 +226,32 @@
 
   function selectOption(index) {
     selectedOption = index;
-    answers[currentQ] = index;
     document.querySelectorAll('.option-card').forEach((card, i) => {
       const check = card.querySelector('.option-check');
-      if (i === index) {
-        card.classList.add('selected');
-        if (check) check.style.opacity = '1';
-      } else {
-        card.classList.remove('selected');
-        if (check) check.style.opacity = '0';
-      }
+      if (i === index) { card.classList.add('selected'); if (check) check.style.opacity='1'; }
+      else { card.classList.remove('selected'); if (check) check.style.opacity='0'; }
     });
     document.getElementById('btn-next').disabled = false;
   }
 
   function goNext() {
     if (selectedOption === null) return;
-    answers[currentQ] = selectedOption;
-    if (currentQ < QUESTIONS.length - 1) {
-      currentQ++;
-      selectedOption = null;
-      renderQuestion();
+    const qId = QUIZ.questions[currentQ].id;
+    // Save/update answer
+    const idx = answers.findIndex(a => a.questionId === qId);
+    if (idx >= 0) answers[idx].optionIndex = selectedOption;
+    else answers.push({ questionId: qId, optionIndex: selectedOption });
+    Session.setAnswers(answers);
+
+    if (currentQ < QUIZ.questions.length - 1) {
+      currentQ++; selectedOption = null; renderQuestion();
     } else {
       showLoading();
     }
   }
 
   function goBack() {
-    if (currentQ > 0) {
-      currentQ--;
-      renderQuestion();
-    }
+    if (currentQ > 0) { currentQ--; selectedOption = null; renderQuestion(); }
   }
 
   function showLoading() {
@@ -283,13 +260,13 @@
     document.getElementById('progress-bar').style.width = '100%';
 
     const steps = [
-      'Analizando tu perfil financiero...',
-      'Comparando con 1,200+ usuarios similares...',
-      'Seleccionando la mejor recomendación...',
-      '¡Listo! Redirigiendo a tu resultado...'
+      'Analizando tus respuestas...',
+      'Identificando tu perfil...',
+      'Preparando tu recomendación personalizada...',
+      '¡Listo! Redirigiendo...',
     ];
     let i = 0;
-    const bar = document.getElementById('loading-bar');
+    const bar    = document.getElementById('loading-bar');
     const status = document.getElementById('loading-status');
 
     const interval = setInterval(() => {
@@ -299,11 +276,17 @@
       i++;
       if (i >= steps.length) {
         clearInterval(interval);
+        // Track completion
+        const profile = calculateProfile(QUIZ, answers);
+        if (QUIZ.id) Analytics.trackCompletion(QUIZ.id, profile.id);
         setTimeout(() => {
-          window.location.href = './resultado-quiz.html';
-        }, 600);
+          const dest = QUIZ.id
+            ? `./resultado-quiz.html?quiz=${QUIZ.id}`
+            : `./resultado-quiz.html`;
+          window.location.href = dest;
+        }, 500);
       }
-    }, 700);
+    }, 650);
   }
 </script>
 </body></html>
