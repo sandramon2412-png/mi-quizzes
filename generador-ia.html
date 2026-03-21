@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "on-secondary-fixed": "#00452d",
+              "tertiary-dim": "#e883d2",
+              "on-tertiary-fixed": "#380033",
+              "secondary-container": "#006c49",
+              "secondary-fixed": "#69f6b8",
+              "tertiary-fixed-dim": "#e883d2",
+              "on-primary": "#00257d",
+              "outline": "#767575",
+              "surface-container-high": "#20201f",
+              "primary-dim": "#3867fb",
+              "primary-fixed-dim": "#6d8cff",
+              "secondary-fixed-dim": "#58e7ab",
+              "surface-bright": "#2c2c2c",
+              "surface-tint": "#95aaff",
+              "secondary-dim": "#58e7ab",
+              "tertiary": "#ffa3e9",
+              "on-tertiary": "#6c1561",
+              "on-primary-fixed-variant": "#002377",
+              "error": "#ff6e84",
+              "inverse-on-surface": "#565555",
+              "background": "#0e0e0e",
+              "on-error-container": "#ffb2b9",
+              "primary-container": "#819bff",
+              "on-tertiary-container": "#5f0656",
+              "error-container": "#a70138",
+              "secondary": "#69f6b8",
+              "error-dim": "#d73357",
+              "surface-container-highest": "#262626",
+              "surface-container-lowest": "#000000",
+              "on-surface": "#ffffff",
+              "tertiary-fixed": "#f790e0",
+              "surface-container": "#1a1a1a",
+              "on-secondary-fixed-variant": "#006544",
+              "surface": "#0e0e0e",
+              "on-surface-variant": "#adaaaa",
+              "surface-dim": "#0e0e0e",
+              "on-secondary-container": "#e1ffec",
+              "tertiary-container": "#f790e0",
+              "on-secondary": "#005a3c",
+              "on-primary-container": "#001b62",
+              "on-error": "#490013",
+              "surface-variant": "#262626",
+              "outline-variant": "#484847",
+              "primary-fixed": "#819bff",
+              "on-tertiary-fixed-variant": "#6a1460",
+              "primary": "#95aaff",
+              "on-background": "#ffffff",
+              "inverse-primary": "#144fe5",
+              "surface-container-low": "#131313",
+              "on-primary-fixed": "#000000",
+              "inverse-surface": "#fcf9f8"
+            },
+            fontFamily: {
+              "headline": ["Plus Jakarta Sans"],
+              "body": ["Plus Jakarta Sans"],
+              "label": ["Plus Jakarta Sans"]
+            },
+            borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .glass-panel {
+            background: rgba(38, 38, 38, 0.6);
+            backdrop-filter: blur(20px);
+        }
+        .primary-gradient {
+            background: linear-gradient(135deg, #95aaff 0%, #3867fb 100%);
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+</head>
+<body class="bg-background text-on-surface font-body selection:bg-primary/30 min-h-screen">
+<!-- TopAppBar -->
+<header class="w-full top-0 sticky z-50 bg-[#131313] transition-colors duration-300 shadow-[0_40px_40px_-15px_rgba(20,79,229,0.08)]">
+<div class="flex justify-between items-center px-6 py-4 w-full">
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 rounded-full bg-surface-container-highest flex items-center justify-center border border-outline-variant/15 overflow-hidden">
+<img alt="Creator Profile" class="w-full h-full object-cover" data-alt="Avatar representativo del perfil del creador" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBuQDEuB9cwoSfjcTUcVlKnChrAeNEc2A-hIt3bCyf4nm3B4v7Wv1MEc8Zvjkj4aw7QsHaM_ONOIdzZVnDq9Sj2RJkyVnPFEGvYrZDD2DNFfRquIqjv5wdpfKzs0ya-CQbbJbYmx2zCIk8btiqaSqYAWOoWGBs7SyG4TrdOZFUG52HYzy-YhgyQoIhmVIrJy94os9nHGm_DISy-xsFJxX1Cv67re6_tw89TVxBZoaGkIW7O6SNMBL8Vt4hkrIDtsjTBheNbLQYBITY"/>
+</div>
+<h1 class="text-xl font-bold tracking-tighter text-[#95AAFF] font-headline">Luminous Studio</h1>
+</div>
+<div class="flex items-center gap-6">
+<nav class="hidden md:flex items-center gap-8 text-sm font-medium tracking-tight">
+<a class="text-[#95AAFF] font-['Plus_Jakarta_Sans']" href="#">Workspace</a>
+<a class="text-[#ADAAAA] hover:text-[#95AAFF] transition-all duration-400 ease-[cubic-bezier(0.16,1,0.3,1)]" href="#">Quizzes</a>
+<a class="text-[#ADAAAA] hover:text-[#95AAFF] transition-all duration-400 ease-[cubic-bezier(0.16,1,0.3,1)]" href="#">Mini-Apps</a>
+</nav>
+<button class="material-symbols-outlined text-[#95AAFF] scale-95 opacity-80 transition-transform">settings</button>
+</div>
+</div>
+</header>
+<div class="flex min-h-[calc(100vh-72px)]">
+<!-- NavigationDrawer (Desktop Only) -->
+<aside class="hidden lg:flex flex-col h-[calc(100vh-72px)] w-64 sticky top-[72px] bg-[#131313] border-r border-[#484847]/15 py-8 gap-4 px-4 overflow-y-auto">
+<div class="mb-4 px-2">
+<span class="font-['Plus_Jakarta_Sans'] text-sm uppercase tracking-widest text-[#ADAAAA]">The Curator</span>
+</div>
+<nav class="flex flex-col gap-2">
+<a class="flex items-center gap-3 px-4 py-3 bg-[#2C2C2C] text-[#95AAFF] font-semibold border-l-2 border-[#95AAFF] rounded-r-lg transition-all duration-400 ease-[cubic-bezier(0.16,1,0.3,1)]" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="font-['Plus_Jakarta_Sans'] text-sm uppercase tracking-widest">Workspace</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-[#ADAAAA] hover:bg-[#20201F] hover:text-[#95AAFF] rounded-lg transition-all duration-400 ease-[cubic-bezier(0.16,1,0.3,1)]" href="#">
+<span class="material-symbols-outlined">quiz</span>
+<span class="font-['Plus_Jakarta_Sans'] text-sm uppercase tracking-widest">Quizzes</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-[#ADAAAA] hover:bg-[#20201F] hover:text-[#95AAFF] rounded-lg transition-all duration-400 ease-[cubic-bezier(0.16,1,0.3,1)]" href="#">
+<span class="material-symbols-outlined">extension</span>
+<span class="font-['Plus_Jakarta_Sans'] text-sm uppercase tracking-widest">Mini-Apps</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-[#ADAAAA] hover:bg-[#20201F] hover:text-[#95AAFF] rounded-lg transition-all duration-400 ease-[cubic-bezier(0.16,1,0.3,1)]" href="#">
+<span class="material-symbols-outlined">insights</span>
+<span class="font-['Plus_Jakarta_Sans'] text-sm uppercase tracking-widest">Analytics</span>
+</a>
+</nav>
+</aside>
+<!-- Main Content (The Canvas) -->
+<main class="flex-1 p-6 md:p-12 max-w-7xl mx-auto w-full">
+<!-- Header Section -->
+<div class="mb-12">
+<span class="text-primary font-medium tracking-widest uppercase text-xs mb-2 block">Quiz Generator</span>
+<h2 class="text-4xl md:text-5xl font-extrabold tracking-tight text-on-surface mb-6 font-headline">generador-ia.html</h2>
+<p class="text-on-surface-variant max-w-2xl text-lg leading-relaxed">Define tu producto y deja que nuestra IA cure la experiencia de venta perfecta para tu audiencia.</p>
+</div>
+<!-- Bento Grid Layout -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+<!-- Input Column -->
+<div class="lg:col-span-5 space-y-8">
+<!-- Product Input Card -->
+<div class="bg-surface-container-low rounded-xl p-8 border border-outline-variant/10">
+<label class="block text-sm font-semibold text-primary mb-4 uppercase tracking-wider">Tu Producto</label>
+<div class="relative mb-6">
+<input class="w-full bg-surface-container-lowest border-none focus:ring-2 focus:ring-primary rounded-lg py-4 px-5 text-on-surface font-medium placeholder:text-outline/50 transition-all duration-400" placeholder="Nombre del producto..." type="text" value="eBook Finanzas Pro"/>
+<span class="absolute right-4 top-1/2 -translate-y-1/2 material-symbols-outlined text-outline-variant">edit</span>
+</div>
+<button class="w-full primary-gradient text-on-primary-fixed font-bold py-4 rounded-xl flex items-center justify-center gap-2 group hover:shadow-[0_0_20px_rgba(149,170,255,0.4)] transition-all duration-400">
+<span class="material-symbols-outlined">auto_awesome</span>
+                            Generar Preguntas con IA
+                        </button>
+</div>
+<!-- IA Logic Summary Card -->
+<div class="bg-surface-container-high rounded-xl p-8 border border-outline-variant/10 relative overflow-hidden">
+<div class="absolute top-0 right-0 p-4 opacity-10">
+<span class="material-symbols-outlined text-7xl">psychology</span>
+</div>
+<h3 class="text-xl font-bold mb-4 text-on-surface">Lógica de Recomendación</h3>
+<p class="text-on-surface-variant text-sm leading-relaxed mb-6">
+                            Basado en las respuestas, la IA segmentará al usuario en tres perfiles: <br/>
+<span class="text-secondary font-semibold">Principiante, Intermedio y Avanzado.</span>
+</p>
+<div class="space-y-3">
+<div class="flex items-center gap-3 p-3 bg-surface-container-lowest rounded-lg">
+<span class="material-symbols-outlined text-secondary">check_circle</span>
+<span class="text-xs text-on-surface/80">Segmentación por nivel de ahorro</span>
+</div>
+<div class="flex items-center gap-3 p-3 bg-surface-container-lowest rounded-lg">
+<span class="material-symbols-outlined text-secondary">check_circle</span>
+<span class="text-xs text-on-surface/80">Identificación de puntos de dolor</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Questions Preview Column -->
+<div class="lg:col-span-7 space-y-6">
+<div class="flex items-center justify-between mb-2 px-2">
+<h3 class="text-lg font-bold text-on-surface uppercase tracking-widest text-sm">Previsualización del Quiz</h3>
+<span class="text-on-surface-variant text-xs">3 Preguntas Generadas</span>
+</div>
+<!-- Question Card 1 -->
+<div class="bg-surface-container-low rounded-xl border border-outline-variant/5 hover:border-primary/20 transition-all duration-400">
+<div class="p-6 border-b border-outline-variant/10 flex justify-between items-start">
+<div>
+<span class="text-primary-dim text-[10px] font-black uppercase tracking-widest mb-1 block">Pregunta 01</span>
+<h4 class="text-on-surface font-semibold text-lg">¿Cuál es tu principal objetivo financiero para este año?</h4>
+</div>
+<button class="material-symbols-outlined text-on-surface-variant hover:text-error transition-colors">delete</button>
+</div>
+<div class="p-6 grid grid-cols-1 md:grid-cols-2 gap-3">
+<div class="p-4 bg-surface-container-lowest rounded-lg border border-outline-variant/10 flex items-center justify-between group hover:border-secondary/50 cursor-pointer transition-all">
+<span class="text-sm text-on-surface-variant group-hover:text-on-surface">Empezar a ahorrar</span>
+<span class="material-symbols-outlined text-secondary opacity-0 group-hover:opacity-100 transition-opacity" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+</div>
+<div class="p-4 bg-surface-container-lowest rounded-lg border border-outline-variant/10 flex items-center justify-between group hover:border-secondary/50 cursor-pointer transition-all">
+<span class="text-sm text-on-surface-variant group-hover:text-on-surface">Invertir en bolsa</span>
+<span class="material-symbols-outlined text-secondary opacity-0 group-hover:opacity-100 transition-opacity" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+</div>
+<div class="p-4 bg-surface-container-lowest rounded-lg border border-outline-variant/10 flex items-center justify-between group hover:border-secondary/50 cursor-pointer transition-all">
+<span class="text-sm text-on-surface-variant group-hover:text-on-surface">Eliminar deudas</span>
+<span class="material-symbols-outlined text-secondary opacity-0 group-hover:opacity-100 transition-opacity" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+</div>
+<div class="p-4 bg-surface-container-lowest rounded-lg border border-outline-variant/10 flex items-center justify-between group hover:border-secondary/50 cursor-pointer transition-all">
+<span class="text-sm text-on-surface-variant group-hover:text-on-surface">Planear mi retiro</span>
+<span class="material-symbols-outlined text-secondary opacity-0 group-hover:opacity-100 transition-opacity" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+</div>
+</div>
+</div>
+<!-- Question Card 2 -->
+<div class="bg-surface-container-low rounded-xl border border-outline-variant/5 opacity-80 scale-[0.98] blur-[0.5px]">
+<div class="p-6 border-b border-outline-variant/10 flex justify-between items-start">
+<div>
+<span class="text-primary-dim text-[10px] font-black uppercase tracking-widest mb-1 block">Pregunta 02</span>
+<h4 class="text-on-surface font-semibold text-lg">¿Cuánto tiempo dedicas a revisar tus finanzas?</h4>
+</div>
+<button class="material-symbols-outlined text-on-surface-variant">lock</button>
+</div>
+<div class="p-6">
+<div class="h-4 w-3/4 bg-surface-container-lowest rounded mb-3"></div>
+<div class="h-4 w-1/2 bg-surface-container-lowest rounded"></div>
+</div>
+</div>
+<!-- Add Question Button -->
+<button class="w-full py-6 border-2 border-dashed border-outline-variant/20 rounded-xl text-on-surface-variant hover:text-primary hover:border-primary/40 hover:bg-primary/5 transition-all duration-400 flex flex-col items-center justify-center gap-2">
+<span class="material-symbols-outlined text-3xl">add_circle</span>
+<span class="text-sm font-bold uppercase tracking-widest">Añadir Pregunta Manualmente</span>
+</button>
+</div>
+</div>
+<!-- Recommendation Flow Preview (Asymmetric Layout) -->
+<div class="mt-20">
+<h3 class="text-2xl font-bold mb-10 text-on-surface font-headline border-l-4 border-secondary pl-6">Final del Camino: El Cierre de Venta</h3>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+<!-- Recommendation Card 1 -->
+<div class="glass-panel p-8 rounded-2xl border border-outline-variant/10 relative group overflow-hidden">
+<div class="absolute top-0 right-0 w-32 h-32 bg-secondary/5 blur-[60px] rounded-full -mr-10 -mt-10 group-hover:bg-secondary/20 transition-all duration-700"></div>
+<span class="px-3 py-1 bg-secondary/20 text-secondary text-[10px] font-bold rounded-full uppercase mb-4 inline-block">Perfil: Ahorrador Novato</span>
+<h5 class="text-lg font-bold mb-3 text-on-surface">Oferta: Módulo de Ahorro Automático</h5>
+<p class="text-sm text-on-surface-variant mb-6 leading-relaxed">Ideal para quienes están empezando y necesitan estructura. Incluye la plantilla de presupuesto.</p>
+<div class="flex items-center gap-2 text-secondary text-xs font-bold tracking-widest uppercase">
+<span>Ver Página de Éxito</span>
+<span class="material-symbols-outlined text-sm">arrow_forward</span>
+</div>
+</div>
+<!-- Recommendation Card 2 -->
+<div class="glass-panel p-8 rounded-2xl border border-outline-variant/10 relative group overflow-hidden md:translate-y-4">
+<div class="absolute top-0 right-0 w-32 h-32 bg-primary/5 blur-[60px] rounded-full -mr-10 -mt-10 group-hover:bg-primary/20 transition-all duration-700"></div>
+<span class="px-3 py-1 bg-primary/20 text-primary text-[10px] font-bold rounded-full uppercase mb-4 inline-block">Perfil: El Inversionista</span>
+<h5 class="text-lg font-bold mb-3 text-on-surface">Oferta: Masterclass de Bolsa</h5>
+<p class="text-sm text-on-surface-variant mb-6 leading-relaxed">Para usuarios con capital disponible que buscan multiplicar sus activos de forma segura.</p>
+<div class="flex items-center gap-2 text-primary text-xs font-bold tracking-widest uppercase">
+<span>Ver Página de Éxito</span>
+<span class="material-symbols-outlined text-sm">arrow_forward</span>
+</div>
+</div>
+<!-- Recommendation Card 3 -->
+<div class="glass-panel p-8 rounded-2xl border border-outline-variant/10 relative group overflow-hidden md:translate-y-8">
+<div class="absolute top-0 right-0 w-32 h-32 bg-tertiary/5 blur-[60px] rounded-full -mr-10 -mt-10 group-hover:bg-tertiary/20 transition-all duration-700"></div>
+<span class="px-3 py-1 bg-tertiary/20 text-tertiary text-[10px] font-bold rounded-full uppercase mb-4 inline-block">Perfil: Deuda Zero</span>
+<h5 class="text-lg font-bold mb-3 text-on-surface">Oferta: Plan de Choque Financiero</h5>
+<p class="text-sm text-on-surface-variant mb-6 leading-relaxed">Contenido enfocado en la liberación de deudas y limpieza de historial crediticio.</p>
+<div class="flex items-center gap-2 text-tertiary text-xs font-bold tracking-widest uppercase">
+<span>Ver Página de Éxito</span>
+<span class="material-symbols-outlined text-sm">arrow_forward</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Spacer for mobile nav -->
+<div class="h-24 lg:hidden"></div>
+</main>
+</div>
+<!-- BottomNavBar (Mobile Only) -->
+<div class="md:hidden">
+<nav class="fixed bottom-8 left-1/2 -translate-x-1/2 w-[90%] max-w-md rounded-2xl bg-[#262626]/60 backdrop-blur-xl border border-[#484847]/10 z-50 flex justify-around items-center p-2 shadow-[0_20px_50px_rgba(0,0,0,0.5)]">
+<a class="flex flex-col items-center gap-1 text-[#ADAAAA] hover:scale-110 active:scale-90 transition-all duration-200" href="#">
+<span class="material-symbols-outlined">add_circle</span>
+<span class="font-['Plus_Jakarta_Sans'] text-[10px] font-medium">Build</span>
+</a>
+<a class="flex flex-col items-center gap-1 text-[#95AAFF] bg-[#2C2C2C] rounded-xl px-4 py-1 active:scale-90 transition-all duration-200" href="#">
+<span class="material-symbols-outlined">auto_stories</span>
+<span class="font-['Plus_Jakarta_Sans'] text-[10px] font-medium">Library</span>
+</a>
+<a class="flex flex-col items-center gap-1 text-[#ADAAAA] hover:scale-110 active:scale-90 transition-all duration-200" href="#">
+<span class="material-symbols-outlined">payments</span>
+<span class="font-['Plus_Jakarta_Sans'] text-[10px] font-medium">Sales</span>
+</a>
+<a class="flex flex-col items-center gap-1 text-[#ADAAAA] hover:scale-110 active:scale-90 transition-all duration-200" href="#">
+<span class="material-symbols-outlined">account_circle</span>
+<span class="font-['Plus_Jakarta_Sans'] text-[10px] font-medium">Account</span>
+</a>
+</nav>
+</div>
+</body></html>

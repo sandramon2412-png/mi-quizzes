@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>precios.html</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "surface-dim": "#0e0e0e",
+              "secondary-dim": "#58e7ab",
+              "tertiary": "#ffa3e9",
+              "surface-container": "#1a1a1a",
+              "background": "#0e0e0e",
+              "surface-container-high": "#20201f",
+              "on-primary-fixed": "#000000",
+              "primary": "#95aaff",
+              "inverse-on-surface": "#565555",
+              "surface-bright": "#2c2c2c",
+              "inverse-primary": "#144fe5",
+              "outline-variant": "#484847",
+              "secondary-fixed-dim": "#58e7ab",
+              "surface-container-low": "#131313",
+              "primary-dim": "#3867fb",
+              "on-surface-variant": "#adaaaa",
+              "surface-container-highest": "#262626",
+              "error-container": "#a70138",
+              "primary-fixed-dim": "#6d8cff",
+              "tertiary-fixed": "#f790e0",
+              "tertiary-dim": "#e883d2",
+              "error-dim": "#d73357",
+              "on-tertiary-fixed-variant": "#6a1460",
+              "error": "#ff6e84",
+              "on-tertiary-fixed": "#380033",
+              "on-secondary-container": "#e1ffec",
+              "on-error-container": "#ffb2b9",
+              "primary-container": "#819bff",
+              "on-secondary-fixed": "#00452d",
+              "on-background": "#ffffff",
+              "tertiary-fixed-dim": "#e883d2",
+              "surface-tint": "#95aaff",
+              "on-tertiary-container": "#5f0656",
+              "on-surface": "#ffffff",
+              "on-primary-fixed-variant": "#002377",
+              "on-primary": "#00257d",
+              "secondary": "#69f6b8",
+              "surface-container-lowest": "#000000",
+              "primary-fixed": "#819bff",
+              "inverse-surface": "#fcf9f8",
+              "secondary-fixed": "#69f6b8",
+              "on-secondary-fixed-variant": "#006544",
+              "on-secondary": "#005a3c",
+              "surface": "#0e0e0e",
+              "on-tertiary": "#6c1561",
+              "secondary-container": "#006c49",
+              "tertiary-container": "#f790e0",
+              "outline": "#767575",
+              "on-error": "#490013"
+            },
+            fontFamily: {
+              "headline": ["Plus Jakarta Sans"],
+              "body": ["Plus Jakarta Sans"],
+              "label": ["Plus Jakarta Sans"]
+            },
+            borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+          },
+        },
+      }
+    </script>
+<style>
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #0e0e0e; color: #ffffff; }
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+        .glass-card { background: rgba(38, 38, 38, 0.6); backdrop-filter: blur(20px); }
+        .primary-gradient { background: linear-gradient(135deg, #95aaff 0%, #3867fb 100%); }
+        .glow-shadow { shadow-[0_0_40px_rgba(20,79,229,0.08)]; }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+</head>
+<body class="bg-surface text-on-surface">
+<!-- TopAppBar -->
+<header class="fixed top-0 left-0 right-0 z-50 bg-[#0E0E0E] flex justify-between items-center w-full px-6 py-4">
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-[#95AAFF]">menu</span>
+<h1 class="text-xl font-bold tracking-tighter text-[#95AAFF] font-['Plus_Jakarta_SANS']">Luminous Studio</h1>
+</div>
+<div class="flex items-center gap-4">
+<div class="w-8 h-8 rounded-full bg-surface-container-highest overflow-hidden">
+<img alt="Profile" data-alt="Creator Profile Avatar" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB9kvBWGzNaeTxnzh5_WmivkAUggidxcJAtlDKat6CcBWM9I-5b46fmjHjkxXdh87mXIEkmpD3sJToe7ZELRklfX--sOF3Rp6Axm_NaO3Kuxy-8sb56Em8iTZUJPsQipWNZ7P_n9XFB2NCVa1jnVSnqGyyBkVrdqCeBRhI9ryNhEPqUbJlcb5U838DIoQ87I8wW3MgXUEKCL6DHi4f01gZJ9cJ5AMsfrkVnhQCmOPsNPD0iaPG6Alids0TipjO_5l21AJYpDXP9_ac"/>
+</div>
+</div>
+</header>
+<main class="pt-24 pb-40 px-6 max-w-7xl mx-auto">
+<!-- Hero Header -->
+<section class="mb-16 text-left">
+<h2 class="text-5xl font-extrabold tracking-tight mb-4 text-on-surface">Scale your <span class="text-primary">creative</span> vision.</h2>
+<p class="text-on-surface-variant max-w-2xl text-lg leading-relaxed">
+                Choose the workspace that fits your production scale. From solo explorers to high-output creative agencies.
+            </p>
+</section>
+<!-- Pricing Bento Layout -->
+<div class="grid grid-cols-1 md:grid-cols-12 gap-6">
+<!-- Current Plan Indicator / Free Tier -->
+<div class="md:col-span-4 flex flex-col gap-6">
+<div class="bg-surface-container-high rounded-xl p-8 border border-outline-variant/10 relative overflow-hidden h-full">
+<div class="absolute top-4 right-4 bg-secondary/10 text-secondary text-[10px] font-bold px-2 py-1 rounded-full tracking-widest uppercase">Current Plan</div>
+<h3 class="text-2xl font-bold mb-2">Free</h3>
+<div class="flex items-baseline gap-1 mb-6">
+<span class="text-4xl font-bold">$0</span>
+<span class="text-on-surface-variant text-sm">/month</span>
+</div>
+<ul class="space-y-4 mb-8">
+<li class="flex items-center gap-3 text-on-surface-variant text-sm">
+<span class="material-symbols-outlined text-secondary text-sm">check_circle</span>
+                            3 Active Quizzes
+                        </li>
+<li class="flex items-center gap-3 text-on-surface-variant text-sm">
+<span class="material-symbols-outlined text-secondary text-sm">check_circle</span>
+                            1 Mini-app Project
+                        </li>
+<li class="flex items-center gap-3 text-on-surface-variant text-sm">
+<span class="material-symbols-outlined text-secondary text-sm">check_circle</span>
+                            Community Access
+                        </li>
+</ul>
+<button class="w-full py-3 rounded-lg border border-outline-variant text-on-surface-variant font-medium text-sm transition-all hover:bg-surface-bright">Manage Usage</button>
+</div>
+</div>
+<!-- Pro Plan (Featured) -->
+<div class="md:col-span-4">
+<div class="primary-gradient rounded-xl p-8 shadow-[0_0_50px_rgba(20,79,229,0.15)] relative h-full flex flex-col justify-between">
+<div>
+<div class="bg-on-primary-container/20 text-on-surface text-[10px] font-bold px-2 py-1 rounded-full tracking-widest uppercase inline-block mb-4">Most Popular</div>
+<h3 class="text-2xl font-bold mb-2 text-on-primary-fixed">Pro</h3>
+<div class="flex items-baseline gap-1 mb-6 text-on-primary-fixed">
+<span class="text-4xl font-bold">$29</span>
+<span class="text-on-primary-fixed/70 text-sm">/month</span>
+</div>
+<ul class="space-y-4 mb-8">
+<li class="flex items-center gap-3 text-on-primary-fixed text-sm font-medium">
+<span class="material-symbols-outlined text-on-primary-fixed text-sm">auto_awesome</span>
+                                Unlimited Quizzes
+                            </li>
+<li class="flex items-center gap-3 text-on-primary-fixed text-sm font-medium">
+<span class="material-symbols-outlined text-on-primary-fixed text-sm">auto_awesome</span>
+                                5 Mini-app Projects
+                            </li>
+<li class="flex items-center gap-3 text-on-primary-fixed text-sm font-medium">
+<span class="material-symbols-outlined text-on-primary-fixed text-sm">auto_awesome</span>
+                                Priority Rendering
+                            </li>
+<li class="flex items-center gap-3 text-on-primary-fixed text-sm font-medium">
+<span class="material-symbols-outlined text-on-primary-fixed text-sm">auto_awesome</span>
+                                Advanced Analytics
+                            </li>
+</ul>
+</div>
+<button class="w-full py-4 rounded-lg bg-on-primary-fixed text-primary font-bold text-sm tracking-wide shadow-xl hover:scale-[1.02] transition-transform">Upgrade to Pro</button>
+</div>
+</div>
+<!-- Business Plan -->
+<div class="md:col-span-4">
+<div class="bg-surface-container-highest rounded-xl p-8 border border-outline-variant/10 h-full flex flex-col justify-between">
+<div>
+<h3 class="text-2xl font-bold mb-2">Business</h3>
+<div class="flex items-baseline gap-1 mb-6">
+<span class="text-4xl font-bold">$99</span>
+<span class="text-on-surface-variant text-sm">/month</span>
+</div>
+<ul class="space-y-4 mb-8">
+<li class="flex items-center gap-3 text-on-surface-variant text-sm">
+<span class="material-symbols-outlined text-primary text-sm">verified</span>
+                                Unlimited Projects
+                            </li>
+<li class="flex items-center gap-3 text-on-surface-variant text-sm">
+<span class="material-symbols-outlined text-primary text-sm">verified</span>
+                                Multi-user Collaboration
+                            </li>
+<li class="flex items-center gap-3 text-on-surface-variant text-sm">
+<span class="material-symbols-outlined text-primary text-sm">verified</span>
+                                Custom Branding &amp; Domains
+                            </li>
+<li class="flex items-center gap-3 text-on-surface-variant text-sm">
+<span class="material-symbols-outlined text-primary text-sm">verified</span>
+                                Dedicated Account Manager
+                            </li>
+</ul>
+</div>
+<button class="w-full py-3 rounded-lg border border-primary text-primary font-bold text-sm tracking-wide hover:bg-primary/5 transition-colors">Contact Sales</button>
+</div>
+</div>
+<!-- Feature Comparison (Mini-Bento) -->
+<div class="md:col-span-12 mt-8">
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+<div class="bg-surface-container-low p-6 rounded-xl border border-outline-variant/5">
+<div class="w-10 h-10 bg-surface-container-highest rounded-lg flex items-center justify-center mb-4">
+<span class="material-symbols-outlined text-primary">speed</span>
+</div>
+<h4 class="font-bold mb-2">High Performance</h4>
+<p class="text-on-surface-variant text-xs">All plans include our edge-delivery network for zero-latency interactions.</p>
+</div>
+<div class="bg-surface-container-low p-6 rounded-xl border border-outline-variant/5">
+<div class="w-10 h-10 bg-surface-container-highest rounded-lg flex items-center justify-center mb-4">
+<span class="material-symbols-outlined text-secondary">security</span>
+</div>
+<h4 class="font-bold mb-2">Encrypted Assets</h4>
+<p class="text-on-surface-variant text-xs">Your creative logic and data are protected with enterprise-grade encryption.</p>
+</div>
+<div class="bg-surface-container-low p-6 rounded-xl border border-outline-variant/5">
+<div class="w-10 h-10 bg-surface-container-highest rounded-lg flex items-center justify-center mb-4">
+<span class="material-symbols-outlined text-tertiary">api</span>
+</div>
+<h4 class="font-bold mb-2">Open API</h4>
+<p class="text-on-surface-variant text-xs">Connect Luminous Studio with your existing workflow seamlessly.</p>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- BottomNavBar -->
+<nav class="fixed bottom-8 left-0 right-0 z-50 flex justify-around items-center px-4">
+<div class="bg-[#262626]/60 backdrop-blur-xl w-[90%] max-w-md rounded-2xl border border-[#484847]/15 shadow-[0_0_40px_rgba(20,79,229,0.08)] flex justify-around items-center px-4 py-2">
+<div class="flex flex-col items-center justify-center text-[#ADAAAA] px-4 py-2 hover:bg-[#20201F] rounded-xl transition-all duration-400">
+<span class="material-symbols-outlined mb-1">auto_awesome</span>
+<span class="text-[10px] font-medium uppercase tracking-widest">Studio</span>
+</div>
+<div class="flex flex-col items-center justify-center text-[#ADAAAA] px-4 py-2 hover:bg-[#20201F] rounded-xl transition-all duration-400">
+<span class="material-symbols-outlined mb-1">quiz</span>
+<span class="text-[10px] font-medium uppercase tracking-widest">Quizzes</span>
+</div>
+<div class="flex flex-col items-center justify-center text-[#ADAAAA] px-4 py-2 hover:bg-[#20201F] rounded-xl transition-all duration-400">
+<span class="material-symbols-outlined mb-1">data_usage</span>
+<span class="text-[10px] font-medium uppercase tracking-widest">Usage</span>
+</div>
+<div class="flex flex-col items-center justify-center text-[#95AAFF] bg-[#2C2C2C] rounded-xl px-4 py-2">
+<span class="material-symbols-outlined mb-1">subscriptions</span>
+<span class="text-[10px] font-medium uppercase tracking-widest">Plans</span>
+</div>
+</div>
+</nav>
+</body></html>

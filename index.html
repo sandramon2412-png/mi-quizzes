@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="es"><head><title>index.html</title>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "on-secondary-fixed": "#00452d",
+              "tertiary-dim": "#e883d2",
+              "on-tertiary-fixed": "#380033",
+              "secondary-container": "#006c49",
+              "secondary-fixed": "#69f6b8",
+              "tertiary-fixed-dim": "#e883d2",
+              "on-primary": "#00257d",
+              "outline": "#767575",
+              "surface-container-high": "#20201f",
+              "primary-dim": "#3867fb",
+              "primary-fixed-dim": "#6d8cff",
+              "secondary-fixed-dim": "#58e7ab",
+              "surface-bright": "#2c2c2c",
+              "surface-tint": "#95aaff",
+              "secondary-dim": "#58e7ab",
+              "tertiary": "#ffa3e9",
+              "on-tertiary": "#6c1561",
+              "on-primary-fixed-variant": "#002377",
+              "error": "#ff6e84",
+              "inverse-on-surface": "#565555",
+              "background": "#0e0e0e",
+              "on-error-container": "#ffb2b9",
+              "primary-container": "#819bff",
+              "on-tertiary-container": "#5f0656",
+              "error-container": "#a70138",
+              "secondary": "#69f6b8",
+              "error-dim": "#d73357",
+              "surface-container-highest": "#262626",
+              "surface-container-lowest": "#000000",
+              "on-surface": "#ffffff",
+              "tertiary-fixed": "#f790e0",
+              "surface-container": "#1a1a1a",
+              "on-secondary-fixed-variant": "#006544",
+              "surface": "#0e0e0e",
+              "on-surface-variant": "#adaaaa",
+              "surface-dim": "#0e0e0e",
+              "on-secondary-container": "#e1ffec",
+              "tertiary-container": "#f790e0",
+              "on-secondary": "#005a3c",
+              "on-primary-container": "#001b62",
+              "on-error": "#490013",
+              "surface-variant": "#262626",
+              "outline-variant": "#484847",
+              "primary-fixed": "#819bff",
+              "on-tertiary-fixed-variant": "#6a1460",
+              "primary": "#95aaff",
+              "on-background": "#ffffff",
+              "inverse-primary": "#144fe5",
+              "surface-container-low": "#131313",
+              "on-primary-fixed": "#000000",
+              "inverse-surface": "#fcf9f8"
+            },
+            fontFamily: {
+              "headline": ["Plus Jakarta Sans"],
+              "body": ["Plus Jakarta Sans"],
+              "label": ["Plus Jakarta Sans"]
+            },
+            borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+          },
+        },
+      }
+    </script>
+<style>
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #0e0e0e; color: #ffffff; }
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+        .glass-card { background: rgba(38, 38, 38, 0.6); backdrop-filter: blur(20px); }
+        .primary-gradient { background: linear-gradient(135deg, #95aaff 0%, #3867fb 100%); }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+</head>
+<body class="bg-background text-on-background selection:bg-primary/30 selection:text-primary">
+<header class="w-full top-0 sticky bg-[#0e0e0e] z-50 transition-colors duration-300 shadow-[0_40px_40px_-15px_rgba(20,79,229,0.08)]">
+<nav class="flex justify-between items-center px-6 py-4 w-full">
+<div class="flex items-center gap-3">
+<span class="text-xl font-bold tracking-tighter text-[#95aaff]">Luminous Studio</span>
+</div>
+<div class="hidden md:flex items-center gap-8 font-['Plus_Jakarta_Sans'] font-medium tracking-tight">
+<a class="text-[#95aaff] hover:text-[#95aaff] transition-all duration-400" href="#">Workspace</a>
+<a class="text-[#adaaaa] hover:text-[#95aaff] transition-all duration-400" href="#">Features</a>
+<a class="text-[#adaaaa] hover:text-[#95aaff] transition-all duration-400" href="#">Pricing</a>
+</div>
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-[#adaaaa] cursor-pointer hover:text-[#95aaff] transition-all">settings</span>
+<div class="w-8 h-8 rounded-full bg-surface-container-highest flex items-center justify-center overflow-hidden border border-outline-variant/20">
+<img alt="Creator Profile" data-alt="Small round profile picture of a creator" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDzD8lGh-gqeqTgjvgly1wKzrS0--pOqusDjZDvOxcBxT2r3xAmotN_7LJNs7t6KSIjgp_Lh8qyUYhC6oF4ZbTJYVjw_01SB1j6V7dUTTSu8Uka8Kt3VQLbNRGBmPrc8CFWBfCr-CTdhf4GCjHdHDyshtkx3JrbZBlDh7xwl_M_92DfN_5B-CB-jvA3D2hZClrvPyQcsBcgldL4bfdmKdAplxFQI03PR1qkBRxaQx2AD6koW0d5fJogFoAZk0OrHsWk2w7AOcTU4sw"/>
+</div>
+</div>
+</nav>
+</header>
+<main class="relative">
+<section class="pt-24 pb-32 px-6 max-w-7xl mx-auto relative overflow-hidden">
+<div class="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full pointer-events-none">
+<div class="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-primary/10 blur-[120px] rounded-full"></div>
+<div class="absolute bottom-[-10%] right-[-10%] w-[30%] h-[30%] bg-tertiary/5 blur-[100px] rounded-full"></div>
+</div>
+<div class="relative z-10 text-center space-y-8">
+<div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-surface-container-high border border-outline-variant/10">
+<span class="w-2 h-2 rounded-full bg-secondary"></span>
+<span class="text-xs font-semibold tracking-widest uppercase text-on-surface-variant">The Future of Digital Sales</span>
+</div>
+<h1 class="text-5xl md:text-7xl font-extrabold tracking-tighter leading-tight max-w-4xl mx-auto text-on-surface">
+                    Vende más con <span class="text-transparent bg-clip-text primary-gradient">Quizzes &amp; Mini-Apps</span>
+</h1>
+<p class="text-on-surface-variant text-lg md:text-xl max-w-2xl mx-auto leading-relaxed">
+                    Transforma tu audiencia en clientes. Capta la atención con quizzes interactivos y entrega eBooks potenciados por mini-apps exclusivas que multiplican tu valor añadido.
+                </p>
+<div class="flex flex-col sm:flex-row items-center justify-center gap-4 pt-6">
+<button class="primary-gradient px-10 py-4 rounded-xl font-bold text-on-primary-fixed hover:scale-[1.02] active:scale-95 transition-all duration-400 shadow-lg shadow-primary/20">
+                        Empezar ahora
+                    </button>
+<button class="px-10 py-4 rounded-xl font-bold text-primary border border-outline-variant/30 hover:bg-surface-container-low transition-all duration-400">
+                        Ver Demo
+                    </button>
+</div>
+</div>
+<div class="mt-20 relative px-4 md:px-0">
+<div class="w-full aspect-video md:aspect-[21/9] rounded-2xl overflow-hidden border border-outline-variant/10 surface-container-highest shadow-2xl">
+<img class="w-full h-full object-cover opacity-60 mix-blend-luminosity" data-alt="Interface dashboard showing quiz analytics and app performance" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAfHbZ508k-IwjfemXlHEjUMTNx18nBlYeVMwDA1NnwEIPfejNvJ43iMQInPFGlqj7YFPV85EsU5Lq9tAwNcgiXvdF2coTTzTIsKWiyiU22GUqm48jraKY8fn-BFH2gAe3hSqpyhMHET5kHxWcmoOpSW8xzLU4D0c-zUdwRicdAk6VB6ndx4VQIgdY8fp9XB-2dimlrSik3W5j_R5XVyjUkqWcd0mg5vyAJ0y3ziksJa-KDvJQWso0kEY4eHYXi_gISTDF9I7d6i8Y"/>
+<div class="absolute inset-0 bg-gradient-to-t from-background via-transparent to-transparent"></div>
+<div class="absolute inset-0 flex items-center justify-center">
+<div class="glass-card p-6 rounded-2xl border border-outline-variant/20 max-w-sm">
+<div class="flex items-center gap-4 mb-4">
+<div class="w-10 h-10 rounded-lg primary-gradient flex items-center justify-center">
+<span class="material-symbols-outlined text-white">quiz</span>
+</div>
+<div class="text-sm font-bold">Quiz de Recomendación</div>
+</div>
+<div class="space-y-3">
+<div class="h-2 w-full bg-surface-container rounded-full overflow-hidden">
+<div class="h-full bg-secondary w-3/4"></div>
+</div>
+<div class="text-[10px] text-on-surface-variant uppercase tracking-widest font-bold">75% Completado</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section class="py-24 px-6 bg-surface-container-low">
+<div class="max-w-7xl mx-auto">
+<div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+<div class="p-8 rounded-3xl surface-container-high border border-outline-variant/5 hover:border-primary/20 transition-all duration-500 group">
+<div class="w-12 h-12 rounded-2xl bg-surface-container flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined text-primary text-3xl">trending_up</span>
+</div>
+<h3 class="text-xl font-bold mb-4 text-on-surface">Conversión Extrema</h3>
+<p class="text-on-surface-variant leading-relaxed">
+                            Los quizzes no son solo preguntas; son embudos de alta fricción positiva. Entiende a tu cliente antes de venderle el eBook perfecto.
+                        </p>
+</div>
+<div class="p-8 rounded-3xl surface-container-high border border-outline-variant/5 hover:border-secondary/20 transition-all duration-500 group">
+<div class="w-12 h-12 rounded-2xl bg-surface-container flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined text-secondary text-3xl">deployed_code</span>
+</div>
+<h3 class="text-xl font-bold mb-4 text-on-surface">Mini-Apps de Valor</h3>
+<p class="text-on-surface-variant leading-relaxed">
+                            No entregues solo un PDF. Entrega una mini-app interactiva con calculadoras, trackers o generadores que den vida a tu contenido.
+                        </p>
+</div>
+<div class="p-8 rounded-3xl surface-container-high border border-outline-variant/5 hover:border-tertiary/20 transition-all duration-500 group">
+<div class="w-12 h-12 rounded-2xl bg-surface-container flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined text-tertiary text-3xl">auto_awesome</span>
+</div>
+<h3 class="text-xl font-bold mb-4 text-on-surface">Curación con IA</h3>
+<p class="text-on-surface-variant leading-relaxed">
+                            Nuestra IA analiza las respuestas del quiz para personalizar el contenido de la mini-app en tiempo real. Valor 100% personalizado.
+                        </p>
+</div>
+</div>
+</div>
+</section>
+<section class="py-32 px-6">
+<div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center gap-16">
+<div class="flex-1 space-y-6">
+<h2 class="text-4xl font-extrabold tracking-tight text-on-surface">De un simple lector a un <span class="text-secondary">usuario activo</span></h2>
+<p class="text-on-surface-variant text-lg leading-relaxed">
+                        El mercado de los eBooks está saturado. Para destacar, necesitas ofrecer una experiencia, no solo información. Nuestra plataforma permite a los creadores construir "Compañeros Digitales" que acompañan la lectura.
+                    </p>
+<ul class="space-y-4 pt-4">
+<li class="flex items-center gap-3">
+<span class="material-symbols-outlined text-secondary">check_circle</span>
+<span class="text-on-surface">Segmentación automática de leads</span>
+</li>
+<li class="flex items-center gap-3">
+<span class="material-symbols-outlined text-secondary">check_circle</span>
+<span class="text-on-surface">Dashboard de analíticas de usuario</span>
+</li>
+<li class="flex items-center gap-3">
+<span class="material-symbols-outlined text-secondary">check_circle</span>
+<span class="text-on-surface">Integración con Stripe y LemonSqueezy</span>
+</li>
+</ul>
+</div>
+<div class="flex-1 w-full">
+<div class="grid grid-cols-2 gap-4">
+<div class="space-y-4 mt-8">
+<div class="aspect-square rounded-2xl surface-container-highest border border-outline-variant/10 overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="Abstract vibrant gradient colors represent creativity" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDunxWbnBbRL4IKj-qgHEr9ZLIkgN4pQO9VQv4glHEK3HA8kt4xCSewYUCSTuuRm-zJDXrm2rVq_VXqBCZDTbD6GnPop6e7g_GrQRBLb0YbcW5uKj_RYq2_hIci-S6EbeLZfMFsgbhAGMIB6cH9Xit1wxrvwEo886SC7tT1uMZCEWJH4_EFS6YypjygutrFRFkcalktZe2njXfDBnXgZZzlbkuaisjJzuZBIvGvFF9b7sXTuDoX87EflYhFzBRzO4TMSBg18C81NBA"/>
+</div>
+<div class="aspect-[3/4] rounded-2xl surface-container-highest border border-outline-variant/10 p-6 flex flex-col justify-end">
+<div class="text-4xl font-black text-primary">45%</div>
+<div class="text-sm text-on-surface-variant font-bold uppercase tracking-wider">Aumento en Conversión</div>
+</div>
+</div>
+<div class="space-y-4">
+<div class="aspect-[3/4] rounded-2xl surface-container-highest border border-outline-variant/10 p-6 flex flex-col justify-end primary-gradient">
+<div class="text-white text-xl font-bold">La nueva era de infoproductos</div>
+</div>
+<div class="aspect-square rounded-2xl surface-container-highest border border-outline-variant/10 overflow-hidden">
+<img class="w-full h-full object-cover opacity-50" data-alt="Futuristic digital circuitry representing mini-apps" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBWDjDNS9b6BO1DMAkgFhQPfjDp8ogpVjZcRJIFwcrjY8JmeZNpxPVkvnFLYCvZbSI-FCYne2R_64Yl_L5UdgxiMhkP0XetXBp_vjOicwyv0Ksln4Ma9wdNRa6DRK0b60QjCEkQM6FgQenexn6A8GlByjhPsvwMEHirY9F3U2cyAqiEGbeARINC41gx6FitrqcqBO614V1edj7oryVa7yRhfabOiQMshN-Z-g7nnc7njeZvltAqVSxLzRXTVugoX4726elt3tml9Mo"/>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section class="py-24 px-6 mb-24">
+<div class="max-w-4xl mx-auto glass-card border border-outline-variant/10 rounded-[2.5rem] p-12 text-center space-y-8 relative overflow-hidden">
+<div class="absolute -top-24 -right-24 w-64 h-64 bg-primary/10 blur-[80px] rounded-full"></div>
+<h2 class="text-4xl font-extrabold tracking-tight text-on-surface">¿Listo para transformar tus ventas?</h2>
+<p class="text-on-surface-variant text-lg">Únete a más de 1,200 creadores que están redefiniendo el valor de sus productos digitales.</p>
+<div class="flex flex-col sm:flex-row items-center justify-center gap-4">
+<button class="primary-gradient px-12 py-5 rounded-xl font-bold text-on-primary-fixed hover:scale-[1.05] transition-transform">
+                        Crear mi primer Quiz
+                    </button>
+</div>
+<p class="text-xs text-on-surface-variant/60 font-medium">Prueba gratuita de 14 días. No requiere tarjeta.</p>
+</div>
+</section>
+</main>
+<footer class="py-12 px-6 bg-surface-container-lowest border-t border-outline-variant/5">
+<div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-8">
+<div class="text-xl font-bold tracking-tighter text-[#95aaff]">Luminous Studio</div>
+<div class="flex gap-8 text-on-surface-variant text-sm">
+<a class="hover:text-primary transition-colors" href="#">Privacy</a>
+<a class="hover:text-primary transition-colors" href="#">Terms</a>
+<a class="hover:text-primary transition-colors" href="#">Support</a>
+<a class="hover:text-primary transition-colors" href="#">Twitter</a>
+</div>
+<div class="text-on-surface-variant/40 text-xs">
+                © 2024 Luminous Studio. All rights reserved.
+            </div>
+</div>
+</footer>
+<nav class="md:hidden fixed bottom-8 left-1/2 -translate-x-1/2 w-[90%] max-w-md bg-[#262626]/60 backdrop-blur-xl rounded-2xl border border-[#484847]/10 z-50 p-2 shadow-[0_20px_50px_rgba(0,0,0,0.5)]">
+<div class="flex justify-around items-center">
+<a class="flex flex-col items-center gap-1 text-[#95aaff] bg-[#2c2c2c] rounded-xl px-4 py-1 active:scale-90 transition-all duration-200" href="#">
+<span class="material-symbols-outlined">add_circle</span>
+<span class="font-['Plus_Jakarta_Sans'] text-[10px] font-medium uppercase tracking-tight">Build</span>
+</a>
+<a class="flex flex-col items-center gap-1 text-[#adaaaa] hover:scale-110 active:scale-90 transition-all duration-200" href="#">
+<span class="material-symbols-outlined">auto_stories</span>
+<span class="font-['Plus_Jakarta_Sans'] text-[10px] font-medium uppercase tracking-tight">Library</span>
+</a>
+<a class="flex flex-col items-center gap-1 text-[#adaaaa] hover:scale-110 active:scale-90 transition-all duration-200" href="#">
+<span class="material-symbols-outlined">payments</span>
+<span class="font-['Plus_Jakarta_Sans'] text-[10px] font-medium uppercase tracking-tight">Sales</span>
+</a>
+<a class="flex flex-col items-center gap-1 text-[#adaaaa] hover:scale-110 active:scale-90 transition-all duration-200" href="#">
+<span class="material-symbols-outlined">account_circle</span>
+<span class="font-['Plus_Jakarta_Sans'] text-[10px] font-medium uppercase tracking-tight">Account</span>
+</a>
+</div>
+</nav>
+</body></html>
