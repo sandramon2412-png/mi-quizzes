@@ -3,7 +3,7 @@
 <html class="dark" lang="es"><head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>dashboard.html</title>
+<title>Dashboard | Luminous Studio</title>
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
@@ -21,7 +21,7 @@
               "outline": "#767575",
               "error": "#ff6e84",
               "primary-container": "#819bff",
-              "primary": "#95aaff",
+              "primary": "#2E5BFF",
               "secondary-fixed-dim": "#58e7ab",
               "tertiary-fixed-dim": "#e883d2",
               "surface-container-low": "#131313",
@@ -30,14 +30,14 @@
               "secondary-container": "#006c49",
               "inverse-primary": "#144fe5",
               "surface-container": "#1a1a1a",
-              "on-primary": "#00257d",
+              "on-primary": "#ffffff",
               "on-error-container": "#ffb2b9",
               "tertiary": "#ffa3e9",
               "surface-bright": "#2c2c2c",
               "on-tertiary-container": "#5f0656",
               "inverse-surface": "#fcf9f8",
               "error-dim": "#d73357",
-              "surface-tint": "#95aaff",
+              "surface-tint": "#2E5BFF",
               "error-container": "#a70138",
               "tertiary-fixed": "#f790e0",
               "secondary-dim": "#58e7ab",
@@ -70,7 +70,7 @@
               "body": ["Plus Jakarta Sans"],
               "label": ["Plus Jakarta Sans"]
             },
-            borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+            borderRadius: {"DEFAULT": "0.5rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
           },
         },
       }
@@ -92,14 +92,14 @@
 </head>
 <body class="bg-surface text-on-surface custom-scrollbar selection:bg-primary/30">
 <!-- TopAppBar -->
-<header class="fixed top-0 w-full z-50 flex justify-between items-center px-8 h-16 bg-[#0E0E0E] shadow-[0_40px_40px_-15px_rgba(20,79,229,0.08)]">
+<header class="fixed top-0 w-full z-50 flex justify-between items-center px-8 h-16 bg-[#0E0E0E] shadow-[0_40px_40px_-15px_rgba(46,91,255,0.08)]">
 <div class="flex items-center gap-8">
-<a class="text-xl font-bold tracking-tighter text-[#95AAFF]" href="./dashboard.html">Luminous Studio</a>
+<a class="text-xl font-bold tracking-tighter text-primary" href="./dashboard.html">Luminous Studio</a>
 <nav class="hidden md:flex items-center gap-6">
-<a class="text-[#95AAFF] font-semibold text-sm tracking-tight transition-colors duration-400" href="./dashboard.html">Projects</a>
-<a class="text-[#ADAAAA] hover:text-[#95AAFF] text-sm tracking-tight transition-colors duration-400" href="./plantillas.html">Plantillas</a>
-<a class="text-[#ADAAAA] hover:text-[#95AAFF] text-sm tracking-tight transition-colors duration-400" href="./precios.html">Plan</a>
-<a class="text-[#ADAAAA] hover:text-[#95AAFF] text-sm tracking-tight transition-colors duration-400" href="./dashboard.html">Settings</a>
+<a class="text-primary font-semibold text-sm tracking-tight transition-colors duration-400" href="./dashboard.html">Projects</a>
+<a class="text-[#ADAAAA] hover:text-primary text-sm tracking-tight transition-colors duration-400" href="./plantillas.html">Plantillas</a>
+<a class="text-[#ADAAAA] hover:text-primary text-sm tracking-tight transition-colors duration-400" href="./precios.html">Plan</a>
+<a class="text-[#ADAAAA] hover:text-primary text-sm tracking-tight transition-colors duration-400" href="./settings.html">Settings</a>
 </nav>
 </div>
 <div class="flex items-center gap-4">
@@ -108,10 +108,10 @@
 <input class="bg-transparent border-none focus:ring-0 text-xs w-48 text-on-surface placeholder:text-on-surface-variant" placeholder="Search resources..." type="text"/>
 </div>
 <button class="material-symbols-outlined text-on-surface-variant hover:text-primary transition-colors" data-icon="notifications">notifications</button>
-<a class="material-symbols-outlined text-on-surface-variant hover:text-primary transition-colors" data-icon="settings" href="./dashboard.html">settings</a>
-<div class="w-8 h-8 rounded-full overflow-hidden border border-primary/20">
-<img class="w-full h-full object-cover" data-alt="User profile avatar of a male creator" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCb8fGHN0CXDIGOQsDJr44gJMr4h_2A19WgDG7xn4lqbRe5hcCVhq3pWmYPI-IEnHFIcvCrotJJ6yxayu2isewEhKNGMq5lThqIfldijQTsl6WIcbntzGthL3J3w5VO_pZDPaIMSRQU1n7UfNGO6cdlr5-9uvME7TWEmkw9BZgVSHYGBlj6U5Y2QTAkFGNwjLTxf9nSs3A9mAXRU7SiZL861to-8hMYCZGp3hrNp_kqxStQZxL-VG_bNcA9gmYSIvEIV3ItYlccLjo"/>
-</div>
+<a class="material-symbols-outlined text-on-surface-variant hover:text-primary transition-colors" data-icon="settings" href="./settings.html">settings</a>
+<a class="w-8 h-8 rounded-full overflow-hidden border border-primary/20 block" href="./settings.html">
+<img class="w-full h-full object-cover" data-alt="User profile avatar" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCb8fGHN0CXDIGOQsDJr44gJMr4h_2A19WgDG7xn4lqbRe5hcCVhq3pWmYPI-IEnHFIcvCrotJJ6yxayu2isewEhKNGMq5lThqIfldijQTsl6WIcbntzGthL3J3w5VO_pZDPaIMSRQU1n7UfNGO6cdlr5-9uvME7TWEmkw9BZgVSHYGBlj6U5Y2QTAkFGNwjLTxf9nSs3A9mAXRU7SiZL861to-8hMYCZGp3hrNp_kqxStQZxL-VG_bNcA9gmYSIvEIV3ItYlccLjo"/>
+</a>
 </div>
 <div class="absolute bottom-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-[#20201F] to-transparent"></div>
 </header>
@@ -120,28 +120,38 @@
 <div class="px-6 mb-8">
 <div class="flex items-center gap-3">
 <div class="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center">
-<span class="material-symbols-outlined text-[#95AAFF]" data-icon="grid_view">grid_view</span>
+<span class="material-symbols-outlined text-primary" data-icon="grid_view">grid_view</span>
 </div>
 <div>
-<h2 class="text-lg font-bold text-[#95AAFF] tracking-tight leading-none">The Curator</h2>
+<h2 class="text-lg font-bold text-primary tracking-tight leading-none">The Curator</h2>
 <p class="text-[0.75rem] text-on-surface-variant font-medium">Digital Workspace</p>
 </div>
 </div>
 </div>
 <nav class="flex-1 px-4 space-y-1">
-<a class="flex items-center gap-3 bg-[#2C2C2C] text-[#95AAFF] border-l-2 border-[#95AAFF] px-4 py-3 font-medium text-[0.875rem] transition-all duration-400 translate-x-1" href="./dashboard.html">
+<a class="flex items-center gap-3 bg-[#2C2C2C] text-primary border-l-2 border-primary px-4 py-3 font-medium text-[0.875rem] transition-all duration-400 translate-x-1" href="./dashboard.html">
 <span class="material-symbols-outlined text-sm" data-icon="grid_view">grid_view</span>
-                Projects
-            </a>
-<a class="flex items-center gap-3 text-[#ADAAAA] px-4 py-3 hover:bg-[#20201F] hover:text-[#95AAFF] text-[0.875rem] transition-all duration-400" href="./plantillas.html"><span class="material-symbols-outlined text-sm" data-icon="description">description</span> Plantillas</a>
-<a class="flex items-center gap-3 text-[#ADAAAA] px-4 py-3 hover:bg-[#20201F] hover:text-[#95AAFF] text-[0.875rem] transition-all duration-400" href="./precios.html"><span class="material-symbols-outlined text-sm" data-icon="credit_card">credit_card</span> Plan</a>
-<a class="flex items-center gap-3 text-[#ADAAAA] px-4 py-3 hover:bg-[#20201F] hover:text-[#95AAFF] text-[0.875rem] transition-all duration-400" href="./dashboard.html">
+            Projects
+        </a>
+<a class="flex items-center gap-3 text-[#ADAAAA] px-4 py-3 hover:bg-[#20201F] hover:text-primary text-[0.875rem] transition-all duration-400" href="./plantillas.html">
+<span class="material-symbols-outlined text-sm" data-icon="description">description</span>
+            Plantillas
+        </a>
+<a class="flex items-center gap-3 text-[#ADAAAA] px-4 py-3 hover:bg-[#20201F] hover:text-primary text-[0.875rem] transition-all duration-400" href="./precios.html">
+<span class="material-symbols-outlined text-sm" data-icon="credit_card">credit_card</span>
+            Plan
+        </a>
+<a class="flex items-center gap-3 text-[#ADAAAA] px-4 py-3 hover:bg-[#20201F] hover:text-primary text-[0.875rem] transition-all duration-400" href="./settings.html">
 <span class="material-symbols-outlined text-sm" data-icon="settings">settings</span>
-                Settings
-            </a>
-<a class="flex items-center gap-3 text-[#ADAAAA] px-4 py-3 hover:bg-[#20201F] hover:text-[#95AAFF] text-[0.875rem] transition-all duration-400 mt-4" href="./index.html"><span class="material-symbols-outlined text-sm" data-icon="logout">logout</span> Cerrar sesión</a></nav>
+            Settings
+        </a>
+<a class="flex items-center gap-3 text-[#ADAAAA] px-4 py-3 hover:bg-[#20201F] hover:text-primary text-[0.875rem] transition-all duration-400 mt-4" href="./index.html">
+<span class="material-symbols-outlined text-sm" data-icon="logout">logout</span>
+            Cerrar sesión
+        </a>
+</nav>
 <div class="px-6 pt-4 border-t border-outline-variant/10">
-<a class="w-full block text-center bg-gradient-to-r from-primary to-primary-dim text-on-primary-fixed py-2.5 rounded-lg text-sm font-bold shadow-lg shadow-primary/10 hover:scale-[0.98] active:scale-95 transition-transform" href="./generador-ia.html">New Quiz</a>
+<a class="w-full block text-center bg-gradient-to-r from-primary to-primary-dim text-on-primary py-2.5 rounded-lg text-sm font-bold shadow-lg shadow-primary/10 hover:scale-[0.98] active:scale-95 transition-transform" href="./generador-ia.html">New Quiz</a>
 </div>
 </aside>
 <!-- Main Content -->
@@ -154,7 +164,7 @@
 </div>
 <div class="flex gap-3">
 <button class="px-5 py-2 bg-surface-container-high text-on-surface text-sm font-medium rounded-lg border border-outline-variant/20 hover:bg-surface-bright transition-colors">Export Data</button>
-<a class="px-5 py-2 bg-primary text-on-primary text-sm font-bold rounded-lg shadow-lg shadow-primary/10 hover:opacity-90 transition-opacity flex items-center" href="./generador-ia.html">Launch Mini-App</a>
+<a class="px-5 py-2 bg-primary text-on-primary text-sm font-bold rounded-lg shadow-lg shadow-primary/10 hover:opacity-90 transition-opacity flex items-center" href="./acceso-exito.html">Launch Mini-App</a>
 </div>
 </header>
 <!-- Bento Grid Layout -->
@@ -392,7 +402,7 @@
 <span class="material-symbols-outlined text-xl" data-icon="bar_chart">bar_chart</span>
 <span class="text-[10px] font-bold uppercase tracking-tighter">Sales</span>
 </a>
-<a class="flex flex-col items-center gap-0.5 text-on-surface-variant hover:text-primary transition-colors" href="./precios.html">
+<a class="flex flex-col items-center gap-0.5 text-on-surface-variant hover:text-primary transition-colors" href="./settings.html">
 <span class="material-symbols-outlined text-xl" data-icon="person">person</span>
 <span class="text-[10px] font-bold uppercase tracking-tighter">Account</span>
 </a>
