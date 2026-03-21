@@ -210,6 +210,27 @@
               class="w-full bg-transparent text-on-surface-variant text-sm outline-none mt-2"/>
           </div>
 
+          <!-- Product URL + Mini-App link -->
+          <div class="bg-surface-container rounded-xl p-4 border border-outline-variant/10 space-y-4">
+            <div>
+              <label class="text-xs font-bold text-on-surface-variant uppercase tracking-widest block mb-1">URL de destino del quiz</label>
+              <p class="text-[10px] text-on-surface-variant/60 mb-2">Link de tu landing, checkout de Hotmart, Shopify, etc. Se puede sobrescribir por perfil.</p>
+              <div class="relative">
+                <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant/40 text-sm">link</span>
+                <input id="quiz-product-url" type="url" placeholder="https://hotmart.com/product/... o https://tu-landing.com"
+                  class="w-full bg-surface-container-high border border-outline-variant/20 rounded-lg pl-9 pr-4 py-2.5 text-xs text-on-surface outline-none focus:ring-1 focus:ring-primary transition-colors"/>
+              </div>
+            </div>
+            <div>
+              <label class="text-xs font-bold text-on-surface-variant uppercase tracking-widest block mb-1">Mini-App Bonus vinculada</label>
+              <p class="text-[10px] text-on-surface-variant/60 mb-2">Se mostrará en la página de resultado como bonus incluido al comprar.</p>
+              <select id="quiz-miniapp-id"
+                class="w-full bg-surface-container-high border border-outline-variant/20 rounded-lg px-3 py-2.5 text-xs text-on-surface outline-none focus:ring-1 focus:ring-secondary transition-colors">
+                <option value="">Sin mini-app vinculada</option>
+              </select>
+            </div>
+          </div>
+
           <!-- Questions -->
           <div id="questions-list" class="space-y-3"></div>
 
@@ -372,8 +393,16 @@ function loadQuizIntoEditor(quiz) {
   document.getElementById('btn-save-header').classList.remove('hidden');
   document.getElementById('btn-add-q').classList.remove('hidden');
   document.getElementById('btn-preview').classList.remove('hidden');
-  document.getElementById('quiz-title').value    = quiz.title || '';
-  document.getElementById('quiz-subtitle').value = quiz.subtitle || '';
+  document.getElementById('quiz-title').value       = quiz.title      || '';
+  document.getElementById('quiz-subtitle').value    = quiz.subtitle   || '';
+  document.getElementById('quiz-product-url').value = quiz.productUrl || '';
+
+  // Populate mini-app selector
+  const miniAppsAll = MiniApps.getAll();
+  const sel = document.getElementById('quiz-miniapp-id');
+  sel.innerHTML = '<option value="">Sin mini-app vinculada</option>' +
+    miniAppsAll.map(a => `<option value="${a.id}" ${quiz.miniAppId === a.id ? 'selected' : ''}>${a.icon || '⚡'} ${a.name}</option>`).join('');
+
   syncMeta(quiz);
   renderQuestions(quiz.questions || []);
   renderProfiles(quiz.profiles || []);
@@ -431,6 +460,13 @@ function renderProfiles(profiles) {
           <input type="text" value="${esc(p.cta)}" onchange="currentQuiz.profiles[${pi}].cta=this.value"
             placeholder="Texto del botón CTA..."
             class="w-full bg-surface-container-high border border-outline-variant/10 rounded-lg px-3 py-2 text-xs text-primary font-semibold outline-none focus:border-primary transition-colors"/>
+          <div class="relative mt-1">
+            <span class="material-symbols-outlined absolute left-2.5 top-1/2 -translate-y-1/2 text-on-surface-variant/40 text-xs">link</span>
+            <input type="url" value="${esc(p.ctaUrl||'')}" onchange="currentQuiz.profiles[${pi}].ctaUrl=this.value.trim()"
+              placeholder="URL de este perfil (Hotmart, Shopify, landing…)"
+              class="w-full bg-surface-container-high border border-outline-variant/10 rounded-lg pl-8 pr-3 py-2 text-xs text-on-surface-variant outline-none focus:border-secondary focus:ring-1 focus:ring-secondary/30 transition-colors"/>
+          </div>
+          <p class="text-[10px] text-on-surface-variant/40 mt-0.5">Si vacío, usa la URL general del quiz.</p>
         </div>
       </div>`;
     c.appendChild(d);
@@ -482,11 +518,13 @@ function syncMeta(q) {
 // ── Save ──────────────────────────────────────────────────
 async function saveQuiz() {
   if (!currentQuiz) { showToast('Genera o crea un quiz primero', 'error'); return; }
-  currentQuiz.title       = document.getElementById('quiz-title').value.trim()    || currentQuiz.title;
-  currentQuiz.subtitle    = document.getElementById('quiz-subtitle').value.trim() || currentQuiz.subtitle;
-  currentQuiz.product     = document.getElementById('input-product').value.trim() || currentQuiz.product;
-  currentQuiz.niche       = document.getElementById('input-niche').value.trim()   || currentQuiz.niche;
-  currentQuiz.description = document.getElementById('input-desc').value.trim()    || currentQuiz.description;
+  currentQuiz.title       = document.getElementById('quiz-title').value.trim()       || currentQuiz.title;
+  currentQuiz.subtitle    = document.getElementById('quiz-subtitle').value.trim()    || currentQuiz.subtitle;
+  currentQuiz.productUrl  = document.getElementById('quiz-product-url').value.trim() || currentQuiz.productUrl || '';
+  currentQuiz.miniAppId   = document.getElementById('quiz-miniapp-id').value         || currentQuiz.miniAppId  || '';
+  currentQuiz.product     = document.getElementById('input-product').value.trim()    || currentQuiz.product;
+  currentQuiz.niche       = document.getElementById('input-niche').value.trim()      || currentQuiz.niche;
+  currentQuiz.description = document.getElementById('input-desc').value.trim()       || currentQuiz.description;
 
   if (editingQuizId) currentQuiz.id = editingQuizId;
 
