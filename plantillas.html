@@ -7,7 +7,6 @@
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
 <script id="tailwind-config">
       tailwind.config = {
         darkMode: "class",
@@ -96,12 +95,10 @@
             outline: 1px solid #95AAFF;
         }
         .no-scrollbar::-webkit-scrollbar { display: none; }
+        body {
+            min-height: max(884px, 100dvh);
+        }
     </style>
-<style>
-    body {
-      min-height: max(884px, 100dvh);
-    }
-  </style>
 </head>
 <body class="bg-background text-on-background min-h-screen">
 <!-- TopAppBar -->
@@ -113,8 +110,8 @@
 </div>
 <div class="flex items-center gap-6">
 <nav class="hidden md:flex items-center gap-8 font-plus-jakarta text-sm font-medium tracking-tight">
-<a class="text-[#ADAAAA] hover:text-[#95AAFF] transition-colors duration-400" href="dashboard.html">Build</a>
-<a class="text-[#95AAFF]" href="#">Library</a>
+<a class="text-[#ADAAAA] hover:text-[#95AAFF] transition-colors duration-400" href="generador-ia.html">Build</a>
+<a class="text-[#95AAFF]" href="plantillas.html">Library</a>
 <a class="text-[#ADAAAA] hover:text-[#95AAFF] transition-colors duration-400" href="dashboard.html">Analytics</a>
 </nav>
 <div class="w-8 h-8 rounded-full bg-surface-container-high flex items-center justify-center overflow-hidden border border-outline-variant/20">
@@ -141,30 +138,30 @@
 </div>
 <!-- Bento Categories -->
 <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-<div class="md:col-span-2 group relative overflow-hidden rounded-2xl bg-surface-container-high p-8 h-[240px] flex flex-col justify-end border border-outline-variant/10">
+<a class="md:col-span-2 group relative overflow-hidden rounded-2xl bg-surface-container-high p-8 h-[240px] flex flex-col justify-end border border-outline-variant/10" href="generador-ia.html">
 <div class="absolute top-0 right-0 p-8 opacity-20 group-hover:opacity-40 transition-opacity duration-700">
 <span class="material-symbols-outlined text-8xl" data-icon="quiz">quiz</span>
 </div>
 <div class="relative z-10">
 <h3 class="text-2xl font-bold mb-2">Sales Quizzes</h3>
 <p class="text-on-surface-variant text-sm mb-4 max-w-xs">Segment your audience with high-intent interactive journeys.</p>
-<button class="text-primary font-bold text-xs tracking-widest uppercase flex items-center gap-2 group-hover:gap-3 transition-all">
+<div class="text-primary font-bold text-xs tracking-widest uppercase flex items-center gap-2 group-hover:gap-3 transition-all">
                             Explore Category <span class="material-symbols-outlined text-sm" data-icon="arrow_forward">arrow_forward</span>
-</button>
 </div>
 </div>
-<div class="group relative overflow-hidden rounded-2xl bg-surface-container-high p-8 h-[240px] flex flex-col justify-end border border-outline-variant/10">
+</a>
+<a class="group relative overflow-hidden rounded-2xl bg-surface-container-high p-8 h-[240px] flex flex-col justify-end border border-outline-variant/10" href="generador-ia.html">
 <div class="absolute top-0 right-0 p-8 opacity-20 group-hover:opacity-40 transition-opacity duration-700">
 <span class="material-symbols-outlined text-7xl" data-icon="calculate">calculate</span>
 </div>
 <div class="relative z-10">
 <h3 class="text-2xl font-bold mb-2">Calculators</h3>
 <p class="text-on-surface-variant text-sm mb-4">Demonstrate ROI instantly with custom data tools.</p>
-<button class="text-primary font-bold text-xs tracking-widest uppercase flex items-center gap-2 group-hover:gap-3 transition-all">
+<div class="text-primary font-bold text-xs tracking-widest uppercase flex items-center gap-2 group-hover:gap-3 transition-all">
                             Browse <span class="material-symbols-outlined text-sm" data-icon="arrow_forward">arrow_forward</span>
-</button>
 </div>
 </div>
+</a>
 </div>
 </section>
 <!-- Templates Grid Section -->
@@ -176,15 +173,15 @@
 <span class="w-1 h-6 bg-secondary rounded-full"></span>
                         Lead Magnets
                     </h4>
-<a class="text-on-surface-variant text-sm hover:text-primary transition-colors" href="#">View all 12</a>
+<a class="text-on-surface-variant text-sm hover:text-primary transition-colors" href="generador-ia.html">View all 12</a>
 </div>
 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
 <!-- Template Card 1 -->
-<div class="group bg-surface-container-low rounded-xl overflow-hidden border border-outline-variant/5 hover:border-primary/20 transition-all duration-400">
+<a class="group bg-surface-container-low rounded-xl overflow-hidden border border-outline-variant/5 hover:border-primary/20 transition-all duration-400" href="generador-ia.html">
 <div class="aspect-video relative overflow-hidden bg-surface-container-highest">
 <img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" data-alt="Abstract deep blue and violet gradient mesh pattern" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCfRSmylB892NPAvHn0Z3w9W4Mx9KU9GgSasB7H6VDIEM_b3clN9OXv_wvaH31wTG0tV9rq18ClRVvMfzOukAbwVjARpswtrs5gaSrp7FozjIEzZcDjsiG0YETbWPbpI80hhuVzLG6rSgqZ-bgiJzNueOHnrwe_Rr6HBLAcJIuM_GKP4-TF6K9w2vfzS7edYwiL3NfgbXXHTqLFCwaY4ffby1rBlX94geQpL5pTp-iqvB7zpnXj92bu5i9_IrfpYmA7bsrA2Vwi5zc"/>
 <div class="absolute inset-0 bg-gradient-to-t from-surface-container-low/80 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-4">
-<button class="primary-gradient w-full py-2 rounded-lg text-xs font-bold text-on-primary">Use Template</button>
+<div class="primary-gradient w-full py-2 rounded-lg text-xs font-bold text-on-primary text-center">Use Template</div>
 </div>
 </div>
 <div class="p-5">
@@ -194,13 +191,13 @@
 </div>
 <p class="text-xs text-on-surface-variant">Multi-step opt-in with high-conversion landing page.</p>
 </div>
-</div>
+</a>
 <!-- Template Card 2 -->
-<div class="group bg-surface-container-low rounded-xl overflow-hidden border border-outline-variant/5 hover:border-primary/20 transition-all duration-400">
+<a class="group bg-surface-container-low rounded-xl overflow-hidden border border-outline-variant/5 hover:border-primary/20 transition-all duration-400" href="generador-ia.html">
 <div class="aspect-video relative overflow-hidden bg-surface-container-highest">
 <img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" data-alt="Dark abstract glowing tech lines on black background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAXa-mTqkVBMmwpcjx4JvQY3UbFKN1o8idY4QgYyHSn7QZ_zV-llrdON769y3D89_GM5OaxheRApG9idLGNCHEkSGelklH7kxuVkJcC8g47vQtZox2nultjDdI0C6fixNezYl3CaRetJNMaDFrPF61Tbifb2qL6zySChjfGYOxKYT_QrMd6BE55j2wku3_9H31x0nM-5dU799TtYGrGWAS9Wjqz5PWg-ZwbjYls9BA0wXwv1KVX3xnPdoztqp6Nc1SVJXKkVgSO9zc"/>
 <div class="absolute inset-0 bg-gradient-to-t from-surface-container-low/80 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-4">
-<button class="primary-gradient w-full py-2 rounded-lg text-xs font-bold text-on-primary">Use Template</button>
+<div class="primary-gradient w-full py-2 rounded-lg text-xs font-bold text-on-primary text-center">Use Template</div>
 </div>
 </div>
 <div class="p-5">
@@ -210,13 +207,13 @@
 </div>
 <p class="text-xs text-on-surface-variant">Clean, focus-driven layout for high-ticket events.</p>
 </div>
-</div>
+</a>
 <!-- Template Card 3 -->
-<div class="group bg-surface-container-low rounded-xl overflow-hidden border border-outline-variant/5 hover:border-primary/20 transition-all duration-400">
+<a class="group bg-surface-container-low rounded-xl overflow-hidden border border-outline-variant/5 hover:border-primary/20 transition-all duration-400" href="generador-ia.html">
 <div class="aspect-video relative overflow-hidden bg-surface-container-highest">
 <img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" data-alt="Geometric emerald green abstract shapes on dark surface" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBFuiZxYyl_Hqd8E94mRBwyTIDiH7kdexKS_wriBhYuFal29qm8Rw2WZ3Drn13R0_jNP_NELCLey0qT0pdrqXlIeUyJuWQi2WRyG8RXk-5U98X0-tU4VfTEbjpsm_9FK081Ojy7HDcTM-xRblJK8jFVn9UQPChWQ36YZIzogY245tcH0rbLGDP4WIAzlK2i6gH8_1kPYg90YridjX7zQoz3ngMWgdvkfZj9HKQgPS4eT3NoB_lDj24T88lfjpwMDbuFkNtxh2ZUosk"/>
 <div class="absolute inset-0 bg-gradient-to-t from-surface-container-low/80 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-4">
-<button class="primary-gradient w-full py-2 rounded-lg text-xs font-bold text-on-primary">Use Template</button>
+<div class="primary-gradient w-full py-2 rounded-lg text-xs font-bold text-on-primary text-center">Use Template</div>
 </div>
 </div>
 <div class="p-5">
@@ -226,13 +223,13 @@
 </div>
 <p class="text-xs text-on-surface-variant">Help prospects visualize the value of your software.</p>
 </div>
-</div>
+</a>
 <!-- Template Card 4 -->
-<div class="group bg-surface-container-low rounded-xl overflow-hidden border border-outline-variant/5 hover:border-primary/20 transition-all duration-400">
+<a class="group bg-surface-container-low rounded-xl overflow-hidden border border-outline-variant/5 hover:border-primary/20 transition-all duration-400" href="generador-ia.html">
 <div class="aspect-video relative overflow-hidden bg-surface-container-highest">
 <img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" data-alt="Vibrant magenta and blue ethereal light waves" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCDN99sPx9JshwbDzhESpguWiCFLBCQOfGpOpRXOvRB6YF1mvQEbXXm_DCNcfeJcE9zYacfgfqKVR0fPzemaj2oVU09G30XNFXO38U1x_dbCmoVbD7rADGqBQKgQ9FhfFg-RQi2e3wvIlPHHj_GBmJP6u5S1EaMY8aPRDzsvHx_yFu4MKpV58swQlwAV3KlGVj2j92uad0Uz9boteEgrc74Vqa0I0patcRcQ3GWe9sO52MUe831vUPcaPsAWmBVgiUT7LnaITEHC7Y"/>
 <div class="absolute inset-0 bg-gradient-to-t from-surface-container-low/80 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-4">
-<button class="primary-gradient w-full py-2 rounded-lg text-xs font-bold text-on-primary">Use Template</button>
+<div class="primary-gradient w-full py-2 rounded-lg text-xs font-bold text-on-primary text-center">Use Template</div>
 </div>
 </div>
 <div class="p-5">
@@ -242,14 +239,14 @@
 </div>
 <p class="text-xs text-on-surface-variant">Viral-style personality test for list building.</p>
 </div>
-</div>
+</a>
 </div>
 </div>
 <!-- More categories indicator -->
 <div class="flex justify-center pt-8">
-<button class="px-8 py-3 rounded-xl border border-outline-variant/30 text-primary text-sm font-bold tracking-widest uppercase hover:bg-surface-container-high transition-all">
+<a class="px-8 py-3 rounded-xl border border-outline-variant/30 text-primary text-sm font-bold tracking-widest uppercase hover:bg-surface-container-high transition-all" href="generador-ia.html">
                     Load More Categories
-                </button>
+                </a>
 </div>
 </section>
 </main>
@@ -262,17 +259,17 @@
 <span class="font-plus-jakarta text-[10px] font-medium uppercase tracking-widest mt-1">Build</span>
 </a>
 <!-- Library (Active) -->
-<a class="flex flex-col items-center justify-center text-[#95AAFF] bg-[#2C2C2C] rounded-xl px-4 py-2 transition-all duration-400 scale-100" href="#">
+<a class="flex flex-col items-center justify-center text-[#95AAFF] bg-[#2C2C2C] rounded-xl px-4 py-2 transition-all duration-400 scale-100" href="plantillas.html">
 <span class="material-symbols-outlined" data-icon="local_library" style="font-variation-settings: 'FILL' 1;">local_library</span>
 <span class="font-plus-jakarta text-[10px] font-medium uppercase tracking-widest mt-1">Library</span>
 </a>
-<!-- Analytics -->
-<a class="flex flex-col items-center justify-center text-[#ADAAAA] px-4 py-2 hover:bg-[#131313] rounded-xl transition-all duration-400 scale-95 active:scale-90" href="dashboard.html">
+<!-- Sales -->
+<a class="flex flex-col items-center justify-center text-[#ADAAAA] px-4 py-2 hover:bg-[#131313] rounded-xl transition-all duration-400 scale-95 active:scale-90" href="resultado-quiz.html">
 <span class="material-symbols-outlined" data-icon="leaderboard">leaderboard</span>
-<span class="font-plus-jakarta text-[10px] font-medium uppercase tracking-widest mt-1">Analytics</span>
+<span class="font-plus-jakarta text-[10px] font-medium uppercase tracking-widest mt-1">Sales</span>
 </a>
 <!-- Account -->
-<a class="flex flex-col items-center justify-center text-[#ADAAAA] px-4 py-2 hover:bg-[#131313] rounded-xl transition-all duration-400 scale-95 active:scale-90" href="dashboard.html">
+<a class="flex flex-col items-center justify-center text-[#ADAAAA] px-4 py-2 hover:bg-[#131313] rounded-xl transition-all duration-400 scale-95 active:scale-90" href="precios.html">
 <span class="material-symbols-outlined" data-icon="person">person</span>
 <span class="font-plus-jakarta text-[10px] font-medium uppercase tracking-widest mt-1">Account</span>
 </a>
