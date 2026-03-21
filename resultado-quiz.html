@@ -27,7 +27,7 @@
               "surface-container-highest": "#262626",
               "outline-variant": "#484847",
               "secondary-container": "#006c49",
-              "surface-tint": "#95aaff",
+              "surface-tint": "#2E5BFF",
               "surface-container-lowest": "#000000",
               "primary-fixed": "#819bff",
               "inverse-on-surface": "#565555",
@@ -53,7 +53,7 @@
               "on-secondary-fixed": "#00452d",
               "surface": "#0e0e0e",
               "secondary": "#69f6b8",
-              "primary": "#95aaff",
+              "primary": "#2E5BFF",
               "tertiary-fixed-dim": "#e883d2",
               "outline": "#767575",
               "on-tertiary-container": "#5f0656",
@@ -96,16 +96,15 @@
 </head>
 <body class="bg-background text-on-surface antialiased min-h-screen">
 <!-- TopAppBar -->
-<header class="bg-[#0E0E0E] text-[#95AAFF] font-['Plus_Jakarta_Sans'] antialiased tracking-tight w-full top-0 sticky z-50 bg-[#131313] shadow-[0px_40px_0px_rgba(20,79,229,0.08)]">
+<header class="bg-[#0E0E0E] w-full top-0 sticky z-50 border-b border-white/5">
 <div class="flex justify-between items-center px-6 py-4 w-full">
 <div class="flex items-center gap-2">
-<span class="material-symbols-outlined text-[#95AAFF]" data-icon="bubble_chart">bubble_chart</span>
-<span class="text-xl font-bold tracking-tighter text-[#95AAFF]">Luminous Studio</span>
+<a class="text-xl font-bold tracking-tighter text-primary" href="./dashboard.html">Luminous Studio</a>
 </div>
 <div class="hidden md:flex gap-8 items-center">
-<a class="text-[#ADAAAA] hover:text-[#95AAFF] transition-colors duration-400 ease-[cubic-bezier(0.16,1,0.3,1)]" href="./index.html">Home</a>
-<a class="text-[#ADAAAA] hover:text-[#95AAFF] transition-colors duration-400 ease-[cubic-bezier(0.16,1,0.3,1)]" href="./generador-ia.html">Editor</a>
-<a class="text-[#ADAAAA] hover:text-[#95AAFF] transition-colors duration-400 ease-[cubic-bezier(0.16,1,0.3,1)]" href="./dashboard.html">Sales</a>
+<a class="text-on-surface-variant hover:text-primary transition-colors" href="./dashboard.html">Dashboard</a>
+<a class="text-on-surface-variant hover:text-primary transition-colors" href="./generador-ia.html">Crear Quiz</a>
+<a class="text-on-surface-variant hover:text-primary transition-colors" href="./plantillas.html">Plantillas</a>
 <div class="w-8 h-8 rounded-full overflow-hidden border border-outline-variant/30">
 <img alt="User profile avatar" data-alt="User profile circular headshot portrait" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCgvwrlynuF77ZgeyYBpSVLwHI4sIX35YKEe3YwyGzUgibIp1NDTviX9lPttmW13GjgvmuAIheyh6pPUzeqeWkZ2_UaXifKHEdw5M-NHaPeB-PJxX2VnVYGSlmHNXiOupLXeFFXkCwJa8HPcnl6gZsly6Zm62wP7VieITuQvmul4vBf_95tvcTCz8tuvgB7wgsgsqfKRIQx-xsBIMryJicS3VYbSAt8kewAuP6p43H2hPTZuU118JvJk0ifIIA013HOqPWGETjwsjw"/>
 </div>
@@ -224,6 +223,7 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('result-description').textContent     = profile.description   || '';
   document.getElementById('result-recommendation').textContent  = profile.recommendation || '';
   document.getElementById('btn-cta').textContent                = profile.cta  || 'Comprar Ahora';
+  document.getElementById('btn-cta').href = `./acceso-exito.html${quizId ? '?quiz=' + quizId : ''}`;
   document.getElementById('result-subtitle').textContent        =
     `Basado en tus respuestas al quiz "${quiz.title || ''}", este es tu perfil.`;
   document.title = `Tu perfil: ${profile.name} | Luminous Studio`;
