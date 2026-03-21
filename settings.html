@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html class="dark" lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Settings | Luminous Studio</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script src="./app.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+  tailwind.config = {
+    darkMode: "class",
+    theme: {
+      extend: {
+        colors: {
+          "on-surface-variant": "#adaaaa",
+          "surface-container-low": "#131313",
+          "surface-container": "#1a1a1a",
+          "surface-container-high": "#20201f",
+          "surface-container-highest": "#262626",
+          "surface-container-lowest": "#000000",
+          "surface-bright": "#2c2c2c",
+          "outline-variant": "#484847",
+          "outline": "#767575",
+          "primary": "#2E5BFF",
+          "primary-dim": "#3867fb",
+          "secondary": "#69f6b8",
+          "tertiary": "#ffa3e9",
+          "error": "#ff6e84",
+          "on-primary": "#ffffff",
+          "on-surface": "#ffffff",
+          "background": "#0e0e0e",
+          "surface": "#0e0e0e",
+        },
+        fontFamily: {
+          "headline": ["Plus Jakarta Sans"],
+          "body": ["Plus Jakarta Sans"],
+        },
+        borderRadius: {"DEFAULT": "0.5rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+      },
+    },
+  }
+</script>
+<style>
+  body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #0e0e0e; color: #ffffff; }
+  .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+  .glass-panel { background: rgba(38,38,38,0.6); backdrop-filter: blur(20px); }
+  body { min-height: max(884px, 100dvh); }
+</style>
+</head>
+<body class="bg-background text-on-surface">
+
+<!-- TopAppBar -->
+<header class="fixed top-0 w-full z-50 flex justify-between items-center px-8 h-16 bg-[#0E0E0E] shadow-[0_40px_40px_-15px_rgba(46,91,255,0.08)]">
+  <div class="flex items-center gap-8">
+    <a class="text-xl font-bold tracking-tighter text-primary" href="./dashboard.html">Luminous Studio</a>
+    <nav class="hidden md:flex items-center gap-6">
+      <a class="text-[#ADAAAA] hover:text-primary text-sm tracking-tight transition-colors duration-400" href="./dashboard.html">Projects</a>
+      <a class="text-[#ADAAAA] hover:text-primary text-sm tracking-tight transition-colors duration-400" href="./plantillas.html">Plantillas</a>
+      <a class="text-[#ADAAAA] hover:text-primary text-sm tracking-tight transition-colors duration-400" href="./precios.html">Plan</a>
+      <a class="text-primary font-semibold text-sm tracking-tight transition-colors duration-400" href="./settings.html">Settings</a>
+    </nav>
+  </div>
+  <div class="flex items-center gap-4">
+    <a class="w-8 h-8 rounded-full overflow-hidden border border-primary/20 block" href="./settings.html">
+      <img class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCb8fGHN0CXDIGOQsDJr44gJMr4h_2A19WgDG7xn4lqbRe5hcCVhq3pWmYPI-IEnHFIcvCrotJJ6yxayu2isewEhKNGMq5lThqIfldijQTsl6WIcbntzGthL3J3w5VO_pZDPaIMSRQU1n7UfNGO6cdlr5-9uvME7TWEmkw9BZgVSHYGBlj6U5Y2QTAkFGNwjLTxf9nSs3A9mAXRU7SiZL861to-8hMYCZGp3hrNp_kqxStQZxL-VG_bNcA9gmYSIvEIV3ItYlccLjo" alt="User"/>
+    </a>
+  </div>
+</header>
+
+<!-- Sidebar -->
+<aside class="fixed left-0 top-0 h-full w-64 bg-[#131313] flex flex-col py-6 space-y-2 rounded-r-lg z-40 pt-20">
+  <div class="px-6 mb-8">
+    <div class="flex items-center gap-3">
+      <div class="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center">
+        <span class="material-symbols-outlined text-primary">grid_view</span>
+      </div>
+      <div>
+        <h2 class="text-lg font-bold text-primary tracking-tight leading-none">The Curator</h2>
+        <p class="text-[0.75rem] text-on-surface-variant font-medium">Digital Workspace</p>
+      </div>
+    </div>
+  </div>
+  <nav class="flex-1 px-4 space-y-1">
+    <a class="flex items-center gap-3 text-[#ADAAAA] px-4 py-3 hover:bg-[#20201F] hover:text-primary text-[0.875rem] transition-all duration-400" href="./dashboard.html">
+      <span class="material-symbols-outlined text-sm">grid_view</span>
+      Projects
+    </a>
+    <a class="flex items-center gap-3 text-[#ADAAAA] px-4 py-3 hover:bg-[#20201F] hover:text-primary text-[0.875rem] transition-all duration-400" href="./plantillas.html">
+      <span class="material-symbols-outlined text-sm">description</span>
+      Plantillas
+    </a>
+    <a class="flex items-center gap-3 text-[#ADAAAA] px-4 py-3 hover:bg-[#20201F] hover:text-primary text-[0.875rem] transition-all duration-400" href="./precios.html">
+      <span class="material-symbols-outlined text-sm">credit_card</span>
+      Plan
+    </a>
+    <a class="flex items-center gap-3 bg-[#2C2C2C] text-primary border-l-2 border-primary px-4 py-3 font-medium text-[0.875rem] transition-all duration-400 translate-x-1" href="./settings.html">
+      <span class="material-symbols-outlined text-sm">settings</span>
+      Settings
+    </a>
+    <a class="flex items-center gap-3 text-[#ADAAAA] px-4 py-3 hover:bg-[#20201F] hover:text-primary text-[0.875rem] transition-all duration-400 mt-4" href="./index.html">
+      <span class="material-symbols-outlined text-sm">logout</span>
+      Cerrar sesión
+    </a>
+  </nav>
+  <div class="px-6 pt-4 border-t border-outline-variant/10">
+    <a class="w-full block text-center bg-gradient-to-r from-primary to-primary-dim text-on-primary py-2.5 rounded-lg text-sm font-bold shadow-lg shadow-primary/10 hover:scale-[0.98] active:scale-95 transition-transform" href="./generador-ia.html">New Quiz</a>
+  </div>
+</aside>
+
+<!-- Main Content -->
+<main class="ml-64 pt-24 pb-12 px-10">
+  <header class="mb-10">
+    <h1 class="text-[2.5rem] font-extrabold tracking-tight leading-tight text-on-surface">Account <span class="text-primary">Settings</span></h1>
+    <p class="text-on-surface-variant max-w-xl mt-2">Gestiona tu perfil, notificaciones y preferencias de la cuenta.</p>
+  </header>
+
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+
+    <!-- Profile Section -->
+    <div class="lg:col-span-2 space-y-6">
+      <section class="bg-surface-container-low rounded-xl p-8 border border-outline-variant/5">
+        <h2 class="text-lg font-bold mb-6 text-on-surface">Perfil</h2>
+        <div class="flex items-center gap-6 mb-8">
+          <div class="relative">
+            <div class="w-20 h-20 rounded-full overflow-hidden border-2 border-primary/30">
+              <img class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCb8fGHN0CXDIGOQsDJr44gJMr4h_2A19WgDG7xn4lqbRe5hcCVhq3pWmYPI-IEnHFIcvCrotJJ6yxayu2isewEhKNGMq5lThqIfldijQTsl6WIcbntzGthL3J3w5VO_pZDPaIMSRQU1n7UfNGO6cdlr5-9uvME7TWEmkw9BZgVSHYGBlj6U5Y2QTAkFGNwjLTxf9nSs3A9mAXRU7SiZL861to-8hMYCZGp3hrNp_kqxStQZxL-VG_bNcA9gmYSIvEIV3ItYlccLjo" alt="Avatar"/>
+            </div>
+            <button onclick="alert('Función de carga de imagen próximamente')" class="absolute -bottom-1 -right-1 w-7 h-7 bg-primary rounded-full flex items-center justify-center hover:bg-primary-dim transition-colors">
+              <span class="material-symbols-outlined text-white text-sm">edit</span>
+            </button>
+          </div>
+          <div>
+            <p class="font-bold text-on-surface">The Curator</p>
+            <p class="text-sm text-on-surface-variant">curator@luminousstudio.com</p>
+          </div>
+        </div>
+        <div class="space-y-4">
+          <div>
+            <label class="block text-xs font-bold text-on-surface-variant uppercase tracking-widest mb-2">Nombre</label>
+            <input id="input-name" type="text" class="w-full bg-surface-container-lowest border border-outline-variant/20 rounded-lg px-4 py-3 text-on-surface focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all"/>
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-on-surface-variant uppercase tracking-widest mb-2">Email</label>
+            <input id="input-email" type="email" class="w-full bg-surface-container-lowest border border-outline-variant/20 rounded-lg px-4 py-3 text-on-surface focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all"/>
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-on-surface-variant uppercase tracking-widest mb-2">Bio</label>
+            <textarea id="input-bio" rows="3" class="w-full bg-surface-container-lowest border border-outline-variant/20 rounded-lg px-4 py-3 text-on-surface focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all resize-none" placeholder="Cuéntanos sobre ti..."></textarea>
+          </div>
+          <button onclick="saveProfile()" class="px-6 py-3 bg-primary text-on-primary rounded-lg font-bold text-sm hover:bg-primary-dim transition-colors">
+            Guardar Cambios
+          </button>
+        </div>
+      </section>
+
+      <!-- Claude API Key -->
+      <section class="bg-surface-container-low rounded-xl p-8 border border-outline-variant/5">
+        <div class="flex items-start gap-4 mb-6">
+          <div class="w-10 h-10 rounded-lg bg-secondary/10 flex items-center justify-center shrink-0">
+            <span class="material-symbols-outlined text-secondary">psychology</span>
+          </div>
+          <div>
+            <h2 class="text-lg font-bold text-on-surface">Integración con IA (Claude)</h2>
+            <p class="text-sm text-on-surface-variant mt-1">Conecta tu API key de Anthropic Claude para generar quizzes y mini-app ideas con inteligencia artificial.</p>
+          </div>
+        </div>
+        <div class="space-y-4">
+          <div>
+            <label class="block text-xs font-bold text-on-surface-variant uppercase tracking-widest mb-2">Claude API Key</label>
+            <div class="relative">
+              <input id="input-api-key" type="password" placeholder="sk-ant-api03-..." class="w-full bg-surface-container-lowest border border-outline-variant/20 rounded-lg px-4 py-3 pr-12 text-on-surface focus:ring-2 focus:ring-secondary focus:border-transparent outline-none transition-all font-mono text-sm"/>
+              <button onclick="toggleApiKeyVisibility()" class="absolute right-3 top-1/2 -translate-y-1/2 text-on-surface-variant hover:text-on-surface transition-colors">
+                <span id="eye-icon" class="material-symbols-outlined text-lg">visibility</span>
+              </button>
+            </div>
+            <p class="text-xs text-on-surface-variant mt-2">Obtén tu API key en <a href="https://console.anthropic.com" target="_blank" class="text-secondary hover:underline">console.anthropic.com</a>. Se guarda solo en tu navegador, nunca en nuestros servidores.</p>
+          </div>
+          <div id="api-key-status" class="hidden flex items-center gap-2 p-3 rounded-lg text-sm font-medium"></div>
+          <div class="flex gap-3">
+            <button onclick="saveApiKey()" class="px-6 py-3 bg-secondary text-on-secondary rounded-lg font-bold text-sm hover:opacity-90 transition-opacity" style="color:#00452d">
+              Guardar API Key
+            </button>
+            <button onclick="testApiKey()" class="px-6 py-3 border border-secondary/30 text-secondary rounded-lg font-bold text-sm hover:bg-secondary/5 transition-colors">
+              Probar Conexión
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- Notifications -->
+      <section class="bg-surface-container-low rounded-xl p-8 border border-outline-variant/5">
+        <h2 class="text-lg font-bold mb-6 text-on-surface">Notificaciones</h2>
+        <div class="space-y-4">
+          <div class="flex items-center justify-between py-3 border-b border-outline-variant/10">
+            <div>
+              <p class="font-medium text-on-surface text-sm">Nuevas ventas</p>
+              <p class="text-xs text-on-surface-variant">Recibe un aviso cada vez que alguien compre</p>
+            </div>
+            <button onclick="toggleSwitch(this)" class="relative w-12 h-6 bg-primary rounded-full transition-colors duration-300 active-toggle">
+              <span class="absolute top-1 left-1 w-4 h-4 bg-white rounded-full transition-transform duration-300 translate-x-6"></span>
+            </button>
+          </div>
+          <div class="flex items-center justify-between py-3 border-b border-outline-variant/10">
+            <div>
+              <p class="font-medium text-on-surface text-sm">Quizzes completados</p>
+              <p class="text-xs text-on-surface-variant">Notificación cuando un usuario termina un quiz</p>
+            </div>
+            <button onclick="toggleSwitch(this)" class="relative w-12 h-6 bg-primary rounded-full transition-colors duration-300 active-toggle">
+              <span class="absolute top-1 left-1 w-4 h-4 bg-white rounded-full transition-transform duration-300 translate-x-6"></span>
+            </button>
+          </div>
+          <div class="flex items-center justify-between py-3">
+            <div>
+              <p class="font-medium text-on-surface text-sm">Resumen semanal</p>
+              <p class="text-xs text-on-surface-variant">Email con el resumen de métricas cada lunes</p>
+            </div>
+            <button onclick="toggleSwitch(this)" class="relative w-12 h-6 bg-surface-container-highest rounded-full transition-colors duration-300">
+              <span class="absolute top-1 left-1 w-4 h-4 bg-white rounded-full transition-transform duration-300"></span>
+            </button>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- Right Column -->
+    <div class="space-y-6">
+      <!-- Plan Card -->
+      <section class="bg-surface-container-low rounded-xl p-6 border border-outline-variant/5">
+        <h2 class="text-sm font-bold text-on-surface-variant uppercase tracking-widest mb-4">Plan Actual</h2>
+        <div class="flex items-center gap-3 mb-4">
+          <div class="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
+            <span class="material-symbols-outlined text-primary">workspace_premium</span>
+          </div>
+          <div>
+            <p id="plan-name" class="font-bold text-on-surface">Free</p>
+            <p id="plan-desc" class="text-xs text-on-surface-variant">3 quizzes activos</p>
+          </div>
+        </div>
+        <a href="./precios.html" class="block w-full text-center py-2.5 bg-primary text-on-primary rounded-lg text-sm font-bold hover:bg-primary-dim transition-colors">Ver Planes</a>
+      </section>
+
+      <!-- Security -->
+      <section class="bg-surface-container-low rounded-xl p-6 border border-outline-variant/5">
+        <h2 class="text-sm font-bold text-on-surface-variant uppercase tracking-widest mb-4">Seguridad</h2>
+        <div class="space-y-3">
+          <button onclick="showToast('Enlace de cambio de contraseña enviado al email')" class="w-full flex items-center gap-3 p-3 rounded-lg hover:bg-surface-container-high transition-colors text-left">
+            <span class="material-symbols-outlined text-on-surface-variant text-sm">lock</span>
+            <span class="text-sm text-on-surface">Cambiar contraseña</span>
+            <span class="material-symbols-outlined text-on-surface-variant text-sm ml-auto">chevron_right</span>
+          </button>
+          <button onclick="showToast('Autenticación de dos factores activada')" class="w-full flex items-center gap-3 p-3 rounded-lg hover:bg-surface-container-high transition-colors text-left">
+            <span class="material-symbols-outlined text-on-surface-variant text-sm">security</span>
+            <span class="text-sm text-on-surface">Autenticación 2FA</span>
+            <span class="material-symbols-outlined text-on-surface-variant text-sm ml-auto">chevron_right</span>
+          </button>
+        </div>
+      </section>
+
+      <!-- Danger Zone -->
+      <section class="bg-surface-container-low rounded-xl p-6 border border-error/20">
+        <h2 class="text-sm font-bold text-error uppercase tracking-widest mb-4">Zona de Peligro</h2>
+        <button onclick="if(confirm('¿Seguro que quieres eliminar tu cuenta? Esta acción no se puede deshacer.')) alert('Contacta a soporte: soporte@luminousstudio.com')" class="w-full py-2.5 border border-error/30 text-error rounded-lg text-sm font-bold hover:bg-error/5 transition-colors">
+          Eliminar cuenta
+        </button>
+      </section>
+    </div>
+  </div>
+</main>
+
+<!-- Toast notification -->
+<div id="toast" class="fixed bottom-24 left-1/2 -translate-x-1/2 bg-surface-container-highest border border-outline-variant/30 text-on-surface px-6 py-3 rounded-full text-sm font-medium shadow-xl opacity-0 transition-opacity duration-300 z-50 pointer-events-none">
+  Guardado correctamente
+</div>
+
+<!-- Floating Dock -->
+<div class="fixed bottom-8 left-1/2 -translate-x-1/2 glass-panel border border-outline-variant/10 rounded-full px-6 py-3 flex items-center gap-8 shadow-2xl z-50">
+  <a class="flex flex-col items-center gap-0.5 text-on-surface-variant hover:text-primary transition-colors" href="./dashboard.html">
+    <span class="material-symbols-outlined text-xl">dashboard</span>
+    <span class="text-[10px] font-bold uppercase tracking-tighter">Build</span>
+  </a>
+  <a class="flex flex-col items-center gap-0.5 text-on-surface-variant hover:text-primary transition-colors" href="./plantillas.html">
+    <span class="material-symbols-outlined text-xl">apps</span>
+    <span class="text-[10px] font-bold uppercase tracking-tighter">Library</span>
+  </a>
+  <a class="flex flex-col items-center gap-0.5 text-on-surface-variant hover:text-primary transition-colors" href="./resultado-quiz.html">
+    <span class="material-symbols-outlined text-xl">bar_chart</span>
+    <span class="text-[10px] font-bold uppercase tracking-tighter">Sales</span>
+  </a>
+  <a class="flex flex-col items-center gap-0.5 text-primary transition-colors" href="./settings.html">
+    <span class="material-symbols-outlined text-xl">person</span>
+    <span class="text-[10px] font-bold uppercase tracking-tighter">Account</span>
+  </a>
+  <div class="w-px h-6 bg-outline-variant/20"></div>
+  <a class="w-10 h-10 bg-primary rounded-full flex items-center justify-center text-on-primary hover:rotate-90 transition-transform duration-500" href="./generador-ia.html">
+    <span class="material-symbols-outlined">add</span>
+  </a>
+</div>
+
+<script>
+  // ── Load saved settings on page load ──────────────────
+  document.addEventListener('DOMContentLoaded', () => {
+    const s = Settings.get();
+    document.getElementById('input-name').value  = s.name  || '';
+    document.getElementById('input-email').value = s.email || '';
+    document.getElementById('input-bio').value   = s.bio   || '';
+    if (s.claudeApiKey) {
+      document.getElementById('input-api-key').value = s.claudeApiKey;
+      showApiStatus('API key guardada ✓', true);
+    }
+    const quizCount = Quizzes.getAll().length;
+    const planLimits = { free: '3 quizzes activos', pro: 'Quizzes ilimitados', business: 'Proyectos ilimitados' };
+    document.getElementById('plan-name').textContent = s.plan.charAt(0).toUpperCase() + s.plan.slice(1);
+    document.getElementById('plan-desc').textContent = planLimits[s.plan] || planLimits.free;
+    // Show real quiz count
+    document.getElementById('plan-desc').textContent = `${quizCount} quizzes creados · ${planLimits[s.plan] || planLimits.free}`;
+  });
+
+  function saveProfile() {
+    Settings.save({
+      name:  document.getElementById('input-name').value.trim(),
+      email: document.getElementById('input-email').value.trim(),
+      bio:   document.getElementById('input-bio').value.trim(),
+    });
+    showToast('Perfil guardado correctamente ✓');
+  }
+
+  function saveApiKey() {
+    const key = document.getElementById('input-api-key').value.trim();
+    if (!key) { showToast('Introduce tu API key', 'error'); return; }
+    if (!key.startsWith('sk-ant-')) { showToast('Formato incorrecto. Debe empezar con sk-ant-', 'error'); return; }
+    Settings.save({ claudeApiKey: key });
+    showApiStatus('API key guardada ✓', true);
+    showToast('API key guardada correctamente ✓');
+  }
+
+  async function testApiKey() {
+    const key = document.getElementById('input-api-key').value.trim();
+    if (!key) { showToast('Introduce tu API key primero', 'error'); return; }
+    Settings.save({ claudeApiKey: key });
+    showApiStatus('Probando conexión...', null);
+    try {
+      await Claude._call([{ role: 'user', content: 'Di "OK" solamente.' }], 10);
+      showApiStatus('¡Conexión exitosa! La IA está lista ✓', true);
+      showToast('¡Conexión con Claude exitosa!');
+    } catch (e) {
+      showApiStatus('Error: ' + e.message, false);
+      showToast('Error de conexión: ' + e.message, 'error');
+    }
+  }
+
+  function showApiStatus(msg, success) {
+    const el = document.getElementById('api-key-status');
+    el.classList.remove('hidden');
+    if (success === true) {
+      el.className = 'flex items-center gap-2 p-3 rounded-lg text-sm font-medium bg-secondary/10 text-secondary';
+      el.innerHTML = `<span class="material-symbols-outlined text-base">check_circle</span>${msg}`;
+    } else if (success === false) {
+      el.className = 'flex items-center gap-2 p-3 rounded-lg text-sm font-medium bg-error/10 text-error';
+      el.innerHTML = `<span class="material-symbols-outlined text-base">error</span>${msg}`;
+    } else {
+      el.className = 'flex items-center gap-2 p-3 rounded-lg text-sm font-medium bg-surface-container text-on-surface-variant';
+      el.innerHTML = `<span class="material-symbols-outlined text-base animate-spin">progress_activity</span>${msg}`;
+    }
+  }
+
+  function toggleApiKeyVisibility() {
+    const input = document.getElementById('input-api-key');
+    const icon  = document.getElementById('eye-icon');
+    if (input.type === 'password') {
+      input.type = 'text';
+      icon.textContent = 'visibility_off';
+    } else {
+      input.type = 'password';
+      icon.textContent = 'visibility';
+    }
+  }
+
+  function showToast(msg, type) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.style.opacity = '1';
+    setTimeout(() => t.style.opacity = '0', 2800);
+  }
+
+  function toggleSwitch(btn) {
+    const isActive = btn.classList.contains('active-toggle');
+    const knob = btn.querySelector('span');
+    if (isActive) {
+      btn.classList.remove('active-toggle', 'bg-primary');
+      btn.classList.add('bg-surface-container-highest');
+      knob.style.transform = 'translateX(0)';
+    } else {
+      btn.classList.add('active-toggle', 'bg-primary');
+      btn.classList.remove('bg-surface-container-highest');
+      knob.style.transform = 'translateX(1.5rem)';
+    }
+  }
+</script>
+</body></html>

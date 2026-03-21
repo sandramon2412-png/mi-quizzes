@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>MANNA DIARIO — Tu compañero bíblico</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Inter', sans-serif;
+  min-height: 100dvh;
+  background: linear-gradient(160deg, #FDF6E9 0%, #FBF0D8 40%, #F5E6C8 100%);
+  display: flex; flex-direction: column; align-items: center;
+  padding: 0 0 40px 0;
+  position: relative; overflow-x: hidden;
+}
+
+/* ── TOP BAR ── */
+.topbar {
+  width: 100%; max-width: 480px;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 20px 24px 0;
+}
+.topbar .logo { font-family: 'Playfair Display', serif; font-size: 1.1rem; font-weight: 700; color: #5C3D1A; }
+.streak-chip {
+  display: flex; align-items: center; gap: 5px;
+  background: linear-gradient(135deg, #F5C842, #E8A020);
+  color: #fff; font-weight: 700; font-size: 0.82rem;
+  padding: 5px 12px; border-radius: 20px;
+  box-shadow: 0 3px 10px rgba(229,160,32,0.4);
+}
+
+/* ── PROGRESS PATH ── */
+.progress-wrap {
+  width: 100%; max-width: 480px;
+  padding: 16px 24px 0;
+}
+.progress-label { font-size: 0.75rem; color: #9B7B4A; margin-bottom: 6px; font-weight: 500; }
+.progress-bar-bg {
+  height: 8px; background: #EDD89A; border-radius: 10px; overflow: hidden;
+}
+.progress-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #F5C842, #E8A020);
+  border-radius: 10px;
+  transition: width 1s ease;
+}
+.progress-steps { font-size: 0.72rem; color: #B8935A; text-align: right; margin-top: 4px; }
+
+/* ── TAB NAV ── */
+.tabs {
+  display: flex; gap: 0; width: 100%; max-width: 480px;
+  margin: 20px 24px 0;
+  background: rgba(255,255,255,0.5);
+  border-radius: 14px; padding: 4px;
+  border: 1px solid rgba(229,160,32,0.2);
+}
+.tab {
+  flex: 1; text-align: center; padding: 9px 4px;
+  font-size: 0.78rem; font-weight: 600;
+  color: #B8935A; border-radius: 11px;
+  cursor: pointer; transition: all .25s;
+}
+.tab.active {
+  background: linear-gradient(135deg, #F5C842, #E8A020);
+  color: #fff;
+  box-shadow: 0 3px 12px rgba(229,160,32,0.35);
+}
+
+/* ── SCREENS ── */
+.screen { display: none; width: 100%; max-width: 480px; padding: 20px 24px 0; animation: fadeIn .35s ease; }
+.screen.active { display: block; }
+@keyframes fadeIn { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
+
+/* ── VERSE CARD ── */
+.verse-card {
+  background: linear-gradient(135deg, #fff8ee 0%, #fffaf3 100%);
+  border-radius: 22px;
+  padding: 28px 24px 22px;
+  border: 1px solid rgba(229,160,32,0.25);
+  box-shadow: 0 8px 32px rgba(229,160,32,0.12);
+  position: relative; overflow: hidden;
+}
+.verse-card::before {
+  content: '"';
+  position: absolute; top: -10px; left: 16px;
+  font-size: 8rem; color: rgba(229,160,32,0.1);
+  font-family: 'Playfair Display', serif; line-height: 1;
+}
+.day-badge {
+  display: inline-block;
+  background: linear-gradient(135deg, #F5C842, #E8A020);
+  color: #fff; font-size: 0.72rem; font-weight: 700;
+  padding: 4px 12px; border-radius: 20px; margin-bottom: 14px;
+  letter-spacing: .04em;
+}
+.verse-ref { font-family: 'Playfair Display', serif; font-size: 0.9rem; color: #B8935A; font-style: italic; margin-bottom: 10px; }
+.verse-text {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.25rem; line-height: 1.65; color: #3D2B0F;
+  font-weight: 400;
+}
+.verse-context { font-size: 0.82rem; color: #9B7B4A; margin-top: 14px; line-height: 1.55; }
+
+.play-btn {
+  display: flex; align-items: center; gap: 9px;
+  margin-top: 20px; padding: 12px 20px;
+  background: linear-gradient(135deg, #F5C842, #E8A020);
+  border: none; border-radius: 14px;
+  color: #fff; font-weight: 600; font-size: 0.9rem;
+  cursor: pointer; width: 100%;
+  justify-content: center;
+  box-shadow: 0 4px 16px rgba(229,160,32,0.35);
+  transition: transform .15s, box-shadow .15s;
+}
+.play-btn:active { transform: scale(.97); }
+.play-btn.playing { background: linear-gradient(135deg, #7ECFA0, #4CAF7D); box-shadow: 0 4px 16px rgba(76,175,125,0.35); }
+
+/* ── BADGES ── */
+.badges-row {
+  display: flex; gap: 10px; flex-wrap: wrap; margin-top: 20px;
+}
+.badge {
+  display: flex; align-items: center; gap: 6px;
+  background: rgba(255,255,255,0.7); border: 1px solid rgba(229,160,32,0.25);
+  border-radius: 10px; padding: 7px 12px; font-size: 0.76rem; color: #9B7B4A;
+  font-weight: 500;
+}
+.badge.earned { background: linear-gradient(135deg, #FFF8E1, #FFF3CC); border-color: #E8A020; color: #7A5000; }
+.badge-icon { font-size: 1.1rem; }
+
+/* ── QUIZ SCREEN ── */
+.quiz-header { margin-bottom: 20px; }
+.quiz-title { font-family: 'Playfair Display', serif; font-size: 1.4rem; color: #3D2B0F; margin-bottom: 4px; }
+.quiz-sub { font-size: 0.82rem; color: #9B7B4A; }
+
+.q-card {
+  background: #fff8ee; border-radius: 18px;
+  padding: 22px 20px; margin-bottom: 14px;
+  border: 1px solid rgba(229,160,32,0.2);
+}
+.q-num { font-size: 0.72rem; color: #E8A020; font-weight: 700; margin-bottom: 8px; letter-spacing: .06em; }
+.q-text { font-family: 'Playfair Display', serif; font-size: 1rem; color: #3D2B0F; margin-bottom: 14px; line-height: 1.5; }
+.q-options { display: flex; flex-direction: column; gap: 8px; }
+.q-opt {
+  padding: 11px 16px; border-radius: 11px;
+  border: 1.5px solid rgba(229,160,32,0.25);
+  background: rgba(255,255,255,0.7);
+  font-size: 0.88rem; color: #5C3D1A; cursor: pointer;
+  transition: all .2s; font-weight: 500;
+}
+.q-opt:hover { border-color: #E8A020; background: rgba(245,200,66,0.08); }
+.q-opt.selected { background: linear-gradient(135deg, #F5C842, #E8A020); color: #fff; border-color: transparent; }
+.q-opt.correct { background: linear-gradient(135deg, #7ECFA0, #4CAF7D); color: #fff; border-color: transparent; }
+.q-opt.wrong { background: linear-gradient(135deg, #FF8A80, #F44336); color: #fff; border-color: transparent; }
+
+.q-free {
+  width: 100%; padding: 12px 16px;
+  border: 1.5px solid rgba(229,160,32,0.3);
+  border-radius: 11px; background: rgba(255,255,255,0.7);
+  font-family: 'Inter', sans-serif; font-size: 0.88rem; color: #3D2B0F;
+  resize: none; outline: none;
+  transition: border-color .2s;
+}
+.q-free:focus { border-color: #E8A020; background: #fffcf0; }
+
+.submit-quiz-btn {
+  width: 100%; padding: 14px;
+  background: linear-gradient(135deg, #F5C842, #E8A020);
+  border: none; border-radius: 14px;
+  color: #fff; font-weight: 700; font-size: 1rem;
+  cursor: pointer; margin-top: 6px;
+  box-shadow: 0 4px 16px rgba(229,160,32,0.35);
+  transition: transform .15s;
+}
+.submit-quiz-btn:active { transform: scale(.97); }
+
+.quiz-result-card {
+  display: none;
+  background: linear-gradient(135deg, #fff8ee, #fffaf3);
+  border-radius: 18px; padding: 26px 22px; text-align: center;
+  border: 1px solid rgba(229,160,32,0.25);
+  margin-top: 14px;
+}
+.result-emoji { font-size: 3rem; margin-bottom: 10px; }
+.result-title { font-family: 'Playfair Display', serif; font-size: 1.25rem; color: #3D2B0F; margin-bottom: 8px; }
+.result-msg { font-size: 0.85rem; color: #9B7B4A; line-height: 1.55; }
+
+/* ── AI CHAT (PALOMA LUZ) ── */
+.luz-header {
+  display: flex; align-items: center; gap: 14px;
+  background: linear-gradient(135deg, #fff8ee, #fffaf3);
+  border-radius: 18px; padding: 18px 20px;
+  border: 1px solid rgba(229,160,32,0.2); margin-bottom: 16px;
+}
+.luz-avatar {
+  width: 52px; height: 52px;
+  background: linear-gradient(135deg, #F5C842, #E8A020);
+  border-radius: 50%; display: flex; align-items: center; justify-content: center;
+  font-size: 1.6rem; flex-shrink: 0;
+  box-shadow: 0 4px 16px rgba(229,160,32,0.35);
+  animation: pulse-glow 3s ease-in-out infinite;
+}
+@keyframes pulse-glow {
+  0%,100% { box-shadow: 0 4px 16px rgba(229,160,32,0.35), 0 0 0 0 rgba(245,200,66,0.2); }
+  50% { box-shadow: 0 4px 20px rgba(229,160,32,0.5), 0 0 0 8px rgba(245,200,66,0.05); }
+}
+.luz-info h3 { font-family: 'Playfair Display', serif; font-size: 1.05rem; color: #3D2B0F; }
+.luz-info p { font-size: 0.78rem; color: #9B7B4A; margin-top: 2px; }
+.luz-online { display: inline-block; width: 7px; height: 7px; background: #4CAF7D; border-radius: 50%; margin-right: 4px; }
+
+.chat-box {
+  background: rgba(255,255,255,0.5); border-radius: 18px;
+  border: 1px solid rgba(229,160,32,0.15);
+  padding: 16px; height: 300px; overflow-y: auto;
+  display: flex; flex-direction: column; gap: 12px;
+  margin-bottom: 12px;
+}
+.chat-box::-webkit-scrollbar { width: 4px; }
+.chat-box::-webkit-scrollbar-thumb { background: rgba(229,160,32,0.3); border-radius: 4px; }
+
+.msg { display: flex; flex-direction: column; max-width: 82%; }
+.msg.luz { align-self: flex-start; }
+.msg.user { align-self: flex-end; }
+.msg-bubble {
+  padding: 10px 14px; border-radius: 16px;
+  font-size: 0.86rem; line-height: 1.5;
+}
+.msg.luz .msg-bubble {
+  background: linear-gradient(135deg, #fff8ee, #fffaf3);
+  border: 1px solid rgba(229,160,32,0.2); color: #3D2B0F;
+  border-bottom-left-radius: 4px;
+}
+.msg.user .msg-bubble {
+  background: linear-gradient(135deg, #F5C842, #E8A020);
+  color: #fff; border-bottom-right-radius: 4px;
+}
+.msg-name { font-size: 0.68rem; color: #B8935A; margin-bottom: 3px; font-weight: 600; letter-spacing: .04em; }
+.msg.user .msg-name { text-align: right; color: #E8A020; }
+
+.suggestions {
+  display: flex; gap: 7px; flex-wrap: wrap; margin-bottom: 12px;
+}
+.sug-chip {
+  padding: 6px 12px; border-radius: 20px;
+  border: 1px solid rgba(229,160,32,0.4);
+  background: rgba(255,255,255,0.7);
+  font-size: 0.75rem; color: #7A5000; cursor: pointer;
+  transition: all .2s; font-weight: 500;
+}
+.sug-chip:hover { background: rgba(245,200,66,0.15); border-color: #E8A020; }
+
+.chat-input-row {
+  display: flex; gap: 10px;
+}
+.chat-input {
+  flex: 1; padding: 12px 16px;
+  border: 1.5px solid rgba(229,160,32,0.3);
+  border-radius: 14px; background: rgba(255,255,255,0.7);
+  font-family: 'Inter', sans-serif; font-size: 0.88rem; color: #3D2B0F;
+  outline: none; transition: border-color .2s;
+}
+.chat-input:focus { border-color: #E8A020; background: #fffcf0; }
+.chat-send-btn {
+  width: 46px; height: 46px;
+  background: linear-gradient(135deg, #F5C842, #E8A020);
+  border: none; border-radius: 14px; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.1rem; flex-shrink: 0;
+  box-shadow: 0 3px 12px rgba(229,160,32,0.35);
+  transition: transform .15s;
+}
+.chat-send-btn:active { transform: scale(.93); }
+
+.typing-indicator {
+  display: none; align-items: center; gap: 5px; padding: 6px 0;
+}
+.typing-dot {
+  width: 6px; height: 6px; background: #E8A020; border-radius: 50%;
+  animation: typingBounce 1.2s ease-in-out infinite;
+}
+.typing-dot:nth-child(2) { animation-delay: .2s; }
+.typing-dot:nth-child(3) { animation-delay: .4s; }
+@keyframes typingBounce {
+  0%,60%,100% { transform: translateY(0); }
+  30% { transform: translateY(-6px); }
+}
+</style>
+</head>
+<body>
+
+<!-- TOP BAR -->
+<div class="topbar">
+  <span class="logo">🕊️ MANNA</span>
+  <div class="streak-chip">
+    🔥 <span id="streakCount">7</span> días
+  </div>
+</div>
+
+<!-- PROGRESS BAR -->
+<div class="progress-wrap">
+  <div class="progress-label">Tu camino de 40 días</div>
+  <div class="progress-bar-bg">
+    <div class="progress-bar-fill" id="progressFill" style="width: 17.5%"></div>
+  </div>
+  <div class="progress-steps" id="progressSteps">Día 7 de 40</div>
+</div>
+
+<!-- TABS -->
+<div class="tabs">
+  <div class="tab active" onclick="switchTab('verso')">📖 Versículo</div>
+  <div class="tab" onclick="switchTab('quiz')">✨ Reflexión</div>
+  <div class="tab" onclick="switchTab('luz')">🕊️ Luz IA</div>
+</div>
+
+<!-- ══════════ SCREEN 1: VERSÍCULO ══════════ -->
+<div class="screen active" id="screen-verso">
+
+  <div class="verse-card">
+    <div class="day-badge">DÍA 7 — SEMANA 1</div>
+    <div class="verse-ref">Josué 1:9</div>
+    <div class="verse-text" id="verseText">
+      "¿No te he mandado que te esfuerces y seas valiente? No temas ni desmayes, porque Jehová tu Dios estará contigo en dondequiera que vayas."
+    </div>
+    <div class="verse-context">
+      Dios le habla a Josué antes de entrar a la tierra prometida. Una promesa de presencia divina que trasciende el tiempo.
+    </div>
+    <button class="play-btn" id="playBtn" onclick="toggleVerse()">
+      <span id="playIcon">▶️</span>
+      <span id="playText">Escuchar versículo</span>
+    </button>
+  </div>
+
+  <!-- BADGES -->
+  <div class="badges-row">
+    <div class="badge earned"><span class="badge-icon">🌅</span> Primer día</div>
+    <div class="badge earned"><span class="badge-icon">🔥</span> 7 días racha</div>
+    <div class="badge"><span class="badge-icon">⭐</span> 14 días</div>
+    <div class="badge"><span class="badge-icon">🏆</span> 40 días</div>
+  </div>
+
+  <!-- 40-step path visual -->
+  <div style="margin-top:20px; padding:18px 20px; background:rgba(255,255,255,0.5); border-radius:18px; border:1px solid rgba(229,160,32,0.15);">
+    <div style="font-size:0.78rem; color:#9B7B4A; margin-bottom:12px; font-weight:600;">🗺️ Camino de 40 días</div>
+    <div id="pathDots" style="display:flex; flex-wrap:wrap; gap:6px;"></div>
+  </div>
+
+</div>
+
+<!-- ══════════ SCREEN 2: QUIZ ══════════ -->
+<div class="screen" id="screen-quiz">
+
+  <div class="quiz-header">
+    <div class="quiz-title">Reflexión del día</div>
+    <div class="quiz-sub">Josué 1:9 · Día 7</div>
+  </div>
+
+  <!-- Q1 - multiple choice -->
+  <div class="q-card">
+    <div class="q-num">PREGUNTA 1 DE 3</div>
+    <div class="q-text">¿Qué promesa central le da Dios a Josué en este versículo?</div>
+    <div class="q-options" id="q1opts">
+      <div class="q-opt" onclick="selectOpt(this, 'q1', false)">Que tendría victorias militares</div>
+      <div class="q-opt" onclick="selectOpt(this, 'q1', true)">Que estaría con él a donde fuera</div>
+      <div class="q-opt" onclick="selectOpt(this, 'q1', false)">Que nunca enfrentaría problemas</div>
+      <div class="q-opt" onclick="selectOpt(this, 'q1', false)">Que sería el más sabio de Israel</div>
+    </div>
+  </div>
+
+  <!-- Q2 - multiple choice -->
+  <div class="q-card">
+    <div class="q-num">PREGUNTA 2 DE 3</div>
+    <div class="q-text">¿En qué área de tu vida sientes que más necesitas esta promesa hoy?</div>
+    <div class="q-options" id="q2opts">
+      <div class="q-opt" onclick="selectOpt(this, 'q2', null)">En mi trabajo o estudios</div>
+      <div class="q-opt" onclick="selectOpt(this, 'q2', null)">En mis relaciones y familia</div>
+      <div class="q-opt" onclick="selectOpt(this, 'q2', null)">En mi salud o economía</div>
+      <div class="q-opt" onclick="selectOpt(this, 'q2', null)">En mi fe y vida espiritual</div>
+    </div>
+  </div>
+
+  <!-- Q3 - free text -->
+  <div class="q-card">
+    <div class="q-num">PREGUNTA 3 DE 3</div>
+    <div class="q-text">¿Cómo aplicarías el mensaje de "esfuérzate y sé valiente" esta semana?</div>
+    <textarea class="q-free" id="q3free" rows="3" placeholder="Escribe tu reflexión personal aquí..."></textarea>
+  </div>
+
+  <button class="submit-quiz-btn" onclick="submitQuiz()">Guardar mi reflexión ✨</button>
+
+  <div class="quiz-result-card" id="quizResult">
+    <div class="result-emoji" id="resultEmoji">🌟</div>
+    <div class="result-title" id="resultTitle">¡Reflexión completada!</div>
+    <div class="result-msg" id="resultMsg">Dios ve tu corazón buscador. Vuelve mañana para el día 8.</div>
+  </div>
+
+</div>
+
+<!-- ══════════ SCREEN 3: LUZ IA ══════════ -->
+<div class="screen" id="screen-luz">
+
+  <div class="luz-header">
+    <div class="luz-avatar">🕊️</div>
+    <div class="luz-info">
+      <h3>Luz — Guía Bíblica IA</h3>
+      <p><span class="luz-online"></span>Disponible · Respondiendo sobre Josué 1:9</p>
+    </div>
+  </div>
+
+  <div class="chat-box" id="chatBox">
+    <div class="msg luz">
+      <div class="msg-name">LUZ</div>
+      <div class="msg-bubble">¡Hola! Soy Luz, tu guía bíblica. 🕊️ Hoy estamos meditando en <strong>Josué 1:9</strong>. ¿Qué quieres explorar?</div>
+    </div>
+  </div>
+
+  <div class="suggestions">
+    <div class="sug-chip" onclick="sendSuggestion(this)">¿Qué significa "valiente"?</div>
+    <div class="sug-chip" onclick="sendSuggestion(this)">Contexto histórico</div>
+    <div class="sug-chip" onclick="sendSuggestion(this)">Versículos similares</div>
+    <div class="sug-chip" onclick="sendSuggestion(this)">¿Cómo orar esto?</div>
+  </div>
+
+  <div class="chat-input-row">
+    <input type="text" class="chat-input" id="chatInput" placeholder="Pregúntale a Luz..." onkeydown="if(event.key==='Enter') sendChat()"/>
+    <button class="chat-send-btn" onclick="sendChat()">➤</button>
+  </div>
+
+</div>
+
+<script>
+// ── DATA ──
+const DAY = 7;
+const TOTAL = 40;
+const responses = {
+  "¿Qué significa \"valiente\"?": "En hebreo, la palabra es <strong>חָזַק (jazak)</strong> — que significa ser fuerte, firme, robusto. No es ausencia de miedo, sino actuar a pesar de él. Josué tenía miedo, pero Dios le recordó que Él sería la fuente de esa valentía. 💪",
+  "Contexto histórico": "Josué 1 ocurre justo después de la muerte de Moisés. Josué, su sucesor, debe guiar a 2 millones de israelitas al cruce del Jordán. Era un momento de enorme incertidumbre nacional. Esta promesa llega en el momento más decisivo. 🏔️",
+  "Versículos similares": "Hay varios pasajes que resuenan con este mensaje: <br>• <strong>Isaías 41:10</strong> — \"No temas, porque yo estoy contigo\"<br>• <strong>Filipenses 4:13</strong> — \"Todo lo puedo en Cristo\"<br>• <strong>Salmos 27:1</strong> — \"El Señor es mi luz y mi salvación\" 📖",
+  "¿Cómo orar esto?": "Puedes orar así: <em>\"Señor, hoy elijo esforzarme y ser valiente. No porque yo sea fuerte, sino porque Tú prometiste estar conmigo. Donde voy hoy, Tú vas primero. Amén.\"</em> 🙏"
+};
+
+// ── PATH DOTS ──
+(function buildPath() {
+  const container = document.getElementById('pathDots');
+  for (let i = 1; i <= TOTAL; i++) {
+    const dot = document.createElement('div');
+    dot.style.cssText = `
+      width:22px; height:22px; border-radius:50%;
+      display:flex; align-items:center; justify-content:center;
+      font-size:0.6rem; font-weight:700;
+      ${i < DAY ? 'background:linear-gradient(135deg,#F5C842,#E8A020); color:#fff;'
+        : i === DAY ? 'background:linear-gradient(135deg,#4CAF7D,#2E9B5F); color:#fff; box-shadow:0 0 0 3px rgba(76,175,125,0.3);'
+        : 'background:rgba(229,160,32,0.15); color:#B8935A; border:1.5px solid rgba(229,160,32,0.25);'}
+    `;
+    dot.textContent = i < DAY ? '✓' : i;
+    container.appendChild(dot);
+  }
+})();
+
+// ── TABS ──
+function switchTab(name) {
+  document.querySelectorAll('.tab').forEach((t,i)=>t.classList.toggle('active', ['verso','quiz','luz'][i]===name));
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById('screen-'+name).classList.add('active');
+}
+
+// ── TTS ──
+let utterance = null;
+let speaking = false;
+function toggleVerse() {
+  if (!window.speechSynthesis) return;
+  if (speaking) { window.speechSynthesis.cancel(); return; }
+  utterance = new SpeechSynthesisUtterance(document.getElementById('verseText').textContent.trim());
+  utterance.lang = 'es-ES'; utterance.rate = 0.88; utterance.pitch = 1.05;
+  utterance.onstart = () => { speaking=true; document.getElementById('playBtn').classList.add('playing'); document.getElementById('playIcon').textContent='⏹️'; document.getElementById('playText').textContent='Detener'; };
+  utterance.onend = utterance.onerror = () => { speaking=false; document.getElementById('playBtn').classList.remove('playing'); document.getElementById('playIcon').textContent='▶️'; document.getElementById('playText').textContent='Escuchar versículo'; };
+  window.speechSynthesis.speak(utterance);
+}
+
+// ── QUIZ ──
+const answers = {};
+function selectOpt(el, q, correct) {
+  const container = document.getElementById(q+'opts');
+  container.querySelectorAll('.q-opt').forEach(o => {
+    o.classList.remove('selected','correct','wrong');
+    o.style.pointerEvents = 'none';
+  });
+  if (correct === null) { el.classList.add('selected'); }
+  else if (correct) { el.classList.add('correct'); }
+  else {
+    el.classList.add('wrong');
+    container.querySelectorAll('.q-opt').forEach((o,i) => { if(i===1) o.classList.add('correct'); });
+  }
+  answers[q] = correct;
+}
+
+function submitQuiz() {
+  const free = document.getElementById('q3free').value.trim();
+  const result = document.getElementById('quizResult');
+  result.style.display = 'block';
+  if (answers.q1 && free.length > 5) {
+    document.getElementById('resultEmoji').textContent = '🌟';
+    document.getElementById('resultTitle').textContent = '¡Reflexión profunda!';
+    document.getElementById('resultMsg').textContent = 'Tu corazón está abierto a la Palabra. Dios honra esa disposición. Hasta mañana, Día 8. 🕊️';
+  } else {
+    document.getElementById('resultEmoji').textContent = '🌿';
+    document.getElementById('resultTitle').textContent = 'Reflexión guardada';
+    document.getElementById('resultMsg').textContent = 'Cada día que regresas es un paso de fe. Sigue adelante. 🙏';
+  }
+  result.scrollIntoView({ behavior:'smooth', block:'nearest' });
+}
+
+// ── CHAT ──
+function appendMsg(role, text) {
+  const box = document.getElementById('chatBox');
+  const msg = document.createElement('div');
+  msg.className = 'msg ' + role;
+  msg.innerHTML = `<div class="msg-name">${role==='luz'?'LUZ':'TÚ'}</div><div class="msg-bubble">${text}</div>`;
+  box.appendChild(msg);
+  box.scrollTop = box.scrollHeight;
+}
+
+function showTyping() {
+  const box = document.getElementById('chatBox');
+  const t = document.createElement('div');
+  t.className = 'msg luz'; t.id = 'typingMsg';
+  t.innerHTML = `<div class="msg-name">LUZ</div><div class="msg-bubble" style="display:flex;gap:4px;align-items:center;">
+    <div style="width:7px;height:7px;background:#E8A020;border-radius:50%;animation:typingBounce 1.2s ease-in-out infinite"></div>
+    <div style="width:7px;height:7px;background:#E8A020;border-radius:50%;animation:typingBounce 1.2s ease-in-out infinite;animation-delay:.2s"></div>
+    <div style="width:7px;height:7px;background:#E8A020;border-radius:50%;animation:typingBounce 1.2s ease-in-out infinite;animation-delay:.4s"></div>
+  </div>`;
+  box.appendChild(t);
+  box.scrollTop = box.scrollHeight;
+}
+
+const fallback = [
+  "Esa es una pregunta hermosa. En el contexto de Josué 1:9, podemos ver que Dios siempre acompaña a quienes se atreven a obedecer. 🕊️",
+  "La Biblia nos muestra que el miedo es normal, pero la fe en la presencia de Dios nos capacita para avanzar. ¿Quieres que exploremos más sobre este tema? 📖",
+  "Interesante reflexión. Recuerda que Josué tuvo que actuar aunque no lo sentía todo. La obediencia precede a la experiencia de la presencia de Dios. ✨",
+  "Ese pasaje conecta directamente con lo que meditas hoy. Dios es consistente en Su mensaje a lo largo de toda la Escritura. 🌟"
+];
+let fallbackIndex = 0;
+
+function sendChat() {
+  const input = document.getElementById('chatInput');
+  const text = input.value.trim();
+  if (!text) return;
+  appendMsg('user', text);
+  input.value = '';
+  showTyping();
+  setTimeout(() => {
+    document.getElementById('typingMsg')?.remove();
+    const reply = responses[text] || fallback[fallbackIndex++ % fallback.length];
+    appendMsg('luz', reply);
+  }, 1200 + Math.random()*600);
+}
+
+function sendSuggestion(el) {
+  document.getElementById('chatInput').value = el.textContent;
+  sendChat();
+}
+</script>
+</body>
+</html>

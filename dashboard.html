@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-
 <html class="dark" lang="es"><head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
 <title>Dashboard | Luminous Studio</title>
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script src="./app.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
 <script id="tailwind-config">
@@ -167,6 +167,47 @@
 <a class="px-5 py-2 bg-primary text-on-primary text-sm font-bold rounded-lg shadow-lg shadow-primary/10 hover:opacity-90 transition-opacity flex items-center" href="./acceso-exito.html">Launch Mini-App</a>
 </div>
 </header>
+<!-- ====== MIS MINI-APPS (FIJO ARRIBA) ====== -->
+<div id="mis-mini-apps" class="rounded-xl p-6 mb-6" style="background:#1a1a1a;border-left:4px solid #2E5BFF;border:1px solid #2E5BFF33;border-left:4px solid #2E5BFF;">
+  <div class="flex justify-between items-center mb-5">
+    <div>
+      <h2 class="text-lg font-extrabold" style="color:#fff;">Mis Mini-Apps</h2>
+      <p class="text-xs mt-0.5" style="color:#888;">Experiencias interactivas vinculadas a tus productos digitales</p>
+    </div>
+    <button onclick="showNewMiniAppComingSoon()" class="text-xs font-bold flex items-center gap-1 px-3 py-1.5 rounded-lg" style="background:#2E5BFF22;color:#2E5BFF;border:1px solid #2E5BFF55;">
+      <span class="material-symbols-outlined text-sm">add</span>Nueva Mini-App
+    </button>
+  </div>
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+    <!-- MANNA DIARIO -->
+    <div class="rounded-xl p-5" style="background:linear-gradient(135deg,#fdf6e9,#f5e6c8);border:1px solid #f59e0b;">
+      <div class="flex items-start justify-between mb-4">
+        <div class="w-11 h-11 rounded-xl flex items-center justify-center text-xl" style="background:linear-gradient(135deg,#f59e0b,#d97706);">🕊️</div>
+        <span class="text-xs font-extrabold uppercase px-2 py-0.5 rounded-full" style="background:#d1fae5;color:#065f46;">Activa</span>
+      </div>
+      <h4 class="font-bold text-sm mb-1" style="color:#3d2b0f;">MANNA DIARIO</h4>
+      <p class="text-xs mb-4" style="color:#92400e;">Devocional bíblico 40 días · Versículo + Quiz + IA Paloma Luz</p>
+      <div class="flex gap-2">
+        <a href="./manna-acceso.html" target="_blank" class="flex-1 py-2 text-white text-xs font-bold rounded-lg text-center" style="background:linear-gradient(90deg,#f59e0b,#d97706);">
+          Abrir App
+        </a>
+        <a href="./manna-app.html" target="_blank" class="w-9 h-9 rounded-lg flex items-center justify-center" style="background:#fff8;border:1px solid #f59e0b;" title="Vista previa">
+          <span class="material-symbols-outlined text-sm" style="color:#d97706;">open_in_new</span>
+        </a>
+      </div>
+    </div>
+    <!-- Slot vacío -->
+    <div class="rounded-xl p-5 flex flex-col items-center justify-center text-center gap-3 cursor-pointer" style="border:2px dashed #333;" onclick="showNewMiniAppComingSoon()">
+      <div class="w-11 h-11 rounded-xl flex items-center justify-center" style="background:#252525;">
+        <span class="material-symbols-outlined text-xl" style="color:#666;">add</span>
+      </div>
+      <div>
+        <p class="text-xs font-bold" style="color:#aaa;">Nueva Mini-App</p>
+        <p class="text-xs mt-1" style="color:#555;">Vincula tu próximo producto</p>
+      </div>
+    </div>
+  </div>
+</div>
 <!-- Bento Grid Layout -->
 <div class="grid grid-cols-12 gap-6">
 <!-- 1. Resumen de Ingresos Totales -->
@@ -240,61 +281,16 @@
 </div>
 </div>
 </section>
-<!-- 3. Listado de Productos más vendidos -->
+<!-- 3b. Mis Quizzes -->
 <section class="col-span-12 lg:col-span-7 bg-surface-container-low rounded-xl p-8 border border-outline-variant/5">
 <div class="flex justify-between items-center mb-6">
-<h3 class="text-on-surface-variant text-xs font-bold uppercase tracking-[0.15em]">Top Selling eBooks</h3>
-<a class="text-primary text-xs font-bold hover:underline" href="./dashboard.html">View All</a>
+<h3 class="text-on-surface-variant text-xs font-bold uppercase tracking-[0.15em]">Mis Quizzes</h3>
+<a class="text-primary text-xs font-bold hover:underline flex items-center gap-1" href="./generador-ia.html">
+  <span class="material-symbols-outlined text-sm">add</span>Nuevo Quiz
+</a>
 </div>
-<div class="space-y-4">
-<!-- Item 1 -->
-<div class="group flex items-center justify-between p-4 rounded-xl hover:bg-surface-container-high transition-all cursor-pointer">
-<div class="flex items-center gap-4">
-<div class="w-12 h-16 bg-surface-container-highest rounded flex-shrink-0 overflow-hidden shadow-lg border border-outline-variant/10">
-<img class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" data-alt="Abstract vibrant ebook cover design" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBQEekAw_W2Nz1sCRVs7_zDXRCCOr1pKPtNb2gtnTOfx18augyLOM0GaFuvmrKAiwfdzAlL1sPreAwjotFdXKKARKgep2KOmL7Ig08CTDt1_Vrb73aJqEWHGvumAbhX6JFMHY2RnKiSMl_3dZ5q7sdVyuwpbSdAQpr1rOcOMiNCp3m9b-qc1FXczqOP807AW4sbvfa3NKdMDNjDFTV4IAcg6L-ksNdM5JJeRUtUda6RgrHrURLy02QxywF89VJq8EJCi-n7K6Tkfwg"/>
-</div>
-<div>
-<h4 class="text-on-surface font-semibold text-sm">Design Systems for SaaS</h4>
-<p class="text-xs text-on-surface-variant">Digital Architecture • 1.2k Sold</p>
-</div>
-</div>
-<div class="text-right">
-<p class="text-on-surface font-bold">$3,420.00</p>
-<p class="text-[10px] text-secondary font-bold">+5.2%</p>
-</div>
-</div>
-<!-- Item 2 -->
-<div class="group flex items-center justify-between p-4 rounded-xl hover:bg-surface-container-high transition-all cursor-pointer">
-<div class="flex items-center gap-4">
-<div class="w-12 h-16 bg-surface-container-highest rounded flex-shrink-0 overflow-hidden shadow-lg border border-outline-variant/10">
-<img class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" data-alt="Futuristic glowing book cover for technology" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDrwXADgPIKJd6FrZ-DWyiZeD9n4pVeYWq7BXuvCoR4jVYNlOramolx_LGS83uWgdVbFSYTRgCYYgtcxgv2Y8Wqs-5URV0_7vu7NOZF-WcMrFu5_Tfwh91KEMIIsHPTin2PJvtc0AxHd5xJopmZMizK02W_pvtPduxUjIH-fiAxoFrho-qECUj282igFRaKeFQ6Uh9XNHeeI2LVDUuNNehx6ZpAKaB22SYng8yW6i758uRVtGTY3N7kFLF89LHHdyuBhaZfAVURrvg"/>
-</div>
-<div>
-<h4 class="text-on-surface font-semibold text-sm">No-Code Mini Apps Master</h4>
-<p class="text-xs text-on-surface-variant">Development • 840 Sold</p>
-</div>
-</div>
-<div class="text-right">
-<p class="text-on-surface font-bold">$2,890.00</p>
-<p class="text-[10px] text-secondary font-bold">+12.1%</p>
-</div>
-</div>
-<!-- Item 3 -->
-<div class="group flex items-center justify-between p-4 rounded-xl hover:bg-surface-container-high transition-all cursor-pointer">
-<div class="flex items-center gap-4">
-<div class="w-12 h-16 bg-surface-container-highest rounded flex-shrink-0 overflow-hidden shadow-lg border border-outline-variant/10">
-<img class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" data-alt="Minimalist geometric ebook cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD-JZDMsDAXBlHprJt41-eCGTuKvxmIVvpHIi2qACra6jEApo5guOoKiO_otrk2vrnuaLBx7VDwPN9unzerdkVFkckF5-greN15EesVbt_bWWru-WYCDTVnIIk5IdC7EMeL9xt-EeavYnvuJE1iMwGmmVN3qL2YtcL6uKLpBGS5Htxjsz0xJSGqT41mijPuyFvjXzwO1lIvO63VuGBi_pX5qho4NpNBEcCvBJymZf1fiJhIa-hWU5lfS0xn_oVMkZVEnTAm8Jtix04"/>
-</div>
-<div>
-<h4 class="text-on-surface font-semibold text-sm">Visual Storytelling Guide</h4>
-<p class="text-xs text-on-surface-variant">Marketing • 610 Sold</p>
-</div>
-</div>
-<div class="text-right">
-<p class="text-on-surface font-bold">$1,450.00</p>
-<p class="text-[10px] text-error-dim font-bold">-2.4%</p>
-</div>
-</div>
+<div id="quizzes-list" class="space-y-3">
+  <!-- Populated by JS -->
 </div>
 </section>
 <!-- 4. Actividad reciente de leads -->
@@ -411,4 +407,107 @@
 <span class="material-symbols-outlined" data-icon="add">add</span>
 </a>
 </div>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  renderQuizList();
+  updateStats();
+});
+
+function renderQuizList() {
+  const container = document.getElementById('quizzes-list');
+  const quizzes = Quizzes.getAll();
+
+  if (!quizzes.length) {
+    container.innerHTML = `
+      <div class="text-center py-10">
+        <span class="material-symbols-outlined text-4xl text-on-surface-variant/20">quiz</span>
+        <p class="text-on-surface-variant text-sm mt-3">No tienes quizzes todavía.</p>
+        <a href="./generador-ia.html" class="inline-block mt-3 px-5 py-2 bg-primary text-white rounded-lg text-xs font-bold hover:opacity-90 transition-all">
+          Crear mi primer quiz
+        </a>
+      </div>`;
+    return;
+  }
+
+  container.innerHTML = quizzes.map(q => {
+    const stats = Analytics.get(q.id);
+    const cr    = Analytics.conversionRate(q.id);
+    const icon  = q.status === 'active' ? 'check_circle' : 'draft';
+    const color = q.status === 'active' ? 'text-secondary' : 'text-on-surface-variant';
+    return `
+      <div class="group flex items-center justify-between p-4 rounded-xl hover:bg-surface-container-high transition-all">
+        <div class="flex items-center gap-3 min-w-0">
+          <div class="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
+            <span class="material-symbols-outlined text-primary text-lg">quiz</span>
+          </div>
+          <div class="min-w-0">
+            <h4 class="text-on-surface font-semibold text-sm truncate">${esc(q.title || 'Sin título')}</h4>
+            <p class="text-xs text-on-surface-variant">${esc(q.product || q.niche || '')} · ${formatDate(q.created)}</p>
+          </div>
+        </div>
+        <div class="flex items-center gap-4 shrink-0 ml-3">
+          <div class="text-right hidden md:block">
+            <p class="text-xs font-bold text-on-surface">${stats.views} vistas</p>
+            <p class="text-[10px] ${cr >= 50 ? 'text-secondary' : 'text-on-surface-variant'}">${cr}% conv.</p>
+          </div>
+          <div class="flex gap-1">
+            <a href="./quiz.html?quiz=${q.id}" target="_blank" title="Ver quiz"
+              class="w-8 h-8 rounded-lg bg-surface-container flex items-center justify-center hover:bg-primary/10 transition-colors">
+              <span class="material-symbols-outlined text-on-surface-variant text-sm">open_in_new</span>
+            </a>
+            <a href="./generador-ia.html?id=${q.id}" title="Editar"
+              class="w-8 h-8 rounded-lg bg-surface-container flex items-center justify-center hover:bg-primary/10 transition-colors">
+              <span class="material-symbols-outlined text-on-surface-variant text-sm">edit</span>
+            </a>
+            <button onclick="copyLink('${q.id}')" title="Copiar enlace"
+              class="w-8 h-8 rounded-lg bg-surface-container flex items-center justify-center hover:bg-secondary/10 transition-colors">
+              <span class="material-symbols-outlined text-on-surface-variant text-sm">share</span>
+            </button>
+            <button onclick="deleteQuiz('${q.id}')" title="Eliminar"
+              class="w-8 h-8 rounded-lg bg-surface-container flex items-center justify-center hover:bg-error/10 transition-colors">
+              <span class="material-symbols-outlined text-on-surface-variant text-sm">delete</span>
+            </button>
+          </div>
+        </div>
+      </div>`;
+  }).join('');
+}
+
+function updateStats() {
+  const quizzes = Quizzes.getAll();
+  const allAnalytics = Analytics.getAll();
+  let totalViews = 0, totalConversions = 0;
+  quizzes.forEach(q => {
+    const a = allAnalytics[q.id] || {};
+    totalViews       += a.views       || 0;
+    totalConversions += a.completions || 0;
+  });
+  // Update quiz count chip if exists
+  const el = document.querySelector('[data-stat="quiz-count"]');
+  if (el) el.textContent = quizzes.length;
+}
+
+function copyLink(quizId) {
+  copyToClipboard(buildQuizUrl(quizId));
+}
+
+function deleteQuiz(id) {
+  if (!confirm('¿Eliminar este quiz? Esta acción no se puede deshacer.')) return;
+  Quizzes.delete(id);
+  renderQuizList();
+  showToast('Quiz eliminado.');
+}
+
+function esc(s) { return String(s||'').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+function copyMiniAppLink(page) {
+  const url = window.location.origin + '/' + page;
+  navigator.clipboard.writeText(url).catch(() => {});
+  showToast('Enlace copiado 🕊️');
+}
+
+function showNewMiniAppComingSoon() {
+  showToast('Pronto podrás crear nuevas Mini-Apps desde aquí ✨');
+}
+</script>
 </body></html>

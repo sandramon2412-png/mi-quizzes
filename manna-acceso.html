@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>MANNA DIARIO — Acceso</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    min-height: 100dvh;
+    background: linear-gradient(160deg, #FDF6E9 0%, #FBF0D8 40%, #F5E6C8 100%);
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    padding: 24px;
+    position: relative; overflow: hidden;
+  }
+
+  /* Floating particles */
+  .particle {
+    position: fixed; pointer-events: none; font-size: 1.4rem; opacity: 0;
+    animation: floatUp 8s ease-in-out infinite;
+  }
+  @keyframes floatUp {
+    0%   { opacity: 0; transform: translateY(100vh) scale(0.8); }
+    20%  { opacity: 0.35; }
+    80%  { opacity: 0.2; }
+    100% { opacity: 0; transform: translateY(-10vh) scale(1.1) rotate(15deg); }
+  }
+
+  /* Logo / Header */
+  .logo-wrap { text-align: center; margin-bottom: 40px; }
+  .dove-icon {
+    width: 72px; height: 72px;
+    background: linear-gradient(135deg, #F5C842 0%, #E8A020 100%);
+    border-radius: 50%;
+    display: inline-flex; align-items: center; justify-content: center;
+    font-size: 2rem; margin-bottom: 16px;
+    box-shadow: 0 8px 32px rgba(229, 160, 32, 0.35), 0 0 0 8px rgba(245, 200, 66, 0.15);
+    animation: pulse-glow 3s ease-in-out infinite;
+  }
+  @keyframes pulse-glow {
+    0%, 100% { box-shadow: 0 8px 32px rgba(229,160,32,0.35), 0 0 0 8px rgba(245,200,66,0.15); }
+    50%       { box-shadow: 0 8px 40px rgba(229,160,32,0.5),  0 0 0 14px rgba(245,200,66,0.08); }
+  }
+  .logo-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 2.6rem; font-weight: 700;
+    color: #5C3D1A;
+    letter-spacing: 0.04em;
+    line-height: 1;
+  }
+  .logo-subtitle {
+    font-style: italic; font-family: 'Playfair Display', serif;
+    font-size: 1rem; color: #A07840; margin-top: 6px;
+  }
+  .logo-tagline {
+    font-size: 0.82rem; color: #B8945A; margin-top: 10px;
+    letter-spacing: 0.03em; font-weight: 400;
+  }
+
+  /* Card */
+  .card {
+    background: rgba(255,255,255,0.72);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(245,200,66,0.25);
+    border-radius: 24px;
+    padding: 36px 32px;
+    width: 100%; max-width: 420px;
+    box-shadow: 0 20px 60px rgba(140,90,30,0.12), 0 4px 16px rgba(140,90,30,0.06);
+  }
+  .card-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.3rem; font-weight: 700; color: #3D2408;
+    text-align: center; margin-bottom: 8px;
+  }
+  .card-desc {
+    font-size: 0.82rem; color: #8C6030; text-align: center;
+    line-height: 1.5; margin-bottom: 28px;
+  }
+
+  /* Input */
+  .input-wrap { position: relative; margin-bottom: 16px; }
+  input[type="text"] {
+    width: 100%; padding: 16px 20px;
+    font-family: 'Inter', sans-serif; font-size: 1.05rem; font-weight: 500;
+    text-align: center; letter-spacing: 0.12em; text-transform: uppercase;
+    background: rgba(255,255,255,0.9);
+    border: 2px solid rgba(229,160,32,0.3);
+    border-radius: 14px; outline: none;
+    color: #3D2408;
+    transition: border-color 0.25s, box-shadow 0.25s;
+    caret-color: #E8A020;
+  }
+  input[type="text"]::placeholder { color: #C8A878; letter-spacing: 0.05em; text-transform: none; font-weight: 400; }
+  input[type="text"]:focus {
+    border-color: #E8A020;
+    box-shadow: 0 0 0 4px rgba(232,160,32,0.15);
+  }
+  input[type="text"].error { border-color: #E05050; box-shadow: 0 0 0 4px rgba(224,80,80,0.12); animation: shake 0.35s; }
+  @keyframes shake {
+    0%,100% { transform: translateX(0); }
+    25%      { transform: translateX(-6px); }
+    75%      { transform: translateX(6px); }
+  }
+
+  /* Button */
+  .btn-acceso {
+    width: 100%; padding: 16px;
+    background: linear-gradient(135deg, #E8A020 0%, #C47B10 100%);
+    border: none; border-radius: 14px; cursor: pointer;
+    font-family: 'Inter', sans-serif; font-size: 1rem; font-weight: 600;
+    color: #fff; letter-spacing: 0.02em;
+    transition: transform 0.15s, box-shadow 0.15s, opacity 0.15s;
+    box-shadow: 0 6px 24px rgba(196,123,16,0.4);
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+  }
+  .btn-acceso:hover { transform: translateY(-2px); box-shadow: 0 10px 30px rgba(196,123,16,0.45); }
+  .btn-acceso:active { transform: translateY(0); }
+  .btn-acceso:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+
+  /* Error & help */
+  .error-msg { font-size: 0.8rem; color: #C04040; text-align: center; min-height: 20px; margin-top: 10px; }
+  .help-link {
+    display: block; text-align: center; margin-top: 20px;
+    font-size: 0.8rem; color: #A07840; text-decoration: none;
+  }
+  .help-link span { text-decoration: underline; cursor: pointer; }
+
+  /* Verse footer */
+  .verse-footer {
+    margin-top: 36px; text-align: center; max-width: 340px;
+  }
+  .verse-text {
+    font-family: 'Playfair Display', serif; font-style: italic;
+    font-size: 0.92rem; color: #8C6030; line-height: 1.6;
+  }
+  .verse-ref { font-size: 0.78rem; color: #B8945A; margin-top: 6px; }
+
+  /* Loading spinner */
+  .spinner {
+    width: 18px; height: 18px; border: 2px solid rgba(255,255,255,0.4);
+    border-top-color: #fff; border-radius: 50%;
+    animation: spin 0.7s linear infinite; display: none;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* Success flash */
+  .success-overlay {
+    position: fixed; inset: 0;
+    background: linear-gradient(135deg, #F5C842, #E8A020);
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    z-index: 100; opacity: 0; pointer-events: none;
+    transition: opacity 0.4s;
+  }
+  .success-overlay.show { opacity: 1; pointer-events: all; }
+  .success-overlay .big-dove { font-size: 5rem; animation: bounce 0.6s ease infinite alternate; }
+  @keyframes bounce { to { transform: translateY(-12px); } }
+  .success-overlay p { font-family: 'Playfair Display', serif; font-size: 1.6rem; color: #fff; margin-top: 20px; font-weight: 700; }
+  .success-overlay small { color: rgba(255,255,255,0.85); margin-top: 8px; font-size: 0.9rem; }
+</style>
+</head>
+<body>
+
+<!-- Floating particles -->
+<div class="particle" style="left:8%;  animation-delay:0s;   animation-duration:9s">🕊️</div>
+<div class="particle" style="left:22%; animation-delay:2s;   animation-duration:11s">✨</div>
+<div class="particle" style="left:55%; animation-delay:4s;   animation-duration:8s">🌿</div>
+<div class="particle" style="left:75%; animation-delay:1s;   animation-duration:13s">🕊️</div>
+<div class="particle" style="left:88%; animation-delay:6s;   animation-duration:10s">⭐</div>
+<div class="particle" style="left:40%; animation-delay:3s;   animation-duration:12s">✨</div>
+
+<!-- Logo -->
+<div class="logo-wrap">
+  <div class="dove-icon">🕊️</div>
+  <div class="logo-title">MANNA DIARIO</div>
+  <div class="logo-subtitle">Tu compañero bíblico</div>
+  <div class="logo-tagline">Pan espiritual fresco cada día</div>
+</div>
+
+<!-- Card -->
+<div class="card">
+  <div class="card-title">Introduce tu código de acceso</div>
+  <div class="card-desc">
+    Encontrarás tu código en el email de confirmación<br/>
+    de tu compra o en la última página del devocional.
+  </div>
+
+  <div class="input-wrap">
+    <input
+      type="text" id="codigo-input"
+      placeholder="Ej: MANNA-1001"
+      maxlength="20"
+      autocomplete="off" autocorrect="off" spellcheck="false"
+    />
+  </div>
+
+  <button class="btn-acceso" id="btn-acceder" onclick="validarCodigo()">
+    <span id="btn-text">Activar acceso ✨</span>
+    <div class="spinner" id="spinner"></div>
+  </button>
+
+  <div class="error-msg" id="error-msg"></div>
+
+  <a class="help-link">
+    ¿Problemas? <span onclick="alert('Escríbenos a hola@mannadiario.com 💛')">Escríbenos y lo resolvemos enseguida 💛</span>
+  </a>
+</div>
+
+<!-- Verse footer -->
+<div class="verse-footer">
+  <div class="verse-text">"El SEÑOR es mi pastor; nada me faltará."</div>
+  <div class="verse-ref">— Salmos 23:1</div>
+</div>
+
+<!-- Success overlay -->
+<div class="success-overlay" id="success-overlay">
+  <div class="big-dove">🕊️</div>
+  <p>¡Bienvenido/a!</p>
+  <small>Preparando tu devocional...</small>
+</div>
+
+<script>
+  // Códigos válidos para demo — en producción esto vendría de una lista real
+  const CODIGOS_VALIDOS = new Set([
+    'MANNA-1001','MANNA-1002','MANNA-1003','MANNA-1004','MANNA-1005',
+    'MANNA-1006','MANNA-1007','MANNA-1008','MANNA-1009','MANNA-1010',
+    'DEMO-9999', // código de prueba
+  ]);
+
+  const input  = document.getElementById('codigo-input');
+  const btnText= document.getElementById('btn-text');
+  const spinner= document.getElementById('spinner');
+  const errMsg = document.getElementById('error-msg');
+  const overlay= document.getElementById('success-overlay');
+
+  // Si ya tiene sesión activa, ir directo
+  if (localStorage.getItem('manna_acceso') === 'true') {
+    window.location.replace('./manna-app.html');
+  }
+
+  input.addEventListener('input', () => {
+    errMsg.textContent = '';
+    input.classList.remove('error');
+  });
+
+  input.addEventListener('keydown', e => {
+    if (e.key === 'Enter') validarCodigo();
+  });
+
+  function validarCodigo() {
+    const code = input.value.trim().toUpperCase();
+    if (!code) {
+      mostrarError('Ingresa tu código de acceso 👆');
+      return;
+    }
+
+    // Loading state
+    btnText.style.display = 'none';
+    spinner.style.display = 'block';
+    document.getElementById('btn-acceder').disabled = true;
+    errMsg.textContent = '';
+
+    // Simular validación (800ms para feedback)
+    setTimeout(() => {
+      if (CODIGOS_VALIDOS.has(code)) {
+        // Guardar sesión
+        localStorage.setItem('manna_acceso', 'true');
+        localStorage.setItem('manna_codigo', code);
+        if (!localStorage.getItem('manna_dia_actual')) {
+          localStorage.setItem('manna_dia_actual', '1');
+          localStorage.setItem('manna_racha', '0');
+          localStorage.setItem('manna_ultima_visita', '');
+          localStorage.setItem('manna_estrellas', '0');
+          localStorage.setItem('manna_dias_completados', JSON.stringify([]));
+        }
+        // Mostrar éxito y redirigir
+        overlay.classList.add('show');
+        setTimeout(() => window.location.href = './manna-app.html', 1800);
+      } else {
+        mostrarError('Código no válido. Revisa el email o el devocional 🙏');
+        btnText.style.display = 'block';
+        spinner.style.display = 'none';
+        document.getElementById('btn-acceder').disabled = false;
+        input.classList.add('error');
+      }
+    }, 800);
+  }
+
+  function mostrarError(msg) {
+    errMsg.textContent = msg;
+  }
+</script>
+</body>
+</html>
