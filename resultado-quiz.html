@@ -7,7 +7,6 @@
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
 <script id="tailwind-config">
       tailwind.config = {
         darkMode: "class",
@@ -89,12 +88,10 @@
       .material-symbols-outlined {
         font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
       }
+      body {
+        min-height: max(884px, 100dvh);
+      }
     </style>
-<style>
-    body {
-      min-height: max(884px, 100dvh);
-    }
-  </style>
 </head>
 <body class="bg-background text-on-surface antialiased min-h-screen">
 <!-- TopAppBar -->
@@ -105,9 +102,9 @@
 <span class="text-xl font-bold tracking-tighter text-[#95AAFF]">Luminous Studio</span>
 </div>
 <div class="hidden md:flex gap-8 items-center">
-<a class="text-[#95AAFF] font-medium transition-colors duration-400 ease-[cubic-bezier(0.16,1,0.3,1)]" href="dashboard.html">Home</a>
-<a class="text-[#ADAAAA] hover:text-[#95AAFF] transition-colors duration-400 ease-[cubic-bezier(0.16,1,0.3,1)]" href="#">Editor</a>
-<a class="text-[#ADAAAA] hover:text-[#95AAFF] transition-colors duration-400 ease-[cubic-bezier(0.16,1,0.3,1)]" href="#">Sales</a>
+<a class="text-[#ADAAAA] hover:text-[#95AAFF] transition-colors duration-400 ease-[cubic-bezier(0.16,1,0.3,1)]" href="index.html">Home</a>
+<a class="text-[#ADAAAA] hover:text-[#95AAFF] transition-colors duration-400 ease-[cubic-bezier(0.16,1,0.3,1)]" href="plantillas.html">Editor</a>
+<a class="text-[#ADAAAA] hover:text-[#95AAFF] transition-colors duration-400 ease-[cubic-bezier(0.16,1,0.3,1)]" href="dashboard.html">Sales</a>
 <div class="w-8 h-8 rounded-full overflow-hidden border border-outline-variant/30">
 <img alt="User profile avatar" data-alt="User profile circular headshot portrait" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCgvwrlynuF77ZgeyYBpSVLwHI4sIX35YKEe3YwyGzUgibIp1NDTviX9lPttmW13GjgvmuAIheyh6pPUzeqeWkZ2_UaXifKHEdw5M-NHaPeB-PJxX2VnVYGSlmHNXiOupLXeFFXkCwJa8HPcnl6gZsly6Zm62wP7VieITuQvmul4vBf_95tvcTCz8tuvgB7wgsgsqfKRIQx-xsBIMryJicS3VYbSAt8kewAuP6p43H2hPTZuU118JvJk0ifIIA013HOqPWGETjwsjw"/>
 </div>
@@ -156,9 +153,9 @@
 </div>
 <div class="space-y-4">
 <a class="w-full block text-center py-5 rounded-xl bg-gradient-to-r from-primary to-primary-dim text-on-primary-container font-extrabold text-lg tracking-tight hover:brightness-110 transition-all duration-400 active:scale-95" href="acceso-exito.html">Comprar Ahora</a>
-<button class="w-full py-5 rounded-xl border border-outline-variant/30 text-primary font-bold text-lg hover:bg-surface-container-high transition-all duration-400">
+<a class="w-full block text-center py-5 rounded-xl border border-outline-variant/30 text-primary font-bold text-lg hover:bg-surface-container-high transition-all duration-400" href="#">
                             Descargar Resumen PDF
-                        </button>
+                        </a>
 </div>
 <div class="mt-8 flex items-center gap-4 text-on-surface-variant text-sm">
 <span class="material-symbols-outlined text-secondary" style="font-variation-settings: 'FILL' 1;">verified</span>
@@ -225,22 +222,22 @@
 <!-- BottomNavBar -->
 <nav class="fixed bottom-8 left-0 right-0 z-50 flex justify-around items-center mx-auto md:hidden">
 <div class="bg-[#262626]/60 backdrop-blur-xl fixed bottom-8 left-1/2 -translate-x-1/2 w-[90%] max-w-md rounded-2xl border border-[#484847]/10 flex justify-around items-center py-2 px-4 shadow-[0_20px_40px_rgba(20,79,229,0.1)]">
-<a class="flex flex-col items-center text-[#ADAAAA] px-4 py-2" href="dashboard.html">
+<a class="flex flex-col items-center text-[#ADAAAA] px-4 py-2" href="index.html">
 <span class="material-symbols-outlined" data-icon="home">home</span>
 <span class="text-[10px] font-medium uppercase tracking-widest mt-1">Home</span>
 </a>
-<div class="flex flex-col items-center text-[#ADAAAA] px-4 py-2">
+<a class="flex flex-col items-center text-[#ADAAAA] px-4 py-2" href="plantillas.html">
 <span class="material-symbols-outlined" data-icon="extension">extension</span>
 <span class="text-[10px] font-medium uppercase tracking-widest mt-1">Editor</span>
-</div>
-<div class="flex flex-col items-center text-[#95AAFF] bg-[#2C2C2C] rounded-xl px-4 py-2 scale-110">
+</a>
+<a class="flex flex-col items-center text-[#95AAFF] bg-[#2C2C2C] rounded-xl px-4 py-2 scale-110" href="dashboard.html">
 <span class="material-symbols-outlined" data-icon="trending_up">trending_up</span>
 <span class="text-[10px] font-medium uppercase tracking-widest mt-1">Sales</span>
-</div>
-<div class="flex flex-col items-center text-[#ADAAAA] px-4 py-2">
+</a>
+<a class="flex flex-col items-center text-[#ADAAAA] px-4 py-2" href="precios.html">
 <span class="material-symbols-outlined" data-icon="person">person</span>
 <span class="text-[10px] font-medium uppercase tracking-widest mt-1">Account</span>
-</div>
+</a>
 </div>
 </nav>
 <!-- Footer Space for Bottom Nav -->
