@@ -207,14 +207,29 @@
 <div class="aspect-square rounded-xl surface-container-highest border border-outline-variant/10 overflow-hidden">
 <img alt="Creative gradients" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDunxWbnBbRL4IKj-qgHEr9ZLIkgN4pQO9VQv4glHEK3HA8kt4xCSewYUCSTuuRm-zJDXrm2rVq_VXqBCZDTbD6GnPop6e7g_GrQRBLb0YbcW5uKj_RYq2_hIci-S6EbeLZfMFsgbhAGMIB6cH9Xit1wxrvwEo886SC7tT1uMZCEWJH4_EFS6YypjygutrFRFkcalktZe2njXfDBnXgZZzlbkuaisjJzuZBIvGvFF9b7sXTuDoX87EflYhFzBRzO4TMSBg18C81NBA"/>
 </div>
-<div class="aspect-[3/4] rounded-xl border border-primary/20 p-6 flex flex-col justify-end relative overflow-hidden" style="background: linear-gradient(160deg, #0a1a4d 0%, #1a0a3d 40%, #0e1a3a 100%);">
-  <div class="absolute inset-0 opacity-30" style="background: radial-gradient(ellipse at 30% 20%, #2E5BFF55 0%, transparent 60%), radial-gradient(ellipse at 80% 80%, #69f6b830 0%, transparent 50%);"></div>
-  <div class="absolute top-4 right-4 w-16 h-16 rounded-full border border-primary/20 flex items-center justify-center">
-    <span class="material-symbols-outlined text-primary text-2xl">trending_up</span>
+<div class="aspect-[3/4] rounded-xl border border-primary/20 p-5 flex flex-col justify-between relative overflow-hidden" style="background: linear-gradient(150deg, #060d2e 0%, #0d1a4a 50%, #0a1230 100%);">
+  <!-- glow orbs -->
+  <div class="absolute -top-8 -left-8 w-40 h-40 rounded-full opacity-20" style="background: radial-gradient(circle, #2E5BFF 0%, transparent 70%);"></div>
+  <div class="absolute -bottom-8 -right-8 w-40 h-40 rounded-full opacity-15" style="background: radial-gradient(circle, #00f5a0 0%, transparent 70%);"></div>
+  <!-- header -->
+  <div class="relative z-10 flex items-center justify-between">
+    <span class="text-xs font-semibold uppercase tracking-widest" style="color: #2E5BFF99;">Rendimiento</span>
+    <div class="w-8 h-8 rounded-lg flex items-center justify-center" style="background: #2E5BFF22; border: 1px solid #2E5BFF44;">
+      <span class="material-symbols-outlined text-sm" style="color:#2E5BFF; font-size:16px;">trending_up</span>
+    </div>
   </div>
+  <!-- metric -->
   <div class="relative z-10">
-    <div class="text-5xl font-black text-primary mb-1">45%</div>
-    <div class="text-xs text-secondary font-bold uppercase tracking-wider">Aumento en Conversión</div>
+    <div class="font-black leading-none mb-1" style="font-size: 3.5rem; background: linear-gradient(135deg, #2E5BFF 0%, #00f5a0 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">45%</div>
+    <div class="text-xs font-bold uppercase tracking-widest mb-4" style="color: #ffffff88;">Aumento en Conversión</div>
+    <!-- progress bar -->
+    <div class="w-full h-1 rounded-full mb-1" style="background: #ffffff15;">
+      <div class="h-full rounded-full" style="width: 45%; background: linear-gradient(90deg, #2E5BFF, #00f5a0);"></div>
+    </div>
+    <div class="flex justify-between">
+      <span class="text-xs" style="color:#ffffff33;">0%</span>
+      <span class="text-xs" style="color:#ffffff33;">100%</span>
+    </div>
   </div>
 </div>
 </div>
