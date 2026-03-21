@@ -69,7 +69,12 @@
               "body": ["Plus Jakarta Sans"],
               "label": ["Plus Jakarta Sans"]
             },
-            borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+            borderRadius: {
+              "DEFAULT": "0.5rem",
+              "lg": "0.5rem",
+              "xl": "0.75rem",
+              "full": "9999px"
+            },
           },
         },
       }
@@ -85,8 +90,6 @@
         .primary-gradient {
             background: linear-gradient(135deg, #95aaff 0%, #3867fb 100%);
         }
-    </style>
-<style>
         body {
           min-height: max(884px, 100dvh);
         }
@@ -158,8 +161,8 @@
 </div>
 <button class="w-full primary-gradient text-on-primary-fixed font-bold py-4 rounded-xl flex items-center justify-center gap-2 group hover:shadow-[0_0_20px_rgba(149,170,255,0.4)] transition-all duration-400" onclick="window.location.href='./resultado-quiz.html'">
 <span class="material-symbols-outlined">auto_awesome</span>
-                        Generar Preguntas con IA
-                    </button>
+                            Generar Preguntas con IA
+                        </button>
 </div>
 <!-- IA Logic Summary Card -->
 <div class="bg-surface-container-high rounded-xl p-8 border border-outline-variant/10 relative overflow-hidden">
@@ -168,7 +171,7 @@
 </div>
 <h3 class="text-xl font-bold mb-4 text-on-surface">Lógica de Recomendación</h3>
 <p class="text-on-surface-variant text-sm leading-relaxed mb-6">
-                        Basado en las respuestas, la IA segmentará al usuario en tres perfiles: <br/>
+                            Basado en las respuestas, la IA segmentará al usuario en tres perfiles: <br/>
 <span class="text-secondary font-semibold">Principiante, Intermedio y Avanzado.</span>
 </p>
 <div class="space-y-3">
@@ -248,7 +251,7 @@
 <span class="px-3 py-1 bg-secondary/20 text-secondary text-[10px] font-bold rounded-full uppercase mb-4 inline-block">Perfil: Ahorrador Novato</span>
 <h5 class="text-lg font-bold mb-3 text-on-surface">Oferta: Módulo de Ahorro Automático</h5>
 <p class="text-sm text-on-surface-variant mb-6 leading-relaxed">Ideal para quienes están empezando y necesitan estructura. Incluye la plantilla de presupuesto.</p>
-<a class="flex items-center gap-2 text-secondary text-xs font-bold tracking-widest uppercase cursor-pointer" href="./acceso-exito.html">
+<a class="flex items-center gap-2 text-secondary text-xs font-bold tracking-widest uppercase cursor-pointer" href="./resultado-quiz.html">
 <span>Ver Página de Éxito</span>
 <span class="material-symbols-outlined text-sm">arrow_forward</span>
 </a>
@@ -259,7 +262,7 @@
 <span class="px-3 py-1 bg-primary/20 text-primary text-[10px] font-bold rounded-full uppercase mb-4 inline-block">Perfil: El Inversionista</span>
 <h5 class="text-lg font-bold mb-3 text-on-surface">Oferta: Masterclass de Bolsa</h5>
 <p class="text-sm text-on-surface-variant mb-6 leading-relaxed">Para usuarios con capital disponible que buscan multiplicar sus activos de forma segura.</p>
-<a class="flex items-center gap-2 text-primary text-xs font-bold tracking-widest uppercase cursor-pointer" href="./acceso-exito.html">
+<a class="flex items-center gap-2 text-primary text-xs font-bold tracking-widest uppercase cursor-pointer" href="./resultado-quiz.html">
 <span>Ver Página de Éxito</span>
 <span class="material-symbols-outlined text-sm">arrow_forward</span>
 </a>
@@ -270,7 +273,7 @@
 <span class="px-3 py-1 bg-tertiary/20 text-tertiary text-[10px] font-bold rounded-full uppercase mb-4 inline-block">Perfil: Deuda Zero</span>
 <h5 class="text-lg font-bold mb-3 text-on-surface">Oferta: Plan de Choque Financiero</h5>
 <p class="text-sm text-on-surface-variant mb-6 leading-relaxed">Contenido enfocado en la liberación de deudas y limpieza de historial crediticio.</p>
-<a class="flex items-center gap-2 text-tertiary text-xs font-bold tracking-widest uppercase cursor-pointer" href="./acceso-exito.html">
+<a class="flex items-center gap-2 text-tertiary text-xs font-bold tracking-widest uppercase cursor-pointer" href="./resultado-quiz.html">
 <span>Ver Página de Éxito</span>
 <span class="material-symbols-outlined text-sm">arrow_forward</span>
 </a>
@@ -284,7 +287,7 @@
 <!-- BottomNavBar (Mobile Only) -->
 <div class="md:hidden">
 <nav class="fixed bottom-8 left-1/2 -translate-x-1/2 w-[90%] max-w-md rounded-2xl bg-[#262626]/60 backdrop-blur-xl border border-[#484847]/10 z-50 flex justify-around items-center p-2 shadow-[0_20px_50px_rgba(0,0,0,0.5)]">
-<a class="flex flex-col items-center gap-1 text-[#95AAFF] bg-[#2C2C2C] rounded-xl px-4 py-1 active:scale-90 transition-all duration-200" href="./dashboard.html">
+<a class="flex flex-col items-center gap-1 text-[#95AAFF] bg-[#2C2C2C] rounded-xl px-4 py-1 active:scale-90 transition-all duration-200" href="./generador-ia.html">
 <span class="material-symbols-outlined">add_circle</span>
 <span class="font-['Plus_Jakarta_Sans'] text-[10px] font-medium">Build</span>
 </a>
@@ -292,7 +295,7 @@
 <span class="material-symbols-outlined">auto_stories</span>
 <span class="font-['Plus_Jakarta_Sans'] text-[10px] font-medium">Library</span>
 </a>
-<a class="flex flex-col items-center gap-1 text-[#ADAAAA] hover:scale-110 active:scale-90 transition-all duration-200" href="./resultado-quiz.html">
+<a class="flex flex-col items-center gap-1 text-[#ADAAAA] hover:scale-110 active:scale-90 transition-all duration-200" href="./dashboard.html">
 <span class="material-symbols-outlined">payments</span>
 <span class="font-['Plus_Jakarta_Sans'] text-[10px] font-medium">Sales</span>
 </a>
