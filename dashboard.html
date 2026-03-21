@@ -168,6 +168,47 @@
 <a class="px-5 py-2 bg-primary text-on-primary text-sm font-bold rounded-lg shadow-lg shadow-primary/10 hover:opacity-90 transition-opacity flex items-center" href="./acceso-exito.html">Launch Mini-App</a>
 </div>
 </header>
+<!-- ====== MIS MINI-APPS (FIJO ARRIBA) ====== -->
+<div id="mis-mini-apps" class="rounded-xl p-6 mb-6" style="background:#1a1a1a;border-left:4px solid #2E5BFF;border:1px solid #2E5BFF33;border-left:4px solid #2E5BFF;">
+  <div class="flex justify-between items-center mb-5">
+    <div>
+      <h2 class="text-lg font-extrabold" style="color:#fff;">Mis Mini-Apps</h2>
+      <p class="text-xs mt-0.5" style="color:#888;">Experiencias interactivas vinculadas a tus productos digitales</p>
+    </div>
+    <button onclick="showNewMiniAppComingSoon()" class="text-xs font-bold flex items-center gap-1 px-3 py-1.5 rounded-lg" style="background:#2E5BFF22;color:#2E5BFF;border:1px solid #2E5BFF55;">
+      <span class="material-symbols-outlined text-sm">add</span>Nueva Mini-App
+    </button>
+  </div>
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+    <!-- MANNA DIARIO -->
+    <div class="rounded-xl p-5" style="background:linear-gradient(135deg,#fdf6e9,#f5e6c8);border:1px solid #f59e0b;">
+      <div class="flex items-start justify-between mb-4">
+        <div class="w-11 h-11 rounded-xl flex items-center justify-center text-xl" style="background:linear-gradient(135deg,#f59e0b,#d97706);">🕊️</div>
+        <span class="text-xs font-extrabold uppercase px-2 py-0.5 rounded-full" style="background:#d1fae5;color:#065f46;">Activa</span>
+      </div>
+      <h4 class="font-bold text-sm mb-1" style="color:#3d2b0f;">MANNA DIARIO</h4>
+      <p class="text-xs mb-4" style="color:#92400e;">Devocional bíblico 40 días · Versículo + Quiz + IA Paloma Luz</p>
+      <div class="flex gap-2">
+        <a href="./manna-acceso.html" target="_blank" class="flex-1 py-2 text-white text-xs font-bold rounded-lg text-center" style="background:linear-gradient(90deg,#f59e0b,#d97706);">
+          Abrir App
+        </a>
+        <a href="./manna-app.html" target="_blank" class="w-9 h-9 rounded-lg flex items-center justify-center" style="background:#fff8;border:1px solid #f59e0b;" title="Vista previa">
+          <span class="material-symbols-outlined text-sm" style="color:#d97706;">open_in_new</span>
+        </a>
+      </div>
+    </div>
+    <!-- Slot vacío -->
+    <div class="rounded-xl p-5 flex flex-col items-center justify-center text-center gap-3 cursor-pointer" style="border:2px dashed #333;" onclick="showNewMiniAppComingSoon()">
+      <div class="w-11 h-11 rounded-xl flex items-center justify-center" style="background:#252525;">
+        <span class="material-symbols-outlined text-xl" style="color:#666;">add</span>
+      </div>
+      <div>
+        <p class="text-xs font-bold" style="color:#aaa;">Nueva Mini-App</p>
+        <p class="text-xs mt-1" style="color:#555;">Vincula tu próximo producto</p>
+      </div>
+    </div>
+  </div>
+</div>
 <!-- Bento Grid Layout -->
 <div class="grid grid-cols-12 gap-6">
 <!-- 1. Resumen de Ingresos Totales -->
@@ -241,55 +282,6 @@
 </div>
 </div>
 </section>
-<!-- 3. Mis Mini-Apps -->
-<section class="col-span-12 rounded-xl p-8" style="background:#1a1a1a; border:1px solid #2E5BFF44; border-left: 4px solid #2E5BFF;">
-<div class="flex justify-between items-center mb-6">
-  <div>
-    <h3 class="text-base font-extrabold" style="color:#fff;">Mis Mini-Apps</h3>
-    <p class="text-xs mt-1" style="color:#888;">Experiencias interactivas vinculadas a tus productos digitales</p>
-  </div>
-  <button onclick="showNewMiniAppComingSoon()" class="text-xs font-bold flex items-center gap-1 px-3 py-1.5 rounded-lg hover:opacity-90" style="background:#2E5BFF22;color:#2E5BFF;border:1px solid #2E5BFF44;">
-    <span class="material-symbols-outlined text-sm">add</span>Nueva Mini-App
-  </button>
-</div>
-<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-  <!-- MANNA DIARIO card -->
-  <div class="group relative rounded-xl p-5 border border-yellow-500 hover:shadow-lg transition-all" style="background: linear-gradient(135deg, #fdf6e9, #f5e6c8);">
-    <div class="flex items-start justify-between mb-4">
-      <div class="w-12 h-12 rounded-xl flex items-center justify-center text-2xl" style="background: linear-gradient(135deg,#f59e0b,#d97706);">🕊️</div>
-      <span class="text-xs font-extrabold uppercase px-2 py-1 rounded-full" style="background:#d1fae5;color:#065f46;">Activa</span>
-    </div>
-    <h4 class="font-bold text-sm mb-1" style="color:#3d2b0f;">MANNA DIARIO</h4>
-    <p class="text-xs mb-4" style="color:#92400e;">Devocional bíblico 40 días · Versículo + Quiz + IA Paloma Luz</p>
-    <div class="flex items-center gap-3 text-xs mb-5" style="color:#b45309;">
-      <span>🔥 Racha</span><span>·</span><span>🏆 Insignias</span><span>·</span><span>🕊️ IA bíblica</span>
-    </div>
-    <div class="flex gap-2">
-      <a href="./manna-acceso.html" target="_blank" class="flex-1 py-2 text-white text-xs font-bold rounded-lg text-center hover:opacity-90 transition-opacity" style="background: linear-gradient(90deg,#f59e0b,#d97706);">
-        Abrir App
-      </a>
-      <a href="./manna-app.html" target="_blank" class="w-9 h-9 rounded-lg flex items-center justify-center hover:opacity-80 transition-opacity" style="background:#fff8;border:1px solid #f59e0b;" title="Vista previa directa">
-        <span class="material-symbols-outlined text-sm" style="color:#d97706;">open_in_new</span>
-      </a>
-      <button onclick="copyMiniAppLink('manna-acceso.html')" class="w-9 h-9 rounded-lg flex items-center justify-center hover:opacity-80 transition-opacity" style="background:#fff8;border:1px solid #f59e0b;" title="Copiar enlace">
-        <span class="material-symbols-outlined text-sm" style="color:#d97706;">share</span>
-      </button>
-    </div>
-  </div>
-
-  <!-- Slot vacío: próxima mini-app -->
-  <div class="rounded-xl p-5 flex flex-col items-center justify-center text-center gap-3 cursor-pointer hover:opacity-80 transition-opacity" style="border:2px dashed #444;" onclick="showNewMiniAppComingSoon()">
-    <div class="w-12 h-12 rounded-xl flex items-center justify-center" style="background:#2a2a2a;">
-      <span class="material-symbols-outlined text-2xl" style="color:#888;">add</span>
-    </div>
-    <div>
-      <p class="text-xs font-bold" style="color:#aaa;">Nueva Mini-App</p>
-      <p class="text-xs mt-1" style="color:#666;">Vincula tu próximo producto digital</p>
-    </div>
-  </div>
-</div>
-</section>
-
 <!-- 3b. Mis Quizzes -->
 <section class="col-span-12 lg:col-span-7 bg-surface-container-low rounded-xl p-8 border border-outline-variant/5">
 <div class="flex justify-between items-center mb-6">
