@@ -254,41 +254,37 @@
 </div>
 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
   <!-- MANNA DIARIO card -->
-  <div class="group relative bg-gradient-to-br from-[#FDF6E9] to-[#F5E6C8] rounded-xl p-5 border border-amber-200/60 hover:shadow-lg hover:shadow-amber-200/20 transition-all">
+  <div class="group relative rounded-xl p-5 border border-yellow-500 hover:shadow-lg transition-all" style="background: linear-gradient(135deg, #fdf6e9, #f5e6c8);">
     <div class="flex items-start justify-between mb-4">
-      <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center text-2xl shadow-md shadow-amber-400/30">🕊️</div>
-      <span class="text-[10px] font-extrabold uppercase tracking-wider px-2 py-1 rounded-full bg-emerald-100 text-emerald-700">Activa</span>
+      <div class="w-12 h-12 rounded-xl flex items-center justify-center text-2xl" style="background: linear-gradient(135deg,#f59e0b,#d97706);">🕊️</div>
+      <span class="text-xs font-extrabold uppercase px-2 py-1 rounded-full" style="background:#d1fae5;color:#065f46;">Activa</span>
     </div>
-    <h4 class="font-bold text-[#3D2B0F] text-sm mb-1">MANNA DIARIO</h4>
-    <p class="text-[11px] text-[#9B7B4A] mb-4 leading-relaxed">Devocional bíblico 40 días · Versículo + Quiz + IA Paloma Luz</p>
-    <div class="flex items-center gap-3 text-[10px] text-[#B8935A] mb-5">
-      <span>🔥 Racha diaria</span>
-      <span>·</span>
-      <span>🏆 Insignias</span>
-      <span>·</span>
-      <span>🕊️ IA bíblica</span>
+    <h4 class="font-bold text-sm mb-1" style="color:#3d2b0f;">MANNA DIARIO</h4>
+    <p class="text-xs mb-4" style="color:#92400e;">Devocional bíblico 40 días · Versículo + Quiz + IA Paloma Luz</p>
+    <div class="flex items-center gap-3 text-xs mb-5" style="color:#b45309;">
+      <span>🔥 Racha</span><span>·</span><span>🏆 Insignias</span><span>·</span><span>🕊️ IA bíblica</span>
     </div>
     <div class="flex gap-2">
-      <a href="./manna-acceso.html" target="_blank" class="flex-1 py-2 bg-gradient-to-r from-amber-400 to-amber-600 text-white text-xs font-bold rounded-lg text-center hover:opacity-90 transition-opacity shadow-md shadow-amber-400/25">
+      <a href="./manna-acceso.html" target="_blank" class="flex-1 py-2 text-white text-xs font-bold rounded-lg text-center hover:opacity-90 transition-opacity" style="background: linear-gradient(90deg,#f59e0b,#d97706);">
         Abrir App
       </a>
-      <a href="./manna-app.html" target="_blank" class="w-9 h-9 bg-white/70 border border-amber-200 rounded-lg flex items-center justify-center hover:bg-amber-50 transition-colors" title="Vista previa directa">
-        <span class="material-symbols-outlined text-amber-600 text-sm">open_in_new</span>
+      <a href="./manna-app.html" target="_blank" class="w-9 h-9 rounded-lg flex items-center justify-center hover:opacity-80 transition-opacity" style="background:#fff8;border:1px solid #f59e0b;" title="Vista previa directa">
+        <span class="material-symbols-outlined text-sm" style="color:#d97706;">open_in_new</span>
       </a>
-      <button onclick="copyMiniAppLink('manna-acceso.html')" class="w-9 h-9 bg-white/70 border border-amber-200 rounded-lg flex items-center justify-center hover:bg-amber-50 transition-colors" title="Copiar enlace">
-        <span class="material-symbols-outlined text-amber-600 text-sm">share</span>
+      <button onclick="copyMiniAppLink('manna-acceso.html')" class="w-9 h-9 rounded-lg flex items-center justify-center hover:opacity-80 transition-opacity" style="background:#fff8;border:1px solid #f59e0b;" title="Copiar enlace">
+        <span class="material-symbols-outlined text-sm" style="color:#d97706;">share</span>
       </button>
     </div>
   </div>
 
   <!-- Slot vacío: próxima mini-app -->
-  <div class="border-2 border-dashed border-outline-variant/20 rounded-xl p-5 flex flex-col items-center justify-center text-center gap-3 hover:border-primary/30 hover:bg-primary/5 transition-all cursor-pointer group" onclick="showNewMiniAppComingSoon()">
-    <div class="w-12 h-12 rounded-xl bg-surface-container flex items-center justify-center group-hover:bg-primary/10 transition-colors">
-      <span class="material-symbols-outlined text-on-surface-variant group-hover:text-primary text-2xl transition-colors">add</span>
+  <div class="rounded-xl p-5 flex flex-col items-center justify-center text-center gap-3 cursor-pointer hover:opacity-80 transition-opacity" style="border:2px dashed #444;" onclick="showNewMiniAppComingSoon()">
+    <div class="w-12 h-12 rounded-xl flex items-center justify-center" style="background:#2a2a2a;">
+      <span class="material-symbols-outlined text-2xl" style="color:#888;">add</span>
     </div>
     <div>
-      <p class="text-xs font-bold text-on-surface-variant group-hover:text-primary transition-colors">Nueva Mini-App</p>
-      <p class="text-[10px] text-on-surface-variant/60 mt-1">Vincula tu próximo producto digital</p>
+      <p class="text-xs font-bold" style="color:#aaa;">Nueva Mini-App</p>
+      <p class="text-xs mt-1" style="color:#666;">Vincula tu próximo producto digital</p>
     </div>
   </div>
 </div>
