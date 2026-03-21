@@ -7,6 +7,7 @@
 const KEYS = {
   SETTINGS: 'ls_settings',
   QUIZZES:  'ls_quizzes',
+  MINI_APPS: 'ls_mini_apps',
   CURRENT_QUIZ_ID: 'ls_current_quiz_id',
   CURRENT_ANSWERS: 'ls_current_answers',
   ANALYTICS: 'ls_analytics',
@@ -77,6 +78,39 @@ const Quizzes = {
     if (plan === 'free') return count < 3;
     if (plan === 'pro') return count < 999;
     return true;
+  },
+};
+
+// ── Mini-Apps CRUD ─────────────────────────────────────────
+const MiniApps = {
+  getAll() { return Store.get(KEYS.MINI_APPS) || []; },
+  get(id) { return this.getAll().find(a => a.id === id) || null; },
+  save(app) {
+    const all = this.getAll();
+    const idx = all.findIndex(a => a.id === app.id);
+    if (idx >= 0) all[idx] = app;
+    else all.unshift(app);
+    Store.set(KEYS.MINI_APPS, all);
+    return app;
+  },
+  create(data) {
+    const app = {
+      id: crypto.randomUUID(),
+      created: new Date().toISOString(),
+      status: 'active',
+      accessCodes: [],
+      ...data,
+    };
+    return this.save(app);
+  },
+  delete(id) {
+    Store.set(KEYS.MINI_APPS, this.getAll().filter(a => a.id !== id));
+  },
+  validateCode(id, code) {
+    const app = this.get(id);
+    if (!app) return false;
+    if (!app.accessCodes || app.accessCodes.length === 0) return true;
+    return app.accessCodes.map(c => c.trim().toLowerCase()).includes(code.trim().toLowerCase());
   },
 };
 
