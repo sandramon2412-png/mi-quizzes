@@ -3,10 +3,9 @@
 <html class="dark" lang="en"><head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>precios.html</title>
+<title>plantillas.html</title>
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@100..700,0..1&amp;display=swap" rel="stylesheet"/>
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
 <script id="tailwind-config">
       tailwind.config = {
@@ -14,55 +13,57 @@
         theme: {
           extend: {
             colors: {
-              "surface-dim": "#0e0e0e",
-              "secondary-dim": "#58e7ab",
-              "tertiary": "#ffa3e9",
-              "surface-container": "#1a1a1a",
-              "background": "#0e0e0e",
-              "surface-container-high": "#20201f",
-              "on-primary-fixed": "#000000",
-              "primary": "#95aaff",
-              "inverse-on-surface": "#565555",
-              "surface-bright": "#2c2c2c",
-              "inverse-primary": "#144fe5",
-              "outline-variant": "#484847",
-              "secondary-fixed-dim": "#58e7ab",
-              "surface-container-low": "#131313",
-              "primary-dim": "#3867fb",
-              "on-surface-variant": "#adaaaa",
-              "surface-container-highest": "#262626",
-              "error-container": "#a70138",
+              "on-error": "#490013",
               "primary-fixed-dim": "#6d8cff",
-              "tertiary-fixed": "#f790e0",
-              "tertiary-dim": "#e883d2",
-              "error-dim": "#d73357",
               "on-tertiary-fixed-variant": "#6a1460",
-              "error": "#ff6e84",
-              "on-tertiary-fixed": "#380033",
-              "on-secondary-container": "#e1ffec",
-              "on-error-container": "#ffb2b9",
-              "primary-container": "#819bff",
-              "on-secondary-fixed": "#00452d",
-              "on-background": "#ffffff",
-              "tertiary-fixed-dim": "#e883d2",
-              "surface-tint": "#95aaff",
-              "on-tertiary-container": "#5f0656",
               "on-surface": "#ffffff",
-              "on-primary-fixed-variant": "#002377",
+              "surface-container": "#1a1a1a",
               "on-primary": "#00257d",
-              "secondary": "#69f6b8",
-              "surface-container-lowest": "#000000",
-              "primary-fixed": "#819bff",
-              "inverse-surface": "#fcf9f8",
-              "secondary-fixed": "#69f6b8",
+              "error-container": "#a70138",
               "on-secondary-fixed-variant": "#006544",
-              "on-secondary": "#005a3c",
-              "surface": "#0e0e0e",
-              "on-tertiary": "#6c1561",
+              "on-primary-fixed-variant": "#002377",
+              "on-primary-container": "#001b62",
+              "error-dim": "#d73357",
+              "inverse-primary": "#144fe5",
+              "background": "#0e0e0e",
+              "secondary": "#69f6b8",
+              "secondary-fixed": "#69f6b8",
+              "error": "#ff6e84",
+              "on-surface-variant": "#adaaaa",
+              "surface-tint": "#95aaff",
+              "secondary-fixed-dim": "#58e7ab",
+              "on-secondary-fixed": "#00452d",
+              "surface-container-low": "#131313",
               "secondary-container": "#006c49",
-              "tertiary-container": "#f790e0",
               "outline": "#767575",
-              "on-error": "#490013"
+              "surface-container-lowest": "#000000",
+              "primary-dim": "#3867fb",
+              "secondary-dim": "#58e7ab",
+              "on-secondary": "#005a3c",
+              "surface-container-highest": "#262626",
+              "primary": "#95aaff",
+              "on-tertiary-fixed": "#380033",
+              "on-error-container": "#ffb2b9",
+              "tertiary-dim": "#e883d2",
+              "on-primary-fixed": "#000000",
+              "surface-variant": "#262626",
+              "tertiary": "#ffa3e9",
+              "inverse-surface": "#fcf9f8",
+              "tertiary-fixed-dim": "#e883d2",
+              "tertiary-container": "#f790e0",
+              "surface": "#0e0e0e",
+              "primary-fixed": "#819bff",
+              "surface-dim": "#0e0e0e",
+              "on-tertiary-container": "#5f0656",
+              "on-background": "#ffffff",
+              "on-tertiary": "#6c1561",
+              "surface-bright": "#2c2c2c",
+              "primary-container": "#819bff",
+              "on-secondary-container": "#e1ffec",
+              "inverse-on-surface": "#565555",
+              "tertiary-fixed": "#f790e0",
+              "outline-variant": "#484847",
+              "surface-container-high": "#20201f"
             },
             fontFamily: {
               "headline": ["Plus Jakarta Sans"],
@@ -75,176 +76,204 @@
       }
     </script>
 <style>
-        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #0e0e0e; color: #ffffff; }
-        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
-        .glass-card { background: rgba(38, 38, 38, 0.6); backdrop-filter: blur(20px); }
-        .primary-gradient { background: linear-gradient(135deg, #95aaff 0%, #3867fb 100%); }
-        .glow-shadow { shadow-[0_0_40px_rgba(20,79,229,0.08)]; }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .glass-panel {
+            background: rgba(38, 38, 38, 0.6);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+        }
+        .primary-gradient {
+            background: linear-gradient(135deg, #95AAFF 0%, #3867FB 100%);
+        }
+        .recessed-input {
+            background-color: #000000;
+        }
+        .recessed-input:focus-within {
+            outline: 1px solid #95AAFF;
+        }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
     </style>
 <style>
     body {
       min-height: max(884px, 100dvh);
     }
-  </style>
+    </style>
 </head>
-<body class="bg-surface text-on-surface">
+<body class="bg-background text-on-background min-h-screen">
 <!-- TopAppBar -->
-<header class="fixed top-0 left-0 right-0 z-50 bg-[#0E0E0E] flex justify-between items-center w-full px-6 py-4">
-<div class="flex items-center gap-4">
-<span class="material-symbols-outlined text-[#95AAFF]">menu</span>
-<h1 class="text-xl font-bold tracking-tighter text-[#95AAFF] font-['Plus_Jakarta_SANS']">Luminous Studio</h1>
+<header class="bg-[#0E0E0E] dark:bg-[#0E0E0E] w-full top-0 sticky z-50">
+<div class="flex justify-between items-center px-6 py-4 w-full">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-[#95AAFF]" data-icon="auto_awesome">auto_awesome</span>
+<h1 class="text-xl font-bold tracking-tighter text-[#95AAFF]">The Luminous Studio</h1>
 </div>
-<div class="flex items-center gap-4">
-<div class="w-8 h-8 rounded-full bg-surface-container-highest overflow-hidden">
-<img alt="Profile" data-alt="Creator Profile Avatar" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB9kvBWGzNaeTxnzh5_WmivkAUggidxcJAtlDKat6CcBWM9I-5b46fmjHjkxXdh87mXIEkmpD3sJToe7ZELRklfX--sOF3Rp6Axm_NaO3Kuxy-8sb56Em8iTZUJPsQipWNZ7P_n9XFB2NCVa1jnVSnqGyyBkVrdqCeBRhI9ryNhEPqUbJlcb5U838DIoQ87I8wW3MgXUEKCL6DHi4f01gZJ9cJ5AMsfrkVnhQCmOPsNPD0iaPG6Alids0TipjO_5l21AJYpDXP9_ac"/>
+<div class="flex items-center gap-6">
+<nav class="hidden md:flex items-center gap-8 font-plus-jakarta text-sm font-medium tracking-tight">
+<a class="text-[#ADAAAA] hover:text-[#95AAFF] transition-colors duration-400" href="generador-ia.html">Build</a>
+<a class="text-[#95AAFF]" href="plantillas.html">Library</a>
+<a class="text-[#ADAAAA] hover:text-[#95AAFF] transition-colors duration-400" href="dashboard.html">Analytics</a>
+</nav>
+<div class="w-8 h-8 rounded-full bg-surface-container-high flex items-center justify-center overflow-hidden border border-outline-variant/20">
+<img class="w-full h-full object-cover" data-alt="Creator Profile Avatar" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCMNSFWA8t3016FnjYNrtU4Z7o1IPcAdRExMsXyGYxYzRm9PGqyITR7bd0uIbpyFULosEd7R-jZHauJGAiK98p8zJWUsegnC9jfvHnTnxbR9CRamAByJPM8wVl0ZnucuL6q5iozmEEDTv1jTJzl9MjOrp_JAxCQIxngNDZSQ71oklVsfwNt4ZsKtm1cjX2p37P__3o9KVqCkLuVVpXTW-wZCjWU4aAQGtwTzbPpYR7VM9qVdjsEyIkrSEKMnCyb6nuX35kUbJDQQkc"/>
+</div>
 </div>
 </div>
 </header>
-<main class="pt-24 pb-40 px-6 max-w-7xl mx-auto">
-<!-- Hero Header -->
-<section class="mb-16 text-left">
-<h2 class="text-5xl font-extrabold tracking-tight mb-4 text-on-surface">Scale your <span class="text-primary">creative</span> vision.</h2>
-<p class="text-on-surface-variant max-w-2xl text-lg leading-relaxed">
-            Choose the workspace that fits your production scale. From solo explorers to high-output creative agencies.
-        </p>
-</section>
-<!-- Pricing Bento Layout -->
-<div class="grid grid-cols-1 md:grid-cols-12 gap-6">
-<!-- Current Plan Indicator / Free Tier -->
-<div class="md:col-span-4 flex flex-col gap-6">
-<div class="bg-surface-container-high rounded-xl p-8 border border-outline-variant/10 relative overflow-hidden h-full">
-<div class="absolute top-4 right-4 bg-secondary/10 text-secondary text-[10px] font-bold px-2 py-1 rounded-full tracking-widest uppercase">Current Plan</div>
-<h3 class="text-2xl font-bold mb-2">Free</h3>
-<div class="flex items-baseline gap-1 mb-6">
-<span class="text-4xl font-bold">$0</span>
-<span class="text-on-surface-variant text-sm">/month</span>
+<main class="max-w-7xl mx-auto px-6 pt-12 pb-32">
+<!-- Search & Header Section -->
+<section class="mb-16">
+<div class="flex flex-col md:flex-row md:items-end justify-between gap-8 mb-12">
+<div class="space-y-2">
+<h2 class="text-5xl font-extrabold tracking-tight text-on-surface leading-tight">Template<br/><span class="text-primary-dim">Library</span></h2>
+<p class="text-on-surface-variant text-lg max-w-md">The curator's vault of conversion-optimized frameworks.</p>
 </div>
-<ul class="space-y-4 mb-8">
-<li class="flex items-center gap-3 text-on-surface-variant text-sm">
-<span class="material-symbols-outlined text-secondary text-sm">check_circle</span>
-                        3 Active Quizzes
-                    </li>
-<li class="flex items-center gap-3 text-on-surface-variant text-sm">
-<span class="material-symbols-outlined text-secondary text-sm">check_circle</span>
-                        1 Mini-app Project
-                    </li>
-<li class="flex items-center gap-3 text-on-surface-variant text-sm">
-<span class="material-symbols-outlined text-secondary text-sm">check_circle</span>
-                        Community Access
-                    </li>
-</ul>
-<a class="block w-full text-center py-3 rounded-lg border border-outline-variant text-on-surface-variant font-medium text-sm transition-all hover:bg-surface-bright" href="dashboard.html">Manage Usage</a>
+<div class="w-full max-w-md">
+<div class="recessed-input flex items-center px-4 py-3 rounded-xl border border-outline-variant/15 transition-all duration-400">
+<span class="material-symbols-outlined text-on-surface-variant mr-3" data-icon="search">search</span>
+<input class="bg-transparent border-none focus:ring-0 text-on-surface w-full font-medium placeholder:text-on-surface-variant/50" placeholder="Search templates..." type="text"/>
+<span class="text-[10px] font-bold text-on-surface-variant/30 border border-on-surface-variant/30 px-1.5 py-0.5 rounded">⌘K</span>
 </div>
 </div>
-<!-- Pro Plan (Featured) -->
-<div class="md:col-span-4">
-<div class="primary-gradient rounded-xl p-8 shadow-[0_0_50px_rgba(20,79,229,0.15)] relative h-full flex flex-col justify-between">
-<div>
-<div class="bg-on-primary-container/20 text-on-surface text-[10px] font-bold px-2 py-1 rounded-full tracking-widest uppercase inline-block mb-4">Most Popular</div>
-<h3 class="text-2xl font-bold mb-2 text-on-primary-fixed">Pro</h3>
-<div class="flex items-baseline gap-1 mb-6 text-on-primary-fixed">
-<span class="text-4xl font-bold">$29</span>
-<span class="text-on-primary-fixed/70 text-sm">/month</span>
 </div>
-<ul class="space-y-4 mb-8">
-<li class="flex items-center gap-3 text-on-primary-fixed text-sm font-medium">
-<span class="material-symbols-outlined text-on-primary-fixed text-sm">auto_awesome</span>
-                            Unlimited Quizzes
-                        </li>
-<li class="flex items-center gap-3 text-on-primary-fixed text-sm font-medium">
-<span class="material-symbols-outlined text-on-primary-fixed text-sm">auto_awesome</span>
-                            5 Mini-app Projects
-                        </li>
-<li class="flex items-center gap-3 text-on-primary-fixed text-sm font-medium">
-<span class="material-symbols-outlined text-on-primary-fixed text-sm">auto_awesome</span>
-                            Priority Rendering
-                        </li>
-<li class="flex items-center gap-3 text-on-primary-fixed text-sm font-medium">
-<span class="material-symbols-outlined text-on-primary-fixed text-sm">auto_awesome</span>
-                            Advanced Analytics
-                        </li>
-</ul>
-</div>
-<a class="block w-full text-center py-4 rounded-lg bg-on-primary-fixed text-primary font-bold text-sm tracking-wide shadow-xl hover:scale-[1.02] transition-transform" href="dashboard.html">Upgrade to Pro</a>
-</div>
-</div>
-<!-- Business Plan -->
-<div class="md:col-span-4">
-<div class="bg-surface-container-highest rounded-xl p-8 border border-outline-variant/10 h-full flex flex-col justify-between">
-<div>
-<h3 class="text-2xl font-bold mb-2">Business</h3>
-<div class="flex items-baseline gap-1 mb-6">
-<span class="text-4xl font-bold">$99</span>
-<span class="text-on-surface-variant text-sm">/month</span>
-</div>
-<ul class="space-y-4 mb-8">
-<li class="flex items-center gap-3 text-on-surface-variant text-sm">
-<span class="material-symbols-outlined text-primary text-sm">verified</span>
-                            Unlimited Projects
-                        </li>
-<li class="flex items-center gap-3 text-on-surface-variant text-sm">
-<span class="material-symbols-outlined text-primary text-sm">verified</span>
-                            Multi-user Collaboration
-                        </li>
-<li class="flex items-center gap-3 text-on-surface-variant text-sm">
-<span class="material-symbols-outlined text-primary text-sm">verified</span>
-                            Custom Branding &amp; Domains
-                        </li>
-<li class="flex items-center gap-3 text-on-surface-variant text-sm">
-<span class="material-symbols-outlined text-primary text-sm">verified</span>
-                            Dedicated Account Manager
-                        </li>
-</ul>
-</div>
-<a class="block w-full text-center py-3 rounded-lg border border-primary text-primary font-bold text-sm tracking-wide hover:bg-primary/5 transition-colors" href="dashboard.html">Contact Sales</a>
-</div>
-</div>
-<!-- Feature Comparison (Mini-Bento) -->
-<div class="md:col-span-12 mt-8">
+<!-- Bento Categories -->
 <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-<div class="bg-surface-container-low p-6 rounded-xl border border-outline-variant/5">
-<div class="w-10 h-10 bg-surface-container-highest rounded-lg flex items-center justify-center mb-4">
-<span class="material-symbols-outlined text-primary">speed</span>
+<a class="md:col-span-2 group relative overflow-hidden rounded-2xl bg-surface-container-high p-8 h-[240px] flex flex-col justify-end border border-outline-variant/10" href="generador-ia.html">
+<div class="absolute top-0 right-0 p-8 opacity-20 group-hover:opacity-40 transition-opacity duration-700">
+<span class="material-symbols-outlined text-8xl" data-icon="quiz">quiz</span>
 </div>
-<h4 class="font-bold mb-2">High Performance</h4>
-<p class="text-on-surface-variant text-xs">All plans include our edge-delivery network for zero-latency interactions.</p>
-</div>
-<div class="bg-surface-container-low p-6 rounded-xl border border-outline-variant/5">
-<div class="w-10 h-10 bg-surface-container-highest rounded-lg flex items-center justify-center mb-4">
-<span class="material-symbols-outlined text-secondary">security</span>
-</div>
-<h4 class="font-bold mb-2">Encrypted Assets</h4>
-<p class="text-on-surface-variant text-xs">Your creative logic and data are protected with enterprise-grade encryption.</p>
-</div>
-<div class="bg-surface-container-low p-6 rounded-xl border border-outline-variant/5">
-<div class="w-10 h-10 bg-surface-container-highest rounded-lg flex items-center justify-center mb-4">
-<span class="material-symbols-outlined text-tertiary">api</span>
-</div>
-<h4 class="font-bold mb-2">Open API</h4>
-<p class="text-on-surface-variant text-xs">Connect Luminous Studio with your existing workflow seamlessly.</p>
+<div class="relative z-10">
+<h3 class="text-2xl font-bold mb-2">Sales Quizzes</h3>
+<p class="text-on-surface-variant text-sm mb-4 max-w-xs">Segment your audience with high-intent interactive journeys.</p>
+<div class="text-primary font-bold text-xs tracking-widest uppercase flex items-center gap-2 group-hover:gap-3 transition-all">
+                        Explore Category <span class="material-symbols-outlined text-sm" data-icon="arrow_forward">arrow_forward</span>
 </div>
 </div>
+</a>
+<a class="group relative overflow-hidden rounded-2xl bg-surface-container-high p-8 h-[240px] flex flex-col justify-end border border-outline-variant/10" href="generador-ia.html">
+<div class="absolute top-0 right-0 p-8 opacity-20 group-hover:opacity-40 transition-opacity duration-700">
+<span class="material-symbols-outlined text-7xl" data-icon="calculate">calculate</span>
+</div>
+<div class="relative z-10">
+<h3 class="text-2xl font-bold mb-2">Calculators</h3>
+<p class="text-on-surface-variant text-sm mb-4">Demonstrate ROI instantly with custom data tools.</p>
+<div class="text-primary font-bold text-xs tracking-widest uppercase flex items-center gap-2 group-hover:gap-3 transition-all">
+                        Browse <span class="material-symbols-outlined text-sm" data-icon="arrow_forward">arrow_forward</span>
 </div>
 </div>
+</a>
+</div>
+</section>
+<!-- Templates Grid Section -->
+<section class="space-y-12">
+<!-- Lead Magnets -->
+<div>
+<div class="flex items-center justify-between mb-8">
+<h4 class="text-xl font-bold flex items-center gap-3">
+<span class="w-1 h-6 bg-secondary rounded-full"></span>
+                    Lead Magnets
+                </h4>
+<a class="text-on-surface-variant text-sm hover:text-primary transition-colors" href="generador-ia.html">View all 12</a>
+</div>
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+<!-- Template Card 1 -->
+<a class="group bg-surface-container-low rounded-xl overflow-hidden border border-outline-variant/5 hover:border-primary/20 transition-all duration-400" href="generador-ia.html">
+<div class="aspect-video relative overflow-hidden bg-surface-container-highest">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" data-alt="Abstract deep blue and violet gradient mesh pattern" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCfRSmylB892NPAvHn0Z3w9W4Mx9KU9GgSasB7H6VDIEM_b3clN9OXv_wvaH31wTG0tV9rq18ClRVvMfzOukAbwVjARpswtrs5gaSrp7FozjIEzZcDjsiG0YETbWPbpI80hhuVzLG6rSgqZ-bgiJzNueOHnrwe_Rr6HBLAcJIuM_GKP4-TF6K9w2vfzS7edYwiL3NfgbXXHTqLFCwaY4ffby1rBlX94geQpL5pTp-iqvB7zpnXj92bu5i9_IrfpYmA7bsrA2Vwi5zc"/>
+<div class="absolute inset-0 bg-gradient-to-t from-surface-container-low/80 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-4">
+<div class="primary-gradient w-full py-2 rounded-lg text-xs font-bold text-on-primary text-center">Use Template</div>
+</div>
+</div>
+<div class="p-5">
+<div class="flex justify-between items-start mb-2">
+<h5 class="font-semibold text-on-surface">E-book Sales Funnel</h5>
+<span class="material-symbols-outlined text-on-surface-variant text-sm" data-icon="star">star</span>
+</div>
+<p class="text-xs text-on-surface-variant">Multi-step opt-in with high-conversion landing page.</p>
+</div>
+</a>
+<!-- Template Card 2 -->
+<a class="group bg-surface-container-low rounded-xl overflow-hidden border border-outline-variant/5 hover:border-primary/20 transition-all duration-400" href="generador-ia.html">
+<div class="aspect-video relative overflow-hidden bg-surface-container-highest">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" data-alt="Dark abstract glowing tech lines on black background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAXa-mTqkVBMmwpcjx4JvQY3UbFKN1o8idY4QgYyHSn7QZ_zV-llrdON769y3D89_GM5OaxheRApG9idLGNCHEkSGelklH7kxuVkJcC8g47vQtZox2nultjDdI0C6fixNezYl3CaRetJNMaDFrPF61Tbifb2qL6zySChjfGYOxKYT_QrMd6BE55j2wku3_9H31x0nM-5dU799TtYGrGWAS9Wjqz5PWg-ZwbjYls9BA0wXwv1KVX3xnPdoztqp6Nc1SVJXKkVgSO9zc"/>
+<div class="absolute inset-0 bg-gradient-to-t from-surface-container-low/80 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-4">
+<div class="primary-gradient w-full py-2 rounded-lg text-xs font-bold text-on-primary text-center">Use Template</div>
+</div>
+</div>
+<div class="p-5">
+<div class="flex justify-between items-start mb-2">
+<h5 class="font-semibold text-on-surface">Webinar Registration</h5>
+<span class="material-symbols-outlined text-on-surface-variant text-sm" data-icon="star">star</span>
+</div>
+<p class="text-xs text-on-surface-variant">Clean, focus-driven layout for high-ticket events.</p>
+</div>
+</a>
+<!-- Template Card 3 -->
+<a class="group bg-surface-container-low rounded-xl overflow-hidden border border-outline-variant/5 hover:border-primary/20 transition-all duration-400" href="generador-ia.html">
+<div class="aspect-video relative overflow-hidden bg-surface-container-highest">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" data-alt="Geometric emerald green abstract shapes on dark surface" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBFuiZxYyl_Hqd8E94mRBwyTIDiH7kdexKS_wriBhYuFal29qm8Rw2WZ3Drn13R0_jNP_NELCLey0qT0pdrqXlIeUyJuWQi2WRyG8RXk-5U98X0-tU4VfTEbjpsm_9FK081Ojy7HDcTM-xRblJK8jFVn9UQPChWQ36YZIzogY245tcH0rbLGDP4WIAzlK2i6gH8_1kPYg90YridjX7zQoz3ngMWgdvkfZj9HKQgPS4eT3NoB_lDj24T88lfjpwMDbuFkNtxh2ZUosk"/>
+<div class="absolute inset-0 bg-gradient-to-t from-surface-container-low/80 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-4">
+<div class="primary-gradient w-full py-2 rounded-lg text-xs font-bold text-on-primary text-center">Use Template</div>
+</div>
+</div>
+<div class="p-5">
+<div class="flex justify-between items-start mb-2">
+<h5 class="font-semibold text-on-surface">SaaS ROI Calculator</h5>
+<span class="material-symbols-outlined text-on-surface-variant text-sm" data-icon="star">star</span>
+</div>
+<p class="text-xs text-on-surface-variant">Help prospects visualize the value of your software.</p>
+</div>
+</a>
+<!-- Template Card 4 -->
+<a class="group bg-surface-container-low rounded-xl overflow-hidden border border-outline-variant/5 hover:border-primary/20 transition-all duration-400" href="generador-ia.html">
+<div class="aspect-video relative overflow-hidden bg-surface-container-highest">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" data-alt="Vibrant magenta and blue ethereal light waves" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCDN99sPx9JshwbDzhESpguWiCFLBCQOfGpOpRXOvRB6YF1mvQEbXXm_DCNcfeJcE9zYacfgfqKVR0fPzemaj2oVU09G30XNFXO38U1x_dbCmoVbD7rADGqBQKgQ9FhfFg-RQi2e3wvIlPHHj_GBmJP6u5S1EaMY8aPRDzsvHx_yFu4MKpV58swQlwAV3KlGVj2j92uad0Uz9boteEgrc74Vqa0I0patcRcQ3GWe9sO52MUe831vUPcaPsAWmBVgiUT7LnaITEHC7Y"/>
+<div class="absolute inset-0 bg-gradient-to-t from-surface-container-low/80 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-4">
+<div class="primary-gradient w-full py-2 rounded-lg text-xs font-bold text-on-primary text-center">Use Template</div>
+</div>
+</div>
+<div class="p-5">
+<div class="flex justify-between items-start mb-2">
+<h5 class="font-semibold text-on-surface">Founder Archetype Quiz</h5>
+<span class="material-symbols-outlined text-on-surface-variant text-sm" data-icon="star">star</span>
+</div>
+<p class="text-xs text-on-surface-variant">Viral-style personality test for list building.</p>
+</div>
+</a>
+</div>
+</div>
+<!-- More categories indicator -->
+<div class="flex justify-center pt-8">
+<a class="px-8 py-3 rounded-xl border border-outline-variant/30 text-primary text-sm font-bold tracking-widest uppercase hover:bg-surface-container-high transition-all" href="generador-ia.html">
+                Load More Categories
+            </a>
+</div>
+</section>
 </main>
 <!-- BottomNavBar -->
-<nav class="fixed bottom-8 left-0 right-0 z-50 flex justify-around items-center px-4">
-<div class="bg-[#262626]/60 backdrop-blur-xl w-[90%] max-w-md rounded-2xl border border-[#484847]/15 shadow-[0_0_40px_rgba(20,79,229,0.08)] flex justify-around items-center px-4 py-2">
-<a class="flex flex-col items-center justify-center text-[#ADAAAA] px-4 py-2 hover:bg-[#20201F] rounded-xl transition-all duration-400" href="generador-ia.html">
-<span class="material-symbols-outlined mb-1">auto_awesome</span>
-<span class="text-[10px] font-medium uppercase tracking-widest">Studio</span>
+<nav class="fixed bottom-8 left-0 right-0 z-50 flex justify-around items-center p-2 pointer-events-none">
+<div class="fixed bottom-8 left-1/2 -translate-x-1/2 w-[90%] max-w-md rounded-2xl border border-[#484847]/15 bg-[#262626]/60 backdrop-blur-xl shadow-[0_20px_40px_rgba(20,79,229,0.08)] flex justify-around items-center p-2 pointer-events-auto">
+<!-- Build -->
+<a class="flex flex-col items-center justify-center text-[#ADAAAA] px-4 py-2 hover:bg-[#131313] rounded-xl transition-all duration-400 scale-95 active:scale-90" href="generador-ia.html">
+<span class="material-symbols-outlined" data-icon="handhammer">hand_package</span>
+<span class="font-plus-jakarta text-[10px] font-medium uppercase tracking-widest mt-1">Build</span>
 </a>
-<a class="flex flex-col items-center justify-center text-[#ADAAAA] px-4 py-2 hover:bg-[#20201F] rounded-xl transition-all duration-400" href="plantillas.html">
-<span class="material-symbols-outlined mb-1">quiz</span>
-<span class="text-[10px] font-medium uppercase tracking-widest">Quizzes</span>
+<!-- Library (Active) -->
+<a class="flex flex-col items-center justify-center text-[#95AAFF] bg-[#2C2C2C] rounded-xl px-4 py-2 transition-all duration-400 scale-100" href="plantillas.html">
+<span class="material-symbols-outlined" data-icon="local_library" style="font-variation-settings: 'FILL' 1;">local_library</span>
+<span class="font-plus-jakarta text-[10px] font-medium uppercase tracking-widest mt-1">Library</span>
 </a>
-<a class="flex flex-col items-center justify-center text-[#ADAAAA] px-4 py-2 hover:bg-[#20201F] rounded-xl transition-all duration-400" href="dashboard.html">
-<span class="material-symbols-outlined mb-1">data_usage</span>
-<span class="text-[10px] font-medium uppercase tracking-widest">Usage</span>
+<!-- Analytics -->
+<a class="flex flex-col items-center justify-center text-[#ADAAAA] px-4 py-2 hover:bg-[#131313] rounded-xl transition-all duration-400 scale-95 active:scale-90" href="dashboard.html">
+<span class="material-symbols-outlined" data-icon="leaderboard">leaderboard</span>
+<span class="font-plus-jakarta text-[10px] font-medium uppercase tracking-widest mt-1">Analytics</span>
 </a>
-<a class="flex flex-col items-center justify-center text-[#95AAFF] bg-[#2C2C2C] rounded-xl px-4 py-2" href="precios.html">
-<span class="material-symbols-outlined mb-1">subscriptions</span>
-<span class="text-[10px] font-medium uppercase tracking-widest">Plans</span>
+<!-- Account -->
+<a class="flex flex-col items-center justify-center text-[#ADAAAA] px-4 py-2 hover:bg-[#131313] rounded-xl transition-all duration-400 scale-95 active:scale-90" href="precios.html">
+<span class="material-symbols-outlined" data-icon="person">person</span>
+<span class="font-plus-jakarta text-[10px] font-medium uppercase tracking-widest mt-1">Account</span>
 </a>
 </div>
 </nav>
