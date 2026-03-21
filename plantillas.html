@@ -131,7 +131,7 @@
 <div class="w-full max-w-md">
 <div class="recessed-input flex items-center px-4 py-3 rounded-xl border border-outline-variant/15 transition-all duration-400">
 <span class="material-symbols-outlined text-on-surface-variant mr-3" data-icon="search">search</span>
-<input class="bg-transparent border-none focus:ring-0 text-on-surface w-full font-medium placeholder:text-on-surface-variant/50" placeholder="Search templates..." type="text"/>
+<input id="search-input" class="bg-transparent border-none focus:ring-0 text-on-surface w-full font-medium placeholder:text-on-surface-variant/50" placeholder="Search templates..." type="text" oninput="filterTemplates(this.value)"/>
 <span class="text-[10px] font-bold text-on-surface-variant/30 border border-on-surface-variant/30 px-1.5 py-0.5 rounded">⌘K</span>
 </div>
 </div>
@@ -275,4 +275,27 @@
 </a>
 </div>
 </nav>
+<script>
+  function filterTemplates(query) {
+    const q = query.toLowerCase().trim();
+    const cards = document.querySelectorAll('.grid .group');
+    let visibleCount = 0;
+    cards.forEach(card => {
+      const title = card.querySelector('h5')?.textContent.toLowerCase() || '';
+      const desc = card.querySelector('p')?.textContent.toLowerCase() || '';
+      const match = !q || title.includes(q) || desc.includes(q);
+      card.style.display = match ? '' : 'none';
+      if (match) visibleCount++;
+    });
+    let noResultsEl = document.getElementById('no-results');
+    if (!noResultsEl) {
+      noResultsEl = document.createElement('p');
+      noResultsEl.id = 'no-results';
+      noResultsEl.className = 'text-on-surface-variant text-center py-12 col-span-4';
+      noResultsEl.textContent = 'No se encontraron plantillas.';
+      document.querySelector('.grid.grid-cols-1.sm\\:grid-cols-2')?.appendChild(noResultsEl);
+    }
+    noResultsEl.style.display = visibleCount === 0 ? '' : 'none';
+  }
+</script>
 </body></html>
