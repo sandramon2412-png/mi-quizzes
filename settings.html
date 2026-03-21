@@ -190,6 +190,220 @@
         </div>
       </section>
 
+      <!-- Integraciones -->
+      <section class="bg-surface-container-low rounded-xl p-8 border border-outline-variant/5">
+        <div class="flex items-center justify-between mb-6">
+          <div>
+            <h2 class="text-lg font-bold text-on-surface">Integraciones</h2>
+            <p class="text-sm text-on-surface-variant mt-1">Conecta tus herramientas para automatizar ventas y leads.</p>
+          </div>
+          <span class="text-xs font-bold px-2.5 py-1 rounded-full bg-primary/10 text-primary">Plan Pro</span>
+        </div>
+
+        <div class="space-y-3" id="integrations-list">
+
+          <!-- Hotmart -->
+          <div class="integration-card border border-outline-variant/10 rounded-xl overflow-hidden" data-key="hotmart">
+            <div class="flex items-center justify-between p-4 cursor-pointer hover:bg-surface-container transition-colors" onclick="toggleIntegration('hotmart')">
+              <div class="flex items-center gap-3">
+                <div class="w-9 h-9 rounded-lg flex items-center justify-center" style="background:#FF6B3520;">
+                  <span class="material-symbols-outlined text-base" style="color:#FF6B35;">local_fire_department</span>
+                </div>
+                <div>
+                  <p class="font-semibold text-sm text-on-surface">Hotmart</p>
+                  <p class="text-xs text-on-surface-variant">Sincroniza ventas y activa quizzes post-compra</p>
+                </div>
+              </div>
+              <div class="flex items-center gap-2">
+                <span class="integration-status text-xs font-bold px-2 py-0.5 rounded-full bg-surface-container-highest text-on-surface-variant" id="status-hotmart">Desconectado</span>
+                <span class="material-symbols-outlined text-on-surface-variant text-sm transition-transform duration-200" id="arrow-hotmart">expand_more</span>
+              </div>
+            </div>
+            <div class="integration-form hidden px-4 pb-4 space-y-3 border-t border-outline-variant/10 pt-4" id="form-hotmart">
+              <p class="text-xs text-on-surface-variant">Obtén tu API key en <span class="text-primary font-medium">Hotmart → Configuración → API</span></p>
+              <div>
+                <label class="text-xs font-bold uppercase tracking-widest text-on-surface-variant block mb-1.5">Hotmart API Key</label>
+                <input type="password" placeholder="hot_api_..." id="input-hotmart" class="w-full bg-surface-container-lowest border border-outline-variant/20 rounded-lg px-4 py-2.5 text-sm text-on-surface font-mono focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all"/>
+              </div>
+              <div>
+                <label class="text-xs font-bold uppercase tracking-widest text-on-surface-variant block mb-1.5">Client ID</label>
+                <input type="text" placeholder="xxxxxxxx-xxxx-xxxx-xxxx" id="input-hotmart-client" class="w-full bg-surface-container-lowest border border-outline-variant/20 rounded-lg px-4 py-2.5 text-sm text-on-surface font-mono focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all"/>
+              </div>
+              <div class="flex gap-2 pt-1">
+                <button onclick="connectIntegration('hotmart')" class="px-5 py-2 rounded-lg text-sm font-bold text-white primary-gradient hover:brightness-110 transition-all">Conectar</button>
+                <button onclick="toggleIntegration('hotmart')" class="px-5 py-2 rounded-lg text-sm font-semibold text-on-surface-variant border border-outline-variant/20 hover:bg-surface-container transition-colors">Cancelar</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Stripe -->
+          <div class="integration-card border border-outline-variant/10 rounded-xl overflow-hidden" data-key="stripe">
+            <div class="flex items-center justify-between p-4 cursor-pointer hover:bg-surface-container transition-colors" onclick="toggleIntegration('stripe')">
+              <div class="flex items-center gap-3">
+                <div class="w-9 h-9 rounded-lg flex items-center justify-center" style="background:#635BFF20;">
+                  <span class="material-symbols-outlined text-base" style="color:#635BFF;">credit_card</span>
+                </div>
+                <div>
+                  <p class="font-semibold text-sm text-on-surface">Stripe</p>
+                  <p class="text-xs text-on-surface-variant">Cobra directamente desde tu quiz o mini-app</p>
+                </div>
+              </div>
+              <div class="flex items-center gap-2">
+                <span class="integration-status text-xs font-bold px-2 py-0.5 rounded-full bg-surface-container-highest text-on-surface-variant" id="status-stripe">Desconectado</span>
+                <span class="material-symbols-outlined text-on-surface-variant text-sm transition-transform duration-200" id="arrow-stripe">expand_more</span>
+              </div>
+            </div>
+            <div class="integration-form hidden px-4 pb-4 space-y-3 border-t border-outline-variant/10 pt-4" id="form-stripe">
+              <p class="text-xs text-on-surface-variant">Obtén tus claves en <span class="text-primary font-medium">Stripe Dashboard → Developers → API Keys</span></p>
+              <div>
+                <label class="text-xs font-bold uppercase tracking-widest text-on-surface-variant block mb-1.5">Secret Key</label>
+                <input type="password" placeholder="sk_live_..." id="input-stripe-secret" class="w-full bg-surface-container-lowest border border-outline-variant/20 rounded-lg px-4 py-2.5 text-sm text-on-surface font-mono focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all"/>
+              </div>
+              <div>
+                <label class="text-xs font-bold uppercase tracking-widest text-on-surface-variant block mb-1.5">Publishable Key</label>
+                <input type="text" placeholder="pk_live_..." id="input-stripe-pub" class="w-full bg-surface-container-lowest border border-outline-variant/20 rounded-lg px-4 py-2.5 text-sm text-on-surface font-mono focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all"/>
+              </div>
+              <div class="flex gap-2 pt-1">
+                <button onclick="connectIntegration('stripe')" class="px-5 py-2 rounded-lg text-sm font-bold text-white primary-gradient hover:brightness-110 transition-all">Conectar</button>
+                <button onclick="toggleIntegration('stripe')" class="px-5 py-2 rounded-lg text-sm font-semibold text-on-surface-variant border border-outline-variant/20 hover:bg-surface-container transition-colors">Cancelar</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Mailchimp -->
+          <div class="integration-card border border-outline-variant/10 rounded-xl overflow-hidden" data-key="mailchimp">
+            <div class="flex items-center justify-between p-4 cursor-pointer hover:bg-surface-container transition-colors" onclick="toggleIntegration('mailchimp')">
+              <div class="flex items-center gap-3">
+                <div class="w-9 h-9 rounded-lg flex items-center justify-center" style="background:#FFE01B20;">
+                  <span class="material-symbols-outlined text-base" style="color:#FFE01B;">mail</span>
+                </div>
+                <div>
+                  <p class="font-semibold text-sm text-on-surface">Mailchimp</p>
+                  <p class="text-xs text-on-surface-variant">Agrega leads del quiz a tu lista de email marketing</p>
+                </div>
+              </div>
+              <div class="flex items-center gap-2">
+                <span class="integration-status text-xs font-bold px-2 py-0.5 rounded-full bg-surface-container-highest text-on-surface-variant" id="status-mailchimp">Desconectado</span>
+                <span class="material-symbols-outlined text-on-surface-variant text-sm transition-transform duration-200" id="arrow-mailchimp">expand_more</span>
+              </div>
+            </div>
+            <div class="integration-form hidden px-4 pb-4 space-y-3 border-t border-outline-variant/10 pt-4" id="form-mailchimp">
+              <p class="text-xs text-on-surface-variant">Obtén tu API key en <span class="text-primary font-medium">Mailchimp → Account → Extras → API Keys</span></p>
+              <div>
+                <label class="text-xs font-bold uppercase tracking-widest text-on-surface-variant block mb-1.5">API Key</label>
+                <input type="password" placeholder="xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx-us1" id="input-mailchimp" class="w-full bg-surface-container-lowest border border-outline-variant/20 rounded-lg px-4 py-2.5 text-sm text-on-surface font-mono focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all"/>
+              </div>
+              <div>
+                <label class="text-xs font-bold uppercase tracking-widest text-on-surface-variant block mb-1.5">Audience ID (List ID)</label>
+                <input type="text" placeholder="a1b2c3d4e5" id="input-mailchimp-list" class="w-full bg-surface-container-lowest border border-outline-variant/20 rounded-lg px-4 py-2.5 text-sm text-on-surface font-mono focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all"/>
+              </div>
+              <div class="flex gap-2 pt-1">
+                <button onclick="connectIntegration('mailchimp')" class="px-5 py-2 rounded-lg text-sm font-bold text-white primary-gradient hover:brightness-110 transition-all">Conectar</button>
+                <button onclick="toggleIntegration('mailchimp')" class="px-5 py-2 rounded-lg text-sm font-semibold text-on-surface-variant border border-outline-variant/20 hover:bg-surface-container transition-colors">Cancelar</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Zapier - Webhook -->
+          <div class="integration-card border border-outline-variant/10 rounded-xl overflow-hidden" data-key="zapier">
+            <div class="flex items-center justify-between p-4 cursor-pointer hover:bg-surface-container transition-colors" onclick="toggleIntegration('zapier')">
+              <div class="flex items-center gap-3">
+                <div class="w-9 h-9 rounded-lg flex items-center justify-center" style="background:#FF4A0020;">
+                  <span class="material-symbols-outlined text-base" style="color:#FF4A00;">bolt</span>
+                </div>
+                <div>
+                  <p class="font-semibold text-sm text-on-surface">Zapier <span class="text-[10px] font-bold px-1.5 py-0.5 rounded-full ml-1" style="background:#a855f720;color:#a855f7;">Elite</span></p>
+                  <p class="text-xs text-on-surface-variant">Automatiza flujos con cualquier app vía webhook</p>
+                </div>
+              </div>
+              <div class="flex items-center gap-2">
+                <span class="integration-status text-xs font-bold px-2 py-0.5 rounded-full bg-surface-container-highest text-on-surface-variant" id="status-zapier">Desconectado</span>
+                <span class="material-symbols-outlined text-on-surface-variant text-sm transition-transform duration-200" id="arrow-zapier">expand_more</span>
+              </div>
+            </div>
+            <div class="integration-form hidden px-4 pb-4 space-y-3 border-t border-outline-variant/10 pt-4" id="form-zapier">
+              <p class="text-xs text-on-surface-variant">Copia esta URL y pégala en <span class="text-primary font-medium">Zapier → Trigger → Webhook → URL</span></p>
+              <div>
+                <label class="text-xs font-bold uppercase tracking-widest text-on-surface-variant block mb-1.5">Tu Webhook URL</label>
+                <div class="flex gap-2">
+                  <input type="text" readonly value="https://hooks.luminousstudio.com/wh/xxxxxxxx-xxxx" id="webhook-url-zapier" class="flex-1 bg-surface-container-lowest border border-outline-variant/20 rounded-lg px-4 py-2.5 text-sm text-on-surface-variant font-mono outline-none cursor-text"/>
+                  <button onclick="copyWebhook('zapier')" class="px-4 py-2.5 rounded-lg text-sm font-bold border border-outline-variant/20 hover:bg-surface-container text-on-surface transition-colors flex items-center gap-1.5">
+                    <span class="material-symbols-outlined text-sm">content_copy</span> Copiar
+                  </button>
+                </div>
+              </div>
+              <p class="text-xs text-on-surface-variant">Una vez pegado en Zapier, haz clic en <span class="text-secondary font-medium">Activar</span> para confirmar la conexión.</p>
+              <button onclick="connectIntegration('zapier')" class="px-5 py-2 rounded-lg text-sm font-bold text-white primary-gradient hover:brightness-110 transition-all">Marcar como activo</button>
+            </div>
+          </div>
+
+          <!-- Meta Ads - OAuth -->
+          <div class="integration-card border border-outline-variant/10 rounded-xl overflow-hidden" data-key="meta">
+            <div class="flex items-center justify-between p-4 cursor-pointer hover:bg-surface-container transition-colors" onclick="toggleIntegration('meta')">
+              <div class="flex items-center gap-3">
+                <div class="w-9 h-9 rounded-lg flex items-center justify-center" style="background:#2E5BFF20;">
+                  <span class="material-symbols-outlined text-base" style="color:#2E5BFF;">share</span>
+                </div>
+                <div>
+                  <p class="font-semibold text-sm text-on-surface">Meta Ads (Pixel)</p>
+                  <p class="text-xs text-on-surface-variant">Instala tu Pixel de Facebook en todos tus quizzes</p>
+                </div>
+              </div>
+              <div class="flex items-center gap-2">
+                <span class="integration-status text-xs font-bold px-2 py-0.5 rounded-full bg-surface-container-highest text-on-surface-variant" id="status-meta">Desconectado</span>
+                <span class="material-symbols-outlined text-on-surface-variant text-sm transition-transform duration-200" id="arrow-meta">expand_more</span>
+              </div>
+            </div>
+            <div class="integration-form hidden px-4 pb-4 space-y-3 border-t border-outline-variant/10 pt-4" id="form-meta">
+              <p class="text-xs text-on-surface-variant">Encuentra tu Pixel ID en <span class="text-primary font-medium">Meta Business Suite → Events Manager → Pixels</span></p>
+              <div>
+                <label class="text-xs font-bold uppercase tracking-widest text-on-surface-variant block mb-1.5">Meta Pixel ID</label>
+                <input type="text" placeholder="1234567890123456" id="input-meta" class="w-full bg-surface-container-lowest border border-outline-variant/20 rounded-lg px-4 py-2.5 text-sm text-on-surface font-mono focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all"/>
+              </div>
+              <div class="flex gap-2 pt-1">
+                <button onclick="connectIntegration('meta')" class="px-5 py-2 rounded-lg text-sm font-bold text-white primary-gradient hover:brightness-110 transition-all">Activar Pixel</button>
+                <button onclick="toggleIntegration('meta')" class="px-5 py-2 rounded-lg text-sm font-semibold text-on-surface-variant border border-outline-variant/20 hover:bg-surface-container transition-colors">Cancelar</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- WhatsApp -->
+          <div class="integration-card border border-outline-variant/10 rounded-xl overflow-hidden" data-key="whatsapp">
+            <div class="flex items-center justify-between p-4 cursor-pointer hover:bg-surface-container transition-colors" onclick="toggleIntegration('whatsapp')">
+              <div class="flex items-center gap-3">
+                <div class="w-9 h-9 rounded-lg flex items-center justify-center" style="background:#25D36620;">
+                  <span class="material-symbols-outlined text-base" style="color:#25D366;">chat</span>
+                </div>
+                <div>
+                  <p class="font-semibold text-sm text-on-surface">WhatsApp <span class="text-[10px] font-bold px-1.5 py-0.5 rounded-full ml-1" style="background:#69f6b820;color:#005a3c;">Free</span></p>
+                  <p class="text-xs text-on-surface-variant">Redirige al usuario a WhatsApp al terminar el quiz</p>
+                </div>
+              </div>
+              <div class="flex items-center gap-2">
+                <span class="integration-status text-xs font-bold px-2 py-0.5 rounded-full bg-surface-container-highest text-on-surface-variant" id="status-whatsapp">Desconectado</span>
+                <span class="material-symbols-outlined text-on-surface-variant text-sm transition-transform duration-200" id="arrow-whatsapp">expand_more</span>
+              </div>
+            </div>
+            <div class="integration-form hidden px-4 pb-4 space-y-3 border-t border-outline-variant/10 pt-4" id="form-whatsapp">
+              <p class="text-xs text-on-surface-variant">Al terminar el quiz, el usuario será redirigido a este número con un mensaje automático.</p>
+              <div>
+                <label class="text-xs font-bold uppercase tracking-widest text-on-surface-variant block mb-1.5">Número (con código de país)</label>
+                <input type="text" placeholder="+52 55 1234 5678" id="input-whatsapp" class="w-full bg-surface-container-lowest border border-outline-variant/20 rounded-lg px-4 py-2.5 text-sm text-on-surface focus:ring-2 focus:ring-secondary focus:border-transparent outline-none transition-all"/>
+              </div>
+              <div>
+                <label class="text-xs font-bold uppercase tracking-widest text-on-surface-variant block mb-1.5">Mensaje automático</label>
+                <textarea rows="2" placeholder="Hola! Acabo de completar el quiz y me interesa..." id="input-whatsapp-msg" class="w-full bg-surface-container-lowest border border-outline-variant/20 rounded-lg px-4 py-2.5 text-sm text-on-surface focus:ring-2 focus:ring-secondary focus:border-transparent outline-none transition-all resize-none"></textarea>
+              </div>
+              <div class="flex gap-2 pt-1">
+                <button onclick="connectIntegration('whatsapp')" class="px-5 py-2 rounded-lg text-sm font-bold" style="background:#25D366;color:#fff;">Guardar</button>
+                <button onclick="toggleIntegration('whatsapp')" class="px-5 py-2 rounded-lg text-sm font-semibold text-on-surface-variant border border-outline-variant/20 hover:bg-surface-container transition-colors">Cancelar</button>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
       <!-- Notifications -->
       <section class="bg-surface-container-low rounded-xl p-8 border border-outline-variant/5">
         <h2 class="text-lg font-bold mb-6 text-on-surface">Notificaciones</h2>
@@ -406,6 +620,52 @@
     t.textContent = msg;
     t.style.opacity = '1';
     setTimeout(() => t.style.opacity = '0', 2800);
+  }
+
+  // ===== INTEGRACIONES =====
+  const integrationState = JSON.parse(localStorage.getItem('ls_integrations') || '{}');
+
+  // Restore saved states on load
+  document.addEventListener('DOMContentLoaded', () => {
+    Object.keys(integrationState).forEach(key => {
+      if (integrationState[key]?.connected) markConnected(key);
+    });
+  });
+
+  function toggleIntegration(key) {
+    const form = document.getElementById('form-' + key);
+    const arrow = document.getElementById('arrow-' + key);
+    const isOpen = !form.classList.contains('hidden');
+    // close all
+    document.querySelectorAll('.integration-form').forEach(f => f.classList.add('hidden'));
+    document.querySelectorAll('[id^="arrow-"]').forEach(a => a.style.transform = 'rotate(0deg)');
+    if (!isOpen) {
+      form.classList.remove('hidden');
+      arrow.style.transform = 'rotate(180deg)';
+    }
+  }
+
+  function connectIntegration(key) {
+    integrationState[key] = { connected: true, ts: Date.now() };
+    localStorage.setItem('ls_integrations', JSON.stringify(integrationState));
+    markConnected(key);
+    document.getElementById('form-' + key).classList.add('hidden');
+    document.getElementById('arrow-' + key).style.transform = 'rotate(0deg)';
+    showToast('✓ ' + key.charAt(0).toUpperCase() + key.slice(1) + ' conectado correctamente');
+  }
+
+  function markConnected(key) {
+    const badge = document.getElementById('status-' + key);
+    if (badge) {
+      badge.textContent = 'Conectado';
+      badge.style.background = 'rgba(105,246,184,0.15)';
+      badge.style.color = '#69f6b8';
+    }
+  }
+
+  function copyWebhook(key) {
+    const input = document.getElementById('webhook-url-' + key);
+    navigator.clipboard.writeText(input.value).then(() => showToast('URL copiada al portapapeles ✓'));
   }
 
   function toggleSwitch(btn) {
