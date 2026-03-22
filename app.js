@@ -32,6 +32,7 @@ const Settings = {
       email: '',
       bio: '',
       claudeApiKey: '',
+      groqApiKey: '',
       notifications: { sales: true, quizCompleted: true, weekly: false },
     };
   },
@@ -40,6 +41,9 @@ const Settings = {
   },
   getApiKey() {
     return this.get().claudeApiKey || '';
+  },
+  getGroqApiKey() {
+    return this.get().groqApiKey || '';
   },
 };
 
@@ -306,6 +310,61 @@ Responde SOLO con JSON:
 
     const text = await this._call([{ role: 'user', content: prompt }], 500);
     return this._parseJSON(text);
+  },
+};
+
+// ── Groq API ───────────────────────────────────────────────
+const Groq = {
+  async _call(messages, maxTokens = 3000) {
+    const apiKey = Settings.getGroqApiKey();
+    if (!apiKey) throw new Error('NO_GROQ_KEY');
+
+    const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${apiKey}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        model: 'llama-3.3-70b-versatile',
+        max_tokens: maxTokens,
+        messages,
+      }),
+    });
+
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.error?.message || `Error ${res.status}`);
+    }
+    const data = await res.json();
+    return data.choices[0].message.content;
+  },
+
+  _parseJSON(text) {
+    const match = text.match(/\{[\s\S]*\}/);
+    if (!match) throw new Error('Respuesta de IA inválida');
+    return JSON.parse(match[0]);
+  },
+
+  async generateQuiz(productName, description, niche) {
+    return Claude.generateQuiz.call(
+      { _call: this._call.bind(this), _parseJSON: this._parseJSON },
+      productName, description, niche
+    );
+  },
+
+  async generateMiniAppIdeas(productName, description, niche) {
+    return Claude.generateMiniAppIdeas.call(
+      { _call: this._call.bind(this), _parseJSON: this._parseJSON },
+      productName, description, niche
+    );
+  },
+
+  async improveQuestion(currentQuestion, productContext) {
+    return Claude.improveQuestion.call(
+      { _call: this._call.bind(this), _parseJSON: this._parseJSON },
+      currentQuestion, productContext
+    );
   },
 };
 

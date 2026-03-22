@@ -15,6 +15,7 @@ create table public.profiles (
   bio             text,
   plan            text    default 'free',
   claude_api_key  text,
+  groq_api_key    text,
   notifications   jsonb   default '{"sales":true,"quizCompleted":true,"weekly":false}'::jsonb,
   created_at      timestamptz default now(),
   updated_at      timestamptz default now()

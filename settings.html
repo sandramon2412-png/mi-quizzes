@@ -190,6 +190,40 @@
         </div>
       </section>
 
+      <!-- Groq API Key -->
+      <section class="bg-surface-container-low rounded-xl p-8 border border-outline-variant/5">
+        <div class="flex items-start gap-4 mb-6">
+          <div class="w-10 h-10 rounded-lg bg-tertiary/10 flex items-center justify-center shrink-0">
+            <span class="material-symbols-outlined text-tertiary">bolt</span>
+          </div>
+          <div>
+            <h2 class="text-lg font-bold text-on-surface">Integración con IA (Groq)</h2>
+            <p class="text-sm text-on-surface-variant mt-1">Conecta tu API key de Groq para generar quizzes y mini-app ideas a mayor velocidad con modelos open source.</p>
+          </div>
+        </div>
+        <div class="space-y-4">
+          <div>
+            <label class="block text-xs font-bold text-on-surface-variant uppercase tracking-widest mb-2">Groq API Key</label>
+            <div class="relative">
+              <input id="input-groq-api-key" type="password" placeholder="gsk_..." class="w-full bg-surface-container-lowest border border-outline-variant/20 rounded-lg px-4 py-3 pr-12 text-on-surface focus:ring-2 focus:ring-tertiary focus:border-transparent outline-none transition-all font-mono text-sm"/>
+              <button onclick="toggleGroqApiKeyVisibility()" class="absolute right-3 top-1/2 -translate-y-1/2 text-on-surface-variant hover:text-on-surface transition-colors">
+                <span id="groq-eye-icon" class="material-symbols-outlined text-lg">visibility</span>
+              </button>
+            </div>
+            <p class="text-xs text-on-surface-variant mt-2">Obtén tu API key en <a href="https://console.groq.com" target="_blank" class="text-tertiary hover:underline">console.groq.com</a>. Se guarda solo en tu navegador, nunca en nuestros servidores.</p>
+          </div>
+          <div id="groq-api-key-status" class="hidden flex items-center gap-2 p-3 rounded-lg text-sm font-medium"></div>
+          <div class="flex gap-3">
+            <button onclick="saveGroqApiKey()" class="px-6 py-3 bg-tertiary text-on-tertiary rounded-lg font-bold text-sm hover:opacity-90 transition-opacity">
+              Guardar API Key
+            </button>
+            <button onclick="testGroqApiKey()" class="px-6 py-3 border border-tertiary/30 text-tertiary rounded-lg font-bold text-sm hover:bg-tertiary/5 transition-colors">
+              Probar Conexión
+            </button>
+          </div>
+        </div>
+      </section>
+
       <!-- Integraciones -->
       <section class="bg-surface-container-low rounded-xl p-8 border border-outline-variant/5">
         <div class="flex items-center justify-between mb-6">
@@ -532,6 +566,11 @@
         Settings.save({ claudeApiKey: profile.claude_api_key }); // sync to localStorage
         showApiStatus('API key guardada ✓', true);
       }
+      if (profile?.groq_api_key) {
+        document.getElementById('input-groq-api-key').value = profile.groq_api_key;
+        Settings.save({ groqApiKey: profile.groq_api_key }); // sync to localStorage
+        showGroqApiStatus('API key guardada ✓', true);
+      }
       const plan = profile?.plan || 'free';
       const planLimits = { free: 'Quizzes básicos', pro: 'Quizzes ilimitados', business: 'Proyectos ilimitados' };
       document.getElementById('plan-name').textContent = plan.charAt(0).toUpperCase() + plan.slice(1);
@@ -546,6 +585,10 @@
       if (s.claudeApiKey) {
         document.getElementById('input-api-key').value = s.claudeApiKey;
         showApiStatus('API key guardada ✓', true);
+      }
+      if (s.groqApiKey) {
+        document.getElementById('input-groq-api-key').value = s.groqApiKey;
+        showGroqApiStatus('API key guardada ✓', true);
       }
     }
   });
@@ -600,6 +643,60 @@
     } else {
       el.className = 'flex items-center gap-2 p-3 rounded-lg text-sm font-medium bg-surface-container text-on-surface-variant';
       el.innerHTML = `<span class="material-symbols-outlined text-base animate-spin">progress_activity</span>${msg}`;
+    }
+  }
+
+  async function saveGroqApiKey() {
+    const key = document.getElementById('input-groq-api-key').value.trim();
+    if (!key) { showToast('Introduce tu API key de Groq', 'error'); return; }
+    if (!key.startsWith('gsk_')) { showToast('Formato incorrecto. Debe empezar con gsk_', 'error'); return; }
+    Settings.save({ groqApiKey: key });
+    try {
+      await DB.profiles.upsert(_settingsUser.id, { groq_api_key: key });
+    } catch {}
+    showGroqApiStatus('API key guardada ✓', true);
+    showToast('API key de Groq guardada correctamente ✓');
+  }
+
+  async function testGroqApiKey() {
+    const key = document.getElementById('input-groq-api-key').value.trim();
+    if (!key) { showToast('Introduce tu API key de Groq primero', 'error'); return; }
+    Settings.save({ groqApiKey: key });
+    showGroqApiStatus('Probando conexión...', null);
+    try {
+      await Groq._call([{ role: 'user', content: 'Di "OK" solamente.' }], 10);
+      showGroqApiStatus('¡Conexión exitosa! Groq está listo ✓', true);
+      showToast('¡Conexión con Groq exitosa!');
+    } catch (e) {
+      showGroqApiStatus('Error: ' + e.message, false);
+      showToast('Error de conexión: ' + e.message, 'error');
+    }
+  }
+
+  function showGroqApiStatus(msg, success) {
+    const el = document.getElementById('groq-api-key-status');
+    el.classList.remove('hidden');
+    if (success === true) {
+      el.className = 'flex items-center gap-2 p-3 rounded-lg text-sm font-medium bg-tertiary/10 text-tertiary';
+      el.innerHTML = `<span class="material-symbols-outlined text-base">check_circle</span>${msg}`;
+    } else if (success === false) {
+      el.className = 'flex items-center gap-2 p-3 rounded-lg text-sm font-medium bg-error/10 text-error';
+      el.innerHTML = `<span class="material-symbols-outlined text-base">error</span>${msg}`;
+    } else {
+      el.className = 'flex items-center gap-2 p-3 rounded-lg text-sm font-medium bg-surface-container text-on-surface-variant';
+      el.innerHTML = `<span class="material-symbols-outlined text-base animate-spin">progress_activity</span>${msg}`;
+    }
+  }
+
+  function toggleGroqApiKeyVisibility() {
+    const input = document.getElementById('input-groq-api-key');
+    const icon  = document.getElementById('groq-eye-icon');
+    if (input.type === 'password') {
+      input.type = 'text';
+      icon.textContent = 'visibility_off';
+    } else {
+      input.type = 'password';
+      icon.textContent = 'visibility';
     }
   }
 
