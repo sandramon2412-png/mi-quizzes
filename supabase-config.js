@@ -49,7 +49,7 @@ const Auth = {
 
   async resetPassword(email) {
     const { error } = await db.auth.resetPasswordForEmail(email, {
-      redirectTo: window.location.origin + '/reset-password.html',
+      redirectTo: window.location.origin + window.location.pathname.replace(/[^/]*$/, '') + 'reset-password.html',
     });
     if (error) throw error;
   },
