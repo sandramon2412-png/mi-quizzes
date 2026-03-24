@@ -285,6 +285,30 @@ let currentQuiz = null;
 let editingQuizId = null;
 let _currentUser = null;
 
+function getParam(name) {
+  return new URLSearchParams(window.location.search).get(name);
+}
+
+function loadTemplate(id) {
+  const tmpl = getBuiltinTemplates().find(t => t.id === id);
+  if (!tmpl) return;
+  document.getElementById('input-product').value = tmpl.product || '';
+  document.getElementById('input-niche').value   = tmpl.niche   || '';
+  currentQuiz = {
+    title: tmpl.title,
+    subtitle: tmpl.subtitle,
+    estimatedMinutes: tmpl.estimatedMinutes || 2,
+    product: tmpl.product,
+    description: '',
+    niche: tmpl.niche,
+    questions: tmpl.questions,
+    profiles: tmpl.profiles,
+    status: 'draft',
+  };
+  loadQuizIntoEditor(currentQuiz);
+  showToast('Plantilla cargada. Personaliza y guarda tu quiz.');
+}
+
 document.addEventListener('DOMContentLoaded', async () => {
   _currentUser = await Auth.requireAuth();
   if (!_currentUser) return;
