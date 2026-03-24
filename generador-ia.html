@@ -213,17 +213,117 @@
               class="w-full bg-transparent text-on-surface-variant text-sm outline-none mt-2"/>
           </div>
 
-          <!-- Product URL + Mini-App link -->
+          <!-- Post-quiz action -->
           <div class="bg-surface-container rounded-xl p-4 border border-outline-variant/10 space-y-4">
             <div>
-              <label class="text-xs font-bold text-on-surface-variant uppercase tracking-widest block mb-1">URL de destino del quiz</label>
-              <p class="text-[10px] text-on-surface-variant/60 mb-2">Link de tu landing, checkout de Hotmart, Shopify, etc. Se puede sobrescribir por perfil.</p>
-              <div class="relative">
-                <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant/40 text-sm">link</span>
-                <input id="quiz-product-url" type="url" placeholder="https://hotmart.com/product/... o https://tu-landing.com"
-                  class="w-full bg-surface-container-high border border-outline-variant/20 rounded-lg pl-9 pr-4 py-2.5 text-xs text-on-surface outline-none focus:ring-1 focus:ring-primary transition-colors"/>
+              <label class="text-xs font-bold text-on-surface-variant uppercase tracking-widest block mb-2">¿Qué pasa después del quiz?</label>
+              <div class="grid grid-cols-2 gap-2">
+                <label class="action-option cursor-pointer" onclick="selectPostAction('result_page')">
+                  <input type="radio" name="post-action" value="result_page" class="sr-only" checked>
+                  <div id="opt-result_page" class="flex flex-col items-center gap-1 p-3 rounded-lg border-2 border-primary bg-primary/10 transition-all text-center">
+                    <span class="material-symbols-outlined text-xl text-primary">assignment_ind</span>
+                    <span class="text-xs font-bold text-on-surface">Mostrar resultado</span>
+                    <span class="text-[10px] text-on-surface-variant">+ capturar correo</span>
+                  </div>
+                </label>
+                <label class="action-option cursor-pointer" onclick="selectPostAction('whatsapp')">
+                  <input type="radio" name="post-action" value="whatsapp" class="sr-only">
+                  <div id="opt-whatsapp" class="flex flex-col items-center gap-1 p-3 rounded-lg border-2 border-outline-variant/20 hover:border-primary/40 transition-all text-center">
+                    <span class="material-symbols-outlined text-xl text-on-surface-variant">chat</span>
+                    <span class="text-xs font-bold text-on-surface">Enviar a WhatsApp</span>
+                    <span class="text-[10px] text-on-surface-variant">directo al chat</span>
+                  </div>
+                </label>
+                <label class="action-option cursor-pointer" onclick="selectPostAction('payment')">
+                  <input type="radio" name="post-action" value="payment" class="sr-only">
+                  <div id="opt-payment" class="flex flex-col items-center gap-1 p-3 rounded-lg border-2 border-outline-variant/20 hover:border-primary/40 transition-all text-center">
+                    <span class="material-symbols-outlined text-xl text-on-surface-variant">local_fire_department</span>
+                    <span class="text-xs font-bold text-on-surface">Página de pago</span>
+                    <span class="text-[10px] text-on-surface-variant">Hotmart, Stripe…</span>
+                  </div>
+                </label>
+                <label class="action-option cursor-pointer" onclick="selectPostAction('landing')">
+                  <input type="radio" name="post-action" value="landing" class="sr-only">
+                  <div id="opt-landing" class="flex flex-col items-center gap-1 p-3 rounded-lg border-2 border-outline-variant/20 hover:border-primary/40 transition-all text-center">
+                    <span class="material-symbols-outlined text-xl text-on-surface-variant">web</span>
+                    <span class="text-xs font-bold text-on-surface">Landing page</span>
+                    <span class="text-[10px] text-on-surface-variant">tu página propia</span>
+                  </div>
+                </label>
               </div>
             </div>
+
+            <!-- Fields: result_page -->
+            <div id="fields-result_page" class="space-y-3">
+              <label class="flex items-center gap-2 cursor-pointer select-none">
+                <input type="checkbox" id="quiz-lead-capture" checked class="rounded accent-primary"/>
+                <span class="text-xs text-on-surface">Pedir correo antes de mostrar resultado</span>
+              </label>
+              <div>
+                <label class="text-xs font-bold text-on-surface-variant uppercase tracking-widest block mb-1">URL del botón CTA (opcional)</label>
+                <p class="text-[10px] text-on-surface-variant/60 mb-1.5">Hotmart, Stripe, checkout… Se puede sobrescribir por perfil.</p>
+                <div class="relative">
+                  <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant/40 text-sm">link</span>
+                  <input id="quiz-product-url" type="url" placeholder="https://hotmart.com/product/..."
+                    class="w-full bg-surface-container-high border border-outline-variant/20 rounded-lg pl-9 pr-4 py-2.5 text-xs text-on-surface outline-none focus:ring-1 focus:ring-primary transition-colors"/>
+                </div>
+              </div>
+            </div>
+
+            <!-- Fields: whatsapp -->
+            <div id="fields-whatsapp" class="hidden space-y-3">
+              <label class="flex items-center gap-2 cursor-pointer select-none">
+                <input type="checkbox" id="quiz-wa-lead-capture" checked class="rounded accent-primary"/>
+                <span class="text-xs text-on-surface">Pedir correo antes de redirigir</span>
+              </label>
+              <div>
+                <label class="text-xs font-bold text-on-surface-variant uppercase tracking-widest block mb-1">Número de WhatsApp</label>
+                <div class="relative">
+                  <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant/40 text-sm">phone</span>
+                  <input id="quiz-whatsapp-number" type="tel" placeholder="+5491123456789"
+                    class="w-full bg-surface-container-high border border-outline-variant/20 rounded-lg pl-9 pr-4 py-2.5 text-xs text-on-surface outline-none focus:ring-1 focus:ring-primary transition-colors"/>
+                </div>
+                <p class="text-[10px] text-on-surface-variant/60 mt-1">Incluye código de país, sin espacios ni guiones.</p>
+              </div>
+              <div>
+                <label class="text-xs font-bold text-on-surface-variant uppercase tracking-widest block mb-1">Mensaje pre-escrito (opcional)</label>
+                <textarea id="quiz-whatsapp-message" rows="2" placeholder="Hola! Acabo de completar el quiz, me gustaría más información…"
+                  class="w-full bg-surface-container-high border border-outline-variant/20 rounded-lg px-4 py-2.5 text-xs text-on-surface outline-none focus:ring-1 focus:ring-primary transition-colors resize-none"></textarea>
+              </div>
+            </div>
+
+            <!-- Fields: payment -->
+            <div id="fields-payment" class="hidden space-y-3">
+              <label class="flex items-center gap-2 cursor-pointer select-none">
+                <input type="checkbox" id="quiz-pay-lead-capture" checked class="rounded accent-primary"/>
+                <span class="text-xs text-on-surface">Pedir correo antes de redirigir</span>
+              </label>
+              <div>
+                <label class="text-xs font-bold text-on-surface-variant uppercase tracking-widest block mb-1">URL de pago</label>
+                <div class="relative">
+                  <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant/40 text-sm">local_fire_department</span>
+                  <input id="quiz-payment-url" type="url" placeholder="https://hotmart.com/product/..."
+                    class="w-full bg-surface-container-high border border-outline-variant/20 rounded-lg pl-9 pr-4 py-2.5 text-xs text-on-surface outline-none focus:ring-1 focus:ring-primary transition-colors"/>
+                </div>
+              </div>
+            </div>
+
+            <!-- Fields: landing -->
+            <div id="fields-landing" class="hidden space-y-3">
+              <label class="flex items-center gap-2 cursor-pointer select-none">
+                <input type="checkbox" id="quiz-land-lead-capture" checked class="rounded accent-primary"/>
+                <span class="text-xs text-on-surface">Pedir correo antes de redirigir</span>
+              </label>
+              <div>
+                <label class="text-xs font-bold text-on-surface-variant uppercase tracking-widest block mb-1">URL de tu landing page</label>
+                <div class="relative">
+                  <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant/40 text-sm">web</span>
+                  <input id="quiz-landing-url" type="url" placeholder="https://tu-landing.com"
+                    class="w-full bg-surface-container-high border border-outline-variant/20 rounded-lg pl-9 pr-4 py-2.5 text-xs text-on-surface outline-none focus:ring-1 focus:ring-primary transition-colors"/>
+                </div>
+              </div>
+            </div>
+
             <div>
               <label class="text-xs font-bold text-on-surface-variant uppercase tracking-widest block mb-1">Mini-App Bonus vinculada</label>
               <p class="text-[10px] text-on-surface-variant/60 mb-2">Se mostrará en la página de resultado como bonus incluido al comprar.</p>
@@ -406,9 +506,22 @@ function loadQuizIntoEditor(quiz) {
   document.getElementById('btn-save-header').classList.remove('hidden');
   document.getElementById('btn-add-q').classList.remove('hidden');
   document.getElementById('btn-preview').classList.remove('hidden');
-  document.getElementById('quiz-title').value       = quiz.title      || '';
-  document.getElementById('quiz-subtitle').value    = quiz.subtitle   || '';
-  document.getElementById('quiz-product-url').value = quiz.productUrl || '';
+  document.getElementById('quiz-title').value    = quiz.title    || '';
+  document.getElementById('quiz-subtitle').value = quiz.subtitle || '';
+
+  // Post-quiz action
+  const action = quiz.postQuizAction || 'result_page';
+  selectPostAction(action);
+  const leadOn = quiz.leadCapture !== false;
+  document.getElementById('quiz-lead-capture').checked      = leadOn;
+  document.getElementById('quiz-wa-lead-capture').checked   = leadOn;
+  document.getElementById('quiz-pay-lead-capture').checked  = leadOn;
+  document.getElementById('quiz-land-lead-capture').checked = leadOn;
+  document.getElementById('quiz-product-url').value      = quiz.productUrl      || '';
+  document.getElementById('quiz-whatsapp-number').value  = quiz.whatsappNumber  || '';
+  document.getElementById('quiz-whatsapp-message').value = quiz.whatsappMessage || '';
+  document.getElementById('quiz-payment-url').value      = quiz.paymentUrl      || '';
+  document.getElementById('quiz-landing-url').value      = quiz.landingUrl      || '';
 
   // Populate mini-app selector
   const miniAppsAll = MiniApps.getAll();
@@ -536,16 +649,50 @@ function syncMeta(q) {
     `${quiz.questions?.length||0} preguntas · ${quiz.profiles?.length||0} perfiles · ~${quiz.estimatedMinutes||2} min`;
 }
 
+// ── Post-quiz action UI ───────────────────────────────────
+function selectPostAction(action) {
+  const actions = ['result_page', 'whatsapp', 'payment', 'landing'];
+  actions.forEach(a => {
+    const opt = document.getElementById('opt-' + a);
+    const fields = document.getElementById('fields-' + a);
+    if (!opt || !fields) return;
+    const active = a === action;
+    opt.className = active
+      ? 'flex flex-col items-center gap-1 p-3 rounded-lg border-2 border-primary bg-primary/10 transition-all text-center'
+      : 'flex flex-col items-center gap-1 p-3 rounded-lg border-2 border-outline-variant/20 hover:border-primary/40 transition-all text-center';
+    const icon = opt.querySelector('.material-symbols-outlined');
+    if (icon) icon.className = 'material-symbols-outlined text-xl ' + (active ? 'text-primary' : 'text-on-surface-variant');
+    fields.classList.toggle('hidden', !active);
+  });
+  const radio = document.querySelector(`input[name="post-action"][value="${action}"]`);
+  if (radio) radio.checked = true;
+}
+
 // ── Save ──────────────────────────────────────────────────
 async function saveQuiz() {
   if (!currentQuiz) { showToast('Genera o crea un quiz primero', 'error'); return; }
   currentQuiz.title       = document.getElementById('quiz-title').value.trim()       || currentQuiz.title;
   currentQuiz.subtitle    = document.getElementById('quiz-subtitle').value.trim()    || currentQuiz.subtitle;
-  currentQuiz.productUrl  = document.getElementById('quiz-product-url').value.trim() || currentQuiz.productUrl || '';
   currentQuiz.miniAppId   = document.getElementById('quiz-miniapp-id').value         || currentQuiz.miniAppId  || '';
   currentQuiz.product     = document.getElementById('input-product').value.trim()    || currentQuiz.product;
   currentQuiz.niche       = document.getElementById('input-niche').value.trim()      || currentQuiz.niche;
   currentQuiz.description = document.getElementById('input-desc').value.trim()       || currentQuiz.description;
+
+  // Post-quiz action fields
+  const action = document.querySelector('input[name="post-action"]:checked')?.value || 'result_page';
+  currentQuiz.postQuizAction  = action;
+  currentQuiz.productUrl      = document.getElementById('quiz-product-url').value.trim()   || '';
+  currentQuiz.whatsappNumber  = document.getElementById('quiz-whatsapp-number').value.trim() || '';
+  currentQuiz.whatsappMessage = document.getElementById('quiz-whatsapp-message').value.trim() || '';
+  currentQuiz.paymentUrl      = document.getElementById('quiz-payment-url').value.trim()   || '';
+  currentQuiz.landingUrl      = document.getElementById('quiz-landing-url').value.trim()   || '';
+  currentQuiz.leadCapture     = action === 'result_page'
+    ? document.getElementById('quiz-lead-capture').checked
+    : action === 'whatsapp'
+      ? document.getElementById('quiz-wa-lead-capture').checked
+      : action === 'payment'
+        ? document.getElementById('quiz-pay-lead-capture').checked
+        : document.getElementById('quiz-land-lead-capture').checked;
 
   if (editingQuizId) currentQuiz.id = editingQuizId;
 
