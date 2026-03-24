@@ -48,11 +48,14 @@
   ::-webkit-scrollbar-track { background: transparent; }
   ::-webkit-scrollbar-thumb { background: #484847; border-radius: 10px; }
 
-  .stat-card { transition: transform 0.2s, border-color 0.2s; }
-  .stat-card:hover { transform: translateY(-2px); }
+  .stat-card { transition: transform 0.2s, border-color 0.2s, box-shadow 0.2s; }
+  .stat-card:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,0.3); }
   .sparkline-bar { transition: height 0.6s cubic-bezier(0.16,1,0.3,1); }
   .count-up { animation: countUp 0.8s cubic-bezier(0.16,1,0.3,1) both; }
   @keyframes countUp { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:none; } }
+  .welcome-gradient { background: linear-gradient(135deg, rgba(46,91,255,0.06) 0%, transparent 60%); }
+  .section-divider { width: 3px; height: 18px; border-radius: 99px; }
+  .stat-icon-ring { box-shadow: 0 0 0 1px rgba(255,255,255,0.05); }
   /* Modal animation */
   #modal-overlay { transition: opacity .2s; }
   #modal-overlay.hidden { opacity: 0; pointer-events: none; }
@@ -86,16 +89,17 @@
 <main class="pt-20 pb-28 px-4 md:px-8 max-w-5xl mx-auto">
 
   <!-- Welcome + Quick Actions -->
-  <div class="flex flex-wrap items-center justify-between gap-4 mb-6">
+  <div class="welcome-gradient rounded-2xl border border-primary/10 px-6 py-5 mb-6 flex flex-wrap items-center justify-between gap-4">
     <div>
-      <h1 class="text-2xl font-extrabold tracking-tight">Bienvenido, <span class="text-primary" id="user-name">Curator</span> 👋</h1>
-      <p class="text-on-surface-variant text-sm mt-1">Gestiona tus quizzes y mini-apps desde aquí.</p>
+      <p class="text-[11px] font-semibold text-on-surface-variant/60 uppercase tracking-widest mb-1" id="welcome-date">—</p>
+      <h1 class="text-xl font-extrabold tracking-tight leading-snug">Hola, <span class="text-primary" id="user-name">Curator</span></h1>
+      <p class="text-on-surface-variant text-xs mt-0.5">Aquí tienes el resumen de tu actividad.</p>
     </div>
     <div class="flex gap-2">
-      <a href="./generador-ia.html" class="flex items-center gap-1.5 px-4 py-2 bg-primary text-white text-xs font-bold rounded-xl hover:opacity-90 transition-opacity shadow-lg shadow-primary/20">
+      <a href="./generador-ia.html" class="flex items-center gap-1.5 px-4 py-2.5 bg-primary text-white text-xs font-bold rounded-xl hover:brightness-110 transition-all shadow-lg shadow-primary/25">
         <span class="material-symbols-outlined text-sm">add</span>Nuevo Quiz
       </a>
-      <a href="./leads.html" class="flex items-center gap-1.5 px-4 py-2 bg-surface-container border border-outline-variant/20 text-on-surface-variant text-xs font-bold rounded-xl hover:border-secondary/40 hover:text-secondary transition-colors">
+      <a href="./leads.html" class="flex items-center gap-1.5 px-4 py-2.5 bg-surface-container-high border border-outline-variant/20 text-on-surface-variant text-xs font-bold rounded-xl hover:border-outline-variant/50 hover:text-on-surface transition-colors">
         <span class="material-symbols-outlined text-sm">group</span>Leads
       </a>
     </div>
@@ -103,56 +107,68 @@
 
   <!-- Stats Grid -->
   <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-8">
-    <div class="stat-card bg-surface-container rounded-2xl p-4 border border-outline-variant/10 hover:border-primary/30">
-      <div class="flex items-center justify-between mb-2">
-        <span class="text-[10px] font-bold text-on-surface-variant uppercase tracking-widest">Quizzes</span>
-        <div class="w-7 h-7 rounded-lg bg-primary/10 flex items-center justify-center">
-          <span class="material-symbols-outlined text-primary text-sm">quiz</span>
+
+    <div class="stat-card bg-surface-container rounded-2xl p-4 border border-outline-variant/10 hover:border-primary/25 relative overflow-hidden">
+      <div class="absolute top-0 left-0 w-full h-0.5 bg-gradient-to-r from-primary/60 to-transparent rounded-t-2xl"></div>
+      <div class="flex items-center justify-between mb-3">
+        <div class="w-8 h-8 rounded-xl bg-primary/10 stat-icon-ring flex items-center justify-center">
+          <span class="material-symbols-outlined text-primary" style="font-size:16px;">quiz</span>
         </div>
+        <span class="text-[9px] font-bold text-primary/60 uppercase tracking-widest">Quizzes</span>
       </div>
-      <p class="text-2xl font-extrabold text-primary count-up" id="stat-quizzes">0</p>
+      <p class="text-3xl font-extrabold text-primary count-up leading-none" id="stat-quizzes">0</p>
+      <p class="text-[10px] text-on-surface-variant mt-1.5">creados</p>
     </div>
-    <div class="stat-card bg-surface-container rounded-2xl p-4 border border-outline-variant/10 hover:border-secondary/30">
-      <div class="flex items-center justify-between mb-2">
-        <span class="text-[10px] font-bold text-on-surface-variant uppercase tracking-widest">Mini-Apps</span>
-        <div class="w-7 h-7 rounded-lg bg-secondary/10 flex items-center justify-center">
-          <span class="material-symbols-outlined text-secondary text-sm">deployed_code</span>
+
+    <div class="stat-card bg-surface-container rounded-2xl p-4 border border-outline-variant/10 hover:border-secondary/25 relative overflow-hidden">
+      <div class="absolute top-0 left-0 w-full h-0.5 bg-gradient-to-r from-secondary/60 to-transparent rounded-t-2xl"></div>
+      <div class="flex items-center justify-between mb-3">
+        <div class="w-8 h-8 rounded-xl bg-secondary/10 stat-icon-ring flex items-center justify-center">
+          <span class="material-symbols-outlined text-secondary" style="font-size:16px;">deployed_code</span>
         </div>
+        <span class="text-[9px] font-bold text-secondary/60 uppercase tracking-widest">Mini-Apps</span>
       </div>
-      <p class="text-2xl font-extrabold text-secondary count-up" id="stat-apps">0</p>
+      <p class="text-3xl font-extrabold text-secondary count-up leading-none" id="stat-apps">0</p>
+      <p class="text-[10px] text-on-surface-variant mt-1.5">activas</p>
     </div>
-    <div class="stat-card bg-surface-container rounded-2xl p-4 border border-outline-variant/10 hover:border-outline-variant/40">
-      <div class="flex items-center justify-between mb-2">
-        <span class="text-[10px] font-bold text-on-surface-variant uppercase tracking-widest">Vistas</span>
-        <div class="w-7 h-7 rounded-lg bg-surface-container-high flex items-center justify-center">
-          <span class="material-symbols-outlined text-on-surface-variant text-sm">visibility</span>
+
+    <div class="stat-card bg-surface-container rounded-2xl p-4 border border-outline-variant/10 hover:border-outline-variant/40 relative overflow-hidden">
+      <div class="absolute top-0 left-0 w-full h-0.5 bg-gradient-to-r from-outline-variant/60 to-transparent rounded-t-2xl"></div>
+      <div class="flex items-center justify-between mb-3">
+        <div class="w-8 h-8 rounded-xl bg-surface-container-high stat-icon-ring flex items-center justify-center">
+          <span class="material-symbols-outlined text-on-surface-variant" style="font-size:16px;">visibility</span>
         </div>
+        <span class="text-[9px] font-bold text-on-surface-variant/50 uppercase tracking-widest">Vistas</span>
       </div>
-      <p class="text-2xl font-extrabold text-on-surface count-up" id="stat-views">0</p>
+      <p class="text-3xl font-extrabold text-on-surface count-up leading-none" id="stat-views">0</p>
+      <p class="text-[10px] text-on-surface-variant mt-1.5">totales</p>
     </div>
-    <a href="./leads.html" class="stat-card bg-surface-container rounded-2xl p-4 border border-outline-variant/10 hover:border-secondary/40 block">
-      <div class="flex items-center justify-between mb-2">
-        <span class="text-[10px] font-bold text-on-surface-variant uppercase tracking-widest">Leads</span>
-        <div class="w-7 h-7 rounded-lg bg-secondary/10 flex items-center justify-center">
-          <span class="material-symbols-outlined text-secondary text-sm">group</span>
+
+    <a href="./leads.html" class="stat-card bg-surface-container rounded-2xl p-4 border border-outline-variant/10 hover:border-secondary/25 block relative overflow-hidden">
+      <div class="absolute top-0 left-0 w-full h-0.5 bg-gradient-to-r from-secondary/60 to-transparent rounded-t-2xl"></div>
+      <div class="flex items-center justify-between mb-3">
+        <div class="w-8 h-8 rounded-xl bg-secondary/10 stat-icon-ring flex items-center justify-center">
+          <span class="material-symbols-outlined text-secondary" style="font-size:16px;">group</span>
         </div>
+        <span class="text-[9px] font-bold text-secondary/60 uppercase tracking-widest">Leads</span>
       </div>
-      <p class="text-2xl font-extrabold text-secondary count-up" id="stat-leads">0</p>
-      <!-- Sparkline placeholder -->
-      <div class="flex items-end gap-0.5 h-6 mt-2" id="leads-sparkline">
-        <!-- filled by JS -->
-      </div>
+      <p class="text-3xl font-extrabold text-secondary count-up leading-none" id="stat-leads">0</p>
+      <div class="flex items-end gap-0.5 h-5 mt-2" id="leads-sparkline"><!-- filled by JS --></div>
     </a>
+
   </div>
 
   <!-- ══════════════ MIS MINI-APPS ══════════════ -->
   <section class="mb-10">
-    <div class="flex items-center justify-between mb-4">
-      <div>
-        <h2 class="text-lg font-extrabold">Mis Mini-Apps</h2>
-        <p class="text-xs text-on-surface-variant mt-0.5">Experiencias interactivas que acompañan tus productos digitales</p>
+    <div class="flex items-center justify-between mb-5">
+      <div class="flex items-center gap-3">
+        <div class="section-divider bg-secondary"></div>
+        <div>
+          <h2 class="text-sm font-extrabold uppercase tracking-widest text-on-surface">Mis Mini-Apps</h2>
+          <p class="text-[11px] text-on-surface-variant mt-0.5">Experiencias interactivas para tus productos digitales</p>
+        </div>
       </div>
-      <button onclick="openCreateModal()" class="flex items-center gap-1.5 px-4 py-2 bg-primary text-white text-xs font-bold rounded-xl hover:opacity-90 transition-opacity">
+      <button onclick="openCreateModal()" class="flex items-center gap-1.5 px-3.5 py-2 bg-secondary/10 border border-secondary/20 text-secondary text-xs font-bold rounded-xl hover:bg-secondary/15 transition-colors">
         <span class="material-symbols-outlined text-sm">add</span>Nueva Mini-App
       </button>
     </div>
@@ -164,17 +180,20 @@
 
   <!-- ══════════════ MIS QUIZZES ══════════════ -->
   <section>
-    <div class="flex items-center justify-between mb-4">
-      <div>
-        <h2 class="text-lg font-extrabold">Mis Quizzes</h2>
-        <p class="text-xs text-on-surface-variant mt-0.5">Embudos de conversión para Facebook Ads y landing pages</p>
+    <div class="flex items-center justify-between mb-5">
+      <div class="flex items-center gap-3">
+        <div class="section-divider bg-primary"></div>
+        <div>
+          <h2 class="text-sm font-extrabold uppercase tracking-widest text-on-surface">Mis Quizzes</h2>
+          <p class="text-[11px] text-on-surface-variant mt-0.5">Embudos de conversión para Facebook Ads y landing pages</p>
+        </div>
       </div>
-      <a href="./generador-ia.html" class="flex items-center gap-1.5 px-4 py-2 bg-surface-container text-on-surface text-xs font-bold rounded-xl border border-outline-variant/20 hover:border-primary/40 transition-colors">
+      <a href="./generador-ia.html" class="flex items-center gap-1.5 px-3.5 py-2 bg-primary/10 border border-primary/20 text-primary text-xs font-bold rounded-xl hover:bg-primary/15 transition-colors">
         <span class="material-symbols-outlined text-sm">add</span>Nuevo Quiz
       </a>
     </div>
 
-    <div id="quizzes-list" class="space-y-3">
+    <div id="quizzes-list" class="space-y-2.5">
       <!-- populated by JS -->
     </div>
   </section>
@@ -318,6 +337,13 @@
 let _currentUser = null;
 
 document.addEventListener('DOMContentLoaded', async () => {
+  // Set welcome date
+  const dateEl = document.getElementById('welcome-date');
+  if (dateEl) {
+    const now = new Date();
+    dateEl.textContent = now.toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long' });
+  }
+
   _currentUser = await Auth.requireAuth();
   if (!_currentUser) return;
   await Promise.all([loadUserInfo(), renderMiniApps(), renderQuizzes()]);
