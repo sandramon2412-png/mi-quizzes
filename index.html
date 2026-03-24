@@ -82,6 +82,20 @@
         .glass-card { background: rgba(38, 38, 38, 0.6); backdrop-filter: blur(20px); }
         .primary-gradient { background: linear-gradient(135deg, #2E5BFF 0%, #144fe5 100%); }
         body { min-height: max(884px, 100dvh); }
+        /* Hero mock animations */
+        .float-1 { animation: float1 4s ease-in-out infinite; }
+        .float-2 { animation: float2 5s ease-in-out infinite; }
+        .float-3 { animation: float3 3.5s ease-in-out infinite; }
+        @keyframes float1 { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-10px)} }
+        @keyframes float2 { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-7px)} }
+        @keyframes float3 { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-13px)} }
+        .bar-anim { animation: growBar 2s ease-out forwards; }
+        @keyframes growBar { from{width:0} }
+        .ping-dot { position:relative; }
+        .ping-dot::before { content:''; position:absolute; top:0; left:0; right:0; bottom:0; border-radius:9999px; animation:ping 1.5s cubic-bezier(0,0,.2,1) infinite; background:inherit; opacity:.6; }
+        @keyframes ping { 75%,100%{transform:scale(2);opacity:0} }
+        .hero-glow { box-shadow: 0 0 80px rgba(46,91,255,0.15), 0 40px 60px rgba(0,0,0,0.4); }
+        .card-glow { box-shadow: 0 8px 32px rgba(0,0,0,0.4), 0 0 0 1px rgba(255,255,255,0.06); }
     </style>
 </head>
 <body class="bg-background text-on-background selection:bg-primary/30 selection:text-primary">
@@ -102,7 +116,7 @@
 </nav>
 </header>
 <main class="relative">
-<section class="pt-24 pb-32 px-6 max-w-7xl mx-auto relative overflow-hidden">
+<section class="pt-24 pb-32 px-6 max-w-7xl mx-auto relative overflow-visible">
 <div class="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full pointer-events-none">
 <div class="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-primary/10 blur-[120px] rounded-full"></div>
 <div class="absolute bottom-[-10%] right-[-10%] w-[30%] h-[30%] bg-tertiary/5 blur-[100px] rounded-full"></div>
@@ -123,27 +137,151 @@
 <a class="px-10 py-4 rounded-lg font-bold text-primary border border-outline-variant/30 hover:bg-surface-container-low transition-all duration-400 inline-block text-center" href="./login.html">Iniciar sesión</a>
 </div>
 </div>
-<div class="mt-20 relative px-4 md:px-0">
-<div class="w-full aspect-video md:aspect-[21/9] rounded-xl overflow-hidden border border-outline-variant/10 surface-container-highest shadow-2xl">
-<img alt="Interface dashboard" class="w-full h-full object-cover opacity-60 mix-blend-luminosity" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAfHbZ508k-IwjfemXlHEjUMTNx18nBlYeVMwDA1NnwEIPfejNvJ43iMQInPFGlqj7YFPV85EsU5Lq9tAwNcgiXvdF2coTTzTIsKWiyiU22GUqm48jraKY8fn-BFH2gAe3hSqpyhMHET5kHxWcmoOpSW8xzLU4D0c-zUdwRicdAk6VB6ndx4VQIgdY8fp9XB-2dimlrSik3W5j_R5XVyjUkqWcd0mg5vyAJ0y3ziksJa-KDvJQWso0kEY4eHYXi_gISTDF9I7d6i8Y"/>
-<div class="absolute inset-0 bg-gradient-to-t from-background via-transparent to-transparent"></div>
-<div class="absolute inset-0 flex items-center justify-center">
-<div class="glass-card p-6 rounded-xl border border-outline-variant/20 max-w-sm">
-<div class="flex items-center gap-4 mb-4">
-<div class="w-10 h-10 rounded-lg primary-gradient flex items-center justify-center">
-<span class="material-symbols-outlined text-white">quiz</span>
-</div>
-<div class="text-sm font-bold">Quiz de Recomendación</div>
-</div>
-<div class="space-y-3">
-<div class="h-2 w-full bg-surface-container rounded-full overflow-hidden">
-<div class="h-full bg-secondary w-3/4"></div>
-</div>
-<div class="text-[10px] text-on-surface-variant uppercase tracking-widest font-bold">75% Completado</div>
-</div>
-</div>
-</div>
-</div>
+<!-- ── HERO VISUAL MOCK ── -->
+<div class="mt-16 relative px-2 md:px-0">
+
+  <!-- Browser window mock -->
+  <div class="relative max-w-4xl mx-auto rounded-2xl overflow-hidden hero-glow" style="background:#0d0d0d;border:1px solid rgba(255,255,255,0.08);">
+    <!-- Browser chrome -->
+    <div class="flex items-center gap-2 px-4 py-3" style="background:#161616;border-bottom:1px solid rgba(255,255,255,0.06);">
+      <div class="w-3 h-3 rounded-full" style="background:#ff5f57;"></div>
+      <div class="w-3 h-3 rounded-full" style="background:#febc2e;"></div>
+      <div class="w-3 h-3 rounded-full" style="background:#28c840;"></div>
+      <div class="flex-1 mx-4">
+        <div class="bg-surface-container-high rounded-md px-3 py-1 text-[11px] text-on-surface-variant/50 font-mono max-w-[280px] mx-auto text-center">luminousstudio.app/quiz?id=ebk-fin-2024</div>
+      </div>
+    </div>
+
+    <!-- App content -->
+    <div class="grid grid-cols-3 gap-0" style="min-height:340px;">
+
+      <!-- LEFT sidebar - quiz list -->
+      <div class="hidden md:flex flex-col p-4 gap-2 border-r" style="border-color:rgba(255,255,255,0.05);background:#111;">
+        <p class="text-[9px] font-bold uppercase tracking-widest text-on-surface-variant/50 mb-1 px-1">Mis Quizzes</p>
+        <!-- quiz items -->
+        <div class="flex items-center gap-2 px-2 py-2 rounded-lg" style="background:rgba(46,91,255,0.12);border:1px solid rgba(46,91,255,0.2);">
+          <div class="w-6 h-6 rounded flex items-center justify-center shrink-0" style="background:#2E5BFF;"><span class="material-symbols-outlined text-white" style="font-size:13px;">quiz</span></div>
+          <div class="min-w-0"><p class="text-[10px] font-bold text-on-surface truncate">Quiz Finanzas</p><p class="text-[9px] text-on-surface-variant">142 leads</p></div>
+        </div>
+        <div class="flex items-center gap-2 px-2 py-2 rounded-lg hover:bg-surface-container transition-colors cursor-pointer">
+          <div class="w-6 h-6 rounded flex items-center justify-center shrink-0" style="background:rgba(105,246,184,0.15);"><span class="material-symbols-outlined text-secondary" style="font-size:13px;">quiz</span></div>
+          <div class="min-w-0"><p class="text-[10px] font-semibold text-on-surface-variant truncate">Quiz Salud</p><p class="text-[9px] text-on-surface-variant/50">89 leads</p></div>
+        </div>
+        <div class="flex items-center gap-2 px-2 py-2 rounded-lg hover:bg-surface-container transition-colors cursor-pointer">
+          <div class="w-6 h-6 rounded flex items-center justify-center shrink-0" style="background:rgba(255,163,233,0.15);"><span class="material-symbols-outlined text-tertiary" style="font-size:13px;">quiz</span></div>
+          <div class="min-w-0"><p class="text-[10px] font-semibold text-on-surface-variant truncate">Quiz Coaching</p><p class="text-[9px] text-on-surface-variant/50">57 leads</p></div>
+        </div>
+        <!-- stats mini -->
+        <div class="mt-auto pt-3 border-t" style="border-color:rgba(255,255,255,0.05);">
+          <p class="text-[9px] font-bold uppercase tracking-widest text-on-surface-variant/40 mb-2">Leads hoy</p>
+          <div class="flex items-end gap-0.5 h-10">
+            <div class="flex-1 rounded-sm" style="height:30%;background:rgba(105,246,184,0.3);"></div>
+            <div class="flex-1 rounded-sm" style="height:55%;background:rgba(105,246,184,0.3);"></div>
+            <div class="flex-1 rounded-sm" style="height:40%;background:rgba(105,246,184,0.3);"></div>
+            <div class="flex-1 rounded-sm" style="height:70%;background:rgba(105,246,184,0.4);"></div>
+            <div class="flex-1 rounded-sm" style="height:60%;background:rgba(105,246,184,0.4);"></div>
+            <div class="flex-1 rounded-sm" style="height:80%;background:rgba(105,246,184,0.5);"></div>
+            <div class="flex-1 rounded-sm" style="height:100%;background:#69f6b8;"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- CENTER main area - quiz question view -->
+      <div class="col-span-3 md:col-span-2 p-5 relative" style="background:linear-gradient(160deg,#0e0e0e 60%,#0a1020 100%);">
+        <!-- Header strip -->
+        <div class="flex items-center justify-between mb-4">
+          <div class="flex items-center gap-2">
+            <span class="text-[10px] font-bold uppercase tracking-widest" style="color:#2E5BFF88;">Quiz Finanzas para Freelancers</span>
+          </div>
+          <span class="text-[9px] font-bold px-2 py-0.5 rounded-full" style="background:rgba(105,246,184,0.12);color:#69f6b8;">Activo</span>
+        </div>
+        <!-- Progress bar -->
+        <div class="w-full h-1 rounded-full mb-5" style="background:rgba(255,255,255,0.06);">
+          <div class="h-full rounded-full bar-anim" style="width:75%;background:linear-gradient(90deg,#2E5BFF,#69f6b8);"></div>
+        </div>
+        <!-- Question -->
+        <h3 class="text-sm font-extrabold text-on-surface mb-4 leading-tight">¿Cuánto llevas en el mundo del freelancing?</h3>
+        <!-- Options -->
+        <div class="space-y-2">
+          <div class="flex items-center gap-3 px-3 py-2.5 rounded-xl" style="background:rgba(46,91,255,0.15);border:1px solid rgba(46,91,255,0.4);">
+            <div class="w-5 h-5 rounded-full flex items-center justify-center shrink-0" style="background:#2E5BFF;"><span class="material-symbols-outlined text-white" style="font-size:11px;font-variation-settings:'FILL' 1;">check</span></div>
+            <span class="text-[11px] font-semibold text-on-surface">Menos de 1 año, estoy empezando</span>
+          </div>
+          <div class="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-surface-container transition-colors" style="border:1px solid rgba(255,255,255,0.06);">
+            <div class="w-5 h-5 rounded-full border shrink-0" style="border-color:rgba(255,255,255,0.15);"></div>
+            <span class="text-[11px] text-on-surface-variant">1 a 3 años de experiencia</span>
+          </div>
+          <div class="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-surface-container transition-colors" style="border:1px solid rgba(255,255,255,0.06);">
+            <div class="w-5 h-5 rounded-full border shrink-0" style="border-color:rgba(255,255,255,0.15);"></div>
+            <span class="text-[11px] text-on-surface-variant">Más de 3 años, soy veterano</span>
+          </div>
+        </div>
+        <!-- Conversion stat badge at bottom -->
+        <div class="absolute bottom-5 right-5">
+          <div class="px-3 py-1.5 rounded-lg text-center card-glow" style="background:#0a0a14;border:1px solid rgba(46,91,255,0.2);">
+            <p class="text-lg font-black" style="background:linear-gradient(135deg,#2E5BFF,#69f6b8);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">43%</p>
+            <p class="text-[8px] font-bold uppercase tracking-wider text-on-surface-variant/50">Conversión</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- Bottom fade -->
+    <div class="absolute inset-x-0 bottom-0 h-16 pointer-events-none" style="background:linear-gradient(to top,#0e0e0e,transparent);"></div>
+  </div>
+
+  <!-- Floating cards -->
+  <!-- Card 1: New lead notification -->
+  <div class="absolute -left-2 md:left-4 top-8 md:top-12 float-1 hidden sm:block">
+    <div class="card-glow rounded-xl p-3 w-52" style="background:rgba(18,18,24,0.95);border:1px solid rgba(105,246,184,0.2);">
+      <div class="flex items-center gap-2 mb-1.5">
+        <div class="ping-dot w-2 h-2 rounded-full shrink-0" style="background:#69f6b8;"></div>
+        <span class="text-[9px] font-bold uppercase tracking-widest text-secondary">Nuevo lead</span>
+      </div>
+      <div class="flex items-center gap-2">
+        <div class="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold shrink-0" style="background:rgba(46,91,255,0.2);color:#2E5BFF;">M</div>
+        <div>
+          <p class="text-[11px] font-bold text-on-surface">María García</p>
+          <p class="text-[9px] text-on-surface-variant">maria@gmail.com</p>
+        </div>
+        <span class="ml-auto text-[9px] px-1.5 py-0.5 rounded-full font-bold text-black" style="background:#69f6b8;">🎯 Emprendedora</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Card 2: AI generation -->
+  <div class="absolute -right-2 md:right-4 top-6 md:top-10 float-2 hidden sm:block">
+    <div class="card-glow rounded-xl p-3 w-44" style="background:rgba(18,18,28,0.95);border:1px solid rgba(46,91,255,0.25);">
+      <div class="flex items-center gap-2 mb-2">
+        <div class="w-6 h-6 rounded-lg flex items-center justify-center" style="background:rgba(46,91,255,0.2);"><span class="material-symbols-outlined text-primary" style="font-size:14px;font-variation-settings:'FILL' 1;">auto_awesome</span></div>
+        <span class="text-[10px] font-bold text-primary">Generando con IA</span>
+      </div>
+      <div class="space-y-1.5">
+        <div class="h-1.5 rounded-full overflow-hidden" style="background:rgba(255,255,255,0.08);">
+          <div class="h-full rounded-full bar-anim" style="width:85%;background:linear-gradient(90deg,#2E5BFF,#69f6b8);"></div>
+        </div>
+        <p class="text-[9px] text-on-surface-variant">5 preguntas · 3 perfiles · CTA</p>
+        <p class="text-[10px] font-bold text-secondary">✓ Listo en 8 segundos</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Card 3: Stats -->
+  <div class="absolute -right-2 md:right-4 bottom-16 md:bottom-20 float-3 hidden md:block">
+    <div class="card-glow rounded-xl p-3 w-44" style="background:rgba(18,18,24,0.95);border:1px solid rgba(255,163,233,0.2);">
+      <p class="text-[9px] font-bold uppercase tracking-widest text-on-surface-variant/50 mb-2">Hoy</p>
+      <div class="flex gap-3">
+        <div>
+          <p class="text-lg font-black text-on-surface">24</p>
+          <p class="text-[9px] text-on-surface-variant/60">Leads</p>
+        </div>
+        <div>
+          <p class="text-lg font-black text-tertiary">↑18%</p>
+          <p class="text-[9px] text-on-surface-variant/60">vs ayer</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
 </div>
 </section>
 <section class="py-24 px-6 bg-surface-container-low">

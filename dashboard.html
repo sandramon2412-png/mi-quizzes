@@ -48,6 +48,11 @@
   ::-webkit-scrollbar-track { background: transparent; }
   ::-webkit-scrollbar-thumb { background: #484847; border-radius: 10px; }
 
+  .stat-card { transition: transform 0.2s, border-color 0.2s; }
+  .stat-card:hover { transform: translateY(-2px); }
+  .sparkline-bar { transition: height 0.6s cubic-bezier(0.16,1,0.3,1); }
+  .count-up { animation: countUp 0.8s cubic-bezier(0.16,1,0.3,1) both; }
+  @keyframes countUp { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:none; } }
   /* Modal animation */
   #modal-overlay { transition: opacity .2s; }
   #modal-overlay.hidden { opacity: 0; pointer-events: none; }
@@ -80,30 +85,64 @@
 <!-- ── MAIN ── -->
 <main class="pt-20 pb-28 px-4 md:px-8 max-w-5xl mx-auto">
 
-  <!-- Welcome + Stats -->
-  <div class="flex flex-wrap items-center justify-between gap-4 mb-8">
+  <!-- Welcome + Quick Actions -->
+  <div class="flex flex-wrap items-center justify-between gap-4 mb-6">
     <div>
       <h1 class="text-2xl font-extrabold tracking-tight">Bienvenido, <span class="text-primary" id="user-name">Curator</span> 👋</h1>
       <p class="text-on-surface-variant text-sm mt-1">Gestiona tus quizzes y mini-apps desde aquí.</p>
     </div>
-    <div class="flex gap-3 flex-wrap">
-      <div class="bg-surface-container rounded-xl px-4 py-2 text-center min-w-[80px]">
-        <p class="text-lg font-extrabold text-primary" id="stat-quizzes">0</p>
-        <p class="text-[10px] text-on-surface-variant uppercase tracking-wider">Quizzes</p>
-      </div>
-      <div class="bg-surface-container rounded-xl px-4 py-2 text-center min-w-[80px]">
-        <p class="text-lg font-extrabold text-secondary" id="stat-apps">0</p>
-        <p class="text-[10px] text-on-surface-variant uppercase tracking-wider">Mini-Apps</p>
-      </div>
-      <div class="bg-surface-container rounded-xl px-4 py-2 text-center min-w-[80px]">
-        <p class="text-lg font-extrabold text-on-surface" id="stat-views">0</p>
-        <p class="text-[10px] text-on-surface-variant uppercase tracking-wider">Vistas</p>
-      </div>
-      <a href="./leads.html" class="bg-surface-container rounded-xl px-4 py-2 text-center min-w-[80px] hover:border hover:border-secondary/30 transition-all block">
-        <p class="text-lg font-extrabold text-secondary" id="stat-leads">0</p>
-        <p class="text-[10px] text-on-surface-variant uppercase tracking-wider">Leads</p>
+    <div class="flex gap-2">
+      <a href="./generador-ia.html" class="flex items-center gap-1.5 px-4 py-2 bg-primary text-white text-xs font-bold rounded-xl hover:opacity-90 transition-opacity shadow-lg shadow-primary/20">
+        <span class="material-symbols-outlined text-sm">add</span>Nuevo Quiz
+      </a>
+      <a href="./leads.html" class="flex items-center gap-1.5 px-4 py-2 bg-surface-container border border-outline-variant/20 text-on-surface-variant text-xs font-bold rounded-xl hover:border-secondary/40 hover:text-secondary transition-colors">
+        <span class="material-symbols-outlined text-sm">group</span>Leads
       </a>
     </div>
+  </div>
+
+  <!-- Stats Grid -->
+  <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-8">
+    <div class="stat-card bg-surface-container rounded-2xl p-4 border border-outline-variant/10 hover:border-primary/30">
+      <div class="flex items-center justify-between mb-2">
+        <span class="text-[10px] font-bold text-on-surface-variant uppercase tracking-widest">Quizzes</span>
+        <div class="w-7 h-7 rounded-lg bg-primary/10 flex items-center justify-center">
+          <span class="material-symbols-outlined text-primary text-sm">quiz</span>
+        </div>
+      </div>
+      <p class="text-2xl font-extrabold text-primary count-up" id="stat-quizzes">0</p>
+    </div>
+    <div class="stat-card bg-surface-container rounded-2xl p-4 border border-outline-variant/10 hover:border-secondary/30">
+      <div class="flex items-center justify-between mb-2">
+        <span class="text-[10px] font-bold text-on-surface-variant uppercase tracking-widest">Mini-Apps</span>
+        <div class="w-7 h-7 rounded-lg bg-secondary/10 flex items-center justify-center">
+          <span class="material-symbols-outlined text-secondary text-sm">deployed_code</span>
+        </div>
+      </div>
+      <p class="text-2xl font-extrabold text-secondary count-up" id="stat-apps">0</p>
+    </div>
+    <div class="stat-card bg-surface-container rounded-2xl p-4 border border-outline-variant/10 hover:border-outline-variant/40">
+      <div class="flex items-center justify-between mb-2">
+        <span class="text-[10px] font-bold text-on-surface-variant uppercase tracking-widest">Vistas</span>
+        <div class="w-7 h-7 rounded-lg bg-surface-container-high flex items-center justify-center">
+          <span class="material-symbols-outlined text-on-surface-variant text-sm">visibility</span>
+        </div>
+      </div>
+      <p class="text-2xl font-extrabold text-on-surface count-up" id="stat-views">0</p>
+    </div>
+    <a href="./leads.html" class="stat-card bg-surface-container rounded-2xl p-4 border border-outline-variant/10 hover:border-secondary/40 block">
+      <div class="flex items-center justify-between mb-2">
+        <span class="text-[10px] font-bold text-on-surface-variant uppercase tracking-widest">Leads</span>
+        <div class="w-7 h-7 rounded-lg bg-secondary/10 flex items-center justify-center">
+          <span class="material-symbols-outlined text-secondary text-sm">group</span>
+        </div>
+      </div>
+      <p class="text-2xl font-extrabold text-secondary count-up" id="stat-leads">0</p>
+      <!-- Sparkline placeholder -->
+      <div class="flex items-end gap-0.5 h-6 mt-2" id="leads-sparkline">
+        <!-- filled by JS -->
+      </div>
+    </a>
   </div>
 
   <!-- ══════════════ MIS MINI-APPS ══════════════ -->
@@ -300,12 +339,34 @@ async function loadUserInfo() {
   } catch {}
 }
 
-// ── Leads count ──────────────────────────────────────────
+// ── Leads count + sparkline ───────────────────────────────
 async function loadLeadsCount() {
   try {
     const leads = await DB.leads.getAll(_currentUser.id);
     document.getElementById('stat-leads').textContent = leads.length;
+    renderLeadsSparkline(leads);
   } catch {}
+}
+
+function renderLeadsSparkline(leads) {
+  const el = document.getElementById('leads-sparkline');
+  if (!el) return;
+  // Build last 7 days buckets
+  const buckets = Array.from({ length: 7 }, (_, i) => {
+    const d = new Date(); d.setHours(0,0,0,0); d.setDate(d.getDate() - (6 - i));
+    return { date: d, count: 0 };
+  });
+  leads.forEach(l => {
+    const d = new Date(l.created_at); d.setHours(0,0,0,0);
+    const b = buckets.find(b => b.date.getTime() === d.getTime());
+    if (b) b.count++;
+  });
+  const max = Math.max(...buckets.map(b => b.count), 1);
+  el.innerHTML = buckets.map((b, i) => {
+    const h = Math.max(4, Math.round((b.count / max) * 24));
+    const isToday = i === 6;
+    return `<div class="sparkline-bar flex-1 rounded-sm ${isToday ? 'bg-secondary' : 'bg-secondary/30'}" style="height:${h}px" title="${b.count} leads"></div>`;
+  }).join('');
 }
 
 // ── Stats ────────────────────────────────────────────────
