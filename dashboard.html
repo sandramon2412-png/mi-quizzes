@@ -64,9 +64,10 @@
     border: 1px solid rgba(46,91,255,0.15);
   }
   /* Stats unified bar */
-  .stats-bar { background: #1a1a1a; border: 1px solid rgba(255,255,255,0.06); border-radius: 16px; overflow: hidden; }
-  .stats-bar .stat-item { border-right: 1px solid rgba(255,255,255,0.05); }
-  .stats-bar .stat-item:last-child { border-right: none; }
+  .stats-bar { background: #1a1a1a; border: 1px solid rgba(255,255,255,0.06); border-radius: 16px; }
+  .stats-bar .stat-item { border-right: 1px solid rgba(255,255,255,0.05); border-radius: 0; }
+  .stats-bar .stat-item:first-child { border-radius: 16px 0 0 16px; }
+  .stats-bar .stat-item:last-child { border-right: none; border-radius: 0 16px 16px 0; }
   /* Section accent */
   .section-head { border-left: 3px solid; padding-left: 12px; }
 
