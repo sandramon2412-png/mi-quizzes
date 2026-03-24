@@ -1,442 +1,392 @@
 <!DOCTYPE html>
-<html class="dark" lang="es"><head>
+<html class="dark" lang="es">
+<head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
 <title>Dashboard | Luminous Studio</title>
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="./supabase-config.js"></script>
 <script src="./app.js"></script>
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
 <script id="tailwind-config">
-      tailwind.config = {
-        darkMode: "class",
-        theme: {
-          extend: {
-            colors: {
-              "on-surface-variant": "#adaaaa",
-              "on-primary-container": "#001b62",
-              "surface-dim": "#0e0e0e",
-              "primary-dim": "#3867fb",
-              "surface-container-lowest": "#000000",
-              "outline": "#767575",
-              "error": "#ff6e84",
-              "primary-container": "#819bff",
-              "primary": "#2E5BFF",
-              "secondary-fixed-dim": "#58e7ab",
-              "tertiary-fixed-dim": "#e883d2",
-              "surface-container-low": "#131313",
-              "on-error": "#490013",
-              "on-secondary-fixed": "#00452d",
-              "secondary-container": "#006c49",
-              "inverse-primary": "#144fe5",
-              "surface-container": "#1a1a1a",
-              "on-primary": "#ffffff",
-              "on-error-container": "#ffb2b9",
-              "tertiary": "#ffa3e9",
-              "surface-bright": "#2c2c2c",
-              "on-tertiary-container": "#5f0656",
-              "inverse-surface": "#fcf9f8",
-              "error-dim": "#d73357",
-              "surface-tint": "#2E5BFF",
-              "error-container": "#a70138",
-              "tertiary-fixed": "#f790e0",
-              "secondary-dim": "#58e7ab",
-              "on-primary-fixed-variant": "#002377",
-              "secondary": "#69f6b8",
-              "on-primary-fixed": "#000000",
-              "on-secondary-container": "#e1ffec",
-              "on-secondary": "#005a3c",
-              "outline-variant": "#484847",
-              "on-tertiary-fixed-variant": "#6a1460",
-              "secondary-fixed": "#69f6b8",
-              "primary-fixed": "#819bff",
-              "on-tertiary-fixed": "#380033",
-              "primary-fixed-dim": "#6d8cff",
-              "tertiary-container": "#f790e0",
-              "on-surface": "#ffffff",
-              "surface": "#0e0e0e",
-              "surface-container-highest": "#262626",
-              "on-tertiary": "#6c1561",
-              "tertiary-dim": "#e883d2",
-              "surface-container-high": "#20201f",
-              "surface-variant": "#262626",
-              "background": "#0e0e0e",
-              "inverse-on-surface": "#565555",
-              "on-secondary-fixed-variant": "#006544",
-              "on-background": "#ffffff"
-            },
-            fontFamily: {
-              "headline": ["Plus Jakarta Sans"],
-              "body": ["Plus Jakarta Sans"],
-              "label": ["Plus Jakarta Sans"]
-            },
-            borderRadius: {"DEFAULT": "0.5rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
-          },
+  tailwind.config = {
+    darkMode: "class",
+    theme: {
+      extend: {
+        colors: {
+          "primary": "#2E5BFF",
+          "primary-dim": "#3867fb",
+          "secondary": "#69f6b8",
+          "tertiary": "#ffa3e9",
+          "surface": "#0e0e0e",
+          "surface-container-lowest": "#000000",
+          "surface-container-low": "#131313",
+          "surface-container": "#1a1a1a",
+          "surface-container-high": "#20201f",
+          "surface-container-highest": "#262626",
+          "surface-bright": "#2c2c2c",
+          "on-surface": "#ffffff",
+          "on-surface-variant": "#adaaaa",
+          "outline": "#767575",
+          "outline-variant": "#484847",
+          "on-primary": "#ffffff",
+          "error": "#ff6e84",
         },
-      }
-    </script>
+        fontFamily: { "sans": ["Plus Jakarta Sans"] },
+        borderRadius: { "DEFAULT": "0.5rem", "lg": "0.5rem", "xl": "0.75rem", "2xl": "1rem", "full": "9999px" },
+      },
+    },
+  }
+</script>
 <style>
-        body { font-family: 'Plus Jakarta Sans', sans-serif; }
-        .material-symbols-outlined {
-            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
-        }
-        .glass-panel {
-            background: rgba(38, 38, 38, 0.6);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-        }
-        .custom-scrollbar::-webkit-scrollbar { width: 4px; }
-        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
-        .custom-scrollbar::-webkit-scrollbar-thumb { background: #484847; border-radius: 10px; }
-    </style>
+  body { font-family: 'Plus Jakarta Sans', sans-serif; }
+  .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+  .glass { background: rgba(26,26,26,0.85); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); }
+  ::-webkit-scrollbar { width: 4px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: #484847; border-radius: 10px; }
+
+  /* Modal animation */
+  #modal-overlay { transition: opacity .2s; }
+  #modal-overlay.hidden { opacity: 0; pointer-events: none; }
+  #modal-box { transition: transform .2s, opacity .2s; }
+  #modal-overlay.hidden #modal-box { transform: scale(.96); opacity: 0; }
+</style>
 </head>
-<body class="bg-surface text-on-surface custom-scrollbar selection:bg-primary/30">
-<!-- TopAppBar -->
-<header class="fixed top-0 w-full z-50 flex justify-between items-center px-8 h-16 bg-[#0E0E0E] shadow-[0_40px_40px_-15px_rgba(46,91,255,0.08)]">
-<div class="flex items-center gap-8">
-<a class="text-xl font-bold tracking-tighter text-primary" href="./dashboard.html">Luminous Studio</a>
-<nav class="hidden md:flex items-center gap-6">
-<a class="text-primary font-semibold text-sm tracking-tight transition-colors duration-400" href="./dashboard.html">Projects</a>
-<a class="text-[#ADAAAA] hover:text-primary text-sm tracking-tight transition-colors duration-400" href="./plantillas.html">Plantillas</a>
-<a class="text-[#ADAAAA] hover:text-primary text-sm tracking-tight transition-colors duration-400" href="./precios.html">Plan</a>
-<a class="text-[#ADAAAA] hover:text-primary text-sm tracking-tight transition-colors duration-400" href="./settings.html">Settings</a>
-</nav>
-</div>
-<div class="flex items-center gap-4">
-<div class="hidden md:flex bg-surface-container-lowest rounded-full px-4 py-1.5 items-center gap-2 border border-outline-variant/20">
-<span class="material-symbols-outlined text-on-surface-variant text-sm" data-icon="search">search</span>
-<input class="bg-transparent border-none focus:ring-0 text-xs w-48 text-on-surface placeholder:text-on-surface-variant" placeholder="Search resources..." type="text"/>
-</div>
-<button class="material-symbols-outlined text-on-surface-variant hover:text-primary transition-colors" data-icon="notifications">notifications</button>
-<a class="material-symbols-outlined text-on-surface-variant hover:text-primary transition-colors" data-icon="settings" href="./settings.html">settings</a>
-<a class="w-8 h-8 rounded-full overflow-hidden border border-primary/20 block" href="./settings.html">
-<img class="w-full h-full object-cover" data-alt="User profile avatar" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCb8fGHN0CXDIGOQsDJr44gJMr4h_2A19WgDG7xn4lqbRe5hcCVhq3pWmYPI-IEnHFIcvCrotJJ6yxayu2isewEhKNGMq5lThqIfldijQTsl6WIcbntzGthL3J3w5VO_pZDPaIMSRQU1n7UfNGO6cdlr5-9uvME7TWEmkw9BZgVSHYGBlj6U5Y2QTAkFGNwjLTxf9nSs3A9mAXRU7SiZL861to-8hMYCZGp3hrNp_kqxStQZxL-VG_bNcA9gmYSIvEIV3ItYlccLjo"/>
-</a>
-</div>
-<div class="absolute bottom-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-[#20201F] to-transparent"></div>
-</header>
-<!-- SideNavBar -->
-<aside class="fixed left-0 top-0 h-full w-64 bg-[#131313] flex flex-col py-6 space-y-2 rounded-r-lg z-40 pt-20">
-<div class="px-6 mb-8">
-<div class="flex items-center gap-3">
-<div class="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center">
-<span class="material-symbols-outlined text-primary" data-icon="grid_view">grid_view</span>
-</div>
-<div>
-<h2 class="text-lg font-bold text-primary tracking-tight leading-none">The Curator</h2>
-<p class="text-[0.75rem] text-on-surface-variant font-medium">Digital Workspace</p>
-</div>
-</div>
-</div>
-<nav class="flex-1 px-4 space-y-1">
-<a class="flex items-center gap-3 bg-[#2C2C2C] text-primary border-l-2 border-primary px-4 py-3 font-medium text-[0.875rem] transition-all duration-400 translate-x-1" href="./dashboard.html">
-<span class="material-symbols-outlined text-sm" data-icon="grid_view">grid_view</span>
-            Projects
-        </a>
-<a class="flex items-center gap-3 text-[#ADAAAA] px-4 py-3 hover:bg-[#20201F] hover:text-primary text-[0.875rem] transition-all duration-400" href="./plantillas.html">
-<span class="material-symbols-outlined text-sm" data-icon="description">description</span>
-            Plantillas
-        </a>
-<a class="flex items-center gap-3 text-[#ADAAAA] px-4 py-3 hover:bg-[#20201F] hover:text-primary text-[0.875rem] transition-all duration-400" href="./precios.html">
-<span class="material-symbols-outlined text-sm" data-icon="credit_card">credit_card</span>
-            Plan
-        </a>
-<a class="flex items-center gap-3 text-[#ADAAAA] px-4 py-3 hover:bg-[#20201F] hover:text-primary text-[0.875rem] transition-all duration-400" href="./settings.html">
-<span class="material-symbols-outlined text-sm" data-icon="settings">settings</span>
-            Settings
-        </a>
-<a class="flex items-center gap-3 text-[#ADAAAA] px-4 py-3 hover:bg-[#20201F] hover:text-primary text-[0.875rem] transition-all duration-400 mt-4" href="./index.html">
-<span class="material-symbols-outlined text-sm" data-icon="logout">logout</span>
-            Cerrar sesión
-        </a>
-</nav>
-<div class="px-6 pt-4 border-t border-outline-variant/10">
-<a class="w-full block text-center bg-gradient-to-r from-primary to-primary-dim text-on-primary py-2.5 rounded-lg text-sm font-bold shadow-lg shadow-primary/10 hover:scale-[0.98] active:scale-95 transition-transform" href="./generador-ia.html">New Quiz</a>
-</div>
-</aside>
-<!-- Main Content -->
-<main class="ml-64 pt-24 pb-12 px-10">
-<!-- Header Section -->
-<header class="mb-10 flex justify-between items-end">
-<div>
-<h1 class="text-[2.5rem] font-extrabold tracking-tight leading-tight text-on-surface">Workspace <span class="text-primary">Overview</span></h1>
-<p class="text-on-surface-variant max-w-xl mt-2">Bienvenido de nuevo, Curator. Aquí tienes el rendimiento de tus eBooks y Mini-Apps de las últimas 24 horas.</p>
-</div>
-<div class="flex gap-3">
-<button class="px-5 py-2 bg-surface-container-high text-on-surface text-sm font-medium rounded-lg border border-outline-variant/20 hover:bg-surface-bright transition-colors">Export Data</button>
-<a class="px-5 py-2 bg-primary text-on-primary text-sm font-bold rounded-lg shadow-lg shadow-primary/10 hover:opacity-90 transition-opacity flex items-center" href="./acceso-exito.html">Launch Mini-App</a>
-</div>
-</header>
-<!-- ====== MIS MINI-APPS (FIJO ARRIBA) ====== -->
-<div id="mis-mini-apps" class="rounded-xl p-6 mb-6" style="background:#1a1a1a;border-left:4px solid #2E5BFF;border:1px solid #2E5BFF33;border-left:4px solid #2E5BFF;">
-  <div class="flex justify-between items-center mb-5">
-    <div>
-      <h2 class="text-lg font-extrabold" style="color:#fff;">Mis Mini-Apps</h2>
-      <p class="text-xs mt-0.5" style="color:#888;">Experiencias interactivas vinculadas a tus productos digitales</p>
-    </div>
-    <button onclick="showNewMiniAppComingSoon()" class="text-xs font-bold flex items-center gap-1 px-3 py-1.5 rounded-lg" style="background:#2E5BFF22;color:#2E5BFF;border:1px solid #2E5BFF55;">
-      <span class="material-symbols-outlined text-sm">add</span>Nueva Mini-App
+<body class="bg-surface text-on-surface min-h-screen">
+
+<!-- ── TOP BAR ── -->
+<header class="fixed top-0 w-full z-50 flex items-center justify-between px-6 h-14 bg-[#0e0e0e] border-b border-white/5">
+  <a class="text-base font-extrabold tracking-tight text-primary" href="./dashboard.html">Luminous Studio</a>
+  <nav class="hidden md:flex items-center gap-5 text-sm">
+    <a class="text-primary font-semibold" href="./dashboard.html">Dashboard</a>
+    <a class="text-on-surface-variant hover:text-primary transition-colors" href="./generador-ia.html">Crear Quiz</a>
+    <a class="text-on-surface-variant hover:text-primary transition-colors" href="./plantillas.html">Plantillas</a>
+    <a class="text-on-surface-variant hover:text-primary transition-colors" href="./leads.html">Leads</a>
+    <a class="text-on-surface-variant hover:text-primary transition-colors" href="./precios.html">Plan</a>
+    <a class="text-on-surface-variant hover:text-primary transition-colors" href="./settings.html">Ajustes</a>
+  </nav>
+  <div class="flex items-center gap-3">
+    <span id="plan-badge" class="text-xs font-bold px-3 py-1 rounded-full border border-primary/40 text-primary hidden md:block">Free</span>
+    <a href="./settings.html" class="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary text-xs font-bold border border-primary/20" id="user-avatar">U</a>
+    <button onclick="Auth.signOut()" class="hidden md:flex items-center gap-1 text-xs text-on-surface-variant hover:text-on-surface transition-colors" title="Cerrar sesión">
+      <span class="material-symbols-outlined text-base">logout</span>
     </button>
   </div>
-  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-    <!-- MANNA DIARIO -->
-    <div class="rounded-xl p-5" style="background:linear-gradient(135deg,#fdf6e9,#f5e6c8);border:1px solid #f59e0b;">
-      <div class="flex items-start justify-between mb-4">
-        <div class="w-11 h-11 rounded-xl flex items-center justify-center text-xl" style="background:linear-gradient(135deg,#f59e0b,#d97706);">🕊️</div>
-        <span class="text-xs font-extrabold uppercase px-2 py-0.5 rounded-full" style="background:#d1fae5;color:#065f46;">Activa</span>
-      </div>
-      <h4 class="font-bold text-sm mb-1" style="color:#3d2b0f;">MANNA DIARIO</h4>
-      <p class="text-xs mb-4" style="color:#92400e;">Devocional bíblico 40 días · Versículo + Quiz + IA Paloma Luz</p>
-      <div class="flex gap-2">
-        <a href="./manna-acceso.html" target="_blank" class="flex-1 py-2 text-white text-xs font-bold rounded-lg text-center" style="background:linear-gradient(90deg,#f59e0b,#d97706);">
-          Abrir App
-        </a>
-        <a href="./manna-app.html" target="_blank" class="w-9 h-9 rounded-lg flex items-center justify-center" style="background:#fff8;border:1px solid #f59e0b;" title="Vista previa">
-          <span class="material-symbols-outlined text-sm" style="color:#d97706;">open_in_new</span>
-        </a>
-      </div>
+</header>
+
+<!-- ── MAIN ── -->
+<main class="pt-20 pb-28 px-4 md:px-8 max-w-5xl mx-auto">
+
+  <!-- Welcome + Stats -->
+  <div class="flex flex-wrap items-center justify-between gap-4 mb-8">
+    <div>
+      <h1 class="text-2xl font-extrabold tracking-tight">Bienvenido, <span class="text-primary" id="user-name">Curator</span> 👋</h1>
+      <p class="text-on-surface-variant text-sm mt-1">Gestiona tus quizzes y mini-apps desde aquí.</p>
     </div>
-    <!-- Slot vacío -->
-    <div class="rounded-xl p-5 flex flex-col items-center justify-center text-center gap-3 cursor-pointer" style="border:2px dashed #333;" onclick="showNewMiniAppComingSoon()">
-      <div class="w-11 h-11 rounded-xl flex items-center justify-center" style="background:#252525;">
-        <span class="material-symbols-outlined text-xl" style="color:#666;">add</span>
+    <div class="flex gap-3 flex-wrap">
+      <div class="bg-surface-container rounded-xl px-4 py-2 text-center min-w-[80px]">
+        <p class="text-lg font-extrabold text-primary" id="stat-quizzes">0</p>
+        <p class="text-[10px] text-on-surface-variant uppercase tracking-wider">Quizzes</p>
       </div>
-      <div>
-        <p class="text-xs font-bold" style="color:#aaa;">Nueva Mini-App</p>
-        <p class="text-xs mt-1" style="color:#555;">Vincula tu próximo producto</p>
+      <div class="bg-surface-container rounded-xl px-4 py-2 text-center min-w-[80px]">
+        <p class="text-lg font-extrabold text-secondary" id="stat-apps">0</p>
+        <p class="text-[10px] text-on-surface-variant uppercase tracking-wider">Mini-Apps</p>
       </div>
+      <div class="bg-surface-container rounded-xl px-4 py-2 text-center min-w-[80px]">
+        <p class="text-lg font-extrabold text-on-surface" id="stat-views">0</p>
+        <p class="text-[10px] text-on-surface-variant uppercase tracking-wider">Vistas</p>
+      </div>
+      <a href="./leads.html" class="bg-surface-container rounded-xl px-4 py-2 text-center min-w-[80px] hover:border hover:border-secondary/30 transition-all block">
+        <p class="text-lg font-extrabold text-secondary" id="stat-leads">0</p>
+        <p class="text-[10px] text-on-surface-variant uppercase tracking-wider">Leads</p>
+      </a>
     </div>
   </div>
-</div>
-<!-- Bento Grid Layout -->
-<div class="grid grid-cols-12 gap-6">
-<!-- 1. Resumen de Ingresos Totales -->
-<section class="col-span-12 lg:col-span-8 bg-surface-container-low rounded-xl p-8 border border-outline-variant/5 shadow-2xl">
-<div class="flex justify-between items-start mb-10">
-<div>
-<h3 class="text-on-surface-variant text-xs font-bold uppercase tracking-[0.15em] mb-1">Revenue Performance</h3>
-<p class="text-3xl font-bold text-on-surface">$14,290.00 <span class="text-secondary text-sm font-normal ml-2">+12.4% vs last week</span></p>
-</div>
-<div class="flex items-center gap-2 bg-surface-container-lowest p-1 rounded-md border border-outline-variant/10">
-<button class="px-3 py-1 text-xs bg-surface-bright text-on-surface rounded font-medium">Weekly</button>
-<button class="px-3 py-1 text-xs text-on-surface-variant hover:text-on-surface transition-colors">Monthly</button>
-</div>
-</div>
-<!-- Bar Chart Placeholder -->
-<div class="h-[280px] w-full flex items-end justify-between gap-4 px-2">
-<div class="flex-1 bg-surface-container-highest/40 hover:bg-primary/40 transition-colors rounded-t-lg h-[40%] relative group">
-<div class="absolute -top-10 left-1/2 -translate-x-1/2 bg-surface-bright px-2 py-1 rounded text-[10px] opacity-0 group-hover:opacity-100 transition-opacity">$2.1k</div>
-</div>
-<div class="flex-1 bg-surface-container-highest/40 hover:bg-primary/40 transition-colors rounded-t-lg h-[65%] relative group">
-<div class="absolute -top-10 left-1/2 -translate-x-1/2 bg-surface-bright px-2 py-1 rounded text-[10px] opacity-0 group-hover:opacity-100 transition-opacity">$3.4k</div>
-</div>
-<div class="flex-1 bg-surface-container-highest/40 hover:bg-primary/40 transition-colors rounded-t-lg h-[50%] relative group">
-<div class="absolute -top-10 left-1/2 -translate-x-1/2 bg-surface-bright px-2 py-1 rounded text-[10px] opacity-0 group-hover:opacity-100 transition-opacity">$2.8k</div>
-</div>
-<div class="flex-1 bg-surface-container-highest/40 hover:bg-primary/40 transition-colors rounded-t-lg h-[85%] relative group">
-<div class="absolute -top-10 left-1/2 -translate-x-1/2 bg-surface-bright px-2 py-1 rounded text-[10px] opacity-0 group-hover:opacity-100 transition-opacity">$4.1k</div>
-</div>
-<div class="flex-1 bg-primary rounded-t-lg h-[100%] relative group">
-<div class="absolute -top-10 left-1/2 -translate-x-1/2 bg-surface-bright px-2 py-1 rounded text-[10px] opacity-0 group-hover:opacity-100 transition-opacity">$5.0k</div>
-</div>
-<div class="flex-1 bg-surface-container-highest/40 hover:bg-primary/40 transition-colors rounded-t-lg h-[75%] relative group">
-<div class="absolute -top-10 left-1/2 -translate-x-1/2 bg-surface-bright px-2 py-1 rounded text-[10px] opacity-0 group-hover:opacity-100 transition-opacity">$3.8k</div>
-</div>
-<div class="flex-1 bg-surface-container-highest/40 hover:bg-primary/40 transition-colors rounded-t-lg h-[60%] relative group">
-<div class="absolute -top-10 left-1/2 -translate-x-1/2 bg-surface-bright px-2 py-1 rounded text-[10px] opacity-0 group-hover:opacity-100 transition-opacity">$3.0k</div>
-</div>
-</div>
-<div class="flex justify-between mt-4 text-[10px] font-bold text-on-surface-variant uppercase tracking-widest px-2">
-<span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span><span>Sun</span>
-</div>
-</section>
-<!-- 2. Tasa de Conversión de Quizzes -->
-<section class="col-span-12 lg:col-span-4 bg-surface-container-low rounded-xl p-8 border border-outline-variant/5 flex flex-col items-center justify-center text-center">
-<h3 class="text-on-surface-variant text-xs font-bold uppercase tracking-[0.15em] mb-8 w-full text-left">Quiz Conversion</h3>
-<div class="relative w-48 h-48 mb-8">
-<!-- Circular Chart SVG -->
-<svg class="w-full h-full -rotate-90" viewbox="0 0 36 36">
-<circle class="stroke-surface-container-highest" cx="18" cy="18" fill="none" r="16" stroke-width="3"></circle>
-<circle class="stroke-secondary" cx="18" cy="18" fill="none" r="16" stroke-dasharray="68, 100" stroke-linecap="round" stroke-width="3"></circle>
-</svg>
-<div class="absolute inset-0 flex flex-col items-center justify-center">
-<span class="text-4xl font-extrabold text-on-surface">68%</span>
-<span class="text-[10px] text-on-surface-variant uppercase tracking-widest font-bold">Conversion</span>
-</div>
-</div>
-<div class="w-full space-y-3">
-<div class="flex justify-between items-center text-sm">
-<div class="flex items-center gap-2">
-<span class="w-2 h-2 rounded-full bg-secondary"></span>
-<span class="text-on-surface">Subscribed</span>
-</div>
-<span class="font-bold">4,120</span>
-</div>
-<div class="flex justify-between items-center text-sm">
-<div class="flex items-center gap-2">
-<span class="w-2 h-2 rounded-full bg-surface-container-highest"></span>
-<span class="text-on-surface-variant">Dropped</span>
-</div>
-<span class="text-on-surface-variant">1,940</span>
-</div>
-</div>
-</section>
-<!-- 3b. Mis Quizzes -->
-<section class="col-span-12 lg:col-span-7 bg-surface-container-low rounded-xl p-8 border border-outline-variant/5">
-<div class="flex justify-between items-center mb-6">
-<h3 class="text-on-surface-variant text-xs font-bold uppercase tracking-[0.15em]">Mis Quizzes</h3>
-<a class="text-primary text-xs font-bold hover:underline flex items-center gap-1" href="./generador-ia.html">
-  <span class="material-symbols-outlined text-sm">add</span>Nuevo Quiz
-</a>
-</div>
-<div id="quizzes-list" class="space-y-3">
-  <!-- Populated by JS -->
-</div>
-</section>
-<!-- 4. Actividad reciente de leads -->
-<section class="col-span-12 lg:col-span-5 bg-surface-container-low rounded-xl p-8 border border-outline-variant/5">
-<div class="flex justify-between items-center mb-6">
-<h3 class="text-on-surface-variant text-xs font-bold uppercase tracking-[0.15em]">Recent Leads</h3>
-<span class="bg-primary/10 text-primary text-[10px] font-extrabold px-2 py-0.5 rounded-full uppercase tracking-tighter">Live</span>
-</div>
-<div class="overflow-hidden">
-<table class="w-full text-left">
-<thead>
-<tr class="text-[10px] font-bold text-on-surface-variant uppercase tracking-widest border-b border-outline-variant/10">
-<th class="pb-3">User</th>
-<th class="pb-3">Date</th>
-<th class="pb-3 text-right">Action</th>
-</tr>
-</thead>
-<tbody class="divide-y divide-outline-variant/5">
-<tr class="hover:bg-surface-container-highest/20 transition-colors">
-<td class="py-4">
-<div class="flex items-center gap-3">
-<div class="w-8 h-8 rounded-full bg-surface-container-highest flex items-center justify-center text-[10px] font-bold border border-outline-variant/20">AM</div>
-<div>
-<p class="text-xs font-semibold text-on-surface">Alex Martinez</p>
-<p class="text-[10px] text-on-surface-variant">alex@studio.io</p>
-</div>
-</div>
-</td>
-<td class="py-4">
-<p class="text-[10px] text-on-surface-variant">2m ago</p>
-</td>
-<td class="py-4 text-right">
-<span class="text-[10px] font-bold text-secondary uppercase">Purchased</span>
-</td>
-</tr>
-<tr class="hover:bg-surface-container-highest/20 transition-colors">
-<td class="py-4">
-<div class="flex items-center gap-3">
-<div class="w-8 h-8 rounded-full bg-surface-container-highest flex items-center justify-center text-[10px] font-bold border border-outline-variant/20">SK</div>
-<div>
-<p class="text-xs font-semibold text-on-surface">Sarah Koenig</p>
-<p class="text-[10px] text-on-surface-variant">sk@agency.com</p>
-</div>
-</div>
-</td>
-<td class="py-4">
-<p class="text-[10px] text-on-surface-variant">15m ago</p>
-</td>
-<td class="py-4 text-right">
-<span class="text-[10px] font-bold text-primary uppercase">Quiz Completed</span>
-</td>
-</tr>
-<tr class="hover:bg-surface-container-highest/20 transition-colors">
-<td class="py-4">
-<div class="flex items-center gap-3">
-<div class="w-8 h-8 rounded-full bg-surface-container-highest flex items-center justify-center text-[10px] font-bold border border-outline-variant/20">JL</div>
-<div>
-<p class="text-xs font-semibold text-on-surface">James Lee</p>
-<p class="text-[10px] text-on-surface-variant">j.lee@tech.net</p>
-</div>
-</div>
-</td>
-<td class="py-4">
-<p class="text-[10px] text-on-surface-variant">1h ago</p>
-</td>
-<td class="py-4 text-right">
-<span class="text-[10px] font-bold text-secondary uppercase">Purchased</span>
-</td>
-</tr>
-<tr class="hover:bg-surface-container-highest/20 transition-colors">
-<td class="py-4">
-<div class="flex items-center gap-3">
-<div class="w-8 h-8 rounded-full bg-surface-container-highest flex items-center justify-center text-[10px] font-bold border border-outline-variant/20">RW</div>
-<div>
-<p class="text-xs font-semibold text-on-surface">Rachel Wong</p>
-<p class="text-[10px] text-on-surface-variant">rwong@ux.ui</p>
-</div>
-</div>
-</td>
-<td class="py-4">
-<p class="text-[10px] text-on-surface-variant">3h ago</p>
-</td>
-<td class="py-4 text-right">
-<span class="text-[10px] font-bold text-on-surface-variant uppercase">Subscribed</span>
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-<button class="w-full mt-6 py-2 text-[10px] font-bold uppercase tracking-widest text-on-surface-variant hover:text-primary transition-colors">Load More History</button>
-</section>
-</div>
+
+  <!-- ══════════════ MIS MINI-APPS ══════════════ -->
+  <section class="mb-10">
+    <div class="flex items-center justify-between mb-4">
+      <div>
+        <h2 class="text-lg font-extrabold">Mis Mini-Apps</h2>
+        <p class="text-xs text-on-surface-variant mt-0.5">Experiencias interactivas que acompañan tus productos digitales</p>
+      </div>
+      <button onclick="openCreateModal()" class="flex items-center gap-1.5 px-4 py-2 bg-primary text-white text-xs font-bold rounded-xl hover:opacity-90 transition-opacity">
+        <span class="material-symbols-outlined text-sm">add</span>Nueva Mini-App
+      </button>
+    </div>
+
+    <div id="mini-apps-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+      <!-- populated by JS -->
+    </div>
+  </section>
+
+  <!-- ══════════════ MIS QUIZZES ══════════════ -->
+  <section>
+    <div class="flex items-center justify-between mb-4">
+      <div>
+        <h2 class="text-lg font-extrabold">Mis Quizzes</h2>
+        <p class="text-xs text-on-surface-variant mt-0.5">Embudos de conversión para Facebook Ads y landing pages</p>
+      </div>
+      <a href="./generador-ia.html" class="flex items-center gap-1.5 px-4 py-2 bg-surface-container text-on-surface text-xs font-bold rounded-xl border border-outline-variant/20 hover:border-primary/40 transition-colors">
+        <span class="material-symbols-outlined text-sm">add</span>Nuevo Quiz
+      </a>
+    </div>
+
+    <div id="quizzes-list" class="space-y-3">
+      <!-- populated by JS -->
+    </div>
+  </section>
 </main>
-<!-- Floating Dock (Navigation Replacement) -->
-<div class="fixed bottom-8 left-1/2 -translate-x-1/2 glass-panel border border-outline-variant/10 rounded-full px-6 py-3 flex items-center gap-8 shadow-2xl z-50">
-<a class="flex flex-col items-center gap-0.5 text-on-surface-variant hover:text-primary transition-colors" href="./dashboard.html">
-<span class="material-symbols-outlined text-xl" data-icon="dashboard">dashboard</span>
-<span class="text-[10px] font-bold uppercase tracking-tighter">Build</span>
-</a>
-<a class="flex flex-col items-center gap-0.5 text-on-surface-variant hover:text-primary transition-colors" href="./plantillas.html">
-<span class="material-symbols-outlined text-xl" data-icon="apps">apps</span>
-<span class="text-[10px] font-bold uppercase tracking-tighter">Library</span>
-</a>
-<a class="flex flex-col items-center gap-0.5 text-on-surface-variant hover:text-primary transition-colors" href="./resultado-quiz.html">
-<span class="material-symbols-outlined text-xl" data-icon="bar_chart">bar_chart</span>
-<span class="text-[10px] font-bold uppercase tracking-tighter">Sales</span>
-</a>
-<a class="flex flex-col items-center gap-0.5 text-on-surface-variant hover:text-primary transition-colors" href="./settings.html">
-<span class="material-symbols-outlined text-xl" data-icon="person">person</span>
-<span class="text-[10px] font-bold uppercase tracking-tighter">Account</span>
-</a>
-<div class="w-px h-6 bg-outline-variant/20"></div>
-<a class="w-10 h-10 bg-primary rounded-full flex items-center justify-center text-on-primary hover:rotate-90 transition-transform duration-500" href="./generador-ia.html">
-<span class="material-symbols-outlined" data-icon="add">add</span>
-</a>
+
+<!-- ── FLOATING DOCK ── -->
+<div class="fixed bottom-6 left-1/2 -translate-x-1/2 glass border border-white/5 rounded-full px-5 py-3 flex items-center gap-6 shadow-2xl z-50">
+  <a class="flex flex-col items-center gap-0.5 text-primary" href="./dashboard.html">
+    <span class="material-symbols-outlined text-xl">dashboard</span>
+    <span class="text-[9px] font-bold uppercase tracking-tighter">Inicio</span>
+  </a>
+  <a class="flex flex-col items-center gap-0.5 text-on-surface-variant hover:text-primary transition-colors" href="./plantillas.html">
+    <span class="material-symbols-outlined text-xl">apps</span>
+    <span class="text-[9px] font-bold uppercase tracking-tighter">Plantillas</span>
+  </a>
+  <a class="flex flex-col items-center gap-0.5 text-on-surface-variant hover:text-primary transition-colors" href="./leads.html">
+    <span class="material-symbols-outlined text-xl">group</span>
+    <span class="text-[9px] font-bold uppercase tracking-tighter">Leads</span>
+  </a>
+  <a class="flex flex-col items-center gap-0.5 text-on-surface-variant hover:text-primary transition-colors" href="./settings.html">
+    <span class="material-symbols-outlined text-xl">person</span>
+    <span class="text-[9px] font-bold uppercase tracking-tighter">Cuenta</span>
+  </a>
+  <div class="w-px h-5 bg-white/10"></div>
+  <button onclick="openCreateModal()" class="w-10 h-10 bg-primary rounded-full flex items-center justify-center text-white hover:scale-105 transition-transform shadow-lg shadow-primary/20">
+    <span class="material-symbols-outlined">add</span>
+  </button>
 </div>
+
+<!-- ══════════════ MODAL: NUEVA MINI-APP ══════════════ -->
+<div id="modal-overlay" class="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 hidden" onclick="handleOverlayClick(event)">
+  <div id="modal-box" class="bg-[#131313] border border-white/10 rounded-2xl w-full max-w-lg mx-4 p-6 shadow-2xl">
+    <div class="flex items-center justify-between mb-5">
+      <h3 class="text-lg font-extrabold">Nueva Mini-App</h3>
+      <button onclick="closeModal()" class="w-8 h-8 rounded-lg bg-surface-container flex items-center justify-center text-on-surface-variant hover:text-on-surface transition-colors">
+        <span class="material-symbols-outlined text-sm">close</span>
+      </button>
+    </div>
+
+    <form id="mini-app-form" onsubmit="handleCreateMiniApp(event)" class="space-y-4">
+      <!-- Nombre + Emoji -->
+      <div class="flex gap-3">
+        <div class="w-20">
+          <label class="text-xs text-on-surface-variant font-semibold block mb-1.5">Ícono</label>
+          <input type="text" id="ma-icon" value="🚀" maxlength="2"
+            class="w-full bg-surface-container border border-outline-variant/30 rounded-xl px-3 py-2.5 text-xl text-center focus:ring-1 focus:ring-primary focus:border-primary outline-none transition"
+            placeholder="🚀"/>
+        </div>
+        <div class="flex-1">
+          <label class="text-xs text-on-surface-variant font-semibold block mb-1.5">Nombre de la Mini-App *</label>
+          <input type="text" id="ma-name" required maxlength="60"
+            class="w-full bg-surface-container border border-outline-variant/30 rounded-xl px-4 py-2.5 text-sm focus:ring-1 focus:ring-primary focus:border-primary outline-none transition placeholder:text-on-surface-variant/50"
+            placeholder="Ej: Tracker de Hábitos para mi eBook"/>
+        </div>
+      </div>
+
+      <!-- Tipo -->
+      <div>
+        <label class="text-xs text-on-surface-variant font-semibold block mb-1.5">Tipo de Mini-App *</label>
+        <select id="ma-type" required class="w-full bg-surface-container border border-outline-variant/30 rounded-xl px-4 py-2.5 text-sm focus:ring-1 focus:ring-primary outline-none transition">
+          <option value="">Selecciona un tipo...</option>
+          <option value="devocional">🕊️ Devocional / Reflexión diaria</option>
+          <option value="checklist">✅ Checklist interactivo</option>
+          <option value="tracker">📊 Tracker de progreso</option>
+          <option value="calculadora">🧮 Calculadora / Simulador</option>
+          <option value="planificador">📅 Planificador</option>
+          <option value="quiz-embed">🎯 Quiz embebido</option>
+          <option value="generador">✨ Generador de contenido con IA</option>
+        </select>
+      </div>
+
+      <!-- Nicho / Producto -->
+      <div class="grid grid-cols-2 gap-3">
+        <div>
+          <label class="text-xs text-on-surface-variant font-semibold block mb-1.5">Nicho / Tema *</label>
+          <input type="text" id="ma-niche" required maxlength="60"
+            class="w-full bg-surface-container border border-outline-variant/30 rounded-xl px-4 py-2.5 text-sm focus:ring-1 focus:ring-primary outline-none transition placeholder:text-on-surface-variant/50"
+            placeholder="Ej: finanzas, salud, fe..."/>
+        </div>
+        <div>
+          <label class="text-xs text-on-surface-variant font-semibold block mb-1.5">Producto asociado</label>
+          <input type="text" id="ma-product" maxlength="60"
+            class="w-full bg-surface-container border border-outline-variant/30 rounded-xl px-4 py-2.5 text-sm focus:ring-1 focus:ring-primary outline-none transition placeholder:text-on-surface-variant/50"
+            placeholder="Ej: Mi eBook de Finanzas"/>
+        </div>
+      </div>
+
+      <!-- Descripción -->
+      <div>
+        <label class="text-xs text-on-surface-variant font-semibold block mb-1.5">Descripción corta</label>
+        <textarea id="ma-desc" rows="2" maxlength="200"
+          class="w-full bg-surface-container border border-outline-variant/30 rounded-xl px-4 py-2.5 text-sm focus:ring-1 focus:ring-primary outline-none transition resize-none placeholder:text-on-surface-variant/50"
+          placeholder="¿Qué hace esta mini-app? ¿Para qué le sirve al usuario?"></textarea>
+      </div>
+
+      <!-- Códigos de acceso -->
+      <div>
+        <label class="text-xs text-on-surface-variant font-semibold block mb-1.5">
+          Códigos de acceso
+          <span class="font-normal text-on-surface-variant/60 ml-1">(separados por comas · dejar vacío = acceso libre)</span>
+        </label>
+        <input type="text" id="ma-codes"
+          class="w-full bg-surface-container border border-outline-variant/30 rounded-xl px-4 py-2.5 text-sm focus:ring-1 focus:ring-primary outline-none transition placeholder:text-on-surface-variant/50"
+          placeholder="CODIGO1, CODIGO2, VIP2024"/>
+      </div>
+
+      <!-- AI toggle -->
+      <div class="flex items-center gap-3 p-3 bg-primary/5 border border-primary/20 rounded-xl">
+        <span class="material-symbols-outlined text-primary text-xl">auto_awesome</span>
+        <div class="flex-1">
+          <p class="text-xs font-bold text-primary">Generar ideas con IA</p>
+          <p class="text-[11px] text-on-surface-variant">Claude sugerirá funciones específicas para tu nicho</p>
+        </div>
+        <label class="relative inline-flex items-center cursor-pointer">
+          <input type="checkbox" id="ma-ai" class="sr-only peer"/>
+          <div class="w-9 h-5 bg-surface-container-highest rounded-full peer-checked:bg-primary transition-colors peer-focus:ring-1 peer-focus:ring-primary">
+            <div class="absolute top-0.5 left-0.5 w-4 h-4 bg-white rounded-full transition-all peer-checked:translate-x-4 shadow"></div>
+          </div>
+        </label>
+      </div>
+
+      <div id="ai-ideas-box" class="hidden space-y-2"></div>
+
+      <!-- Actions -->
+      <div class="flex gap-3 pt-1">
+        <button type="button" id="ai-btn" onclick="generateIdeas()"
+          class="px-4 py-2.5 bg-surface-container text-on-surface text-xs font-bold rounded-xl border border-outline-variant/20 hover:border-primary/40 transition-colors flex items-center gap-1.5">
+          <span class="material-symbols-outlined text-sm text-primary">auto_awesome</span>Ideas con IA
+        </button>
+        <button type="submit"
+          class="flex-1 py-2.5 bg-primary text-white text-sm font-extrabold rounded-xl hover:opacity-90 transition-opacity shadow-lg shadow-primary/20">
+          Crear Mini-App
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- ══════════════ SCRIPTS ══════════════ -->
 <script>
-document.addEventListener('DOMContentLoaded', () => {
-  renderQuizList();
-  updateStats();
+let _currentUser = null;
+
+document.addEventListener('DOMContentLoaded', async () => {
+  _currentUser = await Auth.requireAuth();
+  if (!_currentUser) return;
+  await Promise.all([loadUserInfo(), renderMiniApps(), renderQuizzes()]);
+  loadLeadsCount();
 });
 
-function renderQuizList() {
+// ── User info ────────────────────────────────────────────
+async function loadUserInfo() {
+  try {
+    const profile = await DB.profiles.get(_currentUser.id);
+    const name = profile?.name || _currentUser.email.split('@')[0];
+    const plan = profile?.plan || 'free';
+    document.getElementById('user-name').textContent = name;
+    document.getElementById('user-avatar').textContent = name.charAt(0).toUpperCase();
+    const b = getPlanBadge(plan);
+    const badge = document.getElementById('plan-badge');
+    badge.textContent = b.label;
+    badge.className = `text-xs font-bold px-3 py-1 rounded-full border hidden md:block ${b.color}`;
+  } catch {}
+}
+
+// ── Leads count ──────────────────────────────────────────
+async function loadLeadsCount() {
+  try {
+    const leads = await DB.leads.getAll(_currentUser.id);
+    document.getElementById('stat-leads').textContent = leads.length;
+  } catch {}
+}
+
+// ── Stats ────────────────────────────────────────────────
+async function updateStats(quizzes, apps) {
+  document.getElementById('stat-quizzes').textContent = quizzes.length;
+  document.getElementById('stat-apps').textContent = apps.length;
+  try {
+    const statsMap = await DB.analytics.summaryAll(_currentUser.id);
+    let views = 0;
+    quizzes.forEach(q => { views += (statsMap[q.id]?.views || 0); });
+    document.getElementById('stat-views').textContent = views;
+  } catch {}
+}
+
+// ── Mini-Apps ────────────────────────────────────────────
+async function renderMiniApps() {
+  const container = document.getElementById('mini-apps-grid');
+  container.innerHTML = '<p class="text-xs text-on-surface-variant col-span-3 py-6 text-center animate-pulse">Cargando...</p>';
+  let apps = [];
+  try {
+    apps = await DB.miniApps.getAll(_currentUser.id);
+  } catch (err) {
+    container.innerHTML = `<p class="text-xs text-error col-span-3 py-4">Error al cargar mini-apps: ${esc(err.message)}</p>`;
+    return;
+  }
+
+  const dynamicCards = apps.map(app => buildAppCard(app)).join('');
+  const addCard = `
+    <div onclick="openCreateModal()" class="rounded-2xl p-5 flex flex-col items-center justify-center text-center gap-3 cursor-pointer border-2 border-dashed border-outline-variant/30 hover:border-primary/40 hover:bg-primary/5 transition-all min-h-[160px]">
+      <div class="w-11 h-11 rounded-xl bg-surface-container flex items-center justify-center">
+        <span class="material-symbols-outlined text-xl text-on-surface-variant">add</span>
+      </div>
+      <div>
+        <p class="text-xs font-bold text-on-surface-variant">Nueva Mini-App</p>
+        <p class="text-xs text-on-surface-variant/50 mt-0.5">Conecta tu producto digital</p>
+      </div>
+    </div>`;
+
+  container.innerHTML = dynamicCards + addCard;
+
+  // Also update quizzes stat (already loaded)
+  try {
+    const quizzes = await DB.quizzes.getAll(_currentUser.id);
+    await updateStats(quizzes, apps);
+  } catch {}
+}
+
+// ── Quizzes ──────────────────────────────────────────────
+async function renderQuizzes() {
   const container = document.getElementById('quizzes-list');
-  const quizzes = Quizzes.getAll();
+  container.innerHTML = '<p class="text-xs text-on-surface-variant py-6 text-center animate-pulse">Cargando quizzes...</p>';
+  let quizzes = [];
+  try {
+    quizzes = await DB.quizzes.getAll(_currentUser.id);
+  } catch (err) {
+    container.innerHTML = `<p class="text-xs text-error py-4">Error: ${esc(err.message)}</p>`;
+    return;
+  }
+  document.getElementById('stat-quizzes').textContent = quizzes.length;
 
   if (!quizzes.length) {
     container.innerHTML = `
-      <div class="text-center py-10">
+      <div class="text-center py-12 bg-surface-container rounded-2xl border border-outline-variant/10">
         <span class="material-symbols-outlined text-4xl text-on-surface-variant/20">quiz</span>
-        <p class="text-on-surface-variant text-sm mt-3">No tienes quizzes todavía.</p>
-        <a href="./generador-ia.html" class="inline-block mt-3 px-5 py-2 bg-primary text-white rounded-lg text-xs font-bold hover:opacity-90 transition-all">
-          Crear mi primer quiz
+        <p class="text-on-surface-variant text-sm mt-3">Aún no tienes quizzes.</p>
+        <a href="./generador-ia.html" class="inline-block mt-4 px-5 py-2.5 bg-primary text-white rounded-xl text-xs font-bold hover:opacity-90 transition-opacity">
+          Crear mi primer quiz con IA
         </a>
       </div>`;
     return;
   }
 
+  let statsMap = {};
+  try { statsMap = await DB.analytics.summaryAll(_currentUser.id); } catch {}
+
   container.innerHTML = quizzes.map(q => {
-    const stats = Analytics.get(q.id);
-    const cr    = Analytics.conversionRate(q.id);
-    const icon  = q.status === 'active' ? 'check_circle' : 'draft';
-    const color = q.status === 'active' ? 'text-secondary' : 'text-on-surface-variant';
+    const s = statsMap[q.id] || { views: 0, completions: 0 };
+    const cr = s.views > 0 ? Math.round((s.completions / s.views) * 100) : 0;
     return `
-      <div class="group flex items-center justify-between p-4 rounded-xl hover:bg-surface-container-high transition-all">
-        <div class="flex items-center gap-3 min-w-0">
+      <div class="group flex items-center justify-between p-4 rounded-2xl bg-surface-container border border-outline-variant/10 hover:border-primary/20 transition-all gap-3">
+        <div class="flex items-center gap-3 min-w-0 flex-1">
           <div class="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
             <span class="material-symbols-outlined text-primary text-lg">quiz</span>
           </div>
@@ -445,69 +395,195 @@ function renderQuizList() {
             <p class="text-xs text-on-surface-variant">${esc(q.product || q.niche || '')} · ${formatDate(q.created)}</p>
           </div>
         </div>
-        <div class="flex items-center gap-4 shrink-0 ml-3">
-          <div class="text-right hidden md:block">
-            <p class="text-xs font-bold text-on-surface">${stats.views} vistas</p>
+        <div class="hidden md:flex items-center gap-4 text-right shrink-0">
+          <div>
+            <p class="text-xs font-bold text-on-surface">${s.views} vistas</p>
             <p class="text-[10px] ${cr >= 50 ? 'text-secondary' : 'text-on-surface-variant'}">${cr}% conv.</p>
           </div>
-          <div class="flex gap-1">
-            <a href="./quiz.html?quiz=${q.id}" target="_blank" title="Ver quiz"
-              class="w-8 h-8 rounded-lg bg-surface-container flex items-center justify-center hover:bg-primary/10 transition-colors">
-              <span class="material-symbols-outlined text-on-surface-variant text-sm">open_in_new</span>
-            </a>
-            <a href="./generador-ia.html?id=${q.id}" title="Editar"
-              class="w-8 h-8 rounded-lg bg-surface-container flex items-center justify-center hover:bg-primary/10 transition-colors">
-              <span class="material-symbols-outlined text-on-surface-variant text-sm">edit</span>
-            </a>
-            <button onclick="copyLink('${q.id}')" title="Copiar enlace"
-              class="w-8 h-8 rounded-lg bg-surface-container flex items-center justify-center hover:bg-secondary/10 transition-colors">
-              <span class="material-symbols-outlined text-on-surface-variant text-sm">share</span>
-            </button>
-            <button onclick="deleteQuiz('${q.id}')" title="Eliminar"
-              class="w-8 h-8 rounded-lg bg-surface-container flex items-center justify-center hover:bg-error/10 transition-colors">
-              <span class="material-symbols-outlined text-on-surface-variant text-sm">delete</span>
-            </button>
-          </div>
+          <span class="text-[10px] font-bold uppercase px-2 py-1 rounded-full ${q.status === 'active' ? 'bg-secondary/10 text-secondary' : 'bg-surface-container-high text-on-surface-variant'}">
+            ${q.status === 'active' ? 'Activo' : 'Borrador'}
+          </span>
+        </div>
+        <div class="flex gap-1 shrink-0">
+          <a href="./quiz.html?quiz=${q.id}" target="_blank"
+            class="w-8 h-8 rounded-xl bg-surface-container-high flex items-center justify-center hover:bg-primary/10 transition-colors" title="Ver quiz">
+            <span class="material-symbols-outlined text-on-surface-variant text-sm">open_in_new</span>
+          </a>
+          <a href="./generador-ia.html?id=${q.id}"
+            class="w-8 h-8 rounded-xl bg-surface-container-high flex items-center justify-center hover:bg-primary/10 transition-colors" title="Editar">
+            <span class="material-symbols-outlined text-on-surface-variant text-sm">edit</span>
+          </a>
+          <button onclick="copyLink('${q.id}')"
+            class="w-8 h-8 rounded-xl bg-surface-container-high flex items-center justify-center hover:bg-secondary/10 transition-colors" title="Copiar enlace">
+            <span class="material-symbols-outlined text-on-surface-variant text-sm">share</span>
+          </button>
+          <button onclick="deleteQuiz('${q.id}')"
+            class="w-8 h-8 rounded-xl bg-surface-container-high flex items-center justify-center hover:bg-error/10 transition-colors" title="Eliminar">
+            <span class="material-symbols-outlined text-on-surface-variant text-sm">delete</span>
+          </button>
         </div>
       </div>`;
   }).join('');
 }
 
-function updateStats() {
-  const quizzes = Quizzes.getAll();
-  const allAnalytics = Analytics.getAll();
-  let totalViews = 0, totalConversions = 0;
-  quizzes.forEach(q => {
-    const a = allAnalytics[q.id] || {};
-    totalViews       += a.views       || 0;
-    totalConversions += a.completions || 0;
-  });
-  // Update quiz count chip if exists
-  const el = document.querySelector('[data-stat="quiz-count"]');
-  if (el) el.textContent = quizzes.length;
+function buildAppCard(app) {
+  const typeLabels = {
+    devocional: 'Devocional', checklist: 'Checklist', tracker: 'Tracker',
+    calculadora: 'Calculadora', planificador: 'Planificador',
+    'quiz-embed': 'Quiz', generador: 'Generador IA',
+  };
+  const typeLabel = typeLabels[app.type] || app.type;
+  const icon = app.icon || '⚡';
+  const appUrl = `./mini-app-player.html?id=${app.id}`;
+
+  return `
+    <div class="rounded-2xl p-5 flex flex-col gap-3 bg-surface-container border border-outline-variant/10 hover:border-primary/20 transition-all">
+      <div class="flex items-start justify-between">
+        <div class="w-11 h-11 rounded-xl bg-primary/10 flex items-center justify-center text-2xl">${esc(icon)}</div>
+        <span class="text-[10px] font-extrabold uppercase px-2 py-0.5 rounded-full bg-secondary/10 text-secondary">${esc(typeLabel)}</span>
+      </div>
+      <div>
+        <h4 class="font-extrabold text-sm text-on-surface truncate">${esc(app.name)}</h4>
+        <p class="text-xs text-on-surface-variant mt-0.5 line-clamp-2">${esc(app.description || app.niche || '')}</p>
+      </div>
+      <div class="flex gap-2 mt-auto">
+        <a href="${appUrl}" target="_blank" class="flex-1 py-2 bg-primary text-white text-xs font-bold rounded-xl text-center hover:opacity-90 transition-opacity">Abrir App</a>
+        <button onclick="copyToClipboard(window.location.origin.replace(/\\/[^\\/]*$/, '')+'/mini-app-player.html?id=${app.id}')" class="w-9 h-9 rounded-xl bg-surface-container-high flex items-center justify-center hover:bg-primary/10 transition-colors" title="Copiar enlace">
+          <span class="material-symbols-outlined text-sm text-on-surface-variant">share</span>
+        </button>
+        <button onclick="deleteApp('${app.id}')" class="w-9 h-9 rounded-xl bg-surface-container-high flex items-center justify-center hover:bg-error/10 transition-colors" title="Eliminar">
+          <span class="material-symbols-outlined text-sm text-on-surface-variant">delete</span>
+        </button>
+      </div>
+    </div>`;
+}
+
+async function deleteApp(id) {
+  if (!confirm('¿Eliminar esta mini-app? No se puede deshacer.')) return;
+  try {
+    await DB.miniApps.delete(id);
+    renderMiniApps();
+    showToast('Mini-App eliminada.');
+  } catch (err) {
+    showToast('Error al eliminar: ' + err.message, 'error');
+  }
 }
 
 function copyLink(quizId) {
   copyToClipboard(buildQuizUrl(quizId));
 }
 
-function deleteQuiz(id) {
+async function deleteQuiz(id) {
   if (!confirm('¿Eliminar este quiz? Esta acción no se puede deshacer.')) return;
-  Quizzes.delete(id);
-  renderQuizList();
-  showToast('Quiz eliminado.');
+  try {
+    await DB.quizzes.delete(id);
+    renderQuizzes();
+    showToast('Quiz eliminado.');
+  } catch (err) {
+    showToast('Error al eliminar: ' + err.message, 'error');
+  }
 }
 
-function esc(s) { return String(s||'').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
-
-function copyMiniAppLink(page) {
-  const url = window.location.origin + '/' + page;
-  navigator.clipboard.writeText(url).catch(() => {});
-  showToast('Enlace copiado 🕊️');
+// ── Modal ────────────────────────────────────────────────
+function openCreateModal() {
+  document.getElementById('modal-overlay').classList.remove('hidden');
+  document.getElementById('ma-name').focus();
 }
 
-function showNewMiniAppComingSoon() {
-  showToast('Pronto podrás crear nuevas Mini-Apps desde aquí ✨');
+function closeModal() {
+  document.getElementById('modal-overlay').classList.add('hidden');
+  document.getElementById('mini-app-form').reset();
+  document.getElementById('ai-ideas-box').classList.add('hidden');
+  document.getElementById('ai-ideas-box').innerHTML = '';
 }
+
+function handleOverlayClick(e) {
+  if (e.target === document.getElementById('modal-overlay')) closeModal();
+}
+
+// ── Create Mini-App ──────────────────────────────────────
+async function handleCreateMiniApp(e) {
+  e.preventDefault();
+  const name = document.getElementById('ma-name').value.trim();
+  const type = document.getElementById('ma-type').value;
+  const niche = document.getElementById('ma-niche').value.trim();
+  const product = document.getElementById('ma-product').value.trim();
+  const description = document.getElementById('ma-desc').value.trim();
+  const icon = document.getElementById('ma-icon').value.trim() || '⚡';
+  const codesRaw = document.getElementById('ma-codes').value.trim();
+  const accessCodes = codesRaw ? codesRaw.split(',').map(c => c.trim()).filter(Boolean) : [];
+
+  if (!name || !type || !niche) {
+    showToast('Completa los campos obligatorios.', 'error');
+    return;
+  }
+
+  try {
+    await DB.miniApps.save({ name, type, niche, product, description, icon, accessCodes }, _currentUser.id);
+    closeModal();
+    renderMiniApps();
+    showToast('Mini-App creada correctamente ✨');
+  } catch (err) {
+    showToast('Error al crear: ' + err.message, 'error');
+  }
+}
+
+// ── AI Ideas ─────────────────────────────────────────────
+async function generateIdeas() {
+  const name = document.getElementById('ma-name').value.trim();
+  const niche = document.getElementById('ma-niche').value.trim();
+  const desc = document.getElementById('ma-desc').value.trim();
+
+  if (!name && !niche) {
+    showToast('Escribe el nombre y nicho primero.', 'info');
+    return;
+  }
+
+  const btn = document.getElementById('ai-btn');
+  const box = document.getElementById('ai-ideas-box');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="material-symbols-outlined text-sm animate-spin text-primary">progress_activity</span>Generando...';
+  box.classList.remove('hidden');
+  box.innerHTML = '<p class="text-xs text-on-surface-variant animate-pulse">Claude está pensando en ideas para tu nicho...</p>';
+
+  try {
+    const result = await Claude.generateMiniAppIdeas(name || 'Producto digital', desc, niche);
+    const ideas = result.apps || [];
+    if (!ideas.length) throw new Error('Sin ideas');
+
+    box.innerHTML = `<p class="text-xs font-bold text-primary mb-2">Ideas de IA para tu nicho:</p>` +
+      ideas.map(idea => `
+        <div class="p-3 bg-surface-container rounded-xl border border-primary/10 cursor-pointer hover:border-primary/30 transition-all"
+             onclick="applyIdea(${JSON.stringify(idea).replace(/"/g,'&quot;')})">
+          <div class="flex items-center gap-2 mb-1">
+            <span class="text-base">${esc(idea.icon||'⚡')}</span>
+            <span class="text-xs font-bold text-on-surface">${esc(idea.name)}</span>
+          </div>
+          <p class="text-[11px] text-on-surface-variant">${esc(idea.description)}</p>
+          <p class="text-[10px] text-primary mt-1">${esc(idea.whySellsMore||'')}</p>
+        </div>`).join('');
+  } catch (err) {
+    if (err.message === 'NO_API_KEY') {
+      box.innerHTML = '<p class="text-xs text-on-surface-variant">Configura tu API key de Claude en <a href="./settings.html" class="text-primary underline">Ajustes</a> para usar IA.</p>';
+    } else {
+      box.innerHTML = `<p class="text-xs text-error">Error: ${esc(err.message)}</p>`;
+    }
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = '<span class="material-symbols-outlined text-sm text-primary">auto_awesome</span>Ideas con IA';
+  }
+}
+
+function applyIdea(idea) {
+  if (idea.name) document.getElementById('ma-name').value = idea.name;
+  if (idea.icon) document.getElementById('ma-icon').value = idea.icon;
+  if (idea.type) document.getElementById('ma-type').value = idea.type;
+  if (idea.description) document.getElementById('ma-desc').value = idea.description;
+  showToast('Idea aplicada al formulario ✨');
+}
+
+// ── Utils ────────────────────────────────────────────────
+function esc(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
 </script>
-</body></html>
+</body>
+</html>

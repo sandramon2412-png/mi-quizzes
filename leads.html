@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html class="dark" lang="es">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Mis Leads | Luminous Studio</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="./supabase-config.js"></script>
+<script src="./app.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+  tailwind.config = {
+    darkMode: "class",
+    theme: {
+      extend: {
+        colors: {
+          "primary": "#2E5BFF", "primary-dim": "#3867fb",
+          "secondary": "#69f6b8", "tertiary": "#ffa3e9",
+          "surface": "#0e0e0e", "surface-container-lowest": "#000000",
+          "surface-container-low": "#131313", "surface-container": "#1a1a1a",
+          "surface-container-high": "#20201f", "surface-container-highest": "#262626",
+          "surface-bright": "#2c2c2c", "on-surface": "#ffffff",
+          "on-surface-variant": "#adaaaa", "outline": "#767575",
+          "outline-variant": "#484847", "on-primary": "#ffffff", "error": "#ff6e84",
+        },
+        fontFamily: { "sans": ["Plus Jakarta Sans"] },
+        borderRadius: { "DEFAULT": "0.5rem", "lg": "0.5rem", "xl": "0.75rem", "2xl": "1rem", "full": "9999px" },
+      },
+    },
+  }
+</script>
+<style>
+  body { font-family: 'Plus Jakarta Sans', sans-serif; }
+  .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+  .glass { background: rgba(26,26,26,0.85); backdrop-filter: blur(20px); }
+  ::-webkit-scrollbar { width: 4px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: #484847; border-radius: 10px; }
+</style>
+</head>
+<body class="bg-surface text-on-surface min-h-screen">
+
+<!-- ── TOP BAR ── -->
+<header class="fixed top-0 w-full z-50 flex items-center justify-between px-6 h-14 bg-[#0e0e0e] border-b border-white/5">
+  <a class="text-base font-extrabold tracking-tight text-primary" href="./dashboard.html">Luminous Studio</a>
+  <nav class="hidden md:flex items-center gap-5 text-sm">
+    <a class="text-on-surface-variant hover:text-primary transition-colors" href="./dashboard.html">Dashboard</a>
+    <a class="text-on-surface-variant hover:text-primary transition-colors" href="./generador-ia.html">Crear Quiz</a>
+    <a class="text-on-surface-variant hover:text-primary transition-colors" href="./plantillas.html">Plantillas</a>
+    <a class="text-primary font-semibold" href="./leads.html">Leads</a>
+    <a class="text-on-surface-variant hover:text-primary transition-colors" href="./settings.html">Ajustes</a>
+  </nav>
+  <div class="flex items-center gap-3">
+    <a href="./settings.html" class="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary text-xs font-bold border border-primary/20" id="user-avatar">U</a>
+    <button onclick="Auth.signOut()" class="hidden md:flex items-center gap-1 text-xs text-on-surface-variant hover:text-on-surface transition-colors" title="Cerrar sesión">
+      <span class="material-symbols-outlined text-base">logout</span>
+    </button>
+  </div>
+</header>
+
+<!-- ── MAIN ── -->
+<main class="pt-20 pb-28 px-4 md:px-8 max-w-6xl mx-auto">
+
+  <!-- Header + Actions -->
+  <div class="flex flex-wrap items-center justify-between gap-4 mb-8">
+    <div>
+      <h1 class="text-2xl font-extrabold tracking-tight">Mis Leads</h1>
+      <p class="text-on-surface-variant text-sm mt-1">Contactos capturados a través de tus quizzes.</p>
+    </div>
+    <div class="flex items-center gap-3">
+      <!-- Filter by quiz -->
+      <select id="filter-quiz" onchange="applyFilter()" class="bg-surface-container border border-outline-variant/30 rounded-xl px-4 py-2 text-sm text-on-surface focus:outline-none focus:border-primary transition-colors">
+        <option value="">Todos los quizzes</option>
+      </select>
+      <!-- Export CSV -->
+      <button onclick="exportCSV()" class="flex items-center gap-1.5 px-4 py-2 bg-surface-container border border-outline-variant/30 rounded-xl text-sm font-semibold hover:border-primary/40 transition-colors">
+        <span class="material-symbols-outlined text-sm text-on-surface-variant">download</span>
+        Exportar CSV
+      </button>
+    </div>
+  </div>
+
+  <!-- Stats row -->
+  <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+    <div class="bg-surface-container rounded-xl p-4 border border-outline-variant/10">
+      <p class="text-2xl font-extrabold text-secondary" id="stat-total">—</p>
+      <p class="text-xs text-on-surface-variant mt-1 uppercase tracking-wider">Total leads</p>
+    </div>
+    <div class="bg-surface-container rounded-xl p-4 border border-outline-variant/10">
+      <p class="text-2xl font-extrabold text-primary" id="stat-today">—</p>
+      <p class="text-xs text-on-surface-variant mt-1 uppercase tracking-wider">Hoy</p>
+    </div>
+    <div class="bg-surface-container rounded-xl p-4 border border-outline-variant/10">
+      <p class="text-2xl font-extrabold text-tertiary" id="stat-week">—</p>
+      <p class="text-xs text-on-surface-variant mt-1 uppercase tracking-wider">Esta semana</p>
+    </div>
+    <div class="bg-surface-container rounded-xl p-4 border border-outline-variant/10">
+      <p class="text-2xl font-extrabold text-on-surface" id="stat-quizzes-count">—</p>
+      <p class="text-xs text-on-surface-variant mt-1 uppercase tracking-wider">Quizzes activos</p>
+    </div>
+  </div>
+
+  <!-- Leads table -->
+  <div class="bg-surface-container rounded-2xl border border-outline-variant/10 overflow-hidden">
+
+    <!-- Table header -->
+    <div class="hidden md:grid grid-cols-12 gap-4 px-5 py-3 border-b border-outline-variant/10 text-[11px] font-bold uppercase tracking-widest text-on-surface-variant">
+      <div class="col-span-3">Nombre</div>
+      <div class="col-span-3">Email</div>
+      <div class="col-span-2">Perfil</div>
+      <div class="col-span-2">Quiz</div>
+      <div class="col-span-1">Fecha</div>
+      <div class="col-span-1 text-right">Acción</div>
+    </div>
+
+    <!-- Leads list -->
+    <div id="leads-list">
+      <div class="text-center py-16">
+        <div class="w-8 h-8 border-2 border-primary/30 border-t-primary rounded-full animate-spin mx-auto mb-4"></div>
+        <p class="text-on-surface-variant text-sm">Cargando leads...</p>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<!-- ── FLOATING DOCK ── -->
+<div class="fixed bottom-6 left-1/2 -translate-x-1/2 glass border border-white/5 rounded-full px-5 py-3 flex items-center gap-6 shadow-2xl z-50">
+  <a class="flex flex-col items-center gap-0.5 text-on-surface-variant hover:text-primary transition-colors" href="./dashboard.html">
+    <span class="material-symbols-outlined text-xl">dashboard</span>
+    <span class="text-[9px] font-bold uppercase tracking-tighter">Inicio</span>
+  </a>
+  <a class="flex flex-col items-center gap-0.5 text-on-surface-variant hover:text-primary transition-colors" href="./plantillas.html">
+    <span class="material-symbols-outlined text-xl">apps</span>
+    <span class="text-[9px] font-bold uppercase tracking-tighter">Plantillas</span>
+  </a>
+  <a class="flex flex-col items-center gap-0.5 text-primary" href="./leads.html">
+    <span class="material-symbols-outlined text-xl">group</span>
+    <span class="text-[9px] font-bold uppercase tracking-tighter">Leads</span>
+  </a>
+  <a class="flex flex-col items-center gap-0.5 text-on-surface-variant hover:text-primary transition-colors" href="./settings.html">
+    <span class="material-symbols-outlined text-xl">person</span>
+    <span class="text-[9px] font-bold uppercase tracking-tighter">Cuenta</span>
+  </a>
+  <div class="w-px h-5 bg-white/10"></div>
+  <a href="./generador-ia.html" class="w-10 h-10 bg-primary rounded-full flex items-center justify-center text-white hover:scale-105 transition-transform shadow-lg shadow-primary/20">
+    <span class="material-symbols-outlined">add</span>
+  </a>
+</div>
+
+<script>
+let _allLeads = [];
+let _quizzes  = [];
+let _user     = null;
+
+document.addEventListener('DOMContentLoaded', async () => {
+  _user = await Auth.requireAuth();
+  if (!_user) return;
+
+  // Load avatar
+  try {
+    const p = await DB.profiles.get(_user.id);
+    if (p?.name) document.getElementById('user-avatar').textContent = p.name.charAt(0).toUpperCase();
+  } catch {}
+
+  await loadData();
+});
+
+async function loadData() {
+  try {
+    [_allLeads, _quizzes] = await Promise.all([
+      DB.leads.getAll(_user.id),
+      DB.quizzes.getAll(_user.id),
+    ]);
+  } catch (err) {
+    document.getElementById('leads-list').innerHTML =
+      `<p class="text-error text-sm text-center py-8">Error al cargar: ${esc(err.message)}</p>`;
+    return;
+  }
+
+  updateStats(_allLeads, _quizzes);
+  populateQuizFilter(_quizzes);
+  renderLeads(_allLeads);
+}
+
+function updateStats(leads, quizzes) {
+  const today = new Date(); today.setHours(0,0,0,0);
+  const weekAgo = new Date(today); weekAgo.setDate(weekAgo.getDate() - 7);
+
+  document.getElementById('stat-total').textContent  = leads.length;
+  document.getElementById('stat-today').textContent  = leads.filter(l => new Date(l.created_at) >= today).length;
+  document.getElementById('stat-week').textContent   = leads.filter(l => new Date(l.created_at) >= weekAgo).length;
+  document.getElementById('stat-quizzes-count').textContent = quizzes.length;
+}
+
+function populateQuizFilter(quizzes) {
+  const sel = document.getElementById('filter-quiz');
+  quizzes.forEach(q => {
+    const opt = document.createElement('option');
+    opt.value = q.id;
+    opt.textContent = q.title || 'Sin título';
+    sel.appendChild(opt);
+  });
+}
+
+function applyFilter() {
+  const quizId = document.getElementById('filter-quiz').value;
+  const filtered = quizId ? _allLeads.filter(l => l.quiz_id === quizId) : _allLeads;
+  renderLeads(filtered);
+}
+
+function renderLeads(leads) {
+  const container = document.getElementById('leads-list');
+
+  if (!leads.length) {
+    container.innerHTML = `
+      <div class="text-center py-16 space-y-4">
+        <div class="w-14 h-14 mx-auto rounded-full bg-surface-container-high flex items-center justify-center">
+          <span class="material-symbols-outlined text-on-surface-variant text-2xl">group_off</span>
+        </div>
+        <p class="text-on-surface-variant font-semibold">Aún no tienes leads</p>
+        <p class="text-xs text-on-surface-variant/60 max-w-xs mx-auto">Cuando alguien complete un quiz tuyo y deje su email, aparecerá aquí.</p>
+        <a href="./generador-ia.html" class="inline-block mt-2 px-5 py-2.5 bg-primary text-white rounded-xl text-xs font-bold hover:opacity-90 transition-opacity">
+          Crear un quiz ahora
+        </a>
+      </div>`;
+    return;
+  }
+
+  container.innerHTML = leads.map(lead => {
+    const quizTitle = lead.quizzes?.title || 'Quiz eliminado';
+    const date = formatDate(lead.created_at);
+    const initial = (lead.name || lead.email || '?').charAt(0).toUpperCase();
+    return `
+      <div class="grid grid-cols-1 md:grid-cols-12 gap-2 md:gap-4 items-center px-5 py-4 border-b border-outline-variant/10 hover:bg-surface-container-high/50 transition-colors">
+        <!-- Name -->
+        <div class="col-span-3 flex items-center gap-3">
+          <div class="w-9 h-9 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center text-primary font-bold text-sm shrink-0">${esc(initial)}</div>
+          <span class="font-semibold text-sm text-on-surface truncate">${esc(lead.name || '—')}</span>
+        </div>
+        <!-- Email -->
+        <div class="col-span-3 flex items-center gap-2">
+          <a href="mailto:${esc(lead.email)}" class="text-sm text-on-surface-variant hover:text-primary transition-colors truncate">${esc(lead.email || '—')}</a>
+          <button onclick="copyToClipboard('${esc(lead.email || '')}')" class="shrink-0 text-on-surface-variant/40 hover:text-primary transition-colors" title="Copiar email">
+            <span class="material-symbols-outlined text-sm">content_copy</span>
+          </button>
+        </div>
+        <!-- Profile -->
+        <div class="col-span-2">
+          ${lead.profile_emoji ? `<span class="inline-flex items-center gap-1.5 text-xs font-semibold px-2.5 py-1 rounded-full bg-secondary/10 text-secondary">
+            <span>${esc(lead.profile_emoji)}</span>
+            <span class="truncate max-w-[80px]">${esc(lead.profile_name || '')}</span>
+          </span>` : '<span class="text-xs text-on-surface-variant">—</span>'}
+        </div>
+        <!-- Quiz -->
+        <div class="col-span-2">
+          <span class="text-xs text-on-surface-variant truncate block max-w-[120px]" title="${esc(quizTitle)}">${esc(quizTitle)}</span>
+        </div>
+        <!-- Date -->
+        <div class="col-span-1">
+          <span class="text-xs text-on-surface-variant">${date}</span>
+        </div>
+        <!-- Actions -->
+        <div class="col-span-1 flex justify-end">
+          <button onclick="deleteLead('${lead.id}')" class="w-8 h-8 rounded-xl bg-surface-container-high flex items-center justify-center hover:bg-error/10 transition-colors" title="Eliminar lead">
+            <span class="material-symbols-outlined text-on-surface-variant text-sm">delete</span>
+          </button>
+        </div>
+      </div>`;
+  }).join('');
+}
+
+async function deleteLead(id) {
+  if (!confirm('¿Eliminar este lead? Esta acción no se puede deshacer.')) return;
+  try {
+    await DB.leads.delete(id);
+    _allLeads = _allLeads.filter(l => l.id !== id);
+    updateStats(_allLeads, _quizzes);
+    applyFilter();
+    showToast('Lead eliminado.');
+  } catch (err) {
+    showToast('Error al eliminar: ' + err.message, 'error');
+  }
+}
+
+function exportCSV() {
+  if (!_allLeads.length) { showToast('No hay leads para exportar.', 'info'); return; }
+  const headers = ['Nombre', 'Email', 'Perfil', 'Emoji', 'Quiz', 'Fecha'];
+  const rows = _allLeads.map(l => [
+    l.name || '',
+    l.email || '',
+    l.profile_name || '',
+    l.profile_emoji || '',
+    l.quizzes?.title || '',
+    formatDate(l.created_at),
+  ].map(v => `"${String(v).replace(/"/g,'""')}"`));
+
+  const csv = [headers, ...rows].map(r => r.join(',')).join('\n');
+  const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `leads-luminous-${new Date().toISOString().slice(0,10)}.csv`;
+  a.click();
+  URL.revokeObjectURL(url);
+  showToast('CSV exportado correctamente.');
+}
+
+function esc(s) {
+  return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+</script>
+</body>
+</html>

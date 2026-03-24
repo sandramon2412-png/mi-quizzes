@@ -5,6 +5,8 @@
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
 <title>Resultado Quiz - Luminous Studio</title>
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="./supabase-config.js"></script>
 <script src="./app.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
@@ -27,7 +29,7 @@
               "surface-container-highest": "#262626",
               "outline-variant": "#484847",
               "secondary-container": "#006c49",
-              "surface-tint": "#95aaff",
+              "surface-tint": "#2E5BFF",
               "surface-container-lowest": "#000000",
               "primary-fixed": "#819bff",
               "inverse-on-surface": "#565555",
@@ -53,7 +55,7 @@
               "on-secondary-fixed": "#00452d",
               "surface": "#0e0e0e",
               "secondary": "#69f6b8",
-              "primary": "#95aaff",
+              "primary": "#2E5BFF",
               "tertiary-fixed-dim": "#e883d2",
               "outline": "#767575",
               "on-tertiary-container": "#5f0656",
@@ -96,16 +98,15 @@
 </head>
 <body class="bg-background text-on-surface antialiased min-h-screen">
 <!-- TopAppBar -->
-<header class="bg-[#0E0E0E] text-[#95AAFF] font-['Plus_Jakarta_Sans'] antialiased tracking-tight w-full top-0 sticky z-50 bg-[#131313] shadow-[0px_40px_0px_rgba(20,79,229,0.08)]">
+<header class="bg-[#0E0E0E] w-full top-0 sticky z-50 border-b border-white/5">
 <div class="flex justify-between items-center px-6 py-4 w-full">
 <div class="flex items-center gap-2">
-<span class="material-symbols-outlined text-[#95AAFF]" data-icon="bubble_chart">bubble_chart</span>
-<span class="text-xl font-bold tracking-tighter text-[#95AAFF]">Luminous Studio</span>
+<a class="text-xl font-bold tracking-tighter text-primary" href="./dashboard.html">Luminous Studio</a>
 </div>
 <div class="hidden md:flex gap-8 items-center">
-<a class="text-[#ADAAAA] hover:text-[#95AAFF] transition-colors duration-400 ease-[cubic-bezier(0.16,1,0.3,1)]" href="./index.html">Home</a>
-<a class="text-[#ADAAAA] hover:text-[#95AAFF] transition-colors duration-400 ease-[cubic-bezier(0.16,1,0.3,1)]" href="./generador-ia.html">Editor</a>
-<a class="text-[#ADAAAA] hover:text-[#95AAFF] transition-colors duration-400 ease-[cubic-bezier(0.16,1,0.3,1)]" href="./dashboard.html">Sales</a>
+<a class="text-on-surface-variant hover:text-primary transition-colors" href="./dashboard.html">Dashboard</a>
+<a class="text-on-surface-variant hover:text-primary transition-colors" href="./generador-ia.html">Crear Quiz</a>
+<a class="text-on-surface-variant hover:text-primary transition-colors" href="./plantillas.html">Plantillas</a>
 <div class="w-8 h-8 rounded-full overflow-hidden border border-outline-variant/30">
 <img alt="User profile avatar" data-alt="User profile circular headshot portrait" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCgvwrlynuF77ZgeyYBpSVLwHI4sIX35YKEe3YwyGzUgibIp1NDTviX9lPttmW13GjgvmuAIheyh6pPUzeqeWkZ2_UaXifKHEdw5M-NHaPeB-PJxX2VnVYGSlmHNXiOupLXeFFXkCwJa8HPcnl6gZsly6Zm62wP7VieITuQvmul4vBf_95tvcTCz8tuvgB7wgsgsqfKRIQx-xsBIMryJicS3VYbSAt8kewAuP6p43H2hPTZuU118JvJk0ifIIA013HOqPWGETjwsjw"/>
 </div>
@@ -177,6 +178,37 @@
     </div>
   </div>
 
+  <!-- Mini-App Bonus Block -->
+  <section id="miniapp-bonus" class="hidden mb-12">
+    <div class="relative overflow-hidden rounded-2xl border border-secondary/20 bg-gradient-to-r from-secondary/5 via-surface-container-low to-primary/5 p-6 md:p-8 flex flex-col md:flex-row items-start md:items-center gap-6">
+      <!-- Deco glow -->
+      <div class="absolute -top-10 -right-10 w-40 h-40 rounded-full bg-secondary/10 blur-3xl pointer-events-none"></div>
+
+      <!-- Icon -->
+      <div class="w-16 h-16 rounded-2xl bg-surface-container-highest flex items-center justify-center text-3xl shrink-0 border border-outline-variant/15" id="bonus-icon">⚡</div>
+
+      <!-- Text -->
+      <div class="flex-1 min-w-0">
+        <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-secondary/15 border border-secondary/20 mb-3">
+          <span class="material-symbols-outlined text-secondary text-xs" style="font-variation-settings:'FILL' 1;">star</span>
+          <span class="text-[10px] font-black text-secondary uppercase tracking-widest">Bonus incluido</span>
+        </div>
+        <h3 id="bonus-name" class="text-lg font-extrabold tracking-tight text-on-surface mb-1">Mini-App</h3>
+        <p id="bonus-desc" class="text-on-surface-variant text-sm leading-relaxed mb-3">—</p>
+        <div class="flex flex-wrap items-center gap-3">
+          <span class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-secondary/10 border border-secondary/25 text-sm font-bold text-secondary">
+            <span class="material-symbols-outlined text-base" style="font-variation-settings:'FILL' 1;">lock</span>
+            Incluido al comprar
+          </span>
+          <a id="bonus-link" href="#"
+            class="text-xs text-on-surface-variant/50 hover:text-primary underline underline-offset-2 transition-colors">
+            Ya compré → ingresar con mi código
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
   <!-- All Profiles overview -->
   <section id="all-profiles-section" class="mb-16 hidden">
     <h3 class="text-xl font-bold mb-2">Los 3 perfiles del quiz</h3>
@@ -202,12 +234,18 @@
 </main>
 
 <script>
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
   // Load quiz and answers from session
   const quizId  = getParam('quiz') || Session.getCurrentQuizId();
   const answers = Session.getAnswers();
 
-  let quiz    = quizId === 'demo' ? DEMO_QUIZ : (quizId ? Quizzes.get(quizId) : null);
+  let quiz = null;
+  if (quizId === 'demo') {
+    quiz = DEMO_QUIZ;
+  } else if (quizId) {
+    try { quiz = await DB.quizzes.get(quizId); } catch {}
+    if (!quiz) quiz = Quizzes.get(quizId);
+  }
   if (!quiz) quiz = DEMO_QUIZ;
 
   let profile;
@@ -223,10 +261,32 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('result-profile-name').textContent    = profile.name  || '—';
   document.getElementById('result-description').textContent     = profile.description   || '';
   document.getElementById('result-recommendation').textContent  = profile.recommendation || '';
-  document.getElementById('btn-cta').textContent                = profile.cta  || 'Comprar Ahora';
+  document.getElementById('btn-cta').textContent = profile.cta || 'Comprar Ahora';
+
+  // CTA destination: profile.ctaUrl → quiz.productUrl → acceso-exito.html
+  const ctaDest = profile.ctaUrl || quiz.productUrl ||
+    `./acceso-exito.html${quizId ? '?quiz=' + quizId : ''}`;
+  const btnCta = document.getElementById('btn-cta');
+  btnCta.href = ctaDest;
+  if (/^https?:\/\//.test(ctaDest)) {
+    btnCta.target = '_blank';
+    btnCta.rel    = 'noopener noreferrer';
+  }
   document.getElementById('result-subtitle').textContent        =
     `Basado en tus respuestas al quiz "${quiz.title || ''}", este es tu perfil.`;
   document.title = `Tu perfil: ${profile.name} | Luminous Studio`;
+
+  // Show mini-app bonus block if quiz has a linked mini-app
+  if (quiz.miniAppId) {
+    const miniApp = MiniApps.get(quiz.miniAppId);
+    if (miniApp) {
+      document.getElementById('bonus-icon').textContent = miniApp.icon || '⚡';
+      document.getElementById('bonus-name').textContent = miniApp.name || 'Herramienta incluida';
+      document.getElementById('bonus-desc').textContent = miniApp.description || 'Herramienta interactiva exclusiva para compradores.';
+      document.getElementById('bonus-link').href = `./mini-app-player.html?id=${miniApp.id}`;
+      document.getElementById('miniapp-bonus').classList.remove('hidden');
+    }
+  }
 
   // Show all profiles if quiz has product link context
   if (quiz.profiles && quiz.profiles.length > 1) {
