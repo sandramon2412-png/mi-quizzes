@@ -49,22 +49,27 @@
   ::-webkit-scrollbar-thumb { background: #484847; border-radius: 10px; }
 
   .stat-card { transition: transform 0.2s, border-color 0.2s, box-shadow 0.2s; }
-  .stat-card:hover { transform: translateY(-2px); box-shadow: 0 8px 32px rgba(0,0,0,0.35); }
+  .stat-card:hover { transform: translateY(-3px); box-shadow: 0 12px 40px rgba(0,0,0,0.4); }
   .sparkline-bar { transition: height 0.6s cubic-bezier(0.16,1,0.3,1); }
   .count-up { animation: countUp 0.8s cubic-bezier(0.16,1,0.3,1) both; }
-  @keyframes countUp { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:none; } }
-  .stat-icon-ring { box-shadow: 0 0 0 1px rgba(255,255,255,0.05); }
+  @keyframes countUp { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:none; } }
   /* Modal animation */
   #modal-overlay { transition: opacity .2s; }
   #modal-overlay.hidden { opacity: 0; pointer-events: none; }
   #modal-box { transition: transform .2s, opacity .2s; }
   #modal-overlay.hidden #modal-box { transform: scale(.96); opacity: 0; }
-  /* Section headers */
-  .section-label { font-size: 11px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; }
-  /* Stat accent line */
-  .stat-accent { height: 2px; width: 28px; border-radius: 99px; margin-top: 10px; }
-  /* Welcome */
-  .welcome-bg { background: radial-gradient(ellipse 70% 80% at 0% 50%, rgba(46,91,255,0.07) 0%, transparent 70%); }
+  /* Welcome gradient */
+  .welcome-card {
+    background: linear-gradient(135deg, rgba(46,91,255,0.12) 0%, rgba(46,91,255,0.03) 50%, transparent 100%);
+    border: 1px solid rgba(46,91,255,0.15);
+  }
+  /* Stats unified bar */
+  .stats-bar { background: #1a1a1a; border: 1px solid rgba(255,255,255,0.06); border-radius: 16px; overflow: hidden; }
+  .stats-bar .stat-item { border-right: 1px solid rgba(255,255,255,0.05); }
+  .stats-bar .stat-item:last-child { border-right: none; }
+  /* Section accent */
+  .section-head { border-left: 3px solid; padding-left: 12px; }
+
 </style>
 </head>
 <body class="bg-surface text-on-surface min-h-screen">
@@ -93,75 +98,57 @@
 <main class="pt-20 pb-28 px-4 md:px-8 max-w-5xl mx-auto">
 
   <!-- ── Welcome ── -->
-  <div class="welcome-bg mb-8">
-    <div class="flex flex-wrap items-end justify-between gap-4 pb-6 border-b border-white/[0.06]">
-      <div>
-        <p class="text-[11px] font-medium text-on-surface-variant/50 uppercase tracking-[.12em] mb-2" id="welcome-date">—</p>
-        <h1 class="text-2xl font-extrabold tracking-tight leading-tight">
-          Hola, <span class="text-primary" id="user-name">Curator</span>
-        </h1>
-        <p class="text-on-surface-variant text-xs mt-1.5 leading-relaxed">Aquí tienes el resumen de tu actividad.</p>
-      </div>
-      <div class="flex items-center gap-2.5">
-        <button onclick="openCreateModal()" class="flex items-center gap-1.5 px-4 py-2.5 bg-secondary/10 border border-secondary/25 text-secondary text-xs font-bold rounded-xl hover:bg-secondary/15 transition-all">
-          <span class="material-symbols-outlined text-sm">add</span>Mini-App
-        </button>
-        <a href="./generador-ia.html" class="flex items-center gap-1.5 px-4 py-2.5 bg-primary text-white text-xs font-bold rounded-xl hover:brightness-110 transition-all shadow-lg shadow-primary/20">
-          <span class="material-symbols-outlined text-sm">add</span>Nuevo Quiz
-        </a>
-      </div>
+  <div class="welcome-card rounded-2xl px-7 py-6 mb-6 flex flex-wrap items-center justify-between gap-4">
+    <div>
+      <p class="text-[11px] font-semibold text-primary/60 uppercase tracking-[.15em] mb-1.5" id="welcome-date">—</p>
+      <h1 class="text-3xl font-black tracking-tight leading-tight">
+        Hola, <span class="text-primary" id="user-name">Curator</span> 👋
+      </h1>
+      <p class="text-on-surface-variant/70 text-sm mt-2">Aquí tienes el resumen de tu actividad.</p>
+    </div>
+    <div class="flex items-center gap-3">
+      <button onclick="openCreateModal()" class="flex items-center gap-2 px-5 py-2.5 bg-surface-container-high border border-secondary/30 text-secondary text-sm font-bold rounded-xl hover:bg-secondary/10 transition-all">
+        <span class="material-symbols-outlined text-base">deployed_code</span>Nueva Mini-App
+      </button>
+      <a href="./generador-ia.html" class="flex items-center gap-2 px-5 py-2.5 bg-primary text-white text-sm font-bold rounded-xl hover:brightness-110 transition-all shadow-lg shadow-primary/30">
+        <span class="material-symbols-outlined text-base">add</span>Nuevo Quiz
+      </a>
     </div>
   </div>
 
-  <!-- ── Stats ── -->
-  <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-10">
+  <!-- ── Stats (unified bar) ── -->
+  <div class="stats-bar flex mb-8">
 
-    <div class="stat-card bg-surface-container rounded-2xl p-5 border border-outline-variant/10 hover:border-primary/30 cursor-default">
-      <div class="flex items-center gap-2.5 mb-4">
-        <div class="w-7 h-7 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
-          <span class="material-symbols-outlined text-primary" style="font-size:15px;font-variation-settings:'FILL' 1">quiz</span>
-        </div>
-        <span class="section-label text-on-surface-variant/50">Quizzes</span>
-      </div>
-      <p class="text-[2rem] font-black text-on-surface count-up leading-none tracking-tight" id="stat-quizzes">0</p>
-      <div class="stat-accent bg-primary/40 mt-2.5"></div>
-      <p class="text-[11px] text-on-surface-variant/60 mt-2">creados</p>
+    <div class="stat-item stat-card flex-1 px-5 py-5 cursor-default">
+      <p class="text-[11px] font-bold text-primary/70 uppercase tracking-widest mb-3 flex items-center gap-1.5">
+        <span class="material-symbols-outlined text-primary" style="font-size:13px;font-variation-settings:'FILL' 1">quiz</span>Quizzes
+      </p>
+      <p class="text-4xl font-black text-primary count-up leading-none" id="stat-quizzes">0</p>
+      <p class="text-xs text-on-surface-variant/50 mt-2">creados</p>
     </div>
 
-    <div class="stat-card bg-surface-container rounded-2xl p-5 border border-outline-variant/10 hover:border-secondary/30 cursor-default">
-      <div class="flex items-center gap-2.5 mb-4">
-        <div class="w-7 h-7 rounded-lg bg-secondary/10 flex items-center justify-center shrink-0">
-          <span class="material-symbols-outlined text-secondary" style="font-size:15px;font-variation-settings:'FILL' 1">deployed_code</span>
-        </div>
-        <span class="section-label text-on-surface-variant/50">Mini-Apps</span>
-      </div>
-      <p class="text-[2rem] font-black text-on-surface count-up leading-none tracking-tight" id="stat-apps">0</p>
-      <div class="stat-accent bg-secondary/40 mt-2.5"></div>
-      <p class="text-[11px] text-on-surface-variant/60 mt-2">activas</p>
+    <div class="stat-item stat-card flex-1 px-5 py-5 cursor-default">
+      <p class="text-[11px] font-bold text-secondary/70 uppercase tracking-widest mb-3 flex items-center gap-1.5">
+        <span class="material-symbols-outlined text-secondary" style="font-size:13px;font-variation-settings:'FILL' 1">deployed_code</span>Mini-Apps
+      </p>
+      <p class="text-4xl font-black text-secondary count-up leading-none" id="stat-apps">0</p>
+      <p class="text-xs text-on-surface-variant/50 mt-2">activas</p>
     </div>
 
-    <div class="stat-card bg-surface-container rounded-2xl p-5 border border-outline-variant/10 hover:border-outline-variant/40 cursor-default">
-      <div class="flex items-center gap-2.5 mb-4">
-        <div class="w-7 h-7 rounded-lg bg-surface-container-highest flex items-center justify-center shrink-0">
-          <span class="material-symbols-outlined text-on-surface-variant" style="font-size:15px;">visibility</span>
-        </div>
-        <span class="section-label text-on-surface-variant/50">Vistas</span>
-      </div>
-      <p class="text-[2rem] font-black text-on-surface count-up leading-none tracking-tight" id="stat-views">0</p>
-      <div class="stat-accent bg-outline-variant/50 mt-2.5"></div>
-      <p class="text-[11px] text-on-surface-variant/60 mt-2">totales</p>
+    <div class="stat-item stat-card flex-1 px-5 py-5 cursor-default">
+      <p class="text-[11px] font-bold text-on-surface-variant/50 uppercase tracking-widest mb-3 flex items-center gap-1.5">
+        <span class="material-symbols-outlined text-on-surface-variant/60" style="font-size:13px;">visibility</span>Vistas
+      </p>
+      <p class="text-4xl font-black text-on-surface count-up leading-none" id="stat-views">0</p>
+      <p class="text-xs text-on-surface-variant/50 mt-2">totales</p>
     </div>
 
-    <a href="./leads.html" class="stat-card bg-surface-container rounded-2xl p-5 border border-outline-variant/10 hover:border-secondary/30 block">
-      <div class="flex items-center gap-2.5 mb-4">
-        <div class="w-7 h-7 rounded-lg bg-secondary/10 flex items-center justify-center shrink-0">
-          <span class="material-symbols-outlined text-secondary" style="font-size:15px;font-variation-settings:'FILL' 1">group</span>
-        </div>
-        <span class="section-label text-on-surface-variant/50">Leads</span>
-      </div>
-      <p class="text-[2rem] font-black text-on-surface count-up leading-none tracking-tight" id="stat-leads">0</p>
-      <div class="flex items-end gap-0.5 h-5 mt-2.5" id="leads-sparkline"><!-- filled by JS --></div>
-      <p class="text-[11px] text-on-surface-variant/60 mt-2">capturados →</p>
+    <a href="./leads.html" class="stat-item stat-card flex-1 px-5 py-5 block">
+      <p class="text-[11px] font-bold text-secondary/70 uppercase tracking-widest mb-3 flex items-center gap-1.5">
+        <span class="material-symbols-outlined text-secondary" style="font-size:13px;font-variation-settings:'FILL' 1">group</span>Leads
+      </p>
+      <p class="text-4xl font-black text-secondary count-up leading-none" id="stat-leads">0</p>
+      <div class="flex items-end gap-0.5 h-4 mt-2.5" id="leads-sparkline"></div>
     </a>
 
   </div>
@@ -169,18 +156,14 @@
   <!-- ══════════════ MIS MINI-APPS ══════════════ -->
   <section class="mb-10">
     <div class="flex items-center justify-between mb-5">
-      <div>
-        <div class="flex items-center gap-2 mb-0.5">
-          <span class="w-1.5 h-1.5 rounded-full bg-secondary inline-block"></span>
-          <h2 class="text-base font-bold text-on-surface tracking-tight">Mis Mini-Apps</h2>
-        </div>
-        <p class="text-xs text-on-surface-variant/60 pl-3.5">Experiencias interactivas para tus productos digitales</p>
+      <div class="section-head border-secondary">
+        <h2 class="text-lg font-black text-on-surface tracking-tight">Mis Mini-Apps</h2>
+        <p class="text-xs text-on-surface-variant/55 mt-0.5">Experiencias interactivas para tus productos digitales</p>
       </div>
-      <button onclick="openCreateModal()" class="flex items-center gap-1.5 px-3.5 py-2 bg-secondary/10 border border-secondary/20 text-secondary text-xs font-bold rounded-xl hover:bg-secondary/15 transition-colors">
+      <button onclick="openCreateModal()" class="flex items-center gap-1.5 px-4 py-2 bg-secondary/10 border border-secondary/25 text-secondary text-xs font-bold rounded-xl hover:bg-secondary/15 transition-colors">
         <span class="material-symbols-outlined text-sm">add</span>Nueva Mini-App
       </button>
     </div>
-
     <div id="mini-apps-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
       <!-- populated by JS -->
     </div>
@@ -189,18 +172,14 @@
   <!-- ══════════════ MIS QUIZZES ══════════════ -->
   <section>
     <div class="flex items-center justify-between mb-5">
-      <div>
-        <div class="flex items-center gap-2 mb-0.5">
-          <span class="w-1.5 h-1.5 rounded-full bg-primary inline-block"></span>
-          <h2 class="text-base font-bold text-on-surface tracking-tight">Mis Quizzes</h2>
-        </div>
-        <p class="text-xs text-on-surface-variant/60 pl-3.5">Embudos de conversión para Facebook Ads y landing pages</p>
+      <div class="section-head border-primary">
+        <h2 class="text-lg font-black text-on-surface tracking-tight">Mis Quizzes</h2>
+        <p class="text-xs text-on-surface-variant/55 mt-0.5">Embudos de conversión para Facebook Ads y landing pages</p>
       </div>
-      <a href="./generador-ia.html" class="flex items-center gap-1.5 px-3.5 py-2 bg-primary/10 border border-primary/20 text-primary text-xs font-bold rounded-xl hover:bg-primary/15 transition-colors">
+      <a href="./generador-ia.html" class="flex items-center gap-1.5 px-4 py-2 bg-primary/10 border border-primary/25 text-primary text-xs font-bold rounded-xl hover:bg-primary/15 transition-colors">
         <span class="material-symbols-outlined text-sm">add</span>Nuevo Quiz
       </a>
     </div>
-
     <div id="quizzes-list" class="space-y-2.5">
       <!-- populated by JS -->
     </div>
@@ -451,14 +430,11 @@ async function renderMiniApps() {
 
   const dynamicCards = apps.map(app => buildAppCard(app)).join('');
   const addCard = `
-    <div onclick="openCreateModal()" class="rounded-2xl p-5 flex flex-col items-center justify-center text-center gap-2.5 cursor-pointer border border-dashed border-outline-variant/25 hover:border-secondary/40 hover:bg-secondary/[0.03] transition-all min-h-[140px] group">
-      <div class="w-9 h-9 rounded-xl bg-surface-container-high flex items-center justify-center group-hover:bg-secondary/10 transition-colors">
-        <span class="material-symbols-outlined text-lg text-on-surface-variant/50 group-hover:text-secondary transition-colors">add</span>
+    <div onclick="openCreateModal()" class="rounded-2xl flex flex-col items-center justify-center text-center gap-2 cursor-pointer border border-dashed border-outline-variant/20 hover:border-secondary/50 hover:bg-secondary/[0.04] transition-all min-h-[130px] group">
+      <div class="w-8 h-8 rounded-lg bg-surface-container-high border border-outline-variant/20 flex items-center justify-center group-hover:bg-secondary/10 group-hover:border-secondary/30 transition-all">
+        <span class="material-symbols-outlined text-base text-on-surface-variant/40 group-hover:text-secondary transition-colors">add</span>
       </div>
-      <div>
-        <p class="text-xs font-semibold text-on-surface-variant/60 group-hover:text-on-surface-variant transition-colors">Nueva Mini-App</p>
-        <p class="text-[11px] text-on-surface-variant/35 mt-0.5">Conecta tu producto digital</p>
-      </div>
+      <p class="text-xs font-semibold text-on-surface-variant/40 group-hover:text-secondary/70 transition-colors">Nueva Mini-App</p>
     </div>`;
 
   container.innerHTML = dynamicCards + addCard;
