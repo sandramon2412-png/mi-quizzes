@@ -500,6 +500,14 @@ function addQuestion() {
   });
   renderQuestions(currentQuiz.questions);
   syncMeta(currentQuiz);
+  // Scroll to new question and focus its text input
+  const cards = document.querySelectorAll('#questions-list > div');
+  const newCard = cards[cards.length - 1];
+  if (newCard) {
+    newCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    const input = newCard.querySelector('input[type="text"]');
+    if (input) { input.select(); input.focus(); }
+  }
 }
 
 function removeQuestion(qi) {
@@ -540,6 +548,20 @@ async function saveQuiz() {
   currentQuiz.description = document.getElementById('input-desc').value.trim()       || currentQuiz.description;
 
   if (editingQuizId) currentQuiz.id = editingQuizId;
+
+  // Validate no placeholder text left
+  const defaultTexts = ['Nueva pregunta', 'Opción A', 'Opción B', 'Opción C', 'Opción D', 'Nueva opción'];
+  const incomplete = currentQuiz.questions.filter(q =>
+    defaultTexts.includes(q.text) || q.options.some(o => defaultTexts.includes(o.text))
+  );
+  if (incomplete.length) {
+    showToast(`Hay ${incomplete.length} pregunta(s) con texto de ejemplo. Por favor edítalas antes de guardar.`, 'error');
+    // Scroll to first incomplete question
+    const idx = currentQuiz.questions.indexOf(incomplete[0]);
+    const cards = document.querySelectorAll('#questions-list > div');
+    if (cards[idx]) { cards[idx].scrollIntoView({ behavior: 'smooth', block: 'center' }); cards[idx].querySelector('input')?.focus(); }
+    return;
+  }
 
   try {
     const saved = await DB.quizzes.save(currentQuiz, _currentUser.id);
