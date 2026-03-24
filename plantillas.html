@@ -222,6 +222,13 @@ const CATEGORY_COLORS = {
   'Salud & Bienestar':  'text-emerald-400 bg-emerald-400/10',
 };
 
+const CATEGORY_BG = {
+  'Finanzas':          'background: linear-gradient(135deg, #006c49 0%, #004d34 100%)',
+  'Marketing Digital': 'background: linear-gradient(135deg, #1a3a8f 0%, #0d1f5c 100%)',
+  'Productividad':     'background: linear-gradient(135deg, #5b1f8a 0%, #3a0f6b 100%)',
+  'Salud & Bienestar': 'background: linear-gradient(135deg, #1a6b4a 0%, #0f4a30 100%)',
+};
+
 document.addEventListener('DOMContentLoaded', async () => {
   const user = await Auth.requireAuth();
   if (!user) return;
@@ -232,9 +239,12 @@ function renderTemplates(templates) {
   const grid = document.getElementById('templates-grid');
   grid.innerHTML = templates.map(t => `
     <div class="group bg-surface-container-low rounded-xl overflow-hidden border border-outline-variant/5 hover:border-primary/20 transition-all duration-400 flex flex-col">
-      <div class="aspect-video relative overflow-hidden bg-surface-container-highest flex items-center justify-center">
-        <span class="material-symbols-outlined text-on-surface-variant/30" style="font-size:80px; font-variation-settings:'FILL' 1,'wght' 300;">${t.icon}</span>
-        <div class="absolute inset-0 bg-gradient-to-t from-surface-container-low/80 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-4">
+      <div class="aspect-video relative overflow-hidden flex items-center justify-center" style="${CATEGORY_BG[t.category] || 'background:#1a1a2e'}">
+        <span class="material-symbols-outlined text-white/20" style="font-size:120px; font-variation-settings:'FILL' 1,'wght' 200;">${t.icon}</span>
+        <div class="absolute inset-0 flex items-center justify-center">
+          <span class="material-symbols-outlined text-white drop-shadow-lg" style="font-size:52px; font-variation-settings:'FILL' 1,'wght' 400;">${t.icon}</span>
+        </div>
+        <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-4">
           <a href="./generador-ia.html?template=${t.id}" class="primary-gradient w-full py-2 rounded-lg text-xs font-bold text-white text-center block">
             Usar Plantilla
           </a>
