@@ -98,6 +98,7 @@
             outline: 1px solid #95AAFF;
         }
         .no-scrollbar::-webkit-scrollbar { display: none; }
+        .active-cat { background: #2E5BFF; border-color: #2E5BFF; color: #fff; }
         body {
             min-height: max(884px, 100dvh);
         }
@@ -125,46 +126,46 @@
 </header>
 <main class="max-w-7xl mx-auto px-6 pt-12 pb-32">
 <!-- Search & Header Section -->
-<section class="mb-16">
-<div class="flex flex-col md:flex-row md:items-end justify-between gap-8 mb-12">
-<div class="space-y-2">
-<h2 class="text-5xl font-extrabold tracking-tight text-on-surface leading-tight">Template<br/><span class="text-primary-dim">Library</span></h2>
-<p class="text-on-surface-variant text-lg max-w-md">The curator's vault of conversion-optimized frameworks.</p>
+<section class="mb-12">
+<div class="flex flex-col md:flex-row md:items-end justify-between gap-8 mb-10">
+  <div class="space-y-2">
+    <h2 class="text-5xl font-extrabold tracking-tight text-on-surface leading-tight">Biblioteca de<br/><span class="text-primary">Plantillas</span></h2>
+    <p class="text-on-surface-variant text-lg max-w-md">Quizzes listos para usar, optimizados para convertir.</p>
+  </div>
+  <div class="w-full max-w-md">
+    <div class="recessed-input flex items-center px-4 py-3 rounded-xl border border-outline-variant/15 transition-all duration-400">
+      <span class="material-symbols-outlined text-on-surface-variant mr-3">search</span>
+      <input id="search-input" class="bg-transparent border-none focus:ring-0 text-on-surface w-full font-medium placeholder:text-on-surface-variant/50" placeholder="Buscar plantillas..." type="text" oninput="filterBySearch(this.value)"/>
+    </div>
+  </div>
 </div>
-<div class="w-full max-w-md">
-<div class="recessed-input flex items-center px-4 py-3 rounded-xl border border-outline-variant/15 transition-all duration-400">
-<span class="material-symbols-outlined text-on-surface-variant mr-3" data-icon="search">search</span>
-<input id="search-input" class="bg-transparent border-none focus:ring-0 text-on-surface w-full font-medium placeholder:text-on-surface-variant/50" placeholder="Search templates..." type="text" oninput="filterTemplates(this.value)"/>
-<span class="text-[10px] font-bold text-on-surface-variant/30 border border-on-surface-variant/30 px-1.5 py-0.5 rounded">⌘K</span>
-</div>
-</div>
-</div>
-<!-- Bento Categories -->
-<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-<a class="md:col-span-2 group relative overflow-hidden rounded-2xl bg-surface-container-high p-8 h-[240px] flex flex-col justify-end border border-outline-variant/10" href="./generador-ia.html">
-<div class="absolute top-0 right-0 p-8 opacity-20 group-hover:opacity-40 transition-opacity duration-700">
-<span class="material-symbols-outlined text-8xl" data-icon="quiz">quiz</span>
-</div>
-<div class="relative z-10">
-<h3 class="text-2xl font-bold mb-2">Sales Quizzes</h3>
-<p class="text-on-surface-variant text-sm mb-4 max-w-xs">Segment your audience with high-intent interactive journeys.</p>
-<div class="text-primary font-bold text-xs tracking-widest uppercase flex items-center gap-2 group-hover:gap-3 transition-all">
-                        Explore Category <span class="material-symbols-outlined text-sm" data-icon="arrow_forward">arrow_forward</span>
-</div>
-</div>
-</a>
-<a class="group relative overflow-hidden rounded-2xl bg-surface-container-high p-8 h-[240px] flex flex-col justify-end border border-outline-variant/10" href="./generador-ia.html">
-<div class="absolute top-0 right-0 p-8 opacity-20 group-hover:opacity-40 transition-opacity duration-700">
-<span class="material-symbols-outlined text-7xl" data-icon="calculate">calculate</span>
-</div>
-<div class="relative z-10">
-<h3 class="text-2xl font-bold mb-2">Calculators</h3>
-<p class="text-on-surface-variant text-sm mb-4">Demonstrate ROI instantly with custom data tools.</p>
-<div class="text-primary font-bold text-xs tracking-widest uppercase flex items-center gap-2 group-hover:gap-3 transition-all">
-                        Browse <span class="material-symbols-outlined text-sm" data-icon="arrow_forward">arrow_forward</span>
-</div>
-</div>
-</a>
+<!-- Category Filter Pills -->
+<div class="flex flex-wrap gap-3" id="category-filters">
+  <button onclick="setCategory(this, '')"
+    class="category-pill px-4 py-2 rounded-full text-sm font-bold border transition-all active-cat"
+    data-cat="">
+    Todas
+  </button>
+  <button onclick="setCategory(this, 'Finanzas')"
+    class="category-pill px-4 py-2 rounded-full text-sm font-bold border border-outline-variant/30 text-on-surface-variant hover:border-secondary/50 hover:text-secondary transition-all"
+    data-cat="Finanzas">
+    💰 Finanzas
+  </button>
+  <button onclick="setCategory(this, 'Marketing Digital')"
+    class="category-pill px-4 py-2 rounded-full text-sm font-bold border border-outline-variant/30 text-on-surface-variant hover:border-primary/50 hover:text-primary transition-all"
+    data-cat="Marketing Digital">
+    📱 Marketing Digital
+  </button>
+  <button onclick="setCategory(this, 'Productividad')"
+    class="category-pill px-4 py-2 rounded-full text-sm font-bold border border-outline-variant/30 text-on-surface-variant hover:border-tertiary/50 hover:text-tertiary transition-all"
+    data-cat="Productividad">
+    ⚡ Productividad
+  </button>
+  <button onclick="setCategory(this, 'Salud &amp; Bienestar')"
+    class="category-pill px-4 py-2 rounded-full text-sm font-bold border border-outline-variant/30 text-on-surface-variant hover:border-emerald-400/50 hover:text-emerald-400 transition-all"
+    data-cat="Salud &amp; Bienestar">
+    🌿 Salud &amp; Bienestar
+  </button>
 </div>
 </section>
 <!-- Templates Grid Section -->
@@ -251,20 +252,42 @@ function renderTemplates(templates) {
     </div>`).join('');
 }
 
-function filterTemplates(query) {
-  const q = query.toLowerCase().trim();
+let _activeCategory = '';
+let _activeSearch = '';
+
+function applyFilters() {
   const all = getBuiltinTemplates();
-  const filtered = !q ? all : all.filter(t =>
-    t.title.toLowerCase().includes(q) ||
-    t.product.toLowerCase().includes(q) ||
-    t.category.toLowerCase().includes(q) ||
-    t.niche.toLowerCase().includes(q)
-  );
+  const filtered = all.filter(t => {
+    const matchCat = !_activeCategory || t.category === _activeCategory;
+    const q = _activeSearch.toLowerCase().trim();
+    const matchSearch = !q ||
+      t.title.toLowerCase().includes(q) ||
+      t.product.toLowerCase().includes(q) ||
+      t.category.toLowerCase().includes(q) ||
+      t.niche.toLowerCase().includes(q);
+    return matchCat && matchSearch;
+  });
   renderTemplates(filtered);
   if (!filtered.length) {
     document.getElementById('templates-grid').innerHTML =
-      `<p class="text-on-surface-variant text-center py-12 col-span-4">No se encontraron plantillas para "${query}".</p>`;
+      `<p class="text-on-surface-variant text-center py-12 col-span-4">No se encontraron plantillas.</p>`;
   }
+}
+
+function filterBySearch(query) {
+  _activeSearch = query;
+  applyFilters();
+}
+
+function setCategory(btn, cat) {
+  _activeCategory = cat;
+  document.querySelectorAll('.category-pill').forEach(p => p.classList.remove('active-cat'));
+  btn.classList.add('active-cat');
+  applyFilters();
+}
+
+function filterTemplates(query) {
+  filterBySearch(query);
 }
 
 function esc(s) { return String(s||'').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
