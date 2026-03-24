@@ -292,16 +292,6 @@ function getParam(name) {
   return new URLSearchParams(window.location.search).get(name);
 }
 
-function loadDemo() {
-  const demo = getBuiltinTemplates()[0];
-  if (!demo) return;
-  document.getElementById('input-product').value = demo.product || '';
-  document.getElementById('input-niche').value   = demo.niche   || '';
-  currentQuiz = JSON.parse(JSON.stringify(demo));
-  currentQuiz.status = 'draft';
-  loadQuizIntoEditor(currentQuiz);
-  showToast('Demo cargado. Personalízalo y guárdalo.');
-}
 
 document.addEventListener('DOMContentLoaded', async () => {
   _currentUser = await Auth.requireAuth();
@@ -397,15 +387,20 @@ function createManual() {
 }
 
 function loadDemo() {
-  document.getElementById('input-product').value = DEMO_QUIZ.product;
-  currentQuiz = JSON.parse(JSON.stringify(DEMO_QUIZ));
+  const demo = getBuiltinTemplates()[0];
+  if (!demo) return;
+  document.getElementById('input-product').value = demo.product || '';
+  document.getElementById('input-niche').value   = demo.niche   || '';
+  currentQuiz = JSON.parse(JSON.stringify(demo));
+  currentQuiz.status = 'draft';
   loadQuizIntoEditor(currentQuiz);
-  showToast('Demo cargado. Puedes editarlo libremente.');
+  showToast('Demo cargado. Personalízalo y guárdalo.');
 }
 
 // ── Load quiz into UI ─────────────────────────────────────
 function loadQuizIntoEditor(quiz) {
   showLoading(false);
+  document.getElementById('empty-state').classList.add('hidden');
   document.getElementById('quiz-content').classList.remove('hidden');
   document.getElementById('action-buttons').classList.remove('hidden');
   document.getElementById('btn-save-header').classList.remove('hidden');
@@ -550,9 +545,15 @@ async function saveQuiz() {
     const saved = await DB.quizzes.save(currentQuiz, _currentUser.id);
     editingQuizId = saved.id;
     currentQuiz.id = saved.id;
+    // Also keep a local copy so dashboard can always show it
+    Quizzes.save({ ...currentQuiz, id: saved.id });
     showToast('¡Quiz guardado exitosamente! ✓');
   } catch (err) {
-    showToast('Error al guardar: ' + err.message, 'error');
+    // Fallback: save locally if Supabase fails
+    const saved = Quizzes.save(currentQuiz.id ? currentQuiz : Quizzes.create(currentQuiz));
+    editingQuizId = saved.id;
+    currentQuiz.id = saved.id;
+    showToast('Quiz guardado localmente ✓');
   }
 }
 
