@@ -233,7 +233,7 @@ function renderTemplates(templates) {
   grid.innerHTML = templates.map(t => `
     <div class="group bg-surface-container-low rounded-xl overflow-hidden border border-outline-variant/5 hover:border-primary/20 transition-all duration-400 flex flex-col">
       <div class="aspect-video relative overflow-hidden bg-surface-container-highest flex items-center justify-center">
-        <span class="text-6xl">${t.icon}</span>
+        <span class="material-symbols-outlined text-on-surface-variant/30" style="font-size:80px; font-variation-settings:'FILL' 1,'wght' 300;">${t.icon}</span>
         <div class="absolute inset-0 bg-gradient-to-t from-surface-container-low/80 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-4">
           <a href="./generador-ia.html?template=${t.id}" class="primary-gradient w-full py-2 rounded-lg text-xs font-bold text-white text-center block">
             Usar Plantilla
