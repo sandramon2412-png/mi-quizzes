@@ -421,9 +421,12 @@ async function renderQuizzes() {
   let quizzes = [];
   try {
     quizzes = await DB.quizzes.getAll(_currentUser.id);
+    // Merge with any locally saved quizzes not yet synced
+    const local = Quizzes.getAll().filter(lq => !quizzes.find(q => q.id === lq.id));
+    quizzes = [...quizzes, ...local];
   } catch (err) {
-    container.innerHTML = `<p class="text-xs text-error py-4">Error: ${esc(err.message)}</p>`;
-    return;
+    // Fallback to localStorage if Supabase is unreachable
+    quizzes = Quizzes.getAll();
   }
   document.getElementById('stat-quizzes').textContent = quizzes.length;
 
