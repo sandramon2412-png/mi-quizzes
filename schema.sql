@@ -127,3 +127,7 @@ $$ language plpgsql security definer;
 create trigger on_auth_user_created
   after insert on auth.users
   for each row execute procedure public.handle_new_user();
+
+-- ── Meta Pixel / Conversions API (run if upgrading an existing DB) ──
+-- alter table public.quizzes add column if not exists meta_pixel_id   text default '';
+-- alter table public.quizzes add column if not exists meta_capi_token text default '';

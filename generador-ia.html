@@ -334,6 +334,57 @@
             </div>
           </div>
 
+          <!-- Meta Pixel / Facebook Ads -->
+          <div class="bg-surface-container rounded-xl p-4 border border-outline-variant/10 space-y-4">
+            <div class="flex items-center justify-between">
+              <div class="flex items-center gap-2">
+                <svg class="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="#1877F2"><path d="M24 12.073C24 5.405 18.627 0 12 0S0 5.405 0 12.073C0 18.1 4.388 23.094 10.125 24v-8.437H7.078v-3.49h3.047V9.41c0-3.025 1.791-4.697 4.533-4.697 1.312 0 2.686.235 2.686.235v2.97h-1.513c-1.491 0-1.956.93-1.956 1.883v2.277h3.328l-.532 3.49h-2.796V24C19.612 23.094 24 18.1 24 12.073z"/></svg>
+                <label class="text-xs font-bold text-on-surface uppercase tracking-widest">Meta Pixel / Facebook Ads</label>
+              </div>
+              <label class="relative inline-flex items-center cursor-pointer">
+                <input type="checkbox" id="quiz-meta-pixel-enabled" class="sr-only peer" onchange="toggleMetaPixelFields()"/>
+                <div class="w-9 h-5 bg-outline-variant/40 peer-checked:bg-primary rounded-full transition-colors after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:after:translate-x-4"></div>
+              </label>
+            </div>
+            <div id="meta-pixel-fields" class="hidden space-y-3">
+              <div>
+                <label class="text-xs font-bold text-on-surface-variant uppercase tracking-widest block mb-1">Pixel ID</label>
+                <p class="text-[10px] text-on-surface-variant/60 mb-1.5">Copia tu Pixel ID desde Meta Business Suite → Fuentes de Datos → Píxeles.</p>
+                <div class="relative">
+                  <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant/40 text-sm">tag</span>
+                  <input id="quiz-pixel-id" type="text" placeholder="123456789012345"
+                    class="w-full bg-surface-container-high border border-outline-variant/20 rounded-lg pl-9 pr-4 py-2.5 text-xs text-on-surface outline-none focus:ring-1 focus:ring-primary transition-colors font-mono"/>
+                </div>
+              </div>
+              <div class="grid grid-cols-3 gap-2 pt-1">
+                <div class="flex flex-col items-center gap-1 p-2 rounded-lg bg-surface-container-high border border-outline-variant/10 text-center">
+                  <span class="material-symbols-outlined text-primary text-base">visibility</span>
+                  <span class="text-[10px] font-bold text-on-surface">ViewContent</span>
+                  <span class="text-[9px] text-on-surface-variant">Al abrir quiz</span>
+                </div>
+                <div class="flex flex-col items-center gap-1 p-2 rounded-lg bg-surface-container-high border border-outline-variant/10 text-center">
+                  <span class="material-symbols-outlined text-secondary text-base">mail</span>
+                  <span class="text-[10px] font-bold text-on-surface">Lead</span>
+                  <span class="text-[9px] text-on-surface-variant">Al dejar correo</span>
+                </div>
+                <div class="flex flex-col items-center gap-1 p-2 rounded-lg bg-surface-container-high border border-outline-variant/10 text-center">
+                  <span class="material-symbols-outlined text-tertiary text-base">shopping_cart</span>
+                  <span class="text-[10px] font-bold text-on-surface">InitiateCheckout</span>
+                  <span class="text-[9px] text-on-surface-variant">Al hacer clic CTA</span>
+                </div>
+              </div>
+              <div>
+                <label class="text-xs font-bold text-on-surface-variant uppercase tracking-widest block mb-1">CAPI Access Token <span class="text-[10px] font-normal normal-case text-on-surface-variant/50">(opcional, recomendado)</span></label>
+                <p class="text-[10px] text-on-surface-variant/60 mb-1.5">Conversions API del servidor — mejora el tracking bloqueado por navegadores. Encuéntralo en Meta Business Suite → Configuración → Conversions API.</p>
+                <div class="relative">
+                  <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant/40 text-sm">vpn_key</span>
+                  <input id="quiz-capi-token" type="password" placeholder="EAAxxxxxxxxxxxxxxxxxx"
+                    class="w-full bg-surface-container-high border border-outline-variant/20 rounded-lg pl-9 pr-4 py-2.5 text-xs text-on-surface outline-none focus:ring-1 focus:ring-primary transition-colors font-mono"/>
+                </div>
+              </div>
+            </div>
+          </div>
+
           <!-- Questions -->
           <div id="questions-list" class="space-y-3"></div>
 
@@ -523,6 +574,13 @@ function loadQuizIntoEditor(quiz) {
   document.getElementById('quiz-payment-url').value      = quiz.paymentUrl      || '';
   document.getElementById('quiz-landing-url').value      = quiz.landingUrl      || '';
 
+  // Meta Pixel
+  const hasPixel = !!(quiz.metaPixelId);
+  document.getElementById('quiz-meta-pixel-enabled').checked = hasPixel;
+  document.getElementById('quiz-pixel-id').value   = quiz.metaPixelId   || '';
+  document.getElementById('quiz-capi-token').value = quiz.metaCapiToken || '';
+  document.getElementById('meta-pixel-fields').classList.toggle('hidden', !hasPixel);
+
   // Populate mini-app selector
   const miniAppsAll = MiniApps.getAll();
   const sel = document.getElementById('quiz-miniapp-id');
@@ -649,6 +707,12 @@ function syncMeta(q) {
     `${quiz.questions?.length||0} preguntas · ${quiz.profiles?.length||0} perfiles · ~${quiz.estimatedMinutes||2} min`;
 }
 
+// ── Meta Pixel toggle ────────────────────────────────────
+function toggleMetaPixelFields() {
+  const enabled = document.getElementById('quiz-meta-pixel-enabled').checked;
+  document.getElementById('meta-pixel-fields').classList.toggle('hidden', !enabled);
+}
+
 // ── Post-quiz action UI ───────────────────────────────────
 function selectPostAction(action) {
   const actions = ['result_page', 'whatsapp', 'payment', 'landing'];
@@ -693,6 +757,11 @@ async function saveQuiz() {
       : action === 'payment'
         ? document.getElementById('quiz-pay-lead-capture').checked
         : document.getElementById('quiz-land-lead-capture').checked;
+
+  // Meta Pixel / CAPI
+  const pixelEnabled = document.getElementById('quiz-meta-pixel-enabled').checked;
+  currentQuiz.metaPixelId  = pixelEnabled ? (document.getElementById('quiz-pixel-id').value.trim() || '') : '';
+  currentQuiz.metaCapiToken = pixelEnabled ? (document.getElementById('quiz-capi-token').value.trim() || '') : '';
 
   if (editingQuizId) currentQuiz.id = editingQuizId;
 

@@ -226,6 +226,17 @@
 </main>
 
 <script>
+  // ── Meta Pixel helper ────────────────────────────────────
+  function initMetaPixel(pixelId) {
+    if (!pixelId) return;
+    !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,document,'script','https://connect.facebook.net/en_US/fbevents.js');
+    fbq('init', pixelId);
+    fbq('track', 'PageView');
+  }
+  function fbTrack(event, params) {
+    if (typeof fbq === 'function') fbq('track', event, params || {});
+  }
+
   // ── State ────────────────────────────────────────────────
   let QUIZ = null;
   let currentQ = 0;
@@ -252,6 +263,12 @@
       DB.analytics.track(QUIZ.id, QUIZ.userId, 'view').catch(() => {});
     } else if (QUIZ.id) {
       Analytics.trackView(QUIZ.id); // fallback localStorage
+    }
+
+    // Meta Pixel: init + ViewContent
+    if (QUIZ.metaPixelId) {
+      initMetaPixel(QUIZ.metaPixelId);
+      fbTrack('ViewContent', { content_name: QUIZ.title || 'Quiz', content_type: 'quiz' });
     }
 
     // Set session
@@ -423,6 +440,9 @@
       console.warn('Lead save error:', err.message);
     }
 
+    // Meta Pixel: Lead event
+    fbTrack('Lead', { content_name: QUIZ.title || 'Quiz' });
+
     handlePostQuizAction();
   }
 
@@ -440,6 +460,7 @@
     if (action === 'whatsapp') {
       const number = (QUIZ.whatsappNumber || '').replace(/\D/g, '');
       if (!number) { _goToResultPage(); return; }
+      fbTrack('InitiateCheckout', { content_name: QUIZ.title || 'Quiz', content_type: 'whatsapp' });
       const defaultMsg = _calculatedProfile
         ? `Hola! Completé el quiz y mi perfil es "${_calculatedProfile.name}". Me gustaría más información.`
         : 'Hola! Acabo de completar el quiz y me gustaría más información.';
@@ -450,14 +471,22 @@
 
     if (action === 'payment') {
       const url = QUIZ.paymentUrl || QUIZ.productUrl;
-      if (url) { window.location.href = url; return; }
+      if (url) {
+        fbTrack('InitiateCheckout', { content_name: QUIZ.title || 'Quiz', content_type: 'payment' });
+        window.location.href = url;
+        return;
+      }
       _goToResultPage();
       return;
     }
 
     if (action === 'landing') {
       const url = QUIZ.landingUrl;
-      if (url) { window.location.href = url; return; }
+      if (url) {
+        fbTrack('InitiateCheckout', { content_name: QUIZ.title || 'Quiz', content_type: 'landing' });
+        window.location.href = url;
+        return;
+      }
       _goToResultPage();
       return;
     }
