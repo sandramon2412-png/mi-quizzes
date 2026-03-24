@@ -459,7 +459,7 @@ async function renderQuizzes() {
   try {
     quizzes = await DB.quizzes.getAll(_currentUser.id);
     // Merge with any locally saved quizzes not yet synced
-    const local = Quizzes.getAll().filter(lq => !quizzes.find(q => q.id === lq.id));
+    const local = Quizzes.getAll().filter(lq => !quizzes.find(q => q.id === lq.id)).map(lq => ({ ...lq, _isLocal: true }));
     quizzes = [...quizzes, ...local];
   } catch (err) {
     // Fallback to localStorage if Supabase is unreachable
@@ -494,6 +494,10 @@ async function renderQuizzes() {
           <div class="min-w-0">
             <h4 class="text-on-surface font-semibold text-sm truncate">${esc(q.title || 'Sin título')}</h4>
             <p class="text-xs text-on-surface-variant">${esc(q.product || q.niche || '')} · ${formatDate(q.created)}</p>
+            ${q._isLocal
+              ? `<span class="inline-flex items-center gap-1 mt-1 text-[10px] font-bold px-2 py-0.5 rounded-full bg-yellow-500/10 text-yellow-400 border border-yellow-500/20" title="Este quiz solo existe en este navegador. El link NO funcionará para otros."><span class="material-symbols-outlined text-[11px]" style="font-variation-settings:'FILL' 1">warning</span>Solo en este dispositivo</span>`
+              : `<span class="inline-flex items-center gap-1 mt-1 text-[10px] font-bold px-2 py-0.5 rounded-full bg-secondary/10 text-secondary border border-secondary/20" title="El link funciona para cualquier persona. Listo para tu embudo de ventas."><span class="material-symbols-outlined text-[11px]" style="font-variation-settings:'FILL' 1">check_circle</span>Listo para compartir</span>`
+            }
           </div>
         </div>
         <div class="hidden md:flex items-center gap-4 text-right shrink-0">
@@ -514,8 +518,8 @@ async function renderQuizzes() {
             class="w-8 h-8 rounded-xl bg-surface-container-high flex items-center justify-center hover:bg-primary/10 transition-colors" title="Editar">
             <span class="material-symbols-outlined text-on-surface-variant text-sm">edit</span>
           </a>
-          <button onclick="copyLink('${q.id}')"
-            class="w-8 h-8 rounded-xl bg-surface-container-high flex items-center justify-center hover:bg-secondary/10 transition-colors" title="Copiar enlace">
+          <button onclick="copyLink('${q.id}', ${q._isLocal ? 'true' : 'false'})"
+            class="w-8 h-8 rounded-xl bg-surface-container-high flex items-center justify-center ${q._isLocal ? 'hover:bg-yellow-500/10 opacity-40 cursor-not-allowed' : 'hover:bg-secondary/10'} transition-colors" title="${q._isLocal ? 'No disponible: solo en este dispositivo' : 'Copiar enlace'}">
             <span class="material-symbols-outlined text-on-surface-variant text-sm">share</span>
           </button>
           <button onclick="deleteQuiz('${q.id}')"
@@ -570,7 +574,11 @@ async function deleteApp(id) {
   }
 }
 
-function copyLink(quizId) {
+function copyLink(quizId, isLocal) {
+  if (isLocal) {
+    showToast('⚠ Este quiz solo existe en este navegador. El link no funcionará en otro dispositivo.', 'error');
+    return;
+  }
   copyToClipboard(buildQuizUrl(quizId));
 }
 
