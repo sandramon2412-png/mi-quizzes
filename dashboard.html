@@ -119,7 +119,8 @@
   <!-- ── Stats (unified bar) ── -->
   <div class="stats-bar flex mb-8">
 
-    <div class="stat-item stat-card flex-1 px-5 py-5 cursor-default">
+    <!-- Quizzes: azul → sombra verde -->
+    <div class="stat-item stat-card flex-1 px-5 py-5 cursor-default rounded-l-2xl" style="box-shadow: 0 8px 28px -4px rgba(105,246,184,0.18);">
       <p class="text-[11px] font-bold text-primary/70 uppercase tracking-widest mb-3 flex items-center gap-1.5">
         <span class="material-symbols-outlined text-primary" style="font-size:13px;font-variation-settings:'FILL' 1">quiz</span>Quizzes
       </p>
@@ -127,7 +128,8 @@
       <p class="text-xs text-on-surface-variant/50 mt-2">creados</p>
     </div>
 
-    <div class="stat-item stat-card flex-1 px-5 py-5 cursor-default">
+    <!-- Mini-Apps: verde → sombra azul -->
+    <div class="stat-item stat-card flex-1 px-5 py-5 cursor-default" style="box-shadow: 0 8px 28px -4px rgba(46,91,255,0.22);">
       <p class="text-[11px] font-bold text-secondary/70 uppercase tracking-widest mb-3 flex items-center gap-1.5">
         <span class="material-symbols-outlined text-secondary" style="font-size:13px;font-variation-settings:'FILL' 1">deployed_code</span>Mini-Apps
       </p>
@@ -135,15 +137,17 @@
       <p class="text-xs text-on-surface-variant/50 mt-2">activas</p>
     </div>
 
-    <div class="stat-item stat-card flex-1 px-5 py-5 cursor-default">
-      <p class="text-[11px] font-bold text-on-surface-variant/50 uppercase tracking-widest mb-3 flex items-center gap-1.5">
-        <span class="material-symbols-outlined text-on-surface-variant/60" style="font-size:13px;">visibility</span>Vistas
+    <!-- Vistas: rosa/tertiary → sombra azul -->
+    <div class="stat-item stat-card flex-1 px-5 py-5 cursor-default" style="box-shadow: 0 8px 28px -4px rgba(46,91,255,0.20);">
+      <p class="text-[11px] font-bold text-[#ffa3e9]/70 uppercase tracking-widest mb-3 flex items-center gap-1.5">
+        <span class="material-symbols-outlined text-[#ffa3e9]" style="font-size:13px;font-variation-settings:'FILL' 1">visibility</span>Vistas
       </p>
-      <p class="text-4xl font-black text-on-surface count-up leading-none" id="stat-views">0</p>
+      <p class="text-4xl font-black text-[#ffa3e9] count-up leading-none" id="stat-views">0</p>
       <p class="text-xs text-on-surface-variant/50 mt-2">totales</p>
     </div>
 
-    <a href="./leads.html" class="stat-item stat-card flex-1 px-5 py-5 block">
+    <!-- Leads: verde → sombra azul -->
+    <a href="./leads.html" class="stat-item stat-card flex-1 px-5 py-5 block rounded-r-2xl" style="box-shadow: 0 8px 28px -4px rgba(46,91,255,0.22);">
       <p class="text-[11px] font-bold text-secondary/70 uppercase tracking-widest mb-3 flex items-center gap-1.5">
         <span class="material-symbols-outlined text-secondary" style="font-size:13px;font-variation-settings:'FILL' 1">group</span>Leads
       </p>
