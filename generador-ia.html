@@ -193,9 +193,12 @@
 
         <!-- Empty -->
         <div id="empty-state" class="p-12 text-center">
-          <span class="material-symbols-outlined text-5xl text-on-surface-variant/20">quiz</span>
-          <p class="text-on-surface-variant text-sm mt-3">Ingresa los datos de tu producto<br>y genera el quiz.</p>
-          <button onclick="loadDemo()" class="mt-4 text-xs text-primary hover:underline">Ver demo →</button>
+          <div class="w-16 h-16 rounded-2xl mx-auto mb-4 flex items-center justify-center" style="background: linear-gradient(135deg, rgba(46,91,255,0.15), rgba(105,246,184,0.1)); border: 1px solid rgba(46,91,255,0.2);">
+            <span class="material-symbols-outlined text-primary" style="font-size:32px; font-variation-settings:'FILL' 1;">edit_note</span>
+          </div>
+          <p class="font-semibold text-on-surface text-sm">Tu quiz aparecerá aquí</p>
+          <p class="text-on-surface-variant text-xs mt-1 max-w-[200px] mx-auto">Ingresa los datos de tu producto y genera el quiz con IA.</p>
+          <button onclick="loadDemo()" class="mt-4 text-xs font-bold text-primary border border-primary/20 px-4 py-2 rounded-lg hover:bg-primary/5 transition-colors">Ver demo →</button>
         </div>
 
         <!-- Quiz Content -->
@@ -289,24 +292,15 @@ function getParam(name) {
   return new URLSearchParams(window.location.search).get(name);
 }
 
-function loadTemplate(id) {
-  const tmpl = getBuiltinTemplates().find(t => t.id === id);
-  if (!tmpl) return;
-  document.getElementById('input-product').value = tmpl.product || '';
-  document.getElementById('input-niche').value   = tmpl.niche   || '';
-  currentQuiz = {
-    title: tmpl.title,
-    subtitle: tmpl.subtitle,
-    estimatedMinutes: tmpl.estimatedMinutes || 2,
-    product: tmpl.product,
-    description: '',
-    niche: tmpl.niche,
-    questions: tmpl.questions,
-    profiles: tmpl.profiles,
-    status: 'draft',
-  };
+function loadDemo() {
+  const demo = getBuiltinTemplates()[0];
+  if (!demo) return;
+  document.getElementById('input-product').value = demo.product || '';
+  document.getElementById('input-niche').value   = demo.niche   || '';
+  currentQuiz = JSON.parse(JSON.stringify(demo));
+  currentQuiz.status = 'draft';
   loadQuizIntoEditor(currentQuiz);
-  showToast('Plantilla cargada. Personaliza y guarda tu quiz.');
+  showToast('Demo cargado. Personalízalo y guárdalo.');
 }
 
 document.addEventListener('DOMContentLoaded', async () => {
@@ -567,9 +561,11 @@ function copyShareLink() {
   copyToClipboard(buildQuizUrl(editingQuizId));
 }
 
-function previewQuiz() {
-  if (!editingQuizId) { saveQuiz(); }
+async function previewQuiz() {
+  if (!currentQuiz) { showToast('Genera un quiz primero', 'error'); return; }
+  if (!editingQuizId) await saveQuiz();
   if (editingQuizId) window.open(`./quiz.html?quiz=${editingQuizId}`, '_blank');
+  else showToast('Guarda el quiz antes de hacer preview', 'error');
 }
 
 // ── Mini-App ideas ─────────────────────────────────────────
