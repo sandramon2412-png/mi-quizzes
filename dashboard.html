@@ -255,13 +255,35 @@
         <label class="text-xs text-on-surface-variant font-semibold block mb-1.5">Tipo de Mini-App *</label>
         <select id="ma-type" required class="w-full bg-surface-container border border-outline-variant/30 rounded-xl px-4 py-2.5 text-sm focus:ring-1 focus:ring-primary outline-none transition">
           <option value="">Selecciona un tipo...</option>
+          <optgroup label="── Hábitos y seguimiento">
           <option value="devocional">🕊️ Devocional / Reflexión diaria</option>
           <option value="checklist">✅ Checklist interactivo</option>
           <option value="tracker">📊 Tracker de progreso</option>
+          <option value="reto">🔥 Reto / Challenge (7, 21, 30 días)</option>
+          <option value="diario">📓 Diario / Journaling guiado</option>
+          </optgroup>
+          <optgroup label="── Herramientas de decisión">
           <option value="calculadora">🧮 Calculadora / Simulador</option>
-          <option value="planificador">📅 Planificador</option>
+          <option value="comparador">⚖️ Comparador de opciones</option>
+          <option value="diagnostico">🩺 Diagnóstico / Evaluación inicial</option>
           <option value="quiz-embed">🎯 Quiz embebido</option>
+          </optgroup>
+          <optgroup label="── Organización y planificación">
+          <option value="planificador">📅 Planificador</option>
+          <option value="roadmap">🗺️ Mapa de ruta / Roadmap</option>
+          <option value="temporizador">⏱️ Temporizador / Pomodoro</option>
+          </optgroup>
+          <optgroup label="── Contenido y aprendizaje">
+          <option value="glosario">📖 Glosario interactivo</option>
+          <option value="faq">💬 FAQ interactivo</option>
+          <option value="biblioteca">📚 Biblioteca de recursos</option>
+          <option value="flashcards">🃏 Flashcards / Tarjetas de estudio</option>
+          </optgroup>
+          <optgroup label="── Generación con IA">
           <option value="generador">✨ Generador de contenido con IA</option>
+          <option value="afirmaciones">🌟 Generador de afirmaciones</option>
+          <option value="onboarding">🚀 Onboarding guiado con IA</option>
+          </optgroup>
         </select>
       </div>
 
