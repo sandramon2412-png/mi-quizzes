@@ -85,15 +85,6 @@
     </div>
   </div>
 
-  <!-- API Key Warning -->
-  <div id="no-api-warning" class="hidden mb-6 p-4 rounded-xl border border-secondary/20 bg-secondary/5 flex items-start gap-3">
-    <span class="material-symbols-outlined text-secondary shrink-0">info</span>
-    <div>
-      <p class="font-semibold text-sm">Configura tu API key de Claude para usar la IA</p>
-      <p class="text-on-surface-variant text-xs mt-1">Sin API key puedes usar plantillas o crear manualmente. <a href="./settings.html" class="text-secondary font-bold hover:underline">Configurar ahora →</a></p>
-    </div>
-  </div>
-
   <div class="grid grid-cols-1 lg:grid-cols-5 gap-6">
 
     <!-- LEFT: Product Form + Mini-App -->
@@ -448,17 +439,6 @@ document.addEventListener('DOMContentLoaded', async () => {
   _currentUser = await Auth.requireAuth();
   if (!_currentUser) return;
 
-  // Load API key from Supabase profile first, then localStorage fallback
-  try {
-    const profile = await DB.profiles.get(_currentUser.id);
-    if (profile?.claude_api_key) {
-      Settings.save({ claudeApiKey: profile.claude_api_key });
-    }
-  } catch {}
-
-  if (!Settings.getApiKey()) {
-    document.getElementById('no-api-warning').classList.remove('hidden');
-  }
   const id = getParam('id');
   if (id) {
     let q = null;
@@ -482,11 +462,6 @@ async function generateWithAI() {
   const desc    = document.getElementById('input-desc').value.trim();
   const niche   = document.getElementById('input-niche').value.trim();
   if (!product) { showToast('Escribe el nombre de tu producto', 'error'); return; }
-  if (!Settings.getApiKey()) {
-    showToast('Configura tu API key de Claude en Settings', 'error');
-    setTimeout(() => window.location.href = './settings.html', 1800);
-    return;
-  }
   const btn = document.getElementById('btn-generate');
   btn.disabled = true;
   showLoading(true, 'Analizando tu nicho y audiencia...', 15);
@@ -811,7 +786,6 @@ async function previewQuiz() {
 async function generateMiniApps() {
   const product = document.getElementById('input-product').value.trim();
   if (!product) { showToast('Escribe el nombre de tu producto primero', 'error'); return; }
-  if (!Settings.getApiKey()) { showToast('Configura tu API key primero', 'error'); return; }
   const c = document.getElementById('mini-app-ideas');
   c.innerHTML = '<span class="text-xs text-on-surface-variant flex items-center gap-1"><span class="material-symbols-outlined text-sm spin">progress_activity</span>Generando ideas con IA...</span>';
   try {
