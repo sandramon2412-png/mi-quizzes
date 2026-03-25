@@ -190,215 +190,241 @@
     </div>
   </section>
 
-  <!-- ══════════════ GUÍA: FACEBOOK ADS ══════════════ -->
+  <!-- ══════════════ GUÍA COMPLETA ══════════════ -->
   <section class="mt-12 mb-4" id="guia-facebook-ads">
     <!-- Accordion header -->
-    <button onclick="toggleFbGuide()" class="w-full flex items-center justify-between p-5 rounded-2xl border border-[#1877F2]/25 bg-[#1877F2]/5 hover:bg-[#1877F2]/10 transition-all group text-left">
+    <button onclick="toggleFbGuide()" class="w-full flex items-center justify-between p-5 rounded-2xl border border-primary/20 bg-primary/5 hover:bg-primary/8 transition-all group text-left">
       <div class="flex items-center gap-3">
-        <div class="w-10 h-10 rounded-xl bg-[#1877F2]/15 flex items-center justify-center shrink-0">
-          <svg class="w-5 h-5" viewBox="0 0 24 24" fill="#1877F2"><path d="M24 12.073C24 5.405 18.627 0 12 0S0 5.405 0 12.073C0 18.1 4.388 23.094 10.125 24v-8.437H7.078v-3.49h3.047V9.41c0-3.025 1.791-4.697 4.533-4.697 1.312 0 2.686.235 2.686.235v2.97h-1.513c-1.491 0-1.956.93-1.956 1.883v2.277h3.328l-.532 3.49h-2.796V24C19.612 23.094 24 18.1 24 12.073z"/></svg>
+        <div class="w-10 h-10 rounded-xl bg-primary/15 flex items-center justify-center shrink-0">
+          <span class="material-symbols-outlined text-primary" style="font-variation-settings:'FILL' 1">menu_book</span>
         </div>
         <div>
-          <p class="font-extrabold text-on-surface text-base">Conectar Facebook Ads con tu quiz</p>
-          <p class="text-xs text-on-surface-variant/70 mt-0.5">Guía paso a paso · 5 minutos · Sin conocimientos técnicos</p>
+          <p class="font-extrabold text-on-surface text-base">Guía completa: del quiz al anuncio que vende</p>
+          <p class="text-xs text-on-surface-variant/70 mt-0.5">Todos los pasos · Desde crear el quiz hasta tener Facebook Ads corriendo · Sin conocimientos técnicos</p>
         </div>
       </div>
       <span id="fb-guide-chevron" class="material-symbols-outlined text-on-surface-variant group-hover:text-primary transition-all">expand_more</span>
     </button>
 
     <!-- Accordion content -->
-    <div id="fb-guide-content" class="hidden mt-3 space-y-4">
+    <div id="fb-guide-content" class="hidden mt-4 space-y-3">
 
-      <!-- Intro card -->
-      <div class="rounded-2xl border border-outline-variant/10 bg-surface-container-low p-6">
+      <!-- Intro banner -->
+      <div class="rounded-2xl border border-primary/15 bg-gradient-to-r from-primary/8 via-surface-container-low to-surface-container-low p-6">
         <p class="text-sm text-on-surface-variant leading-relaxed">
-          Al conectar tu Pixel de Facebook con el quiz, Meta sabrá exactamente qué hace cada persona que llega desde tu anuncio:
-          si abrió el quiz, si dejó su correo y si hizo clic para comprar. Con eso podés
-          <span class="text-on-surface font-bold">optimizar el algoritmo para conseguir más leads o más ventas</span>, no solo clics.
+          Esta guía te lleva de la mano desde <span class="text-on-surface font-bold">crear tu primer quiz</span> hasta tener un
+          <span class="text-on-surface font-bold">anuncio de Facebook corriendo</span> que captura leads y vende tu producto.
+          No necesitás saber programar ni tener experiencia en publicidad.
         </p>
-
-        <!-- Event flow visual -->
-        <div class="mt-5 flex flex-col sm:flex-row items-center gap-2 text-xs font-bold">
-          <div class="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-primary/10 border border-primary/20 text-primary">
-            <span class="material-symbols-outlined text-base">visibility</span>
-            ViewContent
-            <span class="font-normal text-primary/70 text-[10px] block">Abre el quiz</span>
-          </div>
-          <span class="text-on-surface-variant/30 text-lg">→</span>
-          <div class="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-secondary/10 border border-secondary/20 text-secondary">
-            <span class="material-symbols-outlined text-base">mail</span>
-            Lead
-            <span class="font-normal text-secondary/70 text-[10px] block">Deja correo</span>
-          </div>
-          <span class="text-on-surface-variant/30 text-lg">→</span>
-          <div class="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-tertiary/10 border border-tertiary/20 text-tertiary">
-            <span class="material-symbols-outlined text-base">shopping_cart</span>
-            InitiateCheckout
-            <span class="font-normal text-tertiary/70 text-[10px] block">Clic en CTA</span>
-          </div>
-          <span class="text-on-surface-variant/30 text-lg">→</span>
-          <div class="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#1877F2]/10 border border-[#1877F2]/20 text-[#60a5fa]">
-            <svg class="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="currentColor"><path d="M24 12.073C24 5.405 18.627 0 12 0S0 5.405 0 12.073C0 18.1 4.388 23.094 10.125 24v-8.437H7.078v-3.49h3.047V9.41c0-3.025 1.791-4.697 4.533-4.697 1.312 0 2.686.235 2.686.235v2.97h-1.513c-1.491 0-1.956.93-1.956 1.883v2.277h3.328l-.532 3.49h-2.796V24C19.612 23.094 24 18.1 24 12.073z"/></svg>
-            Meta lo ve
-            <span class="font-normal text-[#60a5fa]/70 text-[10px] block">en tiempo real</span>
-          </div>
+        <!-- Progress pills -->
+        <div class="mt-4 flex flex-wrap gap-2 text-[10px] font-black uppercase tracking-widest">
+          <span class="px-3 py-1 rounded-full bg-primary/15 text-primary border border-primary/20">1. Crear el quiz</span>
+          <span class="text-on-surface-variant/30 self-center">›</span>
+          <span class="px-3 py-1 rounded-full bg-surface-container-highest text-on-surface-variant border border-outline-variant/20">2. Configurar destino</span>
+          <span class="text-on-surface-variant/30 self-center">›</span>
+          <span class="px-3 py-1 rounded-full bg-surface-container-highest text-on-surface-variant border border-outline-variant/20">3. Capturar correos</span>
+          <span class="text-on-surface-variant/30 self-center">›</span>
+          <span class="px-3 py-1 rounded-full bg-surface-container-highest text-on-surface-variant border border-outline-variant/20">4. Pixel de Meta</span>
+          <span class="text-on-surface-variant/30 self-center">›</span>
+          <span class="px-3 py-1 rounded-full bg-surface-container-highest text-on-surface-variant border border-outline-variant/20">5. Publicar</span>
+          <span class="text-on-surface-variant/30 self-center">›</span>
+          <span class="px-3 py-1 rounded-full bg-surface-container-highest text-on-surface-variant border border-outline-variant/20">6. Crear anuncio</span>
+          <span class="text-on-surface-variant/30 self-center">›</span>
+          <span class="px-3 py-1 rounded-full bg-secondary/15 text-secondary border border-secondary/20">7. Ver resultados</span>
         </div>
       </div>
 
-      <!-- Steps -->
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <!-- Steps grid -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
 
-        <!-- Step 1 -->
+        <!-- Step 1: Crear el quiz -->
         <div class="rounded-2xl border border-outline-variant/10 bg-surface-container-low p-5 space-y-3">
           <div class="flex items-center gap-3">
-            <div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-white text-sm font-black shrink-0">1</div>
-            <h3 class="font-extrabold text-on-surface text-sm">Ir a Meta Business Suite y copiar tu Pixel ID</h3>
+            <div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-on-primary text-sm font-black shrink-0">1</div>
+            <h3 class="font-extrabold text-on-surface text-sm">Crear tu quiz con IA</h3>
           </div>
           <div class="rounded-xl bg-surface-container p-4 space-y-2 text-xs text-on-surface-variant leading-relaxed border border-outline-variant/10">
             <p class="flex items-start gap-2">
               <span class="material-symbols-outlined text-primary text-base shrink-0 mt-0.5" style="font-variation-settings:'FILL' 1">arrow_right</span>
-              Abrí <span class="text-on-surface font-bold mx-1">business.facebook.com</span> (o Meta Business Suite en el celular)
+              Hacé clic en <span class="text-on-surface font-bold mx-1">+ Nuevo Quiz</span> en esta pantalla o en el ícono <span class="material-symbols-outlined text-xs align-middle">add</span> del menú
             </p>
             <p class="flex items-start gap-2">
               <span class="material-symbols-outlined text-primary text-base shrink-0 mt-0.5" style="font-variation-settings:'FILL' 1">arrow_right</span>
-              En el menú izquierdo buscá <span class="text-on-surface font-bold mx-1">Configuración del negocio</span> (ícono de engranaje)
+              Elegí <span class="text-on-surface font-bold mx-1">Crear con IA</span> y describí tu producto en una oración (ej: "vendo curso de yoga para embarazadas")
             </p>
             <p class="flex items-start gap-2">
               <span class="material-symbols-outlined text-primary text-base shrink-0 mt-0.5" style="font-variation-settings:'FILL' 1">arrow_right</span>
-              Entrá a <span class="text-on-surface font-bold mx-1">Fuentes de datos → Píxeles</span>
-            </p>
-            <p class="flex items-start gap-2">
-              <span class="material-symbols-outlined text-primary text-base shrink-0 mt-0.5" style="font-variation-settings:'FILL' 1">arrow_right</span>
-              Si no tenés un Pixel, hacé clic en <span class="text-on-surface font-bold mx-1">+ Agregar</span> y seguí los pasos para crearlo
+              La IA genera preguntas, resultados y un gancho automáticamente. Podés editar todo.
             </p>
             <p class="flex items-start gap-2">
               <span class="material-symbols-outlined text-secondary text-base shrink-0 mt-0.5" style="font-variation-settings:'FILL' 1">check_circle</span>
-              Copiá el número que aparece debajo del nombre de tu Pixel (ejemplo: <span class="font-mono text-on-surface">123456789012345</span>)
-            </p>
-          </div>
-          <div class="flex items-center gap-2 text-[10px] text-on-surface-variant/50 border border-outline-variant/10 rounded-lg px-3 py-2">
-            <span class="material-symbols-outlined text-sm text-on-surface-variant/40">info</span>
-            Si no tenés cuenta de Meta Business Suite, es gratis crearla en business.facebook.com
-          </div>
-        </div>
-
-        <!-- Step 2 -->
-        <div class="rounded-2xl border border-outline-variant/10 bg-surface-container-low p-5 space-y-3">
-          <div class="flex items-center gap-3">
-            <div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-white text-sm font-black shrink-0">2</div>
-            <h3 class="font-extrabold text-on-surface text-sm">Pegar el Pixel ID en el creador del quiz</h3>
-          </div>
-          <div class="rounded-xl bg-surface-container p-4 space-y-2 text-xs text-on-surface-variant leading-relaxed border border-outline-variant/10">
-            <p class="flex items-start gap-2">
-              <span class="material-symbols-outlined text-primary text-base shrink-0 mt-0.5" style="font-variation-settings:'FILL' 1">arrow_right</span>
-              Abrí tu quiz desde <span class="text-on-surface font-bold mx-1">Mis Quizzes</span> → hacé clic en <span class="text-on-surface font-bold mx-1">Editar</span>
-            </p>
-            <p class="flex items-start gap-2">
-              <span class="material-symbols-outlined text-primary text-base shrink-0 mt-0.5" style="font-variation-settings:'FILL' 1">arrow_right</span>
-              En el panel de configuración, buscá la sección <span class="text-on-surface font-bold mx-1">Meta Pixel / Facebook Ads</span>
-            </p>
-            <p class="flex items-start gap-2">
-              <span class="material-symbols-outlined text-primary text-base shrink-0 mt-0.5" style="font-variation-settings:'FILL' 1">arrow_right</span>
-              Activá el <span class="text-on-surface font-bold mx-1">toggle</span> (interruptor) para habilitarlo
-            </p>
-            <p class="flex items-start gap-2">
-              <span class="material-symbols-outlined text-primary text-base shrink-0 mt-0.5" style="font-variation-settings:'FILL' 1">arrow_right</span>
-              Pegá tu número de Pixel en el campo <span class="text-on-surface font-bold mx-1">Pixel ID</span>
-            </p>
-            <p class="flex items-start gap-2">
-              <span class="material-symbols-outlined text-secondary text-base shrink-0 mt-0.5" style="font-variation-settings:'FILL' 1">check_circle</span>
-              Hacé clic en <span class="text-on-surface font-bold mx-1">Guardar Quiz</span> — listo, el Pixel ya está activo
+              Un buen quiz tiene 4–6 preguntas y al menos 2 resultados distintos.
             </p>
           </div>
           <a href="./generador-ia.html" class="flex items-center justify-center gap-2 w-full py-2.5 bg-primary/10 border border-primary/25 text-primary text-xs font-bold rounded-xl hover:bg-primary/15 transition-all">
-            <span class="material-symbols-outlined text-sm">edit</span>
-            Ir al creador del quiz
+            <span class="material-symbols-outlined text-sm">auto_awesome</span>
+            Crear quiz con IA
           </a>
         </div>
 
-        <!-- Step 3 -->
+        <!-- Step 2: Configurar el destino -->
         <div class="rounded-2xl border border-outline-variant/10 bg-surface-container-low p-5 space-y-3">
           <div class="flex items-center gap-3">
-            <div class="w-8 h-8 rounded-full bg-secondary flex items-center justify-center text-[#00452d] text-sm font-black shrink-0">3</div>
-            <h3 class="font-extrabold text-on-surface text-sm">Verificar que el Pixel está funcionando</h3>
+            <div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-on-primary text-sm font-black shrink-0">2</div>
+            <h3 class="font-extrabold text-on-surface text-sm">Configurar adónde van cuando terminan</h3>
           </div>
           <div class="rounded-xl bg-surface-container p-4 space-y-2 text-xs text-on-surface-variant leading-relaxed border border-outline-variant/10">
             <p class="flex items-start gap-2">
               <span class="material-symbols-outlined text-primary text-base shrink-0 mt-0.5" style="font-variation-settings:'FILL' 1">arrow_right</span>
-              Instalá la extensión <span class="text-on-surface font-bold mx-1">Meta Pixel Helper</span> en Google Chrome (gratis)
+              En el editor del quiz, abrí la sección <span class="text-on-surface font-bold mx-1">Resultados</span>
             </p>
             <p class="flex items-start gap-2">
               <span class="material-symbols-outlined text-primary text-base shrink-0 mt-0.5" style="font-variation-settings:'FILL' 1">arrow_right</span>
-              Abrí el enlace de tu quiz publicado en el navegador
+              Para cada resultado configurá un <span class="text-on-surface font-bold mx-1">Botón CTA</span> con texto y URL (ej: "Ver el curso →" apuntando a tu página de venta)
             </p>
             <p class="flex items-start gap-2">
               <span class="material-symbols-outlined text-primary text-base shrink-0 mt-0.5" style="font-variation-settings:'FILL' 1">arrow_right</span>
-              Hacé clic en el ícono de la extensión — vas a ver <span class="text-secondary font-bold mx-1">ViewContent</span> en verde
-            </p>
-            <p class="flex items-start gap-2">
-              <span class="material-symbols-outlined text-primary text-base shrink-0 mt-0.5" style="font-variation-settings:'FILL' 1">arrow_right</span>
-              Completá el quiz y dejá un correo de prueba → deberías ver <span class="text-secondary font-bold mx-1">Lead</span>
+              Podés poner distintos enlaces por resultado para segmentar (ej: resultado A → producto básico, resultado B → producto premium)
             </p>
             <p class="flex items-start gap-2">
               <span class="material-symbols-outlined text-secondary text-base shrink-0 mt-0.5" style="font-variation-settings:'FILL' 1">check_circle</span>
-              Si aparecen los eventos en verde, el Pixel está enviando datos a Meta correctamente
+              El botón CTA dispara el evento <span class="font-mono text-on-surface">InitiateCheckout</span> en Meta automáticamente.
             </p>
           </div>
         </div>
 
-        <!-- Step 4: usar en FB Ads -->
+        <!-- Step 3: Captura de correos -->
         <div class="rounded-2xl border border-outline-variant/10 bg-surface-container-low p-5 space-y-3">
           <div class="flex items-center gap-3">
-            <div class="w-8 h-8 rounded-full bg-secondary flex items-center justify-center text-[#00452d] text-sm font-black shrink-0">4</div>
-            <h3 class="font-extrabold text-on-surface text-sm">Crear el anuncio apuntando al quiz</h3>
+            <div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-on-primary text-sm font-black shrink-0">3</div>
+            <h3 class="font-extrabold text-on-surface text-sm">Activar captura de correos</h3>
           </div>
           <div class="rounded-xl bg-surface-container p-4 space-y-2 text-xs text-on-surface-variant leading-relaxed border border-outline-variant/10">
             <p class="flex items-start gap-2">
               <span class="material-symbols-outlined text-primary text-base shrink-0 mt-0.5" style="font-variation-settings:'FILL' 1">arrow_right</span>
-              En Meta Ads Manager, creá una campaña con objetivo <span class="text-on-surface font-bold mx-1">Leads</span> o <span class="text-on-surface font-bold mx-1">Ventas</span>
+              En el editor, buscá la sección <span class="text-on-surface font-bold mx-1">Captura de correo</span> y activá el toggle
             </p>
             <p class="flex items-start gap-2">
               <span class="material-symbols-outlined text-primary text-base shrink-0 mt-0.5" style="font-variation-settings:'FILL' 1">arrow_right</span>
-              En la URL de destino, pegá el <span class="text-on-surface font-bold mx-1">enlace de tu quiz</span> (copialo desde el creador)
+              Editá el título del formulario (ej: "¿Querés ver tu resultado personalizado?")
             </p>
             <p class="flex items-start gap-2">
               <span class="material-symbols-outlined text-primary text-base shrink-0 mt-0.5" style="font-variation-settings:'FILL' 1">arrow_right</span>
-              En "Evento de conversión" elegí <span class="text-on-surface font-bold mx-1">Lead</span> para que Meta optimice para correos, o <span class="text-on-surface font-bold mx-1">InitiateCheckout</span> para optimizar para clics al botón de compra
+              El formulario aparece entre las preguntas y el resultado. El usuario deja su correo para desbloquearlo.
             </p>
             <p class="flex items-start gap-2">
               <span class="material-symbols-outlined text-secondary text-base shrink-0 mt-0.5" style="font-variation-settings:'FILL' 1">check_circle</span>
-              A partir de 50 conversiones, el algoritmo de Meta empieza a aprender y los resultados mejoran solos
+              Todos los correos quedan en <span class="text-on-surface font-bold mx-1">Leads</span> en el menú inferior. Exportables en CSV.
             </p>
           </div>
         </div>
+
+        <!-- Step 4: Pixel de Meta -->
+        <div class="rounded-2xl border border-outline-variant/10 bg-surface-container-low p-5 space-y-3">
+          <div class="flex items-center gap-3">
+            <div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-on-primary text-sm font-black shrink-0">4</div>
+            <h3 class="font-extrabold text-on-surface text-sm">Conectar el Pixel de Meta</h3>
+          </div>
+          <div class="rounded-xl bg-surface-container p-4 space-y-2 text-xs text-on-surface-variant leading-relaxed border border-outline-variant/10">
+            <p class="flex items-start gap-2">
+              <span class="material-symbols-outlined text-primary text-base shrink-0 mt-0.5" style="font-variation-settings:'FILL' 1">arrow_right</span>
+              Abrí <span class="text-on-surface font-bold mx-1">business.facebook.com → Configuración del negocio → Fuentes de datos → Píxeles</span>
+            </p>
+            <p class="flex items-start gap-2">
+              <span class="material-symbols-outlined text-primary text-base shrink-0 mt-0.5" style="font-variation-settings:'FILL' 1">arrow_right</span>
+              Copiá tu <span class="text-on-surface font-bold mx-1">Pixel ID</span> (número de 15 dígitos). Si no tenés uno, crealo ahí mismo gratis.
+            </p>
+            <p class="flex items-start gap-2">
+              <span class="material-symbols-outlined text-primary text-base shrink-0 mt-0.5" style="font-variation-settings:'FILL' 1">arrow_right</span>
+              En el editor del quiz, buscá la sección <span class="text-on-surface font-bold mx-1">Meta Pixel</span>, activá el toggle y pegá el ID
+            </p>
+            <p class="flex items-start gap-2">
+              <span class="material-symbols-outlined text-secondary text-base shrink-0 mt-0.5" style="font-variation-settings:'FILL' 1">check_circle</span>
+              El Pixel envía <span class="font-mono text-on-surface">ViewContent</span> al abrir, <span class="font-mono text-on-surface">Lead</span> al dejar correo, e <span class="font-mono text-on-surface">InitiateCheckout</span> al hacer clic en CTA.
+            </p>
+          </div>
+        </div>
+
+        <!-- Step 5: Publicar -->
+        <div class="rounded-2xl border border-outline-variant/10 bg-surface-container-low p-5 space-y-3">
+          <div class="flex items-center gap-3">
+            <div class="w-8 h-8 rounded-full bg-secondary flex items-center justify-center text-on-secondary text-sm font-black shrink-0">5</div>
+            <h3 class="font-extrabold text-on-surface text-sm">Publicar el quiz y copiar el enlace</h3>
+          </div>
+          <div class="rounded-xl bg-surface-container p-4 space-y-2 text-xs text-on-surface-variant leading-relaxed border border-outline-variant/10">
+            <p class="flex items-start gap-2">
+              <span class="material-symbols-outlined text-primary text-base shrink-0 mt-0.5" style="font-variation-settings:'FILL' 1">arrow_right</span>
+              Hacé clic en <span class="text-on-surface font-bold mx-1">Guardar Quiz</span> en el editor
+            </p>
+            <p class="flex items-start gap-2">
+              <span class="material-symbols-outlined text-primary text-base shrink-0 mt-0.5" style="font-variation-settings:'FILL' 1">arrow_right</span>
+              Desde <span class="text-on-surface font-bold mx-1">Mis Quizzes</span>, hacé clic en el ícono <span class="material-symbols-outlined text-xs align-middle">link</span> para copiar el enlace público
+            </p>
+            <p class="flex items-start gap-2">
+              <span class="material-symbols-outlined text-primary text-base shrink-0 mt-0.5" style="font-variation-settings:'FILL' 1">arrow_right</span>
+              Abrilo en el celular para ver cómo se ve desde el anuncio. Probalo completo.
+            </p>
+            <p class="flex items-start gap-2">
+              <span class="material-symbols-outlined text-secondary text-base shrink-0 mt-0.5" style="font-variation-settings:'FILL' 1">check_circle</span>
+              Ese enlace es lo que vas a poner en tu anuncio. No necesitás un sitio web propio.
+            </p>
+          </div>
+        </div>
+
+        <!-- Step 6: Crear el anuncio -->
+        <div class="rounded-2xl border border-outline-variant/10 bg-surface-container-low p-5 space-y-3">
+          <div class="flex items-center gap-3">
+            <div class="w-8 h-8 rounded-full bg-secondary flex items-center justify-center text-on-secondary text-sm font-black shrink-0">6</div>
+            <h3 class="font-extrabold text-on-surface text-sm">Crear el anuncio en Meta Ads Manager</h3>
+          </div>
+          <div class="rounded-xl bg-surface-container p-4 space-y-2 text-xs text-on-surface-variant leading-relaxed border border-outline-variant/10">
+            <p class="flex items-start gap-2">
+              <span class="material-symbols-outlined text-primary text-base shrink-0 mt-0.5" style="font-variation-settings:'FILL' 1">arrow_right</span>
+              En <span class="text-on-surface font-bold mx-1">Meta Ads Manager</span>, creá una campaña nueva con objetivo <span class="text-on-surface font-bold mx-1">Leads</span> (para correos) o <span class="text-on-surface font-bold mx-1">Ventas</span> (para clics al producto)
+            </p>
+            <p class="flex items-start gap-2">
+              <span class="material-symbols-outlined text-primary text-base shrink-0 mt-0.5" style="font-variation-settings:'FILL' 1">arrow_right</span>
+              En el nivel del anuncio, pegá el <span class="text-on-surface font-bold mx-1">enlace del quiz</span> como URL de destino
+            </p>
+            <p class="flex items-start gap-2">
+              <span class="material-symbols-outlined text-primary text-base shrink-0 mt-0.5" style="font-variation-settings:'FILL' 1">arrow_right</span>
+              En el conjunto de anuncios, elegí el Pixel y el evento de conversión: <span class="font-mono text-on-surface">Lead</span> o <span class="font-mono text-on-surface">InitiateCheckout</span>
+            </p>
+            <p class="flex items-start gap-2">
+              <span class="material-symbols-outlined text-secondary text-base shrink-0 mt-0.5" style="font-variation-settings:'FILL' 1">check_circle</span>
+              Para el copy del anuncio usá una pregunta del quiz como gancho (ej: "¿Qué tipo de emprendedora sos?")
+            </p>
+          </div>
+        </div>
+
       </div>
 
-      <!-- CAPI optional card -->
-      <div class="rounded-2xl border border-tertiary/15 bg-tertiary/5 p-5 space-y-3">
+      <!-- Step 7: Ver resultados (full width) -->
+      <div class="rounded-2xl border border-secondary/20 bg-secondary/5 p-5 space-y-3">
         <div class="flex items-center gap-3">
-          <span class="material-symbols-outlined text-tertiary text-xl">vpn_key</span>
+          <div class="w-8 h-8 rounded-full bg-secondary flex items-center justify-center text-on-secondary text-sm font-black shrink-0">7</div>
           <div>
-            <p class="font-extrabold text-on-surface text-sm">Opcional (recomendado): Conversions API del servidor</p>
-            <p class="text-xs text-on-surface-variant/70 mt-0.5">Mejora el tracking en un 20-40% porque funciona aunque el usuario tenga bloqueadores de anuncios.</p>
+            <h3 class="font-extrabold text-on-surface text-sm">Ver resultados y optimizar</h3>
+            <p class="text-xs text-on-surface-variant/70 mt-0.5">Después de las primeras 48–72 hs ya tenés datos para ajustar.</p>
           </div>
         </div>
-        <div class="rounded-xl bg-surface-container p-4 space-y-2 text-xs text-on-surface-variant leading-relaxed border border-outline-variant/10">
-          <p class="flex items-start gap-2">
-            <span class="material-symbols-outlined text-primary text-base shrink-0 mt-0.5" style="font-variation-settings:'FILL' 1">arrow_right</span>
-            En Meta Business Suite, andá a <span class="text-on-surface font-bold mx-1">Fuentes de datos → Píxeles → Configuración</span>
-          </p>
-          <p class="flex items-start gap-2">
-            <span class="material-symbols-outlined text-primary text-base shrink-0 mt-0.5" style="font-variation-settings:'FILL' 1">arrow_right</span>
-            Buscá la sección <span class="text-on-surface font-bold mx-1">Conversions API</span> → Generá un token de acceso
-          </p>
-          <p class="flex items-start gap-2">
-            <span class="material-symbols-outlined text-primary text-base shrink-0 mt-0.5" style="font-variation-settings:'FILL' 1">arrow_right</span>
-            Volvé al creador del quiz y pegalo en el campo <span class="text-on-surface font-bold mx-1">CAPI Access Token</span>
-          </p>
-          <p class="flex items-start gap-2">
-            <span class="material-symbols-outlined text-secondary text-base shrink-0 mt-0.5" style="font-variation-settings:'FILL' 1">check_circle</span>
-            Los eventos ahora llegan a Meta por dos vías: Pixel (navegador) + CAPI (servidor). Mayor cobertura, mejores resultados.
-          </p>
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs text-on-surface-variant">
+          <div class="rounded-xl bg-surface-container p-4 space-y-1 border border-outline-variant/10">
+            <p class="font-bold text-on-surface flex items-center gap-1.5"><span class="material-symbols-outlined text-primary text-sm">bar_chart</span>En Ads Manager</p>
+            <p>Mirá el <span class="text-on-surface font-bold">costo por Lead</span> y la <span class="text-on-surface font-bold">tasa de conversión</span> del anuncio al quiz.</p>
+          </div>
+          <div class="rounded-xl bg-surface-container p-4 space-y-1 border border-outline-variant/10">
+            <p class="font-bold text-on-surface flex items-center gap-1.5"><span class="material-symbols-outlined text-secondary text-sm">group</span>En Leads (acá)</p>
+            <p>Revisá cuántos correos capturó cada quiz y cuál es el resultado más elegido por tu audiencia.</p>
+          </div>
+          <div class="rounded-xl bg-surface-container p-4 space-y-1 border border-outline-variant/10">
+            <p class="font-bold text-on-surface flex items-center gap-1.5"><span class="material-symbols-outlined text-tertiary text-sm">tune</span>Para optimizar</p>
+            <p>Si el costo por Lead es alto, probá cambiar la imagen o el primer texto del anuncio (el hook).</p>
+          </div>
+        </div>
+        <div class="flex items-center gap-2 text-[10px] text-on-surface-variant/60 border border-secondary/15 rounded-lg px-3 py-2 bg-secondary/5">
+          <span class="material-symbols-outlined text-sm text-secondary/60">info</span>
+          Meta necesita ~50 conversiones en 7 días para salir de la fase de aprendizaje y empezar a optimizar solo.
         </div>
       </div>
 
@@ -408,19 +434,19 @@
         <div class="space-y-4 text-xs text-on-surface-variant leading-relaxed">
           <div>
             <p class="font-bold text-on-surface mb-1">¿Necesito un sitio web propio?</p>
-            <p>No. El quiz funciona desde el enlace de Luminous Studio directamente. Ese enlace es el que vas a poner en tu anuncio.</p>
+            <p>No. El quiz funciona desde su enlace directamente. Ese enlace es el que ponés en el anuncio.</p>
           </div>
           <div>
-            <p class="font-bold text-on-surface mb-1">¿Cuándo empieza a mejorar el algoritmo?</p>
-            <p>Meta necesita recibir el evento de conversión al menos 50 veces en 7 días para salir de la "fase de aprendizaje". Una vez que supera ese umbral, el algoritmo empieza a mostrar el anuncio a personas con más probabilidad de convertir.</p>
+            <p class="font-bold text-on-surface mb-1">¿Qué objetivo elijo en Meta Ads: Leads o Ventas?</p>
+            <p>Si tu meta principal es capturar correos, elegí <span class="text-on-surface font-bold">Leads</span> y optimizá por el evento <span class="font-mono text-on-surface">Lead</span>. Si querés llevar gente directo a comprar, elegí <span class="text-on-surface font-bold">Ventas</span> y optimizá por <span class="font-mono text-on-surface">InitiateCheckout</span>.</p>
           </div>
           <div>
-            <p class="font-bold text-on-surface mb-1">¿Un quiz se puede usar en Reels e Instagram?</p>
-            <p>Sí. En Meta Ads podés poner el mismo enlace del quiz en anuncios de Feed, Stories, Reels e Instagram. El Pixel funciona igual en todos.</p>
+            <p class="font-bold text-on-surface mb-1">¿Un quiz funciona en Instagram y Reels también?</p>
+            <p>Sí. En Meta Ads podés poner el mismo enlace en Feed, Stories, Reels e Instagram. El Pixel funciona igual en todos los placements.</p>
           </div>
           <div>
             <p class="font-bold text-on-surface mb-1">¿Puedo usar el mismo Pixel en múltiples quizzes?</p>
-            <p>Sí. Usás el mismo Pixel ID en todos tus quizzes. Los datos se acumulan en el mismo Pixel dentro de Meta y podés ver el rendimiento separado por URL de destino en el Administrador de Anuncios.</p>
+            <p>Sí. Usás el mismo Pixel ID en todos tus quizzes. Los datos se acumulan en el mismo Pixel y podés filtrar por URL de destino en el Administrador de Anuncios.</p>
           </div>
         </div>
       </div>
