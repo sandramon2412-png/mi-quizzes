@@ -183,16 +183,14 @@ function calculateProfile(quiz, answers) {
 // ── Claude API ─────────────────────────────────────────────
 const Claude = {
   async _call(messages, maxTokens = 3000) {
-    const apiKey = Settings.getApiKey();
-    if (!apiKey) throw new Error('NO_API_KEY');
+    const session = await Auth.session();
+    if (!session) throw new Error('NOT_AUTHENTICATED');
 
-    const res = await fetch('https://api.anthropic.com/v1/messages', {
+    const res = await fetch(`${SUPABASE_URL}/functions/v1/claude-proxy`, {
       method: 'POST',
       headers: {
-        'x-api-key': apiKey,
-        'anthropic-version': '2023-06-01',
-        'content-type': 'application/json',
-        'anthropic-dangerous-direct-browser-access': 'true',
+        'Authorization': `Bearer ${session.access_token}`,
+        'Content-Type': 'application/json',
       },
       body: JSON.stringify({
         model: 'claude-haiku-4-5-20251001',

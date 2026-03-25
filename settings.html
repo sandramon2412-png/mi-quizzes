@@ -156,40 +156,6 @@
         </div>
       </section>
 
-      <!-- Claude API Key -->
-      <section class="bg-surface-container-low rounded-xl p-8 border border-outline-variant/5">
-        <div class="flex items-start gap-4 mb-6">
-          <div class="w-10 h-10 rounded-lg bg-secondary/10 flex items-center justify-center shrink-0">
-            <span class="material-symbols-outlined text-secondary">psychology</span>
-          </div>
-          <div>
-            <h2 class="text-lg font-bold text-on-surface">Integración con IA (Claude)</h2>
-            <p class="text-sm text-on-surface-variant mt-1">Conecta tu API key de Anthropic Claude para generar quizzes y mini-app ideas con inteligencia artificial.</p>
-          </div>
-        </div>
-        <div class="space-y-4">
-          <div>
-            <label class="block text-xs font-bold text-on-surface-variant uppercase tracking-widest mb-2">Claude API Key</label>
-            <div class="relative">
-              <input id="input-api-key" type="password" placeholder="sk-ant-api03-..." class="w-full bg-surface-container-lowest border border-outline-variant/20 rounded-lg px-4 py-3 pr-12 text-on-surface focus:ring-2 focus:ring-secondary focus:border-transparent outline-none transition-all font-mono text-sm"/>
-              <button onclick="toggleApiKeyVisibility()" class="absolute right-3 top-1/2 -translate-y-1/2 text-on-surface-variant hover:text-on-surface transition-colors">
-                <span id="eye-icon" class="material-symbols-outlined text-lg">visibility</span>
-              </button>
-            </div>
-            <p class="text-xs text-on-surface-variant mt-2">Obtén tu API key en <a href="https://console.anthropic.com" target="_blank" class="text-secondary hover:underline">console.anthropic.com</a>. Se guarda solo en tu navegador, nunca en nuestros servidores.</p>
-          </div>
-          <div id="api-key-status" class="hidden flex items-center gap-2 p-3 rounded-lg text-sm font-medium"></div>
-          <div class="flex gap-3">
-            <button onclick="saveApiKey()" class="px-6 py-3 bg-secondary text-on-secondary rounded-lg font-bold text-sm hover:opacity-90 transition-opacity" style="color:#00452d">
-              Guardar API Key
-            </button>
-            <button onclick="testApiKey()" class="px-6 py-3 border border-secondary/30 text-secondary rounded-lg font-bold text-sm hover:bg-secondary/5 transition-colors">
-              Probar Conexión
-            </button>
-          </div>
-        </div>
-      </section>
-
       <!-- Groq API Key -->
       <section class="bg-surface-container-low rounded-xl p-8 border border-outline-variant/5">
         <div class="flex items-start gap-4 mb-6">
@@ -561,11 +527,6 @@
       document.getElementById('input-name').value  = profile?.name  || '';
       document.getElementById('input-email').value = profile?.email || _settingsUser.email || '';
       document.getElementById('input-bio').value   = profile?.bio   || '';
-      if (profile?.claude_api_key) {
-        document.getElementById('input-api-key').value = profile.claude_api_key;
-        Settings.save({ claudeApiKey: profile.claude_api_key }); // sync to localStorage
-        showApiStatus('API key guardada ✓', true);
-      }
       if (profile?.groq_api_key) {
         document.getElementById('input-groq-api-key').value = profile.groq_api_key;
         Settings.save({ groqApiKey: profile.groq_api_key }); // sync to localStorage
@@ -582,10 +543,6 @@
       document.getElementById('input-name').value  = s.name  || '';
       document.getElementById('input-email').value = s.email || '';
       document.getElementById('input-bio').value   = s.bio   || '';
-      if (s.claudeApiKey) {
-        document.getElementById('input-api-key').value = s.claudeApiKey;
-        showApiStatus('API key guardada ✓', true);
-      }
       if (s.groqApiKey) {
         document.getElementById('input-groq-api-key').value = s.groqApiKey;
         showGroqApiStatus('API key guardada ✓', true);
@@ -602,48 +559,6 @@
       await DB.profiles.upsert(_settingsUser.id, { name, email, bio });
     } catch {}
     showToast('Perfil guardado correctamente ✓');
-  }
-
-  async function saveApiKey() {
-    const key = document.getElementById('input-api-key').value.trim();
-    if (!key) { showToast('Introduce tu API key', 'error'); return; }
-    if (!key.startsWith('sk-ant-')) { showToast('Formato incorrecto. Debe empezar con sk-ant-', 'error'); return; }
-    Settings.save({ claudeApiKey: key });
-    try {
-      await DB.profiles.upsert(_settingsUser.id, { claude_api_key: key });
-    } catch {}
-    showApiStatus('API key guardada ✓', true);
-    showToast('API key guardada correctamente ✓');
-  }
-
-  async function testApiKey() {
-    const key = document.getElementById('input-api-key').value.trim();
-    if (!key) { showToast('Introduce tu API key primero', 'error'); return; }
-    Settings.save({ claudeApiKey: key });
-    showApiStatus('Probando conexión...', null);
-    try {
-      await Claude._call([{ role: 'user', content: 'Di "OK" solamente.' }], 10);
-      showApiStatus('¡Conexión exitosa! La IA está lista ✓', true);
-      showToast('¡Conexión con Claude exitosa!');
-    } catch (e) {
-      showApiStatus('Error: ' + e.message, false);
-      showToast('Error de conexión: ' + e.message, 'error');
-    }
-  }
-
-  function showApiStatus(msg, success) {
-    const el = document.getElementById('api-key-status');
-    el.classList.remove('hidden');
-    if (success === true) {
-      el.className = 'flex items-center gap-2 p-3 rounded-lg text-sm font-medium bg-secondary/10 text-secondary';
-      el.innerHTML = `<span class="material-symbols-outlined text-base">check_circle</span>${msg}`;
-    } else if (success === false) {
-      el.className = 'flex items-center gap-2 p-3 rounded-lg text-sm font-medium bg-error/10 text-error';
-      el.innerHTML = `<span class="material-symbols-outlined text-base">error</span>${msg}`;
-    } else {
-      el.className = 'flex items-center gap-2 p-3 rounded-lg text-sm font-medium bg-surface-container text-on-surface-variant';
-      el.innerHTML = `<span class="material-symbols-outlined text-base animate-spin">progress_activity</span>${msg}`;
-    }
   }
 
   async function saveGroqApiKey() {
@@ -691,18 +606,6 @@
   function toggleGroqApiKeyVisibility() {
     const input = document.getElementById('input-groq-api-key');
     const icon  = document.getElementById('groq-eye-icon');
-    if (input.type === 'password') {
-      input.type = 'text';
-      icon.textContent = 'visibility_off';
-    } else {
-      input.type = 'password';
-      icon.textContent = 'visibility';
-    }
-  }
-
-  function toggleApiKeyVisibility() {
-    const input = document.getElementById('input-api-key');
-    const icon  = document.getElementById('eye-icon');
     if (input.type === 'password') {
       input.type = 'text';
       icon.textContent = 'visibility_off';
