@@ -48,8 +48,9 @@ const Auth = {
   },
 
   async resetPassword(email) {
+    const base = window.location.href.replace(/[^/]*(\?.*)?$/, '');
     const { error } = await db.auth.resetPasswordForEmail(email, {
-      redirectTo: 'https://luminous-studio.com/reset-password.html',
+      redirectTo: base + 'reset-password.html',
     });
     if (error) throw error;
   },

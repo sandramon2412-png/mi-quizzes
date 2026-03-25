@@ -796,6 +796,14 @@ async function renderQuizzes() {
             class="w-8 h-8 rounded-xl bg-surface-container-high flex items-center justify-center ${q._isLocal ? 'hover:bg-yellow-500/10 opacity-40 cursor-not-allowed' : 'hover:bg-secondary/10'} transition-colors" title="${q._isLocal ? 'No disponible: solo en este dispositivo' : 'Copiar enlace'}">
             <span class="material-symbols-outlined text-on-surface-variant text-sm">share</span>
           </button>
+          <button onclick="duplicateQuiz('${q.id}')"
+            class="w-8 h-8 rounded-xl bg-surface-container-high flex items-center justify-center hover:bg-primary/10 transition-colors" title="Duplicar quiz">
+            <span class="material-symbols-outlined text-on-surface-variant text-sm">content_copy</span>
+          </button>
+          <button onclick="toggleQuizStatus('${q.id}', '${q.status || 'draft'}')"
+            class="w-8 h-8 rounded-xl bg-surface-container-high flex items-center justify-center ${q.status === 'active' ? 'hover:bg-yellow-500/10' : 'hover:bg-secondary/10'} transition-colors" title="${q.status === 'active' ? 'Volver a borrador' : 'Publicar quiz'}">
+            <span class="material-symbols-outlined text-on-surface-variant text-sm">${q.status === 'active' ? 'unpublished' : 'publish'}</span>
+          </button>
           <button onclick="deleteQuiz('${q.id}')"
             class="w-8 h-8 rounded-xl bg-surface-container-high flex items-center justify-center hover:bg-error/10 transition-colors" title="Eliminar">
             <span class="material-symbols-outlined text-on-surface-variant text-sm">delete</span>
@@ -864,6 +872,44 @@ async function deleteQuiz(id) {
     showToast('Quiz eliminado.');
   } catch (err) {
     showToast('Error al eliminar: ' + err.message, 'error');
+  }
+}
+
+async function duplicateQuiz(id) {
+  try {
+    const all = await DB.quizzes.getAll(_currentUser.id);
+    const original = all.find(q => q.id === id);
+    if (!original) { showToast('Quiz no encontrado.', 'error'); return; }
+    const copy = {
+      title:            (original.title || 'Sin título') + ' (Copia)',
+      subtitle:         original.subtitle,
+      product:          original.product,
+      niche:            original.niche,
+      estimatedMinutes: original.estimatedMinutes,
+      questions:        original.questions,
+      profiles:         original.profiles,
+      status:           'draft',
+    };
+    await DB.quizzes.save(copy, _currentUser.id);
+    showToast('Quiz duplicado correctamente.');
+    renderQuizzes();
+  } catch (err) {
+    showToast('Error al duplicar: ' + err.message, 'error');
+  }
+}
+
+async function toggleQuizStatus(id, currentStatus) {
+  try {
+    const all = await DB.quizzes.getAll(_currentUser.id);
+    const quiz = all.find(q => q.id === id);
+    if (!quiz) return;
+    const newStatus = currentStatus === 'active' ? 'draft' : 'active';
+    quiz.status = newStatus;
+    await DB.quizzes.save(quiz, _currentUser.id);
+    showToast(newStatus === 'active' ? 'Quiz publicado.' : 'Quiz vuelto a borrador.');
+    renderQuizzes();
+  } catch (err) {
+    showToast('Error al cambiar estado: ' + err.message, 'error');
   }
 }
 

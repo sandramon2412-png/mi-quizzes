@@ -6,6 +6,23 @@ const CORS = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
+// ── In-memory rate limiter: 15 requests per user per minute ──
+const rateMap = new Map<string, { count: number; reset: number }>();
+const RATE_LIMIT = 15;
+const RATE_WINDOW_MS = 60_000;
+
+function checkRateLimit(userId: string): boolean {
+  const now = Date.now();
+  const entry = rateMap.get(userId);
+  if (!entry || now > entry.reset) {
+    rateMap.set(userId, { count: 1, reset: now + RATE_WINDOW_MS });
+    return true;
+  }
+  if (entry.count >= RATE_LIMIT) return false;
+  entry.count++;
+  return true;
+}
+
 serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response("ok", { headers: CORS });
@@ -33,6 +50,14 @@ serve(async (req) => {
         status: 401,
         headers: { ...CORS, "Content-Type": "application/json" },
       });
+    }
+
+    // Rate limit check
+    if (!checkRateLimit(user.id)) {
+      return new Response(
+        JSON.stringify({ error: { message: "Demasiadas solicitudes. Espera un momento e intenta de nuevo." } }),
+        { status: 429, headers: { ...CORS, "Content-Type": "application/json" } }
+      );
     }
 
     // Forward request to Anthropic
