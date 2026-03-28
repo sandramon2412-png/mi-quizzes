@@ -604,40 +604,50 @@
 
         let reply = null;
 
-        // ── Intentar Groq primero (no requiere proxy de Supabase) ──
-        // Buscar key en localStorage, si no está cargarla desde Supabase profile
-        let groqKey = Settings.getGroqApiKey();
-        if (!groqKey) {
-          try {
-            const user = await Auth.user();
-            if (user) {
-              const remoteKey = await Auth.getGroqKey(user.id);
-              if (remoteKey) {
-                Settings.save({ groqApiKey: remoteKey }); // sincronizar a localStorage
-                groqKey = remoteKey;
-              }
-            }
-          } catch {}
-        }
+        // ── 1. Intentar Groq (no necesita sesión Supabase) ──
+        const groqKey = Settings.getGroqApiKey();
         if (groqKey) {
-          const groqMessages = [
-            { role: 'system', content: _currentMode.prompt },
-            ...cleanMessages,
-          ];
           const groqRes = await fetch('https://api.groq.com/openai/v1/chat/completions', {
             method: 'POST',
             headers: { 'Authorization': `Bearer ${groqKey}`, 'Content-Type': 'application/json' },
-            body: JSON.stringify({ model: 'llama-3.3-70b-versatile', max_tokens: 1024, messages: groqMessages }),
+            body: JSON.stringify({
+              model: 'llama-3.3-70b-versatile',
+              max_tokens: 1024,
+              messages: [{ role: 'system', content: _currentMode.prompt }, ...cleanMessages],
+            }),
           });
           const groqData = await groqRes.json();
-          if (!groqRes.ok) throw new Error(groqData.error?.message || `Error Groq: ${groqRes.status}`);
-          reply = groqData.choices?.[0]?.message?.content;
+          if (groqRes.ok) reply = groqData.choices?.[0]?.message?.content;
         }
 
-        // ── Fallback: Claude proxy (requiere sesión activa) ──
+        // ── 2. Fallback: Claude proxy ──
         if (!reply) {
-          const token = await Auth.getToken();
-          if (!token) throw new Error('Sin sesión. Configura tu API key de Groq en Ajustes, o recarga la página.');
+          // Obtener token, intentando refresh primero
+          let token = null;
+          try {
+            const { data } = await db.auth.refreshSession();
+            token = data?.session?.access_token || null;
+          } catch {}
+          if (!token) {
+            try {
+              const { data: { session } } = await db.auth.getSession();
+              token = session?.access_token || null;
+            } catch {}
+          }
+
+          if (!token) {
+            // Sin sesión válida: mostrar mensaje con links de acción
+            _activeSession.messages.push({
+              role: 'assistant',
+              content: '⚠️ Tu sesión expiró o no tienes Groq configurado.\n\n**Opciones:**\n• [Iniciar sesión de nuevo](./login.html)\n• Añade tu API key de Groq en [Ajustes](./settings.html) para usar el asistente sin depender de la sesión.',
+              _isError: true,
+            });
+            _isThinking = false;
+            document.getElementById('lsa-send-btn').disabled = false;
+            _renderMessages();
+            return;
+          }
+
           const res = await fetch(`${SUPABASE_URL}/functions/v1/claude-proxy`, {
             method: 'POST',
             headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
@@ -650,10 +660,19 @@
           });
           const data = await res.json();
           if (!res.ok) {
-            const msg = data.error?.message || data.message || (typeof data.error === 'string' ? data.error : null);
-            if (res.status === 401) throw new Error('Sesión expirada. Recarga la página o configura tu API key de Groq en Ajustes.');
+            if (res.status === 401) {
+              _activeSession.messages.push({
+                role: 'assistant',
+                content: '⚠️ Sesión expirada.\n\n**Opciones:**\n• [Iniciar sesión de nuevo](./login.html)\n• Añade tu API key de Groq en [Ajustes](./settings.html).',
+                _isError: true,
+              });
+              _isThinking = false;
+              document.getElementById('lsa-send-btn').disabled = false;
+              _renderMessages();
+              return;
+            }
             if (res.status === 429) throw new Error('Demasiadas solicitudes. Espera un momento.');
-            throw new Error(msg || `Error ${res.status}`);
+            throw new Error(data.error?.message || data.message || `Error ${res.status}`);
           }
           reply = data.content?.[0]?.text;
         }
