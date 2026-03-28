@@ -183,21 +183,27 @@ function calculateProfile(quiz, answers) {
 // ── Claude API ─────────────────────────────────────────────
 const Claude = {
   async _call(messages, maxTokens = 3000) {
-    const token = await Auth.getToken();
+    const doRequest = async (token) => fetch(`${SUPABASE_URL}/functions/v1/claude-proxy`, {
+      method: 'POST',
+      headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ model: 'claude-haiku-4-5-20251001', max_tokens: maxTokens, messages }),
+    });
+
+    let token = await Auth.getToken();
     if (!token) throw new Error('NOT_AUTHENTICATED');
 
-    const res = await fetch(`${SUPABASE_URL}/functions/v1/claude-proxy`, {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${token}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        model: 'claude-haiku-4-5-20251001',
-        max_tokens: maxTokens,
-        messages,
-      }),
-    });
+    let res = await doRequest(token);
+
+    // On 401, force a fresh session refresh and retry once
+    if (res.status === 401) {
+      try {
+        const { data, error } = await db.auth.refreshSession();
+        if (!error && data.session?.access_token) {
+          token = data.session.access_token;
+          res = await doRequest(token);
+        }
+      } catch {}
+    }
 
     if (!res.ok) {
       const err = await res.json().catch(() => ({}));
@@ -309,6 +315,29 @@ Responde SOLO con JSON:
     const text = await this._call([{ role: 'user', content: prompt }], 500);
     return this._parseJSON(text);
   },
+
+  async generateMiniAppContent(appIdea, product, niche) {
+    const { type, name, description } = appIdea;
+    const typeInstructions = {
+      checklist: `Genera 10-12 ítems de checklist ESPECÍFICOS y accionables para "${name}". Responde: {"initialItems":["ítem 1","ítem 2",...]}`,
+      planificador: `Genera 8-10 tareas de planificador ESPECÍFICAS y ordenadas lógicamente para "${name}". Responde: {"initialTasks":["tarea 1","tarea 2",...]}`,
+      tracker: `Define el hábito diario y duración para "${name}". Responde: {"trackerDays":30,"trackerHabit":"nombre del hábito diario específico"}`,
+      calculadora: `Diseña una calculadora específica para "${name}". Define 2-3 campos y una fórmula JavaScript simple usando los ids (a,b,c). Responde: {"calcFields":[{"id":"a","label":"Etiqueta del campo","placeholder":"valor ejemplo"}],"calcFormula":"a * b","calcResultLabel":"Etiqueta del resultado"}`,
+      generador: `Define el prompt base para el generador de contenido "${name}". Responde: {"generatorPrompt":"Genera [tipo de contenido] para [contexto]: [input del usuario]","inputLabel":"¿Qué quieres generar?","inputPlaceholder":"Describe tu situación..."}`,
+    };
+    const instruction = typeInstructions[type];
+    if (!instruction) return {};
+
+    const prompt = `Eres experto en productos digitales. Producto: "${product}" · Nicho: ${niche || 'infoproductos'}.
+Mini-app: "${name}" — ${description}
+
+${instruction}
+
+RESPONDE SOLO JSON VÁLIDO, sin texto adicional.`;
+
+    const text = await this._call([{ role: 'user', content: prompt }], 1000);
+    return this._parseJSON(text);
+  },
 };
 
 // ── Groq API ───────────────────────────────────────────────
@@ -364,6 +393,13 @@ const Groq = {
       currentQuestion, productContext
     );
   },
+
+  async generateMiniAppContent(appIdea, product, niche) {
+    return Claude.generateMiniAppContent.call(
+      { _call: this._call.bind(this), _parseJSON: this._parseJSON },
+      appIdea, product, niche
+    );
+  },
 };
 
 // ── AI helper: Groq primero, Claude como fallback ──────────
@@ -379,6 +415,10 @@ const AI = {
   async improveQuestion(question, context) {
     if (Settings.getGroqApiKey()) return Groq.improveQuestion(question, context);
     return Claude.improveQuestion(question, context);
+  },
+  async generateMiniAppContent(appIdea, product, niche) {
+    if (Settings.getGroqApiKey()) return Groq.generateMiniAppContent(appIdea, product, niche);
+    return Claude.generateMiniAppContent(appIdea, product, niche);
   },
 };
 
