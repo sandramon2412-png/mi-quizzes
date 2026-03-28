@@ -597,34 +597,55 @@
       _renderMessages();
 
       try {
-        const token = await Auth.getToken();
-        if (!token) throw new Error('Sesión no encontrada. Recarga la página e inicia sesión.');
-
         // Solo mensajes válidos, sin errores anteriores
         const cleanMessages = _activeSession.messages
           .filter(m => !m._isError)
           .map(m => ({ role: m.role, content: m.content }));
 
-        const res = await fetch(`${SUPABASE_URL}/functions/v1/claude-proxy`, {
-          method: 'POST',
-          headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            model: 'claude-haiku-4-5-20251001',
-            max_tokens: 1024,
-            system: _currentMode.prompt,
-            messages: cleanMessages,
-          }),
-        });
-        const data = await res.json();
-        if (!res.ok) {
-          // Supabase puede devolver error en distintos formatos
-          const msg = data.error?.message || data.message || (typeof data.error === 'string' ? data.error : null);
-          if (res.status === 401) throw new Error('Sesión expirada. Recarga la página e inicia sesión.');
-          if (res.status === 429) throw new Error('Demasiadas solicitudes. Espera un momento.');
-          throw new Error(msg || `Error del servidor: ${res.status}`);
+        let reply = null;
+
+        // ── Intentar Groq primero (no requiere proxy de Supabase) ──
+        const groqKey = Settings.getGroqApiKey();
+        if (groqKey) {
+          const groqMessages = [
+            { role: 'system', content: _currentMode.prompt },
+            ...cleanMessages,
+          ];
+          const groqRes = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+            method: 'POST',
+            headers: { 'Authorization': `Bearer ${groqKey}`, 'Content-Type': 'application/json' },
+            body: JSON.stringify({ model: 'llama-3.3-70b-versatile', max_tokens: 1024, messages: groqMessages }),
+          });
+          const groqData = await groqRes.json();
+          if (!groqRes.ok) throw new Error(groqData.error?.message || `Error Groq: ${groqRes.status}`);
+          reply = groqData.choices?.[0]?.message?.content;
         }
-        const reply = data.content?.[0]?.text;
-        if (!reply) throw new Error('Respuesta vacía del servidor.');
+
+        // ── Fallback: Claude proxy (requiere sesión activa) ──
+        if (!reply) {
+          const token = await Auth.getToken();
+          if (!token) throw new Error('Sin sesión. Configura tu API key de Groq en Ajustes, o recarga la página.');
+          const res = await fetch(`${SUPABASE_URL}/functions/v1/claude-proxy`, {
+            method: 'POST',
+            headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              model: 'claude-haiku-4-5-20251001',
+              max_tokens: 1024,
+              system: _currentMode.prompt,
+              messages: cleanMessages,
+            }),
+          });
+          const data = await res.json();
+          if (!res.ok) {
+            const msg = data.error?.message || data.message || (typeof data.error === 'string' ? data.error : null);
+            if (res.status === 401) throw new Error('Sesión expirada. Recarga la página o configura tu API key de Groq en Ajustes.');
+            if (res.status === 429) throw new Error('Demasiadas solicitudes. Espera un momento.');
+            throw new Error(msg || `Error ${res.status}`);
+          }
+          reply = data.content?.[0]?.text;
+        }
+
+        if (!reply) throw new Error('Respuesta vacía. Intenta de nuevo.');
         _activeSession.messages.push({ role: 'assistant', content: reply });
         saveSession();
       } catch (err) {
