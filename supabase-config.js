@@ -21,6 +21,19 @@ const Auth = {
     return session;
   },
 
+  // Siempre devuelve un token válido, refrescándolo si es necesario
+  async getToken() {
+    let { data: { session } } = await db.auth.getSession();
+    if (!session) return null;
+    // Refrescar si expira en menos de 60 segundos
+    const expiresAt = session.expires_at || 0;
+    if (expiresAt - Math.floor(Date.now() / 1000) < 60) {
+      const { data } = await db.auth.refreshSession();
+      session = data.session;
+    }
+    return session?.access_token || null;
+  },
+
   async user() {
     const { data: { user } } = await db.auth.getUser();
     return user;
