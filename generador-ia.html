@@ -795,19 +795,54 @@ async function generateMiniApps() {
       document.getElementById('input-desc').value.trim(),
       document.getElementById('input-niche').value.trim()
     );
-    c.innerHTML = data.apps.map(a => `
+    // Store ideas for use by create buttons
+    window._miniAppIdeas = data.apps;
+    c.innerHTML = data.apps.map((a, i) => `
       <div class="flex items-start gap-2 mb-3 p-3 rounded-lg bg-surface-container border border-outline-variant/10">
         <span class="text-xl shrink-0">${esc(a.icon)}</span>
-        <div class="min-w-0">
+        <div class="min-w-0 flex-1">
           <p class="text-sm font-bold text-on-surface truncate">${esc(a.name)}</p>
           <p class="text-xs text-on-surface-variant mt-0.5 line-clamp-2">${esc(a.description)}</p>
           <div class="flex flex-wrap gap-1 mt-1.5">
             ${(a.features||[]).slice(0,3).map(f=>`<span class="text-[10px] px-2 py-0.5 rounded-full bg-tertiary/10 text-tertiary">${esc(f)}</span>`).join('')}
           </div>
+          <button onclick="createMiniAppFromIdea(${i})" class="mt-2 text-[10px] px-3 py-1 rounded-full bg-primary text-on-primary font-semibold hover:bg-primary/90 transition-colors">
+            ✨ Crear esta app
+          </button>
         </div>
       </div>`).join('');
   } catch(e) {
     c.innerHTML = `<p class="text-xs text-error">Error: ${esc(e.message)}</p>`;
+  }
+}
+
+// ── Create mini-app from idea ─────────────────────────────
+async function createMiniAppFromIdea(idx) {
+  const ideas = window._miniAppIdeas;
+  if (!ideas || !ideas[idx]) return;
+  const a = ideas[idx];
+  const btn = event.currentTarget;
+  btn.disabled = true;
+  btn.textContent = '⏳ Creando...';
+  try {
+    const product = document.getElementById('input-product').value.trim();
+    const niche   = document.getElementById('input-niche').value.trim();
+    const app = MiniApps.create({
+      name:        a.name,
+      type:        a.type || 'tool',
+      icon:        a.icon || '⚡',
+      description: a.description,
+      niche:       niche,
+      product:     product,
+      accessCodes: [],
+    });
+    btn.textContent = '✅ ¡App creada!';
+    btn.classList.replace('bg-primary', 'bg-tertiary');
+    showToast(`Mini-app "${app.name}" creada. Puedes verla en Dashboard.`);
+  } catch(e) {
+    btn.disabled = false;
+    btn.textContent = '✨ Crear esta app';
+    showToast('Error al crear la app: ' + e.message, 'error');
   }
 }
 
