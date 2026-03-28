@@ -366,6 +366,22 @@ const Groq = {
   },
 };
 
+// ── AI helper: Groq primero, Claude como fallback ──────────
+const AI = {
+  async generateQuiz(product, desc, niche) {
+    if (Settings.getGroqApiKey()) return Groq.generateQuiz(product, desc, niche);
+    return Claude.generateQuiz(product, desc, niche);
+  },
+  async generateMiniAppIdeas(product, desc, niche) {
+    if (Settings.getGroqApiKey()) return Groq.generateMiniAppIdeas(product, desc, niche);
+    return Claude.generateMiniAppIdeas(product, desc, niche);
+  },
+  async improveQuestion(question, context) {
+    if (Settings.getGroqApiKey()) return Groq.improveQuestion(question, context);
+    return Claude.improveQuestion(question, context);
+  },
+};
+
 // ── URL helpers ────────────────────────────────────────────
 function getParam(name) {
   return new URLSearchParams(window.location.search).get(name);

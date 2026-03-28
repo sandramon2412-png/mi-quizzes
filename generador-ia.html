@@ -468,7 +468,7 @@ async function generateWithAI() {
   showLoading(true, 'Analizando tu nicho y audiencia...', 15);
   try {
     const data = await Promise.race([
-      Claude.generateQuiz(product, desc, niche),
+      AI.generateQuiz(product, desc, niche),
       new Promise((_, rej) => setTimeout(() => rej(new Error('Timeout: la IA tardó demasiado')), 30000))
     ]);
     setLoadingProgress(85, 'Organizando preguntas y perfiles...');
@@ -790,7 +790,7 @@ async function generateMiniApps() {
   const c = document.getElementById('mini-app-ideas');
   c.innerHTML = '<span class="text-xs text-on-surface-variant flex items-center gap-1"><span class="material-symbols-outlined text-sm spin">progress_activity</span>Generando ideas con IA...</span>';
   try {
-    const data = await Claude.generateMiniAppIdeas(
+    const data = await AI.generateMiniAppIdeas(
       product,
       document.getElementById('input-desc').value.trim(),
       document.getElementById('input-niche').value.trim()
