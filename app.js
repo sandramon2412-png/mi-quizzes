@@ -183,13 +183,13 @@ function calculateProfile(quiz, answers) {
 // ── Claude API ─────────────────────────────────────────────
 const Claude = {
   async _call(messages, maxTokens = 3000) {
-    const session = await Auth.session();
-    if (!session) throw new Error('NOT_AUTHENTICATED');
+    const token = await Auth.getToken();
+    if (!token) throw new Error('NOT_AUTHENTICATED');
 
     const res = await fetch(`${SUPABASE_URL}/functions/v1/claude-proxy`, {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${session.access_token}`,
+        'Authorization': `Bearer ${token}`,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
