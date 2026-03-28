@@ -605,7 +605,20 @@
         let reply = null;
 
         // ── Intentar Groq primero (no requiere proxy de Supabase) ──
-        const groqKey = Settings.getGroqApiKey();
+        // Buscar key en localStorage, si no está cargarla desde Supabase profile
+        let groqKey = Settings.getGroqApiKey();
+        if (!groqKey) {
+          try {
+            const user = await Auth.user();
+            if (user) {
+              const remoteKey = await Auth.getGroqKey(user.id);
+              if (remoteKey) {
+                Settings.save({ groqApiKey: remoteKey }); // sincronizar a localStorage
+                groqKey = remoteKey;
+              }
+            }
+          } catch {}
+        }
         if (groqKey) {
           const groqMessages = [
             { role: 'system', content: _currentMode.prompt },

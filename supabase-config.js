@@ -23,15 +23,22 @@ const Auth = {
 
   // Siempre devuelve un token válido, refrescándolo si es necesario
   async getToken() {
-    let { data: { session } } = await db.auth.getSession();
-    if (!session) return null;
-    // Refrescar si expira en menos de 60 segundos
-    const expiresAt = session.expires_at || 0;
-    if (expiresAt - Math.floor(Date.now() / 1000) < 60) {
-      const { data } = await db.auth.refreshSession();
-      session = data.session;
-    }
+    // Intentar refresh incondicional para garantizar token fresco
+    try {
+      const { data, error } = await db.auth.refreshSession();
+      if (!error && data.session?.access_token) return data.session.access_token;
+    } catch {}
+    // Fallback: sesión actual
+    const { data: { session } } = await db.auth.getSession();
     return session?.access_token || null;
+  },
+
+  // Obtener Groq API key desde Supabase profile (sin depender de localStorage)
+  async getGroqKey(userId) {
+    try {
+      const { data } = await db.from('profiles').select('groq_api_key').eq('id', userId).single();
+      return data?.groq_api_key || null;
+    } catch { return null; }
   },
 
   async user() {
