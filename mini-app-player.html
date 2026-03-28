@@ -154,13 +154,21 @@ function renderApp() {
   if (type === 'planificador') return renderPlanificador(content);
   if (type === 'calculadora') return renderCalculadora(content);
   if (type === 'quiz-embed') return renderQuizEmbed(content);
+  if (type === 'generador' || type === 'simulador') return renderGenerador(content);
   renderGeneric(content);
 }
 
 // ── CHECKLIST ─────────────────────────────────────────────
 function renderChecklist(el) {
   const storageKey = `app_checklist_${currentApp.id}`;
-  let items = JSON.parse(localStorage.getItem(storageKey) || '[]');
+  let stored = localStorage.getItem(storageKey);
+  // Pre-populate with AI-generated items on first open
+  if (!stored && currentApp.initialItems?.length) {
+    const initial = currentApp.initialItems.map(text => ({ text, done: false }));
+    localStorage.setItem(storageKey, JSON.stringify(initial));
+    stored = localStorage.getItem(storageKey);
+  }
+  let items = JSON.parse(stored || '[]');
 
   function save() { localStorage.setItem(storageKey, JSON.stringify(items)); }
 
@@ -212,11 +220,12 @@ function renderChecklist(el) {
 // ── TRACKER ───────────────────────────────────────────────
 function renderTracker(el) {
   const storageKey = `app_tracker_${currentApp.id}`;
-  let data = JSON.parse(localStorage.getItem(storageKey) || '{"days":30,"checked":[]}');
+  const defaultDays = currentApp.trackerDays || 30;
+  let data = JSON.parse(localStorage.getItem(storageKey) || `{"days":${defaultDays},"checked":[]}`);
 
   function save() { localStorage.setItem(storageKey, JSON.stringify(data)); }
 
-  const days = data.days || 30;
+  const days = data.days || defaultDays;
   const checked = new Set(data.checked || []);
   const today = new Date().toISOString().split('T')[0];
   const streak = calcStreak(checked, today);
@@ -343,34 +352,42 @@ function getDayNumber() {
 
 // ── CALCULADORA ───────────────────────────────────────────
 function renderCalculadora(el) {
+  // Use AI-generated fields if available, otherwise fall back to generic
+  const fields = currentApp.calcFields?.length ? currentApp.calcFields : [
+    { id: 'a', label: 'Valor A', placeholder: '0' },
+    { id: 'b', label: 'Valor B', placeholder: '0' },
+  ];
+  const resultLabel = currentApp.calcResultLabel || 'Resultado';
+  const hasCustomFormula = !!currentApp.calcFormula;
+
   el.innerHTML = `
     <div class="fade-in space-y-4">
       <div class="bg-surface-container rounded-2xl p-5 border border-outline-variant/10">
-        <div class="text-3xl text-center mb-3">🧮</div>
+        <div class="text-3xl text-center mb-3">${esc(currentApp.icon || '🧮')}</div>
         <h2 class="text-base font-extrabold text-center mb-1">${esc(currentApp.name)}</h2>
         <p class="text-xs text-on-surface-variant text-center mb-5">${esc(currentApp.description || '')}</p>
         <div class="space-y-3">
+          ${fields.map(f => `
           <div>
-            <label class="text-xs font-bold text-on-surface-variant block mb-1.5">Valor A</label>
-            <input type="number" id="calc-a" placeholder="0"
+            <label class="text-xs font-bold text-on-surface-variant block mb-1.5">${esc(f.label)}</label>
+            <input type="number" id="calc-${f.id}" placeholder="${esc(f.placeholder || '0')}"
               class="w-full bg-surface-container-high border border-outline-variant/20 rounded-xl px-4 py-2.5 text-sm focus:ring-1 focus:ring-primary outline-none" oninput="calcResult()"/>
-          </div>
-          <div>
-            <label class="text-xs font-bold text-on-surface-variant block mb-1.5">Valor B</label>
-            <input type="number" id="calc-b" placeholder="0"
-              class="w-full bg-surface-container-high border border-outline-variant/20 rounded-xl px-4 py-2.5 text-sm focus:ring-1 focus:ring-primary outline-none" oninput="calcResult()"/>
-          </div>
+          </div>`).join('')}
+          ${!hasCustomFormula ? `
           <div class="flex gap-2 flex-wrap">
             ${['Suma','Resta','Multiplica','Divide','Porcentaje'].map(op => `
               <button onclick="setOp('${op}')" id="op-${op}"
                 class="px-3 py-1.5 rounded-xl text-xs font-bold bg-surface-container-high text-on-surface-variant hover:bg-primary/10 hover:text-primary transition-all">
                 ${op}
               </button>`).join('')}
-          </div>
+          </div>` : ''}
           <div id="calc-result" class="p-4 bg-primary/10 rounded-xl text-center border border-primary/20 hidden">
-            <p class="text-[10px] text-on-surface-variant uppercase tracking-wider mb-1">Resultado</p>
+            <p class="text-[10px] text-on-surface-variant uppercase tracking-wider mb-1">${esc(resultLabel)}</p>
             <p class="text-3xl font-extrabold text-primary" id="calc-value">—</p>
           </div>
+          <button onclick="calcResult()" class="w-full py-2.5 bg-primary text-white text-xs font-bold rounded-xl hover:opacity-90 transition-opacity">
+            Calcular
+          </button>
         </div>
       </div>
     </div>`;
@@ -383,24 +400,41 @@ function renderCalculadora(el) {
     calcResult();
   };
   window.calcResult = () => {
-    const a = parseFloat(document.getElementById('calc-a').value) || 0;
-    const b = parseFloat(document.getElementById('calc-b').value) || 0;
+    // Build values object from all fields
+    const vals = {};
+    fields.forEach(f => { vals[f.id] = parseFloat(document.getElementById(`calc-${f.id}`)?.value) || 0; });
     let res;
-    if (currentOp === 'Suma') res = a + b;
-    else if (currentOp === 'Resta') res = a - b;
-    else if (currentOp === 'Multiplica') res = a * b;
-    else if (currentOp === 'Divide') res = b !== 0 ? (a / b).toFixed(4) : '∞';
-    else if (currentOp === 'Porcentaje') res = ((a * b) / 100).toFixed(2);
+    if (hasCustomFormula) {
+      try {
+        const fn = new Function(...Object.keys(vals), `return (${currentApp.calcFormula})`);
+        const raw = fn(...Object.values(vals));
+        res = typeof raw === 'number' ? (Number.isInteger(raw) ? raw : raw.toFixed(2)) : raw;
+      } catch { res = 'Error en fórmula'; }
+    } else {
+      const { a = 0, b = 0 } = vals;
+      if (currentOp === 'Suma') res = a + b;
+      else if (currentOp === 'Resta') res = a - b;
+      else if (currentOp === 'Multiplica') res = a * b;
+      else if (currentOp === 'Divide') res = b !== 0 ? (a / b).toFixed(4) : '∞';
+      else if (currentOp === 'Porcentaje') res = ((a * b) / 100).toFixed(2);
+    }
     document.getElementById('calc-result').classList.remove('hidden');
     document.getElementById('calc-value').textContent = res;
   };
-  window.setOp('Suma');
+  if (!hasCustomFormula) window.setOp('Suma');
 }
 
 // ── PLANIFICADOR ──────────────────────────────────────────
 function renderPlanificador(el) {
   const storageKey = `app_plan_${currentApp.id}`;
-  let tasks = JSON.parse(localStorage.getItem(storageKey) || '[]');
+  let stored = localStorage.getItem(storageKey);
+  // Pre-populate with AI-generated tasks on first open
+  if (!stored && currentApp.initialTasks?.length) {
+    const initial = currentApp.initialTasks.map(text => ({ id: crypto.randomUUID(), text, status: 'todo' }));
+    localStorage.setItem(storageKey, JSON.stringify(initial));
+    stored = localStorage.getItem(storageKey);
+  }
+  let tasks = JSON.parse(stored || '[]');
   function save() { localStorage.setItem(storageKey, JSON.stringify(tasks)); }
 
   function draw() {
@@ -486,6 +520,68 @@ function renderQuizEmbed(el) {
           </a>`).join('')}
       </div>
     </div>`;
+}
+
+// ── GENERADOR ─────────────────────────────────────────────
+function renderGenerador(el) {
+  const groqKey = typeof Settings !== 'undefined' ? Settings.getGroqApiKey() : null;
+  const inputLabel = currentApp.generatorPrompt ? (currentApp.inputLabel || '¿Qué quieres generar?') : 'Tu solicitud';
+  const inputPlaceholder = currentApp.inputPlaceholder || 'Describe lo que necesitas...';
+
+  el.innerHTML = `
+    <div class="fade-in space-y-4">
+      <div class="bg-surface-container rounded-2xl p-5 border border-outline-variant/10">
+        <div class="text-3xl text-center mb-3">${esc(currentApp.icon || '✨')}</div>
+        <h2 class="text-base font-extrabold text-center mb-1">${esc(currentApp.name)}</h2>
+        <p class="text-xs text-on-surface-variant text-center mb-5">${esc(currentApp.description || '')}</p>
+        <div class="space-y-3">
+          <label class="text-xs font-bold text-on-surface-variant block">${esc(inputLabel)}</label>
+          <textarea id="gen-input" rows="3" placeholder="${esc(inputPlaceholder)}"
+            class="w-full bg-surface-container-high border border-outline-variant/20 rounded-xl p-3 text-sm focus:ring-1 focus:ring-primary outline-none resize-none placeholder:text-on-surface-variant/40"></textarea>
+          <button onclick="runGenerador()" class="w-full py-2.5 bg-primary text-white text-xs font-bold rounded-xl hover:opacity-90 transition-opacity">
+            ✨ Generar
+          </button>
+        </div>
+      </div>
+      <div id="gen-result" class="hidden bg-surface-container rounded-2xl p-5 border border-outline-variant/10">
+        <div class="flex items-center justify-between mb-3">
+          <h3 class="text-xs font-bold text-on-surface-variant uppercase tracking-wider">Resultado</h3>
+          <button onclick="copyResult()" class="text-[10px] px-3 py-1 rounded-full bg-primary/10 text-primary font-bold hover:bg-primary/20 transition-colors">Copiar</button>
+        </div>
+        <div id="gen-output" class="text-sm text-on-surface whitespace-pre-wrap leading-relaxed"></div>
+      </div>
+    </div>`;
+
+  window.runGenerador = async () => {
+    const input = document.getElementById('gen-input').value.trim();
+    if (!input) return;
+    const btn = el.querySelector('button');
+    btn.disabled = true; btn.textContent = '⏳ Generando...';
+    try {
+      const basePrompt = currentApp.generatorPrompt || `Genera contenido útil y específico basado en: [input]`;
+      const userPrompt = basePrompt.replace('[input]', input).replace('[Input]', input);
+      let result = '';
+      if (groqKey) {
+        const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+          method: 'POST',
+          headers: { 'Authorization': `Bearer ${groqKey}`, 'Content-Type': 'application/json' },
+          body: JSON.stringify({ model: 'llama-3.3-70b-versatile', max_tokens: 800, messages: [{ role: 'user', content: userPrompt }] }),
+        });
+        if (res.ok) { const d = await res.json(); result = d.choices?.[0]?.message?.content || ''; }
+      }
+      document.getElementById('gen-output').textContent = result || 'No se pudo generar contenido. Verifica tu API key de Groq en Configuración.';
+      document.getElementById('gen-result').classList.remove('hidden');
+    } catch(e) {
+      document.getElementById('gen-output').textContent = 'Error: ' + e.message;
+      document.getElementById('gen-result').classList.remove('hidden');
+    } finally {
+      btn.disabled = false; btn.textContent = '✨ Generar';
+    }
+  };
+  window.copyResult = () => {
+    const text = document.getElementById('gen-output').textContent;
+    navigator.clipboard.writeText(text).then(() => showToast?.('Copiado al portapapeles'));
+  };
 }
 
 // ── GENERIC ───────────────────────────────────────────────

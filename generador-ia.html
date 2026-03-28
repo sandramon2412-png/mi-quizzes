@@ -823,22 +823,37 @@ async function createMiniAppFromIdea(idx) {
   const a = ideas[idx];
   const btn = event.currentTarget;
   btn.disabled = true;
-  btn.textContent = '⏳ Creando...';
   try {
     const product = document.getElementById('input-product').value.trim();
     const niche   = document.getElementById('input-niche').value.trim();
+
+    // Step 1: Generate full content with AI
+    btn.textContent = '🤖 Generando contenido...';
+    let content = {};
+    try {
+      content = await AI.generateMiniAppContent(a, product, niche);
+    } catch(e) {
+      // Content generation optional — create app without it
+      console.warn('generateMiniAppContent failed:', e.message);
+    }
+
+    // Step 2: Create the app with all data
+    btn.textContent = '💾 Guardando...';
     const app = MiniApps.create({
       name:        a.name,
       type:        a.type || 'tool',
       icon:        a.icon || '⚡',
       description: a.description,
-      niche:       niche,
-      product:     product,
+      niche,
+      product,
       accessCodes: [],
+      // AI-generated content fields
+      ...content,
     });
+
     btn.textContent = '✅ ¡App creada!';
     btn.classList.replace('bg-primary', 'bg-tertiary');
-    showToast(`Mini-app "${app.name}" creada. Puedes verla en Dashboard.`);
+    showToast(`Mini-app "${app.name}" creada con contenido completo. Puedes verla en Dashboard.`);
   } catch(e) {
     btn.disabled = false;
     btn.textContent = '✨ Crear esta app';
