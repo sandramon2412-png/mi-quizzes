@@ -703,9 +703,12 @@ async function renderMiniApps() {
   let apps = [];
   try {
     apps = await DB.miniApps.getAll(_currentUser.id);
+    // Merge localStorage mini-apps not yet synced to Supabase
+    const local = MiniApps.getAll().filter(la => !apps.find(a => a.id === la.id));
+    apps = [...apps, ...local];
   } catch (err) {
-    container.innerHTML = `<p class="text-xs text-error col-span-3 py-4">Error al cargar mini-apps: ${esc(err.message)}</p>`;
-    return;
+    // Supabase unreachable — fall back entirely to localStorage
+    apps = MiniApps.getAll();
   }
 
   const dynamicCards = apps.map(app => buildAppCard(app)).join('');

@@ -252,12 +252,12 @@
                 <span class="text-xs text-on-surface">Pedir correo antes de mostrar resultado</span>
               </label>
               <div>
-                <label class="text-xs font-bold text-on-surface-variant uppercase tracking-widest block mb-1">URL del botón CTA (opcional)</label>
-                <p class="text-[10px] text-on-surface-variant/60 mb-1.5">Hotmart, Stripe, checkout… Se puede sobrescribir por perfil.</p>
+                <label class="text-xs font-bold text-primary uppercase tracking-widest block mb-1">🔗 URL del botón "Comprar" en el resultado</label>
+                <p class="text-[10px] text-on-surface-variant/60 mb-1.5">Tu landing, Hotmart, Stripe, checkout… Si lo dejas vacío el botón no irá a ningún lado.</p>
                 <div class="relative">
                   <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant/40 text-sm">link</span>
-                  <input id="quiz-product-url" type="url" placeholder="https://hotmart.com/product/..."
-                    class="w-full bg-surface-container-high border border-outline-variant/20 rounded-lg pl-9 pr-4 py-2.5 text-xs text-on-surface outline-none focus:ring-1 focus:ring-primary transition-colors"/>
+                  <input id="quiz-product-url" type="url" placeholder="https://tu-landing.com o https://hotmart.com/..."
+                    class="w-full bg-surface-container-high border border-primary/30 rounded-lg pl-9 pr-4 py-2.5 text-xs text-on-surface outline-none focus:ring-1 focus:ring-primary transition-colors"/>
                 </div>
               </div>
             </div>
@@ -833,13 +833,10 @@ async function createMiniAppFromIdea(idx) {
     try {
       content = await AI.generateMiniAppContent(a, product, niche);
     } catch(e) {
-      // Content generation optional — create app without it
       console.warn('generateMiniAppContent failed:', e.message);
     }
 
-    // Step 2: Create the app with all data
-    btn.textContent = '💾 Guardando...';
-    const app = MiniApps.create({
+    const appData = {
       name:        a.name,
       type:        a.type || 'tool',
       icon:        a.icon || '⚡',
@@ -847,13 +844,32 @@ async function createMiniAppFromIdea(idx) {
       niche,
       product,
       accessCodes: [],
-      // AI-generated content fields
       ...content,
-    });
+    };
+
+    // Step 2: Try saving to Supabase first (so it appears in Dashboard)
+    btn.textContent = '💾 Guardando...';
+    let savedId = null;
+    try {
+      const user = await Auth.user();
+      if (user) {
+        const saved = await DB.miniApps.save(appData, user.id);
+        savedId = saved.id;
+      }
+    } catch(e) {
+      console.warn('DB.miniApps.save failed, using localStorage only:', e.message);
+    }
+
+    // Step 3: Save to localStorage (with AI content + same ID if we got one from Supabase)
+    if (savedId) {
+      MiniApps.save({ id: savedId, status: 'active', created: new Date().toISOString(), ...appData });
+    } else {
+      MiniApps.create(appData);
+    }
 
     btn.textContent = '✅ ¡App creada!';
     btn.classList.replace('bg-primary', 'bg-tertiary');
-    showToast(`Mini-app "${app.name}" creada con contenido completo. Puedes verla en Dashboard.`);
+    showToast(`Mini-app "${a.name}" creada. Búscala en el Dashboard.`);
   } catch(e) {
     btn.disabled = false;
     btn.textContent = '✨ Crear esta app';

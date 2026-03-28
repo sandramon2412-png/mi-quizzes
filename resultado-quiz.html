@@ -320,8 +320,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     document.getElementById('match-pct').textContent = matchPct + '%';
   }, 600);
 
-  // CTA destination: profile.ctaUrl → quiz.productUrl → acceso-exito.html
-  const ctaDest = profile.ctaUrl || quiz.productUrl ||
+  // CTA destination: profile.ctaUrl → quiz.productUrl → quiz.landingUrl → acceso-exito.html
+  const ctaDest = profile.ctaUrl || quiz.productUrl || quiz.landingUrl ||
     `./acceso-exito.html${quizId ? '?quiz=' + quizId : ''}`;
   const btnCta = document.getElementById('btn-cta');
   btnCta.href = ctaDest;
