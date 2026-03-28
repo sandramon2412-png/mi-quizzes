@@ -598,7 +598,13 @@
 
       try {
         const session = await Auth.session();
-        if (!session) throw new Error('Debes iniciar sesión.');
+        if (!session) throw new Error('Debes iniciar sesión para usar el asistente.');
+
+        // Solo enviamos mensajes válidos sin mensajes de error previos
+        const cleanMessages = _activeSession.messages
+          .filter(m => !m._isError)
+          .map(m => ({ role: m.role, content: m.content }));
+
         const res = await fetch(`${SUPABASE_URL}/functions/v1/claude-proxy`, {
           method: 'POST',
           headers: { 'Authorization': `Bearer ${session.access_token}`, 'Content-Type': 'application/json' },
@@ -606,16 +612,18 @@
             model: 'claude-haiku-4-5-20251001',
             max_tokens: 1024,
             system: _currentMode.prompt,
-            messages: _activeSession.messages,
+            messages: cleanMessages,
           }),
         });
         const data = await res.json();
-        if (!res.ok) throw new Error(data.error?.message || `Error ${res.status}`);
-        const reply = data.content?.[0]?.text || 'Sin respuesta.';
+        if (!res.ok) throw new Error(data.error?.message || `Error del servidor: ${res.status}`);
+        const reply = data.content?.[0]?.text;
+        if (!reply) throw new Error('Respuesta vacía del servidor.');
         _activeSession.messages.push({ role: 'assistant', content: reply });
         saveSession();
       } catch (err) {
-        _activeSession.messages.push({ role: 'assistant', content: `**Error:** ${err.message}` });
+        // Marcamos el mensaje de error para no incluirlo en el historial de la API
+        _activeSession.messages.push({ role: 'assistant', content: `⚠️ ${err.message}`, _isError: true });
       } finally {
         _isThinking = false;
         document.getElementById('lsa-send-btn').disabled = false;
