@@ -404,8 +404,11 @@
   }
 
   function showLeadCapture() {
-    // Skip lead capture if: no Supabase owner, or creator disabled it
-    const captureLeads = QUIZ.userId && QUIZ.leadCapture !== false;
+    const action = QUIZ.postQuizAction || 'result_page';
+    // Skip lead capture when redirecting directly to landing/payment (no result page shown)
+    const skipForAction = action === 'landing' || action === 'payment' || action === 'whatsapp';
+    // Skip if: no Supabase owner, creator disabled it, or action doesn't show result page
+    const captureLeads = QUIZ.userId && QUIZ.leadCapture !== false && !skipForAction;
     if (!captureLeads) {
       handlePostQuizAction();
       return;
@@ -488,7 +491,16 @@
       const url = QUIZ.landingUrl;
       if (url) {
         fbTrack('InitiateCheckout', { content_name: QUIZ.title || 'Quiz', content_type: 'landing' });
-        window.location.href = url;
+        // Pass profile data as URL params so the landing page can personalize the message
+        const params = new URLSearchParams();
+        if (_calculatedProfile) {
+          params.set('perfil', _calculatedProfile.name || '');
+          params.set('emoji', _calculatedProfile.emoji || '');
+          params.set('descripcion', (_calculatedProfile.description || '').slice(0, 200));
+          params.set('recomendacion', (_calculatedProfile.recommendation || '').slice(0, 200));
+        }
+        const separator = url.includes('?') ? '&' : '?';
+        window.location.href = url + separator + params.toString();
         return;
       }
       _goToResultPage();
