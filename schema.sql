@@ -128,6 +128,11 @@ create trigger on_auth_user_created
   after insert on auth.users
   for each row execute procedure public.handle_new_user();
 
--- ── Meta Pixel / Conversions API (run if upgrading an existing DB) ──
+-- ── Quiz settings column (run this in Supabase SQL Editor to enable full functionality) ──
+-- Stores: postQuizAction, landingUrl, productUrl, paymentUrl, metaPixelId,
+--         metaCapiToken, whatsappNumber, leadCapture, miniAppId, etc.
+alter table public.quizzes add column if not exists settings jsonb default '{}'::jsonb;
+
+-- (Legacy columns, no longer needed with settings jsonb)
 -- alter table public.quizzes add column if not exists meta_pixel_id   text default '';
 -- alter table public.quizzes add column if not exists meta_capi_token text default '';

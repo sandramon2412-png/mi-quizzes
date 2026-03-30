@@ -254,6 +254,10 @@
       try {
         QUIZ = await DB.quizzes.get(quizId);
       } catch {}
+      // Always merge with localStorage: Supabase only stores questions/profiles,
+      // localStorage has all settings (postQuizAction, landingUrl, pixelId, etc.)
+      const localQuiz = Quizzes.get(quizId);
+      if (localQuiz) QUIZ = { ...localQuiz, ...(QUIZ || {}) };
       if (!QUIZ) QUIZ = Quizzes.get(quizId);
     }
     if (!QUIZ) QUIZ = DEMO_QUIZ;

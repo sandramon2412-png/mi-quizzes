@@ -285,6 +285,10 @@ document.addEventListener('DOMContentLoaded', async () => {
     quiz = DEMO_QUIZ;
   } else if (quizId) {
     try { quiz = await DB.quizzes.get(quizId); } catch {}
+    // Merge with localStorage: Supabase only stores questions/profiles;
+    // localStorage has all settings (pixelId, productUrl, landingUrl, etc.)
+    const localQuiz = Quizzes.get(quizId);
+    if (localQuiz) quiz = { ...localQuiz, ...(quiz || {}) };
     if (!quiz) quiz = Quizzes.get(quizId);
   }
   if (!quiz) quiz = DEMO_QUIZ;

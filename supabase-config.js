@@ -141,6 +141,20 @@ const DB = {
         questions:         quiz.questions,
         profiles:          quiz.profiles,
         updated_at:        new Date().toISOString(),
+        // All extra settings in one JSONB column (postQuizAction, landingUrl, pixelId, etc.)
+        settings: {
+          postQuizAction:   quiz.postQuizAction   || 'result_page',
+          productUrl:       quiz.productUrl        || '',
+          paymentUrl:       quiz.paymentUrl        || '',
+          landingUrl:       quiz.landingUrl        || '',
+          whatsappNumber:   quiz.whatsappNumber    || '',
+          whatsappMessage:  quiz.whatsappMessage   || '',
+          leadCapture:      quiz.leadCapture       !== false,
+          waLeadCapture:    quiz.waLeadCapture     !== false,
+          metaPixelId:      quiz.metaPixelId       || '',
+          metaCapiToken:    quiz.metaCapiToken      || '',
+          miniAppId:        quiz.miniAppId          || '',
+        },
       };
       if (quiz.id && !quiz.id.startsWith('tmpl-')) {
         const { data, error } = await db.from('quizzes').update(row).eq('id', quiz.id).select().single();
@@ -170,6 +184,8 @@ const DB = {
       questions:        r.questions,
       profiles:         r.profiles,
       userId:           r.user_id,
+      // Spread all settings fields back to top level
+      ...(r.settings || {}),
     }),
   },
 
