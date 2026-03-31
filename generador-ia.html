@@ -1038,6 +1038,25 @@ const TEMPLATE_QUESTIONS = [
 ];
 
 function openTemplateModal() {
+  const list = document.getElementById('templates-list');
+  list.innerHTML = TEMPLATE_QUESTIONS.map((tq, idx) => `
+    <button onclick="addTemplateQuestion(${idx})"
+      class="tpl-q-card w-full text-left p-4 rounded-xl border border-outline-variant/10 bg-surface transition-all hover:border-primary/30">
+      <div class="flex items-start gap-3">
+        <span class="text-lg shrink-0">${tq.category.split(' ')[0]}</span>
+        <div class="flex-1 min-w-0">
+          <p class="text-xs font-bold text-on-surface-variant uppercase tracking-widest mb-0.5">${tq.category.split(' ').slice(1).join(' ')}</p>
+          <p class="text-sm font-semibold text-on-surface">${tq.text}</p>
+          <div class="flex flex-wrap gap-1.5 mt-2">
+            ${tq.options.map(o => `
+              <span class="inline-flex items-center gap-1 text-[10px] px-2 py-0.5 rounded-full bg-surface-container-high text-on-surface-variant">
+                ${o.imageUrl ? '<span class="material-symbols-outlined text-[10px]">image</span>' : ''}${o.text}
+              </span>`).join('')}
+          </div>
+        </div>
+        <span class="material-symbols-outlined text-primary shrink-0">add_circle</span>
+      </div>
+    </button>`).join('');
   document.getElementById('modal-templates').classList.remove('hidden');
 }
 function closeTemplateModal() {
@@ -1082,25 +1101,7 @@ function addTemplateQuestion(idx) {
         <span class="material-symbols-outlined">close</span>
       </button>
     </div>
-    <div class="overflow-y-auto p-4 space-y-2">
-      ${(()=>TEMPLATE_QUESTIONS.map((tq, idx) => `
-        <button onclick="addTemplateQuestion(${idx})"
-          class="tpl-q-card w-full text-left p-4 rounded-xl border border-outline-variant/10 bg-surface transition-all">
-          <div class="flex items-start gap-3">
-            <span class="text-lg shrink-0">${tq.category.split(' ')[0]}</span>
-            <div class="flex-1 min-w-0">
-              <p class="text-xs font-bold text-on-surface-variant uppercase tracking-widest mb-0.5">${tq.category.split(' ').slice(1).join(' ')}</p>
-              <p class="text-sm font-semibold text-on-surface">${tq.text}</p>
-              <div class="flex flex-wrap gap-1.5 mt-2">
-                ${tq.options.map(o => `
-                  <span class="inline-flex items-center gap-1 text-[10px] px-2 py-0.5 rounded-full bg-surface-container-high text-on-surface-variant">
-                    ${o.imageUrl ? '<span class="material-symbols-outlined text-[10px]">image</span>' : ''}${o.text}
-                  </span>`).join('')}
-              </div>
-            </div>
-            <span class="material-symbols-outlined text-primary shrink-0">add_circle</span>
-          </div>
-        </button>`).join(''))()}
+    <div id="templates-list" class="overflow-y-auto p-4 space-y-2">
     </div>
   </div>
 </div>
