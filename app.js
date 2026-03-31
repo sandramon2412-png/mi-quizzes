@@ -287,15 +287,17 @@ Cada pregunta: exactamente ${nO} opciones. Cada opción:
     const text = await this._call([{ role: 'user', content: prompt }], 5000);
     const quiz = this._parseJSON(text);
     if (quiz && quiz.questions) {
-      quiz.questions.forEach(q => {
-        // Fix side panel image: use Unsplash API instead of deprecated source.unsplash.com
-        if (q.imageKeywords && !q.image) {
-          q.image = `https://images.unsplash.com/photo-1506126613408-eca07ce68773?w=800&h=1000&fit=crop&auto=format&q=80`;
-        }
-        q.options && q.options.forEach(opt => {
+      quiz.questions.forEach((q, qi) => {
+        q.options && q.options.forEach((opt, oi) => {
           if (!opt.imageUrl) {
-            const prompt = opt.imagePrompt || opt.text;
-            opt.imageUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(prompt + ', photorealistic, 4:3 ratio, no text')}?width=400&height=280&nologo=true&seed=${Math.floor(Math.random()*9999)}`;
+            const kw = (opt.imagePrompt || opt.text)
+              .toLowerCase()
+              .replace(/[^a-záéíóúüñ\s]/g, '')
+              .split(/\s+/)
+              .filter(w => w.length > 3)
+              .slice(0, 2)
+              .join(',') || 'person,lifestyle';
+            opt.imageUrl = `https://loremflickr.com/400/280/${encodeURIComponent(kw)}?lock=${qi * 10 + oi}`;
           }
         });
       });
