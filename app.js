@@ -219,7 +219,9 @@ const Claude = {
     return JSON.parse(match[0]);
   },
 
-  async generateQuiz(productName, description, niche) {
+  async generateQuiz(productName, description, niche, numQuestions, numOptions) {
+    const nQ = numQuestions || 6;
+    const nO = numOptions   || 4;
     const prompt = `Eres un experto en psicología del comprador, copywriting emocional y quizzes virales de alta conversión. Conoces a profundidad el nicho de ${niche || 'infoproductos'}.
 
 PRODUCTO: "${productName}"
@@ -229,25 +231,27 @@ NICHO: ${niche || 'infoproductos'}
 ═══ TU MISIÓN ═══
 Crear un quiz que haga que cada persona sienta que "le leyeron la mente". Cada pregunta y cada opción debe usar el vocabulario, las situaciones reales y los dolores específicos del nicho "${niche || 'infoproductos'}". NADA GENÉRICO.
 
-═══ REGLAS PARA LAS PREGUNTAS (6 en total) ═══
-Las 6 preguntas deben cubrir estos ángulos en orden:
+═══ REGLAS PARA LAS PREGUNTAS (${nQ} en total) ═══
+Las ${nQ} preguntas deben cubrir estos ángulos en orden:
 1. Situación actual — ¿Cómo se describe el lector en este momento respecto al tema?
 2. Obstáculo principal — ¿Qué le impide avanzar?
 3. Experiencia previa — ¿Qué ha intentado antes?
 4. Motivación profunda — ¿Por qué realmente quiere este resultado?
 5. Estilo / Cómo aprende — ¿Cómo prefiere trabajar o aprender?
 6. Mentalidad / Actitud — ¿Cómo reacciona ante los desafíos en este nicho?
+${nQ > 6 ? Array.from({length: nQ - 6}, (_,k) => `${k+7}. Pregunta adicional específica del nicho`).join('\n') : ''}
 
-Cada pregunta: exactamente 4 opciones, cada opción describe UNA SITUACIÓN CONCRETA y reconocible del nicho (no "a) Sí b) No c) A veces").
+Cada pregunta: exactamente ${nO} opciones. Cada opción:
+- Describe UNA SITUACIÓN CONCRETA del nicho (no "Sí / No / A veces")
+- Tiene un EMOJI que represente emocionalmente esa situación (ej: 😊 para algo positivo, 😔 para algo difícil)
 
 ═══ REGLAS PARA LOS PERFILES (3 perfiles) ═══
-Cada perfil debe ser una IDENTIDAD con la que el usuario se identifique al 100%:
-• name: Un apodo de identidad poderoso (ej: "La Perfeccionista Estancada", "El Emprendedor Impaciente", "La Mamá Multi-Tarea") — específico del nicho
-• emoji: Un emoji que represente visualmente ese perfil
-• description: 2-3 oraciones que hagan que el usuario piense "¡ESO SOY EXACTAMENTE YO!" — usa situaciones concretas del nicho, no descripciones genéricas
-• recommendation: Explica POR QUÉ este producto resuelve exactamente el problema de ESTE perfil — conecta el dolor específico con la solución
-• matchScore: Número entre 83-96 (distinto para cada perfil, como si fuera calculado)
-• cta: Llamada a la acción personalizada para ese perfil (máx 35 chars)
+• name: Identidad poderosa específica del nicho (ej: "La Perfeccionista Estancada", "El Emprendedor Impaciente")
+• emoji: Emoji representativo del perfil
+• description: 2-3 oraciones que hagan que el usuario piense "¡ESO SOY YO!" — situaciones concretas del nicho
+• recommendation: Por qué este producto resuelve exactamente el problema de ESTE perfil
+• matchScore: Número 83-96 (diferente por perfil)
+• cta: CTA personalizado (máx 35 chars)
 
 ═══ RESPONDE SOLO JSON VÁLIDO ═══
 {
@@ -259,10 +263,10 @@ Cada perfil debe ser una IDENTIDAD con la que el usuario se identifique al 100%:
       "id": "q1",
       "text": "texto de la pregunta — específico del nicho",
       "options": [
-        {"text": "situación concreta y reconocible del nicho", "profiles": ["id_perfil"]},
-        {"text": "situación concreta y reconocible del nicho", "profiles": ["id_perfil"]},
-        {"text": "situación concreta y reconocible del nicho", "profiles": ["id_perfil", "id_perfil2"]},
-        {"text": "situación concreta y reconocible del nicho", "profiles": ["id_perfil"]}
+        {"text": "situación concreta del nicho", "emoji": "😊", "profiles": ["id_perfil"]},
+        {"text": "situación concreta del nicho", "emoji": "😔", "profiles": ["id_perfil"]},
+        {"text": "situación concreta del nicho", "emoji": "😤", "profiles": ["id_perfil", "id_perfil2"]},
+        {"text": "situación concreta del nicho", "emoji": "😩", "profiles": ["id_perfil"]}
       ]
     }
   ],
@@ -392,10 +396,10 @@ const Groq = {
     return JSON.parse(match[0]);
   },
 
-  async generateQuiz(productName, description, niche) {
+  async generateQuiz(productName, description, niche, numQ, numOpts) {
     return Claude.generateQuiz.call(
       { _call: this._call.bind(this), _parseJSON: this._parseJSON },
-      productName, description, niche
+      productName, description, niche, numQ, numOpts
     );
   },
 
@@ -423,9 +427,9 @@ const Groq = {
 
 // ── AI helper: Groq primero, Claude como fallback ──────────
 const AI = {
-  async generateQuiz(product, desc, niche) {
-    if (Settings.getGroqApiKey()) return Groq.generateQuiz(product, desc, niche);
-    return Claude.generateQuiz(product, desc, niche);
+  async generateQuiz(product, desc, niche, numQ, numOpts) {
+    if (Settings.getGroqApiKey()) return Groq.generateQuiz(product, desc, niche, numQ, numOpts);
+    return Claude.generateQuiz(product, desc, niche, numQ, numOpts);
   },
   async generateMiniAppIdeas(product, desc, niche) {
     if (Settings.getGroqApiKey()) return Groq.generateMiniAppIdeas(product, desc, niche);

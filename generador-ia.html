@@ -46,6 +46,8 @@
   @keyframes spin { to { transform: rotate(360deg); } }
   .fade-in { animation: fadeIn .35s ease; }
   @keyframes fadeIn { from { opacity:0; transform:translateY(6px); } to { opacity:1; transform:none; } }
+  .active-num { border-color: #2E5BFF !important; color: #2E5BFF !important; background: rgba(46,91,255,0.08); }
+  .tpl-q-card:hover { border-color: #2E5BFF; background: rgba(46,91,255,0.04); }
 </style>
 </head>
 <body class="bg-background text-on-background">
@@ -114,6 +116,28 @@
               class="w-full bg-surface-container-lowest border border-outline-variant/20 rounded-lg px-4 py-3 text-on-surface text-sm focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all"/>
           </div>
 
+          <!-- Quiz structure options -->
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="block text-xs font-bold text-on-surface-variant uppercase tracking-widest mb-1.5">Preguntas</label>
+              <div class="flex gap-1.5 flex-wrap" id="num-questions-group">
+                <button onclick="setNumQ(4)"  class="num-q-btn px-3 py-1.5 rounded-lg text-xs font-bold border border-outline-variant/20 text-on-surface-variant hover:border-primary hover:text-primary transition-all">4</button>
+                <button onclick="setNumQ(5)"  class="num-q-btn px-3 py-1.5 rounded-lg text-xs font-bold border border-outline-variant/20 text-on-surface-variant hover:border-primary hover:text-primary transition-all">5</button>
+                <button onclick="setNumQ(6)"  class="num-q-btn px-3 py-1.5 rounded-lg text-xs font-bold border border-outline-variant/20 text-on-surface-variant hover:border-primary hover:text-primary transition-all active-num">6</button>
+                <button onclick="setNumQ(8)"  class="num-q-btn px-3 py-1.5 rounded-lg text-xs font-bold border border-outline-variant/20 text-on-surface-variant hover:border-primary hover:text-primary transition-all">8</button>
+                <button onclick="setNumQ(10)" class="num-q-btn px-3 py-1.5 rounded-lg text-xs font-bold border border-outline-variant/20 text-on-surface-variant hover:border-primary hover:text-primary transition-all">10</button>
+              </div>
+            </div>
+            <div>
+              <label class="block text-xs font-bold text-on-surface-variant uppercase tracking-widest mb-1.5">Respuestas</label>
+              <div class="flex gap-1.5" id="num-options-group">
+                <button onclick="setNumOpts(2)" class="num-opt-btn px-3 py-1.5 rounded-lg text-xs font-bold border border-outline-variant/20 text-on-surface-variant hover:border-primary hover:text-primary transition-all">2</button>
+                <button onclick="setNumOpts(3)" class="num-opt-btn px-3 py-1.5 rounded-lg text-xs font-bold border border-outline-variant/20 text-on-surface-variant hover:border-primary hover:text-primary transition-all">3</button>
+                <button onclick="setNumOpts(4)" class="num-opt-btn px-3 py-1.5 rounded-lg text-xs font-bold border border-outline-variant/20 text-on-surface-variant hover:border-primary hover:text-primary transition-all active-num">4</button>
+              </div>
+            </div>
+          </div>
+
           <button id="btn-generate" onclick="generateWithAI()"
             class="w-full primary-gradient py-4 rounded-xl font-bold text-white text-sm hover:opacity-90 active:scale-[0.98] transition-all flex items-center justify-center gap-2 shadow-lg shadow-primary/20 mt-1">
             <span class="material-symbols-outlined text-base">auto_awesome</span>
@@ -164,6 +188,9 @@
           <div class="flex items-center gap-2">
             <button onclick="addQuestion()" id="btn-add-q" class="hidden text-xs text-primary font-bold hover:underline flex items-center gap-1">
               <span class="material-symbols-outlined text-sm">add</span>Pregunta
+            </button>
+            <button onclick="openTemplateModal()" id="btn-templates" class="hidden text-xs text-on-surface-variant font-bold hover:text-primary hover:underline flex items-center gap-1 transition-colors">
+              <span class="material-symbols-outlined text-sm">dashboard</span>Plantillas
             </button>
             <button onclick="previewQuiz()" id="btn-preview" class="hidden px-3 py-1.5 border border-primary/30 text-primary rounded-lg text-xs font-bold hover:bg-primary/5 transition-colors flex items-center gap-1">
               <span class="material-symbols-outlined text-sm">open_in_new</span>Preview
@@ -468,7 +495,7 @@ async function generateWithAI() {
   showLoading(true, 'Analizando tu nicho y audiencia...', 15);
   try {
     const data = await Promise.race([
-      AI.generateQuiz(product, desc, niche),
+      AI.generateQuiz(product, desc, niche, _numQuestions, _numOptions),
       new Promise((_, rej) => setTimeout(() => rej(new Error('Timeout: la IA tardó demasiado')), 30000))
     ]);
     setLoadingProgress(85, 'Organizando preguntas y perfiles...');
@@ -532,6 +559,7 @@ function loadQuizIntoEditor(quiz) {
   document.getElementById('action-buttons').classList.remove('hidden');
   document.getElementById('btn-save-header').classList.remove('hidden');
   document.getElementById('btn-add-q').classList.remove('hidden');
+  document.getElementById('btn-templates').classList.remove('hidden');
   document.getElementById('btn-preview').classList.remove('hidden');
   document.getElementById('quiz-title').value    = quiz.title    || '';
   document.getElementById('quiz-subtitle').value = quiz.subtitle || '';
@@ -585,13 +613,18 @@ function renderQuestions(questions) {
           <span class="material-symbols-outlined text-lg">delete</span>
         </button>
       </div>
-      <div class="grid grid-cols-2 gap-2">
+      <div class="space-y-1.5">
         ${q.options.map((opt,oi)=>`
-          <div class="flex items-center gap-2 bg-surface-container-high rounded-lg px-3 py-2">
-            <span class="text-xs text-on-surface-variant font-bold shrink-0">${String.fromCharCode(65+oi)}</span>
-            <input type="text" value="${esc(opt.text)}" placeholder="Opción ${oi+1}"
+          <div class="flex items-center gap-2 bg-surface-container-high rounded-lg px-2 py-1.5">
+            <input type="text" value="${esc(opt.emoji||'')}" placeholder="😊"
+              onchange="currentQuiz.questions[${qi}].options[${oi}].emoji=this.value"
+              class="w-9 text-center text-lg bg-surface-container rounded-md border border-outline-variant/20 outline-none shrink-0 py-0.5"/>
+            <input type="text" value="${esc(opt.text)}" placeholder="Texto de la opción"
               onchange="currentQuiz.questions[${qi}].options[${oi}].text=this.value"
-              class="flex-1 bg-transparent text-xs text-on-surface outline-none"/>
+              class="flex-1 bg-transparent text-xs text-on-surface outline-none min-w-0"/>
+            <input type="url" value="${esc(opt.imageUrl||'')}" placeholder="URL imagen (opcional)"
+              onchange="currentQuiz.questions[${qi}].options[${oi}].imageUrl=this.value.trim()"
+              class="w-32 bg-transparent text-[10px] text-on-surface-variant outline-none border-l border-outline-variant/20 pl-2 shrink-0"/>
           </div>`).join('')}
       </div>
       <button onclick="addOption(${qi})" class="mt-2 text-xs text-primary hover:underline flex items-center gap-1">
@@ -905,6 +938,163 @@ function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
 function esc(s) {
   return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
+
+// ── Num questions / options state ─────────────────────────
+let _numQuestions = 6;
+let _numOptions   = 4;
+
+function setNumQ(n) {
+  _numQuestions = n;
+  document.querySelectorAll('.num-q-btn').forEach(b => {
+    b.classList.toggle('active-num', parseInt(b.textContent) === n);
+  });
+}
+function setNumOpts(n) {
+  _numOptions = n;
+  document.querySelectorAll('.num-opt-btn').forEach(b => {
+    b.classList.toggle('active-num', parseInt(b.textContent) === n);
+  });
+}
+
+// ── Template questions modal ───────────────────────────────
+const TEMPLATE_QUESTIONS = [
+  {
+    id: 'tq_gender', category: '👤 Perfil',
+    text: '¿Con qué género te identificas?',
+    options: [
+      { text: 'Mujer',  imageUrl: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400&h=280&fit=crop&auto=format&q=80' },
+      { text: 'Hombre', imageUrl: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=280&fit=crop&auto=format&q=80' },
+      { text: 'Prefiero no decirlo', imageUrl: '' },
+    ]
+  },
+  {
+    id: 'tq_age', category: '👤 Perfil',
+    text: '¿En qué rango de edad estás?',
+    options: [
+      { text: '18 - 25 años', imageUrl: 'https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?w=400&h=280&fit=crop&auto=format&q=80' },
+      { text: '26 - 35 años', imageUrl: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=400&h=280&fit=crop&auto=format&q=80' },
+      { text: '36 - 45 años', imageUrl: 'https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?w=400&h=280&fit=crop&auto=format&q=80' },
+      { text: '46 años o más', imageUrl: 'https://images.unsplash.com/photo-1566616213894-2d4e1baee5d8?w=400&h=280&fit=crop&auto=format&q=80' },
+    ]
+  },
+  {
+    id: 'tq_experience', category: '📊 Experiencia',
+    text: '¿Cuál es tu nivel de experiencia en el tema?',
+    options: [
+      { text: 'Soy principiante, estoy empezando desde cero' },
+      { text: 'Tengo algo de experiencia pero no veo resultados' },
+      { text: 'Tengo experiencia pero quiero mejorar' },
+      { text: 'Soy avanzado/a y busco perfeccionarme' },
+    ]
+  },
+  {
+    id: 'tq_goal', category: '🎯 Objetivo',
+    text: '¿Cuál es tu objetivo principal ahora mismo?',
+    options: [
+      { text: 'Perder peso y sentirme mejor', imageUrl: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=280&fit=crop&auto=format&q=80' },
+      { text: 'Ganar músculo y fuerza', imageUrl: 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=400&h=280&fit=crop&auto=format&q=80' },
+      { text: 'Mejorar mi salud y energía', imageUrl: 'https://images.unsplash.com/photo-1476480862126-209bfaa8edc8?w=400&h=280&fit=crop&auto=format&q=80' },
+      { text: 'Reducir el estrés y bienestar mental', imageUrl: 'https://images.unsplash.com/photo-1506126613408-eca07ce68773?w=400&h=280&fit=crop&auto=format&q=80' },
+    ]
+  },
+  {
+    id: 'tq_time', category: '⏰ Disponibilidad',
+    text: '¿Cuánto tiempo puedes dedicar por día?',
+    options: [
+      { text: 'Menos de 15 minutos' },
+      { text: '15 a 30 minutos' },
+      { text: '30 minutos a 1 hora' },
+      { text: 'Más de 1 hora' },
+    ]
+  },
+  {
+    id: 'tq_obstacle', category: '🚧 Obstáculo',
+    text: '¿Qué te ha impedido lograr tu objetivo hasta ahora?',
+    options: [
+      { text: 'Falta de tiempo y mil ocupaciones' },
+      { text: 'No sé por dónde empezar' },
+      { text: 'Lo he intentado pero no mantengo la constancia' },
+      { text: 'No he encontrado el método correcto para mí' },
+    ]
+  },
+  {
+    id: 'tq_lifestyle', category: '🌿 Estilo de vida',
+    text: '¿Cómo describes tu estilo de vida actual?',
+    options: [
+      { text: 'Muy activo/a, siempre en movimiento', imageUrl: 'https://images.unsplash.com/photo-1552674605-db6ffd4facb5?w=400&h=280&fit=crop&auto=format&q=80' },
+      { text: 'Trabajo frente a una pantalla todo el día', imageUrl: 'https://images.unsplash.com/photo-1515378791036-0648a3ef77b2?w=400&h=280&fit=crop&auto=format&q=80' },
+      { text: 'Soy mamá/papá con poco tiempo libre', imageUrl: 'https://images.unsplash.com/photo-1543342384-1f1350e27861?w=400&h=280&fit=crop&auto=format&q=80' },
+      { text: 'Trabajo en casa o de forma independiente', imageUrl: 'https://images.unsplash.com/photo-1588196749597-9ff075ee6b5b?w=400&h=280&fit=crop&auto=format&q=80' },
+    ]
+  },
+];
+
+function openTemplateModal() {
+  document.getElementById('modal-templates').classList.remove('hidden');
+}
+function closeTemplateModal() {
+  document.getElementById('modal-templates').classList.add('hidden');
+}
+function addTemplateQuestion(idx) {
+  if (!currentQuiz) { showToast('Genera un quiz primero', 'error'); return; }
+  const tq = TEMPLATE_QUESTIONS[idx];
+  const pids = currentQuiz.profiles.map(p => p.id);
+  const newQ = {
+    id: tq.id + '_' + Date.now(),
+    text: tq.text,
+    category: tq.category || '',
+    options: tq.options.map((o, i) => ({
+      text: o.text,
+      imageUrl: o.imageUrl || '',
+      profiles: [pids[i % pids.length] || 'p1'],
+    })),
+  };
+  currentQuiz.questions.push(newQ);
+  renderQuestions(currentQuiz.questions);
+  syncMeta(currentQuiz);
+  closeTemplateModal();
+  showToast('Pregunta añadida — asigna los perfiles a cada opción');
+  setTimeout(() => {
+    const cards = document.querySelectorAll('#questions-list > div');
+    const last = cards[cards.length - 1];
+    if (last) last.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }, 100);
+}
 </script>
+
+<!-- Template Questions Modal -->
+<div id="modal-templates" class="hidden fixed inset-0 z-50 flex items-end sm:items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+  <div class="bg-surface-container w-full max-w-lg rounded-2xl border border-outline-variant/10 overflow-hidden max-h-[80vh] flex flex-col">
+    <div class="flex items-center justify-between px-5 py-4 border-b border-outline-variant/10">
+      <div>
+        <h3 class="font-bold text-sm">Preguntas plantilla</h3>
+        <p class="text-xs text-on-surface-variant mt-0.5">Haz clic para agregar al quiz. Puedes editar el texto después.</p>
+      </div>
+      <button onclick="closeTemplateModal()" class="text-on-surface-variant hover:text-on-surface transition-colors">
+        <span class="material-symbols-outlined">close</span>
+      </button>
+    </div>
+    <div class="overflow-y-auto p-4 space-y-2">
+      ${(()=>TEMPLATE_QUESTIONS.map((tq, idx) => `
+        <button onclick="addTemplateQuestion(${idx})"
+          class="tpl-q-card w-full text-left p-4 rounded-xl border border-outline-variant/10 bg-surface transition-all">
+          <div class="flex items-start gap-3">
+            <span class="text-lg shrink-0">${tq.category.split(' ')[0]}</span>
+            <div class="flex-1 min-w-0">
+              <p class="text-xs font-bold text-on-surface-variant uppercase tracking-widest mb-0.5">${tq.category.split(' ').slice(1).join(' ')}</p>
+              <p class="text-sm font-semibold text-on-surface">${tq.text}</p>
+              <div class="flex flex-wrap gap-1.5 mt-2">
+                ${tq.options.map(o => `
+                  <span class="inline-flex items-center gap-1 text-[10px] px-2 py-0.5 rounded-full bg-surface-container-high text-on-surface-variant">
+                    ${o.imageUrl ? '<span class="material-symbols-outlined text-[10px]">image</span>' : ''}${o.text}
+                  </span>`).join('')}
+              </div>
+            </div>
+            <span class="material-symbols-outlined text-primary shrink-0">add_circle</span>
+          </div>
+        </button>`).join(''))()}
+    </div>
+  </div>
+</div>
 </body>
 </html>
