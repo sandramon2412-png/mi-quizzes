@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html class="dark" lang="es"><head>
+<html lang="es"><head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
 <title>Quiz | Luminous Studio</title>
@@ -8,215 +8,202 @@
 <script src="./supabase-config.js"></script>
 <script src="./app.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.2/dist/confetti.browser.min.js"></script>
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
-<script id="tailwind-config">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
+<script>
   tailwind.config = {
-    darkMode: "class",
     theme: {
       extend: {
         colors: {
-          "primary": "#2E5BFF",
-          "primary-dim": "#3867fb",
-          "secondary": "#69f6b8",
-          "tertiary": "#ffa3e9",
-          "on-primary": "#ffffff",
-          "on-surface": "#ffffff",
-          "on-surface-variant": "#adaaaa",
-          "background": "#0e0e0e",
-          "surface": "#0e0e0e",
-          "surface-container-lowest": "#000000",
-          "surface-container-low": "#131313",
-          "surface-container": "#1a1a1a",
-          "surface-container-high": "#20201f",
-          "surface-container-highest": "#262626",
-          "surface-bright": "#2c2c2c",
-          "outline-variant": "#484847",
-          "outline": "#767575",
+          "brand": "var(--brand, #8B6AA0)",
+          "brand-light": "var(--brand-light, #C4A7D7)",
+          "brand-bg": "var(--brand-bg, #f7f2fa)",
+          "brand-surface": "var(--brand-surface, #faf8fc)",
         },
-        fontFamily: { "headline": ["Plus Jakarta Sans"], "body": ["Plus Jakarta Sans"] },
-        borderRadius: {"DEFAULT": "0.5rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+        fontFamily: {
+          "serif": ["Playfair Display", "Georgia", "serif"],
+          "sans": ["Plus Jakarta Sans", "system-ui", "sans-serif"],
+        },
       },
     },
   }
 </script>
 <style>
-  body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #0e0e0e; color: #fff; }
-  .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
-  .primary-gradient { background: linear-gradient(135deg, #2E5BFF 0%, #144fe5 100%); }
-  .option-card { transition: all 0.18s cubic-bezier(0.34,1.56,0.64,1); cursor: pointer; }
-  .option-card:hover { border-color: rgba(46,91,255,0.5); background: rgba(46,91,255,0.08); transform: translateY(-1px); }
-  .option-card.selected { border-color: #2E5BFF; background: rgba(46,91,255,0.15); transform: scale(1.01); box-shadow: 0 0 0 2px rgba(46,91,255,0.25); }
-  .option-card.selected .option-check { opacity: 1 !important; transform: scale(1) !important; }
-  .option-card .option-check { transform: scale(0.5); transition: all 0.2s cubic-bezier(0.34,1.56,0.64,1); }
-  .option-card.auto-advancing { opacity: 0.7; pointer-events: none; }
-  .slide-in { animation: slideIn 0.35s cubic-bezier(0.16,1,0.3,1); }
-  .stagger-in > * { animation: slideIn 0.35s cubic-bezier(0.16,1,0.3,1) both; }
-  .stagger-in > *:nth-child(1) { animation-delay: 0.04s; }
-  .stagger-in > *:nth-child(2) { animation-delay: 0.1s; }
-  .stagger-in > *:nth-child(3) { animation-delay: 0.16s; }
-  .stagger-in > *:nth-child(4) { animation-delay: 0.22s; }
-  @keyframes slideIn {
-    from { opacity: 0; transform: translateY(20px); }
-    to   { opacity: 1; transform: translateY(0); }
+  :root {
+    --brand: #8B6AA0;
+    --brand-light: #C4A7D7;
+    --brand-bg: #f7f2fa;
+    --brand-surface: #faf8fc;
   }
-  .social-proof-pulse { animation: pulse 2s ease-in-out infinite; }
-  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.7} }
-  .progress-bar-glow { box-shadow: 0 0 8px rgba(46,91,255,0.5); }
-  body { min-height: max(884px, 100dvh); }
+  body { font-family: 'Plus Jakarta Sans', sans-serif; background: #ffffff; color: #3d3d3d; }
+  .brand-gradient { background: linear-gradient(180deg, var(--brand-bg) 0%, #ffffff 100%); }
+
+  /* Elegant option cards */
+  .option-card {
+    transition: all 0.22s cubic-bezier(0.34,1.56,0.64,1);
+    cursor: pointer;
+    border: 1.5px solid #e8e0ed;
+    background: #ffffff;
+  }
+  .option-card:hover {
+    border-color: var(--brand-light);
+    background: var(--brand-bg);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(139,106,160,0.08);
+  }
+  .option-card.selected {
+    border-color: var(--brand);
+    background: var(--brand-bg);
+    box-shadow: 0 0 0 3px rgba(139,106,160,0.15);
+  }
+  .option-card.selected .opt-check { opacity: 1 !important; transform: scale(1) !important; }
+  .option-card .opt-check { transform: scale(0.5); transition: all 0.2s cubic-bezier(0.34,1.56,0.64,1); }
+  .option-card.auto-advancing { opacity: 0.6; pointer-events: none; }
+
+  /* Animations */
+  .slide-in { animation: slideIn 0.4s cubic-bezier(0.16,1,0.3,1); }
+  .stagger-in > * { animation: slideIn 0.4s cubic-bezier(0.16,1,0.3,1) both; }
+  .stagger-in > *:nth-child(1) { animation-delay: 0.05s; }
+  .stagger-in > *:nth-child(2) { animation-delay: 0.12s; }
+  .stagger-in > *:nth-child(3) { animation-delay: 0.19s; }
+  .stagger-in > *:nth-child(4) { animation-delay: 0.26s; }
+  @keyframes slideIn { from { opacity:0; transform:translateY(18px); } to { opacity:1; transform:none; } }
+  @keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-6px)} }
+  .float-icon { animation: float 3s ease-in-out infinite; }
+  @keyframes progress-glow { 0%,100%{opacity:0.5} 50%{opacity:1} }
 </style>
 </head>
-<body class="bg-background text-on-surface min-h-screen flex flex-col">
+<body class="min-h-screen">
 
-<!-- Header -->
-<header class="sticky top-0 z-50 bg-[#0e0e0e] border-b border-outline-variant/10 px-6 py-4 flex items-center justify-between">
-  <a href="./index.html" class="text-xl font-bold tracking-tighter text-primary">Luminous Studio</a>
-  <button onclick="if(confirm('¿Salir del quiz?')) window.location.href='./index.html'" class="text-on-surface-variant hover:text-on-surface transition-colors text-sm font-medium flex items-center gap-1">
-    <span class="material-symbols-outlined text-base">close</span>
-    Salir
+<!-- Gradient background that fades down -->
+<div class="brand-gradient fixed inset-0 -z-10 pointer-events-none" style="height:50vh"></div>
+
+<!-- Minimal header -->
+<header class="sticky top-0 z-50 backdrop-blur-md bg-white/70 border-b border-brand-light/20 px-6 py-3 flex items-center justify-between">
+  <span id="header-brand" class="text-sm font-semibold tracking-wide text-brand uppercase"></span>
+  <button onclick="if(confirm('¿Salir del quiz?')) window.location.href='./index.html'" class="text-gray-400 hover:text-gray-600 transition-colors text-sm flex items-center gap-1">
+    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
   </button>
 </header>
 
-<!-- Progress Bar -->
-<div class="w-full h-1.5 bg-surface-container-high">
-  <div id="progress-bar" class="h-full primary-gradient transition-all duration-500 progress-bar-glow" style="width: 0%"></div>
+<!-- Progress bar -->
+<div class="w-full h-1 bg-brand-light/20">
+  <div id="progress-bar" class="h-full bg-brand rounded-full transition-all duration-500" style="width:0%"></div>
 </div>
 
-<!-- Quiz Container -->
-<main class="flex-1 flex items-center justify-center px-6 py-12">
-  <div class="w-full max-w-2xl">
+<!-- Quiz container -->
+<main class="flex-1 flex items-center justify-center px-5 py-10">
+  <div class="w-full max-w-lg">
 
-    <!-- Intro Screen -->
-    <div id="screen-intro" class="text-center space-y-8 slide-in">
-      <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-surface-container-high border border-outline-variant/10">
-        <span class="w-2 h-2 rounded-full bg-secondary animate-pulse"></span>
-        <span class="text-xs font-semibold tracking-widest uppercase text-on-surface-variant">Quiz de Recomendación</span>
+    <!-- ═══ INTRO SCREEN ═══ -->
+    <div id="screen-intro" class="text-center space-y-6 slide-in">
+      <!-- Brand icon -->
+      <div class="float-icon inline-block">
+        <div id="intro-icon" class="w-16 h-16 mx-auto rounded-2xl bg-brand-bg border border-brand-light/30 flex items-center justify-center text-3xl shadow-sm">🌸</div>
       </div>
-      <h1 id="intro-title" class="text-4xl md:text-5xl font-extrabold tracking-tighter leading-tight">
-        Descubre tu <span class="text-transparent bg-clip-text primary-gradient">perfil ideal</span>
+
+      <!-- Brand label -->
+      <p id="intro-brand" class="text-xs font-bold tracking-[0.25em] uppercase text-brand"></p>
+
+      <!-- Title -->
+      <h1 id="intro-title" class="font-serif text-3xl md:text-4xl font-semibold leading-tight text-gray-800">
+        Descubre tu perfil ideal
       </h1>
-      <p id="intro-subtitle" class="text-on-surface-variant text-lg max-w-lg mx-auto leading-relaxed">
-        Responde unas preguntas rápidas y descubre qué producto es perfecto para ti.
-      </p>
 
-      <!-- Social proof -->
-      <div class="flex items-center justify-center gap-2 py-1">
-        <div class="flex -space-x-2">
-          <div class="w-7 h-7 rounded-full bg-primary/30 border-2 border-surface flex items-center justify-center text-[9px] font-bold text-primary">A</div>
-          <div class="w-7 h-7 rounded-full bg-secondary/30 border-2 border-surface flex items-center justify-center text-[9px] font-bold text-secondary">M</div>
-          <div class="w-7 h-7 rounded-full bg-tertiary/30 border-2 border-surface flex items-center justify-center text-[9px] font-bold text-tertiary">L</div>
-          <div class="w-7 h-7 rounded-full bg-primary/20 border-2 border-surface flex items-center justify-center text-[9px] font-bold text-on-surface-variant">+</div>
-        </div>
-        <p class="text-sm text-on-surface-variant social-proof-pulse"><span id="social-count" class="font-bold text-on-surface">1,247</span> personas ya lo completaron</p>
+      <!-- Subtitle -->
+      <p id="intro-subtitle" class="text-gray-500 text-base max-w-md mx-auto leading-relaxed"></p>
+
+      <!-- Name input (optional, elegant) -->
+      <div class="max-w-xs mx-auto pt-2">
+        <input id="intro-name" type="text" placeholder="¿Cómo te llamo, cariño?"
+          class="w-full text-center bg-white border border-brand-light/40 rounded-full px-6 py-3.5 text-sm text-gray-700 placeholder:text-gray-400 focus:outline-none focus:border-brand focus:ring-2 focus:ring-brand/20 transition-all shadow-sm"/>
       </div>
 
-      <div class="flex flex-col sm:flex-row items-center justify-center gap-4 pt-2">
-        <button onclick="startQuiz()" class="primary-gradient px-10 py-4 rounded-xl font-bold text-white hover:scale-[1.02] active:scale-95 transition-all duration-300 shadow-lg shadow-primary/30 text-base">
-          Empezar Quiz →
-        </button>
-        <span id="intro-time" class="text-on-surface-variant text-sm">~2 minutos · Gratis</span>
-      </div>
-      <div class="flex items-center justify-center gap-6 pt-3 text-sm text-on-surface-variant flex-wrap">
-        <div class="flex items-center gap-1.5">
-          <span class="material-symbols-outlined text-secondary text-base" style="font-variation-settings:'FILL' 1;">check_circle</span>
-          <span>Sin registro</span>
-        </div>
-        <div class="flex items-center gap-1.5">
-          <span class="material-symbols-outlined text-secondary text-base" style="font-variation-settings:'FILL' 1;">check_circle</span>
-          <span>Resultado inmediato</span>
-        </div>
-        <div class="flex items-center gap-1.5">
-          <span class="material-symbols-outlined text-secondary text-base" style="font-variation-settings:'FILL' 1;">check_circle</span>
-          <span>100% gratis</span>
-        </div>
-      </div>
+      <!-- CTA button -->
+      <button onclick="startQuiz()"
+        class="inline-block bg-brand hover:bg-brand/90 text-white font-bold text-sm tracking-wider uppercase px-10 py-4 rounded-full transition-all duration-300 hover:shadow-lg hover:shadow-brand/25 active:scale-[0.97]">
+        <span id="intro-cta-text">Descubrir mi resultado →</span>
+      </button>
+
+      <!-- Time estimate -->
+      <p id="intro-time" class="text-gray-400 text-xs">Solo 5 preguntas · Menos de 2 minutos</p>
     </div>
 
-    <!-- Question Screen -->
+    <!-- ═══ QUESTION SCREEN ═══ -->
     <div id="screen-question" class="hidden space-y-6">
-      <!-- Question header -->
-      <div class="flex items-center justify-between mb-1">
-        <span id="q-counter" class="text-xs font-bold text-on-surface-variant uppercase tracking-widest">Pregunta 1 de 4</span>
-        <span id="q-category" class="text-xs font-bold text-primary uppercase tracking-widest px-2.5 py-0.5 rounded-full bg-primary/10"></span>
+      <!-- Question counter -->
+      <div class="flex items-center justify-between">
+        <span id="q-counter" class="text-xs font-semibold text-gray-400 tracking-wide">Pregunta 1 de 5</span>
+        <span id="q-category" class="text-xs font-semibold text-brand tracking-wide px-3 py-1 rounded-full bg-brand-bg"></span>
       </div>
-      <h2 id="q-text" class="text-2xl md:text-3xl font-extrabold tracking-tight leading-tight slide-in"></h2>
+
+      <!-- Question text -->
+      <h2 id="q-text" class="font-serif text-2xl md:text-3xl font-semibold leading-snug text-gray-800 slide-in"></h2>
+
+      <!-- Options -->
       <div id="q-options" class="space-y-3 stagger-in"></div>
-      <div class="flex justify-between items-center pt-2">
-        <button id="btn-back" onclick="goBack()" class="flex items-center gap-2 text-on-surface-variant hover:text-on-surface transition-colors text-sm font-medium px-4 py-2 rounded-xl hover:bg-surface-container-high">
-          <span class="material-symbols-outlined text-base">arrow_back</span>
+
+      <!-- Navigation -->
+      <div class="flex justify-between items-center pt-3">
+        <button id="btn-back" onclick="goBack()"
+          class="flex items-center gap-1.5 text-gray-400 hover:text-gray-600 transition-colors text-sm font-medium px-3 py-2 rounded-lg hover:bg-gray-50">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
           Anterior
         </button>
-        <button id="btn-next" onclick="goNext()" disabled class="primary-gradient px-8 py-3 rounded-xl font-bold text-white disabled:opacity-30 disabled:cursor-not-allowed hover:scale-[1.02] active:scale-95 transition-all duration-300 flex items-center gap-2 shadow-lg shadow-primary/20">
+        <button id="btn-next" onclick="goNext()" disabled
+          class="bg-brand text-white px-7 py-3 rounded-full font-bold text-sm tracking-wide disabled:opacity-30 disabled:cursor-not-allowed hover:bg-brand/90 active:scale-[0.97] transition-all duration-300 flex items-center gap-2 shadow-md shadow-brand/15">
           Siguiente
-          <span class="material-symbols-outlined text-base">arrow_forward</span>
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
         </button>
       </div>
     </div>
 
-    <!-- Loading Screen -->
-    <div id="screen-loading" class="hidden text-center space-y-8">
-      <div class="w-20 h-20 mx-auto rounded-full primary-gradient flex items-center justify-center animate-pulse">
-        <span class="material-symbols-outlined text-white text-4xl">psychology</span>
+    <!-- ═══ LOADING SCREEN ═══ -->
+    <div id="screen-loading" class="hidden text-center space-y-6 slide-in">
+      <div class="float-icon inline-block">
+        <div class="w-20 h-20 mx-auto rounded-full bg-brand-bg border border-brand-light/30 flex items-center justify-center text-4xl shadow-sm">✨</div>
       </div>
-      <h2 class="text-2xl font-extrabold tracking-tight">Analizando tus respuestas...</h2>
-      <p class="text-on-surface-variant">Nuestra IA está procesando tu perfil para darte la mejor recomendación.</p>
-      <div class="w-full max-w-xs mx-auto bg-surface-container-high rounded-full h-2 overflow-hidden">
-        <div id="loading-bar" class="h-full primary-gradient rounded-full" style="width: 0%; transition: width 0.3s ease"></div>
+      <h2 class="font-serif text-2xl font-semibold text-gray-800">Analizando tus respuestas...</h2>
+      <p class="text-gray-500 text-sm max-w-xs mx-auto">Estamos preparando tu resultado personalizado</p>
+      <div class="w-full max-w-xs mx-auto bg-brand-light/20 rounded-full h-1.5 overflow-hidden">
+        <div id="loading-bar" class="h-full bg-brand rounded-full" style="width:0%; transition:width 0.4s ease"></div>
       </div>
-      <div id="loading-status" class="text-sm text-on-surface-variant"></div>
+      <p id="loading-status" class="text-xs text-gray-400"></p>
     </div>
 
-    <!-- Lead Capture Screen -->
+    <!-- ═══ LEAD CAPTURE SCREEN ═══ -->
     <div id="screen-lead" class="hidden space-y-6 slide-in">
-      <div class="text-center space-y-3">
-        <div class="relative inline-block">
-          <div class="w-20 h-20 mx-auto rounded-full primary-gradient flex items-center justify-center shadow-2xl shadow-primary/40">
-            <span class="material-symbols-outlined text-white text-4xl" style="font-variation-settings:'FILL' 1;">auto_awesome</span>
-          </div>
-          <span class="absolute -top-1 -right-1 text-xl">🎉</span>
+      <div class="text-center space-y-4">
+        <div class="float-icon inline-block">
+          <div class="w-20 h-20 mx-auto rounded-full bg-brand-bg border border-brand-light/30 flex items-center justify-center text-4xl shadow-sm">🎉</div>
         </div>
-        <h2 class="text-2xl md:text-3xl font-extrabold tracking-tight">¡Tu perfil está listo!</h2>
-        <p class="text-on-surface-variant max-w-sm mx-auto leading-relaxed text-sm">
-          Solo falta un paso. Deja tu correo para ver tu resultado personalizado y la recomendación exacta para ti.
+        <h2 class="font-serif text-2xl md:text-3xl font-semibold text-gray-800">¡Tu perfil está listo!</h2>
+        <p class="text-gray-500 max-w-sm mx-auto leading-relaxed text-sm">
+          Deja tu correo para ver tu resultado personalizado y la recomendación exacta para ti.
         </p>
-        <!-- Urgency bar -->
-        <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-secondary/10 border border-secondary/20 mx-auto">
-          <span class="w-2 h-2 rounded-full bg-secondary animate-ping absolute"></span>
-          <span class="w-2 h-2 rounded-full bg-secondary"></span>
-          <span class="text-secondary text-xs font-bold">Tu análisis expira en esta sesión</span>
-        </div>
       </div>
 
-      <form id="lead-form" onsubmit="submitLead(event)" class="space-y-3 max-w-md mx-auto">
-        <div class="space-y-1.5">
-          <label class="text-xs font-bold text-on-surface-variant uppercase tracking-wider" for="lead-name">Tu nombre</label>
-          <div class="relative">
-            <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-lg">person</span>
-            <input id="lead-name" type="text" required placeholder="¿Cómo te llaman?"
-              class="w-full bg-surface-container border border-outline-variant/40 rounded-xl pl-10 pr-4 py-3.5 text-sm text-on-surface placeholder:text-on-surface-variant/50 focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/30 transition-all"/>
-          </div>
+      <form id="lead-form" onsubmit="submitLead(event)" class="space-y-3 max-w-sm mx-auto">
+        <div>
+          <input id="lead-name" type="text" required placeholder="Tu nombre"
+            class="w-full bg-white border border-brand-light/40 rounded-xl px-5 py-3.5 text-sm text-gray-700 placeholder:text-gray-400 focus:outline-none focus:border-brand focus:ring-2 focus:ring-brand/20 transition-all"/>
         </div>
-        <div class="space-y-1.5">
-          <label class="text-xs font-bold text-on-surface-variant uppercase tracking-wider" for="lead-email">Tu correo electrónico</label>
-          <div class="relative">
-            <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-lg">mail</span>
-            <input id="lead-email" type="email" required placeholder="tu@email.com"
-              class="w-full bg-surface-container border border-outline-variant/40 rounded-xl pl-10 pr-4 py-3.5 text-sm text-on-surface placeholder:text-on-surface-variant/50 focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/30 transition-all"/>
-          </div>
+        <div>
+          <input id="lead-email" type="email" required placeholder="Tu correo electrónico"
+            class="w-full bg-white border border-brand-light/40 rounded-xl px-5 py-3.5 text-sm text-gray-700 placeholder:text-gray-400 focus:outline-none focus:border-brand focus:ring-2 focus:ring-brand/20 transition-all"/>
         </div>
         <button type="submit" id="lead-submit-btn"
-          class="w-full primary-gradient py-4 rounded-xl font-bold text-white hover:brightness-110 active:scale-[0.98] transition-all duration-300 flex items-center justify-center gap-2 shadow-lg shadow-primary/30 text-base mt-2">
-          <span id="lead-btn-text">Ver mi resultado gratis →</span>
+          class="w-full bg-brand hover:bg-brand/90 text-white py-4 rounded-full font-bold text-sm tracking-wide transition-all duration-300 shadow-md shadow-brand/15 active:scale-[0.97] flex items-center justify-center gap-2">
+          <span id="lead-btn-text">Ver mi resultado →</span>
           <span id="lead-btn-spinner" class="hidden w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
         </button>
-        <p class="text-xs text-on-surface-variant/50 text-center flex items-center justify-center gap-1">
-          <span class="material-symbols-outlined text-sm">lock</span>
-          Tu información está segura. Sin spam, prometido.
+        <p class="text-xs text-gray-400 text-center flex items-center justify-center gap-1.5">
+          <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd"/></svg>
+          Tu información está segura. Sin spam.
         </p>
       </form>
 
-      <p class="text-center text-xs text-on-surface-variant/50">
-        <button onclick="skipLead()" class="hover:text-on-surface-variant transition-colors underline underline-offset-2">
+      <p class="text-center">
+        <button onclick="skipLead()" class="text-xs text-gray-400 hover:text-gray-500 transition-colors underline underline-offset-2">
           Prefiero no compartir mis datos
         </button>
       </p>
@@ -224,6 +211,11 @@
 
   </div>
 </main>
+
+<!-- Subtle footer -->
+<footer class="text-center py-4 text-[10px] text-gray-300">
+  Powered by <a href="./index.html" class="text-brand/50 hover:text-brand transition-colors">Luminous Studio</a>
+</footer>
 
 <script>
   // ── Meta Pixel helper ────────────────────────────────────
@@ -240,7 +232,7 @@
   // ── State ────────────────────────────────────────────────
   let QUIZ = null;
   let currentQ = 0;
-  let answers  = []; // [{questionId, optionIndex}]
+  let answers  = [];
   let selectedOption = null;
   let _calculatedProfile = null;
 
@@ -250,42 +242,46 @@
     if (quizId === 'demo') {
       QUIZ = DEMO_QUIZ;
     } else if (quizId) {
-      // Try Supabase first, fallback to localStorage
-      try {
-        QUIZ = await DB.quizzes.get(quizId);
-      } catch {}
-      // Always merge with localStorage: Supabase only stores questions/profiles,
-      // localStorage has all settings (postQuizAction, landingUrl, pixelId, etc.)
+      try { QUIZ = await DB.quizzes.get(quizId); } catch {}
       const localQuiz = Quizzes.get(quizId);
       if (localQuiz) QUIZ = { ...localQuiz, ...(QUIZ || {}) };
       if (!QUIZ) QUIZ = Quizzes.get(quizId);
     }
     if (!QUIZ) QUIZ = DEMO_QUIZ;
 
-    // Track view via Supabase (if quiz has a real owner)
+    // Apply quiz theme color if set
+    if (QUIZ.themeColor) {
+      document.documentElement.style.setProperty('--brand', QUIZ.themeColor);
+    }
+
+    // Track view
     if (QUIZ.id && QUIZ.userId) {
       DB.analytics.track(QUIZ.id, QUIZ.userId, 'view').catch(() => {});
     } else if (QUIZ.id) {
-      Analytics.trackView(QUIZ.id); // fallback localStorage
+      Analytics.trackView(QUIZ.id);
     }
 
-    // Meta Pixel: init + ViewContent
+    // Meta Pixel
     if (QUIZ.metaPixelId) {
       initMetaPixel(QUIZ.metaPixelId);
       fbTrack('ViewContent', { content_name: QUIZ.title || 'Quiz', content_type: 'quiz' });
     }
 
-    // Set session
     Session.setCurrentQuiz(QUIZ.id || 'demo');
     Session.setAnswers([]);
 
-    // Populate intro screen
-    document.getElementById('intro-title').textContent = QUIZ.title || 'Descubre tu perfil ideal';
-    document.getElementById('intro-subtitle').textContent = QUIZ.subtitle || '';
-    document.getElementById('intro-time').textContent = `~${QUIZ.estimatedMinutes || 2} minutos · Gratis`;
+    // ── Populate intro ────────────────────────────────────
+    const firstEmoji = QUIZ.profiles?.[0]?.emoji || '🌸';
+    document.getElementById('intro-icon').textContent = firstEmoji;
+    document.getElementById('header-brand').textContent = QUIZ.product || QUIZ.niche || '';
+    document.getElementById('intro-brand').textContent = QUIZ.product || QUIZ.niche || '';
+    document.getElementById('intro-title').innerHTML = QUIZ.title || 'Descubre tu perfil ideal';
+    document.getElementById('intro-subtitle').textContent = QUIZ.subtitle || `Responde ${QUIZ.questions?.length || 5} preguntas y descubre el origen de lo que te está frenando — personalizado para ti.`;
+    document.getElementById('intro-time').textContent = `Solo ${QUIZ.questions?.length || 5} preguntas · Menos de ${QUIZ.estimatedMinutes || 2} minutos`;
     document.title = (QUIZ.title || 'Quiz') + ' | Luminous Studio';
   });
 
+  // ── Quiz flow ──────────────────────────────────────────
   function startQuiz() {
     document.getElementById('screen-intro').classList.add('hidden');
     document.getElementById('screen-question').classList.remove('hidden');
@@ -314,14 +310,12 @@
 
     q.options.forEach((opt, i) => {
       const div = document.createElement('div');
-      div.className = 'option-card flex items-center gap-4 p-4 rounded-xl border border-outline-variant/20 bg-surface-container-low';
+      div.className = 'option-card flex items-center gap-4 p-4 rounded-2xl';
       if (prevIdx === i) div.classList.add('selected');
       div.innerHTML = `
-        <div class="w-10 h-10 rounded-lg bg-surface-container-highest flex items-center justify-center shrink-0">
-          <span class="material-symbols-outlined text-on-surface-variant">${opt.icon || 'radio_button_unchecked'}</span>
-        </div>
-        <span class="font-medium text-on-surface flex-1">${opt.text}</span>
-        <span class="material-symbols-outlined text-primary option-check" style="opacity:${prevIdx===i?1:0}; font-variation-settings:'FILL' 1;">check_circle</span>
+        <div class="w-10 h-10 rounded-xl bg-brand-bg flex items-center justify-center shrink-0 text-brand font-bold text-sm">${String.fromCharCode(65 + i)}</div>
+        <span class="font-medium text-gray-700 flex-1 text-sm">${opt.text}</span>
+        <svg class="opt-check w-5 h-5 text-brand shrink-0" style="opacity:${prevIdx===i?1:0}" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
       `;
       div.addEventListener('click', () => selectOption(i));
       container.appendChild(div);
@@ -332,8 +326,8 @@
     document.getElementById('btn-back').style.visibility = currentQ === 0 ? 'hidden' : 'visible';
     const nextBtn = document.getElementById('btn-next');
     nextBtn.innerHTML = currentQ === total - 1
-      ? `Ver mi resultado <span class="material-symbols-outlined text-base">auto_awesome</span>`
-      : `Siguiente <span class="material-symbols-outlined text-base">arrow_forward</span>`;
+      ? `Ver mi resultado <svg class="w-4 h-4 inline-block ml-1" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>`
+      : `Siguiente <svg class="w-4 h-4 inline-block" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>`;
   }
 
   let _autoAdvanceTimer = null;
@@ -341,13 +335,12 @@
   function selectOption(index) {
     selectedOption = index;
     document.querySelectorAll('.option-card').forEach((card, i) => {
-      const check = card.querySelector('.option-check');
+      const check = card.querySelector('.opt-check');
       if (i === index) { card.classList.add('selected'); if (check) check.style.opacity='1'; }
       else { card.classList.remove('selected'); if (check) check.style.opacity='0'; }
     });
     document.getElementById('btn-next').disabled = false;
 
-    // Auto-advance after 550ms for smoother UX
     clearTimeout(_autoAdvanceTimer);
     _autoAdvanceTimer = setTimeout(() => {
       document.querySelectorAll('.option-card').forEach(c => c.classList.add('auto-advancing'));
@@ -359,7 +352,6 @@
     if (selectedOption === null) return;
     clearTimeout(_autoAdvanceTimer);
     const qId = QUIZ.questions[currentQ].id;
-    // Save/update answer
     const idx = answers.findIndex(a => a.questionId === qId);
     if (idx >= 0) answers[idx].optionIndex = selectedOption;
     else answers.push({ questionId: qId, optionIndex: selectedOption });
@@ -391,8 +383,7 @@
     const status = document.getElementById('loading-status');
 
     const interval = setInterval(() => {
-      const pct = ((i + 1) / steps.length) * 100;
-      bar.style.width = pct + '%';
+      bar.style.width = ((i + 1) / steps.length * 100) + '%';
       status.textContent = steps[i];
       i++;
       if (i >= steps.length) {
@@ -405,21 +396,20 @@
 
   function showLeadCapture() {
     const action = QUIZ.postQuizAction || 'result_page';
-    // Skip lead capture when redirecting directly to landing/payment (no result page shown)
-    const skipForAction = action === 'landing' || action === 'payment' || action === 'whatsapp';
-    // Skip if: no Supabase owner, creator disabled it, or action doesn't show result page
-    const captureLeads = QUIZ.userId && QUIZ.leadCapture !== false && !skipForAction;
-    if (!captureLeads) {
+    // Skip email capture for actions that redirect away, or if disabled
+    if (QUIZ.leadCapture === false || action !== 'result_page') {
       handlePostQuizAction();
       return;
     }
+    // Also skip if no Supabase owner
+    if (!QUIZ.userId) { handlePostQuizAction(); return; }
+
     document.getElementById('screen-loading').classList.add('hidden');
     document.getElementById('screen-lead').classList.remove('hidden');
     document.getElementById('lead-name').focus();
 
-    // Celebrate!
     if (typeof confetti === 'function') {
-      confetti({ particleCount: 80, spread: 70, origin: { y: 0.6 }, colors: ['#2E5BFF','#69f6b8','#ffa3e9'] });
+      confetti({ particleCount: 60, spread: 70, origin: { y: 0.6 }, colors: ['#8B6AA0','#C4A7D7','#ffa3e9','#69f6b8'] });
     }
   }
 
@@ -432,24 +422,18 @@
     try {
       if (QUIZ.userId && QUIZ.id) {
         await DB.leads.create({
-          quiz_id:       QUIZ.id,
-          user_id:       QUIZ.userId,
-          name,
-          email,
-          profile_id:    _calculatedProfile?.id || null,
-          profile_name:  _calculatedProfile?.name || null,
+          quiz_id: QUIZ.id, user_id: QUIZ.userId,
+          name, email,
+          profile_id: _calculatedProfile?.id || null,
+          profile_name: _calculatedProfile?.name || null,
           profile_emoji: _calculatedProfile?.emoji || null,
           answers,
         });
         DB.analytics.track(QUIZ.id, QUIZ.userId, 'completion', _calculatedProfile?.id || null).catch(() => {});
       }
-    } catch (err) {
-      console.warn('Lead save error:', err.message);
-    }
+    } catch (err) { console.warn('Lead save error:', err.message); }
 
-    // Meta Pixel: Lead event
     fbTrack('Lead', { content_name: QUIZ.title || 'Quiz' });
-
     handlePostQuizAction();
   }
 
@@ -469,10 +453,9 @@
       if (!number) { _goToResultPage(); return; }
       fbTrack('InitiateCheckout', { content_name: QUIZ.title || 'Quiz', content_type: 'whatsapp' });
       const defaultMsg = _calculatedProfile
-        ? `Hola! Completé el quiz y mi perfil es "${_calculatedProfile.name}". Me gustaría más información.`
+        ? `Hola! Completé el quiz "${QUIZ.title || ''}" y mi perfil es "${_calculatedProfile.name}". Me gustaría más información.`
         : 'Hola! Acabo de completar el quiz y me gustaría más información.';
-      const msg = QUIZ.whatsappMessage || defaultMsg;
-      window.location.href = `https://wa.me/${number}?text=${encodeURIComponent(msg)}`;
+      window.location.href = `https://wa.me/${number}?text=${encodeURIComponent(QUIZ.whatsappMessage || defaultMsg)}`;
       return;
     }
 
@@ -488,10 +471,9 @@
     }
 
     if (action === 'landing') {
-      const url = QUIZ.landingUrl;
+      const url = QUIZ.landingUrl || QUIZ.productUrl;
       if (url) {
         fbTrack('InitiateCheckout', { content_name: QUIZ.title || 'Quiz', content_type: 'landing' });
-        // Pass profile data as URL params so the landing page can personalize the message
         const params = new URLSearchParams();
         if (_calculatedProfile) {
           params.set('perfil', _calculatedProfile.name || '');
@@ -499,28 +481,26 @@
           params.set('descripcion', (_calculatedProfile.description || '').slice(0, 200));
           params.set('recomendacion', (_calculatedProfile.recommendation || '').slice(0, 200));
         }
-        const separator = url.includes('?') ? '&' : '?';
-        window.location.href = url + separator + params.toString();
+        window.location.href = url + (url.includes('?') ? '&' : '?') + params.toString();
         return;
       }
       _goToResultPage();
       return;
     }
 
+    // Default: result_page
     _goToResultPage();
   }
 
   function _goToResultPage() {
-    const dest = QUIZ.id
+    window.location.href = QUIZ.id
       ? `./resultado-quiz.html?quiz=${QUIZ.id}`
       : `./resultado-quiz.html`;
-    window.location.href = dest;
   }
 
   function setLeadLoading(on) {
     document.getElementById('lead-submit-btn').disabled = on;
-    document.getElementById('lead-btn-text').textContent = on ? 'Un momento...' : 'Ver mi resultado';
-    document.getElementById('lead-btn-icon').classList.toggle('hidden', on);
+    document.getElementById('lead-btn-text').textContent = on ? 'Un momento...' : 'Ver mi resultado →';
     document.getElementById('lead-btn-spinner').classList.toggle('hidden', !on);
   }
 </script>
