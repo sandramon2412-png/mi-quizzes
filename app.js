@@ -264,10 +264,10 @@ Cada pregunta: exactamente ${nO} opciones. Cada opción:
       "text": "texto de la pregunta — específico del nicho",
       "imageKeywords": "2-3 palabras en inglés para buscar imagen ilustrativa (ej: 'headache stress pain')",
       "options": [
-        {"text": "situación concreta del nicho", "emoji": "😊", "imagePrompt": "short visual scene in English, photorealistic, no text (ej: 'woman meditating calm face')", "profiles": ["id_perfil"]},
-        {"text": "situación concreta del nicho", "emoji": "😔", "imagePrompt": "short visual scene in English, photorealistic, no text", "profiles": ["id_perfil"]},
-        {"text": "situación concreta del nicho", "emoji": "😤", "imagePrompt": "short visual scene in English, photorealistic, no text", "profiles": ["id_perfil", "id_perfil2"]},
-        {"text": "situación concreta del nicho", "emoji": "😩", "imagePrompt": "short visual scene in English, photorealistic, no text", "profiles": ["id_perfil"]}
+        {"text": "situación concreta del nicho", "emoji": "😊", "profiles": ["id_perfil"]},
+        {"text": "situación concreta del nicho", "emoji": "😔", "profiles": ["id_perfil"]},
+        {"text": "situación concreta del nicho", "emoji": "😤", "profiles": ["id_perfil", "id_perfil2"]},
+        {"text": "situación concreta del nicho", "emoji": "😩", "profiles": ["id_perfil"]}
       ]
     }
   ],
@@ -285,24 +285,7 @@ Cada pregunta: exactamente ${nO} opciones. Cada opción:
 }`;
 
     const text = await this._call([{ role: 'user', content: prompt }], 5000);
-    const quiz = this._parseJSON(text);
-    if (quiz && quiz.questions) {
-      quiz.questions.forEach((q, qi) => {
-        q.options && q.options.forEach((opt, oi) => {
-          if (!opt.imageUrl) {
-            const kw = (opt.imagePrompt || opt.text)
-              .toLowerCase()
-              .replace(/[^a-záéíóúüñ\s]/g, '')
-              .split(/\s+/)
-              .filter(w => w.length > 3)
-              .slice(0, 2)
-              .join(',') || 'person,lifestyle';
-            opt.imageUrl = `https://loremflickr.com/400/280/${encodeURIComponent(kw)}?lock=${qi * 10 + oi}`;
-          }
-        });
-      });
-    }
-    return quiz;
+    return this._parseJSON(text);
   },
 
   async generateMiniAppIdeas(productName, description, niche) {
