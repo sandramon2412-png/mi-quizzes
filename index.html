@@ -678,7 +678,7 @@
         <span class="text-sm font-medium text-on-surface" id="label-annual">Anual <span class="text-xs text-secondary font-bold">-20%</span></span>
       </div>
     </div>
-    <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
+    <div class="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-5">
       <!-- FREE -->
       <div class="glass-card border border-outline-variant/10 rounded-xl p-6 flex flex-col gap-5 hover:border-outline-variant/30 transition-colors">
         <div>
@@ -703,10 +703,10 @@
         <div>
           <div class="text-xs font-bold uppercase tracking-widest text-secondary mb-3">Starter</div>
           <div class="flex items-end gap-1">
-            <span class="text-4xl font-black text-on-surface">$5</span>
+            <span class="text-4xl font-black text-on-surface price-starter">$5</span>
             <span class="text-on-surface-variant text-sm mb-1">/mes</span>
           </div>
-          <p class="text-sm text-on-surface-variant mt-2">Para dar el primer paso.</p>
+          <p class="text-sm text-on-surface-variant mt-2">Crea tus primeros quizzes.</p>
         </div>
         <ul class="space-y-3 flex-1">
           <li class="flex items-center gap-2 text-sm text-on-surface"><span class="material-symbols-outlined text-secondary text-base" style="font-variation-settings:'FILL' 1;">check_circle</span>3 quizzes activos</li>
@@ -725,10 +725,10 @@
         <div>
           <div class="text-xs font-bold uppercase tracking-widest text-primary mb-3">Pro</div>
           <div class="flex items-end gap-1">
-            <span class="text-4xl font-black text-on-surface">$9</span>
+            <span class="text-4xl font-black text-on-surface price-pro">$9</span>
             <span class="text-on-surface-variant text-sm mb-1">/mes</span>
           </div>
-          <p class="text-sm text-on-surface-variant mt-2">Para creadores que quieren escalar.</p>
+          <p class="text-sm text-on-surface-variant mt-2">Quiz + captura de leads.</p>
         </div>
         <ul class="space-y-3 flex-1">
           <li class="flex items-center gap-2 text-sm text-on-surface"><span class="material-symbols-outlined text-secondary text-base" style="font-variation-settings:'FILL' 1;">check_circle</span>Quizzes ilimitados</li>
@@ -739,12 +739,31 @@
         </ul>
         <a href="./registro.html" class="block text-center py-3 rounded-lg font-bold text-sm text-white primary-gradient hover:brightness-110 transition-all">Comenzar con Pro</a>
       </div>
+      <!-- GROWTH -->
+      <div class="glass-card border border-tertiary/20 rounded-xl p-6 flex flex-col gap-5 hover:border-tertiary/40 transition-colors">
+        <div>
+          <div class="text-xs font-bold uppercase tracking-widest text-tertiary mb-3">Growth</div>
+          <div class="flex items-end gap-1">
+            <span class="text-4xl font-black text-on-surface price-growth">$19</span>
+            <span class="text-on-surface-variant text-sm mb-1">/mes</span>
+          </div>
+          <p class="text-sm text-on-surface-variant mt-2">Quizzes avanzados con IA.</p>
+        </div>
+        <ul class="space-y-3 flex-1">
+          <li class="flex items-center gap-2 text-sm text-on-surface"><span class="material-symbols-outlined text-secondary text-base" style="font-variation-settings:'FILL' 1;">check_circle</span>Todo lo de Pro</li>
+          <li class="flex items-center gap-2 text-sm text-on-surface"><span class="material-symbols-outlined text-secondary text-base" style="font-variation-settings:'FILL' 1;">check_circle</span>25,000 respuestas/mes</li>
+          <li class="flex items-center gap-2 text-sm text-on-surface"><span class="material-symbols-outlined text-secondary text-base" style="font-variation-settings:'FILL' 1;">check_circle</span>Mini-apps ilimitadas</li>
+          <li class="flex items-center gap-2 text-sm text-on-surface"><span class="material-symbols-outlined text-secondary text-base" style="font-variation-settings:'FILL' 1;">check_circle</span>Meta Pixel avanzado</li>
+          <li class="flex items-center gap-2 text-sm text-on-surface"><span class="material-symbols-outlined text-secondary text-base" style="font-variation-settings:'FILL' 1;">check_circle</span>Soporte prioritario</li>
+        </ul>
+        <a href="./registro.html" class="block text-center py-3 rounded-lg font-bold text-sm border border-tertiary/40 text-tertiary hover:bg-tertiary/10 transition-colors">Comenzar</a>
+      </div>
       <!-- ELITE -->
       <div class="glass-card border border-outline-variant/10 rounded-xl p-6 flex flex-col gap-5 hover:border-outline-variant/30 transition-colors">
         <div>
           <div class="text-xs font-bold uppercase tracking-widest text-on-surface-variant mb-3">Elite</div>
           <div class="flex items-end gap-1">
-            <span class="text-4xl font-black text-on-surface">$49</span>
+            <span class="text-4xl font-black text-on-surface price-elite">$49</span>
             <span class="text-on-surface-variant text-sm mb-1">/mes</span>
           </div>
           <p class="text-sm text-on-surface-variant mt-2">Para agencias y equipos.</p>
@@ -865,13 +884,20 @@
 
   // Pricing toggle
   let isAnnual = false;
-  const prices = { pro: { monthly: 29, annual: 23 }, elite: { monthly: 79, annual: 63 } };
+  const prices = {
+    starter: { monthly: 5,  annual: 4  },
+    pro:     { monthly: 9,  annual: 7  },
+    growth:  { monthly: 19, annual: 15 },
+    elite:   { monthly: 49, annual: 39 },
+  };
   function toggleBilling() {
     isAnnual = !isAnnual;
-    const knob = document.getElementById('toggle-knob');
-    knob.style.transform = isAnnual ? 'translateX(24px)' : 'translateX(0)';
-    document.querySelector('.price-pro').textContent = '$' + (isAnnual ? prices.pro.annual : prices.pro.monthly);
-    document.querySelector('.price-elite').textContent = '$' + (isAnnual ? prices.elite.annual : prices.elite.monthly);
+    document.getElementById('toggle-knob').style.transform = isAnnual ? 'translateX(24px)' : 'translateX(0)';
+    document.getElementById('billing-toggle').style.background = isAnnual ? '#69f6b8' : '#2E5BFF';
+    for (const [plan, p] of Object.entries(prices)) {
+      const el = document.querySelector('.price-' + plan);
+      if (el) el.textContent = '$' + (isAnnual ? p.annual : p.monthly);
+    }
   }
 </script>
 
