@@ -262,6 +262,7 @@ Cada pregunta: exactamente ${nO} opciones. Cada opción:
     {
       "id": "q1",
       "text": "texto de la pregunta — específico del nicho",
+      "imageKeywords": "2-3 palabras en inglés para buscar imagen ilustrativa (ej: 'headache stress pain')",
       "options": [
         {"text": "situación concreta del nicho", "emoji": "😊", "profiles": ["id_perfil"]},
         {"text": "situación concreta del nicho", "emoji": "😔", "profiles": ["id_perfil"]},

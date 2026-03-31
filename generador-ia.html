@@ -604,7 +604,7 @@ function renderQuestions(questions) {
     const d = document.createElement('div');
     d.className = 'bg-surface-container rounded-xl p-4 border border-outline-variant/10 fade-in';
     d.innerHTML = `
-      <div class="flex items-center gap-2 mb-3">
+      <div class="flex items-center gap-2 mb-2">
         <span class="w-6 h-6 rounded-full primary-gradient text-white text-xs font-black flex items-center justify-center shrink-0">${qi+1}</span>
         <input type="text" value="${esc(q.text)}" placeholder="Texto de la pregunta..."
           onchange="currentQuiz.questions[${qi}].text=this.value"
@@ -612,6 +612,14 @@ function renderQuestions(questions) {
         <button onclick="removeQuestion(${qi})" class="text-on-surface-variant hover:text-error transition-colors ml-1">
           <span class="material-symbols-outlined text-lg">delete</span>
         </button>
+      </div>
+      <!-- Question image -->
+      <div class="flex items-center gap-2 mb-2">
+        <span class="material-symbols-outlined text-sm text-on-surface-variant/50">image</span>
+        <input type="url" value="${esc(q.image||'')}" placeholder="URL de imagen decorativa (se muestra a la derecha de la pregunta)"
+          onchange="currentQuiz.questions[${qi}].image=this.value.trim()"
+          class="flex-1 bg-surface-container-high border border-outline-variant/10 rounded-lg px-3 py-1.5 text-xs text-on-surface-variant outline-none focus:border-primary transition-colors"/>
+        ${q.imageKeywords ? `<a href="https://unsplash.com/s/photos/${encodeURIComponent(q.imageKeywords)}" target="_blank" class="text-[10px] text-primary hover:underline whitespace-nowrap flex items-center gap-0.5"><span class="material-symbols-outlined text-xs">search</span>Buscar</a>` : ''}
       </div>
       <div class="space-y-1.5">
         ${q.options.map((opt,oi)=>`

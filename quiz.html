@@ -102,8 +102,8 @@
 </div>
 
 <!-- Quiz container -->
-<main class="flex-1 flex items-center justify-center px-5 py-10">
-  <div class="w-full max-w-lg">
+<main class="flex-1 flex items-stretch justify-center px-5 py-10" id="quiz-main">
+  <div class="w-full max-w-lg" id="quiz-wrapper">
 
     <!-- ═══ INTRO SCREEN ═══ -->
     <div id="screen-intro" class="text-center space-y-6 slide-in">
@@ -168,6 +168,7 @@
       </div>
     </div>
 
+
     <!-- ═══ LOADING SCREEN ═══ -->
     <div id="screen-loading" class="hidden text-center space-y-6 slide-in">
       <div class="float-icon inline-block">
@@ -220,7 +221,15 @@
       </p>
     </div>
 
+  </div><!-- end quiz-wrapper -->
+
+  <!-- Side image panel — shown on desktop when question has an image -->
+  <div id="q-side-panel" class="hidden shrink-0 ml-8 self-stretch w-[42vw] max-w-[520px] relative overflow-hidden rounded-2xl">
+    <img id="q-side-img" src="" alt="" loading="lazy"
+      class="w-full h-full object-cover object-top absolute inset-0 transition-opacity duration-700"/>
+    <div class="absolute inset-0 bg-gradient-to-r from-white/50 to-transparent pointer-events-none"></div>
   </div>
+
 </main>
 
 <!-- Subtle footer -->
@@ -311,6 +320,22 @@
     const qText = document.getElementById('q-text');
     qText.textContent = q.text;
     qText.classList.remove('slide-in'); void qText.offsetWidth; qText.classList.add('slide-in');
+
+    // Side image
+    const sidePanel = document.getElementById('q-side-panel');
+    const sideImg   = document.getElementById('q-side-img');
+    const wrapper   = document.getElementById('quiz-wrapper');
+    const imgSrc = q.image || (q.imageKeywords
+      ? `https://source.unsplash.com/featured/800x1000/?${encodeURIComponent(q.imageKeywords)}`
+      : '');
+    if (imgSrc && window.innerWidth >= 768) {
+      sideImg.src = imgSrc;
+      sidePanel.classList.remove('hidden');
+      wrapper.style.maxWidth = '480px';
+    } else {
+      sidePanel.classList.add('hidden');
+      wrapper.style.maxWidth = '';
+    }
 
     const container = document.getElementById('q-options');
     container.innerHTML = '';
@@ -407,6 +432,8 @@
 
   function showLoading() {
     document.getElementById('screen-question').classList.add('hidden');
+    document.getElementById('q-side-panel').classList.add('hidden');
+    document.getElementById('quiz-wrapper').style.maxWidth = '';
     document.getElementById('screen-loading').classList.remove('hidden');
     document.getElementById('progress-bar').style.width = '100%';
 
