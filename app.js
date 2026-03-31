@@ -220,51 +220,66 @@ const Claude = {
   },
 
   async generateQuiz(productName, description, niche) {
-    const prompt = `Eres un experto en marketing digital, copywriting de alta conversión y creación de quizzes para Facebook Ads y embudos de venta.
+    const prompt = `Eres un experto en psicología del comprador, copywriting emocional y quizzes virales de alta conversión. Conoces a profundidad el nicho de ${niche || 'infoproductos'}.
 
-TAREA: Crea un quiz interactivo de alta conversión en español para este producto digital:
-- Nombre: ${productName}
-- Descripción: ${description || 'Producto digital premium'}
-- Nicho: ${niche || 'marketing digital / infoproductos'}
+PRODUCTO: "${productName}"
+DESCRIPCIÓN: ${description || 'Producto digital premium'}
+NICHO: ${niche || 'infoproductos'}
 
-REQUISITOS DEL QUIZ:
-• 5 preguntas muy específicas del nicho (no genéricas)
-• Cada pregunta con exactamente 4 opciones de respuesta
-• Las opciones deben revelar el perfil del comprador
-• 3 perfiles de resultado distintos y muy concretos
-• Lenguaje conversacional y cercano (tuteo)
-• Optimizado para generar curiosidad y que el usuario quiera ver su resultado
+═══ TU MISIÓN ═══
+Crear un quiz que haga que cada persona sienta que "le leyeron la mente". Cada pregunta y cada opción debe usar el vocabulario, las situaciones reales y los dolores específicos del nicho "${niche || 'infoproductos'}". NADA GENÉRICO.
 
-RESPONDE SOLO CON JSON VÁLIDO, sin texto adicional:
+═══ REGLAS PARA LAS PREGUNTAS (6 en total) ═══
+Las 6 preguntas deben cubrir estos ángulos en orden:
+1. Situación actual — ¿Cómo se describe el lector en este momento respecto al tema?
+2. Obstáculo principal — ¿Qué le impide avanzar?
+3. Experiencia previa — ¿Qué ha intentado antes?
+4. Motivación profunda — ¿Por qué realmente quiere este resultado?
+5. Estilo / Cómo aprende — ¿Cómo prefiere trabajar o aprender?
+6. Mentalidad / Actitud — ¿Cómo reacciona ante los desafíos en este nicho?
+
+Cada pregunta: exactamente 4 opciones, cada opción describe UNA SITUACIÓN CONCRETA y reconocible del nicho (no "a) Sí b) No c) A veces").
+
+═══ REGLAS PARA LOS PERFILES (3 perfiles) ═══
+Cada perfil debe ser una IDENTIDAD con la que el usuario se identifique al 100%:
+• name: Un apodo de identidad poderoso (ej: "La Perfeccionista Estancada", "El Emprendedor Impaciente", "La Mamá Multi-Tarea") — específico del nicho
+• emoji: Un emoji que represente visualmente ese perfil
+• description: 2-3 oraciones que hagan que el usuario piense "¡ESO SOY EXACTAMENTE YO!" — usa situaciones concretas del nicho, no descripciones genéricas
+• recommendation: Explica POR QUÉ este producto resuelve exactamente el problema de ESTE perfil — conecta el dolor específico con la solución
+• matchScore: Número entre 83-96 (distinto para cada perfil, como si fuera calculado)
+• cta: Llamada a la acción personalizada para ese perfil (máx 35 chars)
+
+═══ RESPONDE SOLO JSON VÁLIDO ═══
 {
-  "title": "título del quiz (máx 60 chars, con gancho)",
-  "subtitle": "subtítulo persuasivo de 1 línea",
+  "title": "título del quiz con gancho emocional (máx 65 chars)",
+  "subtitle": "subtítulo que describe el beneficio de completarlo (1 línea)",
   "estimatedMinutes": 2,
   "questions": [
     {
       "id": "q1",
-      "text": "texto de la pregunta",
+      "text": "texto de la pregunta — específico del nicho",
       "options": [
-        {"text": "texto opción", "profiles": ["id_perfil"]},
-        {"text": "texto opción", "profiles": ["id_perfil"]},
-        {"text": "texto opción", "profiles": ["id_perfil", "id_perfil2"]},
-        {"text": "texto opción", "profiles": ["id_perfil"]}
+        {"text": "situación concreta y reconocible del nicho", "profiles": ["id_perfil"]},
+        {"text": "situación concreta y reconocible del nicho", "profiles": ["id_perfil"]},
+        {"text": "situación concreta y reconocible del nicho", "profiles": ["id_perfil", "id_perfil2"]},
+        {"text": "situación concreta y reconocible del nicho", "profiles": ["id_perfil"]}
       ]
     }
   ],
   "profiles": [
     {
       "id": "id_perfil",
-      "name": "Nombre del Perfil",
+      "name": "Nombre Identidad del Perfil",
       "emoji": "🎯",
-      "description": "Descripción persuasiva de 2-3 oraciones que resuene con el lector",
-      "recommendation": "Por qué este producto es exactamente lo que necesita",
-      "cta": "Texto del botón de compra (máx 30 chars)"
+      "description": "Descripción muy específica que hace que el usuario diga 'eso soy yo'",
+      "recommendation": "Por qué este producto resuelve exactamente el problema de este perfil",
+      "matchScore": 91,
+      "cta": "CTA personalizado al perfil"
     }
   ]
 }`;
 
-    const text = await this._call([{ role: 'user', content: prompt }], 4000);
+    const text = await this._call([{ role: 'user', content: prompt }], 5000);
     return this._parseJSON(text);
   },
 
@@ -300,16 +315,20 @@ RESPONDE SOLO CON JSON VÁLIDO:
   },
 
   async improveQuestion(currentQuestion, productContext) {
-    const prompt = `Eres un experto en copywriting de quizzes de alta conversión.
+    const prompt = `Eres un experto en copywriting de quizzes de alta conversión. Reescribe esta pregunta para que sea MUCHO más específica del nicho, use situaciones reales y concretas, y haga que el lector sienta que "le leen la mente".
 
-Mejora esta pregunta de quiz para que sea más específica, persuasiva y relevante:
 Pregunta actual: "${currentQuestion}"
-Contexto del producto: ${productContext}
+Contexto del producto/nicho: ${productContext}
+
+REGLAS:
+• La pregunta mejorada debe sonar como una conversación, no como un formulario
+• Las 4 opciones deben ser situaciones concretas y reconocibles del nicho (no "a) Sí b) No c) A veces d) Depende")
+• Cada opción debe describir un perfil de persona real
 
 Responde SOLO con JSON:
 {
-  "improved": "nueva pregunta mejorada",
-  "options": ["opción 1", "opción 2", "opción 3", "opción 4"]
+  "improved": "nueva pregunta mejorada y específica del nicho",
+  "options": ["situación concreta 1", "situación concreta 2", "situación concreta 3", "situación concreta 4"]
 }`;
 
     const text = await this._call([{ role: 'user', content: prompt }], 500);
