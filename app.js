@@ -264,10 +264,10 @@ Cada pregunta: exactamente ${nO} opciones. Cada opción:
       "text": "texto de la pregunta — específico del nicho",
       "imageKeywords": "2-3 palabras en inglés para buscar imagen ilustrativa (ej: 'headache stress pain')",
       "options": [
-        {"text": "situación concreta del nicho", "emoji": "😊", "profiles": ["id_perfil"]},
-        {"text": "situación concreta del nicho", "emoji": "😔", "profiles": ["id_perfil"]},
-        {"text": "situación concreta del nicho", "emoji": "😤", "profiles": ["id_perfil", "id_perfil2"]},
-        {"text": "situación concreta del nicho", "emoji": "😩", "profiles": ["id_perfil"]}
+        {"text": "situación concreta del nicho", "emoji": "😊", "imagePrompt": "short visual scene in English, photorealistic, no text (ej: 'woman meditating calm face')", "profiles": ["id_perfil"]},
+        {"text": "situación concreta del nicho", "emoji": "😔", "imagePrompt": "short visual scene in English, photorealistic, no text", "profiles": ["id_perfil"]},
+        {"text": "situación concreta del nicho", "emoji": "😤", "imagePrompt": "short visual scene in English, photorealistic, no text", "profiles": ["id_perfil", "id_perfil2"]},
+        {"text": "situación concreta del nicho", "emoji": "😩", "imagePrompt": "short visual scene in English, photorealistic, no text", "profiles": ["id_perfil"]}
       ]
     }
   ],
@@ -285,7 +285,17 @@ Cada pregunta: exactamente ${nO} opciones. Cada opción:
 }`;
 
     const text = await this._call([{ role: 'user', content: prompt }], 5000);
-    return this._parseJSON(text);
+    const quiz = this._parseJSON(text);
+    if (quiz && quiz.questions) {
+      quiz.questions.forEach(q => {
+        q.options && q.options.forEach(opt => {
+          if (opt.imagePrompt && !opt.imageUrl) {
+            opt.imageUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(opt.imagePrompt + ', photorealistic, clean background, 4:3')}&width=400&height=280&nologo=true`;
+          }
+        });
+      });
+    }
+    return quiz;
   },
 
   async generateMiniAppIdeas(productName, description, niche) {
