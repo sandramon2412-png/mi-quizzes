@@ -59,8 +59,19 @@
   .option-card .opt-check { transform: scale(0.5); transition: all 0.2s cubic-bezier(0.34,1.56,0.64,1); }
   .option-card.auto-advancing { opacity: 0.6; pointer-events: none; }
 
-  /* Animations */
-  .slide-in { animation: slideIn 0.4s cubic-bezier(0.16,1,0.3,1); }
+  /* Image option cards */
+  .option-card-img {
+    transition: all 0.22s cubic-bezier(0.34,1.56,0.64,1);
+    cursor: pointer;
+    border: 2px solid #e8e0ed;
+    background: #ffffff;
+    border-radius: 1rem;
+    overflow: hidden;
+  }
+  .option-card-img:hover { border-color: var(--brand-light); transform: translateY(-2px); box-shadow: 0 6px 20px rgba(139,106,160,0.12); }
+  .option-card-img.selected { border-color: var(--brand); box-shadow: 0 0 0 3px rgba(139,106,160,0.18); }
+  .option-card-img .opt-check { transform: scale(0.5); transition: all 0.2s cubic-bezier(0.34,1.56,0.64,1); opacity: 0; }
+  .option-card-img.selected .opt-check { opacity: 1 !important; transform: scale(1) !important; }
   .stagger-in > * { animation: slideIn 0.4s cubic-bezier(0.16,1,0.3,1) both; }
   .stagger-in > *:nth-child(1) { animation-delay: 0.05s; }
   .stagger-in > *:nth-child(2) { animation-delay: 0.12s; }
@@ -308,15 +319,41 @@
     const prevAnswer = answers.find(a => a.questionId === q.id);
     const prevIdx    = prevAnswer ? prevAnswer.optionIndex : null;
 
+    const hasImages = q.options.some(o => o.imageUrl);
+    container.className = hasImages
+      ? 'grid grid-cols-2 gap-3 stagger-in'
+      : 'space-y-3 stagger-in';
+
     q.options.forEach((opt, i) => {
       const div = document.createElement('div');
-      div.className = 'option-card flex items-center gap-4 p-4 rounded-2xl';
-      if (prevIdx === i) div.classList.add('selected');
-      div.innerHTML = `
-        <div class="w-10 h-10 rounded-xl bg-brand-bg flex items-center justify-center shrink-0 text-brand font-bold text-sm">${String.fromCharCode(65 + i)}</div>
-        <span class="font-medium text-gray-700 flex-1 text-sm">${opt.text}</span>
-        <svg class="opt-check w-5 h-5 text-brand shrink-0" style="opacity:${prevIdx===i?1:0}" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
-      `;
+      const isSelected = prevIdx === i;
+
+      if (opt.imageUrl) {
+        div.className = 'option-card-img' + (isSelected ? ' selected' : '');
+        div.innerHTML = `
+          <div class="relative">
+            <img src="${opt.imageUrl}" alt="${opt.text}" class="w-full h-36 object-cover" loading="lazy"/>
+            <div class="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent"></div>
+            <svg class="opt-check absolute top-2 right-2 w-6 h-6 text-white drop-shadow-md" fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+            </svg>
+          </div>
+          <div class="px-3 py-2.5 text-center">
+            <span class="font-semibold text-gray-700 text-sm">${opt.text}</span>
+          </div>`;
+      } else {
+        // Use emoji if set, otherwise letter badge
+        const badge = opt.emoji
+          ? `<span class="text-2xl shrink-0 w-10 text-center">${opt.emoji}</span>`
+          : `<div class="w-9 h-9 rounded-xl bg-brand-bg flex items-center justify-center shrink-0 text-brand font-bold text-sm">${String.fromCharCode(65 + i)}</div>`;
+        div.className = 'option-card flex items-center gap-4 p-4 rounded-2xl';
+        if (isSelected) div.classList.add('selected');
+        div.innerHTML = `
+          ${badge}
+          <span class="font-medium text-gray-700 flex-1 text-sm leading-snug">${opt.text}</span>
+          <svg class="opt-check w-5 h-5 text-brand shrink-0" style="opacity:${isSelected?1:0}" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>`;
+      }
+
       div.addEventListener('click', () => selectOption(i));
       container.appendChild(div);
     });
@@ -334,16 +371,16 @@
 
   function selectOption(index) {
     selectedOption = index;
-    document.querySelectorAll('.option-card').forEach((card, i) => {
+    document.querySelectorAll('.option-card, .option-card-img').forEach((card, i) => {
       const check = card.querySelector('.opt-check');
-      if (i === index) { card.classList.add('selected'); if (check) check.style.opacity='1'; }
-      else { card.classList.remove('selected'); if (check) check.style.opacity='0'; }
+      if (i === index) { card.classList.add('selected'); if (check) { check.style.opacity='1'; check.style.transform='scale(1)'; } }
+      else { card.classList.remove('selected'); if (check) { check.style.opacity='0'; check.style.transform='scale(0.5)'; } }
     });
     document.getElementById('btn-next').disabled = false;
 
     clearTimeout(_autoAdvanceTimer);
     _autoAdvanceTimer = setTimeout(() => {
-      document.querySelectorAll('.option-card').forEach(c => c.classList.add('auto-advancing'));
+      document.querySelectorAll('.option-card, .option-card-img').forEach(c => c.classList.add('auto-advancing'));
       setTimeout(goNext, 120);
     }, 550);
   }
