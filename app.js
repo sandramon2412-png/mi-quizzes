@@ -290,7 +290,7 @@ Cada pregunta: exactamente ${nO} opciones. Cada opción:
       quiz.questions.forEach(q => {
         q.options && q.options.forEach(opt => {
           if (opt.imagePrompt && !opt.imageUrl) {
-            opt.imageUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(opt.imagePrompt + ', photorealistic, clean background, 4:3')}&width=400&height=280&nologo=true`;
+            opt.imageUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(opt.imagePrompt + ', photorealistic, clean background, 4:3')}?width=400&height=280&nologo=true`;
           }
         });
       });
