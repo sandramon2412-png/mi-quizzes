@@ -396,13 +396,11 @@
 
   function showLeadCapture() {
     const action = QUIZ.postQuizAction || 'result_page';
-    // Skip email capture for actions that redirect away, or if disabled
-    if (QUIZ.leadCapture === false || action !== 'result_page') {
-      handlePostQuizAction();
+    // Only show email capture for result_page action when explicitly enabled
+    if (QUIZ.leadCapture === false || action !== 'result_page' || !QUIZ.userId) {
+      _goToResultPage();
       return;
     }
-    // Also skip if no Supabase owner
-    if (!QUIZ.userId) { handlePostQuizAction(); return; }
 
     document.getElementById('screen-loading').classList.add('hidden');
     document.getElementById('screen-lead').classList.remove('hidden');
@@ -434,61 +432,19 @@
     } catch (err) { console.warn('Lead save error:', err.message); }
 
     fbTrack('Lead', { content_name: QUIZ.title || 'Quiz' });
-    handlePostQuizAction();
+    _goToResultPage();
   }
 
   function skipLead() {
     if (QUIZ.id && QUIZ.userId) {
       DB.analytics.track(QUIZ.id, QUIZ.userId, 'completion', _calculatedProfile?.id || null).catch(() => {});
     }
-    handlePostQuizAction();
+    _goToResultPage();
   }
 
   function handlePostQuizAction() {
+    // Always show the result page first — the CTA button there handles the final redirect
     Session.setAnswers(answers);
-    const action = QUIZ.postQuizAction || 'result_page';
-
-    if (action === 'whatsapp') {
-      const number = (QUIZ.whatsappNumber || '').replace(/\D/g, '');
-      if (!number) { _goToResultPage(); return; }
-      fbTrack('InitiateCheckout', { content_name: QUIZ.title || 'Quiz', content_type: 'whatsapp' });
-      const defaultMsg = _calculatedProfile
-        ? `Hola! Completé el quiz "${QUIZ.title || ''}" y mi perfil es "${_calculatedProfile.name}". Me gustaría más información.`
-        : 'Hola! Acabo de completar el quiz y me gustaría más información.';
-      window.location.href = `https://wa.me/${number}?text=${encodeURIComponent(QUIZ.whatsappMessage || defaultMsg)}`;
-      return;
-    }
-
-    if (action === 'payment') {
-      const url = QUIZ.paymentUrl || QUIZ.productUrl;
-      if (url) {
-        fbTrack('InitiateCheckout', { content_name: QUIZ.title || 'Quiz', content_type: 'payment' });
-        window.location.href = url;
-        return;
-      }
-      _goToResultPage();
-      return;
-    }
-
-    if (action === 'landing') {
-      const url = QUIZ.landingUrl || QUIZ.productUrl;
-      if (url) {
-        fbTrack('InitiateCheckout', { content_name: QUIZ.title || 'Quiz', content_type: 'landing' });
-        const params = new URLSearchParams();
-        if (_calculatedProfile) {
-          params.set('perfil', _calculatedProfile.name || '');
-          params.set('emoji', _calculatedProfile.emoji || '');
-          params.set('descripcion', (_calculatedProfile.description || '').slice(0, 200));
-          params.set('recomendacion', (_calculatedProfile.recommendation || '').slice(0, 200));
-        }
-        window.location.href = url + (url.includes('?') ? '&' : '?') + params.toString();
-        return;
-      }
-      _goToResultPage();
-      return;
-    }
-
-    // Default: result_page
     _goToResultPage();
   }
 

@@ -74,19 +74,27 @@
   <div class="rounded-3xl overflow-hidden border border-brand-light/30 shadow-xl shadow-brand/5 fade-up-2">
 
     <!-- Profile visual strip -->
-    <div class="relative bg-brand-bg px-8 py-10 text-center" style="background:linear-gradient(135deg,var(--brand-bg) 0%,#fff 100%)">
-      <div class="float inline-block mb-4">
-        <div id="profile-emoji-wrap" class="w-24 h-24 mx-auto rounded-2xl bg-white border border-brand-light/40 shadow-md flex items-center justify-center text-5xl">🎯</div>
+    <div class="relative px-8 pt-12 pb-8 text-center" style="background:linear-gradient(160deg,var(--brand-bg) 0%,#fff 80%)">
+      <!-- Decorative petals -->
+      <div class="absolute top-4 left-6 text-3xl opacity-20 select-none pointer-events-none">🌸</div>
+      <div class="absolute top-6 right-8 text-2xl opacity-15 select-none pointer-events-none">✦</div>
+      <div class="absolute bottom-4 right-5 text-3xl opacity-10 select-none pointer-events-none">🌸</div>
+
+      <div class="float inline-block mb-5">
+        <div id="profile-emoji-wrap"
+          class="w-28 h-28 mx-auto rounded-3xl bg-white border-2 border-brand-light/50 shadow-xl shadow-brand/15 flex items-center justify-center text-6xl">
+          🎯
+        </div>
       </div>
-      <h2 id="profile-name" class="font-serif text-2xl font-semibold text-gray-800 mb-1">—</h2>
-      <p class="text-xs font-bold tracking-widest uppercase text-brand mb-4">Tu Perfil</p>
+      <p class="text-[10px] font-black tracking-[0.2em] uppercase text-brand/60 mb-1">Tu Perfil</p>
+      <h2 id="profile-name" class="font-serif text-3xl font-semibold text-gray-800 mb-4">—</h2>
       <!-- Match bar -->
       <div class="max-w-xs mx-auto">
         <div class="flex justify-between text-xs text-gray-400 mb-1.5">
-          <span>Compatibilidad</span>
+          <span>Afinidad con este perfil</span>
           <span id="match-pct" class="font-bold text-brand">—%</span>
         </div>
-        <div class="h-2 bg-brand-light/20 rounded-full overflow-hidden">
+        <div class="h-2.5 bg-brand-light/20 rounded-full overflow-hidden">
           <div id="match-bar" class="h-full rounded-full match-bar-fill" style="width:0%;background:linear-gradient(90deg,var(--brand),var(--brand-light))"></div>
         </div>
       </div>
@@ -96,32 +104,33 @@
     <div class="bg-white px-8 py-8 space-y-6">
 
       <!-- Description -->
-      <div>
-        <p id="result-profile-name" class="font-serif text-xl font-semibold text-gray-800 mb-2">—</p>
+      <div class="space-y-2">
+        <p id="result-profile-name" class="font-serif text-xl font-semibold text-gray-800">—</p>
         <p id="result-description" class="text-gray-500 text-sm leading-relaxed">—</p>
       </div>
 
       <!-- Why this product -->
-      <div class="p-5 rounded-2xl border border-brand-light/30 bg-brand-bg/50">
-        <p class="text-xs font-bold tracking-widest uppercase text-brand mb-2">Por qué este producto es para ti</p>
-        <p id="result-recommendation" class="text-gray-700 text-sm leading-relaxed">—</p>
+      <div class="p-5 rounded-2xl border border-brand-light/30 bg-brand-bg/40">
+        <p class="text-[10px] font-black tracking-widest uppercase text-brand mb-2">Por qué esta solución es para ti</p>
+        <p id="result-recommendation" class="text-gray-600 text-sm leading-relaxed">—</p>
       </div>
 
       <!-- Solution block -->
-      <div id="solution-block" class="hidden rounded-2xl overflow-hidden border border-brand-light/40">
-        <div class="bg-brand px-5 py-3 flex items-center gap-2">
-          <svg class="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20"><path d="M11 3a1 1 0 10-2 0v1a1 1 0 102 0V3zM15.657 5.757a1 1 0 00-1.414-1.414l-.707.707a1 1 0 001.414 1.414l.707-.707zM18 10a1 1 0 01-1 1h-1a1 1 0 110-2h1a1 1 0 011 1zM5.05 6.464A1 1 0 106.464 5.05l-.707-.707a1 1 0 00-1.414 1.414l.707.707zM5 10a1 1 0 01-1 1H3a1 1 0 110-2h1a1 1 0 011 1zM8 16v-1h4v1a2 2 0 11-4 0zM12 14c.015-.34.208-.646.477-.859a4 4 0 10-4.954 0c.27.213.462.519.476.859h4.001z"/></svg>
-          <p class="text-white text-xs font-bold uppercase tracking-widest">Tu solución está aquí</p>
+      <div id="solution-block" class="hidden rounded-2xl overflow-hidden" style="border:1.5px solid var(--brand-light);box-shadow:0 4px 24px 0 rgba(139,106,160,0.10)">
+        <div class="px-5 py-3.5 flex items-center gap-2.5" style="background:linear-gradient(90deg,var(--brand) 0%,#b98fd4 100%)">
+          <span class="text-lg">✨</span>
+          <p class="text-white text-xs font-bold uppercase tracking-widest">Tu solución personalizada</p>
         </div>
-        <div class="px-5 py-4 bg-white">
-          <p id="solution-text" class="text-gray-500 text-sm mb-1"></p>
-          <p id="solution-product" class="text-brand font-bold text-base"></p>
+        <div class="px-5 py-5 bg-white">
+          <p id="solution-text" class="text-gray-400 text-xs mb-1.5"></p>
+          <p id="solution-product" class="text-brand font-serif font-bold text-lg"></p>
         </div>
       </div>
 
       <!-- CTA button -->
       <a id="btn-cta" href="./acceso-exito.html"
-        class="w-full block text-center py-4 rounded-full bg-brand hover:bg-brand/90 text-white font-bold text-sm tracking-wider uppercase transition-all duration-300 shadow-lg shadow-brand/20 active:scale-[0.98]">
+        class="w-full block text-center py-4 rounded-full text-white font-bold text-sm tracking-wide transition-all duration-300 shadow-lg active:scale-[0.98]"
+        style="background:linear-gradient(90deg,var(--brand) 0%,#b98fd4 100%);box-shadow:0 6px 24px 0 rgba(139,106,160,0.30)">
         Ver la solución →
       </a>
 
@@ -242,18 +251,48 @@
       document.getElementById('match-pct').textContent = matchPct + '%';
     }, 700);
 
-    // Solution block
-    const ctaDest = profile.ctaUrl || quiz.productUrl || quiz.landingUrl ||
-      `./acceso-exito.html${quizId ? '?quiz=' + quizId : ''}`;
-    if ((profile.ctaUrl || quiz.productUrl || quiz.landingUrl) && quiz.product) {
+    // Solution block — show whenever quiz has a product name
+    if (quiz.product) {
       document.getElementById('solution-block').classList.remove('hidden');
       document.getElementById('solution-text').textContent = `Como "${profile.name}", encontramos la solución ideal para ti:`;
       document.getElementById('solution-product').textContent = quiz.product;
     }
 
-    // CTA button
+    // CTA button — destination depends on postQuizAction
+    const action = quiz.postQuizAction || 'result_page';
+    let ctaDest = '';
+    let ctaText = '';
+    let ctaIcon = '';
+
+    if (action === 'whatsapp') {
+      const number = (quiz.whatsappNumber || '').replace(/\D/g, '');
+      if (number) {
+        const defaultMsg = profile
+          ? `Hola! Completé el quiz "${quiz.title || ''}" y mi perfil es "${profile.name}". Me gustaría más información.`
+          : 'Hola! Acabo de completar el quiz y me gustaría más información.';
+        ctaDest = `https://wa.me/${number}?text=${encodeURIComponent(quiz.whatsappMessage || defaultMsg)}`;
+        ctaText = '¡Quiero más información por WhatsApp!';
+        ctaIcon = '💬 ';
+      }
+    } else if (action === 'payment') {
+      ctaDest = quiz.paymentUrl || quiz.productUrl;
+      ctaText = profile.cta || (quiz.product ? `Quiero acceder a ${quiz.product}` : 'Comprar ahora');
+      ctaIcon = '✨ ';
+    } else if (action === 'landing') {
+      ctaDest = quiz.landingUrl || quiz.productUrl;
+      ctaText = profile.cta || (quiz.product ? `Ver ${quiz.product}` : 'Ver la solución');
+      ctaIcon = '→ ';
+    } else {
+      ctaDest = profile.ctaUrl || quiz.productUrl || quiz.landingUrl;
+      ctaText = profile.cta || (quiz.product ? `Quiero acceder a ${quiz.product}` : 'Ver la solución');
+      ctaIcon = '✨ ';
+    }
+
+    ctaDest = ctaDest || `./acceso-exito.html${quizId ? '?quiz=' + quizId : ''}`;
+    ctaText = ctaText || 'Ver la solución';
+
     const btnCta = document.getElementById('btn-cta');
-    btnCta.textContent = profile.cta || (quiz.product ? `Quiero acceder a ${quiz.product} →` : 'Ver la solución →');
+    btnCta.textContent = ctaIcon + ctaText + ' →';
     btnCta.href = ctaDest;
     if (/^https?:\/\//.test(ctaDest)) { btnCta.target = '_blank'; btnCta.rel = 'noopener noreferrer'; }
 
