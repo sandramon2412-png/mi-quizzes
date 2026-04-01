@@ -490,6 +490,26 @@ function toggleFbGuide() {
   </button>
 </div>
 
+<!-- ══════════════ MODAL: ANALYTICS ══════════════ -->
+<div id="modal-analytics" class="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 hidden" onclick="if(event.target===this)closeAnalyticsModal()">
+  <div class="bg-[#131313] border border-white/10 rounded-2xl w-full max-w-lg mx-4 shadow-2xl max-h-[90vh] overflow-y-auto">
+    <div class="flex items-center justify-between p-6 pb-4 border-b border-outline-variant/10">
+      <div>
+        <h3 class="text-lg font-extrabold">Estadísticas</h3>
+        <p id="analytics-quiz-title" class="text-xs text-on-surface-variant mt-0.5"></p>
+      </div>
+      <button onclick="closeAnalyticsModal()" class="w-8 h-8 rounded-lg bg-surface-container flex items-center justify-center text-on-surface-variant hover:text-on-surface transition-colors">
+        <span class="material-symbols-outlined text-sm">close</span>
+      </button>
+    </div>
+    <div id="analytics-body" class="p-6 space-y-5">
+      <div class="flex items-center justify-center py-8">
+        <span class="material-symbols-outlined text-primary animate-spin text-3xl">progress_activity</span>
+      </div>
+    </div>
+  </div>
+</div>
+
 <!-- ══════════════ MODAL: NUEVA MINI-APP ══════════════ -->
 <div id="modal-overlay" class="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 hidden" onclick="handleOverlayClick(event)">
   <div id="modal-box" class="bg-[#131313] border border-white/10 rounded-2xl w-full max-w-lg mx-4 p-6 shadow-2xl">
@@ -809,6 +829,10 @@ async function renderQuizzes() {
             class="w-8 h-8 rounded-xl bg-surface-container-high flex items-center justify-center ${q.status === 'active' ? 'hover:bg-yellow-500/10' : 'hover:bg-secondary/10'} transition-colors" title="${q.status === 'active' ? 'Volver a borrador' : 'Publicar quiz'}">
             <span class="material-symbols-outlined text-on-surface-variant text-sm">${q.status === 'active' ? 'unpublished' : 'publish'}</span>
           </button>
+          <button onclick="showQuizAnalytics('${q.id}', ${JSON.stringify(esc(q.title||'Quiz')).replace(/"/g,"'")})"
+            class="w-8 h-8 rounded-xl bg-surface-container-high flex items-center justify-center hover:bg-primary/10 transition-colors" title="Ver estadísticas">
+            <span class="material-symbols-outlined text-on-surface-variant text-sm">bar_chart</span>
+          </button>
           <button onclick="deleteQuiz('${q.id}')"
             class="w-8 h-8 rounded-xl bg-surface-container-high flex items-center justify-center hover:bg-error/10 transition-colors" title="Eliminar">
             <span class="material-symbols-outlined text-on-surface-variant text-sm">delete</span>
@@ -867,6 +891,109 @@ function copyLink(quizId, isLocal) {
     return;
   }
   copyToClipboard(buildQuizUrl(quizId));
+}
+
+// ── Analytics Modal ───────────────────────────────────────
+function closeAnalyticsModal() {
+  document.getElementById('modal-analytics').classList.add('hidden');
+}
+
+async function showQuizAnalytics(quizId, quizTitle) {
+  const modal = document.getElementById('modal-analytics');
+  const body = document.getElementById('analytics-body');
+  document.getElementById('analytics-quiz-title').textContent = quizTitle;
+  modal.classList.remove('hidden');
+  body.innerHTML = `<div class="flex items-center justify-center py-8"><span class="material-symbols-outlined text-primary text-3xl" style="animation:spin 1s linear infinite">progress_activity</span></div>`;
+
+  try {
+    const [stats, allLeads] = await Promise.all([
+      DB.analytics.summary(quizId).catch(() => ({ views: 0, completions: 0 })),
+      DB.leads.getAll(_currentUser.id).catch(() => [])
+    ]);
+    const leads = allLeads.filter(l => l.quiz_id === quizId);
+    const cr = stats.views > 0 ? Math.round((stats.completions / stats.views) * 100) : 0;
+
+    // Count profiles
+    const profileCounts = {};
+    leads.forEach(l => {
+      const key = l.profile_name || l.profile_id || 'Sin perfil';
+      const emoji = l.profile_emoji || '🎯';
+      profileCounts[key] = profileCounts[key] || { count: 0, emoji };
+      profileCounts[key].count++;
+    });
+    const topProfiles = Object.entries(profileCounts).sort((a,b) => b[1].count - a[1].count);
+
+    // Last 7 days leads
+    const now = new Date();
+    const days = Array.from({length: 7}, (_, i) => {
+      const d = new Date(now); d.setDate(d.getDate() - (6 - i));
+      return d.toISOString().split('T')[0];
+    });
+    const byDay = {};
+    leads.forEach(l => { const d = (l.created_at||'').split('T')[0]; byDay[d] = (byDay[d]||0) + 1; });
+    const maxDay = Math.max(...days.map(d => byDay[d]||0), 1);
+
+    body.innerHTML = `
+      <!-- KPIs -->
+      <div class="grid grid-cols-3 gap-3">
+        <div class="bg-surface-container rounded-xl p-4 text-center">
+          <p class="text-2xl font-black text-on-surface">${stats.views}</p>
+          <p class="text-xs text-on-surface-variant mt-1">Vistas</p>
+        </div>
+        <div class="bg-surface-container rounded-xl p-4 text-center">
+          <p class="text-2xl font-black text-secondary">${stats.completions}</p>
+          <p class="text-xs text-on-surface-variant mt-1">Completados</p>
+        </div>
+        <div class="bg-surface-container rounded-xl p-4 text-center">
+          <p class="text-2xl font-black ${cr >= 50 ? 'text-secondary' : 'text-primary'}">${cr}%</p>
+          <p class="text-xs text-on-surface-variant mt-1">Conversión</p>
+        </div>
+      </div>
+      <!-- Leads -->
+      <div class="bg-surface-container rounded-xl p-4">
+        <div class="flex items-center justify-between mb-3">
+          <p class="text-sm font-bold">Leads capturados</p>
+          <span class="text-2xl font-black text-primary">${leads.length}</span>
+        </div>
+        <!-- Sparkline 7 días -->
+        <p class="text-xs text-on-surface-variant mb-2">Últimos 7 días</p>
+        <div class="flex items-end gap-1 h-10">
+          ${days.map(d => {
+            const count = byDay[d] || 0;
+            const h = Math.round((count / maxDay) * 100);
+            return `<div class="flex-1 flex flex-col items-center gap-1">
+              <div class="w-full rounded-sm bg-primary/70 transition-all" style="height:${Math.max(h, count > 0 ? 15 : 4)}%"></div>
+              <span class="text-[9px] text-on-surface-variant">${d.slice(8)}</span>
+            </div>`;
+          }).join('')}
+        </div>
+      </div>
+      <!-- Top perfiles -->
+      ${topProfiles.length > 0 ? `
+      <div class="bg-surface-container rounded-xl p-4">
+        <p class="text-sm font-bold mb-3">Perfiles más elegidos</p>
+        <div class="space-y-2">
+          ${topProfiles.map(([name, {count, emoji}]) => {
+            const pct = leads.length > 0 ? Math.round((count / leads.length) * 100) : 0;
+            return `<div>
+              <div class="flex items-center justify-between text-xs mb-1">
+                <span>${emoji} ${esc(name)}</span>
+                <span class="font-bold text-primary">${count} (${pct}%)</span>
+              </div>
+              <div class="h-1.5 bg-surface-container-high rounded-full overflow-hidden">
+                <div class="h-full bg-primary rounded-full" style="width:${pct}%"></div>
+              </div>
+            </div>`;
+          }).join('')}
+        </div>
+      </div>` : ''}
+      <!-- Ver leads -->
+      <a href="./leads.html" class="block text-center py-3 rounded-xl border border-primary/30 text-primary text-sm font-bold hover:bg-primary/10 transition-colors">
+        Ver lista de leads →
+      </a>`;
+  } catch(e) {
+    body.innerHTML = `<p class="text-center text-on-surface-variant py-8">Error cargando estadísticas</p>`;
+  }
 }
 
 async function deleteQuiz(id) {
