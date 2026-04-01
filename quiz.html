@@ -90,7 +90,10 @@
 
 <!-- Minimal header -->
 <header class="sticky top-0 z-50 backdrop-blur-md bg-white/70 border-b border-brand-light/20 px-6 py-3 flex items-center justify-between">
-  <span id="header-brand" class="text-sm font-semibold tracking-wide text-brand uppercase"></span>
+  <div class="flex items-center gap-2">
+    <img id="quiz-logo" src="" alt="logo" class="hidden h-7 w-auto object-contain"/>
+    <span id="quiz-brand-label" class="text-sm font-semibold tracking-wide text-brand uppercase"></span>
+  </div>
   <button onclick="if(confirm('¿Salir del quiz?')) window.location.href='./index.html'" class="text-gray-400 hover:text-gray-600 transition-colors text-sm flex items-center gap-1">
     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
   </button>
@@ -269,9 +272,19 @@
     }
     if (!QUIZ) QUIZ = DEMO_QUIZ;
 
-    // Apply quiz theme color if set
-    if (QUIZ.themeColor) {
-      document.documentElement.style.setProperty('--brand', QUIZ.themeColor);
+    // Apply branding
+    const brandColor = QUIZ.brandColor || QUIZ.themeColor;
+    if (brandColor) {
+      document.documentElement.style.setProperty('--brand', brandColor);
+      document.documentElement.style.setProperty('--brand-light', brandColor + '99');
+    }
+    if (QUIZ.brandLogo) {
+      const logoEl = document.getElementById('quiz-logo');
+      if (logoEl) { logoEl.src = QUIZ.brandLogo; logoEl.classList.remove('hidden'); }
+    }
+    if (QUIZ.brandName) {
+      const nameEl = document.getElementById('quiz-brand-label');
+      if (nameEl) nameEl.textContent = QUIZ.brandName;
     }
 
     // Track view
@@ -494,6 +507,24 @@
         DB.analytics.track(QUIZ.id, QUIZ.userId, 'completion', _calculatedProfile?.id || null).catch(() => {});
       }
     } catch (err) { console.warn('Lead save error:', err.message); }
+
+    // Send result email if enabled
+    if (QUIZ.emailResultEnabled && email && _calculatedProfile) {
+      fetch('/api/send-email', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          toEmail: email, toName: name,
+          quizTitle: QUIZ.title, quizProduct: QUIZ.product,
+          profileName: _calculatedProfile.name,
+          profileEmoji: _calculatedProfile.emoji,
+          profileDescription: _calculatedProfile.description,
+          profileRecommendation: _calculatedProfile.recommendation,
+          matchScore: _calculatedProfile.matchScore,
+          fromName: QUIZ.brandName || '',
+        }),
+      }).catch(() => {}); // fire and forget
+    }
 
     fbTrack('Lead', { content_name: QUIZ.title || 'Quiz' });
     _goToResultPage();

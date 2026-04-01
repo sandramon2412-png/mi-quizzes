@@ -232,6 +232,30 @@
               class="w-full bg-transparent text-on-surface-variant text-sm outline-none mt-2"/>
           </div>
 
+          <!-- Branding (White-label) -->
+          <div class="bg-surface-container rounded-xl p-4 border border-outline-variant/10 space-y-3">
+            <label class="text-xs font-bold text-on-surface-variant uppercase tracking-widest block">🎨 Marca del quiz</label>
+            <div class="flex gap-2">
+              <div class="flex-1">
+                <label class="text-[10px] text-on-surface-variant block mb-1">Nombre de tu marca</label>
+                <input id="quiz-brand-name" type="text" placeholder="Ej: Academia Fitness Pro"
+                  class="w-full bg-surface-container-high border border-outline-variant/10 rounded-lg px-3 py-2 text-xs text-on-surface outline-none focus:border-primary transition-colors"/>
+              </div>
+              <div class="w-24">
+                <label class="text-[10px] text-on-surface-variant block mb-1">Color principal</label>
+                <div class="flex items-center gap-1.5 bg-surface-container-high border border-outline-variant/10 rounded-lg px-2 py-1.5">
+                  <input id="quiz-brand-color" type="color" value="#8B6AA0" class="w-6 h-6 rounded cursor-pointer border-0 bg-transparent"/>
+                  <span id="quiz-brand-color-hex" class="text-[10px] text-on-surface-variant font-mono">#8B6AA0</span>
+                </div>
+              </div>
+            </div>
+            <div>
+              <label class="text-[10px] text-on-surface-variant block mb-1">URL del logo <span class="text-on-surface-variant/50">(opcional)</span></label>
+              <input id="quiz-brand-logo" type="url" placeholder="https://tu-logo.com/logo.png"
+                class="w-full bg-surface-container-high border border-outline-variant/10 rounded-lg px-3 py-2 text-xs text-on-surface outline-none focus:border-primary transition-colors"/>
+            </div>
+          </div>
+
           <!-- Post-quiz action -->
           <div class="bg-surface-container rounded-xl p-4 border border-outline-variant/10 space-y-4">
             <div>
@@ -277,6 +301,10 @@
               <label class="flex items-center gap-2 cursor-pointer select-none">
                 <input type="checkbox" id="quiz-lead-capture" class="rounded accent-primary"/>
                 <span class="text-xs text-on-surface">Pedir correo antes de mostrar resultado</span>
+              </label>
+              <label class="flex items-center gap-2 cursor-pointer select-none">
+                <input type="checkbox" id="quiz-email-result" class="rounded accent-primary"/>
+                <span class="text-xs text-on-surface">Enviar resultado por email al lead <span class="text-on-surface-variant/60">(requiere Resend configurado)</span></span>
               </label>
               <div>
                 <label class="text-xs font-bold text-primary uppercase tracking-widest block mb-1">🔗 URL del botón "Comprar" en el resultado</label>
@@ -464,6 +492,11 @@ function getParam(name) {
 
 
 document.addEventListener('DOMContentLoaded', async () => {
+  // Brand color picker live update
+  document.getElementById('quiz-brand-color')?.addEventListener('input', function() {
+    document.getElementById('quiz-brand-color-hex').textContent = this.value;
+  });
+
   _currentUser = await Auth.requireAuth();
   if (!_currentUser) return;
 
@@ -577,6 +610,11 @@ function loadQuizIntoEditor(quiz) {
   const action = quiz.postQuizAction || 'result_page';
   selectPostAction(action);
   const leadOn = quiz.leadCapture !== false;
+  document.getElementById('quiz-email-result').checked      = !!quiz.emailResultEnabled;
+  document.getElementById('quiz-brand-name').value  = quiz.brandName  || '';
+  document.getElementById('quiz-brand-color').value = quiz.brandColor || '#8B6AA0';
+  document.getElementById('quiz-brand-color-hex').textContent = quiz.brandColor || '#8B6AA0';
+  document.getElementById('quiz-brand-logo').value  = quiz.brandLogo  || '';
   document.getElementById('quiz-lead-capture').checked      = leadOn;
   document.getElementById('quiz-wa-lead-capture').checked   = leadOn;
   document.getElementById('quiz-pay-lead-capture').checked  = leadOn;
@@ -783,6 +821,11 @@ async function saveQuiz() {
       : action === 'payment'
         ? document.getElementById('quiz-pay-lead-capture').checked
         : document.getElementById('quiz-land-lead-capture').checked;
+
+  currentQuiz.emailResultEnabled = document.getElementById('quiz-email-result').checked;
+  currentQuiz.brandName  = document.getElementById('quiz-brand-name').value.trim() || '';
+  currentQuiz.brandColor = document.getElementById('quiz-brand-color').value || '#8B6AA0';
+  currentQuiz.brandLogo  = document.getElementById('quiz-brand-logo').value.trim() || '';
 
   // Meta Pixel / CAPI
   const pixelEnabled = document.getElementById('quiz-meta-pixel-enabled').checked;

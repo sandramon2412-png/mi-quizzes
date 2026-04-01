@@ -191,6 +191,52 @@
         </div>
       </section>
 
+      <!-- Dominio Propio -->
+      <section class="bg-surface-container-low rounded-xl p-8 border border-outline-variant/5">
+        <div class="flex items-center justify-between mb-6">
+          <div>
+            <h2 class="text-lg font-bold text-on-surface">Dominio Propio</h2>
+            <p class="text-sm text-on-surface-variant mt-1">Muestra tus quizzes en tu propio dominio en lugar de luminous-studio.com</p>
+          </div>
+          <span class="text-xs font-bold px-2.5 py-1 rounded-full bg-primary/10 text-primary">Plan Pro</span>
+        </div>
+        <div class="space-y-4">
+          <div class="bg-surface-container rounded-xl p-5 border border-outline-variant/10">
+            <h3 class="text-sm font-bold text-on-surface mb-3">Pasos para conectar tu dominio</h3>
+            <ol class="space-y-3">
+              <li class="flex gap-3">
+                <span class="w-6 h-6 rounded-full bg-primary/10 text-primary text-xs font-black flex items-center justify-center shrink-0 mt-0.5">1</span>
+                <div>
+                  <p class="text-sm text-on-surface font-medium">Entra a tu proveedor de dominio</p>
+                  <p class="text-xs text-on-surface-variant mt-0.5">GoDaddy, Namecheap, Google Domains, etc.</p>
+                </div>
+              </li>
+              <li class="flex gap-3">
+                <span class="w-6 h-6 rounded-full bg-primary/10 text-primary text-xs font-black flex items-center justify-center shrink-0 mt-0.5">2</span>
+                <div>
+                  <p class="text-sm text-on-surface font-medium">Agrega un registro CNAME</p>
+                  <div class="mt-2 bg-surface-container-high rounded-lg px-4 py-3 font-mono text-xs text-secondary">
+                    <p>Nombre: <strong>quiz</strong> (o el subdominio que prefieras)</p>
+                    <p class="mt-1">Valor: <strong>cname.vercel-dns.com</strong></p>
+                  </div>
+                </div>
+              </li>
+              <li class="flex gap-3">
+                <span class="w-6 h-6 rounded-full bg-primary/10 text-primary text-xs font-black flex items-center justify-center shrink-0 mt-0.5">3</span>
+                <div>
+                  <p class="text-sm text-on-surface font-medium">Escríbenos con tu dominio</p>
+                  <p class="text-xs text-on-surface-variant mt-0.5">Nosotros lo activamos en Vercel en menos de 24h. Tu quiz quedará en <span class="text-primary font-mono">quiz.tu-dominio.com</span></p>
+                </div>
+              </li>
+            </ol>
+          </div>
+          <div class="bg-primary/5 border border-primary/20 rounded-xl p-4">
+            <p class="text-xs text-primary font-bold mb-1">💡 ¿Ya tienes el CNAME configurado?</p>
+            <p class="text-xs text-on-surface-variant">Escríbenos a <span class="text-primary font-medium">soporte@luminous-studio.com</span> con tu dominio y te lo activamos.</p>
+          </div>
+        </div>
+      </section>
+
       <!-- Integraciones -->
       <section class="bg-surface-container-low rounded-xl p-8 border border-outline-variant/5">
         <div class="flex items-center justify-between mb-6">
