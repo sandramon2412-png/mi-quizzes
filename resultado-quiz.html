@@ -46,7 +46,10 @@
 
 <!-- Minimal header -->
 <header class="sticky top-0 z-50 backdrop-blur-md bg-white/80 border-b border-brand-light/20 px-6 py-3 flex items-center justify-between">
-  <span id="header-brand" class="text-sm font-semibold tracking-widest uppercase text-brand"></span>
+  <div class="flex items-center gap-2">
+    <img id="result-logo" src="" alt="" class="hidden h-7 w-auto object-contain"/>
+    <span id="header-brand" class="text-sm font-semibold tracking-widest uppercase text-brand"></span>
+  </div>
   <div class="flex items-center gap-4">
     <a href="./generador-ia.html" class="hidden md:inline text-xs text-gray-400 hover:text-brand transition-colors">Crear mi quiz</a>
   </div>
@@ -225,13 +228,21 @@
     }
     if (!quiz) quiz = DEMO_QUIZ;
 
-    // Apply quiz theme color
-    if (quiz.themeColor) document.documentElement.style.setProperty('--brand', quiz.themeColor);
+    // Apply branding
+    const brandColor = quiz.brandColor || quiz.themeColor;
+    if (brandColor) {
+      document.documentElement.style.setProperty('--brand', brandColor);
+      document.documentElement.style.setProperty('--brand-light', brandColor + '99');
+    }
+    if (quiz.brandLogo) {
+      const logoEl = document.getElementById('result-logo');
+      if (logoEl) { logoEl.src = quiz.brandLogo; logoEl.classList.remove('hidden'); }
+    }
 
     const profile = (answers && answers.length > 0) ? calculateProfile(quiz, answers) : quiz.profiles[0];
 
     // Header brand
-    document.getElementById('header-brand').textContent = quiz.product || quiz.niche || '';
+    document.getElementById('header-brand').textContent = quiz.brandName || quiz.product || quiz.niche || '';
 
     // Profile card
     const emojiWrap = document.getElementById('profile-emoji-wrap');
