@@ -490,6 +490,19 @@ function toggleFbGuide() {
   </button>
 </div>
 
+<!-- ══════════════ MODAL: ONBOARDING ══════════════ -->
+<div id="modal-onboarding" class="fixed inset-0 z-[200] flex items-center justify-center bg-black/70 backdrop-blur-sm hidden">
+  <div class="bg-[#131313] border border-white/10 rounded-2xl w-full max-w-md mx-4 shadow-2xl overflow-hidden">
+    <!-- Steps indicator -->
+    <div class="flex" id="onboarding-steps-bar">
+      <div class="h-1 flex-1 bg-primary transition-all" id="ob-bar-1"></div>
+      <div class="h-1 flex-1 bg-white/10 transition-all" id="ob-bar-2"></div>
+      <div class="h-1 flex-1 bg-white/10 transition-all" id="ob-bar-3"></div>
+    </div>
+    <div id="onboarding-body" class="p-7"></div>
+  </div>
+</div>
+
 <!-- ══════════════ MODAL: ANALYTICS ══════════════ -->
 <div id="modal-analytics" class="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 hidden" onclick="if(event.target===this)closeAnalyticsModal()">
   <div class="bg-[#131313] border border-white/10 rounded-2xl w-full max-w-lg mx-4 shadow-2xl max-h-[90vh] overflow-y-auto">
@@ -658,6 +671,11 @@ document.addEventListener('DOMContentLoaded', async () => {
   if (!_currentUser) return;
   await Promise.all([loadUserInfo(), renderMiniApps(), renderQuizzes()]);
   loadLeadsCount();
+  // Show onboarding on first visit
+  const onboardingKey = `onboarding_done_${_currentUser.id}`;
+  if (!localStorage.getItem(onboardingKey)) {
+    setTimeout(() => showOnboarding(onboardingKey), 800);
+  }
 });
 
 // ── User info ────────────────────────────────────────────
@@ -891,6 +909,90 @@ function copyLink(quizId, isLocal) {
     return;
   }
   copyToClipboard(buildQuizUrl(quizId));
+}
+
+// ── Onboarding ────────────────────────────────────────────
+const OB_STEPS = [
+  {
+    emoji: '🎉',
+    title: '¡Bienvenido a Luminous Studio!',
+    desc: 'Crea quizzes de alta conversión con IA en menos de 2 minutos. Segmenta tu audiencia, captura leads y vende más.',
+    cta: 'Siguiente →',
+  },
+  {
+    emoji: '⚡',
+    title: 'Así funciona en 3 pasos',
+    steps: [
+      { icon: '🤖', text: 'La IA genera tu quiz según tu producto y nicho' },
+      { icon: '🔗', text: 'Compartes el link con tu audiencia' },
+      { icon: '💰', text: 'El quiz segmenta y convierte en clientes' },
+    ],
+    cta: 'Siguiente →',
+  },
+  {
+    emoji: '🚀',
+    title: '¿Listo para crear tu primer quiz?',
+    desc: 'Solo necesitas el nombre de tu producto y una descripción. La IA hace el resto.',
+    cta: '¡Crear mi primer quiz!',
+    ctaAction: () => window.location.href = './generador-ia.html',
+  },
+];
+
+let _obStep = 0;
+let _obKey = '';
+
+function showOnboarding(storageKey) {
+  _obKey = storageKey;
+  _obStep = 0;
+  document.getElementById('modal-onboarding').classList.remove('hidden');
+  renderObStep();
+}
+
+function renderObStep() {
+  const s = OB_STEPS[_obStep];
+  const body = document.getElementById('onboarding-body');
+  // Update bar
+  OB_STEPS.forEach((_, i) => {
+    document.getElementById(`ob-bar-${i+1}`).className = `h-1 flex-1 transition-all ${i <= _obStep ? 'bg-primary' : 'bg-white/10'}`;
+  });
+  body.innerHTML = `
+    <div class="text-center space-y-4 fade-in">
+      <div class="text-6xl mb-2">${s.emoji}</div>
+      <h3 class="text-xl font-extrabold tracking-tight">${s.title}</h3>
+      ${s.desc ? `<p class="text-on-surface-variant text-sm leading-relaxed">${s.desc}</p>` : ''}
+      ${s.steps ? `<div class="space-y-3 text-left mt-4">
+        ${s.steps.map(st => `
+          <div class="flex items-center gap-3 p-3 bg-surface-container rounded-xl">
+            <span class="text-2xl">${st.icon}</span>
+            <p class="text-sm text-on-surface">${st.text}</p>
+          </div>`).join('')}
+      </div>` : ''}
+      <div class="flex gap-3 pt-2">
+        ${_obStep > 0 ? `<button onclick="obPrev()" class="flex-1 py-3 rounded-xl border border-outline-variant/20 text-sm text-on-surface-variant hover:bg-surface-container transition-colors">← Atrás</button>` : ''}
+        <button onclick="obNext()" class="flex-1 py-3 rounded-xl bg-primary text-white font-bold text-sm hover:opacity-90 transition-opacity">${s.cta}</button>
+      </div>
+      <button onclick="closeOnboarding()" class="text-xs text-on-surface-variant/50 hover:text-on-surface-variant transition-colors">Saltar introducción</button>
+    </div>`;
+}
+
+function obNext() {
+  if (_obStep < OB_STEPS.length - 1) {
+    _obStep++;
+    renderObStep();
+  } else {
+    closeOnboarding();
+    if (OB_STEPS[_obStep - 1]?.ctaAction) OB_STEPS[_obStep - 1].ctaAction();
+    else if (OB_STEPS[_obStep]?.ctaAction) OB_STEPS[_obStep].ctaAction();
+  }
+}
+
+function obPrev() {
+  if (_obStep > 0) { _obStep--; renderObStep(); }
+}
+
+function closeOnboarding() {
+  localStorage.setItem(_obKey, '1');
+  document.getElementById('modal-onboarding').classList.add('hidden');
 }
 
 // ── Analytics Modal ───────────────────────────────────────
