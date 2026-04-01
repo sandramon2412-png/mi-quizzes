@@ -486,6 +486,15 @@ document.addEventListener('DOMContentLoaded', async () => {
 
 // ── Generate with AI ──────────────────────────────────────
 async function generateWithAI() {
+  // Plan enforcement: free plan cannot use AI generation
+  const plan = Settings.get().plan || 'free';
+  if (plan === 'free') {
+    showToast('La generación con IA requiere plan Starter o superior. Puedes crear el quiz manualmente.', 'error');
+    setTimeout(() => {
+      if (confirm('¿Quieres ver los planes disponibles?')) window.location.href = './precios.html';
+    }, 500);
+    return;
+  }
   const product = document.getElementById('input-product').value.trim();
   const desc    = document.getElementById('input-desc').value.trim();
   const niche   = document.getElementById('input-niche').value.trim();
