@@ -155,7 +155,117 @@ function renderApp() {
   if (type === 'calculadora') return renderCalculadora(content);
   if (type === 'quiz-embed') return renderQuizEmbed(content);
   if (type === 'generador' || type === 'simulador') return renderGenerador(content);
+  if (type === 'chatbot') return renderChatbot(content);
   renderGeneric(content);
+}
+
+// ── CHATBOT ───────────────────────────────────────────────
+function renderChatbot(el) {
+  const app = currentApp;
+  const botName = app.chatbotName || app.name || 'Asistente';
+  const botIcon = app.icon || '🤖';
+  const systemPrompt = app.chatbotSystemPrompt || `Eres un asistente experto en ${app.niche || 'el tema de este producto'}. Responde de forma clara, empática y útil. Máximo 3 oraciones por respuesta.`;
+  const groqKey = (typeof Settings !== 'undefined' && Settings.getGroqApiKey) ? Settings.getGroqApiKey() : '';
+  let messages = []; // {role, text}
+
+  el.innerHTML = `
+    <div class="flex flex-col h-full" style="min-height:420px">
+      <!-- Header del bot -->
+      <div class="flex items-center gap-3 p-4 border-b border-outline-variant/10 mb-2">
+        <div class="w-11 h-11 rounded-full bg-primary/10 flex items-center justify-center text-2xl">${botIcon}</div>
+        <div>
+          <p class="font-bold text-sm">${esc(botName)}</p>
+          <p class="text-xs text-secondary flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-full bg-secondary inline-block"></span>En línea · IA activa</p>
+        </div>
+      </div>
+      <!-- Mensajes -->
+      <div id="chat-messages" class="flex-1 overflow-y-auto px-4 space-y-3 pb-2" style="max-height:340px">
+        <div class="flex gap-2 items-end">
+          <span class="text-xl shrink-0">${botIcon}</span>
+          <div class="bg-surface-container-high rounded-2xl rounded-bl-sm px-4 py-2.5 text-sm max-w-[80%]">
+            ${esc(app.chatbotGreeting || `¡Hola! Soy ${botName}. ¿En qué puedo ayudarte hoy?`)}
+          </div>
+        </div>
+      </div>
+      <!-- Sugerencias -->
+      <div id="chat-suggestions" class="px-4 pb-2 flex flex-wrap gap-2">
+        ${(app.chatbotSuggestions || []).map(s => `
+          <button onclick="sendSuggestion(this)" class="text-xs px-3 py-1.5 rounded-full border border-primary/30 text-primary hover:bg-primary/10 transition-colors">${esc(s)}</button>
+        `).join('')}
+      </div>
+      <!-- Input -->
+      <div class="px-4 pb-4 pt-2 flex gap-2 border-t border-outline-variant/10">
+        <input id="chat-input" type="text" placeholder="Escribe tu pregunta..."
+          class="flex-1 bg-surface-container border border-outline-variant/20 rounded-full px-4 py-2.5 text-sm outline-none focus:border-primary transition-colors"
+          onkeydown="if(event.key==='Enter')sendChatMessage()" maxlength="500"/>
+        <button onclick="sendChatMessage()" class="w-10 h-10 rounded-full bg-primary flex items-center justify-center shrink-0 hover:opacity-90 transition-opacity">
+          <span class="material-symbols-outlined text-white text-base">send</span>
+        </button>
+      </div>
+    </div>`;
+
+  window.sendSuggestion = (btn) => {
+    document.getElementById('chat-input').value = btn.textContent;
+    document.getElementById('chat-suggestions').classList.add('hidden');
+    sendChatMessage();
+  };
+
+  window.sendChatMessage = async () => {
+    const input = document.getElementById('chat-input');
+    const text = input.value.trim();
+    if (!text) return;
+    input.value = '';
+
+    // Add user message
+    appendMsg('user', text);
+    messages.push({ role: 'user', content: text });
+
+    // Typing indicator
+    const typingId = 'typing-' + Date.now();
+    appendMsg('bot', '...', typingId);
+
+    try {
+      let reply = '';
+      if (groqKey) {
+        const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + groqKey },
+          body: JSON.stringify({
+            model: 'llama-3.1-8b-instant',
+            messages: [{ role: 'system', content: systemPrompt }, ...messages],
+            max_tokens: 200, temperature: 0.7
+          })
+        });
+        const data = await res.json();
+        reply = data.choices?.[0]?.message?.content || 'No pude responder. Intenta de nuevo.';
+      } else {
+        // Fallback sin API key
+        reply = `Soy ${botName}, tu asistente de ${app.niche || 'este tema'}. Para respuestas con IA configura tu API key de Groq en ajustes.`;
+      }
+      messages.push({ role: 'assistant', content: reply });
+      document.getElementById(typingId)?.remove();
+      appendMsg('bot', reply);
+    } catch(e) {
+      document.getElementById(typingId)?.remove();
+      appendMsg('bot', 'Hubo un error. Intenta de nuevo.');
+    }
+
+    // Scroll to bottom
+    const msgs = document.getElementById('chat-messages');
+    msgs.scrollTop = msgs.scrollHeight;
+  };
+
+  function appendMsg(role, text, id) {
+    const msgs = document.getElementById('chat-messages');
+    const div = document.createElement('div');
+    div.className = 'flex gap-2 items-end ' + (role === 'user' ? 'flex-row-reverse' : '');
+    if (id) div.id = id;
+    div.innerHTML = role === 'user'
+      ? `<div class="bg-primary text-white rounded-2xl rounded-br-sm px-4 py-2.5 text-sm max-w-[80%]">${esc(text)}</div>`
+      : `<span class="text-xl shrink-0">${botIcon}</span><div class="bg-surface-container-high rounded-2xl rounded-bl-sm px-4 py-2.5 text-sm max-w-[80%]">${esc(text)}</div>`;
+    msgs.appendChild(div);
+    msgs.scrollTop = msgs.scrollHeight;
+  }
 }
 
 // ── CHECKLIST ─────────────────────────────────────────────

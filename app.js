@@ -343,6 +343,8 @@ Responde SOLO con JSON:
   async generateMiniAppContent(appIdea, product, niche) {
     const { type, name, description } = appIdea;
     const typeInstructions = {
+      chatbot: `Diseña un asistente IA especializado en "${name}" para el nicho "${niche}". Responde:
+{"chatbotName":"Nombre del asistente (1-2 palabras)","chatbotGreeting":"Mensaje de bienvenida cálido y específico del nicho (1-2 oraciones)","chatbotSystemPrompt":"Prompt del sistema en español: eres [nombre], experto en [nicho/producto]. Tu tono es [tono]. Responde siempre sobre [tema]. Limita respuestas a 3 oraciones máximo. Si preguntan algo fuera del tema, redirige amablemente.","chatbotSuggestions":["Pregunta sugerida 1 del nicho","Pregunta sugerida 2","Pregunta sugerida 3"]}`,
       checklist: `Genera 10-12 ítems de checklist ESPECÍFICOS y accionables para "${name}". Responde: {"initialItems":["ítem 1","ítem 2",...]}`,
       planificador: `Genera 8-10 tareas de planificador ESPECÍFICAS y ordenadas lógicamente para "${name}". Responde: {"initialTasks":["tarea 1","tarea 2",...]}`,
       tracker: `Define el hábito diario y duración para "${name}". Responde: {"trackerDays":30,"trackerHabit":"nombre del hábito diario específico"}`,
