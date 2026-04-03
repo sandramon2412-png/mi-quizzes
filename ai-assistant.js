@@ -73,16 +73,42 @@
     el.id = 'lsa-root';
     el.innerHTML = `
 <style>
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap');
 #lsa-root * { box-sizing: border-box; margin: 0; padding: 0; }
+
+/* ── Float trigger ── */
+#lsa-float-btn {
+  position: fixed; z-index: 9998;
+  width: 56px; height: 56px; border-radius: 50%;
+  background: linear-gradient(135deg, #2E5BFF 0%, #7c3aed 100%);
+  border: none; cursor: pointer; color: #fff;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 22px;
+  box-shadow: 0 8px 32px rgba(46,91,255,0.5), 0 0 0 0 rgba(46,91,255,0.4);
+  transition: transform 0.2s, box-shadow 0.2s;
+  animation: lsa-ring 2.5s ease-in-out infinite;
+}
+@keyframes lsa-ring {
+  0%   { box-shadow: 0 8px 32px rgba(46,91,255,0.5), 0 0 0 0   rgba(46,91,255,0.35); }
+  60%  { box-shadow: 0 8px 32px rgba(46,91,255,0.5), 0 0 0 14px rgba(46,91,255,0); }
+  100% { box-shadow: 0 8px 32px rgba(46,91,255,0.5), 0 0 0 0   rgba(46,91,255,0); }
+}
+#lsa-float-btn:hover { transform: scale(1.1); }
+#lsa-float-btn .lsa-badge {
+  position: absolute; top: 4px; right: 4px; width: 10px; height: 10px;
+  border-radius: 50%; background: #69f6b8; border: 2px solid #0a0a12;
+  animation: lsa-blink 2s ease-in-out infinite;
+}
+@keyframes lsa-blink { 0%,100%{opacity:1} 50%{opacity:0.4} }
+
+/* ── Main window ── */
 #lsa-win {
   position: fixed; z-index: 9999;
-  width: 400px;
-  background: rgba(13,13,20,0.92);
-  backdrop-filter: blur(24px);
-  -webkit-backdrop-filter: blur(24px);
-  border: 1px solid rgba(46,91,255,0.25);
-  border-radius: 14px;
-  box-shadow: 0 24px 80px rgba(0,0,0,0.7), 0 0 0 1px rgba(255,255,255,0.04);
+  width: 460px;
+  background: #0a0a14;
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 18px;
+  box-shadow: 0 32px 100px rgba(0,0,0,0.85), 0 0 0 1px rgba(46,91,255,0.15), inset 0 1px 0 rgba(255,255,255,0.06);
   display: flex; flex-direction: column;
   overflow: hidden;
   font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
@@ -90,57 +116,71 @@
   transition: box-shadow 0.2s;
   user-select: none;
 }
-#lsa-win.dragging { box-shadow: 0 32px 100px rgba(0,0,0,0.85); }
+#lsa-win.dragging { box-shadow: 0 48px 120px rgba(0,0,0,0.95); }
 
-/* Toolbar */
-#lsa-toolbar {
-  display: flex; align-items: center; gap: 6px;
-  padding: 10px 12px 9px;
-  background: rgba(255,255,255,0.03);
+/* ── Gradient top strip ── */
+#lsa-win::before {
+  content: ''; display: block;
+  height: 1px;
+  background: linear-gradient(90deg, transparent 0%, #2E5BFF 30%, #7c3aed 70%, transparent 100%);
+  opacity: 0.7;
+}
+
+/* ── Header ── */
+#lsa-header {
+  display: flex; align-items: center; gap: 10px;
+  padding: 13px 14px 11px;
+  background: rgba(255,255,255,0.02);
   border-bottom: 1px solid rgba(255,255,255,0.06);
   cursor: grab;
 }
-#lsa-toolbar:active { cursor: grabbing; }
-.lsa-mode-btn {
-  flex: 1; display: flex; align-items: center; gap-5px; gap: 5px;
-  background: rgba(46,91,255,0.12); border: 1px solid rgba(46,91,255,0.22);
-  border-radius: 8px; padding: 5px 10px; color: #a0b4ff;
-  font-size: 12px; font-weight: 700; cursor: pointer;
-  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-  transition: background 0.15s;
-}
-.lsa-mode-btn:hover { background: rgba(46,91,255,0.22); }
-.lsa-tb-btn {
-  width: 28px; height: 28px; border-radius: 7px; border: none;
-  background: rgba(255,255,255,0.05); color: #adaaaa; cursor: pointer;
+#lsa-header:active { cursor: grabbing; }
+.lsa-logo {
+  width: 30px; height: 30px; border-radius: 9px; flex-shrink: 0;
+  background: linear-gradient(135deg, #2E5BFF 0%, #7c3aed 100%);
   display: flex; align-items: center; justify-content: center;
-  font-size: 15px; flex-shrink: 0; transition: background 0.15s, color 0.15s;
+  font-size: 15px; font-weight: 900; color: #fff; letter-spacing: -1px;
+  box-shadow: 0 4px 12px rgba(46,91,255,0.4);
 }
-.lsa-tb-btn:hover { background: rgba(255,255,255,0.1); color: #fff; }
-.lsa-tb-btn.active { background: rgba(46,91,255,0.2); color: #7a9aff; }
-.lsa-tb-sep { width: 1px; height: 16px; background: rgba(255,255,255,0.08); flex-shrink: 0; }
+.lsa-header-info { flex: 1; min-width: 0; }
+.lsa-header-name { font-size: 13px; font-weight: 800; color: #fff; line-height: 1.2; letter-spacing: -0.3px; }
+.lsa-header-sub { font-size: 10px; color: rgba(255,255,255,0.35); font-weight: 500; display: flex; align-items: center; gap: 4px; }
+.lsa-status-dot { width: 5px; height: 5px; border-radius: 50%; background: #69f6b8; display: inline-block; animation: lsa-blink 2s infinite; }
+.lsa-hbtn {
+  width: 26px; height: 26px; border-radius: 7px; border: none; flex-shrink: 0;
+  background: rgba(255,255,255,0.05); color: rgba(255,255,255,0.4); cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: background 0.15s, color 0.15s;
+}
+.lsa-hbtn:hover { background: rgba(255,255,255,0.1); color: #fff; }
+.lsa-hbtn.active { background: rgba(46,91,255,0.2); color: #7a9aff; }
+.lsa-hbtn-sep { width: 1px; height: 14px; background: rgba(255,255,255,0.07); flex-shrink: 0; }
 
-/* Mode dropdown */
-#lsa-mode-dropdown {
-  position: absolute; left: 12px; top: 48px; z-index: 10;
-  background: #131320; border: 1px solid rgba(46,91,255,0.3);
-  border-radius: 10px; overflow: hidden;
-  box-shadow: 0 12px 40px rgba(0,0,0,0.6);
-  min-width: 200px;
+/* ── Mode tabs ── */
+#lsa-mode-tabs {
+  display: flex; gap: 4px; padding: 8px 12px 7px;
+  background: rgba(0,0,0,0.3);
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+  overflow-x: auto; scrollbar-width: none;
 }
-.lsa-mode-opt {
-  padding: 9px 14px; font-size: 12px; font-weight: 600; cursor: pointer;
-  color: #adaaaa; transition: background 0.12s, color 0.12s;
-  display: flex; align-items: center; gap: 8px;
+#lsa-mode-tabs::-webkit-scrollbar { display: none; }
+.lsa-tab {
+  flex-shrink: 0; padding: 4px 11px; border-radius: 20px;
+  font-size: 11px; font-weight: 700; cursor: pointer; border: none;
+  background: rgba(255,255,255,0.05); color: rgba(255,255,255,0.35);
+  transition: all 0.15s; white-space: nowrap;
 }
-.lsa-mode-opt:hover { background: rgba(46,91,255,0.15); color: #fff; }
-.lsa-mode-opt.selected { color: #7a9aff; background: rgba(46,91,255,0.1); }
+.lsa-tab:hover { background: rgba(255,255,255,0.09); color: rgba(255,255,255,0.7); }
+.lsa-tab.active {
+  background: rgba(46,91,255,0.2); color: #7a9aff;
+  border: 1px solid rgba(46,91,255,0.35);
+}
 
-/* Sessions panel */
+/* ── Sessions panel ── */
 #lsa-sessions-panel {
   border-bottom: 1px solid rgba(255,255,255,0.06);
-  max-height: 200px; overflow-y: auto;
-  background: rgba(0,0,0,0.3);
+  max-height: 180px; overflow-y: auto;
+  background: rgba(0,0,0,0.4);
   scrollbar-width: thin; scrollbar-color: #333 transparent;
 }
 .lsa-session-item {
@@ -158,140 +198,152 @@
 }
 .lsa-session-del:hover { color: #ff6e84; background: rgba(255,110,132,0.1); }
 
-/* Messages */
+/* ── Messages ── */
 #lsa-messages {
-  flex: 1; overflow-y: auto; padding: 14px 12px;
-  display: flex; flex-direction: column; gap: 10px;
-  min-height: 220px; max-height: 360px;
-  scrollbar-width: thin; scrollbar-color: #333 transparent;
+  flex: 1; overflow-y: auto; padding: 16px 14px;
+  display: flex; flex-direction: column; gap: 12px;
+  min-height: 240px; max-height: 380px;
+  scrollbar-width: thin; scrollbar-color: #222 transparent;
 }
 #lsa-messages::-webkit-scrollbar { width: 3px; }
-#lsa-messages::-webkit-scrollbar-thumb { background: #333; border-radius: 3px; }
-.lsa-msg { display: flex; gap: 7px; animation: lsa-in 0.18s ease both; }
-@keyframes lsa-in { from { opacity:0; transform: translateY(5px); } to { opacity:1; } }
+#lsa-messages::-webkit-scrollbar-thumb { background: #222; border-radius: 3px; }
+.lsa-msg { display: flex; gap: 9px; animation: lsa-in 0.2s cubic-bezier(.25,.8,.25,1) both; }
+@keyframes lsa-in { from { opacity:0; transform: translateY(6px); } to { opacity:1; transform:translateY(0); } }
 .lsa-msg.user { flex-direction: row-reverse; }
 .lsa-av {
-  width: 24px; height: 24px; border-radius: 50%; flex-shrink: 0;
+  width: 28px; height: 28px; border-radius: 9px; flex-shrink: 0;
   display: flex; align-items: center; justify-content: center;
-  font-size: 11px; font-weight: 800; margin-top: 2px;
+  font-size: 13px; font-weight: 800; margin-top: 1px;
 }
-.lsa-av.ai { background: rgba(46,91,255,0.2); border: 1px solid rgba(46,91,255,0.3); font-size: 13px; }
-.lsa-av.me { background: rgba(105,246,184,0.15); border: 1px solid rgba(105,246,184,0.25); color: #69f6b8; font-size: 9px; }
+.lsa-av.ai {
+  background: linear-gradient(135deg, #1a2dff 0%, #7c3aed 100%);
+  box-shadow: 0 3px 10px rgba(46,91,255,0.4);
+}
+.lsa-av.me {
+  background: rgba(105,246,184,0.12); border: 1px solid rgba(105,246,184,0.2);
+  color: #69f6b8; font-size: 9px; font-weight: 900;
+}
 .lsa-bubble {
-  max-width: calc(100% - 36px); padding: 8px 11px; border-radius: 11px;
-  font-size: 12.5px; line-height: 1.55; color: #ddd;
+  max-width: calc(100% - 42px); padding: 9px 13px; border-radius: 14px;
+  font-size: 13px; line-height: 1.6; color: #d0d0e0;
 }
 .lsa-msg.ai .lsa-bubble {
-  background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.07);
-  border-top-left-radius: 3px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-top-left-radius: 4px;
 }
 .lsa-msg.user .lsa-bubble {
-  background: rgba(46,91,255,0.18); border: 1px solid rgba(46,91,255,0.22);
-  border-top-right-radius: 3px; color: #b8c8ff;
+  background: linear-gradient(135deg, rgba(46,91,255,0.22) 0%, rgba(124,58,237,0.15) 100%);
+  border: 1px solid rgba(46,91,255,0.28);
+  border-top-right-radius: 4px; color: #c0d0ff;
 }
-.lsa-bubble strong { color: #fff; }
-.lsa-bubble code { background: rgba(255,255,255,0.08); padding: 1px 4px; border-radius: 3px; font-size: 11px; }
-.lsa-thinking .lsa-bubble { display: flex; gap: 4px; align-items: center; padding: 11px 14px; }
-.lsa-dot { width: 6px; height: 6px; border-radius: 50%; background: #555; animation: lsa-bounce 1.1s infinite; }
-.lsa-dot:nth-child(2) { animation-delay: .18s; }
-.lsa-dot:nth-child(3) { animation-delay: .36s; }
-@keyframes lsa-bounce { 0%,80%,100%{transform:translateY(0)} 40%{transform:translateY(-5px)} }
+.lsa-bubble strong { color: #fff; font-weight: 700; }
+.lsa-bubble code {
+  background: rgba(255,255,255,0.08); padding: 1px 5px; border-radius: 4px;
+  font-size: 11.5px; font-family: 'Fira Code', monospace;
+}
+.lsa-bubble a { color: #7a9aff; text-decoration: underline; }
+.lsa-thinking .lsa-bubble {
+  display: flex; gap: 5px; align-items: center; padding: 13px 16px;
+}
+.lsa-dot { width: 7px; height: 7px; border-radius: 50%; background: rgba(46,91,255,0.5); animation: lsa-bounce 1.2s infinite; }
+.lsa-dot:nth-child(2) { animation-delay: .2s; background: rgba(124,58,237,0.5); }
+.lsa-dot:nth-child(3) { animation-delay: .4s; background: rgba(46,91,255,0.3); }
+@keyframes lsa-bounce { 0%,80%,100%{transform:translateY(0)} 40%{transform:translateY(-6px)} }
 
-/* Empty state */
+/* ── Empty state ── */
 .lsa-empty {
   flex: 1; display: flex; flex-direction: column; align-items: center;
-  justify-content: center; gap: 8px; padding: 20px; text-align: center;
+  justify-content: center; gap: 10px; padding: 28px 20px; text-align: center;
 }
-.lsa-empty-icon { font-size: 28px; }
-.lsa-empty h4 { font-size: 13px; font-weight: 800; color: #fff; }
-.lsa-empty p { font-size: 11px; color: #555; max-width: 240px; line-height: 1.5; }
-.lsa-chips { display: flex; flex-wrap: wrap; gap: 5px; justify-content: center; margin-top: 6px; }
+.lsa-empty-logo {
+  width: 56px; height: 56px; border-radius: 16px;
+  background: linear-gradient(135deg, #2E5BFF 0%, #7c3aed 100%);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 24px; margin-bottom: 4px;
+  box-shadow: 0 8px 30px rgba(46,91,255,0.35);
+}
+.lsa-empty h4 { font-size: 15px; font-weight: 800; color: #fff; letter-spacing: -0.3px; }
+.lsa-empty p { font-size: 12px; color: rgba(255,255,255,0.3); max-width: 260px; line-height: 1.6; }
+.lsa-chips { display: flex; flex-wrap: wrap; gap: 6px; justify-content: center; margin-top: 8px; }
 .lsa-chip {
-  font-size: 11px; font-weight: 600; padding: 4px 9px;
-  background: rgba(46,91,255,0.08); border: 1px solid rgba(46,91,255,0.2);
-  border-radius: 20px; color: #7a9aff; cursor: pointer; transition: all 0.12s;
+  font-size: 11.5px; font-weight: 600; padding: 5px 11px;
+  background: rgba(46,91,255,0.09); border: 1px solid rgba(46,91,255,0.2);
+  border-radius: 20px; color: #7a9aff; cursor: pointer; transition: all 0.15s;
 }
-.lsa-chip:hover { background: rgba(46,91,255,0.18); }
+.lsa-chip:hover { background: rgba(46,91,255,0.2); border-color: rgba(46,91,255,0.4); color: #a0c0ff; }
 
-/* Input */
+/* ── Input bar ── */
 #lsa-inputbar {
-  padding: 9px 10px; border-top: 1px solid rgba(255,255,255,0.06);
-  display: flex; gap: 6px; align-items: flex-end; background: rgba(0,0,0,0.2);
+  padding: 10px 12px 12px; border-top: 1px solid rgba(255,255,255,0.06);
+  display: flex; gap: 7px; align-items: flex-end;
+  background: rgba(0,0,0,0.35);
 }
 #lsa-input {
   flex: 1; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1);
-  border-radius: 9px; padding: 8px 11px; color: #fff; font-size: 12.5px;
+  border-radius: 12px; padding: 9px 13px; color: #fff; font-size: 13px;
   font-family: inherit; resize: none; outline: none;
-  max-height: 100px; min-height: 36px; line-height: 1.4;
-  transition: border-color 0.15s;
+  max-height: 120px; min-height: 38px; line-height: 1.45;
+  transition: border-color 0.18s, background 0.18s;
 }
-#lsa-input:focus { border-color: rgba(46,91,255,0.5); }
-#lsa-input::placeholder { color: #555; }
+#lsa-input:focus { border-color: rgba(46,91,255,0.5); background: rgba(46,91,255,0.06); }
+#lsa-input::placeholder { color: rgba(255,255,255,0.25); }
 .lsa-input-btn {
-  width: 34px; height: 34px; border-radius: 8px; flex-shrink: 0; border: none;
+  width: 38px; height: 38px; border-radius: 10px; flex-shrink: 0; border: none;
   cursor: pointer; display: flex; align-items: center; justify-content: center;
-  font-size: 16px; align-self: flex-end; transition: all 0.15s;
+  align-self: flex-end; transition: all 0.15s;
 }
-#lsa-mic-btn { background: rgba(255,255,255,0.06); color: #767575; }
-#lsa-mic-btn:hover { background: rgba(255,255,255,0.1); color: #fff; }
+#lsa-mic-btn { background: rgba(255,255,255,0.07); color: rgba(255,255,255,0.4); }
+#lsa-mic-btn:hover { background: rgba(255,255,255,0.12); color: #fff; }
 #lsa-mic-btn.listening { background: rgba(255,110,132,0.15); color: #ff6e84; animation: lsa-pulse 1s infinite; }
-@keyframes lsa-pulse { 0%,100%{opacity:1} 50%{opacity:0.6} }
-#lsa-send-btn { background: #2E5BFF; color: #fff; }
-#lsa-send-btn:hover { background: #1a3fd4; }
-#lsa-send-btn:disabled { background: #222; color: #444; cursor: not-allowed; }
+@keyframes lsa-pulse { 0%,100%{opacity:1} 50%{opacity:0.55} }
+#lsa-send-btn {
+  background: linear-gradient(135deg, #2E5BFF 0%, #7c3aed 100%);
+  color: #fff; box-shadow: 0 4px 14px rgba(46,91,255,0.4);
+}
+#lsa-send-btn:hover { filter: brightness(1.15); transform: scale(1.05); }
+#lsa-send-btn:disabled { background: rgba(255,255,255,0.07); color: rgba(255,255,255,0.2); cursor: not-allowed; box-shadow: none; transform: none; }
 
-/* Minimized */
+/* ── Minimized ── */
 #lsa-win.minimized #lsa-messages,
 #lsa-win.minimized #lsa-inputbar,
-#lsa-win.minimized #lsa-sessions-panel { display: none !important; }
-
-/* Float button */
-#lsa-float-btn {
-  position: fixed; z-index: 9998;
-  width: 48px; height: 48px; border-radius: 50%;
-  background: linear-gradient(135deg,#2E5BFF,#1a3fd4);
-  border: none; cursor: pointer; color: #fff;
-  box-shadow: 0 8px 30px rgba(46,91,255,0.45);
-  display: flex; align-items: center; justify-content: center; font-size: 20px;
-  transition: transform 0.18s, box-shadow 0.18s;
-}
-#lsa-float-btn:hover { transform: scale(1.1); box-shadow: 0 12px 40px rgba(46,91,255,0.6); }
-#lsa-float-btn .lsa-badge {
-  position: absolute; top: 3px; right: 3px; width: 9px; height: 9px;
-  border-radius: 50%; background: #69f6b8; border: 2px solid #0d0d14;
-}
+#lsa-win.minimized #lsa-sessions-panel,
+#lsa-win.minimized #lsa-mode-tabs { display: none !important; }
 </style>
 
 <!-- Botón flotante -->
-<button id="lsa-float-btn" title="Asistente IA · Ctrl+Space">
-  <span class="material-symbols-outlined" style="font-size:22px">auto_awesome</span>
+<button id="lsa-float-btn" title="Lloyd · Asistente IA (Ctrl+Space)">
+  ✦
   <span class="lsa-badge"></span>
 </button>
 
 <!-- Ventana -->
 <div id="lsa-win" style="display:none;">
 
-  <!-- Toolbar / Drag handle -->
-  <div id="lsa-toolbar">
-    <button class="lsa-mode-btn" id="lsa-mode-label" onclick="LSA._toggleModeMenu(event)">✨ General ▾</button>
-    <div class="lsa-tb-sep"></div>
-    <button class="lsa-tb-btn" id="lsa-sessions-btn" onclick="LSA._toggleSessions()" title="Sesiones">
-      <span class="material-symbols-outlined" style="font-size:16px">history</span>
+  <!-- Header / Drag handle -->
+  <div id="lsa-header">
+    <div class="lsa-logo">✦</div>
+    <div class="lsa-header-info">
+      <div class="lsa-header-name">Lloyd</div>
+      <div class="lsa-header-sub"><span class="lsa-status-dot"></span> Asistente IA · Luminous Studio</div>
+    </div>
+    <button class="lsa-hbtn" id="lsa-sessions-btn" onclick="LSA._toggleSessions()" title="Historial">
+      <span class="material-symbols-outlined" style="font-size:15px">history</span>
     </button>
-    <button class="lsa-tb-btn" onclick="LSA._newChat()" title="Nueva conversación">
-      <span class="material-symbols-outlined" style="font-size:16px">add</span>
+    <button class="lsa-hbtn" onclick="LSA._newChat()" title="Nueva conversación">
+      <span class="material-symbols-outlined" style="font-size:15px">add</span>
     </button>
-    <div class="lsa-tb-sep"></div>
-    <button class="lsa-tb-btn" onclick="LSA._toggleMinimize()" id="lsa-min-btn" title="Minimizar">
-      <span class="material-symbols-outlined" style="font-size:16px">remove</span>
+    <div class="lsa-hbtn-sep"></div>
+    <button class="lsa-hbtn" onclick="LSA._toggleMinimize()" title="Minimizar">
+      <span class="material-symbols-outlined" style="font-size:15px">remove</span>
     </button>
-    <button class="lsa-tb-btn" onclick="LSA.hide()" title="Cerrar">
-      <span class="material-symbols-outlined" style="font-size:16px">close</span>
+    <button class="lsa-hbtn" onclick="LSA.hide()" title="Cerrar">
+      <span class="material-symbols-outlined" style="font-size:15px">close</span>
     </button>
   </div>
 
-  <!-- Mode dropdown -->
-  <div id="lsa-mode-dropdown" style="display:none;"></div>
+  <!-- Mode tabs -->
+  <div id="lsa-mode-tabs"></div>
 
   <!-- Sessions panel -->
   <div id="lsa-sessions-panel" style="display:none;"></div>
@@ -301,13 +353,13 @@
 
   <!-- Input bar -->
   <div id="lsa-inputbar">
-    <textarea id="lsa-input" placeholder="Escribe o usa el micrófono..." rows="1"
+    <textarea id="lsa-input" placeholder="Pregúntale algo a Lloyd..." rows="1"
       onkeydown="LSA._key(event)" oninput="LSA._resize(this)"></textarea>
     <button class="lsa-input-btn" id="lsa-mic-btn" onclick="LSA._toggleVoice()" title="Voz">
-      <span class="material-symbols-outlined" style="font-size:17px">mic</span>
+      <span class="material-symbols-outlined" style="font-size:18px">mic</span>
     </button>
     <button class="lsa-input-btn" id="lsa-send-btn" onclick="LSA.send()" title="Enviar">
-      <span class="material-symbols-outlined" style="font-size:17px">send</span>
+      <span class="material-symbols-outlined" style="font-size:18px">arrow_upward</span>
     </button>
   </div>
 </div>`;
@@ -315,13 +367,9 @@
 
     _initDrag();
     _initPosition();
-    _renderModeMenu();
+    _renderModeTabs();
     _renderMessages();
 
-    document.addEventListener('click', (e) => {
-      const dd = document.getElementById('lsa-mode-dropdown');
-      if (dd && !dd.contains(e.target) && e.target.id !== 'lsa-mode-label') dd.style.display = 'none';
-    });
   }
 
   // ── Posición inicial ──────────────────────────────────────
@@ -340,7 +388,7 @@
 
   // ── Drag ─────────────────────────────────────────────────
   function _initDrag() {
-    const toolbar = document.getElementById('lsa-toolbar');
+    const toolbar = document.getElementById('lsa-header');
     const win = document.getElementById('lsa-win');
 
     const onMove = (cx, cy) => {
@@ -378,12 +426,13 @@
   }
 
   // ── Render ────────────────────────────────────────────────
-  function _renderModeMenu() {
-    const dd = document.getElementById('lsa-mode-dropdown');
-    dd.innerHTML = MODES.map(m => `
-      <div class="lsa-mode-opt ${m.id === _currentMode.id ? 'selected' : ''}" onclick="LSA._selectMode('${m.id}')">
+  function _renderModeTabs() {
+    const el = document.getElementById('lsa-mode-tabs');
+    if (!el) return;
+    el.innerHTML = MODES.map(m => `
+      <button class="lsa-tab ${m.id === _currentMode.id ? 'active' : ''}" onclick="LSA._selectMode('${m.id}')">
         ${m.label}
-      </div>`).join('');
+      </button>`).join('');
   }
 
   function _renderSessions() {
@@ -419,9 +468,9 @@
     if (!_activeSession || !_activeSession.messages.length) {
       el.innerHTML = `
         <div class="lsa-empty">
-          <div class="lsa-empty-icon">✨</div>
-          <h4>¿En qué te ayudo?</h4>
-          <p>Modo activo: <strong>${_currentMode.label}</strong></p>
+          <div class="lsa-empty-logo">✦</div>
+          <h4>Hola, soy Lloyd</h4>
+          <p>Tu asistente IA especializado en quizzes, marketing y ventas digitales. ¿En qué puedo ayudarte hoy?</p>
           <div class="lsa-chips">
             ${_getChips().map(c => `<button class="lsa-chip" onclick="LSA._chip('${c.replace(/'/g,"\\'")}')">${c}</button>`).join('')}
           </div>
@@ -432,14 +481,14 @@
     el.innerHTML = _activeSession.messages.map(m => {
       const isUser = m.role === 'user';
       return `<div class="lsa-msg ${isUser ? 'user' : 'ai'}">
-        <div class="lsa-av ${isUser ? 'me' : 'ai'}">${isUser ? 'TÚ' : '✨'}</div>
+        <div class="lsa-av ${isUser ? 'me' : 'ai'}">${isUser ? 'TÚ' : '✦'}</div>
         <div class="lsa-bubble">${_md(m.content)}</div>
       </div>`;
     }).join('');
 
     if (_isThinking) {
       el.innerHTML += `<div class="lsa-msg ai lsa-thinking">
-        <div class="lsa-av ai">✨</div>
+        <div class="lsa-av ai">✦</div>
         <div class="lsa-bubble"><div class="lsa-dot"></div><div class="lsa-dot"></div><div class="lsa-dot"></div></div>
       </div>`;
     }
@@ -509,17 +558,9 @@
       win.classList.toggle('minimized', _isMinimized);
     },
 
-    _toggleModeMenu(e) {
-      e.stopPropagation();
-      const dd = document.getElementById('lsa-mode-dropdown');
-      dd.style.display = dd.style.display === 'none' ? 'block' : 'none';
-    },
-
     _selectMode(id) {
       _currentMode = MODES.find(m => m.id === id) || MODES[0];
-      document.getElementById('lsa-mode-label').textContent = _currentMode.label + ' ▾';
-      document.getElementById('lsa-mode-dropdown').style.display = 'none';
-      _renderModeMenu();
+      _renderModeTabs();
       _renderMessages();
     },
 
@@ -535,8 +576,7 @@
     _loadSession(id) {
       _activeSession = _sessions.find(s => s.id === id);
       if (_activeSession) _currentMode = MODES.find(m => m.id === _activeSession.mode) || MODES[0];
-      document.getElementById('lsa-mode-label').textContent = _currentMode.label + ' ▾';
-      _renderModeMenu();
+      _renderModeTabs();
       _showSessions = false;
       document.getElementById('lsa-sessions-panel').style.display = 'none';
       document.getElementById('lsa-sessions-btn').classList.remove('active');
