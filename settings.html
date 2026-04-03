@@ -266,18 +266,35 @@
                 <span class="material-symbols-outlined text-on-surface-variant text-sm transition-transform duration-200" id="arrow-hotmart">expand_more</span>
               </div>
             </div>
-            <div class="integration-form hidden px-4 pb-4 space-y-3 border-t border-outline-variant/10 pt-4" id="form-hotmart">
-              <p class="text-xs text-on-surface-variant">Obtén tu API key en <span class="text-primary font-medium">Hotmart → Configuración → API</span></p>
-              <div>
-                <label class="text-xs font-bold uppercase tracking-widest text-on-surface-variant block mb-1.5">Hotmart API Key</label>
-                <input type="password" placeholder="hot_api_..." id="input-hotmart" class="w-full bg-surface-container-lowest border border-outline-variant/20 rounded-lg px-4 py-2.5 text-sm text-on-surface font-mono focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all"/>
+            <div class="integration-form hidden px-4 pb-4 space-y-4 border-t border-outline-variant/10 pt-4" id="form-hotmart">
+              <div class="p-3 rounded-lg text-xs" style="background:rgba(46,91,255,0.08);border:1px solid rgba(46,91,255,0.2);color:rgba(255,255,255,0.6);">
+                <strong class="text-primary">Instrucciones:</strong> Crea cada plan como una suscripción en Hotmart, luego pega la URL de checkout de cada uno abajo. El webhook se configura aparte en Vercel.
               </div>
-              <div>
-                <label class="text-xs font-bold uppercase tracking-widest text-on-surface-variant block mb-1.5">Client ID</label>
-                <input type="text" placeholder="xxxxxxxx-xxxx-xxxx-xxxx" id="input-hotmart-client" class="w-full bg-surface-container-lowest border border-outline-variant/20 rounded-lg px-4 py-2.5 text-sm text-on-surface font-mono focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all"/>
+              <!-- Checkout URLs por plan -->
+              <div class="space-y-3">
+                <div>
+                  <label class="text-xs font-bold uppercase tracking-widest text-on-surface-variant block mb-1.5">URL Checkout — Starter ($5/mes)</label>
+                  <input type="url" placeholder="https://pay.hotmart.com/XXXXXXXX" id="input-hotmart-starter" class="w-full bg-surface-container-lowest border border-outline-variant/20 rounded-lg px-4 py-2.5 text-sm text-on-surface font-mono focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all"/>
+                </div>
+                <div>
+                  <label class="text-xs font-bold uppercase tracking-widest text-on-surface-variant block mb-1.5">URL Checkout — Pro ($9/mes)</label>
+                  <input type="url" placeholder="https://pay.hotmart.com/XXXXXXXX" id="input-hotmart-pro" class="w-full bg-surface-container-lowest border border-outline-variant/20 rounded-lg px-4 py-2.5 text-sm text-on-surface font-mono focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all"/>
+                </div>
+                <div>
+                  <label class="text-xs font-bold uppercase tracking-widest text-on-surface-variant block mb-1.5">URL Checkout — Growth ($19/mes)</label>
+                  <input type="url" placeholder="https://pay.hotmart.com/XXXXXXXX" id="input-hotmart-growth" class="w-full bg-surface-container-lowest border border-outline-variant/20 rounded-lg px-4 py-2.5 text-sm text-on-surface font-mono focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all"/>
+                </div>
+                <div>
+                  <label class="text-xs font-bold uppercase tracking-widest text-on-surface-variant block mb-1.5">URL Checkout — Elite ($49/mes)</label>
+                  <input type="url" placeholder="https://pay.hotmart.com/XXXXXXXX" id="input-hotmart-elite" class="w-full bg-surface-container-lowest border border-outline-variant/20 rounded-lg px-4 py-2.5 text-sm text-on-surface font-mono focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all"/>
+                </div>
+              </div>
+              <div class="pt-2 text-xs" style="color:rgba(255,255,255,0.35);">
+                Webhook URL para configurar en Hotmart:<br>
+                <code class="text-primary font-mono select-all" id="webhook-url-display">https://tu-dominio.vercel.app/api/hotmart-webhook</code>
               </div>
               <div class="flex gap-2 pt-1">
-                <button onclick="connectIntegration('hotmart')" class="px-5 py-2 rounded-lg text-sm font-bold text-white primary-gradient hover:brightness-110 transition-all">Conectar</button>
+                <button onclick="saveHotmartUrls()" class="px-5 py-2 rounded-lg text-sm font-bold text-white primary-gradient hover:brightness-110 transition-all">Guardar URLs</button>
                 <button onclick="toggleIntegration('hotmart')" class="px-5 py-2 rounded-lg text-sm font-semibold text-on-surface-variant border border-outline-variant/20 hover:bg-surface-container transition-colors">Cancelar</button>
               </div>
             </div>
@@ -689,6 +706,38 @@
     if (!isOpen) {
       form.classList.remove('hidden');
       arrow.style.transform = 'rotate(180deg)';
+      // Load Hotmart URLs when opening that panel
+      if (key === 'hotmart') loadHotmartUrls();
+    }
+  }
+
+  // ── Hotmart checkout URLs ────────────────────────────────
+  function saveHotmartUrls() {
+    const starter = document.getElementById('input-hotmart-starter').value.trim();
+    const pro     = document.getElementById('input-hotmart-pro').value.trim();
+    const growth  = document.getElementById('input-hotmart-growth').value.trim();
+    const elite   = document.getElementById('input-hotmart-elite').value.trim();
+    Settings.save({ hotmartStarter: starter, hotmartPro: pro, hotmartGrowth: growth, hotmartElite: elite });
+    markConnected('hotmart');
+    document.getElementById('form-hotmart').classList.add('hidden');
+    document.getElementById('arrow-hotmart').style.transform = 'rotate(0deg)';
+    showToast('✓ URLs de Hotmart guardadas correctamente');
+  }
+
+  // Load saved Hotmart URLs into inputs on open
+  function loadHotmartUrls() {
+    const s = Settings.get();
+    const f = (id, val) => { const el = document.getElementById(id); if (el && val) el.value = val; };
+    f('input-hotmart-starter', s.hotmartStarter);
+    f('input-hotmart-pro',     s.hotmartPro);
+    f('input-hotmart-growth',  s.hotmartGrowth);
+    f('input-hotmart-elite',   s.hotmartElite);
+    // Show webhook URL
+    const wh = document.getElementById('webhook-url-display');
+    if (wh) wh.textContent = `${location.origin}/api/hotmart-webhook`;
+    // Mark connected if any URL is saved
+    if (s.hotmartStarter || s.hotmartPro || s.hotmartGrowth || s.hotmartElite) {
+      markConnected('hotmart');
     }
   }
 
@@ -700,6 +749,7 @@
     document.getElementById('arrow-' + key).style.transform = 'rotate(0deg)';
     showToast('✓ ' + key.charAt(0).toUpperCase() + key.slice(1) + ' conectado correctamente');
   }
+
 
   function markConnected(key) {
     const badge = document.getElementById('status-' + key);
