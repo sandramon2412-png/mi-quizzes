@@ -128,7 +128,52 @@ create trigger on_auth_user_created
   after insert on auth.users
   for each row execute procedure public.handle_new_user();
 
--- ── Quiz settings column (run this in Supabase SQL Editor to enable full functionality) ──
+-- ── Hotmart: User plans table ────────────────────────────────
+create table if not exists public.user_plans (
+  user_id            uuid references public.profiles(id) on delete cascade primary key,
+  email              text,
+  plan               text    default 'free',
+  hotmart_product_id text,
+  event_type         text,
+  expires_at         timestamptz,
+  updated_at         timestamptz default now()
+);
+alter table public.user_plans enable row level security;
+create policy "plans_select_own" on public.user_plans for select using (auth.uid() = user_id);
+
+-- ── Hotmart: Pending upgrades (email not yet registered) ─────
+create table if not exists public.pending_upgrades (
+  email              text primary key,
+  plan               text    default 'free',
+  hotmart_product_id text,
+  event_type         text,
+  expires_at         timestamptz,
+  updated_at         timestamptz default now()
+);
+-- Only service_role can write to this table (webhook uses service key)
+alter table public.pending_upgrades enable row level security;
+
+-- When a new user registers, apply any pending upgrade for their email
+create or replace function public.apply_pending_upgrade()
+returns trigger as $$
+declare
+  v_pending record;
+begin
+  select * into v_pending from public.pending_upgrades where email = new.email;
+  if found then
+    update public.profiles set plan = v_pending.plan, updated_at = now() where id = new.id;
+    insert into public.user_plans (user_id, email, plan, hotmart_product_id, event_type, expires_at)
+      values (new.id, new.email, v_pending.plan, v_pending.hotmart_product_id, v_pending.event_type, v_pending.expires_at)
+      on conflict (user_id) do update set plan=excluded.plan, expires_at=excluded.expires_at, updated_at=now();
+    delete from public.pending_upgrades where email = new.email;
+  end if;
+  return new;
+end;
+$$ language plpgsql security definer;
+
+create trigger on_auth_user_created_apply_upgrade
+  after insert on public.profiles
+  for each row execute procedure public.apply_pending_upgrade();
 -- Stores: postQuizAction, landingUrl, productUrl, paymentUrl, metaPixelId,
 --         metaCapiToken, whatsappNumber, leadCapture, miniAppId, etc.
 alter table public.quizzes add column if not exists settings jsonb default '{}'::jsonb;

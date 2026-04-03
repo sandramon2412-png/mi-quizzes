@@ -118,6 +118,25 @@
     </div>
   </div>
 
+  <!-- ── Upgrade Banner (shown only to free users) ── -->
+  <div id="upgrade-banner" class="hidden mb-6 rounded-2xl overflow-hidden relative" style="background:linear-gradient(135deg,#0d0d2e 0%,#120828 100%);border:1px solid rgba(124,58,237,0.3);">
+    <div class="absolute inset-0" style="background:radial-gradient(ellipse at 0% 50%,rgba(46,91,255,0.15) 0%,transparent 60%),radial-gradient(ellipse at 100% 50%,rgba(124,58,237,0.12) 0%,transparent 60%);pointer-events:none;"></div>
+    <div class="relative z-10 px-6 py-4 flex flex-wrap items-center justify-between gap-4">
+      <div class="flex items-center gap-3">
+        <div class="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0" style="background:linear-gradient(135deg,#2E5BFF,#7c3aed);">
+          <span class="material-symbols-outlined text-white text-lg" style="font-variation-settings:'FILL' 1;">rocket_launch</span>
+        </div>
+        <div>
+          <p class="font-bold text-white text-sm">Estás en el plan Gratuito</p>
+          <p class="text-xs" style="color:rgba(255,255,255,0.45);">Actualiza para desbloquear IA, leads ilimitados y más</p>
+        </div>
+      </div>
+      <button onclick="showUpgradeModal()" class="flex-shrink-0 px-5 py-2 rounded-xl text-sm font-bold text-white transition-all hover:brightness-110" style="background:linear-gradient(135deg,#2E5BFF,#7c3aed);box-shadow:0 4px 16px rgba(46,91,255,0.35);">
+        Ver planes →
+      </button>
+    </div>
+  </div>
+
   <!-- ── Stats (unified bar) ── -->
   <div class="stats-bar flex mb-8">
 
@@ -490,6 +509,28 @@ function toggleFbGuide() {
   </button>
 </div>
 
+<!-- ══════════════ MODAL: UPGRADE PLAN ══════════════ -->
+<div id="modal-upgrade" class="fixed inset-0 z-[200] flex items-center justify-center bg-black/75 backdrop-blur-sm hidden" onclick="if(event.target===this)closeUpgradeModal()">
+  <div class="w-full max-w-2xl mx-4 rounded-2xl overflow-hidden shadow-2xl relative" style="background:#0a0a14;border:1px solid rgba(255,255,255,0.08);">
+    <!-- Gradient top strip -->
+    <div class="h-0.5 w-full" style="background:linear-gradient(90deg,#2E5BFF,#7c3aed,#e879f9);"></div>
+    <!-- Header -->
+    <div class="px-7 pt-6 pb-4 flex items-center justify-between">
+      <div>
+        <h2 class="text-xl font-extrabold text-white tracking-tight">Elige tu plan</h2>
+        <p class="text-sm mt-0.5" style="color:rgba(255,255,255,0.4);">14 días gratis · Sin tarjeta · Cancela cuando quieras</p>
+      </div>
+      <button onclick="closeUpgradeModal()" class="w-8 h-8 rounded-lg flex items-center justify-center transition-colors" style="background:rgba(255,255,255,0.06);color:rgba(255,255,255,0.5);">
+        <span class="material-symbols-outlined text-base">close</span>
+      </button>
+    </div>
+    <!-- Plans grid -->
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-3 px-7 pb-7" id="upgrade-plans-grid">
+      <!-- Rendered by JS -->
+    </div>
+  </div>
+</div>
+
 <!-- ══════════════ MODAL: ONBOARDING ══════════════ -->
 <div id="modal-onboarding" class="fixed inset-0 z-[200] flex items-center justify-center bg-black/70 backdrop-blur-sm hidden">
   <div class="bg-[#131313] border border-white/10 rounded-2xl w-full max-w-md mx-4 shadow-2xl overflow-hidden">
@@ -686,6 +727,10 @@ async function loadUserInfo() {
     const plan = profile?.plan || 'free';
     document.getElementById('user-name').textContent = name;
     document.getElementById('user-avatar').textContent = name.charAt(0).toUpperCase();
+    // Show upgrade banner for free users
+    if (plan === 'free') {
+      document.getElementById('upgrade-banner')?.classList.remove('hidden');
+    }
     const b = getPlanBadge(plan);
     const badge = document.getElementById('plan-badge');
     badge.textContent = b.label;
@@ -1247,6 +1292,66 @@ function applyIdea(idea) {
 
 // ── Utils ────────────────────────────────────────────────
 function esc(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+// ── Upgrade Modal ─────────────────────────────────────────
+const UPGRADE_PLANS = [
+  {
+    id: 'starter', label: 'Starter', price: '$5', period: '/mes',
+    color: '#69f6b8', borderColor: 'rgba(105,246,184,0.3)',
+    features: ['3 quizzes activos', '1,000 respuestas/mes', 'Todas las plantillas', 'Captura de leads'],
+  },
+  {
+    id: 'pro', label: 'Pro', price: '$9', period: '/mes',
+    color: '#4d7cff', borderColor: 'rgba(77,124,255,0.4)',
+    popular: true,
+    features: ['Quizzes ilimitados', '10,000 respuestas/mes', 'Dominio propio', 'IA de curación', 'Todas las integraciones'],
+  },
+  {
+    id: 'growth', label: 'Growth', price: '$19', period: '/mes',
+    color: '#a78bfa', borderColor: 'rgba(167,139,250,0.3)',
+    features: ['Todo lo de Pro', '25,000 respuestas/mes', 'Asistente IA del nicho', 'Meta Pixel avanzado', 'Soporte prioritario'],
+  },
+  {
+    id: 'elite', label: 'Elite', price: '$49', period: '/mes',
+    color: '#fbbf24', borderColor: 'rgba(251,191,36,0.3)',
+    features: ['Todo lo de Pro', 'Respuestas ilimitadas', '5 subdominios', 'White-label', 'Soporte dedicado'],
+  },
+];
+
+function showUpgradeModal() {
+  const grid = document.getElementById('upgrade-plans-grid');
+  grid.innerHTML = UPGRADE_PLANS.map(p => {
+    const url = getHotmartUrl(p.id);
+    const hasUrl = url && url !== './precios.html';
+    return `
+    <div class="rounded-xl p-4 flex flex-col gap-3 relative overflow-hidden transition-transform hover:-translate-y-1" style="background:#0e0e1a;border:1px solid ${p.borderColor};">
+      ${p.popular ? `<div class="absolute top-2 right-2 text-[9px] font-bold px-2 py-0.5 rounded-full text-white" style="background:rgba(77,124,255,0.5);border:1px solid rgba(77,124,255,0.4);">Popular</div>` : ''}
+      <div class="text-xs font-bold uppercase tracking-widest" style="color:${p.color};">${p.label}</div>
+      <div class="flex items-end gap-0.5">
+        <span class="text-2xl font-black text-white">${p.price}</span>
+        <span class="text-xs mb-1" style="color:rgba(255,255,255,0.4);">${p.period}</span>
+      </div>
+      <ul class="space-y-1.5 flex-1">
+        ${p.features.map(f => `<li class="flex items-start gap-1.5 text-[11px]" style="color:rgba(255,255,255,0.55);">
+          <span style="color:${p.color};font-size:13px;line-height:1.2;">✓</span>${f}
+        </li>`).join('')}
+      </ul>
+      ${hasUrl
+        ? `<a href="${esc(url)}" target="_blank" class="block text-center py-2 rounded-lg text-xs font-bold text-white transition-all hover:brightness-110" style="background:linear-gradient(135deg,${p.color}33,${p.color}22);border:1px solid ${p.borderColor};color:${p.color};">
+            Comprar en Hotmart →
+          </a>`
+        : `<a href="./precios.html" class="block text-center py-2 rounded-lg text-xs font-bold transition-all" style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.08);color:rgba(255,255,255,0.4);">
+            Ver detalles
+          </a>`
+      }
+    </div>`;
+  }).join('');
+  document.getElementById('modal-upgrade').classList.remove('hidden');
+}
+
+function closeUpgradeModal() {
+  document.getElementById('modal-upgrade').classList.add('hidden');
+}
 </script>
 </body>
 </html>

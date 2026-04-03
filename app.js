@@ -487,11 +487,29 @@ async function copyToClipboard(text) {
 // ── Plan badge helper ──────────────────────────────────────
 function getPlanBadge(plan) {
   const badges = {
-    free:     { label: 'Free',     color: 'text-on-surface-variant border-outline-variant' },
-    pro:      { label: 'Pro',      color: 'text-primary border-primary' },
+    free:    { label: 'Free',    color: 'text-on-surface-variant border-outline-variant' },
+    starter: { label: 'Starter', color: 'text-secondary border-secondary/50' },
+    pro:     { label: 'Pro',     color: 'text-primary border-primary/60' },
+    growth:  { label: 'Growth',  color: 'text-purple-400 border-purple-400/50' },
+    elite:   { label: 'Elite',   color: 'text-yellow-400 border-yellow-400/50' },
+    // legacy
     business: { label: 'Business', color: 'text-secondary border-secondary' },
   };
   return badges[plan] || badges.free;
+}
+
+// ── Hotmart checkout URLs ──────────────────────────────────
+// These are loaded from Settings (set via settings.html)
+// or can be hardcoded here once you have them from Hotmart
+function getHotmartUrl(plan) {
+  const s = Settings.get();
+  const urls = {
+    starter: s.hotmartStarter || '',
+    pro:     s.hotmartPro     || '',
+    growth:  s.hotmartGrowth  || '',
+    elite:   s.hotmartElite   || '',
+  };
+  return urls[plan] || './precios.html';
 }
 
 // ── Date format ────────────────────────────────────────────
