@@ -499,14 +499,20 @@ function getPlanBadge(plan) {
 }
 
 // ── Hotmart checkout URLs ──────────────────────────────────
-// These are loaded from Settings (set via settings.html)
-// or can be hardcoded here once you have them from Hotmart
 function getHotmartUrl(plan) {
   const s = Settings.get();
+  const DEFAULTS = {
+    starter: 'https://pay.hotmart.com/W105245250P',
+    pro:     'https://pay.hotmart.com/P105245330A',
+    growth:  'https://pay.hotmart.com/A105245379C',
+    elite:   'https://pay.hotmart.com/U105245430N',
+  };
   const urls = {
-    starter: s.hotmartStarter || '',
-    pro:     s.hotmartPro     || '',
-    growth:  s.hotmartGrowth  || '',
+    starter: s.hotmartStarter || DEFAULTS.starter,
+    pro:     s.hotmartPro     || DEFAULTS.pro,
+    growth:  s.hotmartGrowth  || DEFAULTS.growth,
+    elite:   s.hotmartElite   || DEFAULTS.elite,
+  };
     elite:   s.hotmartElite   || '',
   };
   return urls[plan] || './precios.html';
