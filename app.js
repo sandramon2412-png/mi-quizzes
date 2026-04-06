@@ -214,9 +214,21 @@ const Claude = {
   },
 
   _parseJSON(text) {
-    const match = text.match(/\{[\s\S]*\}/);
-    if (!match) throw new Error('Respuesta de IA inválida');
-    return JSON.parse(match[0]);
+    // Strip markdown code blocks if present
+    const stripped = text.replace(/```json\s*/gi, '').replace(/```\s*/g, '').trim();
+    const match = stripped.match(/\{[\s\S]*\}/);
+    if (!match) throw new Error('Respuesta de IA inválida: no se encontró JSON');
+    try {
+      return JSON.parse(match[0]);
+    } catch {
+      // Try to extract valid JSON by finding last closing brace
+      const lastBrace = stripped.lastIndexOf('}');
+      if (lastBrace > -1) {
+        const firstBrace = stripped.indexOf('{');
+        try { return JSON.parse(stripped.slice(firstBrace, lastBrace + 1)); } catch {}
+      }
+      throw new Error('Respuesta de IA inválida: JSON malformado');
+    }
   },
 
   async generateQuiz(productName, description, niche, numQuestions, numOptions) {
@@ -297,26 +309,19 @@ TAREA: Para el siguiente producto digital, genera 3 ideas de mini-apps que añad
 - Nicho: ${niche || 'infoproductos'}
 
 CRITERIOS:
-• Las mini-apps deben ser directamente útiles para el tema del producto
-• Deben ser algo que el usuario use MIENTRAS consume el contenido
-• Tipos: calculadora, tracker de progreso, generador de contenido, planificador, checklist interactivo, simulador
+• Cada mini-app debe ser directamente útil para el tema del producto
+• Debe ser algo que el usuario use MIENTRAS consume el contenido
+• Usa SOLO estos tipos exactos: calculadora, tracker, generador, checklist, planificador, chatbot
 
-RESPONDE SOLO CON JSON VÁLIDO:
-{
-  "apps": [
-    {
-      "name": "Nombre de la Mini-App",
-      "icon": "emoji relevante",
-      "type": "calculadora|tracker|generador|checklist|planificador|simulador",
-      "description": "Qué hace exactamente y cómo ayuda al usuario",
-      "features": ["feature 1", "feature 2", "feature 3"],
-      "whySellsMore": "Por qué esta mini-app aumenta el valor percibido del producto"
-    }
-  ]
-}`;
+RESPONDE SOLO CON ESTE JSON VÁLIDO (sin texto antes ni después):
+{"apps":[{"name":"Nombre de la Mini-App","icon":"emoji relevante","type":"calculadora","description":"Qué hace exactamente y cómo ayuda al usuario en 1 oración","features":["Función clave 1","Función clave 2","Función clave 3"]}]}
 
-    const text = await this._call([{ role: 'user', content: prompt }], 2000);
-    return this._parseJSON(text);
+Genera 3 apps distintas con tipos distintos. Devuelve SOLO el JSON, sin markdown, sin explicaciones.`;
+
+    const text = await this._call([{ role: 'user', content: prompt }], 1500);
+    const result = this._parseJSON(text);
+    if (!result.apps || !Array.isArray(result.apps)) throw new Error('Respuesta de IA inválida');
+    return result;
   },
 
   async improveQuestion(currentQuestion, productContext) {
@@ -341,27 +346,35 @@ Responde SOLO con JSON:
   },
 
   async generateMiniAppContent(appIdea, product, niche) {
-    const { type, name, description } = appIdea;
+    const { type, name, description, features = [] } = appIdea;
+    const featuresCtx = features.length ? `\nFunciones que debe incluir: ${features.join(', ')}` : '';
     const typeInstructions = {
-      chatbot: `Diseña un asistente IA especializado en "${name}" para el nicho "${niche}". Responde:
-{"chatbotName":"Nombre del asistente (1-2 palabras)","chatbotGreeting":"Mensaje de bienvenida cálido y específico del nicho (1-2 oraciones)","chatbotSystemPrompt":"Prompt del sistema en español: eres [nombre], experto en [nicho/producto]. Tu tono es [tono]. Responde siempre sobre [tema]. Limita respuestas a 3 oraciones máximo. Si preguntan algo fuera del tema, redirige amablemente.","chatbotSuggestions":["Pregunta sugerida 1 del nicho","Pregunta sugerida 2","Pregunta sugerida 3"]}`,
-      checklist: `Genera 10-12 ítems de checklist ESPECÍFICOS y accionables para "${name}". Responde: {"initialItems":["ítem 1","ítem 2",...]}`,
-      planificador: `Genera 8-10 tareas de planificador ESPECÍFICAS y ordenadas lógicamente para "${name}". Responde: {"initialTasks":["tarea 1","tarea 2",...]}`,
-      tracker: `Define el hábito diario y duración para "${name}". Responde: {"trackerDays":30,"trackerHabit":"nombre del hábito diario específico"}`,
-      calculadora: `Diseña una calculadora específica para "${name}". Define 2-3 campos y una fórmula JavaScript simple usando los ids (a,b,c). Responde: {"calcFields":[{"id":"a","label":"Etiqueta del campo","placeholder":"valor ejemplo"}],"calcFormula":"a * b","calcResultLabel":"Etiqueta del resultado"}`,
-      generador: `Define el prompt base para el generador de contenido "${name}". Responde: {"generatorPrompt":"Genera [tipo de contenido] para [contexto]: [input del usuario]","inputLabel":"¿Qué quieres generar?","inputPlaceholder":"Describe tu situación..."}`,
+      chatbot: `Diseña un asistente IA especializado en "${name}" para el nicho "${niche}".${featuresCtx}
+Devuelve SOLO este JSON sin texto adicional:
+{"chatbotName":"Nombre corto del asistente","chatbotGreeting":"Bienvenida cálida y específica del nicho (1-2 oraciones)","chatbotSystemPrompt":"Eres [nombre], experto en [tema específico del nicho]. Ayudas con: [lista de funciones]. Responde en español, tono [amigable/profesional], máximo 4 oraciones por respuesta. Si te preguntan algo ajeno al tema, redirige amablemente.","chatbotSuggestions":["Pregunta sugerida 1 específica del nicho","Pregunta sugerida 2","Pregunta sugerida 3"]}`,
+      checklist: `Genera 12-15 ítems de checklist MUY ESPECÍFICOS y accionables para "${name}".${featuresCtx}
+Devuelve SOLO este JSON: {"initialItems":["ítem concreto 1","ítem concreto 2",...]}`,
+      planificador: `Genera 10-12 tareas de planificador ESPECÍFICAS, ordenadas y con contexto para "${name}".${featuresCtx}
+Devuelve SOLO este JSON: {"initialTasks":["tarea concreta 1","tarea concreta 2",...]}`,
+      tracker: `Define el hábito y duración para "${name}".${featuresCtx}
+Devuelve SOLO este JSON: {"trackerDays":30,"trackerHabit":"nombre específico del hábito diario en el nicho"}`,
+      calculadora: `Diseña una calculadora práctica y útil para "${name}". Define 2-3 campos con etiquetas claras del nicho y una fórmula JS simple usando las variables a, b, c.${featuresCtx}
+Devuelve SOLO este JSON: {"calcFields":[{"id":"a","label":"Nombre del campo en el nicho","placeholder":"valor de ejemplo"}],"calcFormula":"a * b","calcResultLabel":"Nombre del resultado en el nicho"}`,
+      generador: `Define el prompt y etiquetas para el generador "${name}".${featuresCtx}
+Devuelve SOLO este JSON: {"generatorPrompt":"Genera [tipo de contenido específico] para [contexto del nicho] con las siguientes características: [input del usuario]. Responde en español con formato claro.","inputLabel":"Etiqueta descriptiva del input en el nicho","inputPlaceholder":"Ejemplo de input específico del nicho..."}`,
+      simulador: `Define el prompt y etiquetas para el simulador "${name}".${featuresCtx}
+Devuelve SOLO este JSON: {"generatorPrompt":"Simula [escenario específico del nicho] basado en: [input del usuario]. Explica paso a paso qué pasaría en ese escenario real. Responde en español con ejemplos concretos.","inputLabel":"¿Qué quieres simular?","inputPlaceholder":"Describe tu situación o escenario..."}`,
     };
-    const instruction = typeInstructions[type];
-    if (!instruction) return {};
+    const instruction = typeInstructions[type] || typeInstructions.generador;
 
     const prompt = `Eres experto en productos digitales. Producto: "${product}" · Nicho: ${niche || 'infoproductos'}.
 Mini-app: "${name}" — ${description}
 
 ${instruction}
 
-RESPONDE SOLO JSON VÁLIDO, sin texto adicional.`;
+IMPORTANTE: Devuelve SOLO el JSON válido, sin markdown, sin texto antes ni después.`;
 
-    const text = await this._call([{ role: 'user', content: prompt }], 1000);
+    const text = await this._call([{ role: 'user', content: prompt }], 1200);
     return this._parseJSON(text);
   },
 };
@@ -394,9 +407,21 @@ const Groq = {
   },
 
   _parseJSON(text) {
-    const match = text.match(/\{[\s\S]*\}/);
-    if (!match) throw new Error('Respuesta de IA inválida');
-    return JSON.parse(match[0]);
+    // Strip markdown code blocks if present
+    const stripped = text.replace(/```json\s*/gi, '').replace(/```\s*/g, '').trim();
+    const match = stripped.match(/\{[\s\S]*\}/);
+    if (!match) throw new Error('Respuesta de IA inválida: no se encontró JSON');
+    try {
+      return JSON.parse(match[0]);
+    } catch {
+      // Try to extract valid JSON by finding last closing brace
+      const lastBrace = stripped.lastIndexOf('}');
+      if (lastBrace > -1) {
+        const firstBrace = stripped.indexOf('{');
+        try { return JSON.parse(stripped.slice(firstBrace, lastBrace + 1)); } catch {}
+      }
+      throw new Error('Respuesta de IA inválida: JSON malformado');
+    }
   },
 
   async generateQuiz(productName, description, niche, numQ, numOpts) {

@@ -891,21 +891,30 @@ async function generateMiniApps() {
     // Store ideas for use by create buttons
     window._miniAppIdeas = data.apps;
     c.innerHTML = data.apps.map((a, i) => `
-      <div class="flex items-start gap-2 mb-3 p-3 rounded-lg bg-surface-container border border-outline-variant/10">
-        <span class="text-xl shrink-0">${esc(a.icon)}</span>
-        <div class="min-w-0 flex-1">
-          <p class="text-sm font-bold text-on-surface truncate">${esc(a.name)}</p>
-          <p class="text-xs text-on-surface-variant mt-0.5 line-clamp-2">${esc(a.description)}</p>
-          <div class="flex flex-wrap gap-1 mt-1.5">
-            ${(a.features||[]).slice(0,3).map(f=>`<span class="text-[10px] px-2 py-0.5 rounded-full bg-tertiary/10 text-tertiary">${esc(f)}</span>`).join('')}
+      <div class="mb-3 p-3 rounded-lg bg-surface-container border border-outline-variant/10">
+        <div class="flex items-start gap-2">
+          <span class="text-xl shrink-0">${esc(a.icon)}</span>
+          <div class="min-w-0 flex-1">
+            <p class="text-sm font-bold text-on-surface">${esc(a.name)}</p>
+            <p class="text-xs text-on-surface-variant mt-0.5">${esc(a.description)}</p>
           </div>
-          <button onclick="createMiniAppFromIdea(${i})" class="mt-2 text-[10px] px-3 py-1 rounded-full bg-primary text-on-primary font-semibold hover:bg-primary/90 transition-colors">
-            ✨ Crear esta app
-          </button>
         </div>
+        ${(a.features||[]).length ? `
+        <div class="mt-2 space-y-1">
+          <p class="text-[10px] font-bold text-on-surface-variant uppercase tracking-wider mb-1.5">Funciones a incluir:</p>
+          ${(a.features||[]).map((f,fi)=>`
+            <label class="flex items-center gap-2 cursor-pointer group">
+              <input type="checkbox" checked data-idea="${i}" data-fi="${fi}" class="miniapp-feature-cb w-3.5 h-3.5 rounded accent-tertiary cursor-pointer"/>
+              <span class="text-[11px] text-on-surface-variant group-hover:text-on-surface transition-colors">${esc(f)}</span>
+            </label>`).join('')}
+        </div>` : ''}
+        <button onclick="createMiniAppFromIdea(${i})" class="mt-2.5 w-full text-[10px] px-3 py-1.5 rounded-lg bg-primary text-on-primary font-semibold hover:bg-primary/90 transition-colors">
+          ✨ Crear esta app
+        </button>
       </div>`).join('');
   } catch(e) {
     c.innerHTML = `<p class="text-xs text-error">Error: ${esc(e.message)}</p>`;
+    console.error('generateMiniApps error:', e);
   }
 }
 
@@ -916,6 +925,18 @@ async function createMiniAppFromIdea(idx) {
   const a = ideas[idx];
   const btn = event.currentTarget;
   btn.disabled = true;
+
+  // Read which features are checked for this idea
+  const checkedFeatures = [];
+  document.querySelectorAll(`.miniapp-feature-cb[data-idea="${idx}"]`).forEach(cb => {
+    if (cb.checked) {
+      const fi = parseInt(cb.dataset.fi);
+      if (a.features && a.features[fi]) checkedFeatures.push(a.features[fi]);
+    }
+  });
+  // Merge selected features back into the idea object for the AI prompt
+  const ideaWithFeatures = { ...a, features: checkedFeatures.length ? checkedFeatures : (a.features || []) };
+
   try {
     const product = document.getElementById('input-product').value.trim();
     const niche   = document.getElementById('input-niche').value.trim();
@@ -924,7 +945,7 @@ async function createMiniAppFromIdea(idx) {
     btn.textContent = '🤖 Generando contenido...';
     let content = {};
     try {
-      content = await AI.generateMiniAppContent(a, product, niche);
+      content = await AI.generateMiniAppContent(ideaWithFeatures, product, niche);
     } catch(e) {
       console.warn('generateMiniAppContent failed:', e.message);
     }
