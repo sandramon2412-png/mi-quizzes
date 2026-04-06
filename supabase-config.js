@@ -49,6 +49,8 @@ const Auth = {
   async signIn(email, password) {
     const { data, error } = await db.auth.signInWithPassword({ email, password });
     if (error) throw error;
+    // Apply any pending Hotmart upgrade for this email
+    if (data?.user) _applyPendingUpgrade(data.user).catch(() => {});
     return data;
   },
 
@@ -309,3 +311,21 @@ const DB = {
     },
   },
 };
+
+// ── Apply pending Hotmart upgrade on login ─────────────────
+async function _applyPendingUpgrade(user) {
+  if (!user?.email || !user?.id) return;
+  const { data } = await db.from('pending_upgrades').select('*').eq('email', user.email).single();
+  if (!data) return;
+  // Apply plan to profile
+  await db.from('profiles').update({ plan: data.plan, updated_at: new Date().toISOString() }).eq('id', user.id);
+  // Upsert into user_plans
+  await db.from('user_plans').upsert({
+    user_id: user.id, email: user.email, plan: data.plan,
+    hotmart_product_id: data.hotmart_product_id,
+    event_type: data.event_type, expires_at: data.expires_at,
+    updated_at: new Date().toISOString(),
+  }, { onConflict: 'user_id' });
+  // Delete pending entry
+  await db.from('pending_upgrades').delete().eq('email', user.email);
+}
