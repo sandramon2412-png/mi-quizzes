@@ -10,13 +10,17 @@ const SUPABASE_URL = process.env.SUPABASE_URL;
 const SUPABASE_SERVICE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
 const HOTMART_SECRET = process.env.HOTMART_WEBHOOK_SECRET; // set in Vercel env vars
 
-// Map Hotmart product codes → plan names
-// Fill these with your real Hotmart product codes after creating them
+// Map Hotmart product IDs → plan names
 const PRODUCT_PLAN_MAP = {
-  [process.env.HOTMART_PRODUCT_STARTER]: 'starter',
-  [process.env.HOTMART_PRODUCT_PRO]:     'pro',
-  [process.env.HOTMART_PRODUCT_GROWTH]:  'growth',
-  [process.env.HOTMART_PRODUCT_ELITE]:   'elite',
+  '7513032': 'starter',
+  '7513065': 'pro',
+  '7513088': 'growth',
+  '7513105': 'elite',
+  // Also support env var overrides
+  ...(process.env.HOTMART_PRODUCT_STARTER ? { [process.env.HOTMART_PRODUCT_STARTER]: 'starter' } : {}),
+  ...(process.env.HOTMART_PRODUCT_PRO     ? { [process.env.HOTMART_PRODUCT_PRO]:     'pro'     } : {}),
+  ...(process.env.HOTMART_PRODUCT_GROWTH  ? { [process.env.HOTMART_PRODUCT_GROWTH]:  'growth'  } : {}),
+  ...(process.env.HOTMART_PRODUCT_ELITE   ? { [process.env.HOTMART_PRODUCT_ELITE]:   'elite'   } : {}),
 };
 
 export default async function handler(req, res) {
