@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bot Lab – Luminous Studio</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="./supabase-config.js"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#080810;--sidebar:#0d0d1a;--card:#13131f;--border:rgba(255,255,255,0.06);--text:#e2e8f0;--muted:#94a3b8;--accent:#a78bfa;--accent2:#7c3aed;--user-msg:linear-gradient(135deg,#7c3aed,#a78bfa)}
+html,body{height:100%;font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--text);overflow:hidden}
+#app{display:flex;height:100vh}
+/* SIDEBAR */
+#sidebar{width:280px;min-width:280px;background:var(--sidebar);border-right:1px solid var(--border);display:flex;flex-direction:column;overflow:hidden;transition:transform 0.3s}
+#sidebar-top{padding:16px;border-bottom:1px solid var(--border)}
+.back-link{display:inline-flex;align-items:center;gap:6px;color:var(--muted);font-size:13px;text-decoration:none;transition:color 0.2s}
+.back-link:hover{color:var(--accent)}
+#sidebar-body{flex:1;overflow-y:auto;padding:20px 16px}
+#sidebar-body::-webkit-scrollbar{width:4px}
+#sidebar-body::-webkit-scrollbar-track{background:transparent}
+#sidebar-body::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px}
+.bot-icon-lg{font-size:48px;text-align:center;margin-bottom:12px}
+.bot-name-lg{font-size:18px;font-weight:700;text-align:center;margin-bottom:6px}
+.bot-cat-chip{display:inline-block;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600;background:rgba(167,139,250,0.15);color:var(--accent);margin:0 auto 12px;display:block;width:fit-content;margin-left:auto;margin-right:auto}
+.bot-desc-lg{font-size:13px;color:var(--muted);text-align:center;line-height:1.6;margin-bottom:24px}
+.starters-label{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:var(--muted);margin-bottom:10px}
+.starter-pill{display:block;width:100%;text-align:left;padding:10px 12px;background:var(--card);border:1px solid var(--border);border-radius:10px;color:var(--text);font-size:13px;cursor:pointer;margin-bottom:8px;transition:all 0.2s;line-height:1.4}
+.starter-pill:hover{border-color:var(--accent);color:var(--accent);background:rgba(167,139,250,0.05)}
+#sidebar-bottom{padding:16px;border-top:1px solid var(--border)}
+.new-chat-btn{width:100%;padding:10px;background:var(--card);border:1px solid var(--border);border-radius:10px;color:var(--muted);font-size:13px;cursor:pointer;transition:all 0.2s}
+.new-chat-btn:hover{border-color:var(--accent);color:var(--accent)}
+/* MAIN */
+#main{flex:1;display:flex;flex-direction:column;overflow:hidden}
+#chat-header{padding:16px 24px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:12px}
+#mobile-toggle{display:none;background:none;border:none;color:var(--muted);font-size:20px;cursor:pointer;padding:4px}
+.chat-header-icon{font-size:24px}
+.chat-header-name{font-weight:700;font-size:16px}
+.chat-header-model{font-size:12px;color:var(--muted);margin-left:auto;display:flex;align-items:center;gap:6px}
+.model-dot{width:7px;height:7px;background:#22c55e;border-radius:50%}
+#messages{flex:1;overflow-y:auto;padding:24px;display:flex;flex-direction:column;gap:16px}
+#messages::-webkit-scrollbar{width:4px}
+#messages::-webkit-scrollbar-track{background:transparent}
+#messages::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px}
+.msg{max-width:75%;display:flex;flex-direction:column;gap:4px;animation:msgIn 0.2s ease}
+@keyframes msgIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.msg.user{align-self:flex-end;align-items:flex-end}
+.msg.bot{align-self:flex-start;align-items:flex-start}
+.msg-bubble{padding:12px 16px;border-radius:16px;font-size:14px;line-height:1.6}
+.msg.user .msg-bubble{background:var(--user-msg);color:#fff;border-bottom-right-radius:4px}
+.msg.bot .msg-bubble{background:var(--card);border:1px solid var(--border);border-bottom-left-radius:4px}
+.msg-bubble b{font-weight:700}
+.msg-bubble code{background:rgba(255,255,255,0.1);padding:2px 6px;border-radius:4px;font-family:monospace;font-size:13px}
+.msg-bubble pre{background:rgba(0,0,0,0.3);padding:12px;border-radius:8px;overflow-x:auto;margin:8px 0}
+.msg-bubble pre code{background:none;padding:0}
+.msg-bubble ul,.msg-bubble ol{padding-left:20px;margin:6px 0}
+.msg-bubble li{margin-bottom:4px}
+.msg-time{font-size:11px;color:var(--muted);padding:0 4px}
+.typing-indicator{display:flex;align-items:center;gap:5px;padding:12px 16px;background:var(--card);border:1px solid var(--border);border-radius:16px;border-bottom-left-radius:4px;align-self:flex-start}
+.typing-dot{width:7px;height:7px;background:var(--muted);border-radius:50%;animation:typingBounce 1.2s infinite}
+.typing-dot:nth-child(2){animation-delay:0.2s}
+.typing-dot:nth-child(3){animation-delay:0.4s}
+@keyframes typingBounce{0%,80%,100%{transform:scale(0.8);opacity:0.5}40%{transform:scale(1.2);opacity:1}}
+#empty-state{display:flex;flex-direction:column;align-items:center;justify-content:center;flex:1;gap:12px;color:var(--muted);text-align:center;padding:40px}
+#empty-state .es-icon{font-size:56px;margin-bottom:8px;opacity:0.4}
+#empty-state p{font-size:14px;max-width:280px;line-height:1.6}
+#input-bar{padding:16px 24px;border-top:1px solid var(--border);background:var(--bg)}
+.input-wrap{display:flex;align-items:flex-end;gap:10px;background:var(--card);border:1px solid var(--border);border-radius:16px;padding:10px 14px;transition:border-color 0.2s}
+.input-wrap:focus-within{border-color:var(--accent)}
+#user-input{flex:1;background:none;border:none;outline:none;color:var(--text);font-size:14px;resize:none;max-height:160px;line-height:1.5;font-family:inherit}
+#user-input::placeholder{color:var(--muted)}
+#send-btn{background:var(--accent2);border:none;color:#fff;width:36px;height:36px;border-radius:10px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all 0.2s}
+#send-btn:hover{background:var(--accent);transform:scale(1.05)}
+#send-btn:disabled{opacity:0.5;cursor:default;transform:none}
+/* LOCKED */
+#locked-overlay{position:absolute;inset:0;background:rgba(8,8,16,0.9);backdrop-filter:blur(8px);display:flex;align-items:center;justify-content:center;z-index:50}
+.locked-card{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:40px;text-align:center;max-width:360px}
+.locked-icon{font-size:48px;margin-bottom:16px}
+.locked-title{font-size:20px;font-weight:700;margin-bottom:8px}
+.locked-desc{font-size:14px;color:var(--muted);margin-bottom:24px;line-height:1.6}
+.locked-btn{display:inline-block;padding:12px 28px;background:var(--accent2);color:#fff;text-decoration:none;border-radius:12px;font-weight:600;transition:background 0.2s}
+.locked-btn:hover{background:var(--accent)}
+/* MOBILE */
+@media(max-width:768px){
+  #sidebar{position:fixed;left:0;top:0;bottom:0;z-index:100;transform:translateX(-100%)}
+  #sidebar.open{transform:translateX(0)}
+  #mobile-toggle{display:block}
+  #main{position:relative}
+  .msg{max-width:90%}
+}
+</style>
+</head>
+<body>
+<div id="app">
+  <aside id="sidebar">
+    <div id="sidebar-top">
+      <a href="./bots.html" class="back-link">← Volver al Lab</a>
+    </div>
+    <div id="sidebar-body">
+      <div class="bot-icon-lg" id="sb-icon">🤖</div>
+      <div class="bot-name-lg" id="sb-name">Bot</div>
+      <div class="bot-cat-chip" id="sb-cat">General</div>
+      <div class="bot-desc-lg" id="sb-desc"></div>
+      <div class="starters-label">Empezar con...</div>
+      <div id="starters-list"></div>
+    </div>
+    <div id="sidebar-bottom">
+      <button class="new-chat-btn" onclick="newChat()">+ Nueva conversación</button>
+    </div>
+  </aside>
+  <main id="main" style="position:relative">
+    <div id="chat-header">
+      <button id="mobile-toggle" onclick="toggleSidebar()">☰</button>
+      <span class="chat-header-icon" id="hdr-icon">🤖</span>
+      <span class="chat-header-name" id="hdr-name">Bot</span>
+      <div class="chat-header-model">
+        <span class="model-dot"></span>
+        <span>Llama 3.3 70B</span>
+      </div>
+    </div>
+    <div id="messages"></div>
+    <div id="input-bar">
+      <div class="input-wrap">
+        <textarea id="user-input" rows="1" placeholder="Escribe tu mensaje..." maxlength="4000"></textarea>
+        <button id="send-btn" onclick="sendMessage()" title="Enviar">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+        </button>
+      </div>
+    </div>
+    <div id="locked-overlay" style="display:none">
+      <div class="locked-card">
+        <div class="locked-icon">🔒</div>
+        <div class="locked-title">Bot PRO</div>
+        <div class="locked-desc">Este bot especializado requiere un plan PRO. Desbloquea todos los bots y herramientas avanzadas.</div>
+        <a href="./precios.html" class="locked-btn">Ver Planes PRO</a>
+      </div>
+    </div>
+  </main>
+</div>
+<script>
+const BOTS=[
+  {id:'quiz-creator',icon:'🎯',name:'Quiz Creator Pro',category:'Quiz',plan:'free',desc:'Crea quizzes de diagnóstico completos con preguntas, perfiles y mensajes personalizados.'},
+  {id:'quiz-profiles',icon:'🧬',name:'Perfiles de Resultado',category:'Quiz',plan:'pro',desc:'Diseña perfiles de resultado irresistibles que conectan emocionalmente con tu audiencia.'},
+  {id:'quiz-questions',icon:'❓',name:'Generador de Preguntas',category:'Quiz',plan:'free',desc:'Genera preguntas de quiz optimizadas para máximo engagement y segmentación.'},
+  {id:'sales-copy',icon:'✍️',name:'Copy de Ventas',category:'Copywriting',plan:'pro',desc:'Escribe copy de ventas persuasivo al estilo Gary Halbert y Dan Kennedy.'},
+  {id:'email-sequence',icon:'📧',name:'Secuencia de Emails',category:'Copywriting',plan:'pro',desc:'Crea secuencias de email marketing que nutren y convierten a tus leads.'},
+  {id:'whatsapp-closer',icon:'💬',name:'Cierre por WhatsApp',category:'Copywriting',plan:'free',desc:'Genera scripts de cierre de ventas por WhatsApp naturales y efectivos.'},
+  {id:'fb-ads',icon:'📱',name:'Anuncios Facebook/IG',category:'Ads',plan:'pro',desc:'Crea anuncios de Facebook e Instagram que capturan atención y generan clicks.'},
+  {id:'andromeda-ads',icon:'🚀',name:'Método Andrómeda Ads',category:'Ads',plan:'pro',desc:'Implementa el Método Andrómeda: quiz como landing + retargeting de completadores.'},
+  {id:'video-script',icon:'🎬',name:'Script de Video VSL',category:'Ads',plan:'pro',desc:'Escribe scripts de Video Sales Letter que enganchan y convierten.'},
+  {id:'product-name',icon:'💡',name:'Nombre de Producto',category:'Producto',plan:'free',desc:'Genera nombres memorables y estratégicos para tu infoproducto o servicio.'},
+  {id:'offer-stack',icon:'🎁',name:'Stack de Oferta',category:'Producto',plan:'pro',desc:'Construye una oferta irresistible con bonos, garantías y elementos de valor.'},
+  {id:'lead-magnet',icon:'🧲',name:'Lead Magnet Creator',category:'Producto',plan:'free',desc:'Diseña lead magnets de alto valor que atraen leads perfectamente cualificados.'},
+  {id:'content-ideas',icon:'💭',name:'Ideas de Contenido',category:'Contenido',plan:'free',desc:'Genera ideas de contenido para redes sociales alineadas con tu nicho y producto.'},
+  {id:'reels-hook',icon:'🎣',name:'Hooks para Reels',category:'Contenido',plan:'free',desc:'Crea hooks irresistibles para tus Reels que detienen el scroll en los primeros 3 segundos.'},
+  {id:'identity-copy',icon:'🪄',name:'Copy de Identidad',category:'Contenido',plan:'pro',desc:'Escribe copy basado en identidad que hace que tu audiencia diga "esto es para mí".'},
+  {id:'launch-plan',icon:'📅',name:'Plan de Lanzamiento',category:'Producto',plan:'pro',desc:'Crea un plan de lanzamiento completo con fases, contenido y estrategia de ventas.'},
+];
+
+const BOT_PROMPTS={
+  'quiz-creator':`Eres un experto en crear quizzes de diagnóstico para infoproductores. Cuando te pidan crear un quiz, genera: título atractivo, 6-8 preguntas con 4 opciones cada una, 3 perfiles de resultado con nombre, descripción y mensaje personalizado. Responde siempre en español, con formato claro y estructurado. Optimiza para máximo engagement y segmentación del público objetivo.`,
+  'quiz-profiles':`Eres un experto en psicología del consumidor y copywriting. Creas perfiles de resultado para quizzes que conectan emocionalmente. Para cada perfil incluye: nombre evocador, descripción de personalidad, dolores principales, sueño/resultado deseado, mensaje personalizado que valide al usuario y presente el producto como solución. Siempre en español, tono empático y poderoso.`,
+  'quiz-questions':`Eres un especialista en diseño de quizzes de marketing. Generas preguntas altamente segmentadoras para quizzes de infoproductos. Cada pregunta debe revelar algo sobre el nivel de consciencia, pain points o deseos del usuario. Incluye 4 opciones por pregunta. Responde en español con explicación breve del por qué cada pregunta es estratégica.`,
+  'sales-copy':`Eres un copywriter experto al estilo Gary Halbert y Dan Kennedy. Escribes copy de ventas en español que vende. Estructura: Headline impactante → Lead que engancha → Historia que conecta → Presentación de la oferta → Prueba social → Garantía → CTA urgente → PS poderoso. Usa lenguaje directo, específico, con beneficios claros. Nunca uses palabras genéricas.`,
+  'email-sequence':`Eres un experto en email marketing para infoproductores hispanohablantes. Creas secuencias de emails que nutren y convierten. Para cada email incluye: Asunto (con alta tasa de apertura), preheader, cuerpo con historia/valor/CTA. Estructura secuencias de bienvenida (5 emails), nurture (7 emails) o lanzamiento (10 emails). Responde siempre en español.`,
+  'whatsapp-closer':`Eres un experto en ventas conversacionales por WhatsApp. Creas scripts naturales para cerrar ventas sin sonar como vendedor. Incluye: apertura de conversación, descubrimiento de necesidades, presentación del valor, manejo de objeciones comunes (precio, tiempo, no sé si funciona), y cierre. Todo en español, tono conversacional y auténtico.`,
+  'fb-ads':`Eres un experto en publicidad de Facebook e Instagram para el mercado hispano. Creas anuncios que paran el scroll y generan clicks. Para cada anuncio: Hook (primeras 3 líneas cruciales), texto principal con historia/beneficios, titular, descripción, CTA. Crea versiones para diferentes niveles de consciencia (frío, tibio, caliente). Siempre en español.`,
+  'andromeda-ads':`Eres experto en el Método Andrómeda para infoproductores: usar un quiz como landing page de Facebook Ads + retargeting a completadores. Ayudas a crear: estructura de la campaña ABO para tráfico frío al quiz, campaña CBO de retargeting a quienes completaron el quiz, copy para ambas fases, audiencias recomendadas, KPIs a monitorear. Responde en español con detalle estratégico.`,
+  'video-script':`Eres un experto en Video Sales Letters (VSL) para infoproductores. Creas scripts que enganchan y convierten usando la estructura: Patrón de interrupción → Promesa → Problema/Agitación → Historia de credibilidad → Solución → Oferta detallada → Bonos → Garantía → Urgencia → CTA. Scripts naturales, conversacionales, en español.`,
+  'product-name':`Eres un experto en branding y naming para infoproductos. Generas nombres memorables, únicos y estratégicos. Para cada nombre propuesto explicas: por qué funciona, qué emociones evoca, cómo se posiciona. Considera: nombres de resultado, nombres de método, nombres de identidad, nombres de transformación. Siempre en español, genera 8-10 opciones por solicitud.`,
+  'offer-stack':`Eres un experto en construcción de ofertas irresistibles al estilo Alex Hormozi. Construyes stacks de oferta con: Producto core (transformación principal), 3-5 bonos estratégicos (que eliminan objeciones), garantía poderosa, elementos de urgencia/escasez, precio anclado vs precio real. Todo en español con el valor percibido calculado para cada elemento.`,
+  'lead-magnet':`Eres un experto en lead magnets de alto valor para infoproductores. Diseñas recursos gratuitos que atraen leads perfectamente cualificados y pre-venden el producto de pago. Para cada lead magnet: título irresistible, formato ideal, contenido outline completo, headline para la landing page, y cómo conectarlo con el producto principal. Responde en español.`,
+  'content-ideas':`Eres un estratega de contenidos para redes sociales enfocado en infoproductores hispanohablantes. Generas ideas de contenido que educan, entretienen y venden. Para cada idea: formato recomendado (Reels/carrusel/texto), hook de apertura, estructura del contenido, CTA. Genera 10+ ideas por solicitud organizadas por tipo. Siempre en español.`,
+  'reels-hook':`Eres el experto número 1 en crear hooks para Reels de Instagram y TikTok en español. Un hook es lo primero que se ve/escucha en los primeros 3 segundos. Creas hooks que detienen el scroll usando: pregunta provocadora, afirmación contraintuitiva, promesa específica, dato sorprendente, o escenario identificable. Genera 8-10 hooks por solicitud con explicación de por qué funcionan.`,
+  'identity-copy':`Eres un experto en copywriting basado en identidad, siguiendo el framework de Seth Godin: "la gente como nosotros hace cosas así". Creas copy que hace que el lector diga "esto es exactamente para mí". Usas lenguaje de tribu, valores compartidos, y posicionamiento por identidad en lugar de solo beneficios. Todo en español, para infoproductores y emprendedores digitales.`,
+  'launch-plan':`Eres un estratega de lanzamientos para infoproductores. Creas planes de lanzamiento completos semana a semana. Incluyes: fase de pre-lanzamiento (generación de expectativa), fase de lanzamiento (contenido diario, emails, lives), fase de cierre (urgencia real), estrategia de contenido para cada fase, métricas a monitorear. Todo en español con calendario detallado.`,
+};
+
+const BOT_STARTERS={
+  'quiz-creator':['Crea un quiz para mi curso de finanzas personales','¿Qué tipo de quiz funciona mejor para vender coaching?','Dame un quiz de diagnóstico para nutrición y bienestar'],
+  'quiz-profiles':['Crea 3 perfiles para un quiz de productividad','¿Cómo hago que los perfiles sean más emocionales?','Dame perfiles para un quiz de estilo de vida saludable'],
+  'quiz-questions':['Genera preguntas para un quiz de fitness','¿Cuántas preguntas debe tener un quiz efectivo?','Crea preguntas segmentadoras para un curso de inglés'],
+  'sales-copy':['Escribe una página de ventas para mi curso online','Dame el headline perfecto para vender coaching','Crea la sección de oferta para mi programa de 6 semanas'],
+  'email-sequence':['Crea una secuencia de bienvenida de 5 emails','Dame emails de lanzamiento para mi curso','¿Cómo estructuro un email de carrito abandonado?'],
+  'whatsapp-closer':['Dame un script para cerrar por WhatsApp después del quiz','¿Cómo manejo la objeción del precio en WhatsApp?','Crea un guion para seguimiento 24h después del quiz'],
+  'fb-ads':['Crea 3 versiones de anuncio para tráfico frío','Dame un anuncio para retargeting de visitantes','¿Qué hook usar para vender un curso de $97?'],
+  'andromeda-ads':['Explícame el Método Andrómeda paso a paso','¿Cómo configuro el retargeting a completadores del quiz?','Dame la estructura completa de campaña Andrómeda'],
+  'video-script':['Escribe un VSL de 10 minutos para mi curso','Dame el script de un VSL corto de 3 minutos','¿Cómo estructuro la parte de la oferta en mi VSL?'],
+  'product-name':['Dame nombres para un curso de productividad femenina','¿Cómo nombro mi método de ventas por WhatsApp?','Necesito nombres para un programa de fitness en casa'],
+  'offer-stack':['Construye el stack de oferta para mi curso de $197','¿Qué bonos son más efectivos para un programa de coaching?','Dame ideas de garantías que aumenten las conversiones'],
+  'lead-magnet':['Crea un lead magnet para vender mi curso de marketing','¿Qué formato de lead magnet convierte mejor?','Dame el título perfecto para mi guía gratuita'],
+  'content-ideas':['Dame 10 ideas de contenido para vender coaching de vida','¿Sobre qué publicar esta semana para calentar audiencia?','Genera ideas de contenido educativo para mi nicho fitness'],
+  'reels-hook':['Dame 10 hooks para un Reel sobre productividad','¿Qué hook usar para hablar de mi quiz en Reels?','Crea hooks para vender mi curso sin sonar vendedor'],
+  'identity-copy':['Escribe copy de identidad para emprendedoras digitales','¿Cómo uso la identidad para vender sin manipular?','Dame un texto de "la gente como nosotros" para mi programa'],
+  'launch-plan':['Crea un plan de lanzamiento de 2 semanas para mi curso','¿Qué contenido publicar cada día durante el lanzamiento?','Dame el cronograma para un lanzamiento de $10K'],
+};
+
+const SUPABASE_URL='https://euauqqamrkqwoytveljp.supabase.co';
+let currentBot=null, messages=[], isTyping=false, userId=null, groqKey=null, userPlan='free';
+
+function getParam(name){return new URLSearchParams(location.search).get(name)}
+function storageKey(id){return'bot_chat_'+id}
+function saveMessages(){if(currentBot)localStorage.setItem(storageKey(currentBot.id),JSON.stringify(messages))}
+function loadMessages(){if(!currentBot)return[];try{return JSON.parse(localStorage.getItem(storageKey(currentBot.id))||'[]')}catch{return[]}}
+
+function md(text){
+  return text
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+    .replace(/```([\s\S]*?)```/g,'<pre><code>$1</code></pre>')
+    .replace(/`([^`]+)`/g,'<code>$1</code>')
+    .replace(/\*\*(.*?)\*\*/g,'<b>$1</b>')
+    .replace(/\*(.*?)\*/g,'<em>$1</em>')
+    .replace(/^### (.*?)$/gm,'<b style="font-size:15px">$1</b>')
+    .replace(/^## (.*?)$/gm,'<b style="font-size:16px">$1</b>')
+    .replace(/^# (.*?)$/gm,'<b style="font-size:17px">$1</b>')
+    .replace(/^\* (.*?)$/gm,'<li>$1</li>')
+    .replace(/^- (.*?)$/gm,'<li>$1</li>')
+    .replace(/(<li>.*<\/li>)/s,'<ul>$1</ul>')
+    .replace(/\n/g,'<br>');
+}
+
+function timeStr(){const d=new Date();return d.getHours()+':'+String(d.getMinutes()).padStart(2,'0')}
+
+function renderMessages(){
+  const el=document.getElementById('messages');
+  if(messages.length===0){
+    el.innerHTML=`<div id="empty-state"><div class="es-icon">${currentBot?currentBot.icon:'🤖'}</div><p>Hola, soy <b>${currentBot?currentBot.name:'el bot'}</b>. ¿En qué puedo ayudarte hoy?</p></div>`;
+    return;
+  }
+  el.innerHTML=messages.map(m=>`
+    <div class="msg ${m.role==='user'?'user':'bot'}">
+      <div class="msg-bubble">${md(m.content)}</div>
+      <div class="msg-time">${m.time||''}</div>
+    </div>
+  `).join('');
+  el.scrollTop=el.scrollHeight;
+}
+
+function showTyping(){
+  const el=document.getElementById('messages');
+  const d=document.createElement('div');
+  d.id='typing-indicator';
+  d.className='typing-indicator';
+  d.innerHTML='<div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div>';
+  el.appendChild(d);
+  el.scrollTop=el.scrollHeight;
+}
+function hideTyping(){const t=document.getElementById('typing-indicator');if(t)t.remove()}
+
+async function sendMessage(text){
+  const input=document.getElementById('user-input');
+  const msg=(text||input.value).trim();
+  if(!msg||isTyping)return;
+  input.value='';
+  input.style.height='auto';
+  messages.push({role:'user',content:msg,time:timeStr()});
+  saveMessages();
+  renderMessages();
+  isTyping=true;
+  document.getElementById('send-btn').disabled=true;
+  showTyping();
+  try{
+    const reply=await callAI(msg);
+    hideTyping();
+    messages.push({role:'assistant',content:reply,time:timeStr()});
+    saveMessages();
+    renderMessages();
+  }catch(e){
+    hideTyping();
+    messages.push({role:'assistant',content:'Lo siento, hubo un error al procesar tu mensaje. Por favor intenta de nuevo.',time:timeStr()});
+    renderMessages();
+    console.error(e);
+  }
+  isTyping=false;
+  document.getElementById('send-btn').disabled=false;
+}
+
+async function callAI(userMsg){
+  const systemPrompt=BOT_PROMPTS[currentBot.id]||'Eres un asistente útil. Responde en español.';
+  const history=messages.slice(-10).map(m=>({role:m.role==='user'?'user':'assistant',content:m.content}));
+  if(groqKey){
+    try{
+      const r=await fetch('https://api.groq.com/openai/v1/chat/completions',{
+        method:'POST',
+        headers:{'Authorization':'Bearer '+groqKey,'Content-Type':'application/json'},
+        body:JSON.stringify({model:'llama-3.3-70b-versatile',messages:[{role:'system',content:systemPrompt},...history],max_tokens:2048,temperature:0.7})
+      });
+      if(r.ok){const d=await r.json();return d.choices[0].message.content}
+    }catch(e){console.warn('Groq failed, trying proxy',e)}
+  }
+  const token=await Auth.getToken();
+  const r=await fetch(SUPABASE_URL+'/functions/v1/claude-proxy',{
+    method:'POST',
+    headers:{'Authorization':'Bearer '+token,'Content-Type':'application/json'},
+    body:JSON.stringify({messages:[{role:'system',content:systemPrompt},...history],max_tokens:2048})
+  });
+  if(!r.ok)throw new Error('AI request failed: '+r.status);
+  const d=await r.json();
+  return d.content||d.choices?.[0]?.message?.content||'Sin respuesta';
+}
+
+function newChat(){
+  messages=[];
+  saveMessages();
+  renderMessages();
+}
+
+function toggleSidebar(){
+  document.getElementById('sidebar').classList.toggle('open');
+}
+
+async function init(){
+  const user=await Auth.requireAuth();
+  if(!user)return;
+  userId=user.id;
+  try{
+    const {data}=await db.from('profiles').select('plan,groq_api_key').eq('id',userId).single();
+    userPlan=data?.plan||'free';
+    groqKey=data?.groq_api_key||null;
+  }catch(e){console.warn(e)}
+  const botId=getParam('bot');
+  currentBot=BOTS.find(b=>b.id===botId)||BOTS[0];
+  document.getElementById('sb-icon').textContent=currentBot.icon;
+  document.getElementById('sb-name').textContent=currentBot.name;
+  document.getElementById('sb-cat').textContent=currentBot.category;
+  document.getElementById('sb-desc').textContent=currentBot.desc;
+  document.getElementById('hdr-icon').textContent=currentBot.icon;
+  document.getElementById('hdr-name').textContent=currentBot.name;
+  document.title=currentBot.name+' – Luminous Studio';
+  const starters=BOT_STARTERS[currentBot.id]||[];
+  document.getElementById('starters-list').innerHTML=starters.map(s=>`<button class="starter-pill" onclick="sendMessage('${s.replace(/'/g,"\\'")}')">${s}</button>`).join('');
+  if(currentBot.plan==='pro'&&userPlan==='free'){
+    document.getElementById('locked-overlay').style.display='flex';
+  }
+  messages=loadMessages();
+  renderMessages();
+  const input=document.getElementById('user-input');
+  input.addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendMessage()}});
+  input.addEventListener('input',()=>{input.style.height='auto';input.style.height=Math.min(input.scrollHeight,160)+'px'});
+}
+init();
+</script>
+</body>
+</html>
