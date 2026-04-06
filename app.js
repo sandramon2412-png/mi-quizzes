@@ -513,8 +513,6 @@ function getHotmartUrl(plan) {
     growth:  s.hotmartGrowth  || DEFAULTS.growth,
     elite:   s.hotmartElite   || DEFAULTS.elite,
   };
-    elite:   s.hotmartElite   || '',
-  };
   return urls[plan] || './precios.html';
 }
 
