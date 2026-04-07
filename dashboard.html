@@ -715,10 +715,20 @@ function toggleFbGuide() {
           class="px-4 py-2.5 bg-surface-container text-on-surface text-xs font-bold rounded-xl border border-outline-variant/20 hover:border-primary/40 transition-colors flex items-center gap-1.5">
           <span class="material-symbols-outlined text-sm text-primary">auto_awesome</span>Ideas con IA
         </button>
-        <button type="submit"
+        <button type="submit" id="ma-submit-btn"
           class="flex-1 py-2.5 bg-primary text-white text-sm font-extrabold rounded-xl hover:opacity-90 transition-opacity shadow-lg shadow-primary/20">
-          Crear Mini-App
+          ✦ Crear con IA
         </button>
+      </div>
+      <!-- AI progress bar (hidden until generating) -->
+      <div id="ma-progress" class="hidden">
+        <div class="flex items-center justify-between mb-1">
+          <p class="text-xs font-bold text-primary" id="ma-progress-msg">Generando contenido...</p>
+          <p class="text-xs text-on-surface-variant" id="ma-progress-pct">0%</p>
+        </div>
+        <div class="h-1.5 bg-surface-container-high rounded-full overflow-hidden">
+          <div id="ma-progress-bar" class="h-full rounded-full transition-all duration-500" style="width:0%;background:linear-gradient(90deg,#2E5BFF,#7c3aed)"></div>
+        </div>
       </div>
     </form>
   </div>
@@ -1261,51 +1271,71 @@ async function handleCreateMiniApp(e) {
   }
   document.getElementById('ma-type-error').classList.add('hidden');
 
-  // Use first type as primary `type` for backward compat, store all in `types`
+  // Use first type as primary, store all in `types`
   const appData = { name, type: types[0], types, niche, product, description, icon, accessCodes };
-  const submitBtn = e.submitter || document.querySelector('#mini-app-form button[type="submit"]');
+  const submitBtn = document.getElementById('ma-submit-btn');
+  const progressEl = document.getElementById('ma-progress');
+  const progressMsg = document.getElementById('ma-progress-msg');
+  const progressBar = document.getElementById('ma-progress-bar');
+  const progressPct = document.getElementById('ma-progress-pct');
+
+  function setProgress(pct, msg) {
+    progressBar.style.width = pct + '%';
+    progressPct.textContent = pct + '%';
+    if (msg) progressMsg.textContent = msg;
+  }
+
   try {
-    if (submitBtn) { submitBtn.disabled = true; submitBtn.textContent = 'Creando...'; }
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Generando...';
+    progressEl.classList.remove('hidden');
+    setProgress(5, 'Iniciando generación con IA...');
+
+    // Generate content for each type (up to 5 to avoid too many calls)
+    const typesToGenerate = types.slice(0, 5);
+    let allContent = {};
+    for (let i = 0; i < typesToGenerate.length; i++) {
+      const t = typesToGenerate[i];
+      const pct = Math.round(10 + (i / typesToGenerate.length) * 80);
+      setProgress(pct, `Generando ${t} (${i+1}/${typesToGenerate.length})...`);
+      try {
+        const idea = { type: t, name, description: description || '', features: [] };
+        const content = await AI.generateMiniAppContent(idea, product || name, niche);
+        if (content) allContent = { ...allContent, ...content };
+      } catch(err) {
+        console.warn(`Content gen failed for ${t}:`, err.message);
+      }
+    }
+
+    setProgress(90, 'Guardando...');
+    const fullApp = { ...appData, ...allContent };
+
+    // Save to Supabase
     let savedId = null;
     try {
-      const saved = await DB.miniApps.save(appData, _currentUser.id);
+      const saved = await DB.miniApps.save(fullApp, _currentUser.id);
       savedId = saved.id;
     } catch (dbErr) {
-      console.warn('DB save failed, using localStorage only:', dbErr.message);
+      console.warn('DB save failed:', dbErr.message);
     }
-    // Save to localStorage immediately so player can open it
+
+    // Always save to localStorage with content
     const localApp = savedId
-      ? MiniApps.save({ id: savedId, status: 'active', created: new Date().toISOString(), ...appData })
-      : MiniApps.create(appData);
+      ? MiniApps.save({ id: savedId, status: 'active', created: new Date().toISOString(), ...fullApp })
+      : MiniApps.create(fullApp);
 
-    closeModal();
-    renderMiniApps();
-    showToast('Mini-App creada ✨ Generando contenido con IA...');
+    setProgress(100, '¡Lista!');
+    setTimeout(() => {
+      closeModal();
+      renderMiniApps();
+      showToast(`✦ "${name}" creada con contenido IA`);
+    }, 400);
 
-    // Generate AI content in background for primary type
-    generateMiniAppContentBackground(localApp);
   } catch (err) {
     showToast('Error al crear: ' + err.message, 'error');
-  } finally {
-    if (submitBtn) { submitBtn.disabled = false; submitBtn.textContent = 'Crear Mini-App'; }
-  }
-}
-
-async function generateMiniAppContentBackground(app) {
-  try {
-    const idea = { type: app.type, name: app.name, description: app.description || '', features: [] };
-    const content = await AI.generateMiniAppContent(idea, app.product || app.name, app.niche);
-    if (!content || !Object.keys(content).length) return;
-    // Merge content into saved app
-    const updated = { ...app, ...content };
-    MiniApps.save(updated);
-    if (_currentUser) {
-      try { await DB.miniApps.save({ ...updated, id: app.id }, _currentUser.id); } catch {}
-    }
-    showToast(`✦ Contenido generado para "${app.name}"`);
-    renderMiniApps();
-  } catch(e) {
-    console.warn('Background AI generation failed:', e.message);
+    submitBtn.disabled = false;
+    submitBtn.textContent = '✦ Crear con IA';
+    progressEl.classList.add('hidden');
   }
 }
 
