@@ -91,11 +91,19 @@
 <script>
 let currentApp = null;
 
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
   const id = getParam('id');
   if (!id) { showError('No se especificó una mini-app.'); return; }
-  const app = MiniApps.get(id);
+
+  // Try localStorage first, then Supabase as fallback
+  let app = MiniApps.get(id);
+  if (!app && typeof DB !== 'undefined') {
+    try { app = await DB.miniApps.get(id); } catch(e) { console.warn('DB fetch failed', e); }
+  }
   if (!app) { showError('Mini-App no encontrada. Verifica el enlace.'); return; }
+
+  // Cache in localStorage for next time
+  if (app && !MiniApps.get(id)) MiniApps.save(app);
 
   currentApp = app;
 

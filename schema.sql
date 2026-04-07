@@ -43,15 +43,21 @@ create table public.mini_apps (
   user_id      uuid references public.profiles(id) on delete cascade not null,
   name         text,
   type         text,
+  types        text[]  default '{}',
   niche        text,
   product      text,
   description  text,
   icon         text,
   access_codes text[]  default '{}',
   status       text    default 'active',
+  content      jsonb   default '{}',
   created_at   timestamptz default now(),
   updated_at   timestamptz default now()
 );
+
+-- Run these if the table already exists:
+-- alter table public.mini_apps add column if not exists types text[] default '{}';
+-- alter table public.mini_apps add column if not exists content jsonb default '{}';
 
 -- ── Leads (captured from quiz completions) ──────────────────
 create table public.leads (

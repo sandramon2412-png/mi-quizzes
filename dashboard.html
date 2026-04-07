@@ -1262,8 +1262,21 @@ async function handleCreateMiniApp(e) {
   document.getElementById('ma-type-error').classList.add('hidden');
 
   // Use first type as primary `type` for backward compat, store all in `types`
+  const appData = { name, type: types[0], types, niche, product, description, icon, accessCodes };
   try {
-    await DB.miniApps.save({ name, type: types[0], types, niche, product, description, icon, accessCodes }, _currentUser.id);
+    let savedId = null;
+    try {
+      const saved = await DB.miniApps.save(appData, _currentUser.id);
+      savedId = saved.id;
+    } catch (dbErr) {
+      console.warn('DB save failed, using localStorage only:', dbErr.message);
+    }
+    // Always save to localStorage so the player can find it
+    if (savedId) {
+      MiniApps.save({ id: savedId, status: 'active', created: new Date().toISOString(), ...appData });
+    } else {
+      MiniApps.create(appData);
+    }
     closeModal();
     renderMiniApps();
     showToast('Mini-App creada correctamente ✨');
