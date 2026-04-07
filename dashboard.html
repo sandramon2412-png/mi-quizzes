@@ -71,6 +71,19 @@
   .stats-bar .stat-item:last-child { border-right: none; border-radius: 0 16px 16px 0; }
   /* Section accent */
   .section-head { border-left: 3px solid; padding-left: 12px; }
+  /* Type chips multi-select */
+  .type-chip {
+    display: inline-flex; align-items: center; gap: 4px;
+    padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 600;
+    border: 1px solid rgba(255,255,255,0.08); cursor: pointer;
+    background: rgba(255,255,255,0.03); color: #94a3b8;
+    transition: all 0.15s; user-select: none;
+  }
+  .type-chip:hover { border-color: rgba(46,91,255,0.4); color: #e2e8f0; }
+  .type-chip.selected {
+    background: rgba(46,91,255,0.15); border-color: rgba(46,91,255,0.5);
+    color: #a5b4fc;
+  }
 
 </style>
 </head>
@@ -596,42 +609,52 @@ function toggleFbGuide() {
         </div>
       </div>
 
-      <!-- Tipo -->
+      <!-- Tipo (multi-select checkboxes) -->
       <div>
-        <label class="text-xs text-on-surface-variant font-semibold block mb-1.5">Tipo de Mini-App *</label>
-        <select id="ma-type" required class="w-full bg-surface-container border border-outline-variant/30 rounded-xl px-4 py-2.5 text-sm focus:ring-1 focus:ring-primary outline-none transition">
-          <option value="">Selecciona un tipo...</option>
-          <optgroup label="── Hábitos y seguimiento">
-          <option value="devocional">🕊️ Devocional / Reflexión diaria</option>
-          <option value="checklist">✅ Checklist interactivo</option>
-          <option value="tracker">📊 Tracker de progreso</option>
-          <option value="reto">🔥 Reto / Challenge (7, 21, 30 días)</option>
-          <option value="diario">📓 Diario / Journaling guiado</option>
-          </optgroup>
-          <optgroup label="── Herramientas de decisión">
-          <option value="calculadora">🧮 Calculadora / Simulador</option>
-          <option value="comparador">⚖️ Comparador de opciones</option>
-          <option value="diagnostico">🩺 Diagnóstico / Evaluación inicial</option>
-          <option value="quiz-embed">🎯 Quiz embebido</option>
-          </optgroup>
-          <optgroup label="── Organización y planificación">
-          <option value="planificador">📅 Planificador</option>
-          <option value="roadmap">🗺️ Mapa de ruta / Roadmap</option>
-          <option value="temporizador">⏱️ Temporizador / Pomodoro</option>
-          </optgroup>
-          <optgroup label="── Contenido y aprendizaje">
-          <option value="glosario">📖 Glosario interactivo</option>
-          <option value="faq">💬 FAQ interactivo</option>
-          <option value="biblioteca">📚 Biblioteca de recursos</option>
-          <option value="flashcards">🃏 Flashcards / Tarjetas de estudio</option>
-          </optgroup>
-          <optgroup label="── Generación con IA">
-          <option value="chatbot">🤖 Asistente IA (chatbot del nicho)</option>
-          <option value="generador">✨ Generador de contenido con IA</option>
-          <option value="afirmaciones">🌟 Generador de afirmaciones</option>
-          <option value="onboarding">🚀 Onboarding guiado con IA</option>
-          </optgroup>
-        </select>
+        <label class="text-xs text-on-surface-variant font-semibold block mb-1.5">
+          Secciones de la Mini-App *
+          <span class="font-normal ml-1 text-primary">(puedes elegir varias)</span>
+        </label>
+        <div id="ma-types-grid" class="space-y-2">
+          <div>
+            <p class="text-[10px] font-bold text-on-surface-variant uppercase tracking-wider mb-1">Hábitos y seguimiento</p>
+            <div class="flex flex-wrap gap-1.5">
+              <label class="type-chip"><input type="checkbox" name="ma-type" value="devocional" class="sr-only"/>🕊️ Devocional</label>
+              <label class="type-chip"><input type="checkbox" name="ma-type" value="checklist" class="sr-only"/>✅ Checklist</label>
+              <label class="type-chip"><input type="checkbox" name="ma-type" value="tracker" class="sr-only"/>📊 Tracker</label>
+              <label class="type-chip"><input type="checkbox" name="ma-type" value="reto" class="sr-only"/>🔥 Reto 30 días</label>
+              <label class="type-chip"><input type="checkbox" name="ma-type" value="diario" class="sr-only"/>📓 Diario</label>
+            </div>
+          </div>
+          <div>
+            <p class="text-[10px] font-bold text-on-surface-variant uppercase tracking-wider mb-1">Herramientas</p>
+            <div class="flex flex-wrap gap-1.5">
+              <label class="type-chip"><input type="checkbox" name="ma-type" value="calculadora" class="sr-only"/>🧮 Calculadora</label>
+              <label class="type-chip"><input type="checkbox" name="ma-type" value="comparador" class="sr-only"/>⚖️ Comparador</label>
+              <label class="type-chip"><input type="checkbox" name="ma-type" value="diagnostico" class="sr-only"/>🩺 Diagnóstico</label>
+              <label class="type-chip"><input type="checkbox" name="ma-type" value="planificador" class="sr-only"/>📅 Planificador</label>
+              <label class="type-chip"><input type="checkbox" name="ma-type" value="roadmap" class="sr-only"/>🗺️ Roadmap</label>
+            </div>
+          </div>
+          <div>
+            <p class="text-[10px] font-bold text-on-surface-variant uppercase tracking-wider mb-1">Contenido</p>
+            <div class="flex flex-wrap gap-1.5">
+              <label class="type-chip"><input type="checkbox" name="ma-type" value="glosario" class="sr-only"/>📖 Glosario</label>
+              <label class="type-chip"><input type="checkbox" name="ma-type" value="faq" class="sr-only"/>💬 FAQ</label>
+              <label class="type-chip"><input type="checkbox" name="ma-type" value="flashcards" class="sr-only"/>🃏 Flashcards</label>
+              <label class="type-chip"><input type="checkbox" name="ma-type" value="biblioteca" class="sr-only"/>📚 Biblioteca</label>
+            </div>
+          </div>
+          <div>
+            <p class="text-[10px] font-bold text-on-surface-variant uppercase tracking-wider mb-1">Generación con IA</p>
+            <div class="flex flex-wrap gap-1.5">
+              <label class="type-chip"><input type="checkbox" name="ma-type" value="chatbot" class="sr-only"/>🤖 Asistente IA</label>
+              <label class="type-chip"><input type="checkbox" name="ma-type" value="generador" class="sr-only"/>✨ Generador</label>
+              <label class="type-chip"><input type="checkbox" name="ma-type" value="afirmaciones" class="sr-only"/>🌟 Afirmaciones</label>
+            </div>
+          </div>
+        </div>
+        <p id="ma-type-error" class="text-[11px] text-error mt-1.5 hidden">Selecciona al menos un tipo.</p>
       </div>
 
       <!-- Nicho / Producto -->
@@ -1218,7 +1241,6 @@ function handleOverlayClick(e) {
 async function handleCreateMiniApp(e) {
   e.preventDefault();
   const name = document.getElementById('ma-name').value.trim();
-  const type = document.getElementById('ma-type').value;
   const niche = document.getElementById('ma-niche').value.trim();
   const product = document.getElementById('ma-product').value.trim();
   const description = document.getElementById('ma-desc').value.trim();
@@ -1226,13 +1248,22 @@ async function handleCreateMiniApp(e) {
   const codesRaw = document.getElementById('ma-codes').value.trim();
   const accessCodes = codesRaw ? codesRaw.split(',').map(c => c.trim()).filter(Boolean) : [];
 
-  if (!name || !type || !niche) {
+  // Collect all checked types
+  const types = [...document.querySelectorAll('input[name="ma-type"]:checked')].map(cb => cb.value);
+
+  if (!name || !niche) {
     showToast('Completa los campos obligatorios.', 'error');
     return;
   }
+  if (!types.length) {
+    document.getElementById('ma-type-error').classList.remove('hidden');
+    return;
+  }
+  document.getElementById('ma-type-error').classList.add('hidden');
 
+  // Use first type as primary `type` for backward compat, store all in `types`
   try {
-    await DB.miniApps.save({ name, type, niche, product, description, icon, accessCodes }, _currentUser.id);
+    await DB.miniApps.save({ name, type: types[0], types, niche, product, description, icon, accessCodes }, _currentUser.id);
     closeModal();
     renderMiniApps();
     showToast('Mini-App creada correctamente ✨');
@@ -1290,10 +1321,25 @@ async function generateIdeas() {
 function applyIdea(idea) {
   if (idea.name) document.getElementById('ma-name').value = idea.name;
   if (idea.icon) document.getElementById('ma-icon').value = idea.icon;
-  if (idea.type) document.getElementById('ma-type').value = idea.type;
   if (idea.description) document.getElementById('ma-desc').value = idea.description;
+  // Select the matching type chip
+  if (idea.type) {
+    const cb = document.querySelector(`input[name="ma-type"][value="${idea.type}"]`);
+    if (cb) { cb.checked = true; cb.closest('.type-chip').classList.add('selected'); }
+  }
   showToast('Idea aplicada al formulario ✨');
 }
+
+// Toggle chip selected state on click
+document.addEventListener('DOMContentLoaded', () => {
+  document.querySelectorAll('.type-chip').forEach(chip => {
+    chip.addEventListener('click', () => {
+      const cb = chip.querySelector('input[type="checkbox"]');
+      // Toggle happens automatically; sync the visual class
+      setTimeout(() => chip.classList.toggle('selected', cb.checked), 0);
+    });
+  });
+});
 
 // ── Utils ────────────────────────────────────────────────
 function esc(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
