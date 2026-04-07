@@ -146,17 +146,75 @@ function enterApp() {
 // ── Render by type ────────────────────────────────────────
 function renderApp() {
   const content = document.getElementById('app-content');
-  const type = currentApp.type;
+  // Support both single type (legacy) and types array (multi-section)
+  const types = currentApp.types && currentApp.types.length
+    ? currentApp.types
+    : [currentApp.type].filter(Boolean);
 
-  if (type === 'checklist') return renderChecklist(content);
-  if (type === 'tracker') return renderTracker(content);
-  if (type === 'devocional') return renderDevocional(content);
-  if (type === 'planificador') return renderPlanificador(content);
-  if (type === 'calculadora') return renderCalculadora(content);
-  if (type === 'quiz-embed') return renderQuizEmbed(content);
-  if (type === 'generador' || type === 'simulador') return renderGenerador(content);
-  if (type === 'chatbot') return renderChatbot(content);
-  renderGeneric(content);
+  if (types.length === 0) return renderGeneric(content);
+
+  if (types.length === 1) {
+    return renderSection(content, types[0]);
+  }
+
+  // Multi-section: render each type as a collapsible section
+  const typeLabels = {
+    devocional:'Devocional', checklist:'Checklist', tracker:'Tracker de progreso',
+    calculadora:'Calculadora', planificador:'Planificador', 'quiz-embed':'Quiz',
+    generador:'Generador IA', simulador:'Simulador', chatbot:'Asistente IA',
+    reto:'Reto / Challenge', diario:'Diario guiado', comparador:'Comparador',
+    diagnostico:'Diagnóstico', roadmap:'Mapa de ruta', temporizador:'Temporizador',
+    glosario:'Glosario', faq:'FAQ', biblioteca:'Biblioteca', flashcards:'Flashcards',
+    afirmaciones:'Afirmaciones', onboarding:'Onboarding',
+  };
+  const typeIcons = {
+    devocional:'🕊️', checklist:'✅', tracker:'📊', calculadora:'🧮',
+    planificador:'📅', 'quiz-embed':'🎯', generador:'✨', simulador:'🔮',
+    chatbot:'🤖', reto:'🔥', diario:'📓', comparador:'⚖️', diagnostico:'🩺',
+    roadmap:'🗺️', temporizador:'⏱️', glosario:'📖', faq:'💬',
+    biblioteca:'📚', flashcards:'🃏', afirmaciones:'🌟', onboarding:'🚀',
+  };
+
+  content.innerHTML = `<div class="space-y-3 p-2" id="multi-sections"></div>`;
+  const sectionsEl = document.getElementById('multi-sections');
+
+  types.forEach((t, idx) => {
+    const section = document.createElement('div');
+    section.className = 'rounded-2xl border border-outline-variant/10 overflow-hidden bg-surface-container';
+    section.innerHTML = `
+      <button onclick="toggleSection(${idx})"
+        class="w-full flex items-center justify-between px-4 py-3 text-left hover:bg-surface-container-high transition-colors">
+        <div class="flex items-center gap-2">
+          <span class="text-xl">${typeIcons[t]||'⚡'}</span>
+          <span class="font-bold text-sm">${typeLabels[t]||t}</span>
+        </div>
+        <span id="sec-chevron-${idx}" class="material-symbols-outlined text-on-surface-variant text-lg transition-transform ${idx===0?'rotate-180':''}">expand_more</span>
+      </button>
+      <div id="sec-body-${idx}" class="${idx===0?'':'hidden'}">
+        <div class="border-t border-outline-variant/10" id="sec-content-${idx}"></div>
+      </div>`;
+    sectionsEl.appendChild(section);
+    renderSection(document.getElementById(`sec-content-${idx}`), t);
+  });
+}
+
+function toggleSection(idx) {
+  const body = document.getElementById(`sec-body-${idx}`);
+  const chevron = document.getElementById(`sec-chevron-${idx}`);
+  body.classList.toggle('hidden');
+  chevron.classList.toggle('rotate-180');
+}
+
+function renderSection(el, type) {
+  if (type === 'checklist') return renderChecklist(el);
+  if (type === 'tracker') return renderTracker(el);
+  if (type === 'devocional') return renderDevocional(el);
+  if (type === 'planificador') return renderPlanificador(el);
+  if (type === 'calculadora') return renderCalculadora(el);
+  if (type === 'quiz-embed') return renderQuizEmbed(el);
+  if (type === 'generador' || type === 'simulador') return renderGenerador(el);
+  if (type === 'chatbot') return renderChatbot(el);
+  renderGeneric(el);
 }
 
 // ── CHATBOT ───────────────────────────────────────────────
