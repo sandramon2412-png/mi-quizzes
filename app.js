@@ -345,6 +345,39 @@ Responde SOLO con JSON:
     return this._parseJSON(text);
   },
 
+  async generateAppTheme(niche, product) {
+    const prompt = `Eres un diseñador UI experto. Dado un nicho y producto, genera la paleta visual perfecta para su mini-app interactiva.
+
+Nicho: "${niche}"
+Producto: "${product || niche}"
+
+Reglas:
+- "mode": "light" para nichos suaves/femeninos/espirituales/wellness/infantil/emocional
+- "mode": "dark" para nichos de tecnología/negocios/fitness intenso/gaming/finanzas premium
+- Los colores deben reflejar la emoción del nicho, no ser genéricos
+- "accent" es el color principal de botones y énfasis (hex)
+- "accent2" es el color secundario/gradiente (hex)
+- "bg" es el color de fondo principal (hex)
+- "card" es el fondo de las tarjetas (hex)
+- "text" es el color de texto principal (hex)
+- "muted" es el color de texto secundario (hex)
+- "font" es "serif" para nichos emocionales/wellness/espirituales, "sans" para los demás
+
+Ejemplos de referencia:
+- Bienestar femenino → mode:light, accent:#c0635c, bg:#fdf8f4, font:serif
+- Fitness/gym → mode:dark, accent:#f97316, bg:#0a0a0a, font:sans
+- Finanzas → mode:dark, accent:#2563eb, bg:#0d1117, font:sans
+- Espiritualidad → mode:light, accent:#7c3aed, bg:#f5f0ff, font:serif
+- Nutrición → mode:light, accent:#16a34a, bg:#f0fdf4, font:sans
+- Maternidad/infantil → mode:light, accent:#ec4899, bg:#fff5f7, font:serif
+
+Devuelve SOLO este JSON sin texto adicional:
+{"mode":"light","accent":"#hex","accent2":"#hex","bg":"#hex","card":"#hex","text":"#hex","muted":"#hex","font":"sans"}`;
+
+    const text = await this._call([{ role: 'user', content: prompt }], 400);
+    return this._parseJSON(text);
+  },
+
   async generateMiniAppContent(appIdea, product, niche) {
     const { type, name, description, features = [] } = appIdea;
     const featuresCtx = features.length ? `\nFunciones que debe incluir: ${features.join(', ')}` : '';
@@ -455,6 +488,13 @@ const Groq = {
       appIdea, product, niche
     );
   },
+
+  async generateAppTheme(niche, product) {
+    return Claude.generateAppTheme.call(
+      { _call: this._call.bind(this), _parseJSON: this._parseJSON },
+      niche, product
+    );
+  },
 };
 
 // ── AI helper: Groq primero, Claude como fallback ──────────
@@ -474,6 +514,10 @@ const AI = {
   async generateMiniAppContent(appIdea, product, niche) {
     if (Settings.getGroqApiKey()) return Groq.generateMiniAppContent(appIdea, product, niche);
     return Claude.generateMiniAppContent(appIdea, product, niche);
+  },
+  async generateAppTheme(niche, product) {
+    if (Settings.getGroqApiKey()) return Groq.generateAppTheme(niche, product);
+    return Claude.generateAppTheme(niche, product);
   },
 };
 

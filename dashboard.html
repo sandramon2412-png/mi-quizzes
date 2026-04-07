@@ -1289,14 +1289,22 @@ async function handleCreateMiniApp(e) {
     submitBtn.disabled = true;
     submitBtn.textContent = 'Generando...';
     progressEl.classList.remove('hidden');
-    setProgress(5, 'Iniciando generación con IA...');
+    setProgress(5, 'Analizando estilo visual...');
+
+    // Generate theme based on niche/product
+    let theme = {};
+    try {
+      theme = await AI.generateAppTheme(niche, product || name) || {};
+    } catch(e) {
+      console.warn('Theme gen failed:', e.message);
+    }
 
     // Generate content for each type (up to 5 to avoid too many calls)
     const typesToGenerate = types.slice(0, 5);
     let allContent = {};
     for (let i = 0; i < typesToGenerate.length; i++) {
       const t = typesToGenerate[i];
-      const pct = Math.round(10 + (i / typesToGenerate.length) * 80);
+      const pct = Math.round(15 + (i / typesToGenerate.length) * 75);
       setProgress(pct, `Generando ${t} (${i+1}/${typesToGenerate.length})...`);
       try {
         const idea = { type: t, name, description: description || '', features: [] };
@@ -1308,7 +1316,7 @@ async function handleCreateMiniApp(e) {
     }
 
     setProgress(90, 'Guardando...');
-    const fullApp = { ...appData, ...allContent };
+    const fullApp = { ...appData, ...theme, ...allContent };
 
     // Save to Supabase
     let savedId = null;

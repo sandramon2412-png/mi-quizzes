@@ -184,8 +184,32 @@ document.addEventListener('DOMContentLoaded', async () => {
   if (app && !MiniApps.get(id)) MiniApps.save(app);
   currentApp = app;
 
-  // Apply theme
-  if (app.theme === 'light') document.body.setAttribute('data-theme', 'light');
+  // Apply dynamic theme from niche/product generation
+  const root = document.documentElement;
+  if (app.mode === 'light') {
+    document.body.setAttribute('data-theme', 'light');
+  } else if (app.mode === 'dark') {
+    document.body.removeAttribute('data-theme');
+  } else if (app.theme === 'light') {
+    document.body.setAttribute('data-theme', 'light');
+  }
+  if (app.accent)  root.style.setProperty('--accent',  app.accent);
+  if (app.accent2) root.style.setProperty('--accent2', app.accent2);
+  if (app.bg)      root.style.setProperty('--bg',      app.bg);
+  if (app.card)    root.style.setProperty('--card',    app.card);
+  if (app.text)    root.style.setProperty('--text',    app.text);
+  if (app.muted)   root.style.setProperty('--muted',   app.muted);
+  // Update btn gradient when accent colors are set
+  if (app.accent || app.accent2) {
+    const a1 = app.accent  || (app.mode === 'light' ? '#c0635c' : '#2E5BFF');
+    const a2 = app.accent2 || (app.mode === 'light' ? '#d4856a' : '#7c3aed');
+    root.style.setProperty('--btn', `linear-gradient(135deg,${a1},${a2})`);
+  }
+  if (app.font === 'serif') {
+    document.body.style.fontFamily = "'Lora', Georgia, serif";
+  } else if (app.font === 'sans') {
+    document.body.style.fontFamily = "'Plus Jakarta Sans', sans-serif";
+  }
 
   // Access screen
   document.getElementById('access-icon').textContent = app.icon || '⚡';
