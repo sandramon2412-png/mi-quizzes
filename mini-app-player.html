@@ -30,35 +30,76 @@
 <style>
   body { font-family: 'Plus Jakarta Sans', sans-serif; }
   .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
-  .fade-in { animation: fadeIn .4s ease; }
-  @keyframes fadeIn { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:none; } }
+  .fade-in { animation: fadeIn .35s cubic-bezier(.16,1,.3,1); }
+  @keyframes fadeIn { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:none; } }
   .check-item input:checked ~ label { text-decoration: line-through; opacity: .5; }
+
+  /* Gradient utilities */
+  .grad-primary { background: linear-gradient(135deg,#2E5BFF,#7c3aed); }
+  .grad-green   { background: linear-gradient(135deg,#069e5c,#69f6b8); }
+  .grad-orange  { background: linear-gradient(135deg,#f97316,#fbbf24); }
+  .grad-pink    { background: linear-gradient(135deg,#ec4899,#a855f7); }
+  .grad-teal    { background: linear-gradient(135deg,#0891b2,#22d3ee); }
+
+  /* Stat card */
+  .stat-pill { background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.06); border-radius:14px; padding:14px 10px; text-align:center; }
+
+  /* Progress ring */
+  .progress-bar-glow { box-shadow: 0 0 10px rgba(46,91,255,0.5); }
+
+  /* Premium card */
+  .pcard { background:#1a1a1a; border:1px solid rgba(255,255,255,0.06); border-radius:16px; }
+  .pcard-glow { background:linear-gradient(135deg,rgba(46,91,255,0.08),rgba(124,58,237,0.04)); border:1px solid rgba(46,91,255,0.15); border-radius:16px; }
+
+  /* Smooth toggle */
+  .day-btn { transition: all .15s ease; }
+  .day-btn.done { background:linear-gradient(135deg,#2E5BFF,#7c3aed); color:#fff; box-shadow:0 2px 8px rgba(46,91,255,0.35); }
+  .day-btn.today:not(.done) { background:rgba(46,91,255,0.15); border:1px solid rgba(46,91,255,0.4); color:#7c9fff; }
+
+  /* Flip card */
+  .card-face { transition: transform .4s ease, box-shadow .2s; }
+  .card-face:hover { box-shadow: 0 8px 24px rgba(46,91,255,0.2); }
+
+  /* Chat bubbles */
+  .bubble-bot { background:#1e1e2e; border:1px solid rgba(255,255,255,0.06); }
+  .bubble-user { background:linear-gradient(135deg,#2E5BFF,#7c3aed); color:#fff; }
+
+  /* Section header accent */
+  .sec-accent { width:3px; height:20px; border-radius:2px; flex-shrink:0; }
+
+  /* Scrollbar */
+  ::-webkit-scrollbar { width:3px; }
+  ::-webkit-scrollbar-track { background:transparent; }
+  ::-webkit-scrollbar-thumb { background:#333; border-radius:4px; }
 </style>
 </head>
 <body class="bg-surface text-on-surface min-h-screen">
 
 <!-- ACCESS SCREEN -->
-<div id="screen-access" class="min-h-screen flex items-center justify-center px-4">
+<div id="screen-access" class="min-h-screen flex items-center justify-center px-4" style="background:radial-gradient(ellipse 80% 60% at 50% -10%,rgba(46,91,255,0.12) 0%,transparent 70%)">
   <div class="w-full max-w-sm text-center fade-in">
-    <div id="access-icon" class="text-6xl mb-4">⚡</div>
+    <!-- Icon with glow -->
+    <div class="relative inline-flex mb-5">
+      <div id="access-icon" class="text-6xl w-24 h-24 flex items-center justify-center rounded-3xl grad-primary shadow-2xl" style="box-shadow:0 16px 48px rgba(46,91,255,0.4)">⚡</div>
+    </div>
     <h1 id="access-title" class="text-2xl font-extrabold tracking-tight mb-2">Mini-App</h1>
-    <p id="access-desc" class="text-on-surface-variant text-sm mb-8">Cargando...</p>
+    <p id="access-desc" class="text-on-surface-variant text-sm mb-8 leading-relaxed">Cargando...</p>
 
     <div id="access-code-section" class="hidden">
       <label class="text-xs font-bold text-on-surface-variant uppercase tracking-wider block mb-3">Código de acceso</label>
       <input id="access-code-input" type="text" placeholder="Ingresa tu código..."
-        class="w-full bg-surface-container border border-outline-variant/30 rounded-xl px-4 py-3 text-center text-sm font-bold focus:ring-2 focus:ring-primary outline-none transition mb-3"/>
+        class="w-full bg-surface-container border border-outline-variant/30 rounded-2xl px-4 py-3.5 text-center text-sm font-bold focus:ring-2 focus:ring-primary outline-none transition mb-3"/>
       <button onclick="validateAccess()"
-        class="w-full py-3 bg-primary text-white font-extrabold rounded-xl hover:opacity-90 transition-opacity">
-        Ingresar
+        class="w-full py-3.5 grad-primary text-white font-extrabold rounded-2xl hover:opacity-90 transition-opacity shadow-lg" style="box-shadow:0 8px 24px rgba(46,91,255,0.35)">
+        Ingresar →
       </button>
       <p id="access-error" class="text-error text-xs mt-2 hidden">Código incorrecto. Verifica con quien te compartió el acceso.</p>
     </div>
 
     <div id="access-free-btn" class="hidden">
       <button onclick="enterApp()"
-        class="w-full py-3 bg-primary text-white font-extrabold rounded-xl hover:opacity-90 transition-opacity">
-        Abrir Mini-App
+        class="w-full py-3.5 grad-primary text-white font-extrabold rounded-2xl hover:opacity-90 transition-opacity" style="box-shadow:0 8px 24px rgba(46,91,255,0.35)">
+        Abrir Mini-App →
       </button>
     </div>
 
@@ -71,19 +112,19 @@
 <!-- APP SCREEN -->
 <div id="screen-app" class="hidden min-h-screen">
   <!-- Header -->
-  <header class="flex items-center gap-3 px-5 py-4 border-b border-white/5 bg-surface-container-low sticky top-0 z-10">
-    <div id="app-icon-header" class="text-2xl w-10 h-10 flex items-center justify-center">⚡</div>
+  <header class="flex items-center gap-3 px-5 py-3 border-b border-white/5 sticky top-0 z-10" style="background:rgba(14,14,14,0.9);backdrop-filter:blur(20px)">
+    <div id="app-icon-header" class="text-xl w-9 h-9 flex items-center justify-center rounded-xl grad-primary shadow-md shrink-0">⚡</div>
     <div class="flex-1 min-w-0">
-      <h1 id="app-title-header" class="font-extrabold text-base truncate">Mini-App</h1>
-      <p id="app-type-header" class="text-xs text-on-surface-variant">Aplicación interactiva</p>
+      <h1 id="app-title-header" class="font-extrabold text-sm truncate leading-tight">Mini-App</h1>
+      <p id="app-type-header" class="text-[10px] text-on-surface-variant">Aplicación interactiva</p>
     </div>
-    <a href="./dashboard.html" class="w-8 h-8 rounded-xl bg-surface-container flex items-center justify-center text-on-surface-variant hover:text-primary transition-colors">
+    <a href="./dashboard.html" class="w-8 h-8 rounded-xl bg-surface-container flex items-center justify-center text-on-surface-variant hover:text-primary transition-colors border border-white/5">
       <span class="material-symbols-outlined text-sm">home</span>
     </a>
   </header>
 
   <!-- Dynamic content -->
-  <div id="app-content" class="px-4 py-6 max-w-lg mx-auto">
+  <div id="app-content" class="px-4 py-5 max-w-lg mx-auto">
     <!-- populated by renderApp() -->
   </div>
 </div>
@@ -782,28 +823,33 @@ function renderReto(el) {
   function save() { localStorage.setItem(storageKey, JSON.stringify(state)); }
   function render() {
     const done = Object.values(state).filter(Boolean).length;
+    const pct = Math.round(done/days*100);
     el.innerHTML = `
-      <div class="p-4">
-        <div class="flex items-center justify-between mb-3">
-          <p class="text-sm font-bold">Reto ${days} días · <span class="text-primary">${done}/${days} completados</span></p>
-          <button onclick="this.closest('[id]')" class="text-[10px] text-on-surface-variant hover:text-error transition-colors" onclick="resetReto()">Reiniciar</button>
-        </div>
-        <div class="w-full bg-surface-container-high rounded-full h-1.5 mb-4">
-          <div class="bg-primary h-1.5 rounded-full transition-all" style="width:${Math.round(done/days*100)}%"></div>
+      <div class="fade-in p-4 space-y-4">
+        <div class="pcard-glow p-4 flex items-center gap-4">
+          <div class="w-16 h-16 rounded-2xl grad-orange flex items-center justify-center text-3xl shadow-lg shrink-0">🔥</div>
+          <div class="flex-1 min-w-0">
+            <p class="font-extrabold text-base">Reto ${days} días</p>
+            <p class="text-xs text-on-surface-variant mb-2">${done} de ${days} completados</p>
+            <div class="h-2 bg-surface-container-high rounded-full overflow-hidden">
+              <div class="h-full rounded-full transition-all progress-bar-glow" style="width:${pct}%;background:linear-gradient(90deg,#f97316,#fbbf24)"></div>
+            </div>
+          </div>
+          <span class="text-2xl font-extrabold text-orange-400">${pct}%</span>
         </div>
         <div class="grid grid-cols-7 gap-1.5">
           ${Array.from({length: days}, (_,i) => {
             const d = i+1, checked = !!state[d];
-            return `<button onclick="toggleDay(${d})" title="Día ${d}"
-              class="aspect-square rounded-lg text-xs font-bold transition-all
-              ${checked ? 'bg-primary text-white' : 'bg-surface-container text-on-surface-variant hover:bg-primary/20'}">${d}</button>`;
+            return `<button onclick="toggleRetoDay(${d})" title="Día ${d}"
+              class="day-btn aspect-square rounded-xl text-xs font-bold ${checked?'done':'bg-surface-container text-on-surface-variant hover:bg-surface-container-high'}">${d}</button>`;
           }).join('')}
         </div>
-        ${done===days ? `<div class="mt-4 text-center p-3 bg-tertiary/10 rounded-xl"><p class="text-tertiary font-bold">🎉 ¡Reto completado!</p></div>` : ''}
+        ${done===days ? `<div class="pcard p-4 text-center"><p class="text-2xl mb-1">🎉</p><p class="font-extrabold text-secondary">¡Reto completado!</p><p class="text-xs text-on-surface-variant mt-1">Lo lograste en ${days} días</p></div>` : ''}
+        <button onclick="if(confirm('¿Reiniciar reto?')){window._retoState={};localStorage.removeItem('${storageKey}');renderReto(document.getElementById('app-content'))}"
+          class="text-[11px] text-on-surface-variant hover:text-error transition-colors w-full text-center">Reiniciar reto</button>
       </div>`;
-    el.querySelector && el.querySelector('[onclick="resetReto()"]')?.addEventListener('click', () => { state={}; save(); render(); });
   }
-  window.toggleDay = (d) => { state[d]=!state[d]; save(); render(); };
+  window.toggleRetoDay = (d) => { state[d]=!state[d]; save(); render(); };
   render();
 }
 
@@ -811,38 +857,45 @@ function renderReto(el) {
 function renderDiario(el) {
   const app = currentApp;
   const prompts = app.journalPrompts || app.initialItems || [
-    '¿Qué quiero lograr hoy?', '¿Qué aprendí ayer?', '¿Qué me frena?',
-    '¿Por qué estoy haciendo esto?', '¿Qué haría si no tuviera miedo?',
+    '¿Qué quiero lograr hoy?','¿Qué aprendí ayer?','¿Qué me frena?',
   ];
   const storageKey = `app_diario_${app.id}`;
   let entries = [];
   try { entries = JSON.parse(localStorage.getItem(storageKey) || '[]'); } catch {}
-
   const today = new Date().toLocaleDateString('es-ES', {day:'numeric',month:'long',year:'numeric'});
   const todayKey = new Date().toDateString();
   const todayEntry = entries.find(e => e.dateKey === todayKey);
 
   el.innerHTML = `
-    <div class="p-4 space-y-4">
-      <div class="flex items-center justify-between">
-        <p class="text-xs font-bold text-primary">${today}</p>
-        <p class="text-[10px] text-on-surface-variant">${entries.length} entradas</p>
+    <div class="fade-in p-4 space-y-3">
+      <div class="pcard-glow p-4 flex items-center gap-3">
+        <div class="w-11 h-11 rounded-xl grad-pink flex items-center justify-center text-xl shrink-0">📓</div>
+        <div>
+          <p class="font-extrabold text-sm">Diario de hoy</p>
+          <p class="text-xs text-on-surface-variant">${today} · ${entries.length} entradas guardadas</p>
+        </div>
       </div>
       ${prompts.slice(0,3).map((p,i) => `
-        <div>
-          <p class="text-xs font-semibold text-on-surface-variant mb-1.5">${esc(p)}</p>
-          <textarea id="journal-${i}" rows="2" placeholder="Escribe aquí..."
-            class="w-full bg-surface-container border border-outline-variant/20 rounded-xl px-3 py-2 text-sm resize-none outline-none focus:border-primary/50 transition-colors"
+        <div class="pcard p-4">
+          <p class="text-[11px] font-bold text-primary uppercase tracking-wider mb-2">${esc(p)}</p>
+          <textarea id="journal-${i}" rows="3" placeholder="Escribe aquí tus pensamientos..."
+            class="w-full bg-surface-container-high border border-outline-variant/20 rounded-xl px-3 py-2.5 text-sm resize-none outline-none focus:border-primary/50 transition-colors placeholder:text-on-surface-variant/40"
             >${esc(todayEntry?.answers?.[i] || '')}</textarea>
         </div>`).join('')}
-      <button onclick="saveDiario()" class="w-full py-2.5 bg-primary text-white font-bold rounded-xl text-sm hover:opacity-90 transition-opacity">
-        Guardar entrada de hoy
+      <button onclick="saveDiario()" class="w-full py-3 grad-primary text-white font-extrabold rounded-2xl hover:opacity-90 transition-opacity text-sm" style="box-shadow:0 4px 16px rgba(46,91,255,0.3)">
+        Guardar entrada ✦
       </button>
-      ${entries.length > 1 ? `<details class="text-xs text-on-surface-variant"><summary class="cursor-pointer hover:text-on-surface">Ver entradas anteriores (${entries.length-1})</summary>
-        <div class="mt-2 space-y-2">${entries.filter(e=>e.dateKey!==todayKey).slice(0,5).map(e=>`
-          <div class="p-2 bg-surface-container rounded-lg"><p class="font-bold mb-1">${esc(e.date)}</p>
-          ${(e.answers||[]).map((a,i)=>`<p class="text-[11px]"><b>${esc(prompts[i]||'')}</b><br>${esc(a)}</p>`).join('')}</div>`).join('')}
-        </div></details>` : ''}
+      ${entries.length > 1 ? `
+        <details class="pcard p-4">
+          <summary class="text-xs font-bold text-on-surface-variant cursor-pointer hover:text-on-surface transition-colors">Ver entradas anteriores (${entries.length-1})</summary>
+          <div class="mt-3 space-y-2 max-h-48 overflow-y-auto">
+            ${entries.filter(e=>e.dateKey!==todayKey).slice(0,5).map(e=>`
+              <div class="p-3 bg-surface-container-high rounded-xl border border-outline-variant/10">
+                <p class="text-[10px] font-bold text-primary mb-1">${esc(e.date)}</p>
+                ${(e.answers||[]).filter(a=>a).map((a,i)=>`<p class="text-xs text-on-surface-variant">${esc(prompts[i]||'')} <span class="text-on-surface">${esc(a)}</span></p>`).join('')}
+              </div>`).join('')}
+          </div>
+        </details>` : ''}
     </div>`;
 
   window.saveDiario = () => {
@@ -860,15 +913,24 @@ function renderDiario(el) {
 function renderGlosario(el) {
   const terms = currentApp.glossaryTerms || currentApp.initialItems?.map(t => ({term:t,def:''})) || [];
   el.innerHTML = `
-    <div class="p-4">
-      <input id="glosario-search" oninput="filterGlosario()" placeholder="Buscar término..."
-        class="w-full bg-surface-container border border-outline-variant/20 rounded-xl px-3 py-2 text-sm outline-none focus:border-primary/50 mb-3 transition-colors"/>
+    <div class="fade-in p-4 space-y-3">
+      <div class="relative">
+        <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-base">search</span>
+        <input id="glosario-search" oninput="filterGlosario()" placeholder="Buscar término..."
+          class="w-full bg-surface-container border border-outline-variant/20 rounded-2xl pl-9 pr-4 py-2.5 text-sm outline-none focus:border-primary/50 transition-colors"/>
+      </div>
+      <p class="text-[10px] text-on-surface-variant">${terms.length} términos</p>
       <div id="glosario-list" class="space-y-2">
-        ${terms.length ? terms.map(t=>`
-          <div class="glosario-item p-3 bg-surface-container rounded-xl border border-outline-variant/10">
-            <p class="text-sm font-bold">${esc(t.term||t)}</p>
-            ${t.def ? `<p class="text-xs text-on-surface-variant mt-0.5">${esc(t.def)}</p>` : ''}
-          </div>`).join('') : `<p class="text-xs text-on-surface-variant text-center py-8">Este glosario está vacío por ahora.</p>`}
+        ${terms.length ? terms.map((t,i)=>`
+          <div class="glosario-item pcard p-4 hover:border-primary/20 transition-colors cursor-pointer" onclick="this.querySelector('.glos-def').classList.toggle('hidden')">
+            <div class="flex items-start gap-3">
+              <div class="w-7 h-7 rounded-lg grad-teal flex items-center justify-center text-xs font-extrabold shrink-0">${String.fromCharCode(65+i%26)}</div>
+              <div class="flex-1 min-w-0">
+                <p class="text-sm font-bold">${esc(t.term||t)}</p>
+                ${t.def ? `<p class="glos-def text-xs text-on-surface-variant mt-1 ${i>0?'hidden':''}">${esc(t.def)}</p>` : ''}
+              </div>
+            </div>
+          </div>`).join('') : `<div class="pcard p-8 text-center"><p class="text-on-surface-variant text-sm">Este glosario está vacío.</p></div>`}
       </div>
     </div>`;
   window.filterGlosario = () => {
@@ -883,57 +945,66 @@ function renderGlosario(el) {
 function renderFaq(el) {
   const faqs = currentApp.faqItems || currentApp.initialItems?.map(q=>({q,a:''})) || [];
   el.innerHTML = `
-    <div class="p-4 space-y-2">
+    <div class="fade-in p-4 space-y-2">
       ${faqs.length ? faqs.map((f,i)=>`
-        <div class="border border-outline-variant/10 rounded-xl overflow-hidden">
-          <button onclick="toggleFaq(${i})" class="w-full flex items-center justify-between px-4 py-3 text-left hover:bg-surface-container transition-colors">
-            <span class="text-sm font-semibold pr-4">${esc(f.q||f)}</span>
-            <span id="faq-icon-${i}" class="material-symbols-outlined text-primary text-lg shrink-0">add</span>
+        <div class="pcard overflow-hidden">
+          <button onclick="toggleFaq(${i})" class="w-full flex items-center justify-between px-4 py-3.5 text-left hover:bg-surface-container-high transition-colors">
+            <div class="flex items-center gap-3 pr-3">
+              <div class="w-6 h-6 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+                <span class="text-primary text-xs font-extrabold">${i+1}</span>
+              </div>
+              <span class="text-sm font-semibold">${esc(f.q||f)}</span>
+            </div>
+            <span id="faq-icon-${i}" class="material-symbols-outlined text-primary text-base shrink-0 transition-transform">expand_more</span>
           </button>
-          <div id="faq-body-${i}" class="hidden px-4 pb-3 text-sm text-on-surface-variant">${esc(f.a||'Respuesta no disponible.')}</div>
-        </div>`).join('') : `<p class="text-xs text-on-surface-variant text-center py-8">No hay preguntas frecuentes aún.</p>`}
+          <div id="faq-body-${i}" class="hidden px-4 pb-4 text-sm text-on-surface-variant border-t border-outline-variant/10 pt-3 leading-relaxed">${esc(f.a||'Respuesta próximamente.')}</div>
+        </div>`).join('') : `<div class="pcard p-8 text-center"><p class="text-on-surface-variant text-sm">No hay preguntas frecuentes aún.</p></div>`}
     </div>`;
   window.toggleFaq = (i) => {
     const body = document.getElementById(`faq-body-${i}`);
     const icon = document.getElementById(`faq-icon-${i}`);
     body.classList.toggle('hidden');
-    icon.textContent = body.classList.contains('hidden') ? 'add' : 'remove';
+    icon.style.transform = body.classList.contains('hidden') ? '' : 'rotate(180deg)';
   };
 }
 
 // ── FLASHCARDS ────────────────────────────────────────────
 function renderFlashcards(el) {
   const cards = currentApp.cards || currentApp.initialItems?.map(t=>({front:t,back:''})) || [];
-  let idx = 0, flipped = false;
+  let idx = 0, flipped = false, known = 0, unknown = 0;
   function render() {
+    if (!cards.length) { el.innerHTML=`<div class="pcard p-8 text-center m-4"><p class="text-on-surface-variant text-sm">No hay flashcards configuradas.</p></div>`; return; }
     const card = cards[idx];
     el.innerHTML = `
-      <div class="p-4">
-        <div class="flex items-center justify-between mb-3">
-          <p class="text-xs text-on-surface-variant">${idx+1} / ${cards.length}</p>
-          <div class="flex gap-2">
-            <button onclick="prevCard()" class="w-8 h-8 rounded-lg bg-surface-container border border-outline-variant/20 text-on-surface-variant hover:text-primary transition-colors flex items-center justify-center">‹</button>
-            <button onclick="nextCard()" class="w-8 h-8 rounded-lg bg-surface-container border border-outline-variant/20 text-on-surface-variant hover:text-primary transition-colors flex items-center justify-center">›</button>
+      <div class="fade-in p-4 space-y-3">
+        <div class="flex items-center justify-between">
+          <div class="flex gap-3 text-xs">
+            <span class="text-secondary font-bold">✓ ${known}</span>
+            <span class="text-error font-bold">✗ ${unknown}</span>
           </div>
+          <p class="text-xs text-on-surface-variant font-bold">${idx+1} / ${cards.length}</p>
         </div>
-        <div onclick="flipCard()" class="cursor-pointer rounded-2xl border-2 border-primary/20 bg-surface-container min-h-[160px] flex flex-col items-center justify-center p-6 text-center transition-all hover:border-primary/40 hover:bg-primary/5">
-          <p class="text-[10px] font-bold uppercase tracking-wider text-on-surface-variant mb-3">${flipped ? 'Respuesta' : 'Pregunta'}</p>
-          <p class="text-base font-semibold">${esc(flipped ? (card?.back || 'Sin respuesta') : (card?.front || card || ''))}</p>
-          <p class="text-[10px] text-primary mt-4">Toca para ${flipped?'ver pregunta':'ver respuesta'}</p>
+        <div class="h-1 bg-surface-container-high rounded-full overflow-hidden">
+          <div class="h-full grad-primary rounded-full transition-all" style="width:${Math.round((idx/cards.length)*100)}%"></div>
         </div>
-        <div class="flex gap-2 mt-3">
-          <button onclick="markCard('no')" class="flex-1 py-2 rounded-xl bg-error/10 text-error text-xs font-bold hover:bg-error/20 transition-colors">✗ No sabía</button>
-          <button onclick="markCard('yes')" class="flex-1 py-2 rounded-xl bg-tertiary/10 text-tertiary text-xs font-bold hover:bg-tertiary/20 transition-colors">✓ Lo sabía</button>
+        <div onclick="flipCard()" class="card-face cursor-pointer pcard min-h-[180px] flex flex-col items-center justify-center p-6 text-center hover:border-primary/30 transition-all" style="${flipped?'background:linear-gradient(135deg,rgba(46,91,255,0.08),rgba(124,58,237,0.05));border-color:rgba(46,91,255,0.2)':''}">
+          <span class="text-[10px] font-extrabold uppercase tracking-widest mb-3 ${flipped?'text-primary':'text-on-surface-variant'}">${flipped?'RESPUESTA':'PREGUNTA'}</span>
+          <p class="text-base font-semibold leading-snug">${esc(flipped?(card?.back||'Sin respuesta'):(card?.front||card||''))}</p>
+          <p class="text-[10px] text-on-surface-variant mt-4 flex items-center gap-1"><span class="material-symbols-outlined text-sm">touch_app</span>Toca para ${flipped?'ver pregunta':'ver respuesta'}</p>
+        </div>
+        <div class="flex gap-2">
+          <button onclick="prevCard()" class="w-10 h-10 pcard rounded-xl flex items-center justify-center text-on-surface-variant hover:text-primary transition-colors">‹</button>
+          <button onclick="markCard('no')" class="flex-1 py-2.5 rounded-xl bg-error/10 border border-error/20 text-error text-xs font-extrabold hover:bg-error/20 transition-colors">✗ No sabía</button>
+          <button onclick="markCard('yes')" class="flex-1 py-2.5 rounded-xl bg-secondary/10 border border-secondary/20 text-secondary text-xs font-extrabold hover:bg-secondary/20 transition-colors">✓ Lo sabía</button>
+          <button onclick="nextCard()" class="w-10 h-10 pcard rounded-xl flex items-center justify-center text-on-surface-variant hover:text-primary transition-colors">›</button>
         </div>
       </div>`;
   }
   window.flipCard = () => { flipped=!flipped; render(); };
   window.nextCard = () => { idx=(idx+1)%cards.length; flipped=false; render(); };
   window.prevCard = () => { idx=(idx-1+cards.length)%cards.length; flipped=false; render(); };
-  window.markCard = (r) => { flipped=false; idx=(idx+1)%cards.length; render(); };
-  if (!cards.length) {
-    el.innerHTML = `<p class="text-xs text-on-surface-variant text-center py-8 p-4">No hay flashcards configuradas.</p>`;
-  } else render();
+  window.markCard = (r) => { if(r==='yes')known++;else unknown++; flipped=false; idx=(idx+1)%cards.length; render(); };
+  render();
 }
 
 // ── ROADMAP ───────────────────────────────────────────────
@@ -944,38 +1015,41 @@ function renderRoadmap(el) {
   try { done = JSON.parse(localStorage.getItem(storageKey) || '{}'); } catch {}
 
   function render() {
+    if (!steps.length) { el.innerHTML=`<div class="pcard p-8 text-center m-4"><p class="text-on-surface-variant text-sm">No hay pasos configurados.</p></div>`; return; }
     const total = steps.length, completed = Object.values(done).filter(Boolean).length;
+    const pct = total ? Math.round(completed/total*100) : 0;
     el.innerHTML = `
-      <div class="p-4">
-        <div class="flex items-center justify-between mb-4">
-          <p class="text-xs font-bold text-on-surface-variant">Progreso: <span class="text-primary">${completed}/${total}</span></p>
-          <div class="w-24 h-1.5 bg-surface-container-high rounded-full">
-            <div class="bg-primary h-1.5 rounded-full transition-all" style="width:${total?Math.round(completed/total*100):0}%"></div>
+      <div class="fade-in p-4 space-y-4">
+        <div class="pcard-glow p-4">
+          <div class="flex items-center justify-between mb-2">
+            <p class="text-sm font-extrabold">Tu Roadmap</p>
+            <span class="text-xs font-bold text-primary">${completed}/${total} etapas</span>
+          </div>
+          <div class="h-2 bg-surface-container-high rounded-full overflow-hidden">
+            <div class="h-full rounded-full transition-all" style="width:${pct}%;background:linear-gradient(90deg,#2E5BFF,#7c3aed)"></div>
           </div>
         </div>
-        <div class="relative pl-6 space-y-0">
+        <div class="relative pl-8">
           ${steps.map((s,i) => `
-            <div class="relative pb-4">
-              <div class="absolute -left-6 top-0 flex flex-col items-center h-full">
+            <div class="relative pb-5 last:pb-0">
+              <div class="absolute -left-8 top-0 flex flex-col items-center" style="height:100%">
                 <button onclick="toggleRoadmap(${i})"
-                  class="w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 transition-all
-                  ${done[i] ? 'bg-primary border-primary text-white' : 'bg-surface-container border-outline-variant/30 hover:border-primary'}">
-                  ${done[i] ? '<span class="text-[10px]">✓</span>' : ''}
+                  class="w-7 h-7 rounded-full border-2 flex items-center justify-center shrink-0 font-extrabold text-xs transition-all z-10
+                  ${done[i] ? 'border-transparent text-white shadow-lg' : 'bg-surface-container border-outline-variant/40 text-on-surface-variant hover:border-primary'}"
+                  style="${done[i]?'background:linear-gradient(135deg,#2E5BFF,#7c3aed);box-shadow:0 2px 8px rgba(46,91,255,0.4)':''}">
+                  ${done[i] ? '✓' : `<span class="text-[10px]">${i+1}</span>`}
                 </button>
-                ${i<steps.length-1 ? `<div class="w-px flex-1 mt-1 ${done[i]?'bg-primary/40':'bg-outline-variant/20'}"></div>` : ''}
+                ${i<steps.length-1 ? `<div class="w-px flex-1 mt-1 transition-colors" style="${done[i]?'background:rgba(46,91,255,0.3)':'background:rgba(255,255,255,0.07)'}"></div>` : ''}
               </div>
-              <p class="text-sm font-semibold ${done[i]?'line-through text-on-surface-variant':''} transition-all">${esc(s)}</p>
+              <div class="pcard p-3 ml-2 hover:border-primary/20 transition-colors cursor-pointer" onclick="toggleRoadmap(${i})">
+                <p class="text-sm font-semibold ${done[i]?'line-through text-on-surface-variant':''} transition-all">${esc(s)}</p>
+              </div>
             </div>`).join('')}
         </div>
       </div>`;
   }
-  window.toggleRoadmap = (i) => {
-    done[i]=!done[i];
-    localStorage.setItem(storageKey, JSON.stringify(done));
-    render();
-  };
-  if (!steps.length) el.innerHTML = `<p class="text-xs text-on-surface-variant text-center py-8 p-4">No hay pasos de roadmap configurados.</p>`;
-  else render();
+  window.toggleRoadmap = (i) => { done[i]=!done[i]; localStorage.setItem(storageKey, JSON.stringify(done)); render(); };
+  render();
 }
 
 // ── COMPARADOR ────────────────────────────────────────────
@@ -998,28 +1072,35 @@ function renderComparador(el) {
 
 // ── DIAGNÓSTICO ───────────────────────────────────────────
 function renderDiagnostico(el) {
-  const questions = currentApp.diagQuestions || currentApp.questions || currentApp.initialItems?.map(q=>({q,opts:['Sí','No','A veces']})) || [];
+  const questions = currentApp.diagQuestions || currentApp.questions || currentApp.initialItems?.map(q=>({q,opts:['Sí','No','A veces','No sé']})) || [];
   let answers = {}, step = 0;
 
   function renderQuestion() {
-    if (!questions.length) { el.innerHTML=`<p class="text-xs text-on-surface-variant text-center py-8 p-4">No hay preguntas de diagnóstico.</p>`; return; }
+    if (!questions.length) { el.innerHTML=`<div class="pcard p-8 text-center m-4"><p class="text-on-surface-variant text-sm">No hay preguntas.</p></div>`; return; }
     if (step >= questions.length) return renderResult();
     const qObj = questions[step];
     const q = qObj.q || qObj;
     const opts = qObj.opts || ['Sí','No','A veces','No sé'];
+    const pct = Math.round((step/questions.length)*100);
     el.innerHTML = `
-      <div class="p-4">
-        <div class="flex items-center justify-between mb-4">
-          <p class="text-xs text-on-surface-variant">Pregunta ${step+1} de ${questions.length}</p>
-          <div class="w-20 h-1 bg-surface-container-high rounded-full">
-            <div class="bg-primary h-1 rounded-full" style="width:${Math.round(step/questions.length*100)}%"></div>
+      <div class="fade-in p-4 space-y-4">
+        <div>
+          <div class="flex items-center justify-between mb-2">
+            <span class="text-xs text-on-surface-variant">Pregunta ${step+1} de ${questions.length}</span>
+            <span class="text-xs font-bold text-primary">${pct}%</span>
+          </div>
+          <div class="h-1.5 bg-surface-container-high rounded-full overflow-hidden">
+            <div class="h-full grad-primary rounded-full transition-all" style="width:${pct}%"></div>
           </div>
         </div>
-        <p class="text-sm font-bold mb-4 leading-snug">${esc(q)}</p>
+        <div class="pcard p-5">
+          <p class="text-base font-extrabold leading-snug">${esc(q)}</p>
+        </div>
         <div class="space-y-2">
           ${opts.map((o,i)=>`
             <button onclick="answerDiag(${i})"
-              class="w-full text-left px-4 py-3 rounded-xl border border-outline-variant/20 text-sm hover:border-primary/50 hover:bg-primary/5 transition-all">
+              class="w-full text-left px-4 py-3.5 pcard rounded-2xl text-sm font-semibold hover:border-primary/40 hover:bg-primary/5 hover:text-primary transition-all flex items-center gap-3">
+              <span class="w-6 h-6 rounded-lg bg-surface-container-high flex items-center justify-center text-xs font-extrabold shrink-0">${String.fromCharCode(65+i)}</span>
               ${esc(o)}
             </button>`).join('')}
         </div>
@@ -1028,11 +1109,11 @@ function renderDiagnostico(el) {
   function renderResult() {
     const total = Object.values(answers).length;
     el.innerHTML = `
-      <div class="p-4 text-center">
-        <div class="text-5xl mb-3">📊</div>
-        <p class="font-bold text-lg mb-2">Diagnóstico completado</p>
-        <p class="text-sm text-on-surface-variant mb-4">Respondiste ${total} preguntas.</p>
-        <button onclick="step=0;answers={};renderQuestion()" class="px-6 py-2.5 bg-primary text-white rounded-xl text-sm font-bold hover:opacity-90 transition-opacity">
+      <div class="fade-in p-4 text-center space-y-4">
+        <div class="w-20 h-20 rounded-3xl grad-primary mx-auto flex items-center justify-center text-4xl shadow-xl" style="box-shadow:0 12px 32px rgba(46,91,255,0.35)">📊</div>
+        <p class="font-extrabold text-xl">Diagnóstico completado</p>
+        <p class="text-sm text-on-surface-variant">Respondiste ${total} preguntas sobre ${esc(currentApp.niche||'tu nicho')}.</p>
+        <button onclick="step=0;answers={};renderQuestion()" class="w-full py-3 grad-primary text-white rounded-2xl text-sm font-extrabold hover:opacity-90 transition-opacity" style="box-shadow:0 4px 16px rgba(46,91,255,0.3)">
           Repetir diagnóstico
         </button>
       </div>`;
