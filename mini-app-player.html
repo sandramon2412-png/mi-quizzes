@@ -4,7 +4,9 @@
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
 <title>Mini-App | Luminous Studio</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <script src="https://cdn.tailwindcss.com?plugins=forms"></script>
+<script src="./supabase-config.js"></script>
 <script src="./app.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
@@ -243,7 +245,13 @@ function renderApp() {
         <div class="border-t border-outline-variant/10" id="sec-content-${idx}"></div>
       </div>`;
     sectionsEl.appendChild(section);
-    renderSection(document.getElementById(`sec-content-${idx}`), t);
+    try {
+      renderSection(document.getElementById(`sec-content-${idx}`), t);
+    } catch(e) {
+      const errEl = document.getElementById(`sec-content-${idx}`);
+      if (errEl) errEl.innerHTML = `<p class="p-4 text-xs text-error">Error cargando sección: ${esc(e.message)}</p>`;
+      console.error('renderSection error for type', t, e);
+    }
   });
 }
 
