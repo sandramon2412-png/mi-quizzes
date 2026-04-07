@@ -212,12 +212,14 @@ const DB = {
         user_id:      userId,
         name:         app.name,
         type:         app.type,
+        types:        app.types || [app.type].filter(Boolean),
         niche:        app.niche,
         product:      app.product,
         description:  app.description,
         icon:         app.icon,
         access_codes: app.accessCodes || [],
         status:       app.status || 'active',
+        content:      app.content || null,
         updated_at:   new Date().toISOString(),
       };
       if (app.id) {
@@ -242,11 +244,13 @@ const DB = {
       status:      r.status,
       name:        r.name,
       type:        r.type,
+      types:       r.types || [r.type].filter(Boolean),
       niche:       r.niche,
       product:     r.product,
       description: r.description,
       icon:        r.icon,
       accessCodes: r.access_codes || [],
+      ...(r.content || {}),
     }),
   },
 
