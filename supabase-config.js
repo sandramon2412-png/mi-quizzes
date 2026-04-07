@@ -208,6 +208,12 @@ const DB = {
     },
 
     async save(app, userId) {
+      // Collect non-standard fields into content JSONB
+      const KNOWN = new Set(['id','user_id','userId','name','type','types','niche','product','description','icon','accessCodes','access_codes','status','content','created','created_at','updated_at']);
+      const extraContent = {};
+      for (const [k, v] of Object.entries(app)) {
+        if (!KNOWN.has(k) && v !== undefined) extraContent[k] = v;
+      }
       const row = {
         user_id:      userId,
         name:         app.name,
@@ -219,7 +225,7 @@ const DB = {
         icon:         app.icon,
         access_codes: app.accessCodes || [],
         status:       app.status || 'active',
-        content:      app.content || null,
+        content:      Object.keys(extraContent).length ? { ...(app.content || {}), ...extraContent } : (app.content || null),
         updated_at:   new Date().toISOString(),
       };
       if (app.id) {
