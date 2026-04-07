@@ -349,6 +349,10 @@ Responde SOLO con JSON:
     const { type, name, description, features = [] } = appIdea;
     const featuresCtx = features.length ? `\nFunciones que debe incluir: ${features.join(', ')}` : '';
     const typeInstructions = {
+      reto: `Genera contenido guiado para un reto de 7 días llamado "${name}" sobre el nicho "${niche}".${featuresCtx}
+Para cada día crea: título motivador, emoji relevante, cita/insight en cursiva (2-3 oraciones inspiradoras), instrucciones concretas (3-5 oraciones), y una pregunta de reflexión.
+Devuelve SOLO este JSON:
+{"retoDays":7,"retoContent":[{"day":1,"title":"Nombre del día","icon":"emoji","quote":"Cita inspiradora o insight poderoso para este día","instructions":"Instrucciones concretas de qué hacer hoy en el nicho","reflectionPrompt":"Pregunta de reflexión para escribir en el diario"}]}`,
       chatbot: `Diseña un asistente IA especializado en "${name}" para el nicho "${niche}".${featuresCtx}
 Devuelve SOLO este JSON sin texto adicional:
 {"chatbotName":"Nombre corto del asistente","chatbotGreeting":"Bienvenida cálida y específica del nicho (1-2 oraciones)","chatbotSystemPrompt":"Eres [nombre], experto en [tema específico del nicho]. Ayudas con: [lista de funciones]. Responde en español, tono [amigable/profesional], máximo 4 oraciones por respuesta. Si te preguntan algo ajeno al tema, redirige amablemente.","chatbotSuggestions":["Pregunta sugerida 1 específica del nicho","Pregunta sugerida 2","Pregunta sugerida 3"]}`,
