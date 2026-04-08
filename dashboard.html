@@ -597,9 +597,10 @@ function toggleFbGuide() {
       <div class="flex gap-3">
         <div class="w-20">
           <label class="text-xs text-on-surface-variant font-semibold block mb-1.5">Ícono</label>
-          <input type="text" id="ma-icon" value="🚀" maxlength="2"
+          <input type="text" id="ma-icon" value="⚡" maxlength="4"
             class="w-full bg-surface-container border border-outline-variant/30 rounded-xl px-3 py-2.5 text-xl text-center focus:ring-1 focus:ring-primary focus:border-primary outline-none transition"
-            placeholder="🚀"/>
+            placeholder="⚡"
+            oninput="this.value=this.value.trim()"/>
         </div>
         <div class="flex-1">
           <label class="text-xs text-on-surface-variant font-semibold block mb-1.5">Nombre de la Mini-App *</label>
@@ -607,6 +608,11 @@ function toggleFbGuide() {
             class="w-full bg-surface-container border border-outline-variant/30 rounded-xl px-4 py-2.5 text-sm focus:ring-1 focus:ring-primary focus:border-primary outline-none transition placeholder:text-on-surface-variant/50"
             placeholder="Ej: Tracker de Hábitos para mi eBook"/>
         </div>
+      </div>
+      <!-- Emoji suggestions (shown after niche is filled) -->
+      <div id="icon-suggestions" class="hidden">
+        <p class="text-[10px] text-on-surface-variant font-semibold uppercase tracking-wider mb-1.5">Sugerencias de ícono para tu nicho</p>
+        <div id="icon-suggestions-grid" class="flex flex-wrap gap-1.5"></div>
       </div>
 
       <!-- Tipo (multi-select checkboxes) -->
@@ -663,7 +669,8 @@ function toggleFbGuide() {
           <label class="text-xs text-on-surface-variant font-semibold block mb-1.5">Nicho / Tema *</label>
           <input type="text" id="ma-niche" required maxlength="60"
             class="w-full bg-surface-container border border-outline-variant/30 rounded-xl px-4 py-2.5 text-sm focus:ring-1 focus:ring-primary outline-none transition placeholder:text-on-surface-variant/50"
-            placeholder="Ej: finanzas, salud, fe..."/>
+            placeholder="Ej: finanzas, salud, fe..."
+            oninput="suggestIcons(this.value)"/>
         </div>
         <div>
           <label class="text-xs text-on-surface-variant font-semibold block mb-1.5">Producto asociado</label>
@@ -1241,6 +1248,8 @@ function closeModal() {
   document.getElementById('mini-app-form').reset();
   document.getElementById('ai-ideas-box').classList.add('hidden');
   document.getElementById('ai-ideas-box').innerHTML = '';
+  document.getElementById('icon-suggestions').classList.add('hidden');
+  document.getElementById('ma-icon').value = '⚡';
 }
 
 function handleOverlayClick(e) {
@@ -1347,6 +1356,52 @@ async function handleCreateMiniApp(e) {
   }
 }
 
+// ── Icon suggestions based on niche ───────────────────────
+const NICHE_ICONS = [
+  [/espirit|bibl|fe\b|dios|oraci|cristi|religi|angel|manna|sagr|iglesi/i, ['📖','🕊️','✝️','🙏','🌟','🔆']],
+  [/wellness|bienestar|yoga|medita|mindful|autoam|holistic/i,              ['🌿','🧘','🌸','💆','✨','🌙']],
+  [/salud|sanación|terapia|psicolog|emocio|mental/i,                       ['💙','🧠','🌈','🦋','💚','🌺']],
+  [/fitness|gym|ejercic|deport|muscula|crossfit|entrena/i,                 ['💪','🏋️','🔥','⚡','🏃','🎯']],
+  [/nutrici|alimentaci|dieta|receta|cocina|gastro/i,                       ['🥗','🍎','🌱','🥦','🍽️','🫐']],
+  [/finanz|dinero|inversion|ahorro|crypto|bolsa/i,                         ['💰','📈','💎','🏦','🪙','💳']],
+  [/negocio|emprender|startup|empresa|marketing/i,                         ['🚀','💼','📊','⚡','🎯','🔑']],
+  [/maternidad|bebe|embaraz|bebé|infantil|niño|crianza/i,                  ['👶','🤱','🌸','💕','🍼','⭐']],
+  [/arte|creativ|diseño|pintura|ilustra/i,                                 ['🎨','✏️','🖌️','🎭','🌈','💡']],
+  [/música|cantar|guitarra|piano|producci/i,                               ['🎵','🎸','🎹','🎤','🎶','🎧']],
+  [/viaje|travel|turismo|aventura|mochila/i,                               ['✈️','🌍','🗺️','🧳','🏔️','🌊']],
+  [/moda|belleza|makeup|cosmetic|estilo/i,                                 ['💄','👗','✨','💅','🪞','👑']],
+  [/educaci|aprendiz|estudio|curso|libr|enseña/i,                         ['📚','🎓','💡','📝','🔬','✏️']],
+  [/tecnolog|programaci|código|software|web|app/i,                         ['💻','🔧','⚙️','🤖','📱','🔌']],
+  [/mascotas|perro|gato|animal|veterinar/i,                                ['🐾','🐕','🐈','🌿','❤️','🦮']],
+  [/coaching|liderazgo|productivid|habit|reto/i,                          ['🎯','🔥','⚡','🏆','💪','🌟']],
+];
+
+function suggestIcons(niche) {
+  const suggestEl = document.getElementById('icon-suggestions');
+  const gridEl = document.getElementById('icon-suggestions-grid');
+  if (!niche || niche.length < 3) { suggestEl.classList.add('hidden'); return; }
+
+  let icons = [];
+  for (const [pattern, emojis] of NICHE_ICONS) {
+    if (pattern.test(niche)) { icons = emojis; break; }
+  }
+  if (!icons.length) { suggestEl.classList.add('hidden'); return; }
+
+  gridEl.innerHTML = icons.map(e =>
+    `<button type="button" onclick="document.getElementById('ma-icon').value='${e}';document.querySelectorAll('#icon-suggestions-grid button').forEach(b=>b.classList.remove('ring-2','ring-primary'));this.classList.add('ring-2','ring-primary')"
+      style="width:38px;height:38px;border-radius:10px;font-size:20px;border:1px solid rgba(255,255,255,0.1);background:rgba(255,255,255,0.05);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s"
+      onmouseover="this.style.transform='scale(1.15)'" onmouseout="this.style.transform=''">${e}</button>`
+  ).join('');
+  suggestEl.classList.remove('hidden');
+
+  // Auto-set first icon if icon field still has default
+  const iconField = document.getElementById('ma-icon');
+  if (!iconField.value || iconField.value === '⚡') {
+    iconField.value = icons[0];
+    gridEl.querySelector('button')?.classList.add('ring-2','ring-primary');
+  }
+}
+
 // ── AI Ideas ─────────────────────────────────────────────
 async function generateIdeas() {
   const name = document.getElementById('ma-name').value.trim();
@@ -1402,6 +1457,9 @@ function applyIdea(idea) {
     const cb = document.querySelector(`input[name="ma-type"][value="${idea.type}"]`);
     if (cb) { cb.checked = true; cb.closest('.type-chip').classList.add('selected'); }
   }
+  // Refresh icon suggestions based on niche
+  const niche = document.getElementById('ma-niche').value.trim();
+  if (niche) suggestIcons(niche);
   showToast('Idea aplicada al formulario ✨');
 }
 
