@@ -412,6 +412,14 @@ Cada paso debe ser específico y accionable, no genérico. Devuelve SOLO este JS
       diagnostico: `Genera 6-8 preguntas de diagnóstico para evaluar al usuario sobre "${name}" (nicho: "${niche}").${featuresCtx}
 Cada pregunta debe tener 4 opciones de respuesta específicas del nicho. Devuelve SOLO este JSON:
 {"diagQuestions":[{"q":"¿Pregunta concreta y relevante?","opts":["Opción A específica","Opción B específica","Opción C específica","Opción D específica"]}]}`,
+      meditacion: `Crea una meditación guiada completa para "${name}" (nicho: "${niche}").${featuresCtx}
+El script debe ser cálido, fluido y listo para ser leído en voz alta con TTS. Usa pausas marcadas con "..." para respiraciones.
+Devuelve SOLO este JSON:
+{"meditationDuration":10,"meditationScript":"Texto completo de la meditación guiada (400-600 palabras). Comienza con respiración. Usa lenguaje en segunda persona, cálido y presente.","meditationTips":["Tip práctico 1 específico del nicho","Tip 2","Tip 3"],"bellFreq":432}`,
+      afirmaciones: `Genera 12-18 afirmaciones poderosas y específicas para "${name}" en el nicho "${niche}".${featuresCtx}
+Deben ser en primera persona, presente, positivas y accionables. Evita clichés genéricos.
+Devuelve SOLO este JSON:
+{"affirmations":["Afirmación 1 específica del nicho","Afirmación 2","..."],"affirmationInstruction":"Instrucción breve de cómo usar estas afirmaciones en el contexto del nicho"}`,
     };
     const instruction = typeInstructions[type] || typeInstructions.generador;
 
