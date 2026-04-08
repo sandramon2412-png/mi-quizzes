@@ -609,17 +609,44 @@ function toggleFbGuide() {
             placeholder="Ej: Tracker de Hábitos para mi eBook"/>
         </div>
       </div>
-      <!-- Emoji suggestions (shown after niche is filled) -->
+
+      <!-- Nicho / Producto — ARRIBA para que las recomendaciones aparezcan primero -->
+      <div class="grid grid-cols-2 gap-3">
+        <div>
+          <label class="text-xs text-on-surface-variant font-semibold block mb-1.5">Nicho / Tema *</label>
+          <input type="text" id="ma-niche" required maxlength="60"
+            class="w-full bg-surface-container border border-outline-variant/30 rounded-xl px-4 py-2.5 text-sm focus:ring-1 focus:ring-primary outline-none transition placeholder:text-on-surface-variant/50"
+            placeholder="Ej: finanzas, salud, fe..."
+            oninput="suggestIcons(this.value); suggestTypes(this.value)"/>
+        </div>
+        <div>
+          <label class="text-xs text-on-surface-variant font-semibold block mb-1.5">Producto asociado</label>
+          <input type="text" id="ma-product" maxlength="60"
+            class="w-full bg-surface-container border border-outline-variant/30 rounded-xl px-4 py-2.5 text-sm focus:ring-1 focus:ring-primary outline-none transition placeholder:text-on-surface-variant/50"
+            placeholder="Ej: Mi eBook de Finanzas"/>
+        </div>
+      </div>
+
+      <!-- Emoji suggestions -->
       <div id="icon-suggestions" class="hidden">
-        <p class="text-[10px] text-on-surface-variant font-semibold uppercase tracking-wider mb-1.5">Sugerencias de ícono para tu nicho</p>
+        <p class="text-[10px] text-on-surface-variant font-semibold uppercase tracking-wider mb-1.5">Sugerencias de ícono</p>
         <div id="icon-suggestions-grid" class="flex flex-wrap gap-1.5"></div>
       </div>
 
-      <!-- Tipo (multi-select checkboxes) -->
+      <!-- Recomendados por nicho — aparece dinámicamente -->
+      <div id="type-recommendations" class="hidden">
+        <div class="flex items-center gap-2 mb-2">
+          <span class="text-xs font-bold text-primary uppercase tracking-wider">✨ Recomendados para este nicho</span>
+          <span class="text-[10px] text-on-surface-variant">(toca para seleccionar)</span>
+        </div>
+        <div id="type-rec-chips" class="flex flex-wrap gap-1.5"></div>
+      </div>
+
+      <!-- Tipo (multi-select checkboxes) — grid completo -->
       <div>
         <label class="text-xs text-on-surface-variant font-semibold block mb-1.5">
-          Secciones de la Mini-App *
-          <span class="font-normal ml-1 text-primary">(puedes elegir varias)</span>
+          Todos los tipos
+          <span class="font-normal ml-1 text-on-surface-variant/60">(elige los que quieras combinar)</span>
         </label>
         <div id="ma-types-grid" class="space-y-2">
           <div>
@@ -662,23 +689,6 @@ function toggleFbGuide() {
           </div>
         </div>
         <p id="ma-type-error" class="text-[11px] text-error mt-1.5 hidden">Selecciona al menos un tipo.</p>
-      </div>
-
-      <!-- Nicho / Producto -->
-      <div class="grid grid-cols-2 gap-3">
-        <div>
-          <label class="text-xs text-on-surface-variant font-semibold block mb-1.5">Nicho / Tema *</label>
-          <input type="text" id="ma-niche" required maxlength="60"
-            class="w-full bg-surface-container border border-outline-variant/30 rounded-xl px-4 py-2.5 text-sm focus:ring-1 focus:ring-primary outline-none transition placeholder:text-on-surface-variant/50"
-            placeholder="Ej: finanzas, salud, fe..."
-            oninput="suggestIcons(this.value)"/>
-        </div>
-        <div>
-          <label class="text-xs text-on-surface-variant font-semibold block mb-1.5">Producto asociado</label>
-          <input type="text" id="ma-product" maxlength="60"
-            class="w-full bg-surface-container border border-outline-variant/30 rounded-xl px-4 py-2.5 text-sm focus:ring-1 focus:ring-primary outline-none transition placeholder:text-on-surface-variant/50"
-            placeholder="Ej: Mi eBook de Finanzas"/>
-        </div>
       </div>
 
       <!-- Descripción -->
@@ -1426,6 +1436,93 @@ function suggestIcons(niche) {
   }
 }
 
+// Recommended types per niche — shown above the full grid
+const NICHE_TYPES = [
+  [/espirit|bibl|fe\b|dios|oraci|cristi|religi|angel|manna|sagr|iglesi/i,
+    ['devocional','afirmaciones','meditacion','reto','diario']],
+  [/wellness|bienestar|yoga|medita|mindful|autoam|holistic/i,
+    ['meditacion','tracker','diario','afirmaciones','reto']],
+  [/fitness|gym|ejercic|deport|muscula|crossfit|entrena/i,
+    ['tracker','reto','calculadora','checklist','diagnostico']],
+  [/finanz|dinero|negocio|emprender|inversion|crypto|ahorro/i,
+    ['calculadora','roadmap','diagnostico','simulador','comparador']],
+  [/nutrici|alimentaci|cocina|dieta|receta|peso/i,
+    ['checklist','calculadora','tracker','planificador','glosario']],
+  [/maternidad|bebe|embaraz|bebé|infantil|niño|crianza/i,
+    ['tracker','checklist','diario','reto','faq']],
+  [/relacion|pareja|amor|dating|matrimoni|vincul/i,
+    ['diario','afirmaciones','meditacion','diagnostico','chatbot']],
+  [/educaci|aprend|estudio|curso|coach|enseñ/i,
+    ['flashcards','roadmap','checklist','reto','faq']],
+  [/productividad|habit|tiempo|organiz|enfoc/i,
+    ['tracker','planificador','checklist','reto','roadmap']],
+  [/autoayuda|crecimiento|personal|motivaci|desarrollo/i,
+    ['afirmaciones','diario','reto','diagnostico','meditacion']],
+  [/marketing|ventas|redes|social|brand|contenido/i,
+    ['checklist','planificador','roadmap','generador','faq']],
+  [/salud|medicina|terapia|psicolog|mental/i,
+    ['diagnostico','diario','meditacion','afirmaciones','faq']],
+];
+
+const TYPE_LABELS = {
+  devocional:'🕊️ Devocional', checklist:'✅ Checklist', tracker:'📊 Tracker',
+  reto:'🔥 Reto', diario:'📓 Diario', calculadora:'🧮 Calculadora',
+  comparador:'⚖️ Comparador', diagnostico:'🩺 Diagnóstico', planificador:'📅 Planificador',
+  roadmap:'🗺️ Roadmap', glosario:'📖 Glosario', faq:'💬 FAQ',
+  flashcards:'🃏 Flashcards', biblioteca:'📚 Biblioteca', chatbot:'🤖 Asistente IA',
+  generador:'✨ Generador', afirmaciones:'🌟 Afirmaciones', meditacion:'🧘 Meditación',
+  simulador:'🔮 Simulador',
+};
+
+function suggestTypes(niche) {
+  const recEl = document.getElementById('type-recommendations');
+  const chipsEl = document.getElementById('type-rec-chips');
+  if (!niche || niche.length < 3) { recEl.classList.add('hidden'); return; }
+
+  let recommended = [];
+  for (const [pattern, types] of NICHE_TYPES) {
+    if (pattern.test(niche)) { recommended = types; break; }
+  }
+  if (!recommended.length) { recEl.classList.add('hidden'); return; }
+
+  chipsEl.innerHTML = recommended.map(type => {
+    const label = TYPE_LABELS[type] || type;
+    const isChecked = document.querySelector(`input[name="ma-type"][value="${type}"]`)?.checked;
+    return `<button type="button" id="rec-chip-${type}"
+      onclick="toggleRecType('${type}')"
+      class="rec-type-chip ${isChecked ? 'active' : ''}"
+      style="padding:6px 13px;border-radius:20px;font-size:12px;font-weight:700;cursor:pointer;transition:all .2s;border:1.5px solid;font-family:inherit;
+        ${isChecked
+          ? 'background:rgba(var(--color-primary-rgb,46,91,255),0.15);border-color:var(--color-primary);color:var(--color-primary)'
+          : 'background:rgba(255,255,255,0.05);border-color:rgba(255,255,255,0.15);color:inherit;opacity:.8'}"
+    >${label}</button>`;
+  }).join('');
+
+  recEl.classList.remove('hidden');
+}
+
+function toggleRecType(type) {
+  // Toggle the real checkbox in the grid
+  const cb = document.querySelector(`input[name="ma-type"][value="${type}"]`);
+  if (!cb) return;
+  cb.checked = !cb.checked;
+  cb.dispatchEvent(new Event('change', { bubbles: true }));
+  // Sync recommended chip style
+  const chip = document.getElementById(`rec-chip-${type}`);
+  if (chip) {
+    const on = cb.checked;
+    chip.style.background = on
+      ? 'rgba(var(--color-primary-rgb,46,91,255),0.15)'
+      : 'rgba(255,255,255,0.05)';
+    chip.style.borderColor = on ? 'var(--color-primary)' : 'rgba(255,255,255,0.15)';
+    chip.style.color = on ? 'var(--color-primary)' : 'inherit';
+    chip.style.opacity = on ? '1' : '.8';
+  }
+  // Sync the visual .selected state of the label chip in the full grid
+  const label = cb.closest('label');
+  if (label) label.classList.toggle('selected', cb.checked);
+}
+
 // ── AI Ideas ─────────────────────────────────────────────
 async function generateIdeas() {
   const name = document.getElementById('ma-name').value.trim();
@@ -1492,8 +1589,18 @@ document.addEventListener('DOMContentLoaded', () => {
   document.querySelectorAll('.type-chip').forEach(chip => {
     chip.addEventListener('click', () => {
       const cb = chip.querySelector('input[type="checkbox"]');
-      // Toggle happens automatically; sync the visual class
-      setTimeout(() => chip.classList.toggle('selected', cb.checked), 0);
+      setTimeout(() => {
+        const on = cb.checked;
+        chip.classList.toggle('selected', on);
+        // Sync recommended chip if visible
+        const recChip = document.getElementById(`rec-chip-${cb.value}`);
+        if (recChip) {
+          recChip.style.background = on ? 'rgba(var(--color-primary-rgb,46,91,255),0.15)' : 'rgba(255,255,255,0.05)';
+          recChip.style.borderColor = on ? 'var(--color-primary)' : 'rgba(255,255,255,0.15)';
+          recChip.style.color = on ? 'var(--color-primary)' : 'inherit';
+          recChip.style.opacity = on ? '1' : '.8';
+        }
+      }, 0);
     });
   });
 });
