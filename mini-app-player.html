@@ -319,7 +319,9 @@ function typeIcon(t) {
 function buildTabs(types) {
   const tabsWrap = document.getElementById('top-tabs');
   tabsWrap.style.display = 'block';
-  tabsWrap.querySelector('div').innerHTML = types.map((t, i) => `
+  const inner = tabsWrap.querySelector('div');
+  inner.style.width = 'max-content'; // prevent compression, allow scroll
+  inner.innerHTML = types.map((t, i) => `
     <button class="tab-btn ${i===0?'active':''}" onclick="showTab(${i})" id="tab-btn-${i}">
       <span>${typeIcon(t)}</span><span>${typeLabel(t)}</span>
     </button>`).join('');
@@ -329,6 +331,8 @@ function showTab(idx) {
   activeTab = idx;
   const types = (currentApp.types?.length ? currentApp.types : [currentApp.type]).filter(Boolean);
   document.querySelectorAll('.tab-btn').forEach((b,i) => b.classList.toggle('active', i===idx));
+  // Scroll active tab into view
+  document.getElementById(`tab-btn-${idx}`)?.scrollIntoView({ behavior:'smooth', block:'nearest', inline:'center' });
   const content = document.getElementById('app-content');
   content.innerHTML = '';
   try { renderSection(content, types[idx]); }
