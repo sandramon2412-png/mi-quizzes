@@ -189,25 +189,30 @@ const Claude = {
       body: JSON.stringify({ model: 'claude-haiku-4-5-20251001', max_tokens: maxTokens, messages }),
     });
 
-    let token = await Auth.getToken();
-    if (!token) throw new Error('NOT_AUTHENTICATED');
+    // Always get a fresh token via forced refresh
+    let token = null;
+    try {
+      const { data, error } = await db.auth.refreshSession();
+      if (!error && data.session?.access_token) token = data.session.access_token;
+    } catch {}
+    if (!token) {
+      const { data: { session } } = await db.auth.getSession();
+      token = session?.access_token || null;
+    }
+    if (!token) throw new Error('Sesión no válida. Por favor recarga la página e inicia sesión de nuevo.');
 
     let res = await doRequest(token);
 
-    // On 401, force a fresh session refresh and retry once
+    // On 401, sign out and tell user to re-login
     if (res.status === 401) {
-      try {
-        const { data, error } = await db.auth.refreshSession();
-        if (!error && data.session?.access_token) {
-          token = data.session.access_token;
-          res = await doRequest(token);
-        }
-      } catch {}
+      throw new Error('Sesión expirada. Por favor recarga la página e inicia sesión de nuevo. O configura tu API key de Groq en Ajustes para no depender del proxy.');
     }
 
     if (!res.ok) {
       const err = await res.json().catch(() => ({}));
-      throw new Error(err.error?.message || `Error ${res.status}`);
+      const msg = err.error?.message || `Error ${res.status}`;
+      if (res.status === 429) throw new Error('Límite de peticiones alcanzado. Espera un momento e intenta de nuevo.');
+      throw new Error(msg);
     }
     const data = await res.json();
     return data.content[0].text;
