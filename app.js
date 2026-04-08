@@ -401,6 +401,12 @@ Devuelve SOLO este JSON: {"calcFields":[{"id":"a","label":"Nombre del campo en e
 Devuelve SOLO este JSON: {"generatorPrompt":"Genera [tipo de contenido específico] para [contexto del nicho] con las siguientes características: [input del usuario]. Responde en español con formato claro.","inputLabel":"Etiqueta descriptiva del input en el nicho","inputPlaceholder":"Ejemplo de input específico del nicho..."}`,
       simulador: `Define el prompt y etiquetas para el simulador "${name}".${featuresCtx}
 Devuelve SOLO este JSON: {"generatorPrompt":"Simula [escenario específico del nicho] basado en: [input del usuario]. Explica paso a paso qué pasaría en ese escenario real. Responde en español con ejemplos concretos.","inputLabel":"¿Qué quieres simular?","inputPlaceholder":"Describe tu situación o escenario..."}`,
+      roadmap: `Genera 8-12 pasos de un roadmap concreto y ordenado para "${name}" en el nicho "${niche}".${featuresCtx}
+Cada paso debe ser específico y accionable, no genérico. Devuelve SOLO este JSON:
+{"roadmapSteps":["Paso 1: descripción concreta y accionable","Paso 2: ...","Paso 3: ..."]}`,
+      diagnostico: `Genera 6-8 preguntas de diagnóstico para evaluar al usuario sobre "${name}" (nicho: "${niche}").${featuresCtx}
+Cada pregunta debe tener 4 opciones de respuesta específicas del nicho. Devuelve SOLO este JSON:
+{"diagQuestions":[{"q":"¿Pregunta concreta y relevante?","opts":["Opción A específica","Opción B específica","Opción C específica","Opción D específica"]}]}`,
     };
     const instruction = typeInstructions[type] || typeInstructions.generador;
 
