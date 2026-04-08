@@ -1298,6 +1298,20 @@ async function handleCreateMiniApp(e) {
     submitBtn.disabled = true;
     submitBtn.textContent = 'Generando...';
     progressEl.classList.remove('hidden');
+    setProgress(3, 'Verificando sesión...');
+
+    // Pre-check: ensure we have a valid session or Groq key before starting
+    if (!Settings.getGroqApiKey()) {
+      const { data } = await db.auth.refreshSession().catch(() => ({ data: null }));
+      if (!data?.session?.access_token) {
+        // Try current session
+        const { data: d2 } = await db.auth.getSession().catch(() => ({ data: null }));
+        if (!d2?.session?.access_token) {
+          throw new Error('Sesión expirada. Recarga la página e inicia sesión. O configura tu API key de Groq en Ajustes → IA.');
+        }
+      }
+    }
+
     setProgress(5, 'Analizando estilo visual...');
 
     // Generate theme based on niche/product
@@ -1349,7 +1363,11 @@ async function handleCreateMiniApp(e) {
     }, 400);
 
   } catch (err) {
-    showToast('Error al crear: ' + err.message, 'error');
+    const isAuth = /sesión|session|401|autenti/i.test(err.message);
+    const msg = isAuth
+      ? 'Sesión expirada — recarga la página o ve a Ajustes y configura tu API key de Groq.'
+      : 'Error al crear: ' + err.message;
+    showToast(msg, 'error');
     submitBtn.disabled = false;
     submitBtn.textContent = '✦ Crear con IA';
     progressEl.classList.add('hidden');
