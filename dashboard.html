@@ -780,6 +780,11 @@ async function loadUserInfo() {
     const badge = document.getElementById('plan-badge');
     badge.textContent = b.label;
     badge.className = `text-xs font-bold px-3 py-1 rounded-full border hidden md:block ${b.color}`;
+
+    // Sync Groq API key from Supabase profile to localStorage (in case localStorage was cleared)
+    if (profile?.groq_api_key && !Settings.getGroqApiKey()) {
+      Settings.save({ groqApiKey: profile.groq_api_key });
+    }
   } catch {}
 }
 
