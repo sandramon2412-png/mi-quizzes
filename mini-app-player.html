@@ -48,17 +48,29 @@
   }
 
   /* Cards */
-  .card { background:var(--card); border:1px solid var(--border); border-radius:var(--radius); }
+  .card { background:var(--card); border:1px solid var(--border); border-radius:var(--radius); box-shadow:0 2px 16px rgba(0,0,0,0.06); }
   .card2 { background:var(--card2); border:1px solid var(--border); border-radius:calc(var(--radius) - 4px); }
+  .card-dark { background:linear-gradient(135deg,var(--accent),var(--accent2,var(--accent))); color:#fff; border-radius:var(--radius); padding:20px; margin-bottom:14px; box-shadow:0 6px 24px rgba(0,0,0,0.18); }
   .quote-box { background:var(--bg3); border-left:3px solid var(--accent); border-radius:10px; padding:14px 16px; font-style:italic; color:var(--muted); font-size:13px; line-height:1.7; }
 
   /* Buttons */
-  .btn-primary { background:var(--btn); color:#fff; border:none; border-radius:50px; padding:14px 24px; font-weight:700; font-size:14px; cursor:pointer; width:100%; transition:opacity .2s,transform .15s; box-shadow:0 4px 20px rgba(0,0,0,0.2); }
-  .btn-primary:hover { opacity:.9; transform:translateY(-1px); }
-  .btn-primary:active { transform:translateY(0); opacity:1; }
-  .btn-secondary { background:var(--card); color:var(--text); border:1px solid var(--border); border-radius:50px; padding:10px 20px; font-weight:600; font-size:13px; cursor:pointer; transition:all .2s; }
+  .btn-primary { background:var(--btn); color:#fff; border:none; border-radius:50px; padding:14px 24px; font-family:inherit; font-weight:800; font-size:14px; cursor:pointer; width:100%; transition:all .2s; box-shadow:0 4px 18px rgba(0,0,0,0.2); display:inline-flex; align-items:center; justify-content:center; gap:6px; }
+  .btn-primary:hover { transform:translateY(-2px); box-shadow:0 6px 24px rgba(0,0,0,0.3); }
+  .btn-primary:active { transform:translateY(0); }
+  .btn-primary:disabled { opacity:.6; cursor:default; transform:none; }
+  .btn-secondary { background:var(--card); color:var(--text); border:1.5px solid var(--border); border-radius:50px; padding:10px 20px; font-family:inherit; font-weight:700; font-size:13px; cursor:pointer; transition:all .2s; }
   .btn-secondary:hover { border-color:var(--accent); color:var(--accent); }
-  .btn-done { background:var(--bg3); color:var(--success); border:1.5px solid var(--success); border-radius:50px; padding:14px 24px; font-weight:700; font-size:14px; cursor:pointer; width:100%; }
+  .btn-done { background:var(--card); color:var(--success); border:1.5px solid var(--success); border-radius:50px; padding:14px 24px; font-family:inherit; font-weight:800; font-size:14px; cursor:pointer; width:100%; display:inline-flex; align-items:center; justify-content:center; gap:6px; }
+
+  /* Quiz options */
+  .quiz-opt { width:100%; padding:14px 18px; border:2px solid var(--border); border-radius:14px; background:var(--card); font-family:inherit; font-size:14px; font-weight:700; cursor:pointer; transition:all .18s; text-align:left; margin-bottom:10px; color:var(--text); display:flex; align-items:center; gap:10px; box-shadow:0 1px 4px rgba(0,0,0,0.04); }
+  .quiz-opt:hover:not(:disabled) { border-color:var(--accent); background:var(--bg3); transform:translateX(2px); }
+  .quiz-opt.correct { border-color:#16a34a; background:#f0fdf4; color:#166534; }
+  .quiz-opt.wrong   { border-color:#dc2626; background:#fef2f2; color:#991b1b; animation:shake .3s ease; }
+  .quiz-opt:disabled { cursor:default; }
+  .quiz-opt .opt-letter { width:28px; height:28px; border-radius:50%; background:var(--bg3); display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:800; flex-shrink:0; }
+  .quiz-opt.correct .opt-letter { background:#16a34a; color:#fff; }
+  .quiz-opt.wrong   .opt-letter { background:#dc2626; color:#fff; }
 
   /* Input */
   .input { background:var(--card2); border:1.5px solid var(--border); border-radius:12px; padding:12px 16px; font-size:14px; color:var(--text); outline:none; transition:border-color .2s; font-family:inherit; }
@@ -97,13 +109,16 @@
 
   /* Stat pills */
   .stat-row { display:flex; gap:10px; margin-bottom:16px; }
-  .stat-pill { flex:1; background:var(--card); border:1px solid var(--border); border-radius:14px; padding:12px 8px; text-align:center; }
-  .stat-val { font-size:22px; font-weight:800; color:var(--accent); }
-  .stat-lbl { font-size:10px; color:var(--muted); text-transform:uppercase; letter-spacing:.05em; margin-top:2px; }
+  .stat-pill { flex:1; background:var(--card); border:1px solid var(--border); border-radius:16px; padding:14px 8px; text-align:center; box-shadow:0 2px 8px rgba(0,0,0,0.05); }
+  .stat-val { font-size:24px; font-weight:900; color:var(--accent); line-height:1.1; }
+  .stat-lbl { font-size:10px; color:var(--muted); text-transform:uppercase; letter-spacing:.07em; margin-top:3px; font-weight:700; }
 
   /* Progress bar */
-  .prog-wrap { height:6px; background:var(--bg3); border-radius:99px; overflow:hidden; margin-bottom:4px; }
-  .prog-bar { height:100%; border-radius:99px; background:var(--btn); transition:width .5s ease; }
+  .prog-wrap { height:8px; background:var(--bg3); border-radius:99px; overflow:hidden; margin-bottom:4px; }
+  .prog-bar { height:100%; border-radius:99px; background:linear-gradient(90deg,var(--accent),var(--accent2,var(--accent))); transition:width .6s cubic-bezier(.4,0,.2,1); }
+
+  /* Shake animation for wrong answers */
+  @keyframes shake { 0%,100%{transform:translateX(0)} 20%,60%{transform:translateX(-6px)} 40%,80%{transform:translateX(6px)} }
 
   /* Checklist item */
   .check-row { display:flex; align-items:center; gap:12px; padding:12px 0; border-bottom:1px solid var(--border); }
@@ -341,6 +356,15 @@ function showTab(idx) {
   content.scrollTop = 0;
 }
 
+// ── Section header card ───────────────────────────────────
+function sectionHdr(emoji, title, sub) {
+  return `<div class="card-dark fade-up" style="padding:20px;margin-bottom:14px">
+    <div style="font-size:38px;margin-bottom:8px">${emoji}</div>
+    <h1 class="serif" style="font-size:21px;font-weight:700;margin-bottom:${sub?'4px':'0'};color:#fff">${esc(title)}</h1>
+    ${sub?`<p style="font-size:12px;opacity:.75;color:#fff">${esc(sub)}</p>`:''}
+  </div>`;
+}
+
 function renderSection(el, type) {
   if (type==='reto') return renderReto(el);
   if (type==='checklist') return renderChecklist(el);
@@ -376,11 +400,12 @@ function renderReto(el) {
 
   // If no guided content, show simple grid
   if (!days.length) {
-    el.innerHTML = `<div class="fade-up" style="padding:20px">
+    el.innerHTML = sectionHdr(app.icon||'🔥', app.name, `Reto ${totalDays} días · ${completed} completados`) +
+    `<div class="fade-up" style="padding:20px">
       <div style="margin-bottom:16px">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
-          <span style="font-size:13px;font-weight:700">Reto ${totalDays} días</span>
-          <span style="font-size:12px;color:var(--accent);font-weight:700">${completed}/${totalDays}</span>
+          <span style="font-size:13px;font-weight:700">${completed}/${totalDays} días</span>
+          <span style="font-size:12px;color:var(--accent);font-weight:700">${pct}%</span>
         </div>
         <div class="prog-wrap"><div class="prog-bar" style="width:${pct}%"></div></div>
       </div>
@@ -396,11 +421,8 @@ function renderReto(el) {
   }
 
   // Guided content
-  el.innerHTML = `<div class="fade-up" style="padding:20px">
-    <div style="margin-bottom:20px">
-      <h2 class="serif" style="font-size:22px;font-weight:700;color:var(--accent);margin-bottom:2px">Reto ${totalDays} Días</h2>
-      <p style="font-size:12px;color:var(--muted)">${esc(app.description||'Un día a la vez')}</p>
-    </div>
+  el.innerHTML = sectionHdr(app.icon||'🔥', app.name, app.description||`Reto ${totalDays} días`) +
+  `<div class="fade-up" style="padding:20px">
     <div class="stat-row">
       <div class="stat-pill"><div class="stat-val">${completed}</div><div class="stat-lbl">Completados</div></div>
       <div class="stat-pill"><div class="stat-val">${totalDays-completed}</div><div class="stat-lbl">Restantes</div></div>
@@ -463,7 +485,8 @@ function renderChecklist(el) {
   function save() { localStorage.setItem(storageKey,JSON.stringify(items)); }
   function draw() {
     const done=items.filter(i=>i.done).length, pct=items.length?Math.round(done/items.length*100):0;
-    el.innerHTML=`<div class="fade-up" style="padding:20px">
+    el.innerHTML=sectionHdr(currentApp.icon||'✅', currentApp.name, `${done}/${items.length} completados`) +
+    `<div class="fade-up" style="padding:20px">
       <div style="margin-bottom:20px">
         <div style="display:flex;justify-content:space-between;margin-bottom:6px">
           <span style="font-size:13px;font-weight:700">${done}/${items.length} completados</span>
@@ -510,27 +533,29 @@ function renderTracker(el) {
   }
   function draw() {
     const todayDone=checked.has(today);
-    el.innerHTML=`<div class="fade-up" style="padding:20px">
+    const s=streak(), pct=days?Math.round(checked.size/days*100):0;
+    el.innerHTML=sectionHdr(currentApp.icon||'📊', currentApp.name, currentApp.description||`Hábito de ${days} días`) +
+    `<div class="fade-up" style="padding:20px">
       <div class="stat-row">
-        <div class="stat-pill"><div class="stat-val">${streak()}</div><div class="stat-lbl">Racha</div></div>
+        <div class="stat-pill"><div class="stat-val">${s}</div><div class="stat-lbl">🔥 Racha</div></div>
         <div class="stat-pill"><div class="stat-val">${checked.size}</div><div class="stat-lbl">Días</div></div>
-        <div class="stat-pill"><div class="stat-val">${days?Math.round(checked.size/days*100):0}%</div><div class="stat-lbl">Logrado</div></div>
+        <div class="stat-pill"><div class="stat-val">${pct}%</div><div class="stat-lbl">Logrado</div></div>
       </div>
-      ${currentApp.trackerHabit?`<div class="quote-box" style="margin-bottom:16px">${esc(currentApp.trackerHabit)}</div>`:''}
+      ${currentApp.trackerHabit?`<div class="quote-box" style="margin-bottom:16px">"${esc(currentApp.trackerHabit)}"</div>`:''}
       <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:5px;margin-bottom:16px">
         ${Array.from({length:days},(_,i)=>{
           const d=new Date();d.setDate(d.getDate()-(days-1-i));
           const key=d.toISOString().split('T')[0];
           const isToday=key===today, done=checked.has(key);
-          return `<button onclick="toggleTrackerDay('${key}')" title="${key}" style="aspect-ratio:1;border-radius:9px;border:${isToday?'1.5px solid var(--accent)':'1px solid var(--border)'};font-size:10px;font-weight:700;cursor:pointer;transition:all .15s;background:${done?'var(--accent)':'var(--card)'};color:${done?'#fff':isToday?'var(--accent)':'var(--muted)'}">${i+1}</button>`;
+          return `<button onclick="toggleTrackerDay('${key}')" title="${key}" style="aspect-ratio:1;border-radius:9px;border:${isToday?'2px solid var(--accent)':'1px solid var(--border)'};font-size:10px;font-weight:800;cursor:pointer;transition:all .15s;background:${done?'var(--accent)':'var(--card)'};color:${done?'#fff':isToday?'var(--accent)':'var(--muted)'};${done?'box-shadow:0 2px 6px rgba(0,0,0,0.15)':''}">${i+1}</button>`;
         }).join('')}
       </div>
-      <button onclick="toggleTrackerDay('${today}')" style="width:100%;padding:14px;border-radius:50px;border:none;cursor:pointer;font-weight:700;font-size:14px;transition:all .2s;background:${todayDone?'var(--bg3)':'var(--btn)'};color:${todayDone?'var(--success)':'#fff'};${todayDone?'border:1.5px solid var(--success)':''}">
-        ${todayDone?'✓ Hoy completado':'Marcar hoy como completado'}
+      <button onclick="toggleTrackerDay('${today}')" class="${todayDone?'btn-done':'btn-primary'}">
+        ${todayDone?'✓ Hoy completado — Desmarcar':'Marcar hoy como completado ✓'}
       </button>
     </div>`;
   }
-  window.toggleTrackerDay=(key)=>{if(checked.has(key))checked.delete(key);else checked.add(key);save();draw();};
+  window.toggleTrackerDay=(key)=>{if(checked.has(key))checked.delete(key);else checked.add(key);save();if(!checked.has(key)||key===today)draw();else{showToast('¡Día marcado! 🔥');draw();}};
   draw();
 }
 
@@ -540,19 +565,23 @@ function renderDevocional(el) {
   let notes=JSON.parse(localStorage.getItem(storageKey)||'{}');
   const today=new Date().toISOString().split('T')[0];
   const dayNum=(()=>{const sk=`devo_start_${currentApp.id}`;let s=localStorage.getItem(sk);if(!s){s=today;localStorage.setItem(sk,s);}return Math.floor((new Date()-new Date(s))/86400000)+1;})();
-  el.innerHTML=`<div class="fade-up" style="padding:20px;space-y:16px">
-    <div class="card" style="padding:24px;text-align:center;margin-bottom:16px">
-      <p style="font-size:11px;font-weight:700;color:var(--accent);text-transform:uppercase;letter-spacing:.1em;margin-bottom:8px">Día ${dayNum}</p>
-      <div style="font-size:40px;margin-bottom:12px">${currentApp.icon||'🕊️'}</div>
-      <h2 class="serif" style="font-size:20px;font-weight:700;margin-bottom:6px">${esc(currentApp.name)}</h2>
-      <p style="font-size:13px;color:var(--muted)">${new Date().toLocaleDateString('es-ES',{weekday:'long',day:'numeric',month:'long'})}</p>
+  const dateStr=new Date().toLocaleDateString('es-ES',{weekday:'long',day:'numeric',month:'long'});
+  el.innerHTML=sectionHdr(currentApp.icon||'🕊️', currentApp.name, dateStr) +
+  `<div class="fade-up" style="padding:20px">
+    <div class="card" style="padding:16px;text-align:center;margin-bottom:16px;border-top:3px solid var(--accent)">
+      <p style="font-size:11px;font-weight:800;color:var(--accent);text-transform:uppercase;letter-spacing:.12em">Día ${dayNum}</p>
     </div>
-    ${currentApp.devotionalText?`<div class="quote-box" style="margin-bottom:16px">${esc(currentApp.devotionalText)}</div>`:''}
+    ${currentApp.devotionalText?`<div class="quote-box" style="margin-bottom:16px">"${esc(currentApp.devotionalText)}"</div>`:''}
     <div class="card" style="padding:20px;margin-bottom:12px">
-      <p style="font-size:11px;font-weight:700;color:var(--accent);text-transform:uppercase;margin-bottom:10px">Mi reflexión de hoy</p>
+      <p style="font-size:11px;font-weight:700;color:var(--accent);text-transform:uppercase;letter-spacing:.08em;margin-bottom:10px">✍️ Mi reflexión de hoy</p>
       <textarea id="devo-note" class="input" style="width:100%" rows="6" placeholder="Escribe tus pensamientos, oraciones o reflexiones...">${esc(notes[today]||'')}</textarea>
-      <button class="btn-primary" style="margin-top:12px" onclick="saveDevo()">Guardar reflexión</button>
+      <button class="btn-primary" style="margin-top:12px" onclick="saveDevo()">Guardar reflexión ✦</button>
     </div>
+    ${Object.keys(notes).filter(k=>k!==today).slice(0,3).map(k=>`
+      <div class="card2" style="padding:12px 16px;margin-bottom:8px;border-radius:12px">
+        <p style="font-size:10px;font-weight:700;color:var(--muted);margin-bottom:4px">${k}</p>
+        <p style="font-size:12px;color:var(--text);line-height:1.5">${esc(notes[k].substring(0,120))}${notes[k].length>120?'…':''}</p>
+      </div>`).join('')}
   </div>`;
   window.saveDevo=()=>{const v=document.getElementById('devo-note')?.value?.trim();if(v){notes[today]=v;localStorage.setItem(storageKey,JSON.stringify(notes));showToast('Reflexión guardada ✨');}};
 }
@@ -563,18 +592,18 @@ function renderDiario(el) {
   let entries=JSON.parse(localStorage.getItem(storageKey)||'[]');
   const prompts=currentApp.journalPrompts||currentApp.initialItems||['¿Cómo me siento hoy?','¿Qué quiero soltar?','¿Qué agradezco?'];
   const todayKey=new Date().toDateString();
-  const todayDate=new Date().toLocaleDateString('es-ES',{day:'numeric',month:'long'});
+  const todayDate=new Date().toLocaleDateString('es-ES',{weekday:'long',day:'numeric',month:'long'});
   const todayEntry=entries.find(e=>e.dateKey===todayKey);
-  el.innerHTML=`<div class="fade-up" style="padding:20px">
-    <h2 class="serif" style="font-size:22px;font-weight:700;color:var(--accent);margin-bottom:2px">Diario Emocional</h2>
-    <p style="font-size:12px;color:var(--muted);margin-bottom:20px">${todayDate}</p>
-    ${currentApp.diaryIntro?`<div class="quote-box" style="margin-bottom:20px">${esc(currentApp.diaryIntro)}</div>`:''}
+  el.innerHTML=sectionHdr(currentApp.icon||'📓', currentApp.name||'Diario', todayDate) +
+  `<div class="fade-up" style="padding:20px">
+    ${currentApp.diaryIntro?`<div class="quote-box" style="margin-bottom:20px">"${esc(currentApp.diaryIntro)}"</div>`:''}
     ${prompts.map((p,i)=>`
       <div class="card" style="padding:16px;margin-bottom:12px">
-        <p style="font-size:11px;font-weight:700;color:var(--accent);text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px">${esc(p)}</p>
+        <p style="font-size:11px;font-weight:800;color:var(--accent);text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px">${esc(p)}</p>
         <textarea id="dj-${i}" class="input" style="width:100%" rows="3" placeholder="Escribe libremente...">${esc(todayEntry?.answers?.[i]||'')}</textarea>
       </div>`).join('')}
     <button class="btn-primary" onclick="saveDiario()">Guardar entrada ✦</button>
+    ${entries.length>0?`<p style="text-align:center;font-size:11px;color:var(--muted);margin-top:16px">${entries.length} entrada${entries.length>1?'s':''} guardada${entries.length>1?'s':''}</p>`:''}
   </div>`;
   window.saveDiario=()=>{
     const answers=prompts.map((_,i)=>document.getElementById(`dj-${i}`)?.value||'');
@@ -595,51 +624,56 @@ function renderPlanificador(el) {
   let tasks=JSON.parse(localStorage.getItem(storageKey)||'[]');
   function save(){localStorage.setItem(storageKey,JSON.stringify(tasks));}
   function draw(){
-    const done=tasks.filter(t=>t.done).length;
-    el.innerHTML=`<div class="fade-up" style="padding:20px">
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
-        <h2 class="serif" style="font-size:20px;font-weight:700">${esc(currentApp.name)}</h2>
-        <span style="font-size:12px;color:var(--accent);font-weight:700">${done}/${tasks.length}</span>
-      </div>
+    const done=tasks.filter(t=>t.done).length, pct=tasks.length?Math.round(done/tasks.length*100):0;
+    el.innerHTML=sectionHdr(currentApp.icon||'📅', currentApp.name, currentApp.description||`${done}/${tasks.length} completadas`) +
+    `<div class="fade-up" style="padding:20px">
+      ${tasks.length>0?`<div style="margin-bottom:16px">
+        <div style="display:flex;justify-content:space-between;margin-bottom:6px">
+          <span style="font-size:12px;font-weight:700;color:var(--muted)">${done}/${tasks.length} completadas</span>
+          <span style="font-size:12px;color:var(--accent);font-weight:800">${pct}%</span>
+        </div>
+        <div class="prog-wrap"><div class="prog-bar" style="width:${pct}%"></div></div>
+      </div>`:''}
       <div class="card" style="padding:8px 16px;margin-bottom:16px">
         ${tasks.map((t,i)=>`
           <div class="check-row">
             <div class="check-circle ${t.done?'done':''}" onclick="toggleTask(${i})">
               ${t.done?'<svg width="12" height="12" viewBox="0 0 12 12"><polyline points="2,6 5,9 10,3" stroke="#fff" stroke-width="2" fill="none"/></svg>':''}
             </div>
-            <span style="flex:1;font-size:13px;${t.done?'text-decoration:line-through;color:var(--muted)':''}">${esc(t.text)}</span>
-            <button onclick="removeTask(${i})" style="background:none;border:none;color:var(--muted);cursor:pointer;font-size:18px">×</button>
+            <span style="flex:1;font-size:13px;line-height:1.4;${t.done?'text-decoration:line-through;color:var(--muted)':''}">${esc(t.text)}</span>
+            <button onclick="removeTask(${i})" style="background:none;border:none;color:var(--muted);cursor:pointer;font-size:18px;padding:0 4px">×</button>
           </div>`).join('')}
-        ${tasks.length===0?'<p style="text-align:center;color:var(--muted);padding:16px;font-size:13px">Sin tareas aún</p>':''}
+        ${tasks.length===0?'<p style="text-align:center;color:var(--muted);padding:24px;font-size:13px">Agrega tu primera tarea ⬇️</p>':''}
       </div>
       <div style="display:flex;gap:8px">
-        <input id="new-task" class="input" style="flex:1" placeholder="Nueva tarea..." onkeydown="if(event.key==='Enter')addTask()"/>
-        <button class="btn-secondary" onclick="addTask()">+</button>
+        <input id="new-task" class="input" style="flex:1" placeholder="Nueva tarea..." maxlength="200" onkeydown="if(event.key==='Enter')addTask()"/>
+        <button class="btn-secondary" onclick="addTask()">+ Agregar</button>
       </div>
     </div>`;
   }
   window.toggleTask=(i)=>{tasks[i].done=!tasks[i].done;save();draw();};
   window.removeTask=(i)=>{tasks.splice(i,1);save();draw();};
-  window.addTask=()=>{const inp=document.getElementById('new-task');const t=inp.value.trim();if(!t)return;tasks.push({text:t,done:false});save();draw();};
+  window.addTask=()=>{const inp=document.getElementById('new-task');const t=inp.value.trim();if(!t)return;tasks.push({text:t,done:false});save();inp.value='';draw();};
   draw();
 }
 
 // ── CALCULADORA ───────────────────────────────────────────
 function renderCalculadora(el) {
   const fields=currentApp.calcFields||[];
-  el.innerHTML=`<div class="fade-up" style="padding:20px">
-    <h2 class="serif" style="font-size:20px;font-weight:700;margin-bottom:16px">${esc(currentApp.name)}</h2>
+  el.innerHTML=sectionHdr(currentApp.icon||'🧮', currentApp.name, currentApp.description||'Calcula tu resultado') +
+  `<div class="fade-up" style="padding:20px">
     <div class="card" style="padding:20px;margin-bottom:12px">
       ${fields.map(f=>`
-        <div style="margin-bottom:12px">
-          <p style="font-size:12px;font-weight:700;color:var(--muted);margin-bottom:6px">${esc(f.label||f.id)}</p>
-          <input id="calc-${f.id}" type="number" class="input" style="width:100%" placeholder="${esc(f.placeholder||'0')}"/>
+        <div style="margin-bottom:16px">
+          <p style="font-size:12px;font-weight:800;color:var(--accent);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px">${esc(f.label||f.id)}</p>
+          <input id="calc-${f.id}" type="number" class="input" style="width:100%;font-size:16px;font-weight:700" placeholder="${esc(f.placeholder||'0')}"/>
         </div>`).join('')}
-      <button class="btn-primary" onclick="calcResult()">Calcular</button>
+      <button class="btn-primary" onclick="calcResult()">🧮 Calcular</button>
     </div>
-    <div id="calc-result" class="card" style="padding:20px;text-align:center;display:none">
-      <p style="font-size:12px;color:var(--muted);margin-bottom:4px">${esc(currentApp.calcResultLabel||'Resultado')}</p>
-      <p id="calc-result-val" style="font-size:36px;font-weight:800;color:var(--accent)"></p>
+    <div id="calc-result" class="card-dark" style="padding:24px;text-align:center;display:none">
+      <p style="font-size:11px;opacity:.8;margin-bottom:4px;color:#fff">${esc(currentApp.calcResultLabel||'Tu resultado')}</p>
+      <p id="calc-result-val" style="font-size:42px;font-weight:900;color:#fff;line-height:1.1"></p>
+      ${currentApp.calcUnit?`<p style="font-size:14px;opacity:.75;color:#fff;margin-top:4px">${esc(currentApp.calcUnit)}</p>`:''}
     </div>
   </div>`;
   window.calcResult=()=>{
@@ -651,6 +685,7 @@ function renderCalculadora(el) {
       const resEl=document.getElementById('calc-result');
       document.getElementById('calc-result-val').textContent=Number.isInteger(res)?res:res.toFixed(2);
       resEl.style.display='block';
+      resEl.scrollIntoView({behavior:'smooth',block:'nearest'});
     }catch(e){showToast('Error en cálculo','error');}
   };
 }
@@ -658,15 +693,14 @@ function renderCalculadora(el) {
 // ── GENERADOR ─────────────────────────────────────────────
 function renderGenerador(el) {
   const groqKey=(typeof Settings!=='undefined'&&Settings.getGroqApiKey)?Settings.getGroqApiKey():'';
-  el.innerHTML=`<div class="fade-up" style="padding:20px">
-    <h2 class="serif" style="font-size:20px;font-weight:700;margin-bottom:4px">${esc(currentApp.name)}</h2>
-    <p style="font-size:12px;color:var(--muted);margin-bottom:20px">${esc(currentApp.description||'')}</p>
+  el.innerHTML=sectionHdr(currentApp.icon||'✨', currentApp.name, currentApp.description||'Generador con IA') +
+  `<div class="fade-up" style="padding:20px">
     <div class="card" style="padding:16px;margin-bottom:12px">
-      <p style="font-size:12px;font-weight:700;color:var(--accent);margin-bottom:8px">${esc(currentApp.inputLabel||'¿Qué necesitas?')}</p>
+      <p style="font-size:12px;font-weight:800;color:var(--accent);text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px">${esc(currentApp.inputLabel||'¿Qué necesitas?')}</p>
       <textarea id="gen-input" class="input" style="width:100%" rows="4" placeholder="${esc(currentApp.inputPlaceholder||'Describe tu situación...')}"></textarea>
     </div>
-    <button class="btn-primary" id="gen-btn" onclick="generateContent()">✦ Generar</button>
-    <div id="gen-result" class="card" style="padding:16px;margin-top:12px;display:none;font-size:13px;line-height:1.7;white-space:pre-wrap"></div>
+    <button class="btn-primary" id="gen-btn" onclick="generateContent()">✦ Generar con IA</button>
+    <div id="gen-result" class="card" style="padding:20px;margin-top:12px;display:none;font-size:14px;line-height:1.8;white-space:pre-wrap;color:var(--text)"></div>
   </div>`;
   window.generateContent=async()=>{
     const input=document.getElementById('gen-input')?.value.trim();
@@ -750,22 +784,23 @@ function renderChatbot(el) {
 // ── FAQ ───────────────────────────────────────────────────
 function renderFaq(el) {
   const faqs=currentApp.faqItems||currentApp.initialItems?.map(q=>({q,a:''}))||[];
-  el.innerHTML=`<div class="fade-up" style="padding:20px">
-    <h2 class="serif" style="font-size:22px;font-weight:700;margin-bottom:16px">Preguntas frecuentes</h2>
+  el.innerHTML=sectionHdr(currentApp.icon||'💬', currentApp.name||'Preguntas Frecuentes', currentApp.description||`${faqs.length} preguntas`) +
+  `<div class="fade-up" style="padding:20px">
     ${faqs.map((f,i)=>`
       <div class="card" style="margin-bottom:8px;overflow:hidden">
-        <div onclick="toggleFaq(${i})" style="display:flex;align-items:center;justify-content:space-between;padding:14px 16px;cursor:pointer;gap:12px">
-          <span style="font-size:13px;font-weight:600;flex:1">${esc(f.q||f)}</span>
-          <span id="faq-chev-${i}" style="color:var(--accent);font-size:18px;transition:transform .2s;flex-shrink:0">+</span>
+        <div onclick="toggleFaq(${i})" style="display:flex;align-items:center;justify-content:space-between;padding:16px;cursor:pointer;gap:12px">
+          <span style="font-size:13px;font-weight:700;flex:1;line-height:1.4">${esc(f.q||f)}</span>
+          <span id="faq-chev-${i}" style="color:var(--accent);font-size:20px;font-weight:300;transition:transform .25s;flex-shrink:0;line-height:1">+</span>
         </div>
         <div id="faq-body-${i}" style="display:none;padding:0 16px 16px;font-size:13px;color:var(--muted);line-height:1.7;border-top:1px solid var(--border)">${esc(f.a||'Respuesta próximamente.')}</div>
       </div>`).join('')}
+    ${faqs.length===0?'<p style="text-align:center;padding:40px;color:var(--muted);font-size:13px">Sin preguntas configuradas.</p>':''}
   </div>`;
   window.toggleFaq=(i)=>{
     const b=document.getElementById(`faq-body-${i}`),c=document.getElementById(`faq-chev-${i}`);
     const open=b.style.display!=='none';
     b.style.display=open?'none':'block';
-    c.textContent=open?'+':'−';c.style.transform=open?'':'rotate(45deg)';
+    c.textContent=open?'+':'−';c.style.transform=open?'rotate(0)':'rotate(45deg)';
   };
 }
 
@@ -776,30 +811,31 @@ function renderFlashcards(el) {
   function draw(){
     if(!cards.length){el.innerHTML=`<p style="text-align:center;padding:40px;color:var(--muted)">No hay flashcards.</p>`;return;}
     const card=cards[idx];
-    el.innerHTML=`<div class="fade-up" style="padding:20px">
-      <div style="display:flex;justify-content:space-between;margin-bottom:12px">
-        <span style="font-size:12px;color:var(--muted);font-weight:600">${idx+1} / ${cards.length}</span>
-        <span style="font-size:12px"><span style="color:var(--success);font-weight:700">✓ ${known}</span> &nbsp; <span style="color:#e55;font-weight:700">✗ ${unknown}</span></span>
+    el.innerHTML=sectionHdr(currentApp.icon||'🃏', currentApp.name, `${idx+1} de ${cards.length} tarjetas`) +
+    `<div class="fade-up" style="padding:20px">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+        <span style="font-size:13px;color:var(--muted);font-weight:700">${idx+1} / ${cards.length}</span>
+        <span style="font-size:12px"><span style="color:var(--success);font-weight:800">✓ ${known}</span> &nbsp; <span style="color:#e55;font-weight:800">✗ ${unknown}</span></span>
       </div>
-      <div class="prog-wrap" style="margin-bottom:20px"><div class="prog-bar" style="width:${Math.round(idx/cards.length*100)}%"></div></div>
-      <div class="flip-card" onclick="flipFC()" style="min-height:180px;cursor:pointer;margin-bottom:16px">
-        <div class="flip-inner ${flipped?'flipped':''}" style="min-height:180px">
-          <div class="flip-face">
-            <p style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin-bottom:12px">Pregunta</p>
-            <p style="font-size:15px;font-weight:600">${esc(card?.front||card||'')}</p>
-            <p style="font-size:11px;color:var(--accent);margin-top:16px">Toca para voltear</p>
+      <div class="prog-wrap" style="margin-bottom:16px"><div class="prog-bar" style="width:${Math.round(idx/cards.length*100)}%"></div></div>
+      <div class="flip-card" onclick="flipFC()" style="min-height:200px;cursor:pointer;margin-bottom:16px">
+        <div class="flip-inner ${flipped?'flipped':''}" style="min-height:200px">
+          <div class="flip-face" style="border-radius:var(--radius)">
+            <p style="font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.12em;color:var(--muted);margin-bottom:12px">Pregunta</p>
+            <p class="serif" style="font-size:17px;font-weight:600;line-height:1.4">${esc(card?.front||card||'')}</p>
+            <p style="font-size:11px;color:var(--accent);margin-top:20px;font-weight:700">👆 Toca para ver respuesta</p>
           </div>
-          <div class="flip-face back">
-            <p style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--accent);margin-bottom:12px">Respuesta</p>
-            <p style="font-size:15px;font-weight:600">${esc(card?.back||'Sin respuesta')}</p>
+          <div class="flip-face back" style="border-radius:var(--radius)">
+            <p style="font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.12em;color:var(--accent);margin-bottom:12px">Respuesta</p>
+            <p class="serif" style="font-size:17px;font-weight:600;line-height:1.4">${esc(card?.back||'Sin respuesta')}</p>
           </div>
         </div>
       </div>
       <div style="display:flex;gap:8px">
-        <button onclick="prevFC()" class="btn-secondary" style="width:44px">‹</button>
-        <button onclick="markFC('no')" style="flex:1;padding:12px;border-radius:50px;border:1.5px solid #e55;background:transparent;color:#e55;font-weight:700;font-size:13px;cursor:pointer">✗ No sabía</button>
-        <button onclick="markFC('yes')" style="flex:1;padding:12px;border-radius:50px;border:1.5px solid var(--success);background:transparent;color:var(--success);font-weight:700;font-size:13px;cursor:pointer">✓ Lo sabía</button>
-        <button onclick="nextFC()" class="btn-secondary" style="width:44px">›</button>
+        <button onclick="prevFC()" class="btn-secondary" style="width:44px;padding:0;display:flex;align-items:center;justify-content:center;font-size:20px">‹</button>
+        <button onclick="markFC('no')" style="flex:1;padding:12px;border-radius:50px;border:2px solid #e55;background:transparent;color:#e55;font-weight:800;font-size:13px;cursor:pointer;transition:all .15s">✗ No sabía</button>
+        <button onclick="markFC('yes')" style="flex:1;padding:12px;border-radius:50px;border:2px solid var(--success);background:transparent;color:var(--success);font-weight:800;font-size:13px;cursor:pointer;transition:all .15s">✓ Lo sabía</button>
+        <button onclick="nextFC()" class="btn-secondary" style="width:44px;padding:0;display:flex;align-items:center;justify-content:center;font-size:20px">›</button>
       </div>
     </div>`;
   }
@@ -813,20 +849,31 @@ function renderFlashcards(el) {
 // ── GLOSARIO ──────────────────────────────────────────────
 function renderGlosario(el) {
   const terms=currentApp.glossaryTerms||currentApp.initialItems?.map(t=>({term:t,def:''}))||[];
-  el.innerHTML=`<div class="fade-up" style="padding:20px">
+  el.innerHTML=sectionHdr(currentApp.icon||'📖', currentApp.name||'Glosario', `${terms.length} términos`) +
+  `<div class="fade-up" style="padding:20px">
     <div style="position:relative;margin-bottom:16px">
-      <input id="glos-q" class="input" style="width:100%;padding-left:40px" oninput="filterGlos()" placeholder="Buscar..."/>
+      <input id="glos-q" class="input" style="width:100%;padding-left:40px" oninput="filterGlos()" placeholder="Buscar término..."/>
       <span style="position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--muted);font-size:16px">🔍</span>
     </div>
     <div id="glos-list">
       ${terms.map((t,i)=>`
-        <div class="glos-item card" style="margin-bottom:8px;padding:14px 16px;display:flex;align-items:start;gap:12px;cursor:pointer" onclick="this.querySelector('.glos-def').classList.toggle('hidden')">
-          <div style="width:32px;height:32px;border-radius:8px;background:var(--btn);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:12px;flex-shrink:0">${(t.term||t).charAt(0).toUpperCase()}</div>
-          <div style="flex:1"><p style="font-weight:700;font-size:13px">${esc(t.term||t)}</p><p class="glos-def hidden" style="font-size:12px;color:var(--muted);margin-top:4px;line-height:1.5">${esc(t.def||'')}</p></div>
+        <div class="glos-item card" style="margin-bottom:8px;overflow:hidden">
+          <div onclick="toggleGlos(${i})" style="padding:14px 16px;display:flex;align-items:center;gap:12px;cursor:pointer">
+            <div style="width:32px;height:32px;border-radius:8px;background:var(--btn);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:13px;flex-shrink:0">${(t.term||t).charAt(0).toUpperCase()}</div>
+            <p style="font-weight:700;font-size:13px;flex:1">${esc(t.term||t)}</p>
+            <span id="glos-chev-${i}" style="color:var(--muted);font-size:18px;transition:transform .2s">+</span>
+          </div>
+          <div id="glos-def-${i}" style="display:none;padding:0 16px 14px 60px;font-size:13px;color:var(--muted);line-height:1.6;border-top:1px solid var(--border)">${esc(t.def||'Definición próximamente.')}</div>
         </div>`).join('')}
+      ${terms.length===0?'<p style="text-align:center;padding:40px;color:var(--muted);font-size:13px">Sin términos configurados.</p>':''}
     </div>
   </div>`;
   window.filterGlos=()=>{const q=document.getElementById('glos-q')?.value.toLowerCase()||'';document.querySelectorAll('.glos-item').forEach(item=>item.style.display=item.textContent.toLowerCase().includes(q)?'':'none');};
+  window.toggleGlos=(i)=>{
+    const d=document.getElementById(`glos-def-${i}`),c=document.getElementById(`glos-chev-${i}`);
+    const open=d.style.display!=='none';d.style.display=open?'none':'block';
+    c.textContent=open?'+':'−';c.style.transform=open?'rotate(0)':'rotate(45deg)';
+  };
 }
 
 // ── ROADMAP ───────────────────────────────────────────────
@@ -836,33 +883,35 @@ function renderRoadmap(el) {
   let done=JSON.parse(localStorage.getItem(storageKey)||'{}');
   function draw(){
     const completed=Object.values(done).filter(Boolean).length,total=steps.length;
-    el.innerHTML=`<div class="fade-up" style="padding:20px">
+    const pct=total?Math.round(completed/total*100):0;
+    el.innerHTML=sectionHdr(currentApp.icon||'🗺️', currentApp.name||'Tu Roadmap', `${completed}/${total} pasos completados`) +
+    `<div class="fade-up" style="padding:20px">
       <div style="margin-bottom:20px">
         <div style="display:flex;justify-content:space-between;margin-bottom:6px">
-          <span style="font-weight:800;font-size:15px">Tu Roadmap</span>
-          <span style="font-size:12px;color:var(--accent);font-weight:700">${completed}/${total}</span>
+          <span style="font-size:12px;font-weight:700;color:var(--muted)">Progreso</span>
+          <span style="font-size:12px;color:var(--accent);font-weight:800">${pct}%</span>
         </div>
-        <div class="prog-wrap"><div class="prog-bar" style="width:${total?Math.round(completed/total*100):0}%"></div></div>
+        <div class="prog-wrap"><div class="prog-bar" style="width:${pct}%"></div></div>
       </div>
-      <div style="position:relative;padding-left:32px">
+      <div style="position:relative;padding-left:36px">
         ${steps.map((s,i)=>`
           <div style="position:relative;padding-bottom:16px">
-            <div style="position:absolute;left:-32px;top:0;display:flex;flex-direction:column;align-items:center;height:100%">
-              <button onclick="toggleRM(${i})" style="width:28px;height:28px;border-radius:50%;border:2px solid ${done[i]?'transparent':'var(--border)'};display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:11px;font-weight:800;flex-shrink:0;transition:all .2s;background:${done[i]?'var(--btn)':'var(--card)'};color:${done[i]?'#fff':'var(--muted)'};${done[i]?'box-shadow:0 2px 8px rgba(0,0,0,0.2)':''}">
-                ${done[i]?'✓':`<span style="font-size:10px">${i+1}</span>`}
+            <div style="position:absolute;left:-36px;top:0;display:flex;flex-direction:column;align-items:center;height:100%">
+              <button onclick="toggleRM(${i})" style="width:30px;height:30px;border-radius:50%;border:2px solid ${done[i]?'transparent':'var(--border)'};display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:11px;font-weight:800;flex-shrink:0;transition:all .2s;background:${done[i]?'var(--btn)':'var(--card)'};color:${done[i]?'#fff':'var(--muted)'};${done[i]?'box-shadow:0 3px 10px rgba(0,0,0,0.2)':''}">
+                ${done[i]?'✓':`<span style="font-size:11px">${i+1}</span>`}
               </button>
-              ${i<steps.length-1?`<div style="width:1px;flex:1;margin-top:4px;background:${done[i]?'var(--accent)':'var(--border)'}"></div>`:''}
+              ${i<steps.length-1?`<div style="width:2px;flex:1;margin-top:4px;border-radius:2px;background:${done[i]?'var(--accent)':'var(--border)'}"></div>`:''}
             </div>
-            <div class="card" style="padding:12px 14px;cursor:pointer;transition:border-color .2s" onclick="toggleRM(${i})">
-              <p style="font-size:13px;font-weight:600;${done[i]?'text-decoration:line-through;color:var(--muted)':''}">${esc(s)}</p>
+            <div class="card" style="padding:14px 16px;cursor:pointer;transition:border-color .2s;border:1.5px solid ${done[i]?'var(--accent)':'var(--border)'}" onclick="toggleRM(${i})">
+              <p style="font-size:13px;font-weight:${done[i]?'600':'700'};line-height:1.4;${done[i]?'text-decoration:line-through;color:var(--muted)':''}">${esc(s)}</p>
             </div>
           </div>`).join('')}
+        ${steps.length===0?'<p style="text-align:center;padding:40px;color:var(--muted);font-size:13px">Sin pasos configurados.</p>':''}
       </div>
     </div>`;
   }
-  window.toggleRM=(i)=>{done[i]=!done[i];localStorage.setItem(storageKey,JSON.stringify(done));draw();};
-  if(!steps.length)el.innerHTML=`<p style="text-align:center;padding:40px;color:var(--muted)">Sin pasos configurados.</p>`;
-  else draw();
+  window.toggleRM=(i)=>{done[i]=!done[i];localStorage.setItem(storageKey,JSON.stringify(done));draw();if(done[i])showToast('¡Paso completado! 🎉');};
+  draw();
 }
 
 // ── DIAGNÓSTICO ───────────────────────────────────────────
@@ -874,10 +923,11 @@ function renderDiagnostico(el) {
     if(step>=questions.length){return drawResult();}
     const qObj=questions[step],q=qObj.q||qObj,opts=qObj.opts||['Sí','No','A veces','No sé'];
     const pct=Math.round(step/questions.length*100);
-    el.innerHTML=`<div class="fade-up" style="padding:20px">
-      <div style="margin-bottom:20px">
+    el.innerHTML=sectionHdr(currentApp.icon||'🩺', currentApp.name, `Pregunta ${step+1} de ${questions.length}`) +
+    `<div class="fade-up" style="padding:20px">
+      <div style="margin-bottom:16px">
         <div style="display:flex;justify-content:space-between;margin-bottom:6px">
-          <span style="font-size:12px;color:var(--muted)">${step+1} de ${questions.length}</span>
+          <span style="font-size:12px;color:var(--muted)">Progreso</span>
           <span style="font-size:12px;color:var(--accent);font-weight:700">${pct}%</span>
         </div>
         <div class="prog-wrap"><div class="prog-bar" style="width:${pct}%"></div></div>
@@ -885,21 +935,33 @@ function renderDiagnostico(el) {
       <div class="card" style="padding:20px;margin-bottom:16px">
         <p class="serif" style="font-size:17px;font-weight:600;line-height:1.4">${esc(q)}</p>
       </div>
-      <div style="display:flex;flex-direction:column;gap:8px">
-        ${opts.map((o,i)=>`
-          <button onclick="answerDiag(${i})" class="card" style="text-align:left;padding:14px 16px;font-size:13px;font-weight:600;cursor:pointer;border:none;display:flex;align-items:center;gap:12px;transition:border-color .2s" onmouseover="this.style.borderColor='var(--accent)'" onmouseout="this.style.borderColor='var(--border)'">
-            <span style="width:28px;height:28px;border-radius:50%;background:var(--bg3);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;flex-shrink:0">${String.fromCharCode(65+i)}</span>
-            ${esc(o)}
-          </button>`).join('')}
-      </div>
+      ${opts.map((o,i)=>`
+        <button onclick="answerDiag(${i})" class="quiz-opt">
+          <span class="opt-letter">${String.fromCharCode(65+i)}</span>
+          ${esc(o)}
+        </button>`).join('')}
     </div>`;
   }
   function drawResult(){
-    el.innerHTML=`<div class="fade-up" style="padding:20px;text-align:center">
-      <div style="width:80px;height:80px;border-radius:24px;background:var(--btn);display:flex;align-items:center;justify-content:center;font-size:40px;margin:0 auto 20px;box-shadow:0 8px 24px rgba(0,0,0,0.2)">📊</div>
-      <h2 class="serif" style="font-size:24px;font-weight:700;margin-bottom:8px">Completado</h2>
-      <p style="color:var(--muted);font-size:13px;margin-bottom:24px">Respondiste ${Object.values(answers).length} preguntas.</p>
-      <button class="btn-primary" onclick="step=0;answers={};drawQ()">Repetir diagnóstico</button>
+    const total=questions.length;
+    // Map answers to profile labels if available (use first option as "positive")
+    const profiles=currentApp.profiles||currentApp.diagProfiles||[];
+    el.innerHTML=`<div class="fade-up" style="padding:20px">
+      ${sectionHdr('🎉', '¡Diagnóstico completado!', `${total} preguntas respondidas`)}
+      <div class="card" style="padding:24px;text-align:center;margin-bottom:16px">
+        <div style="font-size:56px;margin-bottom:12px">${currentApp.icon||'🩺'}</div>
+        <h2 class="serif" style="font-size:22px;font-weight:700;margin-bottom:8px;color:var(--text)">${esc(currentApp.name)}</h2>
+        <p style="font-size:14px;color:var(--muted);line-height:1.6;margin-bottom:20px">${esc(currentApp.diagResultText||'Hemos analizado tus respuestas. Aquí está tu resultado personalizado.')}</p>
+        <div class="stat-row" style="justify-content:center">
+          <div class="stat-pill"><div class="stat-val">${total}</div><div class="stat-lbl">Preguntas</div></div>
+          <div class="stat-pill"><div class="stat-val">100%</div><div class="stat-lbl">Completado</div></div>
+        </div>
+      </div>
+      ${currentApp.diagCta?`<div class="card-dark" style="padding:20px;text-align:center;margin-bottom:16px">
+        <p style="font-size:13px;color:#fff;opacity:.85;line-height:1.6;margin-bottom:12px">${esc(currentApp.diagCta)}</p>
+        ${currentApp.diagCtaUrl?`<a href="${esc(currentApp.diagCtaUrl)}" target="_blank" style="display:inline-block;padding:12px 24px;background:#fff;color:var(--accent);border-radius:50px;font-weight:800;font-size:13px;text-decoration:none">Ver más →</a>`:''}
+      </div>`:''}
+      <button class="btn-primary" onclick="step=0;answers={};drawQ()">Repetir diagnóstico ↺</button>
     </div>`;
   }
   window.answerDiag=(i)=>{answers[step]=i;step++;drawQ();};
@@ -909,31 +971,35 @@ function renderDiagnostico(el) {
 // ── COMPARADOR ────────────────────────────────────────────
 function renderComparador(el) {
   const opts=currentApp.compareOptions||currentApp.initialItems?.map(t=>({name:t,pros:[],cons:[]}))||[];
-  el.innerHTML=`<div class="fade-up" style="padding:20px">
-    <h2 class="serif" style="font-size:20px;font-weight:700;margin-bottom:16px">Comparación</h2>
-    ${opts.map(o=>`
-      <div class="card" style="padding:16px;margin-bottom:12px">
-        <p style="font-weight:800;font-size:14px;margin-bottom:10px">${esc(o.name||o)}</p>
-        ${(o.pros||[]).map(p=>`<p style="font-size:13px;color:var(--success);margin-bottom:4px">✓ ${esc(p)}</p>`).join('')}
-        ${(o.cons||[]).map(c=>`<p style="font-size:13px;color:#e55;margin-bottom:4px">✗ ${esc(c)}</p>`).join('')}
+  el.innerHTML=sectionHdr(currentApp.icon||'⚖️', currentApp.name||'Comparador', currentApp.description||`${opts.length} opciones`) +
+  `<div class="fade-up" style="padding:20px">
+    ${opts.map((o,idx)=>`
+      <div class="card" style="padding:16px;margin-bottom:12px;border-top:3px solid var(--accent)">
+        <p style="font-weight:800;font-size:15px;margin-bottom:12px">${esc(o.name||o)}</p>
+        ${(o.pros||[]).length>0?`<div style="margin-bottom:8px">${(o.pros||[]).map(p=>`<div style="display:flex;align-items:flex-start;gap:8px;margin-bottom:6px"><span style="color:var(--success);font-weight:800;flex-shrink:0">✓</span><p style="font-size:13px;color:var(--text);line-height:1.4">${esc(p)}</p></div>`).join('')}</div>`:''}
+        ${(o.cons||[]).length>0?`<div style="padding-top:8px;border-top:1px solid var(--border)">${(o.cons||[]).map(c=>`<div style="display:flex;align-items:flex-start;gap:8px;margin-bottom:6px"><span style="color:#e55;font-weight:800;flex-shrink:0">✗</span><p style="font-size:13px;color:var(--muted);line-height:1.4">${esc(c)}</p></div>`).join('')}</div>`:''}
       </div>`).join('')}
+    ${opts.length===0?'<p style="text-align:center;padding:40px;color:var(--muted);font-size:13px">Sin opciones configuradas.</p>':''}
   </div>`;
 }
 
 // ── BIBLIOTECA ────────────────────────────────────────────
 function renderBiblioteca(el) {
   const resources=currentApp.resources||currentApp.initialItems?.map(t=>({title:t,url:'',type:'link'}))||[];
-  el.innerHTML=`<div class="fade-up" style="padding:20px">
-    <h2 class="serif" style="font-size:20px;font-weight:700;margin-bottom:16px">Biblioteca</h2>
+  const typeIcon=(t)=>({video:'🎬',pdf:'📄',audio:'🎧',curso:'📚',link:'🔗'}[t]||'🔗');
+  const typeLabel=(t)=>({video:'Video',pdf:'PDF',audio:'Audio',curso:'Curso',link:'Recurso'}[t]||'Enlace');
+  el.innerHTML=sectionHdr(currentApp.icon||'📚', currentApp.name||'Biblioteca', `${resources.length} recursos`) +
+  `<div class="fade-up" style="padding:20px">
     ${resources.map(r=>`
-      <div class="card" style="padding:14px 16px;margin-bottom:8px;display:flex;align-items:center;gap:12px">
-        <span style="font-size:24px;flex-shrink:0">${r.type==='video'?'🎬':r.type==='pdf'?'📄':r.type==='audio'?'🎧':'🔗'}</span>
+      <div class="card" style="padding:16px;margin-bottom:10px;display:flex;align-items:center;gap:14px">
+        <div style="width:44px;height:44px;border-radius:12px;background:var(--btn);display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0">${typeIcon(r.type)}</div>
         <div style="flex:1;min-width:0">
-          <p style="font-weight:700;font-size:13px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(r.title||r)}</p>
-          ${r.desc?`<p style="font-size:11px;color:var(--muted)">${esc(r.desc)}</p>`:''}
+          <p style="font-weight:700;font-size:13px;line-height:1.3;margin-bottom:2px">${esc(r.title||r)}</p>
+          ${r.desc?`<p style="font-size:11px;color:var(--muted);line-height:1.4">${esc(r.desc)}</p>`:`<p style="font-size:11px;color:var(--muted)">${typeLabel(r.type)}</p>`}
         </div>
-        ${r.url?`<a href="${esc(r.url)}" target="_blank" rel="noopener" style="padding:7px 14px;border-radius:20px;background:var(--card2);border:1px solid var(--border);color:var(--accent);font-size:11px;font-weight:700;text-decoration:none;flex-shrink:0">Abrir →</a>`:''}
+        ${r.url?`<a href="${esc(r.url)}" target="_blank" rel="noopener" style="padding:8px 14px;border-radius:20px;background:var(--btn);color:#fff;font-size:11px;font-weight:800;text-decoration:none;flex-shrink:0;white-space:nowrap">Abrir →</a>`:''}
       </div>`).join('')}
+    ${resources.length===0?'<p style="text-align:center;padding:40px;color:var(--muted);font-size:13px">Sin recursos configurados.</p>':''}
   </div>`;
 }
 
