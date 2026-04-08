@@ -23,13 +23,17 @@
   }
   [data-theme="light"] {
     --bg: #fdf8f4; --bg2: #fff; --bg3: #f5ede6;
-    --border: rgba(180,120,100,0.15);
+    --border: rgba(180,120,100,0.13);
     --text: #2d1f1a; --muted: #9c7b6e;
     --accent: #c0635c; --accent2: #d4856a;
     --success: #5a8a5e; --warn: #d4856a;
     --card: #fff; --card2: #fdf8f4;
     --btn: linear-gradient(135deg,#c0635c,#d4856a);
     --radius: 18px;
+    --access-bg: linear-gradient(160deg, #fdf8f4 0%, #f9efe7 50%, #f3e6d8 100%);
+  }
+  :root {
+    --access-bg: var(--bg);
   }
   * { margin:0; padding:0; box-sizing:border-box; }
   body { font-family:'Plus Jakarta Sans',sans-serif; background:var(--bg); color:var(--text); min-height:100vh; }
@@ -128,30 +132,32 @@
 <body>
 
 <!-- ── ACCESS SCREEN ── -->
-<div id="screen-access">
-  <div class="access-wrap">
-    <div class="access-icon-wrap" id="access-icon">⚡</div>
-    <h1 class="access-title serif" id="access-title">Mini-App</h1>
-    <p class="access-subtitle" id="access-desc">Cargando...</p>
+<div id="screen-access" style="min-height:100dvh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 24px;background:var(--access-bg,var(--bg))">
+  <div style="width:100%;max-width:360px;text-align:center;animation:fadeUp .4s ease">
+    <div id="access-icon-wrap" style="width:104px;height:104px;border-radius:32px;background:var(--btn);display:flex;align-items:center;justify-content:center;font-size:54px;margin:0 auto 24px;box-shadow:0 16px 48px rgba(0,0,0,0.18)">
+      <span id="access-icon">⚡</span>
+    </div>
+    <h1 id="access-title" style="font-family:'Lora',serif;font-size:30px;font-weight:700;margin-bottom:8px;line-height:1.2;color:var(--text)">Mini-App</h1>
+    <p id="access-desc" style="color:var(--muted);font-size:14px;margin-bottom:36px;line-height:1.6">Cargando...</p>
 
-    <div id="access-code-section" class="hidden access-box">
-      <p class="access-box-title">Introduce tu código de acceso</p>
-      <p class="access-box-desc">Encontrarás tu código en el email de confirmación de tu compra.</p>
-      <input id="access-code-input" class="input w-full text-center font-bold mb-3" type="text" placeholder="EJ: ROSA-1001"/>
+    <div id="access-code-section" style="display:none;background:var(--card);border:1px solid var(--border);border-radius:22px;padding:24px;text-align:left">
+      <p style="font-weight:700;font-size:15px;margin-bottom:6px;color:var(--text)">Introduce tu código de acceso</p>
+      <p style="color:var(--muted);font-size:12px;margin-bottom:16px;line-height:1.5">Encontrarás tu código en el email de confirmación de tu compra.</p>
+      <input id="access-code-input" class="input" style="width:100%;text-align:center;font-weight:700;margin-bottom:12px" type="text" placeholder="EJ: ROSA-1001"/>
       <button class="btn-primary" onclick="validateAccess()">Activar acceso ✨</button>
-      <p id="access-error" class="hidden text-center mt-3" style="font-size:12px;color:#e55;">Código incorrecto. Intenta de nuevo.</p>
+      <p id="access-error" style="display:none;text-align:center;margin-top:12px;font-size:12px;color:#e55">Código incorrecto. Intenta de nuevo.</p>
     </div>
 
-    <div id="access-free-btn" class="hidden">
+    <div id="access-free-btn" style="display:none">
       <button class="btn-primary" onclick="enterApp()">Abrir app →</button>
     </div>
 
-    <a href="./dashboard.html" style="display:block;margin-top:20px;font-size:12px;color:var(--muted);text-decoration:none">← Volver al dashboard</a>
+    <a href="./dashboard.html" style="display:block;margin-top:24px;font-size:12px;color:var(--muted);text-decoration:none;opacity:.7">← Volver al dashboard</a>
   </div>
 </div>
 
 <!-- ── APP SCREEN ── -->
-<div id="screen-app" class="hidden">
+<div id="screen-app" style="display:none;min-height:100dvh;flex-direction:column">
   <header id="app-header">
     <div id="app-header-icon">⚡</div>
     <div>
@@ -184,6 +190,23 @@ document.addEventListener('DOMContentLoaded', async () => {
   if (app && !MiniApps.get(id)) MiniApps.save(app);
   currentApp = app;
 
+  // Fallback theme if no AI-generated theme data
+  if (!app.mode && !app.accent) {
+    const n = (app.niche || '').toLowerCase();
+    if (/espirit|bibl|fe\b|dios|oraci|cristi|religi|angel|manna|sagr/i.test(n))
+      Object.assign(app, {mode:'light',accent:'#7c3aed',accent2:'#a855f7',bg:'#f5f0ff',card:'#fff',text:'#2d1f3a',muted:'#7c6890',font:'serif'});
+    else if (/wellness|bienestar|salud|yoga|medita|mindful|emocio|autoam/i.test(n))
+      Object.assign(app, {mode:'light',accent:'#c0635c',accent2:'#d4856a',bg:'#fdf8f4',card:'#fff',text:'#2d1f1a',muted:'#9c7b6e',font:'serif'});
+    else if (/fitness|gym|ejercic|deport|muscula|crossfit/i.test(n))
+      Object.assign(app, {mode:'dark',accent:'#f97316',accent2:'#ef4444',bg:'#0a0a0a',card:'#1a1a1a',text:'#f0f0f0',muted:'#9a9a9a',font:'sans'});
+    else if (/finanz|dinero|negocio|emprender|inversion|crypto/i.test(n))
+      Object.assign(app, {mode:'dark',accent:'#2563eb',accent2:'#1d4ed8',bg:'#0d1117',card:'#1a1f2e',text:'#f0f0f0',muted:'#6b7280',font:'sans'});
+    else if (/nutrici|alimentaci|cocina|dieta|receta/i.test(n))
+      Object.assign(app, {mode:'light',accent:'#16a34a',accent2:'#15803d',bg:'#f0fdf4',card:'#fff',text:'#1a3a1a',muted:'#6b7c6b',font:'sans'});
+    else if (/maternidad|bebe|embaraz|bebé|infantil|niño/i.test(n))
+      Object.assign(app, {mode:'light',accent:'#ec4899',accent2:'#f472b6',bg:'#fff5f7',card:'#fff',text:'#3a1a2a',muted:'#9c6b7e',font:'serif'});
+  }
+
   // Apply dynamic theme from niche/product generation
   const root = document.documentElement;
   if (app.mode === 'light') {
@@ -205,6 +228,11 @@ document.addEventListener('DOMContentLoaded', async () => {
     const a2 = app.accent2 || (app.mode === 'light' ? '#d4856a' : '#7c3aed');
     root.style.setProperty('--btn', `linear-gradient(135deg,${a1},${a2})`);
   }
+  // Access screen background gradient
+  if (app.mode === 'light' && app.bg) {
+    // Slightly darker gradient for warmth
+    root.style.setProperty('--access-bg', `linear-gradient(160deg, ${app.bg} 0%, ${app.card||'#fff'} 50%, ${app.bg} 100%)`);
+  }
   if (app.font === 'serif') {
     document.body.style.fontFamily = "'Lora', Georgia, serif";
   } else if (app.font === 'sans') {
@@ -217,19 +245,19 @@ document.addEventListener('DOMContentLoaded', async () => {
   document.getElementById('access-desc').textContent = app.description || (app.niche ? `${app.niche}` : 'Aplicación interactiva');
   document.title = app.name + ' | Luminous Studio';
   if (app.accessCodes?.length) {
-    document.getElementById('access-code-section').classList.remove('hidden');
+    document.getElementById('access-code-section').style.display = 'block';
   } else {
-    document.getElementById('access-free-btn').classList.remove('hidden');
+    document.getElementById('access-free-btn').style.display = 'block';
   }
 });
 
 function validateAccess() {
   const code = document.getElementById('access-code-input').value.trim();
   if (MiniApps.validateCode(currentApp.id, code)) {
-    document.getElementById('access-error').classList.add('hidden');
+    document.getElementById('access-error').style.display = 'none';
     enterApp();
   } else {
-    document.getElementById('access-error').classList.remove('hidden');
+    document.getElementById('access-error').style.display = 'block';
   }
 }
 
@@ -241,12 +269,15 @@ function getGreeting() {
 }
 
 function enterApp() {
-  document.getElementById('screen-access').classList.add('hidden');
-  document.getElementById('screen-app').classList.remove('hidden');
+  if (!currentApp) return;
+  document.getElementById('screen-access').style.display = 'none';
+  document.getElementById('screen-app').style.display = 'flex';
   document.getElementById('app-header-icon').textContent = currentApp.icon || '⚡';
   document.getElementById('app-header-name').textContent = currentApp.name;
   document.getElementById('app-header-greeting').textContent = getGreeting();
-  renderApp();
+  try { renderApp(); } catch(e) {
+    document.getElementById('app-content').innerHTML = `<p style="padding:32px;color:#e55;font-size:13px;text-align:center">Error al cargar: ${esc(e.message)}</p>`;
+  }
 }
 
 // ── Routing ───────────────────────────────────────────────
