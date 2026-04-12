@@ -383,7 +383,7 @@ Devuelve SOLO este JSON sin texto adicional:
     return this._parseJSON(text);
   },
 
-  async generateMiniAppContent(appIdea, product, niche) {
+  async generateMiniAppContent(appIdea, product, niche, creatorCtx = null) {
     const { type, name, description, features = [] } = appIdea;
     const featuresCtx = features.length ? `\nFunciones que debe incluir: ${features.join(', ')}` : '';
     const typeInstructions = {
@@ -430,11 +430,15 @@ Devuelve SOLO este JSON:
     };
     const instruction = typeInstructions[type] || typeInstructions.generador;
 
+    const creatorNote = creatorCtx
+      ? `\n\nEl creador ya definió parte del contenido — inclúyelo exactamente en el JSON y completa los demás campos:\n${JSON.stringify(creatorCtx)}`
+      : '';
+
     const prompt = `Eres experto en crear contenido para apps de usuarios finales. Contexto: el creador tiene un producto llamado "${product}" en el nicho "${niche || 'infoproductos'}" y está creando una mini-app llamada "${name}" (${description}) para que sus CLIENTES la usen.
 
 El contenido que generes es para los USUARIOS FINALES de la app — personas reales que usarán la app en su día a día. NO es contenido sobre cómo construir el producto ni ideas para el creador.
 
-${instruction}
+${instruction}${creatorNote}
 
 IMPORTANTE: Devuelve SOLO el JSON válido, sin markdown, sin texto antes ni después.`;
 
@@ -509,10 +513,10 @@ const Groq = {
     );
   },
 
-  async generateMiniAppContent(appIdea, product, niche) {
+  async generateMiniAppContent(appIdea, product, niche, creatorCtx = null) {
     return Claude.generateMiniAppContent.call(
       { _call: this._call.bind(this), _parseJSON: this._parseJSON },
-      appIdea, product, niche
+      appIdea, product, niche, creatorCtx
     );
   },
 
@@ -538,9 +542,9 @@ const AI = {
     if (Settings.getGroqApiKey()) return Groq.improveQuestion(question, context);
     return Claude.improveQuestion(question, context);
   },
-  async generateMiniAppContent(appIdea, product, niche) {
-    if (Settings.getGroqApiKey()) return Groq.generateMiniAppContent(appIdea, product, niche);
-    return Claude.generateMiniAppContent(appIdea, product, niche);
+  async generateMiniAppContent(appIdea, product, niche, creatorCtx = null) {
+    if (Settings.getGroqApiKey()) return Groq.generateMiniAppContent(appIdea, product, niche, creatorCtx);
+    return Claude.generateMiniAppContent(appIdea, product, niche, creatorCtx);
   },
   async generateAppTheme(niche, product) {
     if (Settings.getGroqApiKey()) return Groq.generateAppTheme(niche, product);
