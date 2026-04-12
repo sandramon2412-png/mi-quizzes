@@ -4,6 +4,10 @@
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
 <title>Dashboard | Luminous Studio</title>
+<meta name="description" content="Panel de control para crear y gestionar quizzes y mini-apps interactivas con IA."/>
+<meta property="og:title" content="Dashboard | Luminous Studio"/>
+<meta property="og:description" content="Crea quizzes de alta conversión y mini-apps interactivas con inteligencia artificial."/>
+<meta name="theme-color" content="#2E5BFF"/>
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="./supabase-config.js"></script>
@@ -73,17 +77,20 @@
   .section-head { border-left: 3px solid; padding-left: 12px; }
   /* Type chips multi-select */
   .type-chip {
-    display: inline-flex; align-items: center; gap: 4px;
-    padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 600;
+    display: inline-flex; align-items: center; gap: 5px;
+    padding: 5px 12px; border-radius: 20px; font-size: 11px; font-weight: 600;
     border: 1px solid rgba(255,255,255,0.08); cursor: pointer;
     background: rgba(255,255,255,0.03); color: #94a3b8;
-    transition: all 0.15s; user-select: none;
+    transition: all 0.2s; user-select: none;
   }
   .type-chip:hover { border-color: rgba(46,91,255,0.4); color: #e2e8f0; }
   .type-chip.selected {
-    background: rgba(46,91,255,0.15); border-color: rgba(46,91,255,0.5);
+    background: linear-gradient(135deg, rgba(46,91,255,0.15), rgba(124,58,237,0.1));
+    border-color: rgba(46,91,255,0.5);
     color: #a5b4fc;
   }
+  .type-chip .material-symbols-outlined { font-size: 15px; }
+  .type-chip.selected .material-symbols-outlined { color: #818cf8; }
 
 </style>
 </head>
@@ -118,7 +125,7 @@
     <div>
       <p class="text-[11px] font-semibold text-primary/60 uppercase tracking-[.15em] mb-1.5" id="welcome-date">—</p>
       <h1 class="text-3xl font-black tracking-tight leading-tight">
-        Hola, <span class="text-primary" id="user-name">Curator</span> 👋
+        Hola, <span class="text-primary" id="user-name">Curator</span> <span class="material-symbols-outlined text-3xl align-middle" style="font-variation-settings:'FILL' 1;background:linear-gradient(135deg,#2E5BFF,#7c3aed);-webkit-background-clip:text;-webkit-text-fill-color:transparent">waving_hand</span>
       </h1>
       <p class="text-on-surface-variant/70 text-sm mt-2">Aquí tienes el resumen de tu actividad.</p>
     </div>
@@ -636,7 +643,7 @@ function toggleFbGuide() {
       <!-- Recomendados por nicho — aparece dinámicamente -->
       <div id="type-recommendations" class="hidden">
         <div class="flex items-center gap-2 mb-2">
-          <span class="text-xs font-bold text-primary uppercase tracking-wider">✨ Recomendados para este nicho</span>
+          <span class="text-xs font-bold text-primary uppercase tracking-wider"><span class="material-symbols-outlined text-sm align-middle" style="font-variation-settings:'FILL' 1">auto_awesome</span> Recomendados para este nicho</span>
           <span class="text-[10px] text-on-surface-variant">(toca para seleccionar)</span>
         </div>
         <div id="type-rec-chips" class="flex flex-wrap gap-1.5"></div>
@@ -652,39 +659,39 @@ function toggleFbGuide() {
           <div>
             <p class="text-[10px] font-bold text-on-surface-variant uppercase tracking-wider mb-1">Hábitos y seguimiento</p>
             <div class="flex flex-wrap gap-1.5">
-              <label class="type-chip"><input type="checkbox" name="ma-type" value="devocional" class="sr-only"/>🕊️ Devocional</label>
-              <label class="type-chip"><input type="checkbox" name="ma-type" value="checklist" class="sr-only"/>✅ Checklist</label>
-              <label class="type-chip"><input type="checkbox" name="ma-type" value="tracker" class="sr-only"/>📊 Tracker</label>
-              <label class="type-chip"><input type="checkbox" name="ma-type" value="reto" class="sr-only"/>🔥 Reto 30 días</label>
-              <label class="type-chip"><input type="checkbox" name="ma-type" value="diario" class="sr-only"/>📓 Diario</label>
+              <label class="type-chip"><input type="checkbox" name="ma-type" value="devocional" class="sr-only"/><span class="material-symbols-outlined">favorite</span>Devocional</label>
+              <label class="type-chip"><input type="checkbox" name="ma-type" value="checklist" class="sr-only"/><span class="material-symbols-outlined">done_all</span>Checklist</label>
+              <label class="type-chip"><input type="checkbox" name="ma-type" value="tracker" class="sr-only"/><span class="material-symbols-outlined">show_chart</span>Tracker</label>
+              <label class="type-chip"><input type="checkbox" name="ma-type" value="reto" class="sr-only"/><span class="material-symbols-outlined">local_fire_department</span>Reto 30 días</label>
+              <label class="type-chip"><input type="checkbox" name="ma-type" value="diario" class="sr-only"/><span class="material-symbols-outlined">edit_note</span>Diario</label>
             </div>
           </div>
           <div>
             <p class="text-[10px] font-bold text-on-surface-variant uppercase tracking-wider mb-1">Herramientas</p>
             <div class="flex flex-wrap gap-1.5">
-              <label class="type-chip"><input type="checkbox" name="ma-type" value="calculadora" class="sr-only"/>🧮 Calculadora</label>
-              <label class="type-chip"><input type="checkbox" name="ma-type" value="comparador" class="sr-only"/>⚖️ Comparador</label>
-              <label class="type-chip"><input type="checkbox" name="ma-type" value="diagnostico" class="sr-only"/>🩺 Diagnóstico</label>
-              <label class="type-chip"><input type="checkbox" name="ma-type" value="planificador" class="sr-only"/>📅 Planificador</label>
-              <label class="type-chip"><input type="checkbox" name="ma-type" value="roadmap" class="sr-only"/>🗺️ Roadmap</label>
+              <label class="type-chip"><input type="checkbox" name="ma-type" value="calculadora" class="sr-only"/><span class="material-symbols-outlined">calculate</span>Calculadora</label>
+              <label class="type-chip"><input type="checkbox" name="ma-type" value="comparador" class="sr-only"/><span class="material-symbols-outlined">compare_arrows</span>Comparador</label>
+              <label class="type-chip"><input type="checkbox" name="ma-type" value="diagnostico" class="sr-only"/><span class="material-symbols-outlined">stethoscope</span>Diagnóstico</label>
+              <label class="type-chip"><input type="checkbox" name="ma-type" value="planificador" class="sr-only"/><span class="material-symbols-outlined">calendar_month</span>Planificador</label>
+              <label class="type-chip"><input type="checkbox" name="ma-type" value="roadmap" class="sr-only"/><span class="material-symbols-outlined">map</span>Roadmap</label>
             </div>
           </div>
           <div>
             <p class="text-[10px] font-bold text-on-surface-variant uppercase tracking-wider mb-1">Contenido</p>
             <div class="flex flex-wrap gap-1.5">
-              <label class="type-chip"><input type="checkbox" name="ma-type" value="glosario" class="sr-only"/>📖 Glosario</label>
-              <label class="type-chip"><input type="checkbox" name="ma-type" value="faq" class="sr-only"/>💬 FAQ</label>
-              <label class="type-chip"><input type="checkbox" name="ma-type" value="flashcards" class="sr-only"/>🃏 Flashcards</label>
-              <label class="type-chip"><input type="checkbox" name="ma-type" value="biblioteca" class="sr-only"/>📚 Biblioteca</label>
+              <label class="type-chip"><input type="checkbox" name="ma-type" value="glosario" class="sr-only"/><span class="material-symbols-outlined">menu_book</span>Glosario</label>
+              <label class="type-chip"><input type="checkbox" name="ma-type" value="faq" class="sr-only"/><span class="material-symbols-outlined">chat</span>FAQ</label>
+              <label class="type-chip"><input type="checkbox" name="ma-type" value="flashcards" class="sr-only"/><span class="material-symbols-outlined">style</span>Flashcards</label>
+              <label class="type-chip"><input type="checkbox" name="ma-type" value="biblioteca" class="sr-only"/><span class="material-symbols-outlined">local_library</span>Biblioteca</label>
             </div>
           </div>
           <div>
             <p class="text-[10px] font-bold text-on-surface-variant uppercase tracking-wider mb-1">Generación con IA</p>
             <div class="flex flex-wrap gap-1.5">
-              <label class="type-chip"><input type="checkbox" name="ma-type" value="chatbot" class="sr-only"/>🤖 Asistente IA</label>
-              <label class="type-chip"><input type="checkbox" name="ma-type" value="generador" class="sr-only"/>✨ Generador</label>
-              <label class="type-chip"><input type="checkbox" name="ma-type" value="afirmaciones" class="sr-only"/>🌟 Afirmaciones</label>
-              <label class="type-chip"><input type="checkbox" name="ma-type" value="meditacion" class="sr-only"/>🧘 Meditación</label>
+              <label class="type-chip"><input type="checkbox" name="ma-type" value="chatbot" class="sr-only"/><span class="material-symbols-outlined">smart_toy</span>Asistente IA</label>
+              <label class="type-chip"><input type="checkbox" name="ma-type" value="generador" class="sr-only"/><span class="material-symbols-outlined">auto_awesome</span>Generador</label>
+              <label class="type-chip"><input type="checkbox" name="ma-type" value="afirmaciones" class="sr-only"/><span class="material-symbols-outlined">brightness_7</span>Afirmaciones</label>
+              <label class="type-chip"><input type="checkbox" name="ma-type" value="meditacion" class="sr-only"/><span class="material-symbols-outlined">self_improvement</span>Meditación</label>
             </div>
           </div>
         </div>
@@ -747,7 +754,7 @@ function toggleFbGuide() {
         </button>
         <button type="submit" id="ma-submit-btn"
           class="flex-1 py-2.5 bg-primary text-white text-sm font-extrabold rounded-xl hover:opacity-90 transition-opacity shadow-lg shadow-primary/20">
-          ✦ Crear con IA
+          <span class="material-symbols-outlined text-sm" style="font-variation-settings:'FILL' 1">auto_awesome</span> Crear con IA
         </button>
       </div>
       <!-- AI progress bar (hidden until generating) -->
@@ -979,26 +986,23 @@ async function renderQuizzes() {
 }
 
 function buildAppCard(app) {
-  const ALL_TYPE_LABELS = {
-    devocional:'Devocional', checklist:'Checklist', tracker:'Tracker', reto:'Reto',
-    diario:'Diario', calculadora:'Calculadora', planificador:'Planificador',
-    comparador:'Comparador', diagnostico:'Diagnóstico', roadmap:'Roadmap',
-    faq:'FAQ', glosario:'Glosario', flashcards:'Flashcards', biblioteca:'Biblioteca',
-    chatbot:'Asistente IA', generador:'Generador', afirmaciones:'Afirmaciones',
-    meditacion:'Meditación', simulador:'Simulador', 'quiz-embed':'Quiz',
-  };
   const types = (app.types?.length ? app.types : [app.type]).filter(Boolean);
   const typeLabel = types.length > 1
     ? `${types.length} secciones`
-    : (ALL_TYPE_LABELS[types[0]] || types[0] || '—');
-  const icon = app.icon || '⚡';
+    : (TYPE_NAMES[types[0]] || types[0] || '—');
+  const typeIcon = TYPE_ICONS[types[0]] || 'deployed_code';
+  const icon = app.icon || '';
   const appUrl = `./mini-app-player.html?id=${app.id}`;
   const hasEditableContent = types.some(t => SUPPORTED_CONTENT_TYPES?.has(t));
+
+  const iconHtml = icon
+    ? `<div class="w-11 h-11 rounded-xl flex items-center justify-center text-2xl" style="background:linear-gradient(135deg,rgba(46,91,255,0.15),rgba(124,58,237,0.1))">${esc(icon)}</div>`
+    : `<div class="w-11 h-11 rounded-xl flex items-center justify-center" style="background:linear-gradient(135deg,#2E5BFF,#7c3aed)"><span class="material-symbols-outlined text-white text-lg">${typeIcon}</span></div>`;
 
   return `
     <div class="rounded-2xl p-5 flex flex-col gap-3 bg-surface-container border border-outline-variant/10 hover:border-primary/20 transition-all">
       <div class="flex items-start justify-between">
-        <div class="w-11 h-11 rounded-xl bg-primary/10 flex items-center justify-center text-2xl">${esc(icon)}</div>
+        ${iconHtml}
         <span class="text-[10px] font-extrabold uppercase px-2 py-0.5 rounded-full bg-secondary/10 text-secondary">${esc(typeLabel)}</span>
       </div>
       <div>
@@ -1042,23 +1046,23 @@ function copyLink(quizId, isLocal) {
 // ── Onboarding ────────────────────────────────────────────
 const OB_STEPS = [
   {
-    emoji: '🎉',
+    msIcon: 'celebration',
     title: '¡Bienvenido a Luminous Studio!',
     desc: 'Crea quizzes de alta conversión con IA en menos de 2 minutos. Segmenta tu audiencia, captura leads y vende más.',
     cta: 'Siguiente →',
   },
   {
-    emoji: '⚡',
+    msIcon: 'bolt',
     title: 'Así funciona en 3 pasos',
     steps: [
-      { icon: '🤖', text: 'La IA genera tu quiz según tu producto y nicho' },
-      { icon: '🔗', text: 'Compartes el link con tu audiencia' },
-      { icon: '💰', text: 'El quiz segmenta y convierte en clientes' },
+      { msIcon: 'smart_toy', text: 'La IA genera tu quiz según tu producto y nicho' },
+      { msIcon: 'link', text: 'Compartes el link con tu audiencia' },
+      { msIcon: 'payments', text: 'El quiz segmenta y convierte en clientes' },
     ],
     cta: 'Siguiente →',
   },
   {
-    emoji: '🚀',
+    msIcon: 'rocket_launch',
     title: '¿Listo para crear tu primer quiz?',
     desc: 'Solo necesitas el nombre de tu producto y una descripción. La IA hace el resto.',
     cta: '¡Crear mi primer quiz!',
@@ -1085,13 +1089,17 @@ function renderObStep() {
   });
   body.innerHTML = `
     <div class="text-center space-y-4 fade-in">
-      <div class="text-6xl mb-2">${s.emoji}</div>
+      <div class="w-16 h-16 mx-auto mb-2 rounded-2xl flex items-center justify-center" style="background:linear-gradient(135deg,#2E5BFF,#7c3aed)">
+        <span class="material-symbols-outlined text-white" style="font-size:32px;font-variation-settings:'FILL' 1">${s.msIcon}</span>
+      </div>
       <h3 class="text-xl font-extrabold tracking-tight">${s.title}</h3>
       ${s.desc ? `<p class="text-on-surface-variant text-sm leading-relaxed">${s.desc}</p>` : ''}
       ${s.steps ? `<div class="space-y-3 text-left mt-4">
         ${s.steps.map(st => `
           <div class="flex items-center gap-3 p-3 bg-surface-container rounded-xl">
-            <span class="text-2xl">${st.icon}</span>
+            <div class="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0" style="background:linear-gradient(135deg,rgba(46,91,255,0.15),rgba(124,58,237,0.1))">
+              <span class="material-symbols-outlined text-primary" style="font-size:20px">${st.msIcon}</span>
+            </div>
             <p class="text-sm text-on-surface">${st.text}</p>
           </div>`).join('')}
       </div>` : ''}
@@ -1418,7 +1426,7 @@ async function handleCreateMiniApp(e) {
       : 'Error al crear: ' + err.message;
     showToast(msg, 'error');
     submitBtn.disabled = false;
-    submitBtn.textContent = '✦ Crear con IA';
+    submitBtn.innerHTML = '<span class="material-symbols-outlined text-sm" style="font-variation-settings:\'FILL\' 1">auto_awesome</span> Crear con IA';
     progressEl.classList.add('hidden');
   }
 }
@@ -1497,15 +1505,27 @@ const NICHE_TYPES = [
     ['diagnostico','diario','meditacion','afirmaciones','faq']],
 ];
 
-const TYPE_LABELS = {
-  devocional:'🕊️ Devocional', checklist:'✅ Checklist', tracker:'📊 Tracker',
-  reto:'🔥 Reto', diario:'📓 Diario', calculadora:'🧮 Calculadora',
-  comparador:'⚖️ Comparador', diagnostico:'🩺 Diagnóstico', planificador:'📅 Planificador',
-  roadmap:'🗺️ Roadmap', glosario:'📖 Glosario', faq:'💬 FAQ',
-  flashcards:'🃏 Flashcards', biblioteca:'📚 Biblioteca', chatbot:'🤖 Asistente IA',
-  generador:'✨ Generador', afirmaciones:'🌟 Afirmaciones', meditacion:'🧘 Meditación',
-  simulador:'🔮 Simulador',
+const TYPE_ICONS = {
+  devocional:'favorite', checklist:'done_all', tracker:'show_chart',
+  reto:'local_fire_department', diario:'edit_note', calculadora:'calculate',
+  comparador:'compare_arrows', diagnostico:'stethoscope', planificador:'calendar_month',
+  roadmap:'map', glosario:'menu_book', faq:'chat',
+  flashcards:'style', biblioteca:'local_library', chatbot:'smart_toy',
+  generador:'auto_awesome', afirmaciones:'brightness_7', meditacion:'self_improvement',
+  simulador:'science',
 };
+const TYPE_NAMES = {
+  devocional:'Devocional', checklist:'Checklist', tracker:'Tracker',
+  reto:'Reto', diario:'Diario', calculadora:'Calculadora',
+  comparador:'Comparador', diagnostico:'Diagnóstico', planificador:'Planificador',
+  roadmap:'Roadmap', glosario:'Glosario', faq:'FAQ',
+  flashcards:'Flashcards', biblioteca:'Biblioteca', chatbot:'Asistente IA',
+  generador:'Generador', afirmaciones:'Afirmaciones', meditacion:'Meditación',
+  simulador:'Simulador',
+};
+const TYPE_LABELS = Object.fromEntries(
+  Object.entries(TYPE_NAMES).map(([k, v]) => [k, `<span class="material-symbols-outlined" style="font-size:14px;vertical-align:middle">${TYPE_ICONS[k]}</span> ${v}`])
+);
 
 function suggestTypes(niche) {
   const recEl = document.getElementById('type-recommendations');

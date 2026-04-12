@@ -79,9 +79,14 @@ const Quizzes = {
   canCreate() {
     const plan = Settings.get().plan;
     const count = this.getAll().length;
-    if (plan === 'free') return count < 3;
-    if (plan === 'pro') return count < 999;
-    return true;
+    const limits = { free: 1, starter: 3, pro: 999, growth: 999, elite: 999 };
+    const max = limits[plan] ?? 999;
+    return count < max;
+  },
+  getLimit() {
+    const plan = Settings.get().plan;
+    const limits = { free: 1, starter: 3, pro: Infinity, growth: Infinity, elite: Infinity };
+    return limits[plan] ?? Infinity;
   },
 };
 
@@ -180,6 +185,124 @@ function calculateProfile(quiz, answers) {
   return quiz.profiles.find(p => p.id === topId) || quiz.profiles[0];
 }
 
+// ── Niche context system ───────────────────────────────────
+const NICHE_CONTEXTS = {
+  fitness: {
+    patterns: /fitness|gym|ejercicio|entrenam|muscul|cardio|crossfit|bodybuilding|calistenia/i,
+    vocabulary: ['series', 'repeticiones', 'sobrecarga progresiva', 'hipertrofia', 'HIIT', 'macros', 'déficit calórico', 'PR (marca personal)', 'split de entrenamiento', 'fase de volumen/definición'],
+    painPoints: ['meseta de progreso', 'lesiones recurrentes', 'falta de motivación después de semanas', 'no ver resultados a pesar del esfuerzo', 'confusión con tanta información contradictoria', 'no saber cuánto peso usar'],
+    metrics: ['peso levantado', 'composición corporal', 'marcas personales', 'resistencia cardiovascular', 'medidas corporales', 'porcentaje de grasa'],
+    archetypes: ['El Novato Entusiasta que se lesiona por exceso', 'El Estancado que lleva meses igual', 'El Informado que sabe todo pero no aplica'],
+    examples: { checklist: 'Completé mi sesión de piernas hoy', tracker: 'Entrenamiento de fuerza', calculator: 'calorías diarias según objetivo', planner: 'Preparar meal prep del domingo' },
+  },
+  spirituality: {
+    patterns: /espirit|fe\b|dios|bibli|cristian|iglesia|devocional|oración|alma|medita.*espirit/i,
+    vocabulary: ['devocional diario', 'vida de oración', 'discipulado', 'comunión', 'propósito divino', 'dones espirituales', 'gracia', 'frutos del espíritu', 'temporadas espirituales'],
+    painPoints: ['sequedad espiritual', 'inconsistencia en la oración', 'dudas de fe en momentos difíciles', 'no entender la Biblia', 'sentirse lejos de Dios', 'culpa por no orar suficiente'],
+    metrics: ['consistencia devocional', 'capítulos leídos', 'tiempo en oración', 'días de ayuno', 'versículos memorizados'],
+    archetypes: ['El Buscador con dudas sinceras', 'El Creyente inconsistente que quiere profundizar', 'El Líder espiritual agotado'],
+    examples: { checklist: 'Leí mi capítulo bíblico del día', tracker: 'Devocional matutino', calculator: 'plan de lectura bíblica anual', planner: 'Preparar mi tiempo devocional de mañana' },
+  },
+  finance: {
+    patterns: /finanz|dinero|inversión|invert|ahorro|trading|cripto|presupuest|deuda|forex|bolsa/i,
+    vocabulary: ['flujo de caja', 'fondo de emergencia', 'interés compuesto', 'diversificación', 'rendimiento', 'ROAS', 'ROI', 'activos vs pasivos', 'libertad financiera', 'inflación'],
+    painPoints: ['gastar más de lo que se gana', 'no saber dónde va el dinero', 'miedo a invertir y perder', 'deudas que no bajan', 'vivir de quincena en quincena', 'no tener fondo de emergencia'],
+    metrics: ['tasa de ahorro mensual', 'deuda total', 'patrimonio neto', 'rendimiento de inversiones', 'gastos fijos vs variables'],
+    archetypes: ['El Endeudado que quiere liberarse', 'El Ahorrador sin estrategia', 'El Inversionista paralizado por el miedo'],
+    examples: { checklist: 'Registré todos mis gastos de hoy', tracker: 'Ahorro diario', calculator: 'interés compuesto a 10 años', planner: 'Revisar y categorizar gastos del mes' },
+  },
+  wellness: {
+    patterns: /bienestar|wellness|salud|hábito|autocuidado|ansiedad|estrés|sueño|descanso|mindful/i,
+    vocabulary: ['autocuidado', 'rutina de bienestar', 'gestión del estrés', 'higiene del sueño', 'mindfulness', 'equilibrio mente-cuerpo', 'sistema nervioso', 'regulación emocional', 'journaling'],
+    painPoints: ['ansiedad constante', 'insomnio o mal dormir', 'burnout laboral', 'no tener tiempo para uno mismo', 'sentirse desconectado del cuerpo', 'ciclos de estrés sin salida'],
+    metrics: ['horas de sueño', 'nivel de estrés percibido', 'minutos de meditación', 'días de autocuidado', 'nivel de energía diario'],
+    archetypes: ['El Quemado que ignora las señales', 'El Ansioso que busca calma', 'El Ocupado que posterga su bienestar'],
+    examples: { checklist: 'Hice mi rutina de respiración matutina', tracker: 'Meditación diaria', calculator: 'horas de sueño vs energía', planner: 'Definir mi ritual de desconexión nocturna' },
+  },
+  nutrition: {
+    patterns: /nutri|dieta|alimenta|comida|receta|cocina|meal|keto|vegano|ayuno/i,
+    vocabulary: ['macronutrientes', 'micronutrientes', 'densidad calórica', 'meal prep', 'índice glucémico', 'proteína por kilo', 'déficit/superávit', 'hidratación', 'suplementación'],
+    painPoints: ['dietas que no se sostienen', 'efecto rebote', 'no saber qué comer', 'comer emocional', 'confusión entre tantas dietas', 'no tener tiempo para cocinar sano'],
+    metrics: ['calorías diarias', 'gramos de proteína', 'litros de agua', 'porciones de vegetales', 'comidas preparadas vs ultraprocesados'],
+    archetypes: ['El Yo-Yo que va de dieta en dieta', 'El Confundido por información contradictoria', 'El Ocupado que come lo primero que encuentra'],
+    examples: { checklist: 'Preparé mi almuerzo saludable', tracker: 'Comer 5 porciones de vegetales', calculator: 'proteína diaria según peso y objetivo', planner: 'Hacer lista de compras saludable del lunes' },
+  },
+  business: {
+    patterns: /negocio|emprendim|empresa|startup|ventas|emprende|lider|coaching.*negocio|escalar/i,
+    vocabulary: ['propuesta de valor', 'embudo de ventas', 'ticket promedio', 'retención de clientes', 'escalabilidad', 'modelo de negocio', 'PMV', 'tracción', 'bootstrapping', 'pitch'],
+    painPoints: ['no conseguir clientes consistentes', 'trabajar 12h sin ver ganancias', 'no saber delegar', 'miedo a subir precios', 'competir por precio', 'síndrome del impostor emprendedor'],
+    metrics: ['ingresos mensuales', 'clientes nuevos/mes', 'tasa de conversión', 'costo de adquisición', 'margen de ganancia', 'lifetime value'],
+    archetypes: ['El Solopreneur agotado', 'El Emprendedor con idea pero sin sistema', 'El Vendedor que no escala'],
+    examples: { checklist: 'Contacté a 3 prospectos hoy', tracker: 'Llamadas de venta diarias', calculator: 'punto de equilibrio mensual', planner: 'Definir mi oferta irresistible esta semana' },
+  },
+  marketing: {
+    patterns: /marketing|ads|anuncio|facebook|instagram|tiktok|seo|contenido|copywriting|embudo|funnel|redes social/i,
+    vocabulary: ['CPC', 'CTR', 'ROAS', 'pixel de conversión', 'audiencia lookalike', 'retargeting', 'copy', 'hook', 'CTA', 'A/B test', 'lead magnet'],
+    painPoints: ['anuncios que no convierten', 'gastar dinero sin retorno', 'algoritmo cambiante', 'no saber segmentar', 'creatividades que no enganchan', 'fatiga publicitaria'],
+    metrics: ['costo por lead', 'costo por venta', 'tasa de clics', 'alcance orgánico', 'engagement rate', 'ROAS'],
+    archetypes: ['El Novato que quema presupuesto', 'El Táctico sin estrategia global', 'El Escalador que pierde rentabilidad'],
+    examples: { checklist: 'Revisé métricas de mis campañas activas', tracker: 'Publicar contenido diario', calculator: 'ROAS y costo por adquisición', planner: 'Crear calendario de contenido semanal' },
+  },
+  motherhood: {
+    patterns: /maternidad|mamá|madre|bebé|embaraz|crianza|lactancia|posparto|hijo|infantil|pediatr/i,
+    vocabulary: ['rutina del bebé', 'lactancia', 'crianza respetuosa', 'hitos del desarrollo', 'apego seguro', 'BLW', 'sueño infantil', 'posparto', 'destete', 'estimulación temprana'],
+    painPoints: ['agotamiento extremo', 'culpa materna', 'no tener tiempo para sí misma', 'inseguridad con decisiones de crianza', 'presión social sobre cómo criar', 'pérdida de identidad propia'],
+    metrics: ['horas de sueño del bebé', 'tomas de leche', 'hitos cumplidos', 'tiempo de calidad mamá-bebé', 'momentos de autocuidado'],
+    archetypes: ['La Mamá Primeriza Abrumada', 'La Madre Culpable que nunca se siente suficiente', 'La Mamá que quiere recuperar su identidad'],
+    examples: { checklist: 'Tomé 15 minutos solo para mí hoy', tracker: 'Rutina de sueño del bebé', calculator: 'onzas de leche según edad y peso', planner: 'Organizar la semana con bloques mamá + bebé' },
+  },
+  education: {
+    patterns: /educación|enseñ|aprendizaje|curso|estudi|profesor|formación|capacitación|idioma|inglés/i,
+    vocabulary: ['plan de estudios', 'objetivos de aprendizaje', 'evaluación formativa', 'retroalimentación', 'curva de aprendizaje', 'repaso espaciado', 'técnica Pomodoro', 'mapa mental', 'resumen activo'],
+    painPoints: ['no retener lo estudiado', 'procrastinar el estudio', 'no saber por dónde empezar', 'sentirse abrumado por el volumen', 'falta de método efectivo', 'desmotivación a mitad de camino'],
+    metrics: ['horas de estudio', 'temas completados', 'notas en evaluaciones', 'flashcards repasadas', 'módulos terminados'],
+    archetypes: ['El Estudiante Disperso', 'El Autodidacta sin Método', 'El Procrastinador Académico'],
+    examples: { checklist: 'Repasé las flashcards del tema 3', tracker: 'Estudio diario de 45 minutos', calculator: 'horas necesarias para completar el curso', planner: 'Asignar temas a cada día de la semana' },
+  },
+  relationships: {
+    patterns: /relacion|pareja|amor|cita|matrimon|divorcio|seducción|atracción|noviazgo|comunicación.*pareja/i,
+    vocabulary: ['lenguajes del amor', 'comunicación asertiva', 'límites sanos', 'interdependencia', 'apego', 'inteligencia emocional', 'intimidad', 'resolución de conflictos', 'codependencia'],
+    painPoints: ['comunicación deficiente con la pareja', 'peleas recurrentes por lo mismo', 'miedo a la vulnerabilidad', 'patrones tóxicos repetitivos', 'falta de conexión emocional', 'celos e inseguridad'],
+    metrics: ['momentos de calidad juntos', 'conversaciones profundas por semana', 'conflictos resueltos vs escalados', 'actos de amor intencionales'],
+    archetypes: ['El Evitante Emocional', 'El Complaciente que se pierde a sí mismo', 'El Perfeccionista Relacional'],
+    examples: { checklist: 'Expresé gratitud a mi pareja hoy', tracker: 'Momento de calidad diario con mi pareja', calculator: 'lenguaje del amor predominante', planner: 'Planificar una cita especial esta semana' },
+  },
+  beauty: {
+    patterns: /belleza|maquillaj|skincare|piel|cabello|estétic|cosmet|cuidado personal|uñas/i,
+    vocabulary: ['rutina de skincare', 'tipo de piel', 'ácido hialurónico', 'retinol', 'SPF', 'doble limpieza', 'barrera cutánea', 'colorimetría', 'técnica de contouring'],
+    painPoints: ['piel reactiva o con acné', 'no saber qué productos usar', 'gastar en productos que no funcionan', 'envejecimiento prematuro', 'rutinas complicadas sin resultados'],
+    metrics: ['días de rutina completada', 'productos terminados vs abandonados', 'mejora percibida de la piel', 'SPF aplicado diariamente'],
+    archetypes: ['La Principiante Abrumada por opciones', 'La Adicta a productos sin rutina', 'La Minimalista que quiere lo esencial'],
+    examples: { checklist: 'Apliqué SPF antes de salir', tracker: 'Rutina de skincare nocturna', calculator: 'tipo de piel y productos recomendados', planner: 'Organizar mi rutina AM/PM de la semana' },
+  },
+  productivity: {
+    patterns: /productividad|tiempo|organiza|planifica|GTD|hábitos.*productiv|agenda|prioridad/i,
+    vocabulary: ['bloque de tiempo', 'deep work', 'matriz de Eisenhower', 'batching', 'revisión semanal', 'inbox zero', 'sistema GTD', 'energía vs tiempo', 'tarea de alto impacto'],
+    painPoints: ['trabajar muchas horas sin avanzar', 'no saber qué priorizar', 'interrupciones constantes', 'listas de tareas interminables', 'agotamiento decisional', 'procrastinar lo importante'],
+    metrics: ['tareas de alto impacto completadas', 'horas de deep work', 'tareas eliminadas o delegadas', 'proyectos terminados por mes'],
+    archetypes: ['El Multitasker Disperso', 'El Perfeccionista Paralizante', 'El Ocupado Improductivo'],
+    examples: { checklist: 'Completé mi tarea #1 del día antes de las 11am', tracker: 'Sesión de deep work diaria', calculator: 'horas productivas reales por día', planner: 'Definir las 3 prioridades de mañana' },
+  },
+};
+
+function getNicheContext(niche) {
+  if (!niche) return null;
+  for (const [key, ctx] of Object.entries(NICHE_CONTEXTS)) {
+    if (ctx.patterns.test(niche)) return { id: key, ...ctx };
+  }
+  return null;
+}
+
+function buildNichePromptBlock(niche) {
+  const ctx = getNicheContext(niche);
+  if (!ctx) return `Nicho: "${niche}". Investiga y usa vocabulario real y específico de este nicho.`;
+  return `Nicho: "${niche}"
+VOCABULARIO OBLIGATORIO del nicho (usa estos términos): ${ctx.vocabulary.join(', ')}
+DOLORES REALES del público: ${ctx.painPoints.join('; ')}
+MÉTRICAS que les importan: ${ctx.metrics.join(', ')}
+ARQUETIPOS de personas en este nicho: ${ctx.archetypes.join('; ')}`;
+}
+
 // ── Claude API ─────────────────────────────────────────────
 const Claude = {
   async _call(messages, maxTokens = 3000) {
@@ -239,64 +362,68 @@ const Claude = {
   async generateQuiz(productName, description, niche, numQuestions, numOptions) {
     const nQ = numQuestions || 6;
     const nO = numOptions   || 4;
-    const prompt = `Eres un experto en psicología del comprador, copywriting emocional y quizzes virales de alta conversión. Conoces a profundidad el nicho de ${niche || 'infoproductos'}.
+    const nicheBlock = buildNichePromptBlock(niche);
+    const ctx = getNicheContext(niche);
+    const archetypeHint = ctx ? `\nInspírate en estos arquetipos reales del nicho para crear los perfiles: ${ctx.archetypes.join('; ')}` : '';
+    const prompt = `Eres un experto en psicología del comprador, copywriting emocional y quizzes virales de alta conversión.
 
 PRODUCTO: "${productName}"
 DESCRIPCIÓN: ${description || 'Producto digital premium'}
-NICHO: ${niche || 'infoproductos'}
+${nicheBlock}
 
 ═══ TU MISIÓN ═══
-Crear un quiz que haga que cada persona sienta que "le leyeron la mente". Cada pregunta y cada opción debe usar el vocabulario, las situaciones reales y los dolores específicos del nicho "${niche || 'infoproductos'}". NADA GENÉRICO.
+Crear un quiz que haga que cada persona sienta que "le leyeron la mente". Cada pregunta y cada opción DEBE usar el vocabulario técnico y las situaciones reales del nicho. NADA GENÉRICO — si alguien pudiera copiar la misma pregunta para otro nicho, está mal.
 
 ═══ REGLAS PARA LAS PREGUNTAS (${nQ} en total) ═══
 Las ${nQ} preguntas deben cubrir estos ángulos en orden:
-1. Situación actual — ¿Cómo se describe el lector en este momento respecto al tema?
-2. Obstáculo principal — ¿Qué le impide avanzar?
-3. Experiencia previa — ¿Qué ha intentado antes?
-4. Motivación profunda — ¿Por qué realmente quiere este resultado?
-5. Estilo / Cómo aprende — ¿Cómo prefiere trabajar o aprender?
-6. Mentalidad / Actitud — ¿Cómo reacciona ante los desafíos en este nicho?
-${nQ > 6 ? Array.from({length: nQ - 6}, (_,k) => `${k+7}. Pregunta adicional específica del nicho`).join('\n') : ''}
+1. Situación actual — ¿Dónde está HOY respecto al tema? (usa jerga real del nicho)
+2. Obstáculo principal — ¿Qué dolor específico del nicho le frena? (menciona situaciones reconocibles)
+3. Experiencia previa — ¿Qué métodos/herramientas/enfoques ha probado ya en este nicho?
+4. Motivación profunda — ¿Qué resultado tangible y medible quiere? (usa métricas del nicho)
+5. Estilo de acción — ¿Cómo prefiere abordar este tema en particular?
+6. Mentalidad ante obstáculos — ¿Cómo reacciona cuando enfrenta un reto típico del nicho?
+${nQ > 6 ? Array.from({length: nQ - 6}, (_,k) => `${k+7}. Pregunta sobre un aspecto específico y técnico del nicho que diferencie niveles`).join('\n') : ''}
 
 Cada pregunta: exactamente ${nO} opciones. Cada opción:
-- Describe UNA SITUACIÓN CONCRETA del nicho (no "Sí / No / A veces")
-- Tiene un EMOJI que represente emocionalmente esa situación (ej: 😊 para algo positivo, 😔 para algo difícil)
+- Describe UNA SITUACIÓN CONCRETA que solo alguien de este nicho reconocería (no "Sí / No / A veces")
+- Usa el vocabulario técnico del nicho en la redacción
+- Tiene un EMOJI que represente emocionalmente esa situación
 
-═══ REGLAS PARA LOS PERFILES (3 perfiles) ═══
-• name: Identidad poderosa específica del nicho (ej: "La Perfeccionista Estancada", "El Emprendedor Impaciente")
+═══ REGLAS PARA LOS PERFILES (3 perfiles) ═══${archetypeHint}
+• name: Identidad poderosa y específica del nicho (NO genérica como "El Principiante")
 • emoji: Emoji representativo del perfil
-• description: 2-3 oraciones que hagan que el usuario piense "¡ESO SOY YO!" — situaciones concretas del nicho
-• recommendation: Por qué este producto resuelve exactamente el problema de ESTE perfil
+• description: 2-3 oraciones que hagan que el usuario piense "¡ESO SOY YO!" — con situaciones, vocabulario y frustraciones concretas del nicho
+• recommendation: Por qué "${productName}" resuelve exactamente el problema de ESTE perfil (menciona características específicas del producto)
 • matchScore: Número 83-96 (diferente por perfil)
-• cta: CTA personalizado (máx 35 chars)
+• cta: CTA personalizado que mencione el resultado deseado (máx 35 chars)
 
 ═══ RESPONDE SOLO JSON VÁLIDO ═══
 {
-  "title": "título del quiz con gancho emocional (máx 65 chars)",
+  "title": "título del quiz con gancho emocional y vocabulario del nicho (máx 65 chars)",
   "subtitle": "subtítulo que describe el beneficio de completarlo (1 línea)",
   "estimatedMinutes": 2,
   "questions": [
     {
       "id": "q1",
-      "text": "texto de la pregunta — específico del nicho",
-      "imageKeywords": "2-3 palabras en inglés para buscar imagen ilustrativa (ej: 'headache stress pain')",
+      "text": "pregunta usando vocabulario real del nicho",
+      "imageKeywords": "2-3 palabras en inglés para imagen (ej: 'gym workout frustration')",
       "options": [
-        {"text": "situación concreta del nicho", "emoji": "😊", "profiles": ["id_perfil"]},
-        {"text": "situación concreta del nicho", "emoji": "😔", "profiles": ["id_perfil"]},
-        {"text": "situación concreta del nicho", "emoji": "😤", "profiles": ["id_perfil", "id_perfil2"]},
-        {"text": "situación concreta del nicho", "emoji": "😩", "profiles": ["id_perfil"]}
+        {"text": "situación reconocible del nicho con jerga real", "emoji": "😊", "profiles": ["id_perfil"]},
+        {"text": "situación reconocible del nicho con jerga real", "emoji": "😔", "profiles": ["id_perfil"]},
+        {"text": "situación reconocible del nicho con jerga real", "emoji": "😤", "profiles": ["id_perfil", "id_perfil2"]},
+        {"text": "situación reconocible del nicho con jerga real", "emoji": "😩", "profiles": ["id_perfil"]}
       ]
     }
   ],
   "profiles": [
     {
       "id": "id_perfil",
-      "name": "Nombre Identidad del Perfil",
+      "name": "Nombre Identidad Específica del Nicho",
       "emoji": "🎯",
-      "description": "Descripción muy específica que hace que el usuario diga 'eso soy yo'",
-      "recommendation": "Por qué este producto resuelve exactamente el problema de este perfil",
+      "description": "Descripción con vocabulario del nicho que hace que el usuario diga 'eso soy yo'",
+      "recommendation": "Por qué ${productName} resuelve exactamente el problema de este perfil",
       "matchScore": 91,
-      "cta": "CTA personalizado al perfil"
+      "cta": "CTA con resultado específico del nicho"
     }
   ]
 }`;
@@ -306,47 +433,61 @@ Cada pregunta: exactamente ${nO} opciones. Cada opción:
   },
 
   async generateMiniAppIdeas(productName, description, niche) {
+    const nicheBlock = buildNichePromptBlock(niche);
+    const ctx = getNicheContext(niche);
+    const exHint = ctx ? `\nEjemplos de lo que le importa a este público: ${ctx.painPoints.slice(0, 3).join(', ')}` : '';
     const prompt = `Eres un experto en productos digitales interactivos y mini-apps de valor añadido para infoproductos.
 
 TAREA: Para el siguiente producto digital, genera 3 ideas de mini-apps que añadan VALOR REAL y diferencial:
 - Nombre: ${productName}
 - Descripción: ${description || 'Producto digital premium'}
-- Nicho: ${niche || 'infoproductos'}
+${nicheBlock}${exHint}
 
 CRITERIOS:
-• Cada mini-app debe ser directamente útil para el tema del producto
-• Debe ser algo que el usuario use MIENTRAS consume el contenido
-• Usa SOLO estos tipos exactos: calculadora, tracker, generador, checklist, planificador, chatbot
+• Cada mini-app debe resolver un DOLOR ESPECÍFICO del público de este nicho
+• Debe ser algo que el usuario use MIENTRAS aplica lo aprendido del producto
+• Los nombres deben usar vocabulario del nicho, no genéricos
+• Usa SOLO estos tipos exactos: calculadora, tracker, generador, checklist, planificador, chatbot, reto, diagnostico, roadmap, simulador, meditacion, afirmaciones, flashcards, comparador, biblioteca, faq, devocional, diario, glosario
+
+ELIGE los 3 tipos que MÁS SENTIDO tengan para "${niche}". Por ejemplo:
+- Fitness → tracker, calculadora, reto
+- Espiritualidad → devocional, meditacion, afirmaciones
+- Finanzas → calculadora, planificador, simulador
+- Bienestar → tracker, meditacion, diario
 
 RESPONDE SOLO CON ESTE JSON VÁLIDO (sin texto antes ni después):
-{"apps":[{"name":"Nombre de la Mini-App","icon":"emoji relevante","type":"calculadora","description":"Qué hace exactamente y cómo ayuda al usuario en 1 oración","features":["Función clave 1","Función clave 2","Función clave 3"]}]}
+{"apps":[{"name":"Nombre específico del nicho","icon":"emoji relevante","type":"tipo_elegido","description":"Qué hace exactamente y cómo ayuda al usuario con un dolor real del nicho en 1 oración","features":["Función clave específica del nicho 1","Función clave 2","Función clave 3"]}]}
 
 Genera 3 apps distintas con tipos distintos. Devuelve SOLO el JSON, sin markdown, sin explicaciones.`;
 
-    const text = await this._call([{ role: 'user', content: prompt }], 1500);
+    const text = await this._call([{ role: 'user', content: prompt }], 2000);
     const result = this._parseJSON(text);
     if (!result.apps || !Array.isArray(result.apps)) throw new Error('Respuesta de IA inválida');
     return result;
   },
 
   async improveQuestion(currentQuestion, productContext) {
-    const prompt = `Eres un experto en copywriting de quizzes de alta conversión. Reescribe esta pregunta para que sea MUCHO más específica del nicho, use situaciones reales y concretas, y haga que el lector sienta que "le leen la mente".
+    const nicheBlock = buildNichePromptBlock(productContext);
+    const prompt = `Eres un experto en copywriting de quizzes de alta conversión.
 
 Pregunta actual: "${currentQuestion}"
-Contexto del producto/nicho: ${productContext}
+${nicheBlock}
+
+MISIÓN: Reescribe esta pregunta para que sea imposible de reusar en otro nicho. Debe usar vocabulario técnico, situaciones reconocibles y dolores REALES del público.
 
 REGLAS:
-• La pregunta mejorada debe sonar como una conversación, no como un formulario
-• Las 4 opciones deben ser situaciones concretas y reconocibles del nicho (no "a) Sí b) No c) A veces d) Depende")
-• Cada opción debe describir un perfil de persona real
+• La pregunta mejorada debe sonar como una conversación entre expertos del nicho
+• Las 4 opciones deben describir situaciones concretas que SOLO alguien de este nicho reconocería
+• Cada opción debe representar un arquetipo/perfil diferente de persona dentro del nicho
+• NO usar opciones genéricas como "Sí / No / A veces / Depende"
 
 Responde SOLO con JSON:
 {
-  "improved": "nueva pregunta mejorada y específica del nicho",
-  "options": ["situación concreta 1", "situación concreta 2", "situación concreta 3", "situación concreta 4"]
+  "improved": "nueva pregunta con vocabulario técnico del nicho",
+  "options": ["situación con jerga del nicho 1", "situación reconocible 2", "situación 3", "situación 4"]
 }`;
 
-    const text = await this._call([{ role: 'user', content: prompt }], 500);
+    const text = await this._call([{ role: 'user', content: prompt }], 800);
     return this._parseJSON(text);
   },
 
@@ -386,47 +527,145 @@ Devuelve SOLO este JSON sin texto adicional:
   async generateMiniAppContent(appIdea, product, niche, creatorCtx = null) {
     const { type, name, description, features = [] } = appIdea;
     const featuresCtx = features.length ? `\nFunciones que debe incluir: ${features.join(', ')}` : '';
+    const nicheBlock = buildNichePromptBlock(niche);
+    const ctx = getNicheContext(niche);
+    const exForType = ctx?.examples || {};
+
     const typeInstructions = {
-      reto: `Genera contenido guiado para un reto de 7 días llamado "${name}" sobre el nicho "${niche}".${featuresCtx}
-Para cada día crea: título motivador, emoji relevante, cita/insight en cursiva (2-3 oraciones inspiradoras), instrucciones concretas (3-5 oraciones), y una pregunta de reflexión.
+      reto: `Genera contenido guiado para un reto de 7 días llamado "${name}".
+${nicheBlock}${featuresCtx}
+IMPORTANTE: Cada día debe tener contenido ÚNICO y progresivo — día 1 no puede parecerse a día 7.
+- Día 1-2: Fundamentos y primeras acciones simples del nicho
+- Día 3-4: Profundización con técnicas específicas
+- Día 5-6: Desafíos más intensos con vocabulario técnico del nicho
+- Día 7: Integración y plan de continuidad
+Las instrucciones deben mencionar herramientas, técnicas o conceptos REALES del nicho, no generalidades.
 Devuelve SOLO este JSON:
-{"retoDays":7,"retoContent":[{"day":1,"title":"Nombre del día","icon":"emoji","quote":"Cita inspiradora o insight poderoso para este día","instructions":"Instrucciones concretas de qué hacer hoy en el nicho","reflectionPrompt":"Pregunta de reflexión para escribir en el diario"}]}`,
-      chatbot: `Diseña un asistente IA especializado en "${name}" para el nicho "${niche}".${featuresCtx}
+{"retoDays":7,"retoContent":[{"day":1,"title":"Título con vocabulario del nicho","icon":"emoji","quote":"Insight basado en conocimiento real del nicho (2-3 oraciones)","instructions":"Instrucciones paso a paso usando terminología del nicho (3-5 oraciones)","reflectionPrompt":"Pregunta de reflexión que use conceptos del nicho"}]}`,
+
+      chatbot: `Diseña un asistente IA especializado en "${name}".
+${nicheBlock}${featuresCtx}
+El asistente debe:
+- Tener personalidad alineada con el tono del nicho (${ctx ? 'vocabulario: ' + ctx.vocabulary.slice(0, 5).join(', ') : 'profesional y cercano'})
+- Responder SOLO sobre temas del nicho — redirigir lo demás amablemente
+- Las preguntas sugeridas deben abordar dolores REALES del público
 Devuelve SOLO este JSON sin texto adicional:
-{"chatbotName":"Nombre corto del asistente","chatbotGreeting":"Bienvenida cálida y específica del nicho (1-2 oraciones)","chatbotSystemPrompt":"Eres [nombre], experto en [tema específico del nicho]. Ayudas con: [lista de funciones]. Responde en español, tono [amigable/profesional], máximo 4 oraciones por respuesta. Si te preguntan algo ajeno al tema, redirige amablemente.","chatbotSuggestions":["Pregunta sugerida 1 específica del nicho","Pregunta sugerida 2","Pregunta sugerida 3"]}`,
-      checklist: `Genera 12-15 ítems de checklist para que el USUARIO FINAL los marque mientras avanza en "${name}" (nicho: "${niche}").${featuresCtx}
-IMPORTANTE: Los ítems son tareas que el usuario hace en su vida real, NO funciones del producto ni ideas para el creador.
-Ejemplo correcto para fitness: "✓ Completé mis 30 minutos de cardio", "✓ Bebí 2 litros de agua hoy"
-Ejemplo INCORRECTO: "Desarrollar plan de ejercicios", "Crear sección de nutrición"
-Devuelve SOLO este JSON: {"initialItems":["ítem accionable para el usuario 1","ítem accionable para el usuario 2",...]}`,
-      planificador: `Genera 10-12 tareas concretas que el USUARIO FINAL debe completar para avanzar en "${name}" (nicho: "${niche}").${featuresCtx}
+{"chatbotName":"Nombre que refleje la experticia del nicho","chatbotGreeting":"Bienvenida que demuestre conocimiento del nicho y sus dolores (1-2 oraciones)","chatbotSystemPrompt":"Eres [nombre], experto en [área específica del nicho]. Conoces: [${ctx ? ctx.vocabulary.slice(0, 4).join(', ') : 'conceptos clave del tema'}]. Ayudas a resolver: [${ctx ? ctx.painPoints.slice(0, 3).join(', ') : 'problemas del público'}]. Responde en español, máximo 4 oraciones por respuesta. Usa vocabulario técnico del nicho pero explícalo si es necesario. Si preguntan algo ajeno, redirige amablemente.","chatbotSuggestions":["Pregunta sobre dolor real #1 del nicho","Pregunta técnica #2","Pregunta práctica #3"]}`,
+
+      checklist: `Genera 12-15 ítems de checklist para que el USUARIO FINAL los marque mientras avanza en "${name}".
+${nicheBlock}${featuresCtx}
+IMPORTANTE: Los ítems son acciones que el usuario hace en su vida real, NO funciones del producto ni ideas para el creador.
+${exForType.checklist ? `Ejemplo correcto para este nicho: "✓ ${exForType.checklist}"` : ''}
+Ejemplo INCORRECTO: "Desarrollar plan de...", "Crear sección de...", "Implementar sistema de..."
+Cada ítem debe usar VOCABULARIO TÉCNICO del nicho y ser una acción medible y concreta.
+Devuelve SOLO este JSON: {"initialItems":["acción medible con vocabulario del nicho 1","acción concreta 2",...]}`,
+
+      planificador: `Genera 10-12 tareas concretas que el USUARIO FINAL debe completar para avanzar en "${name}".
+${nicheBlock}${featuresCtx}
 IMPORTANTE: Son tareas que el usuario realiza en su vida real, en orden lógico de ejecución.
-Ejemplo correcto para finanzas: "Anotar todos mis gastos del mes", "Calcular mis ingresos netos"
-Ejemplo INCORRECTO: "Desarrollar herramienta de presupuesto", "Crear sección de ahorro"
-Devuelve SOLO este JSON: {"initialTasks":["tarea concreta del usuario 1","tarea concreta del usuario 2",...]}`,
-      tracker: `Define el hábito y duración para "${name}".${featuresCtx}
-Devuelve SOLO este JSON: {"trackerDays":30,"trackerHabit":"nombre específico del hábito diario en el nicho"}`,
-      calculadora: `Diseña una calculadora práctica y útil para "${name}". Define 2-3 campos con etiquetas claras del nicho y una fórmula JS simple usando las variables a, b, c.${featuresCtx}
-Devuelve SOLO este JSON: {"calcFields":[{"id":"a","label":"Nombre del campo en el nicho","placeholder":"valor de ejemplo"}],"calcFormula":"a * b","calcResultLabel":"Nombre del resultado en el nicho"}`,
-      generador: `Define el prompt y etiquetas para el generador "${name}".${featuresCtx}
-Devuelve SOLO este JSON: {"generatorPrompt":"Genera [tipo de contenido específico] para [contexto del nicho] con las siguientes características: [input del usuario]. Responde en español con formato claro.","inputLabel":"Etiqueta descriptiva del input en el nicho","inputPlaceholder":"Ejemplo de input específico del nicho..."}`,
-      simulador: `Define el prompt y etiquetas para el simulador "${name}".${featuresCtx}
-Devuelve SOLO este JSON: {"generatorPrompt":"Simula [escenario específico del nicho] basado en: [input del usuario]. Explica paso a paso qué pasaría en ese escenario real. Responde en español con ejemplos concretos.","inputLabel":"¿Qué quieres simular?","inputPlaceholder":"Describe tu situación o escenario..."}`,
-      roadmap: `Genera 8-12 pasos que el USUARIO FINAL debe recorrer en su camino con "${name}" (nicho: "${niche}").${featuresCtx}
-Cada paso describe una acción o logro del usuario, en orden lógico de progresión. NO son pasos de desarrollo del producto.
+${exForType.planner ? `Ejemplo correcto para este nicho: "${exForType.planner}"` : ''}
+Ejemplo INCORRECTO: "Desarrollar herramienta de...", "Crear sección de..."
+Cada tarea debe usar terminología del nicho y ser específica (no "mejorar mi salud" sino "medir mi porcentaje de grasa corporal").
+Devuelve SOLO este JSON: {"initialTasks":["tarea concreta con vocabulario del nicho 1","tarea 2",...]}`,
+
+      tracker: `Define el hábito y duración para "${name}".
+${nicheBlock}${featuresCtx}
+${exForType.tracker ? `Ejemplo de hábito para este nicho: "${exForType.tracker}"` : ''}
+El hábito debe ser específico del nicho, medible y realista para hacer diariamente.
+Devuelve SOLO este JSON: {"trackerDays":30,"trackerHabit":"hábito diario específico con vocabulario del nicho"}`,
+
+      calculadora: `Diseña una calculadora práctica y útil para "${name}".
+${nicheBlock}${featuresCtx}
+${exForType.calculator ? `Ejemplo de cálculo para este nicho: "${exForType.calculator}"` : ''}
+Los campos deben usar etiquetas con TERMINOLOGÍA REAL del nicho (no "valor A", sino "${ctx ? ctx.metrics[0] || 'métrica del nicho' : 'métrica del nicho'}").
+La fórmula debe calcular algo que realmente le importe al público de este nicho.
+Define 2-3 campos con etiquetas claras y una fórmula JS simple usando las variables a, b, c.
+Devuelve SOLO este JSON: {"calcFields":[{"id":"a","label":"Etiqueta con terminología del nicho","placeholder":"valor ejemplo realista"}],"calcFormula":"a * b","calcResultLabel":"Nombre del resultado usando vocabulario del nicho"}`,
+
+      generador: `Define el prompt y etiquetas para el generador "${name}".
+${nicheBlock}${featuresCtx}
+El generador debe producir contenido que un profesional del nicho valoraría — no texto genérico.
+Devuelve SOLO este JSON: {"generatorPrompt":"Genera [tipo de contenido específico del nicho] personalizado para: [input del usuario]. Usa terminología de ${niche}. Incluye: [elementos específicos del nicho]. Responde en español con formato claro y accionable.","inputLabel":"Etiqueta con contexto del nicho","inputPlaceholder":"Ejemplo realista del nicho..."}`,
+
+      simulador: `Define el prompt y etiquetas para el simulador "${name}".
+${nicheBlock}${featuresCtx}
+El simulador debe recrear escenarios REALES que el público de ${niche} enfrenta.
+Devuelve SOLO este JSON: {"generatorPrompt":"Simula un escenario de ${niche} basado en: [input del usuario]. Usa datos y terminología real del nicho. Explica paso a paso qué pasaría, con números y ejemplos concretos. Responde en español.","inputLabel":"Describe tu situación en ${niche}","inputPlaceholder":"Ejemplo realista de escenario del nicho..."}`,
+
+      roadmap: `Genera 8-12 pasos que el USUARIO FINAL debe recorrer en su camino con "${name}".
+${nicheBlock}${featuresCtx}
+IMPORTANTE: Cada paso debe usar vocabulario técnico del nicho y representar un LOGRO REAL del usuario — no pasos de desarrollo.
+Los pasos deben seguir una progresión lógica: Fundamentos → Práctica → Dominio → Maestría.
 Devuelve SOLO este JSON:
-{"roadmapSteps":["Paso 1: acción concreta del usuario","Paso 2: siguiente logro del usuario","Paso 3: ..."]}`,
-      diagnostico: `Genera 6-8 preguntas de diagnóstico para evaluar al usuario sobre "${name}" (nicho: "${niche}").${featuresCtx}
-Cada pregunta debe tener 4 opciones de respuesta específicas del nicho. Devuelve SOLO este JSON:
-{"diagQuestions":[{"q":"¿Pregunta concreta y relevante?","opts":["Opción A específica","Opción B específica","Opción C específica","Opción D específica"]}]}`,
-      meditacion: `Crea una meditación guiada completa para "${name}" (nicho: "${niche}").${featuresCtx}
-El script debe ser cálido, fluido y listo para ser leído en voz alta con TTS. Usa pausas marcadas con "..." para respiraciones.
+{"roadmapSteps":["Paso 1: acción concreta con vocabulario del nicho","Paso 2: siguiente logro medible","Paso 3: ..."]}`,
+
+      diagnostico: `Genera 6-8 preguntas de diagnóstico para evaluar al usuario sobre "${name}".
+${nicheBlock}${featuresCtx}
+Las preguntas deben evaluar DIMENSIONES REALES del nicho (${ctx ? ctx.metrics.slice(0, 3).join(', ') : 'aspectos clave del tema'}).
+Las opciones deben representar niveles de experiencia/habilidad reconocibles en el nicho.
 Devuelve SOLO este JSON:
-{"meditationDuration":10,"meditationScript":"Texto completo de la meditación guiada (400-600 palabras). Comienza con respiración. Usa lenguaje en segunda persona, cálido y presente.","meditationTips":["Tip práctico 1 específico del nicho","Tip 2","Tip 3"],"bellFreq":432}`,
-      afirmaciones: `Genera 12-18 afirmaciones poderosas y específicas para "${name}" en el nicho "${niche}".${featuresCtx}
-Deben ser en primera persona, presente, positivas y accionables. Evita clichés genéricos.
+{"diagQuestions":[{"q":"¿Pregunta que evalúe un aspecto real del nicho?","opts":["Nivel 1: principiante reconocible","Nivel 2: intermedio","Nivel 3: avanzado","Nivel 4: experto"]}]}`,
+
+      meditacion: `Crea una meditación guiada completa para "${name}".
+${nicheBlock}${featuresCtx}
+IMPORTANTE: La meditación debe estar CONTEXTUALIZADA al nicho. No es una meditación genérica — incorpora visualizaciones y metáforas específicas del tema.
+${ctx?.id === 'fitness' ? 'Enfócate en visualización del cuerpo, conexión mente-músculo y recuperación.' : ''}${ctx?.id === 'finance' ? 'Enfócate en abundancia, claridad financiera y soltar el estrés del dinero.' : ''}${ctx?.id === 'business' ? 'Enfócate en visualización de metas empresariales, claridad estratégica y liderazgo.' : ''}
+El script debe ser cálido, fluido y listo para TTS. Usa "..." para pausas de respiración.
 Devuelve SOLO este JSON:
-{"affirmations":["Afirmación 1 específica del nicho","Afirmación 2","..."],"affirmationInstruction":"Instrucción breve de cómo usar estas afirmaciones en el contexto del nicho"}`,
+{"meditationDuration":10,"meditationScript":"Texto completo (400-600 palabras). Comienza con respiración. Incluye visualizaciones y metáforas específicas del nicho. Segunda persona, tono cálido.","meditationTips":["Tip práctico 1 usando vocabulario del nicho","Tip 2","Tip 3"],"bellFreq":432}`,
+
+      afirmaciones: `Genera 12-18 afirmaciones poderosas y específicas para "${name}" en el nicho "${niche}".
+${nicheBlock}${featuresCtx}
+REGLAS:
+- Primera persona, presente, positivas
+- CADA afirmación debe contener vocabulario técnico del nicho (${ctx ? ctx.vocabulary.slice(0, 4).join(', ') : 'términos del tema'})
+- NO clichés genéricos como "Soy capaz de todo" o "Merezco lo mejor"
+- SÍ afirmaciones específicas como: ${ctx?.id === 'fitness' ? '"Mi cuerpo responde a cada repetición con fuerza renovada"' : ctx?.id === 'finance' ? '"Cada peso que ahorro trabaja para mí mientras duermo"' : ctx?.id === 'spirituality' ? '"Mi tiempo devocional transforma mi perspectiva cada mañana"' : '"Domino [habilidad del nicho] con cada día de práctica"'}
+Devuelve SOLO este JSON:
+{"affirmations":["Afirmación con vocabulario del nicho 1","Afirmación 2","..."],"affirmationInstruction":"Instrucción contextualizada al nicho sobre cómo usar estas afirmaciones"}`,
+
+      faq: `Genera 8-12 preguntas frecuentes con respuestas para "${name}".
+${nicheBlock}${featuresCtx}
+Las preguntas deben ser dudas REALES que el público de ${niche} tiene — no genéricas.
+Las respuestas deben usar vocabulario técnico del nicho y ser útiles (3-4 oraciones cada una).
+Devuelve SOLO este JSON:
+{"faqItems":[{"q":"¿Pregunta real que se haría alguien del nicho?","a":"Respuesta con vocabulario técnico del nicho, útil y accionable"}]}`,
+
+      flashcards: `Genera 12-15 flashcards educativas para "${name}".
+${nicheBlock}${featuresCtx}
+El frente debe ser un concepto/término REAL del nicho y el reverso su explicación práctica.
+Devuelve SOLO este JSON:
+{"cards":[{"front":"Concepto/término técnico del nicho","back":"Explicación práctica y clara con vocabulario del nicho"}]}`,
+
+      glosario: `Genera 10-15 términos clave con definiciones para "${name}".
+${nicheBlock}${featuresCtx}
+Los términos deben ser vocabulario REAL que alguien en ${niche} necesita dominar (${ctx ? ctx.vocabulary.slice(0, 5).join(', ') + ', etc.' : 'términos técnicos del nicho'}).
+Devuelve SOLO este JSON:
+{"glossaryTerms":[{"term":"Término técnico del nicho","def":"Definición clara y práctica con ejemplo de uso"}]}`,
+
+      comparador: `Genera una tabla comparativa útil para "${name}".
+${nicheBlock}${featuresCtx}
+Compara 2-3 opciones/enfoques/métodos REALES que el público de ${niche} debate frecuentemente.
+Devuelve SOLO este JSON:
+{"comparatorTitle":"¿Qué se compara?","comparatorItems":[{"name":"Opción/método A del nicho","pros":["Ventaja real 1","Ventaja 2"],"cons":["Desventaja real 1","Desventaja 2"]},{"name":"Opción/método B del nicho","pros":["Ventaja 1","Ventaja 2"],"cons":["Desventaja 1","Desventaja 2"]}]}`,
+
+      biblioteca: `Genera 6-10 recursos recomendados para "${name}".
+${nicheBlock}${featuresCtx}
+Los recursos deben ser útiles para alguien en ${niche}: guías, herramientas, lecturas, videos.
+Devuelve SOLO este JSON:
+{"resources":[{"title":"Nombre del recurso relevante al nicho","url":"#","description":"Por qué es útil para alguien en ${niche} (1 oración)"}]}`,
+
+      devocional: `Genera un devocional/reflexión guiada para "${name}".
+${nicheBlock}${featuresCtx}
+El texto debe ser profundo, usar vocabulario del nicho, y guiar al usuario a reflexionar sobre su proceso.
+Devuelve SOLO este JSON:
+{"devotionalText":"Texto de reflexión guiada (200-300 palabras) con vocabulario del nicho, tono cálido, invitando a la introspección"}`,
+
+      diario: `Genera 8-12 prompts de journaling para "${name}".
+${nicheBlock}${featuresCtx}
+Cada prompt debe invitar a reflexionar sobre un aspecto REAL del nicho — no preguntas genéricas.
+Devuelve SOLO este JSON:
+{"journalPrompts":["¿Pregunta de reflexión sobre aspecto real del nicho?","Prompt 2","..."]}`,
     };
     const instruction = typeInstructions[type] || typeInstructions.generador;
 
@@ -442,7 +681,7 @@ ${instruction}${creatorNote}
 
 IMPORTANTE: Devuelve SOLO el JSON válido, sin markdown, sin texto antes ni después.`;
 
-    const text = await this._call([{ role: 'user', content: prompt }], 1200);
+    const text = await this._call([{ role: 'user', content: prompt }], 2000);
     return this._parseJSON(text);
   },
 };
@@ -600,6 +839,37 @@ function getPlanBadge(plan) {
     business: { label: 'Business', color: 'text-secondary border-secondary' },
   };
   return badges[plan] || badges.free;
+}
+
+// ── Plan capabilities ─────────────────────────────────────
+const PlanLimits = {
+  free:    { quizzes: 1,   responses: 100,    leads: false, ai: false, miniApps: 2,       customDomain: false, metaPixel: false, integrations: false, whiteLabel: false },
+  starter: { quizzes: 3,   responses: 1000,   leads: true,  ai: true,  miniApps: 5,       customDomain: false, metaPixel: false, integrations: false, whiteLabel: false },
+  pro:     { quizzes: 999, responses: 10000,  leads: true,  ai: true,  miniApps: 999,     customDomain: true,  metaPixel: true,  integrations: true,  whiteLabel: false },
+  growth:  { quizzes: 999, responses: 25000,  leads: true,  ai: true,  miniApps: 999,     customDomain: true,  metaPixel: true,  integrations: true,  whiteLabel: false },
+  elite:   { quizzes: 999, responses: 100000, leads: true,  ai: true,  miniApps: 999,     customDomain: true,  metaPixel: true,  integrations: true,  whiteLabel: true  },
+};
+
+function getPlanCaps(plan) {
+  return PlanLimits[plan] || PlanLimits.free;
+}
+
+function canUsePlanFeature(feature) {
+  const plan = Settings.get().plan || 'free';
+  const caps = getPlanCaps(plan);
+  return !!caps[feature];
+}
+
+function getPlanUpgradeMsg(feature) {
+  const msgs = {
+    leads: 'La captura de leads requiere plan Starter o superior.',
+    ai: 'La generación con IA requiere plan Starter o superior.',
+    customDomain: 'El dominio personalizado requiere plan Pro o superior.',
+    metaPixel: 'Meta Pixel requiere plan Pro o superior.',
+    integrations: 'Las integraciones requieren plan Pro o superior.',
+    whiteLabel: 'White-label requiere plan Elite.',
+  };
+  return msgs[feature] || 'Esta función requiere un plan superior.';
 }
 
 // ── Hotmart checkout URLs ──────────────────────────────────

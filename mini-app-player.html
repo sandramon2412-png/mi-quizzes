@@ -4,6 +4,13 @@
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
 <title>Mini-App | Luminous Studio</title>
+<meta name="description" content="Aplicación interactiva creada con Luminous Studio"/>
+<meta property="og:type" content="website"/>
+<meta property="og:title" content="Mini-App | Luminous Studio"/>
+<meta property="og:description" content="Aplicación interactiva creada con Luminous Studio — quizzes, trackers, chatbots y más."/>
+<meta property="og:site_name" content="Luminous Studio"/>
+<meta name="twitter:card" content="summary"/>
+<meta name="theme-color" content="#2E5BFF"/>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <script src="https://cdn.tailwindcss.com"></script>
 <script src="./supabase-config.js"></script>
@@ -284,10 +291,20 @@ document.addEventListener('DOMContentLoaded', async () => {
   }
 
   // Access screen
-  document.getElementById('access-icon').textContent = app.icon || '⚡';
+  const accessIconEl = document.getElementById('access-icon');
+  if (app.icon) {
+    accessIconEl.textContent = app.icon;
+  } else {
+    const msIcon = TYPE_MS_ICONS[(app.types?.[0] || app.type)] || 'deployed_code';
+    accessIconEl.innerHTML = `<span class="material-symbols-outlined" style="font-size:48px;color:#fff">${msIcon}</span>`;
+  }
   document.getElementById('access-title').textContent = app.name;
   document.getElementById('access-desc').textContent = app.description || (app.niche ? `${app.niche}` : 'Aplicación interactiva');
   document.title = app.name + ' | Luminous Studio';
+  // Update OG tags dynamically for better sharing
+  document.querySelector('meta[property="og:title"]')?.setAttribute('content', app.name + ' | Luminous Studio');
+  document.querySelector('meta[property="og:description"]')?.setAttribute('content', app.description || 'Aplicación interactiva creada con Luminous Studio');
+  document.querySelector('meta[name="description"]')?.setAttribute('content', app.description || 'Aplicación interactiva creada con Luminous Studio');
   if (app.accessCodes?.length) {
     document.getElementById('access-code-section').style.display = 'block';
   } else {
@@ -307,16 +324,22 @@ function validateAccess() {
 
 function getGreeting() {
   const h = new Date().getHours();
-  if (h < 12) return '☀️ Buenos días';
-  if (h < 19) return '🌿 Buenas tardes';
-  return '🌙 Buenas noches';
+  if (h < 12) return 'Buenos días';
+  if (h < 19) return 'Buenas tardes';
+  return 'Buenas noches';
 }
 
 function enterApp() {
   if (!currentApp) return;
   document.getElementById('screen-access').style.display = 'none';
   document.getElementById('screen-app').style.display = 'flex';
-  document.getElementById('app-header-icon').textContent = currentApp.icon || '⚡';
+  const headerIconEl = document.getElementById('app-header-icon');
+  if (currentApp.icon) {
+    headerIconEl.textContent = currentApp.icon;
+  } else {
+    const msIcon = TYPE_MS_ICONS[(currentApp.types?.[0] || currentApp.type)] || 'deployed_code';
+    headerIconEl.innerHTML = `<span class="material-symbols-outlined" style="font-size:20px;color:#fff">${msIcon}</span>`;
+  }
   document.getElementById('app-header-name').textContent = currentApp.name;
   document.getElementById('app-header-greeting').textContent = getGreeting();
   try { renderApp(); } catch(e) {
@@ -345,12 +368,17 @@ function typeLabel(t) {
     afirmaciones:'Afirmaciones',meditacion:'Meditación','quiz-embed':'Quiz',simulador:'Simulador'}[t] || t;
 }
 
+const TYPE_MS_ICONS = {
+  devocional:'favorite',checklist:'done_all',tracker:'show_chart',reto:'local_fire_department',diario:'edit_note',
+  calculadora:'calculate',planificador:'calendar_month',generador:'auto_awesome',chatbot:'smart_toy',
+  comparador:'compare_arrows',diagnostico:'stethoscope',roadmap:'map',faq:'chat',
+  glosario:'menu_book',flashcards:'style',biblioteca:'local_library',afirmaciones:'brightness_7',
+  meditacion:'self_improvement','quiz-embed':'quiz',simulador:'science'
+};
 function typeIcon(t) {
-  return {devocional:'🕊️',checklist:'✅',tracker:'📊',reto:'🔥',diario:'📓',
-    calculadora:'🧮',planificador:'📅',generador:'✨',chatbot:'🤖',
-    comparador:'⚖️',diagnostico:'🩺',roadmap:'🗺️',faq:'💬',
-    glosario:'📖',flashcards:'🃏',biblioteca:'📚',afirmaciones:'🌟',
-    meditacion:'🧘','quiz-embed':'🎯',simulador:'🔮'}[t] || '⚡';
+  const icon = TYPE_MS_ICONS[t];
+  if (icon) return `<span class="material-symbols-outlined" style="font-size:16px">${icon}</span>`;
+  return `<span class="material-symbols-outlined" style="font-size:16px">deployed_code</span>`;
 }
 
 function buildTabs(types) {
