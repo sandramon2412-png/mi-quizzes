@@ -699,6 +699,18 @@ function toggleFbGuide() {
           placeholder="¿Qué hace esta mini-app? ¿Para qué le sirve al usuario?"></textarea>
       </div>
 
+      <!-- Contenido propio del creador (dinámico según tipos seleccionados) -->
+      <div id="creator-content-section" class="hidden">
+        <div class="flex items-center justify-between mb-2">
+          <label class="text-xs text-on-surface-variant font-semibold">
+            Tu contenido <span class="font-normal opacity-60">(opcional · la IA lo usa como base)</span>
+          </label>
+          <button type="button" onclick="toggleCreatorContent()" id="creator-content-toggle"
+            class="text-[10px] text-primary font-bold hover:opacity-70 transition-opacity">Ocultar ▲</button>
+        </div>
+        <div id="creator-content-fields" class="space-y-3"></div>
+      </div>
+
       <!-- Códigos de acceso -->
       <div>
         <label class="text-xs text-on-surface-variant font-semibold block mb-1.5">
@@ -967,14 +979,21 @@ async function renderQuizzes() {
 }
 
 function buildAppCard(app) {
-  const typeLabels = {
-    devocional: 'Devocional', checklist: 'Checklist', tracker: 'Tracker',
-    calculadora: 'Calculadora', planificador: 'Planificador',
-    'quiz-embed': 'Quiz', generador: 'Generador IA',
+  const ALL_TYPE_LABELS = {
+    devocional:'Devocional', checklist:'Checklist', tracker:'Tracker', reto:'Reto',
+    diario:'Diario', calculadora:'Calculadora', planificador:'Planificador',
+    comparador:'Comparador', diagnostico:'Diagnóstico', roadmap:'Roadmap',
+    faq:'FAQ', glosario:'Glosario', flashcards:'Flashcards', biblioteca:'Biblioteca',
+    chatbot:'Asistente IA', generador:'Generador', afirmaciones:'Afirmaciones',
+    meditacion:'Meditación', simulador:'Simulador', 'quiz-embed':'Quiz',
   };
-  const typeLabel = typeLabels[app.type] || app.type;
+  const types = (app.types?.length ? app.types : [app.type]).filter(Boolean);
+  const typeLabel = types.length > 1
+    ? `${types.length} secciones`
+    : (ALL_TYPE_LABELS[types[0]] || types[0] || '—');
   const icon = app.icon || '⚡';
   const appUrl = `./mini-app-player.html?id=${app.id}`;
+  const hasEditableContent = types.some(t => SUPPORTED_CONTENT_TYPES?.has(t));
 
   return `
     <div class="rounded-2xl p-5 flex flex-col gap-3 bg-surface-container border border-outline-variant/10 hover:border-primary/20 transition-all">
@@ -988,6 +1007,9 @@ function buildAppCard(app) {
       </div>
       <div class="flex gap-2 mt-auto">
         <a href="${appUrl}" target="_blank" class="flex-1 py-2 bg-primary text-white text-xs font-bold rounded-xl text-center hover:opacity-90 transition-opacity">Abrir App</a>
+        ${hasEditableContent ? `<button id="edit-btn-${app.id}" onclick="openEditContent('${app.id}')" class="w-9 h-9 rounded-xl bg-surface-container-high flex items-center justify-center hover:bg-primary/10 transition-colors" title="Editar contenido">
+          <span class="material-symbols-outlined text-sm text-on-surface-variant">edit</span>
+        </button>` : ''}
         <button onclick="copyToClipboard(window.location.origin.replace(/\\/[^\\/]*$/, '')+'/mini-app-player.html?id=${app.id}')" class="w-9 h-9 rounded-xl bg-surface-container-high flex items-center justify-center hover:bg-primary/10 transition-colors" title="Copiar enlace">
           <span class="material-symbols-outlined text-sm text-on-surface-variant">share</span>
         </button>
@@ -1298,6 +1320,9 @@ async function handleCreateMiniApp(e) {
 
   // Use first type as primary, store all in `types`
   const appData = { name, type: types[0], types, niche, product, description, icon, accessCodes };
+
+  // Collect any content the creator typed in (optional — overrides AI where provided)
+  const creatorContent = getCreatorContent();
   const submitBtn = document.getElementById('ma-submit-btn');
   const progressEl = document.getElementById('ma-progress');
   const progressMsg = document.getElementById('ma-progress-msg');
@@ -1347,7 +1372,13 @@ async function handleCreateMiniApp(e) {
       setProgress(pct, `Generando ${t} (${i+1}/${typesToGenerate.length})...`);
       try {
         const idea = { type: t, name, description: description || '', features: [] };
-        const content = await AI.generateMiniAppContent(idea, product || name, niche);
+        // Build per-type creator context so AI respects it as base content
+        const cfg = CONTENT_CFG[t];
+        const ctxKey = cfg?.key;
+        const creatorCtx = (ctxKey && creatorContent[ctxKey] !== undefined)
+          ? { [ctxKey]: creatorContent[ctxKey] }
+          : null;
+        const content = await AI.generateMiniAppContent(idea, product || name, niche, creatorCtx);
         if (content) allContent = { ...allContent, ...content };
       } catch(err) {
         console.warn(`Content gen failed for ${t}:`, err.message);
@@ -1355,7 +1386,8 @@ async function handleCreateMiniApp(e) {
     }
 
     setProgress(90, 'Guardando...');
-    const fullApp = { ...appData, ...theme, ...allContent };
+    // creatorContent spreads last so it takes precedence over AI-generated fields
+    const fullApp = { ...appData, ...theme, ...allContent, ...creatorContent };
 
     // Save to Supabase
     let savedId = null;
@@ -1375,7 +1407,8 @@ async function handleCreateMiniApp(e) {
     setTimeout(() => {
       closeModal();
       renderMiniApps();
-      showToast(`✦ "${name}" creada con contenido IA`);
+      const usedCreator = Object.keys(creatorContent).length > 0;
+      showToast(`✦ "${name}" creada${usedCreator ? ' con tu contenido' : ' con contenido IA'}`);
     }, 400);
 
   } catch (err) {
@@ -1600,6 +1633,8 @@ document.addEventListener('DOMContentLoaded', () => {
           recChip.style.color = on ? 'var(--color-primary)' : 'inherit';
           recChip.style.opacity = on ? '1' : '.8';
         }
+        // Rebuild creator content fields when types change
+        updateCreatorContentForm();
       }, 0);
     });
   });
@@ -1667,6 +1702,175 @@ function showUpgradeModal() {
 function closeUpgradeModal() {
   document.getElementById('modal-upgrade').classList.add('hidden');
 }
+
+// ══════════════════════════════════════════════════════════
+// CREATOR CONTENT — campos de contenido por tipo
+// ══════════════════════════════════════════════════════════
+
+const CONTENT_CFG = {
+  checklist:   { label:'Ítems del checklist',       hint:'Un ítem por línea  →  "Tomar agua al despertar"',    rows:5, parse:'lines',      key:'initialItems' },
+  planificador:{ label:'Tareas del planificador',    hint:'Una tarea por línea, en orden de ejecución',         rows:5, parse:'lines',      key:'initialTasks' },
+  roadmap:     { label:'Pasos del roadmap',          hint:'Un paso por línea  →  "Semana 1: Establecer rutina"',rows:5, parse:'lines',      key:'roadmapSteps' },
+  faq:         { label:'Preguntas frecuentes',       hint:'Pregunta | Respuesta  (una por línea)',              rows:6, parse:'pipes',      key:'faqItems',    pipeKeys:['q','a'] },
+  flashcards:  { label:'Flashcards',                hint:'Frente | Reverso  (una por línea)',                  rows:6, parse:'pipes',      key:'cards',       pipeKeys:['front','back'] },
+  glosario:    { label:'Términos del glosario',      hint:'Término | Definición  (uno por línea)',              rows:6, parse:'pipes',      key:'glossaryTerms',pipeKeys:['term','def'] },
+  afirmaciones:{ label:'Afirmaciones',              hint:'Una afirmación por línea  →  "Soy capaz de..."',     rows:5, parse:'lines',      key:'affirmations' },
+  diario:      { label:'Preguntas de reflexión',    hint:'Una pregunta por línea  →  "¿Cómo me siento hoy?"', rows:4, parse:'lines',      key:'journalPrompts' },
+  devocional:  { label:'Texto devocional',          hint:'Cita, reflexión o versículo principal',              rows:4, parse:'single',     key:'devotionalText' },
+  meditacion:  { label:'Guión de meditación',       hint:'Texto completo en voz alta. Usa "..." para pausas.', rows:8, parse:'single',     key:'meditationScript' },
+  tracker:     { label:'Nombre del hábito',         hint:'Ej: "Meditar 10 minutos cada mañana"',               rows:1, parse:'single',     key:'trackerHabit', input:true },
+  chatbot:     { label:'Mensaje de bienvenida del asistente', hint:'Primer mensaje que enviará el bot',         rows:2, parse:'single',     key:'chatbotGreeting' },
+  biblioteca:  { label:'Recursos',                  hint:'Título | URL  (uno por línea)',                      rows:5, parse:'pipes',      key:'resources',   pipeKeys:['title','url'] },
+};
+
+const SUPPORTED_CONTENT_TYPES = new Set(Object.keys(CONTENT_CFG));
+
+function buildContentFieldHTML(type, value='') {
+  const cfg = CONTENT_CFG[type];
+  if (!cfg) return '';
+  const inputEl = cfg.input
+    ? `<input type="text" id="cc-${type}" class="w-full bg-surface-container border border-outline-variant/30 rounded-xl px-4 py-2.5 text-sm focus:ring-1 focus:ring-primary outline-none transition placeholder:text-on-surface-variant/50" placeholder="${cfg.hint}" value="${esc(value)}"/>`
+    : `<textarea id="cc-${type}" rows="${cfg.rows}" class="w-full bg-surface-container border border-outline-variant/30 rounded-xl px-4 py-2.5 text-sm focus:ring-1 focus:ring-primary outline-none transition resize-none placeholder:text-on-surface-variant/50" placeholder="${cfg.hint}">${esc(value)}</textarea>`;
+  return `<div>
+    <label class="text-[11px] font-bold text-on-surface-variant uppercase tracking-wider block mb-1">${cfg.label}</label>
+    ${inputEl}
+  </div>`;
+}
+
+function updateCreatorContentForm() {
+  const section = document.getElementById('creator-content-section');
+  const fieldsEl = document.getElementById('creator-content-fields');
+  const checked = [...document.querySelectorAll('input[name="ma-type"]:checked')].map(cb => cb.value);
+  const supported = checked.filter(t => SUPPORTED_CONTENT_TYPES.has(t));
+
+  if (!supported.length) { section.classList.add('hidden'); return; }
+
+  fieldsEl.innerHTML = supported.map(type => buildContentFieldHTML(type)).join('');
+  section.classList.remove('hidden');
+}
+
+function toggleCreatorContent() {
+  const fields = document.getElementById('creator-content-fields');
+  const btn = document.getElementById('creator-content-toggle');
+  const hidden = fields.style.display === 'none';
+  fields.style.display = hidden ? '' : 'none';
+  btn.textContent = hidden ? 'Ocultar ▲' : 'Mostrar ▼';
+}
+
+function parseContentValue(type, rawValue) {
+  const cfg = CONTENT_CFG[type];
+  if (!cfg || !rawValue?.trim()) return null;
+  const lines = rawValue.split('\n').map(l => l.trim()).filter(Boolean);
+  if (!lines.length) return null;
+
+  if (cfg.parse === 'single') return rawValue.trim();
+  if (cfg.parse === 'lines') return lines;
+  if (cfg.parse === 'pipes') {
+    const [k1, k2] = cfg.pipeKeys;
+    return lines.map(l => {
+      const [a, ...rest] = l.split('|');
+      return { [k1]: a.trim(), [k2]: rest.join('|').trim() };
+    }).filter(o => o[k1]);
+  }
+  return null;
+}
+
+function getCreatorContent() {
+  const result = {};
+  document.querySelectorAll('[id^="cc-"]').forEach(el => {
+    const type = el.id.replace('cc-', '');
+    const cfg = CONTENT_CFG[type];
+    if (!cfg) return;
+    const parsed = parseContentValue(type, el.value);
+    if (parsed !== null) result[cfg.key] = parsed;
+  });
+  return result;
+}
+
+// ── Edit existing app content ─────────────────────────────
+let _editingAppId = null;
+
+function openEditContent(appId) {
+  const app = MiniApps.get(appId);
+  if (!app) { alert('App no encontrada. Recarga la página.'); return; }
+  _editingAppId = appId;
+
+  const types = (app.types?.length ? app.types : [app.type]).filter(Boolean);
+  const supported = types.filter(t => SUPPORTED_CONTENT_TYPES.has(t));
+
+  const fieldsHtml = supported.map(type => {
+    const cfg = CONTENT_CFG[type];
+    // Serialize existing value back to text
+    let current = app[cfg.key] ?? app.content?.[cfg.key] ?? '';
+    if (Array.isArray(current)) {
+      if (cfg.parse === 'pipes') {
+        const [k1, k2] = cfg.pipeKeys;
+        current = current.map(o => `${o[k1] ?? ''} | ${o[k2] ?? ''}`).join('\n');
+      } else {
+        current = current.join('\n');
+      }
+    }
+    return buildContentFieldHTML(type, current);
+  }).join('');
+
+  document.getElementById('edit-content-title').textContent = app.name;
+  document.getElementById('edit-content-body').innerHTML = fieldsHtml || '<p style="color:#888;font-size:13px;padding:12px 0">Este tipo de app no tiene contenido editable.</p>';
+
+  // Rename IDs to edit-prefixed to avoid conflict with create form
+  document.querySelectorAll('#edit-content-body [id^="cc-"]').forEach(el => {
+    el.id = 'ec-' + el.id.replace('cc-', '');
+  });
+
+  document.getElementById('modal-edit-content').classList.remove('hidden');
+}
+
+async function saveEditContent() {
+  const app = MiniApps.get(_editingAppId);
+  if (!app) return;
+
+  const types = (app.types?.length ? app.types : [app.type]).filter(Boolean);
+  const supported = types.filter(t => SUPPORTED_CONTENT_TYPES.has(t));
+
+  const updates = {};
+  supported.forEach(type => {
+    const cfg = CONTENT_CFG[type];
+    const el = document.getElementById(`ec-${type}`);
+    if (!el) return;
+    const parsed = parseContentValue(type, el.value);
+    if (parsed !== null) updates[cfg.key] = parsed;
+  });
+
+  const updated = { ...app, ...updates };
+  MiniApps.save(updated);
+  try { await DB.miniApps.save(updated); } catch(e) {}
+
+  document.getElementById('modal-edit-content').classList.add('hidden');
+  const btn = document.getElementById(`edit-btn-${_editingAppId}`);
+  if (btn) btn.textContent = '✓ Guardado';
+  setTimeout(() => { if (btn) btn.textContent = '✏️ Editar'; }, 2000);
+}
+
 </script>
+
+<!-- Edit content modal -->
+<div id="modal-edit-content" class="fixed inset-0 z-[150] flex items-center justify-center bg-black/70 backdrop-blur-sm hidden" onclick="if(event.target===this)this.classList.add('hidden')">
+  <div class="bg-[#131313] border border-white/10 rounded-2xl w-full max-w-lg mx-4 shadow-2xl flex flex-col" style="max-height:90dvh">
+    <div class="flex items-center justify-between p-5 border-b border-white/10 flex-shrink-0">
+      <div>
+        <h3 class="text-base font-extrabold">Editar contenido</h3>
+        <p id="edit-content-title" class="text-xs text-on-surface-variant mt-0.5"></p>
+      </div>
+      <button onclick="document.getElementById('modal-edit-content').classList.add('hidden')" class="w-8 h-8 rounded-lg bg-surface-container flex items-center justify-center text-on-surface-variant hover:text-on-surface transition-colors">
+        <span class="material-symbols-outlined text-sm">close</span>
+      </button>
+    </div>
+    <div id="edit-content-body" class="overflow-y-auto p-5 space-y-4 flex-1"></div>
+    <div class="p-5 border-t border-white/10 flex gap-3 flex-shrink-0">
+      <button onclick="document.getElementById('modal-edit-content').classList.add('hidden')" class="flex-1 py-2.5 bg-surface-container text-on-surface text-sm font-bold rounded-xl border border-outline-variant/20 hover:opacity-80 transition-opacity">Cancelar</button>
+      <button onclick="saveEditContent()" class="flex-1 py-2.5 bg-primary text-white text-sm font-extrabold rounded-xl hover:opacity-90 transition-opacity">Guardar cambios</button>
+    </div>
+  </div>
+</div>
+
 </body>
 </html>
