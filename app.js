@@ -394,10 +394,16 @@ Devuelve SOLO este JSON:
       chatbot: `Diseña un asistente IA especializado en "${name}" para el nicho "${niche}".${featuresCtx}
 Devuelve SOLO este JSON sin texto adicional:
 {"chatbotName":"Nombre corto del asistente","chatbotGreeting":"Bienvenida cálida y específica del nicho (1-2 oraciones)","chatbotSystemPrompt":"Eres [nombre], experto en [tema específico del nicho]. Ayudas con: [lista de funciones]. Responde en español, tono [amigable/profesional], máximo 4 oraciones por respuesta. Si te preguntan algo ajeno al tema, redirige amablemente.","chatbotSuggestions":["Pregunta sugerida 1 específica del nicho","Pregunta sugerida 2","Pregunta sugerida 3"]}`,
-      checklist: `Genera 12-15 ítems de checklist MUY ESPECÍFICOS y accionables para "${name}".${featuresCtx}
-Devuelve SOLO este JSON: {"initialItems":["ítem concreto 1","ítem concreto 2",...]}`,
-      planificador: `Genera 10-12 tareas de planificador ESPECÍFICAS, ordenadas y con contexto para "${name}".${featuresCtx}
-Devuelve SOLO este JSON: {"initialTasks":["tarea concreta 1","tarea concreta 2",...]}`,
+      checklist: `Genera 12-15 ítems de checklist para que el USUARIO FINAL los marque mientras avanza en "${name}" (nicho: "${niche}").${featuresCtx}
+IMPORTANTE: Los ítems son tareas que el usuario hace en su vida real, NO funciones del producto ni ideas para el creador.
+Ejemplo correcto para fitness: "✓ Completé mis 30 minutos de cardio", "✓ Bebí 2 litros de agua hoy"
+Ejemplo INCORRECTO: "Desarrollar plan de ejercicios", "Crear sección de nutrición"
+Devuelve SOLO este JSON: {"initialItems":["ítem accionable para el usuario 1","ítem accionable para el usuario 2",...]}`,
+      planificador: `Genera 10-12 tareas concretas que el USUARIO FINAL debe completar para avanzar en "${name}" (nicho: "${niche}").${featuresCtx}
+IMPORTANTE: Son tareas que el usuario realiza en su vida real, en orden lógico de ejecución.
+Ejemplo correcto para finanzas: "Anotar todos mis gastos del mes", "Calcular mis ingresos netos"
+Ejemplo INCORRECTO: "Desarrollar herramienta de presupuesto", "Crear sección de ahorro"
+Devuelve SOLO este JSON: {"initialTasks":["tarea concreta del usuario 1","tarea concreta del usuario 2",...]}`,
       tracker: `Define el hábito y duración para "${name}".${featuresCtx}
 Devuelve SOLO este JSON: {"trackerDays":30,"trackerHabit":"nombre específico del hábito diario en el nicho"}`,
       calculadora: `Diseña una calculadora práctica y útil para "${name}". Define 2-3 campos con etiquetas claras del nicho y una fórmula JS simple usando las variables a, b, c.${featuresCtx}
@@ -406,9 +412,10 @@ Devuelve SOLO este JSON: {"calcFields":[{"id":"a","label":"Nombre del campo en e
 Devuelve SOLO este JSON: {"generatorPrompt":"Genera [tipo de contenido específico] para [contexto del nicho] con las siguientes características: [input del usuario]. Responde en español con formato claro.","inputLabel":"Etiqueta descriptiva del input en el nicho","inputPlaceholder":"Ejemplo de input específico del nicho..."}`,
       simulador: `Define el prompt y etiquetas para el simulador "${name}".${featuresCtx}
 Devuelve SOLO este JSON: {"generatorPrompt":"Simula [escenario específico del nicho] basado en: [input del usuario]. Explica paso a paso qué pasaría en ese escenario real. Responde en español con ejemplos concretos.","inputLabel":"¿Qué quieres simular?","inputPlaceholder":"Describe tu situación o escenario..."}`,
-      roadmap: `Genera 8-12 pasos de un roadmap concreto y ordenado para "${name}" en el nicho "${niche}".${featuresCtx}
-Cada paso debe ser específico y accionable, no genérico. Devuelve SOLO este JSON:
-{"roadmapSteps":["Paso 1: descripción concreta y accionable","Paso 2: ...","Paso 3: ..."]}`,
+      roadmap: `Genera 8-12 pasos que el USUARIO FINAL debe recorrer en su camino con "${name}" (nicho: "${niche}").${featuresCtx}
+Cada paso describe una acción o logro del usuario, en orden lógico de progresión. NO son pasos de desarrollo del producto.
+Devuelve SOLO este JSON:
+{"roadmapSteps":["Paso 1: acción concreta del usuario","Paso 2: siguiente logro del usuario","Paso 3: ..."]}`,
       diagnostico: `Genera 6-8 preguntas de diagnóstico para evaluar al usuario sobre "${name}" (nicho: "${niche}").${featuresCtx}
 Cada pregunta debe tener 4 opciones de respuesta específicas del nicho. Devuelve SOLO este JSON:
 {"diagQuestions":[{"q":"¿Pregunta concreta y relevante?","opts":["Opción A específica","Opción B específica","Opción C específica","Opción D específica"]}]}`,
@@ -423,8 +430,9 @@ Devuelve SOLO este JSON:
     };
     const instruction = typeInstructions[type] || typeInstructions.generador;
 
-    const prompt = `Eres experto en productos digitales. Producto: "${product}" · Nicho: ${niche || 'infoproductos'}.
-Mini-app: "${name}" — ${description}
+    const prompt = `Eres experto en crear contenido para apps de usuarios finales. Contexto: el creador tiene un producto llamado "${product}" en el nicho "${niche || 'infoproductos'}" y está creando una mini-app llamada "${name}" (${description}) para que sus CLIENTES la usen.
+
+El contenido que generes es para los USUARIOS FINALES de la app — personas reales que usarán la app en su día a día. NO es contenido sobre cómo construir el producto ni ideas para el creador.
 
 ${instruction}
 
