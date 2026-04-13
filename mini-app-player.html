@@ -218,8 +218,8 @@
   </header>
 
   <!-- Top pill tabs (only for multi-type) -->
-  <div id="top-tabs" style="display:none;position:sticky;top:57px;z-index:40;background:var(--bg);border-bottom:1px solid var(--border);padding:10px 16px;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch">
-    <div style="display:flex;gap:6px"></div>
+  <div id="top-tabs" style="display:none;position:sticky;top:57px;z-index:40;background:var(--bg);border-bottom:1px solid var(--border);padding:10px 16px;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch;-webkit-mask-image:linear-gradient(90deg,black 85%,transparent 100%);mask-image:linear-gradient(90deg,black 85%,transparent 100%)">
+    <div style="display:flex;gap:6px;padding-right:28px"></div>
   </div>
 
   <div id="app-content" style="flex:1;overflow-y:auto;width:100%"><!-- filled by renderApp() --></div>
@@ -629,7 +629,7 @@ function renderDevocional(el) {
     <div class="card" style="padding:16px;text-align:center;margin-bottom:16px;border-top:3px solid var(--accent)">
       <p style="font-size:11px;font-weight:800;color:var(--accent);text-transform:uppercase;letter-spacing:.12em">Día ${dayNum}</p>
     </div>
-    ${currentApp.devotionalText?`<div class="quote-box" style="margin-bottom:16px">"${esc(currentApp.devotionalText)}"</div>`:''}
+    ${(currentApp.devotionalText||currentApp.content?.devotionalText)?`<div class="quote-box" style="margin-bottom:16px">"${esc(currentApp.devotionalText||currentApp.content?.devotionalText)}"</div>`:''}
     <div class="card" style="padding:20px;margin-bottom:12px">
       <p style="font-size:11px;font-weight:700;color:var(--accent);text-transform:uppercase;letter-spacing:.08em;margin-bottom:10px">${msIcon('edit_note',14)} Mi reflexión de hoy</p>
       <textarea id="devo-note" class="input" style="width:100%" rows="6" placeholder="Escribe tus pensamientos, oraciones o reflexiones...">${esc(notes[today]||'')}</textarea>
@@ -648,7 +648,7 @@ function renderDevocional(el) {
 function renderDiario(el) {
   const storageKey=`diario_${currentApp.id}`;
   let entries=JSON.parse(localStorage.getItem(storageKey)||'[]');
-  const prompts=currentApp.journalPrompts||currentApp.initialItems||['¿Cómo me siento hoy?','¿Qué quiero soltar?','¿Qué agradezco?'];
+  const prompts=currentApp.journalPrompts||currentApp.content?.journalPrompts||currentApp.initialItems||['¿Cómo me siento hoy?','¿Qué quiero soltar?','¿Qué agradezco?'];
   const todayKey=new Date().toDateString();
   const todayDate=new Date().toLocaleDateString('es-ES',{weekday:'long',day:'numeric',month:'long'});
   const todayEntry=entries.find(e=>e.dateKey===todayKey);
@@ -1114,7 +1114,7 @@ function renderBiblioteca(el) {
 // ── MEDITACIÓN ────────────────────────────────────────────
 function renderMeditacion(el) {
   const app = currentApp;
-  const script = app.meditationScript || app.content?.meditationScript || '';
+  const script = app.meditationScript || app.content?.meditationScript || `Cierra los ojos y respira profundamente. Inhala contando hasta 4... mantén contando hasta 4... exhala contando hasta 6. Repite este ciclo a tu propio ritmo. Permite que tu mente se calme y tu cuerpo se relaje con cada respiración.`;
   const durationMin = parseInt(app.meditationDuration || app.content?.meditationDuration || 10);
   const bellFreq = app.bellFreq || 440;
   let timerInterval = null, secondsLeft = durationMin * 60;
@@ -1221,10 +1221,20 @@ function renderMeditacion(el) {
 // ── AFIRMACIONES ──────────────────────────────────────────
 function renderAfirmaciones(el) {
   const app = currentApp;
-  const items = app.affirmations || app.initialItems || [];
+  let items = app.affirmations || app.content?.affirmations || app.initialItems || [];
+  // Generate default affirmations if none configured
+  if (!items.length) {
+    const topic = app.name || app.niche || 'mi crecimiento';
+    items = [
+      `Cada día avanzo más en ${topic}`,
+      `Soy capaz de lograr todo lo que me propongo`,
+      `Mi dedicación a ${topic} da frutos constantemente`,
+      `Confío en mi proceso y celebro cada paso`,
+      `Estoy creando la mejor versión de mí mismo`,
+    ];
+  }
   let idx = 0;
   function draw() {
-    if (!items.length) { el.innerHTML = `<p style="text-align:center;padding:40px;color:var(--muted)">Sin afirmaciones configuradas.</p>`; return; }
     const aff = items[idx % items.length];
     el.innerHTML = sectionHdr(app.icon||sectionIcon('afirmaciones'), app.name, app.description||`${items.length} afirmaciones`) +
     `<div class="fade-up" style="padding:20px">
@@ -1292,20 +1302,21 @@ function _getAudioCtx() {
 }
 
 function playBell(freq=440, duration=2.5) {
-  const ctx = _getAudioCtx(); if (!ctx) return;
+  const ctx = _getAudioCtx();
+  if (!ctx) { console.warn('AudioContext not available'); return; }
   const _doPlay = () => {
     const now = ctx.currentTime;
     const osc = ctx.createOscillator(), gain = ctx.createGain();
     osc.connect(gain); gain.connect(ctx.destination);
     osc.type = 'sine'; osc.frequency.setValueAtTime(freq, now);
-    gain.gain.setValueAtTime(0.35, now);
+    gain.gain.setValueAtTime(0.7, now);
     gain.gain.exponentialRampToValueAtTime(0.001, now + duration);
     osc.start(now); osc.stop(now + duration);
     // Armónico suave
     const osc2 = ctx.createOscillator(), gain2 = ctx.createGain();
     osc2.connect(gain2); gain2.connect(ctx.destination);
     osc2.type = 'sine'; osc2.frequency.setValueAtTime(freq * 2.01, now);
-    gain2.gain.setValueAtTime(0.1, now);
+    gain2.gain.setValueAtTime(0.25, now);
     gain2.gain.exponentialRampToValueAtTime(0.001, now + duration * 0.75);
     osc2.start(now); osc2.stop(now + duration);
   };
