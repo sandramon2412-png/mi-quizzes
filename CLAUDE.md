@@ -72,13 +72,15 @@ El player soporta **19 tipos de sección** que se combinan en una sola app:
 - Volumen bell: 0.7 (principal) + 0.25 (armónico)
 
 ## Planes de Suscripción
-| Plan | Precio | Quizzes | Respuestas/mes |
-|------|--------|---------|----------------|
-| Free | $0 | 3 | 100 |
-| Starter | $5/mes | 10 | 1,000 |
-| Pro | $9/mes | Ilimitados | 10,000 |
-| Growth | $19/mes | Ilimitados | 25,000 |
-| Elite | $49/mes | Ilimitados | Ilimitados |
+| Plan | Precio | Quizzes | Mini-Apps | Respuestas/mes | IA | Leads | Bot Lab |
+|------|--------|---------|-----------|----------------|----|-------|---------|
+| Free | $0 | 1 | 2 | 100 | No | No | No |
+| Starter | $5/mes | 3 | 5 | 1,000 | **No** | Sí | No |
+| Pro | $9/mes | Ilimitados | Ilimitadas | 10,000 | Sí | Sí | Sí |
+| Growth | $19/mes | Ilimitados | Ilimitadas | 25,000 | Sí | Sí | Sí |
+| Elite | $49/mes | Ilimitados | Ilimitadas | Ilimitadas | Sí | Sí | Sí |
+
+**Decisión**: Starter NO incluye IA — la IA es el diferenciador clave para upgrade a Pro ($9).
 
 La matriz de capacidades está en `app.js` → `PlanLimits`.
 

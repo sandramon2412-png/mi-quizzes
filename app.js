@@ -844,7 +844,7 @@ function getPlanBadge(plan) {
 // ── Plan capabilities ─────────────────────────────────────
 const PlanLimits = {
   free:    { quizzes: 1,   responses: 100,    leads: false, ai: false, miniApps: 2,       customDomain: false, metaPixel: false, integrations: false, whiteLabel: false },
-  starter: { quizzes: 3,   responses: 1000,   leads: true,  ai: true,  miniApps: 5,       customDomain: false, metaPixel: false, integrations: false, whiteLabel: false },
+  starter: { quizzes: 3,   responses: 1000,   leads: true,  ai: false, miniApps: 5,       customDomain: false, metaPixel: false, integrations: false, whiteLabel: false },
   pro:     { quizzes: 999, responses: 10000,  leads: true,  ai: true,  miniApps: 999,     customDomain: true,  metaPixel: true,  integrations: true,  whiteLabel: false },
   growth:  { quizzes: 999, responses: 25000,  leads: true,  ai: true,  miniApps: 999,     customDomain: true,  metaPixel: true,  integrations: true,  whiteLabel: false },
   elite:   { quizzes: 999, responses: 100000, leads: true,  ai: true,  miniApps: 999,     customDomain: true,  metaPixel: true,  integrations: true,  whiteLabel: true  },
