@@ -182,7 +182,7 @@
 <div id="screen-access" style="min-height:100dvh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 24px;background:var(--bg)">
   <div style="width:100%;max-width:360px;text-align:center;animation:fadeUp .4s ease">
     <div id="access-icon-wrap" style="width:104px;height:104px;border-radius:32px;background:var(--btn);display:flex;align-items:center;justify-content:center;font-size:54px;margin:0 auto 24px;box-shadow:0 16px 48px rgba(0,0,0,0.18)">
-      <span id="access-icon">⚡</span>
+      <span id="access-icon"><span class="material-symbols-outlined" style="font-size:48px;color:#fff">bolt</span></span>
     </div>
     <h1 id="access-title" style="font-family:'Lora',serif;font-size:30px;font-weight:700;margin-bottom:8px;line-height:1.2;color:var(--text)">Mini-App</h1>
     <p id="access-desc" style="color:var(--muted);font-size:14px;margin-bottom:36px;line-height:1.6">Cargando...</p>
@@ -191,7 +191,7 @@
       <p style="font-weight:700;font-size:15px;margin-bottom:6px;color:var(--text)">Introduce tu código de acceso</p>
       <p style="color:var(--muted);font-size:12px;margin-bottom:16px;line-height:1.5">Encontrarás tu código en el email de confirmación de tu compra.</p>
       <input id="access-code-input" class="input" style="width:100%;text-align:center;font-weight:700;margin-bottom:12px" type="text" placeholder="EJ: ROSA-1001"/>
-      <button class="btn-primary" onclick="validateAccess()">Activar acceso ✨</button>
+      <button class="btn-primary" onclick="validateAccess()"><span class="material-symbols-outlined" style="font-size:16px">auto_awesome</span> Activar acceso</button>
       <p id="access-error" style="display:none;text-align:center;margin-top:12px;font-size:12px;color:#e55">Código incorrecto. Intenta de nuevo.</p>
     </div>
 
@@ -207,7 +207,7 @@
 <div id="screen-app" style="display:none;min-height:100dvh;flex-direction:column">
   <!-- Top bar -->
   <header id="app-header">
-    <div id="app-header-icon">⚡</div>
+    <div id="app-header-icon"><span class="material-symbols-outlined" style="font-size:20px;color:#fff">bolt</span></div>
     <div style="flex:1;min-width:0">
       <div id="app-header-name">App</div>
       <div id="app-header-greeting" style="font-size:11px;color:var(--accent);font-weight:600"></div>
@@ -380,6 +380,13 @@ function typeIcon(t) {
   if (icon) return `<span class="material-symbols-outlined" style="font-size:16px">${icon}</span>`;
   return `<span class="material-symbols-outlined" style="font-size:16px">deployed_code</span>`;
 }
+function sectionIcon(type) {
+  const icon = TYPE_MS_ICONS[type] || 'deployed_code';
+  return `<span class="material-symbols-outlined" style="font-size:38px;color:#fff">${icon}</span>`;
+}
+function msIcon(name, size) {
+  return `<span class="material-symbols-outlined" style="font-size:${size||16}px">${name}</span>`;
+}
 
 function buildTabs(types) {
   const tabsWrap = document.getElementById('top-tabs');
@@ -451,7 +458,7 @@ function renderReto(el) {
 
   // If no guided content, show simple grid
   if (!days.length) {
-    el.innerHTML = sectionHdr(app.icon||'🔥', app.name, `Reto ${totalDays} días · ${completed} completados`) +
+    el.innerHTML = sectionHdr(app.icon||sectionIcon('reto'), app.name, `Reto ${totalDays} días · ${completed} completados`) +
     `<div class="fade-up" style="padding:20px">
       <div style="margin-bottom:16px">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
@@ -472,7 +479,7 @@ function renderReto(el) {
   }
 
   // Guided content
-  el.innerHTML = sectionHdr(app.icon||'🔥', app.name, app.description||`Reto ${totalDays} días`) +
+  el.innerHTML = sectionHdr(app.icon||sectionIcon('reto'), app.name, app.description||`Reto ${totalDays} días`) +
   `<div class="fade-up" style="padding:20px">
     <div class="stat-row">
       <div class="stat-pill"><div class="stat-val">${completed}</div><div class="stat-lbl">Completados</div></div>
@@ -486,11 +493,11 @@ function renderReto(el) {
       const savedNote = localStorage.getItem(storageNote)||'';
       return `<div class="day-card" id="day-card-${i+1}">
         <div class="day-card-header" onclick="toggleDayCard(${i+1})">
-          <div class="day-num ${isDone?'done':''}">${isDone?'✓':i+1}</div>
+          <div class="day-num ${isDone?'done':''}">${isDone?msIcon('check',16):i+1}</div>
           <div style="flex:1">
             <div style="font-size:13px;font-weight:700;${isDone?'color:var(--muted);text-decoration:line-through':''}">${esc(day.icon||'')} ${esc(day.title||`Día ${i+1}`)}</div>
           </div>
-          <span style="font-size:20px;color:var(--muted);transition:transform .2s" id="day-chevron-${i+1}">${isDone?'✓':'›'}</span>
+          <span style="font-size:20px;color:var(--muted);transition:transform .2s" id="day-chevron-${i+1}">${isDone?msIcon('check',18):'›'}</span>
         </div>
         <div id="day-body-${i+1}" class="day-card-body" style="display:none">
           ${day.quote?`<div class="quote-box" style="margin:16px 0">${esc(day.quote)}</div>`:''}
@@ -502,8 +509,8 @@ function renderReto(el) {
           `:''}
           <div style="margin-top:16px">
             ${isDone
-              ? `<button class="btn-done" onclick="markDay(${i+1},false)">✓ Completado — Desmarcar</button>`
-              : `<button class="btn-primary" onclick="markDay(${i+1},true)">Marcar como completado ✓</button>`
+              ? `<button class="btn-done" onclick="markDay(${i+1},false)">${msIcon('check_circle',16)} Completado — Desmarcar</button>`
+              : `<button class="btn-primary" onclick="markDay(${i+1},true)">Marcar como completado ${msIcon('check',16)}</button>`
             }
           </div>
         </div>
@@ -523,7 +530,7 @@ function renderReto(el) {
     done[n] = val;
     localStorage.setItem(storageKey, JSON.stringify(done));
     renderReto(el);
-    if (val) showToast(`¡Día ${n} completado! 🎉`);
+    if (val) showToast(`¡Día ${n} completado!`);
   };
 }
 // ── CHECKLIST ─────────────────────────────────────────────
@@ -536,7 +543,7 @@ function renderChecklist(el) {
   function save() { localStorage.setItem(storageKey,JSON.stringify(items)); }
   function draw() {
     const done=items.filter(i=>i.done).length, pct=items.length?Math.round(done/items.length*100):0;
-    el.innerHTML=sectionHdr(currentApp.icon||'✅', currentApp.name, `${done}/${items.length} completados`) +
+    el.innerHTML=sectionHdr(currentApp.icon||sectionIcon('checklist'), currentApp.name, `${done}/${items.length} completados`) +
     `<div class="fade-up" style="padding:20px">
       <div style="margin-bottom:20px">
         <div style="display:flex;justify-content:space-between;margin-bottom:6px">
@@ -554,7 +561,7 @@ function renderChecklist(el) {
             <span style="flex:1;font-size:13px;${item.done?'text-decoration:line-through;color:var(--muted)':''}">${esc(item.text)}</span>
             <button onclick="removeItem(${i})" style="background:none;border:none;color:var(--muted);cursor:pointer;font-size:18px;line-height:1">×</button>
           </div>`).join('')}
-        ${items.length===0?'<p style="text-align:center;color:var(--muted);padding:24px;font-size:13px">Agrega tu primer ítem ⬇️</p>':''}
+        ${items.length===0?'<p style="text-align:center;color:var(--muted);padding:24px;font-size:13px">Agrega tu primer ítem</p>':''}
       </div>
       <div style="display:flex;gap:8px">
         <input id="new-check-item" class="input" style="flex:1" placeholder="Agregar ítem..." maxlength="100"
@@ -585,10 +592,10 @@ function renderTracker(el) {
   function draw() {
     const todayDone=checked.has(today);
     const s=streak(), pct=days?Math.round(checked.size/days*100):0;
-    el.innerHTML=sectionHdr(currentApp.icon||'📊', currentApp.name, currentApp.description||`Hábito de ${days} días`) +
+    el.innerHTML=sectionHdr(currentApp.icon||sectionIcon('tracker'), currentApp.name, currentApp.description||`Hábito de ${days} días`) +
     `<div class="fade-up" style="padding:20px">
       <div class="stat-row">
-        <div class="stat-pill"><div class="stat-val">${s}</div><div class="stat-lbl">🔥 Racha</div></div>
+        <div class="stat-pill"><div class="stat-val">${s}</div><div class="stat-lbl">${msIcon('local_fire_department',14)} Racha</div></div>
         <div class="stat-pill"><div class="stat-val">${checked.size}</div><div class="stat-lbl">Días</div></div>
         <div class="stat-pill"><div class="stat-val">${pct}%</div><div class="stat-lbl">Logrado</div></div>
       </div>
@@ -602,11 +609,11 @@ function renderTracker(el) {
         }).join('')}
       </div>
       <button onclick="toggleTrackerDay('${today}')" class="${todayDone?'btn-done':'btn-primary'}">
-        ${todayDone?'✓ Hoy completado — Desmarcar':'Marcar hoy como completado ✓'}
+        ${todayDone?msIcon('check_circle',16)+' Hoy completado — Desmarcar':'Marcar hoy como completado '+msIcon('check',16)}
       </button>
     </div>`;
   }
-  window.toggleTrackerDay=(key)=>{if(checked.has(key))checked.delete(key);else checked.add(key);save();if(!checked.has(key)||key===today)draw();else{showToast('¡Día marcado! 🔥');draw();}};
+  window.toggleTrackerDay=(key)=>{if(checked.has(key))checked.delete(key);else checked.add(key);save();if(!checked.has(key)||key===today)draw();else{showToast('¡Día marcado!');draw();}};
   draw();
 }
 
@@ -617,16 +624,16 @@ function renderDevocional(el) {
   const today=new Date().toISOString().split('T')[0];
   const dayNum=(()=>{const sk=`devo_start_${currentApp.id}`;let s=localStorage.getItem(sk);if(!s){s=today;localStorage.setItem(sk,s);}return Math.floor((new Date()-new Date(s))/86400000)+1;})();
   const dateStr=new Date().toLocaleDateString('es-ES',{weekday:'long',day:'numeric',month:'long'});
-  el.innerHTML=sectionHdr(currentApp.icon||'🕊️', currentApp.name, dateStr) +
+  el.innerHTML=sectionHdr(currentApp.icon||sectionIcon('devocional'), currentApp.name, dateStr) +
   `<div class="fade-up" style="padding:20px">
     <div class="card" style="padding:16px;text-align:center;margin-bottom:16px;border-top:3px solid var(--accent)">
       <p style="font-size:11px;font-weight:800;color:var(--accent);text-transform:uppercase;letter-spacing:.12em">Día ${dayNum}</p>
     </div>
     ${currentApp.devotionalText?`<div class="quote-box" style="margin-bottom:16px">"${esc(currentApp.devotionalText)}"</div>`:''}
     <div class="card" style="padding:20px;margin-bottom:12px">
-      <p style="font-size:11px;font-weight:700;color:var(--accent);text-transform:uppercase;letter-spacing:.08em;margin-bottom:10px">✍️ Mi reflexión de hoy</p>
+      <p style="font-size:11px;font-weight:700;color:var(--accent);text-transform:uppercase;letter-spacing:.08em;margin-bottom:10px">${msIcon('edit_note',14)} Mi reflexión de hoy</p>
       <textarea id="devo-note" class="input" style="width:100%" rows="6" placeholder="Escribe tus pensamientos, oraciones o reflexiones...">${esc(notes[today]||'')}</textarea>
-      <button class="btn-primary" style="margin-top:12px" onclick="saveDevo()">Guardar reflexión ✦</button>
+      <button class="btn-primary" style="margin-top:12px" onclick="saveDevo()">${msIcon('save',14)} Guardar reflexión</button>
     </div>
     ${Object.keys(notes).filter(k=>k!==today).slice(0,3).map(k=>`
       <div class="card2" style="padding:12px 16px;margin-bottom:8px;border-radius:12px">
@@ -634,7 +641,7 @@ function renderDevocional(el) {
         <p style="font-size:12px;color:var(--text);line-height:1.5">${esc(notes[k].substring(0,120))}${notes[k].length>120?'…':''}</p>
       </div>`).join('')}
   </div>`;
-  window.saveDevo=()=>{const v=document.getElementById('devo-note')?.value?.trim();if(v){notes[today]=v;localStorage.setItem(storageKey,JSON.stringify(notes));showToast('Reflexión guardada ✨');}};
+  window.saveDevo=()=>{const v=document.getElementById('devo-note')?.value?.trim();if(v){notes[today]=v;localStorage.setItem(storageKey,JSON.stringify(notes));showToast('Reflexión guardada');}};
 }
 
 // ── DIARIO ────────────────────────────────────────────────
@@ -645,7 +652,7 @@ function renderDiario(el) {
   const todayKey=new Date().toDateString();
   const todayDate=new Date().toLocaleDateString('es-ES',{weekday:'long',day:'numeric',month:'long'});
   const todayEntry=entries.find(e=>e.dateKey===todayKey);
-  el.innerHTML=sectionHdr(currentApp.icon||'📓', currentApp.name||'Diario', todayDate) +
+  el.innerHTML=sectionHdr(currentApp.icon||sectionIcon('diario'), currentApp.name||'Diario', todayDate) +
   `<div class="fade-up" style="padding:20px">
     ${currentApp.diaryIntro?`<div class="quote-box" style="margin-bottom:20px">"${esc(currentApp.diaryIntro)}"</div>`:''}
     ${prompts.map((p,i)=>`
@@ -653,7 +660,7 @@ function renderDiario(el) {
         <p style="font-size:11px;font-weight:800;color:var(--accent);text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px">${esc(p)}</p>
         <textarea id="dj-${i}" class="input" style="width:100%" rows="3" placeholder="Escribe libremente...">${esc(todayEntry?.answers?.[i]||'')}</textarea>
       </div>`).join('')}
-    <button class="btn-primary" onclick="saveDiario()">Guardar entrada ✦</button>
+    <button class="btn-primary" onclick="saveDiario()">${msIcon('save',14)} Guardar entrada</button>
     ${entries.length>0?`<p style="text-align:center;font-size:11px;color:var(--muted);margin-top:16px">${entries.length} entrada${entries.length>1?'s':''} guardada${entries.length>1?'s':''}</p>`:''}
   </div>`;
   window.saveDiario=()=>{
@@ -676,7 +683,7 @@ function renderPlanificador(el) {
   function save(){localStorage.setItem(storageKey,JSON.stringify(tasks));}
   function draw(){
     const done=tasks.filter(t=>t.done).length, pct=tasks.length?Math.round(done/tasks.length*100):0;
-    el.innerHTML=sectionHdr(currentApp.icon||'📅', currentApp.name, currentApp.description||`${done}/${tasks.length} completadas`) +
+    el.innerHTML=sectionHdr(currentApp.icon||sectionIcon('planificador'), currentApp.name, currentApp.description||`${done}/${tasks.length} completadas`) +
     `<div class="fade-up" style="padding:20px">
       ${tasks.length>0?`<div style="margin-bottom:16px">
         <div style="display:flex;justify-content:space-between;margin-bottom:6px">
@@ -694,7 +701,7 @@ function renderPlanificador(el) {
             <span style="flex:1;font-size:13px;line-height:1.4;${t.done?'text-decoration:line-through;color:var(--muted)':''}">${esc(t.text)}</span>
             <button onclick="removeTask(${i})" style="background:none;border:none;color:var(--muted);cursor:pointer;font-size:18px;padding:0 4px">×</button>
           </div>`).join('')}
-        ${tasks.length===0?'<p style="text-align:center;color:var(--muted);padding:24px;font-size:13px">Agrega tu primera tarea ⬇️</p>':''}
+        ${tasks.length===0?'<p style="text-align:center;color:var(--muted);padding:24px;font-size:13px">Agrega tu primera tarea</p>':''}
       </div>
       <div style="display:flex;gap:8px">
         <input id="new-task" class="input" style="flex:1" placeholder="Nueva tarea..." maxlength="200" onkeydown="if(event.key==='Enter')addTask()"/>
@@ -711,7 +718,7 @@ function renderPlanificador(el) {
 // ── CALCULADORA ───────────────────────────────────────────
 function renderCalculadora(el) {
   const fields=currentApp.calcFields||[];
-  el.innerHTML=sectionHdr(currentApp.icon||'🧮', currentApp.name, currentApp.description||'Calcula tu resultado') +
+  el.innerHTML=sectionHdr(currentApp.icon||sectionIcon('calculadora'), currentApp.name, currentApp.description||'Calcula tu resultado') +
   `<div class="fade-up" style="padding:20px">
     <div class="card" style="padding:20px;margin-bottom:12px">
       ${fields.map(f=>`
@@ -719,7 +726,7 @@ function renderCalculadora(el) {
           <p style="font-size:12px;font-weight:800;color:var(--accent);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px">${esc(f.label||f.id)}</p>
           <input id="calc-${f.id}" type="number" class="input" style="width:100%;font-size:16px;font-weight:700" placeholder="${esc(f.placeholder||'0')}"/>
         </div>`).join('')}
-      <button class="btn-primary" onclick="calcResult()">🧮 Calcular</button>
+      <button class="btn-primary" onclick="calcResult()">${msIcon('calculate',16)} Calcular</button>
     </div>
     <div id="calc-result" class="card-dark" style="padding:24px;text-align:center;display:none">
       <p style="font-size:11px;opacity:.8;margin-bottom:4px;color:#fff">${esc(currentApp.calcResultLabel||'Tu resultado')}</p>
@@ -744,15 +751,15 @@ function renderCalculadora(el) {
 // ── GENERADOR ─────────────────────────────────────────────
 function renderGenerador(el) {
   const groqKey=(typeof Settings!=='undefined'&&Settings.getGroqApiKey)?Settings.getGroqApiKey():'';
-  el.innerHTML=sectionHdr(currentApp.icon||'✨', currentApp.name, currentApp.description||'Generador con IA') +
+  el.innerHTML=sectionHdr(currentApp.icon||sectionIcon('generador'), currentApp.name, currentApp.description||'Generador con IA') +
   `<div class="fade-up" style="padding:20px">
     <div class="card" style="padding:16px;margin-bottom:12px">
       <p style="font-size:12px;font-weight:800;color:var(--accent);text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px">${esc(currentApp.inputLabel||'¿Qué necesitas?')}</p>
       <textarea id="gen-input" class="input" style="width:100%" rows="4" placeholder="${esc(currentApp.inputPlaceholder||'Describe tu situación...')}"></textarea>
     </div>
-    <button class="btn-primary" id="gen-btn" onclick="generateContent()">✦ Generar con IA</button>
+    <button class="btn-primary" id="gen-btn" onclick="generateContent()">${msIcon('auto_awesome',14)} Generar con IA</button>
     <div id="gen-listen" style="display:none;align-items:center;gap:10px;margin-top:10px">
-      <button onclick="genSpeak()" class="voice-toggle on" id="gen-speak-btn">🔊 Escuchar resultado</button>
+      <button onclick="genSpeak()" class="voice-toggle on" id="gen-speak-btn">${msIcon('volume_up',14)} Escuchar resultado</button>
       <div id="gen-speaking" style="display:none" class="speaking-bars">
         <span style="height:10px"></span><span style="height:16px"></span><span style="height:12px"></span><span style="height:8px"></span>
       </div>
@@ -762,15 +769,15 @@ function renderGenerador(el) {
   let _lastResult = '';
   window.genSpeak=()=>{
     const btn=document.getElementById('gen-speak-btn'),sp=document.getElementById('gen-speaking');
-    if(!_voiceStopped){stopVoice();if(btn){btn.textContent='🔊 Escuchar resultado';btn.classList.add('on');}if(sp)sp.style.display='none';return;}
-    startVoice(_lastResult,()=>{if(btn){btn.textContent='🔊 Escuchar resultado';btn.classList.add('on');}if(sp)sp.style.display='none';});
-    if(btn){btn.textContent='■ Detener';btn.classList.remove('on');}if(sp)sp.style.display='flex';
+    if(!_voiceStopped){stopVoice();if(btn){btn.innerHTML=msIcon('volume_up',14)+' Escuchar resultado';btn.classList.add('on');}if(sp)sp.style.display='none';return;}
+    startVoice(_lastResult,()=>{if(btn){btn.innerHTML=msIcon('volume_up',14)+' Escuchar resultado';btn.classList.add('on');}if(sp)sp.style.display='none';});
+    if(btn){btn.innerHTML=msIcon('stop',14)+' Detener';btn.classList.remove('on');}if(sp)sp.style.display='flex';
   };
   window.generateContent=async()=>{
     const input=document.getElementById('gen-input')?.value.trim();
     if(!input){showToast('Escribe algo primero','error');return;}
     const btn=document.getElementById('gen-btn');
-    btn.disabled=true;btn.textContent='✦ Generando...';
+    btn.disabled=true;btn.innerHTML=msIcon('auto_awesome',14)+' Generando...';
     stopVoice();
     const rawPrompt=currentApp.generatorPrompt||`Genera contenido útil y accionable. Responde en español con formato claro.`;
     const prompt=rawPrompt.replace('[input del usuario]',input).includes(input)?rawPrompt.replace('[input del usuario]',input):`${rawPrompt}\n\nSolicitud del usuario: ${input}`;
@@ -793,14 +800,14 @@ function renderGenerador(el) {
       const listenWrap=document.getElementById('gen-listen');
       if(listenWrap)listenWrap.style.display='flex';
     }catch(e){showToast('Error: '+e.message,'error');}
-    btn.disabled=false;btn.textContent='✦ Generar con IA';
+    btn.disabled=false;btn.innerHTML=msIcon('auto_awesome',14)+' Generar con IA';
   };
 }
 // ── CHATBOT ───────────────────────────────────────────────
 function renderChatbot(el) {
   const app=currentApp;
   const botName=app.chatbotName||app.name||'Asistente';
-  const botIcon=app.icon||'🤖';
+  const botIcon=app.icon||msIcon('smart_toy',22);
   const systemPrompt=app.chatbotSystemPrompt||`Eres un asistente experto en ${app.niche||'este tema'}. Responde en español, de forma cálida, empática y útil. Máximo 4 oraciones.`;
   const groqKey=(typeof Settings!=='undefined'&&Settings.getGroqApiKey)?Settings.getGroqApiKey():'';
   let msgs=[], chatVoiceOn=false;
@@ -811,7 +818,7 @@ function renderChatbot(el) {
         <div style="font-weight:800;font-size:14px">${esc(botName)}</div>
         <div id="chat-status" style="font-size:11px;color:var(--success);display:flex;align-items:center;gap:4px"><span style="width:6px;height:6px;border-radius:50%;background:var(--success);display:inline-block"></span>En línea</div>
       </div>
-      <button onclick="toggleChatVoice()" id="chat-voice-btn" class="voice-toggle" title="Voz del asistente">🔇</button>
+      <button onclick="toggleChatVoice()" id="chat-voice-btn" class="voice-toggle" title="Voz del asistente">${msIcon('volume_off',18)}</button>
     </div>
     <div id="chat-msgs" style="flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:8px">
       <div class="bubble-wrap"><div class="bubble bot">${esc(app.chatbotGreeting||`¡Hola! Soy ${botName}. ¿En qué puedo ayudarte?`)}</div></div>
@@ -830,9 +837,9 @@ function renderChatbot(el) {
   window.toggleChatVoice=()=>{
     chatVoiceOn=!chatVoiceOn;
     const btn=document.getElementById('chat-voice-btn');
-    if(btn){btn.textContent=chatVoiceOn?'🔊':'🔇';btn.classList.toggle('on',chatVoiceOn);}
+    if(btn){btn.innerHTML=chatVoiceOn?msIcon('volume_up',18):msIcon('volume_off',18);btn.classList.toggle('on',chatVoiceOn);}
     if(!chatVoiceOn)stopVoice();
-    showToast(chatVoiceOn?'Voz activada 🔊':'Voz desactivada 🔇');
+    showToast(chatVoiceOn?'Voz activada':'Voz desactivada');
   };
 
   window.sendSugg=(btn)=>{document.getElementById('chat-input').value=btn.textContent;document.getElementById('chat-sugg').style.display='none';sendChatMsg();};
@@ -875,7 +882,7 @@ function renderChatbot(el) {
     const div=document.createElement('div');div.className='bubble-wrap'+(role==='user'?' user':'');
     if(id)div.id=id;
     // Speaker button on bot messages
-    const speakerBtn = role==='bot'&&!id ? `<button onclick="speakShort(${JSON.stringify(String(text))})" title="Escuchar" style="background:none;border:none;color:var(--muted);cursor:pointer;font-size:14px;padding:4px;flex-shrink:0;align-self:flex-end">🔊</button>` : '';
+    const speakerBtn = role==='bot'&&!id ? `<button onclick="speakShort(${JSON.stringify(String(text))})" title="Escuchar" style="background:none;border:none;color:var(--muted);cursor:pointer;font-size:14px;padding:4px;flex-shrink:0;align-self:flex-end">${msIcon('volume_up',16)}</button>` : '';
     div.innerHTML=`${speakerBtn}<div class="bubble ${role}">${esc(text)}</div>`;
     if(role==='bot'&&!id)div.style.alignItems='flex-end';
     msgsEl.appendChild(div);msgsEl.scrollTop=msgsEl.scrollHeight;
@@ -885,7 +892,7 @@ function renderChatbot(el) {
 // ── FAQ ───────────────────────────────────────────────────
 function renderFaq(el) {
   const faqs=currentApp.faqItems||currentApp.initialItems?.map(q=>({q,a:''}))||[];
-  el.innerHTML=sectionHdr(currentApp.icon||'💬', currentApp.name||'Preguntas Frecuentes', currentApp.description||`${faqs.length} preguntas`) +
+  el.innerHTML=sectionHdr(currentApp.icon||sectionIcon('faq'), currentApp.name||'Preguntas Frecuentes', currentApp.description||`${faqs.length} preguntas`) +
   `<div class="fade-up" style="padding:20px">
     ${faqs.map((f,i)=>`
       <div class="card" style="margin-bottom:8px;overflow:hidden">
@@ -912,11 +919,11 @@ function renderFlashcards(el) {
   function draw(){
     if(!cards.length){el.innerHTML=`<p style="text-align:center;padding:40px;color:var(--muted)">No hay flashcards.</p>`;return;}
     const card=cards[idx];
-    el.innerHTML=sectionHdr(currentApp.icon||'🃏', currentApp.name, `${idx+1} de ${cards.length} tarjetas`) +
+    el.innerHTML=sectionHdr(currentApp.icon||sectionIcon('flashcards'), currentApp.name, `${idx+1} de ${cards.length} tarjetas`) +
     `<div class="fade-up" style="padding:20px">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
         <span style="font-size:13px;color:var(--muted);font-weight:700">${idx+1} / ${cards.length}</span>
-        <span style="font-size:12px"><span style="color:var(--success);font-weight:800">✓ ${known}</span> &nbsp; <span style="color:#e55;font-weight:800">✗ ${unknown}</span></span>
+        <span style="font-size:12px"><span style="color:var(--success);font-weight:800">${msIcon('check',14)} ${known}</span> &nbsp; <span style="color:#e55;font-weight:800">${msIcon('close',14)} ${unknown}</span></span>
       </div>
       <div class="prog-wrap" style="margin-bottom:16px"><div class="prog-bar" style="width:${Math.round(idx/cards.length*100)}%"></div></div>
       <div class="flip-card" onclick="flipFC()" style="min-height:200px;cursor:pointer;margin-bottom:16px">
@@ -924,7 +931,7 @@ function renderFlashcards(el) {
           <div class="flip-face" style="border-radius:var(--radius)">
             <p style="font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.12em;color:var(--muted);margin-bottom:12px">Pregunta</p>
             <p class="serif" style="font-size:17px;font-weight:600;line-height:1.4">${esc(card?.front||card||'')}</p>
-            <p style="font-size:11px;color:var(--accent);margin-top:20px;font-weight:700">👆 Toca para ver respuesta</p>
+            <p style="font-size:11px;color:var(--accent);margin-top:20px;font-weight:700">${msIcon('touch_app',14)} Toca para ver respuesta</p>
           </div>
           <div class="flip-face back" style="border-radius:var(--radius)">
             <p style="font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.12em;color:var(--accent);margin-bottom:12px">Respuesta</p>
@@ -934,8 +941,8 @@ function renderFlashcards(el) {
       </div>
       <div style="display:flex;gap:8px">
         <button onclick="prevFC()" class="btn-secondary" style="width:44px;padding:0;display:flex;align-items:center;justify-content:center;font-size:20px">‹</button>
-        <button onclick="markFC('no')" style="flex:1;padding:12px;border-radius:50px;border:2px solid #e55;background:transparent;color:#e55;font-weight:800;font-size:13px;cursor:pointer;transition:all .15s">✗ No sabía</button>
-        <button onclick="markFC('yes')" style="flex:1;padding:12px;border-radius:50px;border:2px solid var(--success);background:transparent;color:var(--success);font-weight:800;font-size:13px;cursor:pointer;transition:all .15s">✓ Lo sabía</button>
+        <button onclick="markFC('no')" style="flex:1;padding:12px;border-radius:50px;border:2px solid #e55;background:transparent;color:#e55;font-weight:800;font-size:13px;cursor:pointer;transition:all .15s">${msIcon('close',14)} No sabía</button>
+        <button onclick="markFC('yes')" style="flex:1;padding:12px;border-radius:50px;border:2px solid var(--success);background:transparent;color:var(--success);font-weight:800;font-size:13px;cursor:pointer;transition:all .15s">${msIcon('check',14)} Lo sabía</button>
         <button onclick="nextFC()" class="btn-secondary" style="width:44px;padding:0;display:flex;align-items:center;justify-content:center;font-size:20px">›</button>
       </div>
     </div>`;
@@ -950,7 +957,7 @@ function renderFlashcards(el) {
 // ── GLOSARIO ──────────────────────────────────────────────
 function renderGlosario(el) {
   const terms=currentApp.glossaryTerms||currentApp.initialItems?.map(t=>({term:t,def:''}))||[];
-  el.innerHTML=sectionHdr(currentApp.icon||'📖', currentApp.name||'Glosario', `${terms.length} términos`) +
+  el.innerHTML=sectionHdr(currentApp.icon||sectionIcon('glosario'), currentApp.name||'Glosario', `${terms.length} términos`) +
   `<div class="fade-up" style="padding:20px">
     <div style="position:relative;margin-bottom:16px">
       <input id="glos-q" class="input" style="width:100%;padding-left:40px" oninput="filterGlos()" placeholder="Buscar término..."/>
@@ -985,7 +992,7 @@ function renderRoadmap(el) {
   function draw(){
     const completed=Object.values(done).filter(Boolean).length,total=steps.length;
     const pct=total?Math.round(completed/total*100):0;
-    el.innerHTML=sectionHdr(currentApp.icon||'🗺️', currentApp.name||'Tu Roadmap', `${completed}/${total} pasos completados`) +
+    el.innerHTML=sectionHdr(currentApp.icon||sectionIcon('roadmap'), currentApp.name||'Tu Roadmap', `${completed}/${total} pasos completados`) +
     `<div class="fade-up" style="padding:20px">
       <div style="margin-bottom:20px">
         <div style="display:flex;justify-content:space-between;margin-bottom:6px">
@@ -999,7 +1006,7 @@ function renderRoadmap(el) {
           <div style="position:relative;padding-bottom:16px">
             <div style="position:absolute;left:-36px;top:0;display:flex;flex-direction:column;align-items:center;height:100%">
               <button onclick="toggleRM(${i})" style="width:30px;height:30px;border-radius:50%;border:2px solid ${done[i]?'transparent':'var(--border)'};display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:11px;font-weight:800;flex-shrink:0;transition:all .2s;background:${done[i]?'var(--btn)':'var(--card)'};color:${done[i]?'#fff':'var(--muted)'};${done[i]?'box-shadow:0 3px 10px rgba(0,0,0,0.2)':''}">
-                ${done[i]?'✓':`<span style="font-size:11px">${i+1}</span>`}
+                ${done[i]?msIcon('check',14):`<span style="font-size:11px">${i+1}</span>`}
               </button>
               ${i<steps.length-1?`<div style="width:2px;flex:1;margin-top:4px;border-radius:2px;background:${done[i]?'var(--accent)':'var(--border)'}"></div>`:''}
             </div>
@@ -1024,7 +1031,7 @@ function renderDiagnostico(el) {
     if(step>=questions.length){return drawResult();}
     const qObj=questions[step],q=qObj.q||qObj,opts=qObj.opts||['Sí','No','A veces','No sé'];
     const pct=Math.round(step/questions.length*100);
-    el.innerHTML=sectionHdr(currentApp.icon||'🩺', currentApp.name, `Pregunta ${step+1} de ${questions.length}`) +
+    el.innerHTML=sectionHdr(currentApp.icon||sectionIcon('diagnostico'), currentApp.name, `Pregunta ${step+1} de ${questions.length}`) +
     `<div class="fade-up" style="padding:20px">
       <div style="margin-bottom:16px">
         <div style="display:flex;justify-content:space-between;margin-bottom:6px">
@@ -1072,13 +1079,13 @@ function renderDiagnostico(el) {
 // ── COMPARADOR ────────────────────────────────────────────
 function renderComparador(el) {
   const opts=currentApp.compareOptions||currentApp.initialItems?.map(t=>({name:t,pros:[],cons:[]}))||[];
-  el.innerHTML=sectionHdr(currentApp.icon||'⚖️', currentApp.name||'Comparador', currentApp.description||`${opts.length} opciones`) +
+  el.innerHTML=sectionHdr(currentApp.icon||sectionIcon('comparador'), currentApp.name||'Comparador', currentApp.description||`${opts.length} opciones`) +
   `<div class="fade-up" style="padding:20px">
     ${opts.map((o,idx)=>`
       <div class="card" style="padding:16px;margin-bottom:12px;border-top:3px solid var(--accent)">
         <p style="font-weight:800;font-size:15px;margin-bottom:12px">${esc(o.name||o)}</p>
-        ${(o.pros||[]).length>0?`<div style="margin-bottom:8px">${(o.pros||[]).map(p=>`<div style="display:flex;align-items:flex-start;gap:8px;margin-bottom:6px"><span style="color:var(--success);font-weight:800;flex-shrink:0">✓</span><p style="font-size:13px;color:var(--text);line-height:1.4">${esc(p)}</p></div>`).join('')}</div>`:''}
-        ${(o.cons||[]).length>0?`<div style="padding-top:8px;border-top:1px solid var(--border)">${(o.cons||[]).map(c=>`<div style="display:flex;align-items:flex-start;gap:8px;margin-bottom:6px"><span style="color:#e55;font-weight:800;flex-shrink:0">✗</span><p style="font-size:13px;color:var(--muted);line-height:1.4">${esc(c)}</p></div>`).join('')}</div>`:''}
+        ${(o.pros||[]).length>0?`<div style="margin-bottom:8px">${(o.pros||[]).map(p=>`<div style="display:flex;align-items:flex-start;gap:8px;margin-bottom:6px"><span style="color:var(--success);flex-shrink:0">${msIcon('check_circle',16)}</span><p style="font-size:13px;color:var(--text);line-height:1.4">${esc(p)}</p></div>`).join('')}</div>`:''}
+        ${(o.cons||[]).length>0?`<div style="padding-top:8px;border-top:1px solid var(--border)">${(o.cons||[]).map(c=>`<div style="display:flex;align-items:flex-start;gap:8px;margin-bottom:6px"><span style="color:#e55;flex-shrink:0">${msIcon('cancel',16)}</span><p style="font-size:13px;color:var(--muted);line-height:1.4">${esc(c)}</p></div>`).join('')}</div>`:''}
       </div>`).join('')}
     ${opts.length===0?'<p style="text-align:center;padding:40px;color:var(--muted);font-size:13px">Sin opciones configuradas.</p>':''}
   </div>`;
@@ -1087,13 +1094,13 @@ function renderComparador(el) {
 // ── BIBLIOTECA ────────────────────────────────────────────
 function renderBiblioteca(el) {
   const resources=currentApp.resources||currentApp.initialItems?.map(t=>({title:t,url:'',type:'link'}))||[];
-  const typeIcon=(t)=>({video:'🎬',pdf:'📄',audio:'🎧',curso:'📚',link:'🔗'}[t]||'🔗');
+  const resTypeIcon=(t)=>({video:msIcon('movie',18),pdf:msIcon('description',18),audio:msIcon('headphones',18),curso:msIcon('school',18),link:msIcon('link',18)}[t]||msIcon('link',18));
   const typeLabel=(t)=>({video:'Video',pdf:'PDF',audio:'Audio',curso:'Curso',link:'Recurso'}[t]||'Enlace');
-  el.innerHTML=sectionHdr(currentApp.icon||'📚', currentApp.name||'Biblioteca', `${resources.length} recursos`) +
+  el.innerHTML=sectionHdr(currentApp.icon||sectionIcon('biblioteca'), currentApp.name||'Biblioteca', `${resources.length} recursos`) +
   `<div class="fade-up" style="padding:20px">
     ${resources.map(r=>`
       <div class="card" style="padding:16px;margin-bottom:10px;display:flex;align-items:center;gap:14px">
-        <div style="width:44px;height:44px;border-radius:12px;background:var(--btn);display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0">${typeIcon(r.type)}</div>
+        <div style="width:44px;height:44px;border-radius:12px;background:var(--btn);display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;color:#fff">${resTypeIcon(r.type)}</div>
         <div style="flex:1;min-width:0">
           <p style="font-weight:700;font-size:13px;line-height:1.3;margin-bottom:2px">${esc(r.title||r)}</p>
           ${r.desc?`<p style="font-size:11px;color:var(--muted);line-height:1.4">${esc(r.desc)}</p>`:`<p style="font-size:11px;color:var(--muted)">${typeLabel(r.type)}</p>`}
@@ -1116,7 +1123,7 @@ function renderMeditacion(el) {
   function fmt(s){ return `${Math.floor(s/60).toString().padStart(2,'0')}:${(s%60).toString().padStart(2,'0')}`; }
 
   function drawMed() {
-    el.innerHTML = sectionHdr(app.icon||'🧘', app.name, app.description||`Meditación · ${durationMin} min`) +
+    el.innerHTML = sectionHdr(app.icon||sectionIcon('meditacion'), app.name, app.description||`Meditación · ${durationMin} min`) +
     `<div class="fade-up" style="padding:20px">
       <div class="card" style="padding:28px;text-align:center;margin-bottom:16px">
         <div id="med-timer" class="med-timer">${fmt(durationMin*60)}</div>
@@ -1127,21 +1134,21 @@ function renderMeditacion(el) {
           <span style="font-size:11px;color:var(--accent);font-weight:700;margin-left:6px">Voz guiada activa...</span>
         </div>
         <div class="med-ctrl-row">
-          <button id="med-play-btn" class="med-play" onclick="medTogglePlay()">▶</button>
+          <button id="med-play-btn" class="med-play" onclick="medTogglePlay()">${msIcon('play_arrow',28)}</button>
           <button id="med-stop-btn" class="med-stop" onclick="medStopAll()" style="display:none">■</button>
-          <button onclick="medToggleVoice()" id="med-voice-btn" class="voice-toggle on">🔊 Voz</button>
+          <button onclick="medToggleVoice()" id="med-voice-btn" class="voice-toggle on">${msIcon('volume_up',14)} Voz</button>
         </div>
         <p style="font-size:11px;color:var(--muted);margin-top:14px">La campana suena al inicio y al finalizar</p>
       </div>
       ${script?`<div class="card" style="padding:20px;margin-bottom:16px">
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
-          <p style="font-size:11px;font-weight:800;color:var(--accent);text-transform:uppercase;letter-spacing:.08em">📜 Guión</p>
-          <button onclick="speakShort(${JSON.stringify(script)})" class="voice-toggle on" style="font-size:10px">🔊 Leer</button>
+          <p style="font-size:11px;font-weight:800;color:var(--accent);text-transform:uppercase;letter-spacing:.08em">${msIcon('article',14)} Guión</p>
+          <button onclick="speakShort(${JSON.stringify(script)})" class="voice-toggle on" style="font-size:10px">${msIcon('volume_up',14)} Leer</button>
         </div>
         <p style="font-size:13px;line-height:1.9;color:var(--muted);white-space:pre-wrap">${esc(script)}</p>
       </div>`:''}
       ${(app.meditationTips||[]).length?`<div class="card" style="padding:16px">
-        <p style="font-size:11px;font-weight:800;color:var(--accent);margin-bottom:10px">💡 Tips para tu práctica</p>
+        <p style="font-size:11px;font-weight:800;color:var(--accent);margin-bottom:10px">${msIcon('lightbulb',14)} Tips para tu práctica</p>
         ${(app.meditationTips||[]).map(t=>`<p style="font-size:13px;color:var(--muted);margin-bottom:6px;line-height:1.5">• ${esc(t)}</p>`).join('')}
       </div>`:''}
     </div>`;
@@ -1153,12 +1160,12 @@ function renderMeditacion(el) {
       clearInterval(timerInterval); timerInterval = null;
       if (medVoiceOn) pauseVoice();
       medPlaying = false;
-      document.getElementById('med-play-btn').textContent = '▶';
+      document.getElementById('med-play-btn').innerHTML = msIcon('play_arrow',28);
       document.getElementById('med-speaking').style.display = 'none';
     } else {
       // Play / Resume
       medPlaying = true;
-      document.getElementById('med-play-btn').textContent = '⏸';
+      document.getElementById('med-play-btn').innerHTML = msIcon('pause',28);
       document.getElementById('med-stop-btn').style.display = 'flex';
       if (!timerInterval) {
         // First start — ring bell
@@ -1185,8 +1192,8 @@ function renderMeditacion(el) {
           stopVoice();
           playBell(528, 3.5);
           document.getElementById('med-speaking') && (document.getElementById('med-speaking').style.display = 'none');
-          document.getElementById('med-play-btn') && (document.getElementById('med-play-btn').textContent = '▶');
-          showToast('✨ Meditación completada. Gracias por este tiempo');
+          document.getElementById('med-play-btn') && (document.getElementById('med-play-btn').innerHTML = msIcon('play_arrow',28));
+          showToast('Meditación completada. Gracias por este tiempo');
         }
       }, 1000);
     }
@@ -1195,7 +1202,7 @@ function renderMeditacion(el) {
   window.medStopAll = () => {
     clearInterval(timerInterval); timerInterval = null;
     stopVoice(); medPlaying = false; secondsLeft = durationMin * 60;
-    document.getElementById('med-play-btn').textContent = '▶';
+    document.getElementById('med-play-btn').innerHTML = msIcon('play_arrow',28);
     document.getElementById('med-stop-btn').style.display = 'none';
     document.getElementById('med-speaking').style.display = 'none';
     document.getElementById('med-timer').textContent = fmt(durationMin*60);
@@ -1204,7 +1211,7 @@ function renderMeditacion(el) {
   window.medToggleVoice = () => {
     medVoiceOn = !medVoiceOn;
     const btn = document.getElementById('med-voice-btn');
-    if (btn) { btn.textContent = medVoiceOn ? '🔊 Voz' : '🔇 Voz'; btn.classList.toggle('on', medVoiceOn); }
+    if (btn) { btn.innerHTML = medVoiceOn ? msIcon('volume_up',14)+' Voz' : msIcon('volume_off',14)+' Voz'; btn.classList.toggle('on', medVoiceOn); }
     if (!medVoiceOn) stopVoice();
   };
 
@@ -1219,7 +1226,7 @@ function renderAfirmaciones(el) {
   function draw() {
     if (!items.length) { el.innerHTML = `<p style="text-align:center;padding:40px;color:var(--muted)">Sin afirmaciones configuradas.</p>`; return; }
     const aff = items[idx % items.length];
-    el.innerHTML = sectionHdr(app.icon||'🌟', app.name, app.description||`${items.length} afirmaciones`) +
+    el.innerHTML = sectionHdr(app.icon||sectionIcon('afirmaciones'), app.name, app.description||`${items.length} afirmaciones`) +
     `<div class="fade-up" style="padding:20px">
       <div class="card-dark" style="padding:32px;text-align:center;margin-bottom:16px;min-height:200px;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer" onclick="nextAff()">
         <p class="serif" style="font-size:20px;font-weight:700;line-height:1.5;color:#fff;margin-bottom:12px">"${esc(aff)}"</p>
@@ -1227,7 +1234,7 @@ function renderAfirmaciones(el) {
       </div>
       <div style="display:flex;gap:10px;margin-bottom:12px">
         <button onclick="prevAff()" class="btn-secondary" style="flex:1">← Anterior</button>
-        <button onclick="speakAff()" id="aff-speak-btn" class="voice-toggle on" style="flex:0 0 auto;border-radius:50px;padding:10px 16px">🔊 Escuchar</button>
+        <button onclick="speakAff()" id="aff-speak-btn" class="voice-toggle on" style="flex:0 0 auto;border-radius:50px;padding:10px 16px">${msIcon('volume_up',14)} Escuchar</button>
         <button onclick="nextAff()" class="btn-secondary" style="flex:1">Siguiente →</button>
       </div>
       <div id="aff-speaking" style="display:none" class="speaking-wrap">
@@ -1246,11 +1253,11 @@ function renderAfirmaciones(el) {
     const sp = document.getElementById('aff-speaking');
     const btn = document.getElementById('aff-speak-btn');
     if (!_voiceStopped) {
-      stopVoice(); if (sp) sp.style.display = 'none'; if (btn) { btn.textContent = '🔊 Escuchar'; btn.classList.add('on'); } return;
+      stopVoice(); if (sp) sp.style.display = 'none'; if (btn) { btn.innerHTML = msIcon('volume_up',14)+' Escuchar'; btn.classList.add('on'); } return;
     }
-    startVoice(aff, () => { if (sp) sp.style.display = 'none'; if (btn) { btn.textContent = '🔊 Escuchar'; btn.classList.add('on'); } });
+    startVoice(aff, () => { if (sp) sp.style.display = 'none'; if (btn) { btn.innerHTML = msIcon('volume_up',14)+' Escuchar'; btn.classList.add('on'); } });
     if (sp) sp.style.display = 'flex';
-    if (btn) { btn.textContent = '■ Detener'; btn.classList.remove('on'); }
+    if (btn) { btn.innerHTML = msIcon('stop',14)+' Detener'; btn.classList.remove('on'); }
   };
   draw();
 }
@@ -1265,7 +1272,7 @@ function renderQuizEmbed(el) {
 // ── GENERIC ───────────────────────────────────────────────
 function renderGeneric(el) {
   el.innerHTML=`<div class="fade-up" style="padding:40px;text-align:center">
-    <div style="font-size:60px;margin-bottom:12px">${esc(currentApp.icon||'⚡')}</div>
+    <div style="font-size:60px;margin-bottom:12px">${currentApp.icon ? esc(currentApp.icon) : msIcon('bolt',60)}</div>
     <h2 class="serif" style="font-size:22px;font-weight:700;margin-bottom:8px">${esc(currentApp.name)}</h2>
     <p style="color:var(--muted);font-size:13px">${esc(currentApp.description||'')}</p>
   </div>`;
