@@ -1432,7 +1432,7 @@ async function handleCreateMiniApp(e) {
       closeModal();
       renderMiniApps();
       const usedCreator = Object.keys(creatorContent).length > 0;
-      showToast(`✦ "${name}" creada${usedCreator ? ' con tu contenido' : ' con contenido IA'}`);
+      showToast(`"${name}" creada${usedCreator ? ' con tu contenido' : ' con contenido IA'}`);
     }, 400);
 
   } catch (err) {
@@ -1719,7 +1719,7 @@ function showUpgradeModal() {
       </div>
       <ul class="space-y-1.5 flex-1">
         ${p.features.map(f => `<li class="flex items-start gap-1.5 text-[11px]" style="color:rgba(255,255,255,0.55);">
-          <span style="color:${p.color};font-size:13px;line-height:1.2;">✓</span>${f}
+          <span class="material-symbols-outlined" style="color:${p.color};font-size:13px;line-height:1.2;font-variation-settings:'FILL' 1">check_circle</span>${f}
         </li>`).join('')}
       </ul>
       ${hasUrl
@@ -1882,8 +1882,8 @@ async function saveEditContent() {
 
   document.getElementById('modal-edit-content').classList.add('hidden');
   const btn = document.getElementById(`edit-btn-${_editingAppId}`);
-  if (btn) btn.textContent = '✓ Guardado';
-  setTimeout(() => { if (btn) btn.textContent = '✏️ Editar'; }, 2000);
+  if (btn) btn.textContent = 'Guardado';
+  setTimeout(() => { if (btn) btn.textContent = 'Editar'; }, 2000);
 }
 
 </script>

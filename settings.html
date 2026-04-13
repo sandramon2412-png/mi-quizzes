@@ -49,6 +49,13 @@
   .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
   .glass-panel { background: rgba(38,38,38,0.6); backdrop-filter: blur(20px); }
   body { min-height: max(884px, 100dvh); }
+  .primary-gradient { background: linear-gradient(135deg, #2E5BFF 0%, #7c3aed 100%); }
+  /* Premium section header accent */
+  section h2 { position: relative; }
+  .section-accent { display: inline-block; padding-bottom: 4px; border-image: linear-gradient(90deg, #2E5BFF, #7c3aed) 1; border-bottom: 2px solid; }
+  /* Profile avatar gradient border */
+  .avatar-ring { background: linear-gradient(135deg, #2E5BFF, #7c3aed); padding: 2px; border-radius: 50%; }
+  .avatar-ring > div { border-radius: 50%; overflow: hidden; }
 </style>
 </head>
 <body class="bg-background text-on-surface">
@@ -123,11 +130,13 @@
     <!-- Profile Section -->
     <div class="lg:col-span-2 space-y-6">
       <section class="bg-surface-container-low rounded-xl p-8 border border-outline-variant/5">
-        <h2 class="text-lg font-bold mb-6 text-on-surface">Perfil</h2>
+        <h2 class="text-lg font-bold mb-6 text-on-surface section-accent">Perfil</h2>
         <div class="flex items-center gap-6 mb-8">
           <div class="relative">
-            <div class="w-20 h-20 rounded-full overflow-hidden border-2 border-primary/30">
-              <img class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCb8fGHN0CXDIGOQsDJr44gJMr4h_2A19WgDG7xn4lqbRe5hcCVhq3pWmYPI-IEnHFIcvCrotJJ6yxayu2isewEhKNGMq5lThqIfldijQTsl6WIcbntzGthL3J3w5VO_pZDPaIMSRQU1n7UfNGO6cdlr5-9uvME7TWEmkw9BZgVSHYGBlj6U5Y2QTAkFGNwjLTxf9nSs3A9mAXRU7SiZL861to-8hMYCZGp3hrNp_kqxStQZxL-VG_bNcA9gmYSIvEIV3ItYlccLjo" alt="Avatar"/>
+            <div class="avatar-ring w-20 h-20">
+              <div class="w-full h-full">
+                <img class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCb8fGHN0CXDIGOQsDJr44gJMr4h_2A19WgDG7xn4lqbRe5hcCVhq3pWmYPI-IEnHFIcvCrotJJ6yxayu2isewEhKNGMq5lThqIfldijQTsl6WIcbntzGthL3J3w5VO_pZDPaIMSRQU1n7UfNGO6cdlr5-9uvME7TWEmkw9BZgVSHYGBlj6U5Y2QTAkFGNwjLTxf9nSs3A9mAXRU7SiZL861to-8hMYCZGp3hrNp_kqxStQZxL-VG_bNcA9gmYSIvEIV3ItYlccLjo" alt="Avatar"/>
+              </div>
             </div>
             <button onclick="alert('Función de carga de imagen próximamente')" class="absolute -bottom-1 -right-1 w-7 h-7 bg-primary rounded-full flex items-center justify-center hover:bg-primary-dim transition-colors">
               <span class="material-symbols-outlined text-white text-sm">edit</span>
@@ -151,7 +160,7 @@
             <label class="block text-xs font-bold text-on-surface-variant uppercase tracking-widest mb-2">Bio</label>
             <textarea id="input-bio" rows="3" class="w-full bg-surface-container-lowest border border-outline-variant/20 rounded-lg px-4 py-3 text-on-surface focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all resize-none" placeholder="Cuéntanos sobre ti..."></textarea>
           </div>
-          <button onclick="saveProfile()" class="px-6 py-3 bg-primary text-on-primary rounded-lg font-bold text-sm hover:bg-primary-dim transition-colors">
+          <button onclick="saveProfile()" class="px-6 py-3 primary-gradient text-on-primary rounded-lg font-bold text-sm hover:brightness-110 transition-all">
             Guardar Cambios
           </button>
         </div>
@@ -164,7 +173,7 @@
             <span class="material-symbols-outlined text-tertiary">bolt</span>
           </div>
           <div>
-            <h2 class="text-lg font-bold text-on-surface">Integración con IA (Groq)</h2>
+            <h2 class="text-lg font-bold text-on-surface section-accent">Integración con IA (Groq)</h2>
             <p class="text-sm text-on-surface-variant mt-1">Conecta tu API key de Groq para generar quizzes y mini-app ideas a mayor velocidad con modelos open source.</p>
           </div>
         </div>
@@ -195,7 +204,7 @@
       <section class="bg-surface-container-low rounded-xl p-8 border border-outline-variant/5">
         <div class="flex items-center justify-between mb-6">
           <div>
-            <h2 class="text-lg font-bold text-on-surface">Dominio Propio</h2>
+            <h2 class="text-lg font-bold text-on-surface section-accent">Dominio Propio</h2>
             <p class="text-sm text-on-surface-variant mt-1">Muestra tus quizzes en tu propio dominio en lugar de luminous-studio.com</p>
           </div>
           <span class="text-xs font-bold px-2.5 py-1 rounded-full bg-primary/10 text-primary">Plan Pro</span>
@@ -231,7 +240,7 @@
             </ol>
           </div>
           <div class="bg-primary/5 border border-primary/20 rounded-xl p-4">
-            <p class="text-xs text-primary font-bold mb-1">💡 ¿Ya tienes el CNAME configurado?</p>
+            <p class="text-xs text-primary font-bold mb-1"><span class="material-symbols-outlined text-sm align-middle" style="font-variation-settings:'FILL' 1">lightbulb</span> ¿Ya tienes el CNAME configurado?</p>
             <p class="text-xs text-on-surface-variant">Escríbenos a <span class="text-primary font-medium">soporte@luminous-studio.com</span> con tu dominio y te lo activamos.</p>
           </div>
         </div>
@@ -241,7 +250,7 @@
       <section class="bg-surface-container-low rounded-xl p-8 border border-outline-variant/5">
         <div class="flex items-center justify-between mb-6">
           <div>
-            <h2 class="text-lg font-bold text-on-surface">Integraciones</h2>
+            <h2 class="text-lg font-bold text-on-surface section-accent">Integraciones</h2>
             <p class="text-sm text-on-surface-variant mt-1">Conecta tus herramientas para automatizar ventas y leads.</p>
           </div>
           <span class="text-xs font-bold px-2.5 py-1 rounded-full bg-primary/10 text-primary">Plan Pro</span>
@@ -470,7 +479,7 @@
 
       <!-- Notifications -->
       <section class="bg-surface-container-low rounded-xl p-8 border border-outline-variant/5">
-        <h2 class="text-lg font-bold mb-6 text-on-surface">Notificaciones</h2>
+        <h2 class="text-lg font-bold mb-6 text-on-surface section-accent">Notificaciones</h2>
         <div class="space-y-4">
           <div class="flex items-center justify-between py-3 border-b border-outline-variant/10">
             <div>
@@ -517,7 +526,7 @@
             <p id="plan-desc" class="text-xs text-on-surface-variant">3 quizzes activos</p>
           </div>
         </div>
-        <a href="./precios.html" class="block w-full text-center py-2.5 bg-primary text-on-primary rounded-lg text-sm font-bold hover:bg-primary-dim transition-colors">Ver Planes</a>
+        <a href="./precios.html" class="block w-full text-center py-2.5 primary-gradient text-on-primary rounded-lg text-sm font-bold hover:brightness-110 transition-all">Ver Planes</a>
       </section>
 
       <!-- Security -->
