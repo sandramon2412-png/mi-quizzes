@@ -27,7 +27,7 @@
           "outline": "#767575",
           "primary": "#2E5BFF",
           "primary-dim": "#3867fb",
-          "secondary": "#69f6b8",
+          "secondary": "#a78bfa",
           "tertiary": "#ffa3e9",
           "error": "#ff6e84",
           "on-primary": "#ffffff",
@@ -56,6 +56,7 @@
   /* Profile avatar gradient border */
   .avatar-ring { background: linear-gradient(135deg, #2E5BFF, #7c3aed); padding: 2px; border-radius: 50%; }
   .avatar-ring > div { border-radius: 50%; overflow: hidden; }
+  .icon-gradient { background: linear-gradient(135deg, #4d7cff, #a78bfa); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
 </style>
 </head>
 <body class="bg-background text-on-surface">
@@ -169,8 +170,8 @@
       <!-- Groq API Key -->
       <section class="bg-surface-container-low rounded-xl p-8 border border-outline-variant/5">
         <div class="flex items-start gap-4 mb-6">
-          <div class="w-10 h-10 rounded-lg bg-tertiary/10 flex items-center justify-center shrink-0">
-            <span class="material-symbols-outlined text-tertiary">bolt</span>
+          <div class="w-10 h-10 rounded-lg flex items-center justify-center shrink-0" style="background:rgba(77,124,255,0.1);">
+            <span class="material-symbols-outlined icon-gradient">bolt</span>
           </div>
           <div>
             <h2 class="text-lg font-bold text-on-surface section-accent">Integración con IA (Groq)</h2>
@@ -181,19 +182,19 @@
           <div>
             <label class="block text-xs font-bold text-on-surface-variant uppercase tracking-widest mb-2">Groq API Key</label>
             <div class="relative">
-              <input id="input-groq-api-key" type="password" placeholder="gsk_..." class="w-full bg-surface-container-lowest border border-outline-variant/20 rounded-lg px-4 py-3 pr-12 text-on-surface focus:ring-2 focus:ring-tertiary focus:border-transparent outline-none transition-all font-mono text-sm"/>
+              <input id="input-groq-api-key" type="password" placeholder="gsk_..." class="w-full bg-surface-container-lowest border border-outline-variant/20 rounded-lg px-4 py-3 pr-12 text-on-surface focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all font-mono text-sm"/>
               <button onclick="toggleGroqApiKeyVisibility()" class="absolute right-3 top-1/2 -translate-y-1/2 text-on-surface-variant hover:text-on-surface transition-colors">
                 <span id="groq-eye-icon" class="material-symbols-outlined text-lg">visibility</span>
               </button>
             </div>
-            <p class="text-xs text-on-surface-variant mt-2">Obtén tu API key en <a href="https://console.groq.com" target="_blank" class="text-tertiary hover:underline">console.groq.com</a>. Se guarda solo en tu navegador, nunca en nuestros servidores.</p>
+            <p class="text-xs text-on-surface-variant mt-2">Obtén tu API key en <a href="https://console.groq.com" target="_blank" class="text-primary hover:underline">console.groq.com</a>. Se guarda solo en tu navegador, nunca en nuestros servidores.</p>
           </div>
           <div id="groq-api-key-status" class="hidden flex items-center gap-2 p-3 rounded-lg text-sm font-medium"></div>
           <div class="flex gap-3">
-            <button onclick="saveGroqApiKey()" class="px-6 py-3 bg-tertiary text-on-tertiary rounded-lg font-bold text-sm hover:opacity-90 transition-opacity">
+            <button onclick="saveGroqApiKey()" class="px-6 py-3 primary-gradient text-on-primary rounded-lg font-bold text-sm hover:brightness-110 transition-all">
               Guardar API Key
             </button>
-            <button onclick="testGroqApiKey()" class="px-6 py-3 border border-tertiary/30 text-tertiary rounded-lg font-bold text-sm hover:bg-tertiary/5 transition-colors">
+            <button onclick="testGroqApiKey()" class="px-6 py-3 border border-primary/30 text-primary rounded-lg font-bold text-sm hover:bg-primary/5 transition-colors">
               Probar Conexión
             </button>
           </div>
@@ -262,8 +263,8 @@
           <div class="integration-card border border-outline-variant/10 rounded-xl overflow-hidden" data-key="hotmart">
             <div class="flex items-center justify-between p-4 cursor-pointer hover:bg-surface-container transition-colors" onclick="toggleIntegration('hotmart')">
               <div class="flex items-center gap-3">
-                <div class="w-9 h-9 rounded-lg flex items-center justify-center" style="background:#FF6B3520;">
-                  <span class="material-symbols-outlined text-base" style="color:#FF6B35;">local_fire_department</span>
+                <div class="w-9 h-9 rounded-lg flex items-center justify-center" style="background:rgba(77,124,255,0.1);">
+                  <span class="material-symbols-outlined text-base icon-gradient">local_fire_department</span>
                 </div>
                 <div>
                   <p class="font-semibold text-sm text-on-surface">Hotmart</p>
@@ -313,8 +314,8 @@
           <div class="integration-card border border-outline-variant/10 rounded-xl overflow-hidden" data-key="stripe">
             <div class="flex items-center justify-between p-4 cursor-pointer hover:bg-surface-container transition-colors" onclick="toggleIntegration('stripe')">
               <div class="flex items-center gap-3">
-                <div class="w-9 h-9 rounded-lg flex items-center justify-center" style="background:#635BFF20;">
-                  <span class="material-symbols-outlined text-base" style="color:#635BFF;">credit_card</span>
+                <div class="w-9 h-9 rounded-lg flex items-center justify-center" style="background:rgba(77,124,255,0.1);">
+                  <span class="material-symbols-outlined text-base icon-gradient">credit_card</span>
                 </div>
                 <div>
                   <p class="font-semibold text-sm text-on-surface">Stripe</p>
@@ -347,8 +348,8 @@
           <div class="integration-card border border-outline-variant/10 rounded-xl overflow-hidden" data-key="mailchimp">
             <div class="flex items-center justify-between p-4 cursor-pointer hover:bg-surface-container transition-colors" onclick="toggleIntegration('mailchimp')">
               <div class="flex items-center gap-3">
-                <div class="w-9 h-9 rounded-lg flex items-center justify-center" style="background:#FFE01B20;">
-                  <span class="material-symbols-outlined text-base" style="color:#FFE01B;">mail</span>
+                <div class="w-9 h-9 rounded-lg flex items-center justify-center" style="background:rgba(77,124,255,0.1);">
+                  <span class="material-symbols-outlined text-base icon-gradient">mail</span>
                 </div>
                 <div>
                   <p class="font-semibold text-sm text-on-surface">Mailchimp</p>
@@ -381,8 +382,8 @@
           <div class="integration-card border border-outline-variant/10 rounded-xl overflow-hidden" data-key="zapier">
             <div class="flex items-center justify-between p-4 cursor-pointer hover:bg-surface-container transition-colors" onclick="toggleIntegration('zapier')">
               <div class="flex items-center gap-3">
-                <div class="w-9 h-9 rounded-lg flex items-center justify-center" style="background:#FF4A0020;">
-                  <span class="material-symbols-outlined text-base" style="color:#FF4A00;">bolt</span>
+                <div class="w-9 h-9 rounded-lg flex items-center justify-center" style="background:rgba(77,124,255,0.1);">
+                  <span class="material-symbols-outlined text-base icon-gradient">bolt</span>
                 </div>
                 <div>
                   <p class="font-semibold text-sm text-on-surface">Zapier <span class="text-[10px] font-bold px-1.5 py-0.5 rounded-full ml-1" style="background:#a855f720;color:#a855f7;">Elite</span></p>
@@ -414,8 +415,8 @@
           <div class="integration-card border border-outline-variant/10 rounded-xl overflow-hidden" data-key="meta">
             <div class="flex items-center justify-between p-4 cursor-pointer hover:bg-surface-container transition-colors" onclick="toggleIntegration('meta')">
               <div class="flex items-center gap-3">
-                <div class="w-9 h-9 rounded-lg flex items-center justify-center" style="background:#2E5BFF20;">
-                  <span class="material-symbols-outlined text-base" style="color:#2E5BFF;">share</span>
+                <div class="w-9 h-9 rounded-lg flex items-center justify-center" style="background:rgba(77,124,255,0.1);">
+                  <span class="material-symbols-outlined text-base icon-gradient">share</span>
                 </div>
                 <div>
                   <p class="font-semibold text-sm text-on-surface">Meta Ads (Pixel)</p>
@@ -444,11 +445,11 @@
           <div class="integration-card border border-outline-variant/10 rounded-xl overflow-hidden" data-key="whatsapp">
             <div class="flex items-center justify-between p-4 cursor-pointer hover:bg-surface-container transition-colors" onclick="toggleIntegration('whatsapp')">
               <div class="flex items-center gap-3">
-                <div class="w-9 h-9 rounded-lg flex items-center justify-center" style="background:#25D36620;">
-                  <span class="material-symbols-outlined text-base" style="color:#25D366;">chat</span>
+                <div class="w-9 h-9 rounded-lg flex items-center justify-center" style="background:rgba(77,124,255,0.1);">
+                  <span class="material-symbols-outlined text-base icon-gradient">chat</span>
                 </div>
                 <div>
-                  <p class="font-semibold text-sm text-on-surface">WhatsApp <span class="text-[10px] font-bold px-1.5 py-0.5 rounded-full ml-1" style="background:#69f6b820;color:#005a3c;">Free</span></p>
+                  <p class="font-semibold text-sm text-on-surface">WhatsApp <span class="text-[10px] font-bold px-1.5 py-0.5 rounded-full ml-1" style="background:rgba(77,124,255,0.12);color:#a78bfa;">Free</span></p>
                   <p class="text-xs text-on-surface-variant">Redirige al usuario a WhatsApp al terminar el quiz</p>
                 </div>
               </div>
@@ -461,14 +462,14 @@
               <p class="text-xs text-on-surface-variant">Al terminar el quiz, el usuario será redirigido a este número con un mensaje automático.</p>
               <div>
                 <label class="text-xs font-bold uppercase tracking-widest text-on-surface-variant block mb-1.5">Número (con código de país)</label>
-                <input type="text" placeholder="+52 55 1234 5678" id="input-whatsapp" class="w-full bg-surface-container-lowest border border-outline-variant/20 rounded-lg px-4 py-2.5 text-sm text-on-surface focus:ring-2 focus:ring-secondary focus:border-transparent outline-none transition-all"/>
+                <input type="text" placeholder="+52 55 1234 5678" id="input-whatsapp" class="w-full bg-surface-container-lowest border border-outline-variant/20 rounded-lg px-4 py-2.5 text-sm text-on-surface focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all"/>
               </div>
               <div>
                 <label class="text-xs font-bold uppercase tracking-widest text-on-surface-variant block mb-1.5">Mensaje automático</label>
-                <textarea rows="2" placeholder="Hola! Acabo de completar el quiz y me interesa..." id="input-whatsapp-msg" class="w-full bg-surface-container-lowest border border-outline-variant/20 rounded-lg px-4 py-2.5 text-sm text-on-surface focus:ring-2 focus:ring-secondary focus:border-transparent outline-none transition-all resize-none"></textarea>
+                <textarea rows="2" placeholder="Hola! Acabo de completar el quiz y me interesa..." id="input-whatsapp-msg" class="w-full bg-surface-container-lowest border border-outline-variant/20 rounded-lg px-4 py-2.5 text-sm text-on-surface focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all resize-none"></textarea>
               </div>
               <div class="flex gap-2 pt-1">
-                <button onclick="connectIntegration('whatsapp')" class="px-5 py-2 rounded-lg text-sm font-bold" style="background:#25D366;color:#fff;">Guardar</button>
+                <button onclick="connectIntegration('whatsapp')" class="px-5 py-2 rounded-lg text-sm font-bold text-white primary-gradient hover:brightness-110 transition-all">Guardar</button>
                 <button onclick="toggleIntegration('whatsapp')" class="px-5 py-2 rounded-lg text-sm font-semibold text-on-surface-variant border border-outline-variant/20 hover:bg-surface-container transition-colors">Cancelar</button>
               </div>
             </div>
@@ -665,7 +666,7 @@
     const el = document.getElementById('groq-api-key-status');
     el.classList.remove('hidden');
     if (success === true) {
-      el.className = 'flex items-center gap-2 p-3 rounded-lg text-sm font-medium bg-tertiary/10 text-tertiary';
+      el.className = 'flex items-center gap-2 p-3 rounded-lg text-sm font-medium bg-primary/10 text-primary';
       el.innerHTML = `<span class="material-symbols-outlined text-base">check_circle</span>${msg}`;
     } else if (success === false) {
       el.className = 'flex items-center gap-2 p-3 rounded-lg text-sm font-medium bg-error/10 text-error';
@@ -764,8 +765,8 @@
     const badge = document.getElementById('status-' + key);
     if (badge) {
       badge.textContent = 'Conectado';
-      badge.style.background = 'rgba(105,246,184,0.15)';
-      badge.style.color = '#69f6b8';
+      badge.style.background = 'rgba(77,124,255,0.15)';
+      badge.style.color = '#a78bfa';
     }
   }
 

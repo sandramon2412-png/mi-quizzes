@@ -18,7 +18,7 @@
         colors: {
           "primary": "#2E5BFF",
           "primary-dim": "#3867fb",
-          "secondary": "#69f6b8",
+          "secondary": "#a78bfa",
           "tertiary": "#ffa3e9",
           "surface": "#080810",
           "surface-container-lowest": "#000000",
@@ -80,9 +80,9 @@
 
   /* Plan badge */
   .badge-free {
-    background: rgba(105,246,184,0.12);
-    border: 1px solid rgba(105,246,184,0.3);
-    color: #69f6b8;
+    background: linear-gradient(135deg, rgba(77,124,255,0.15), rgba(167,139,250,0.15));
+    border: 1px solid rgba(77,124,255,0.3);
+    color: #a78bfa;
   }
   .badge-pro {
     background: linear-gradient(135deg, rgba(46,91,255,0.15), rgba(124,58,237,0.15));
@@ -185,6 +185,7 @@
     padding: 64px 20px; text-align: center; gap: 12px;
   }
 
+  .icon-gradient { background: linear-gradient(135deg, #4d7cff, #a78bfa); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
   /* Header nav active */
   .nav-active { color: #2E5BFF !important; font-weight: 700; }
 </style>
@@ -220,7 +221,7 @@
     <div class="flex items-start justify-between gap-4 flex-wrap">
       <div>
         <div class="flex items-center gap-2 mb-3">
-          <div class="w-8 h-8 rounded-lg flex items-center justify-center text-base" style="background:linear-gradient(135deg,#2E5BFF,#7c3aed);">🤖</div>
+          <div class="w-8 h-8 rounded-lg flex items-center justify-center" style="background:linear-gradient(135deg,#2E5BFF,#7c3aed);"><span class="material-symbols-outlined text-white" style="font-size:18px;font-variation-settings:'FILL' 1">smart_toy</span></div>
           <span class="text-xs font-bold text-primary/60 uppercase tracking-[.15em]">Bot Lab</span>
         </div>
         <h1 class="text-3xl md:text-4xl font-black tracking-tight leading-tight mb-2">
@@ -231,7 +232,7 @@
         </p>
       </div>
       <div class="flex items-center gap-2 text-xs text-on-surface-variant/50">
-        <span class="w-2 h-2 rounded-full bg-secondary/70 animate-pulse inline-block"></span>
+        <span class="w-2 h-2 rounded-full bg-primary/70 animate-pulse inline-block"></span>
         <span id="bot-count">16 bots disponibles</span>
       </div>
     </div>
@@ -254,11 +255,11 @@
       <!-- Category pills -->
       <div class="flex items-center gap-2 flex-wrap" id="cat-pills">
         <button class="cat-pill active" data-cat="Todos" onclick="selectCat(this)">Todos</button>
-        <button class="cat-pill" data-cat="Copywriting" onclick="selectCat(this)">✍️ Copywriting</button>
-        <button class="cat-pill" data-cat="Ads" onclick="selectCat(this)">🚀 Ads</button>
-        <button class="cat-pill" data-cat="Producto" onclick="selectCat(this)">🏗️ Producto</button>
-        <button class="cat-pill" data-cat="Contenido" onclick="selectCat(this)">💬 Contenido</button>
-        <button class="cat-pill" data-cat="Quiz" onclick="selectCat(this)">🎯 Quiz</button>
+        <button class="cat-pill" data-cat="Copywriting" onclick="selectCat(this)"><span class="material-symbols-outlined icon-gradient" style="font-size:14px;vertical-align:middle;font-variation-settings:'FILL' 1">edit_note</span> Copywriting</button>
+        <button class="cat-pill" data-cat="Ads" onclick="selectCat(this)"><span class="material-symbols-outlined icon-gradient" style="font-size:14px;vertical-align:middle;font-variation-settings:'FILL' 1">rocket_launch</span> Ads</button>
+        <button class="cat-pill" data-cat="Producto" onclick="selectCat(this)"><span class="material-symbols-outlined icon-gradient" style="font-size:14px;vertical-align:middle;font-variation-settings:'FILL' 1">deployed_code</span> Producto</button>
+        <button class="cat-pill" data-cat="Contenido" onclick="selectCat(this)"><span class="material-symbols-outlined icon-gradient" style="font-size:14px;vertical-align:middle;font-variation-settings:'FILL' 1">forum</span> Contenido</button>
+        <button class="cat-pill" data-cat="Quiz" onclick="selectCat(this)"><span class="material-symbols-outlined icon-gradient" style="font-size:14px;vertical-align:middle;font-variation-settings:'FILL' 1">quiz</span> Quiz</button>
       </div>
     </div>
   </div>
@@ -276,7 +277,7 @@
 <div id="upgrade-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 hidden">
   <div class="absolute inset-0 bg-black/70" onclick="closeUpgradeModal()"></div>
   <div class="relative z-10 rounded-2xl p-8 max-w-sm w-full text-center" style="background:#0d0d1a;border:1px solid rgba(124,58,237,0.4);box-shadow:0 32px 80px rgba(0,0,0,0.8);">
-    <div class="w-14 h-14 rounded-2xl flex items-center justify-center text-2xl mx-auto mb-4" style="background:linear-gradient(135deg,#2E5BFF,#7c3aed);">⚡</div>
+    <div class="w-14 h-14 rounded-2xl flex items-center justify-center mx-auto mb-4" style="background:linear-gradient(135deg,#2E5BFF,#7c3aed);"><span class="material-symbols-outlined text-white" style="font-size:28px;font-variation-settings:'FILL' 1">bolt</span></div>
     <h3 class="text-xl font-black mb-2">Bot PRO</h3>
     <p class="text-on-surface-variant/70 text-sm mb-6">Este bot está disponible en el plan <span class="text-[#b388ff] font-bold">PRO</span>. Actualiza tu plan para desbloquearlo.</p>
     <div class="flex flex-col gap-3">
@@ -313,27 +314,37 @@ function initHeader() {
 }
 
 // ── Bot data ────────────────────────────────────────────────
+const BOT_ICONS = {
+  'quiz-creator': 'quiz', 'sales-letter': 'description', 'oferta': 'paid', 'vsl-script': 'videocam',
+  'hook-gen': 'link', 'email-seq': 'mail', 'andromeda': 'rocket_launch', 'meta-decision': 'bar_chart',
+  'ad-copy': 'edit_note', 'ad-library': 'search', 'product-builder': 'deployed_code', 'ebook-writer': 'menu_book',
+  'lead-magnet': 'magnet', 'prompt-builder': 'psychology', 'whatsapp-closer': 'forum', 'identity-persuasion': 'theater_comedy',
+};
+function botIcon(id) {
+  const icon = BOT_ICONS[id] || 'smart_toy';
+  return `<span class="material-symbols-outlined icon-gradient" style="font-size:22px;font-variation-settings:'FILL' 1">${icon}</span>`;
+}
 const BOTS = [
   // COPYWRITING
-  { id: 'quiz-creator',        icon: '🎯', name: 'Quiz Creator',         desc: 'Crea quizzes completos con preguntas, perfiles y CTAs para tu nicho.',                          category: 'Quiz',        plan: 'free' },
-  { id: 'sales-letter',        icon: '📄', name: 'Sales Letter Weapon',  desc: 'Carta de venta persuasiva larga para cerrar ventas de infoproductos.',                          category: 'Copywriting', plan: 'pro'  },
-  { id: 'oferta',              icon: '💰', name: 'Oferta Irresistible',   desc: 'Estructura tu oferta con el método Hormozi: stack, garantía y precio.',                         category: 'Copywriting', plan: 'pro'  },
-  { id: 'vsl-script',          icon: '🎬', name: 'VSL Script',            desc: 'Guión completo de Video Sales Letter para vender tu curso o servicio.',                         category: 'Copywriting', plan: 'pro'  },
-  { id: 'hook-gen',            icon: '🪝', name: 'Hook Generator',        desc: 'Genera 10 hooks virales para Reels, TikTok y anuncios en segundos.',                            category: 'Copywriting', plan: 'free' },
-  { id: 'email-seq',           icon: '📧', name: 'Email Sequence',        desc: 'Secuencia de 5 emails de nurturing adaptada a cada perfil del quiz.',                           category: 'Copywriting', plan: 'pro'  },
+  { id: 'quiz-creator',        name: 'Quiz Creator',         desc: 'Crea quizzes completos con preguntas, perfiles y CTAs para tu nicho.',                          category: 'Quiz',        plan: 'free' },
+  { id: 'sales-letter',        name: 'Sales Letter Weapon',  desc: 'Carta de venta persuasiva larga para cerrar ventas de infoproductos.',                          category: 'Copywriting', plan: 'pro'  },
+  { id: 'oferta',              name: 'Oferta Irresistible',   desc: 'Estructura tu oferta con el método Hormozi: stack, garantía y precio.',                         category: 'Copywriting', plan: 'pro'  },
+  { id: 'vsl-script',          name: 'VSL Script',            desc: 'Guión completo de Video Sales Letter para vender tu curso o servicio.',                         category: 'Copywriting', plan: 'pro'  },
+  { id: 'hook-gen',            name: 'Hook Generator',        desc: 'Genera 10 hooks virales para Reels, TikTok y anuncios en segundos.',                            category: 'Copywriting', plan: 'free' },
+  { id: 'email-seq',           name: 'Email Sequence',        desc: 'Secuencia de 5 emails de nurturing adaptada a cada perfil del quiz.',                           category: 'Copywriting', plan: 'pro'  },
   // ADS
-  { id: 'andromeda',           icon: '🚀', name: 'Andromeda Meta Ads',    desc: 'Campañas de FB/IG con el Método Andromeda usando quiz como landing.',                           category: 'Ads',         plan: 'pro'  },
-  { id: 'meta-decision',       icon: '📊', name: 'Meta Ads Decision',     desc: 'Toma decisiones sobre tus campañas basadas en datos y métricas reales.',                        category: 'Ads',         plan: 'pro'  },
-  { id: 'ad-copy',             icon: '✍️', name: 'Master Script Ads',     desc: 'Scripts y copies de anuncios UGC, testimonial y problema-solución.',                            category: 'Ads',         plan: 'pro'  },
-  { id: 'ad-library',          icon: '🔍', name: 'Ad Library Analyzer',   desc: 'Analiza anuncios de tu competencia y extrae las mejores estrategias.',                          category: 'Ads',         plan: 'pro'  },
+  { id: 'andromeda',           name: 'Andromeda Meta Ads',    desc: 'Campañas de FB/IG con el Método Andromeda usando quiz como landing.',                           category: 'Ads',         plan: 'pro'  },
+  { id: 'meta-decision',       name: 'Meta Ads Decision',     desc: 'Toma decisiones sobre tus campañas basadas en datos y métricas reales.',                        category: 'Ads',         plan: 'pro'  },
+  { id: 'ad-copy',             name: 'Master Script Ads',     desc: 'Scripts y copies de anuncios UGC, testimonial y problema-solución.',                            category: 'Ads',         plan: 'pro'  },
+  { id: 'ad-library',          name: 'Ad Library Analyzer',   desc: 'Analiza anuncios de tu competencia y extrae las mejores estrategias.',                          category: 'Ads',         plan: 'pro'  },
   // PRODUCTO
-  { id: 'product-builder',     icon: '🏗️', name: 'AI Product Builder',    desc: 'Estructura tu infoproducto digital completo: módulos, contenido y precio.',                    category: 'Producto',    plan: 'pro'  },
-  { id: 'ebook-writer',        icon: '📚', name: 'Ebook Writer',           desc: 'Contenido completo de tu ebook capítulo por capítulo con IA.',                                 category: 'Producto',    plan: 'pro'  },
-  { id: 'lead-magnet',         icon: '🧲', name: 'Lead Magnet Creator',   desc: 'Crea lead magnets irresistibles que conviertan visitas en leads calificados.',                  category: 'Producto',    plan: 'free' },
-  { id: 'prompt-builder',      icon: '🧠', name: 'Prompt Builder',         desc: 'Prompts listos para usar en ChatGPT y Claude para tu negocio digital.',                        category: 'Contenido',   plan: 'pro'  },
+  { id: 'product-builder',     name: 'AI Product Builder',    desc: 'Estructura tu infoproducto digital completo: módulos, contenido y precio.',                    category: 'Producto',    plan: 'pro'  },
+  { id: 'ebook-writer',        name: 'Ebook Writer',           desc: 'Contenido completo de tu ebook capítulo por capítulo con IA.',                                 category: 'Producto',    plan: 'pro'  },
+  { id: 'lead-magnet',         name: 'Lead Magnet Creator',   desc: 'Crea lead magnets irresistibles que conviertan visitas en leads calificados.',                  category: 'Producto',    plan: 'free' },
+  { id: 'prompt-builder',      name: 'Prompt Builder',         desc: 'Prompts listos para usar en ChatGPT y Claude para tu negocio digital.',                        category: 'Contenido',   plan: 'pro'  },
   // CONTENIDO
-  { id: 'whatsapp-closer',     icon: '💬', name: 'WhatsApp Closer',        desc: 'Secuencias de cierre por WhatsApp adaptadas al perfil de cada lead.',                          category: 'Contenido',   plan: 'pro'  },
-  { id: 'identity-persuasion', icon: '🎭', name: 'Identity Persuasion',    desc: 'Marketing de identidad: conecta tu oferta con quién quiere ser tu cliente.',                   category: 'Copywriting', plan: 'pro'  },
+  { id: 'whatsapp-closer',     name: 'WhatsApp Closer',        desc: 'Secuencias de cierre por WhatsApp adaptadas al perfil de cada lead.',                          category: 'Contenido',   plan: 'pro'  },
+  { id: 'identity-persuasion', name: 'Identity Persuasion',    desc: 'Marketing de identidad: conecta tu oferta con quién quiere ser tu cliente.',                   category: 'Copywriting', plan: 'pro'  },
 ];
 
 // ── State ───────────────────────────────────────────────────
@@ -360,7 +371,7 @@ function renderBots() {
   if (filtered.length === 0) {
     grid.innerHTML = `
       <div class="empty-state">
-        <div style="font-size:48px;margin-bottom:8px;">🔍</div>
+        <div style="margin-bottom:8px;"><span class="material-symbols-outlined icon-gradient" style="font-size:48px;font-variation-settings:'FILL' 1">search</span></div>
         <p class="text-on-surface-variant/50 text-sm">No se encontraron bots con esos filtros.</p>
         <button onclick="resetFilters()" class="mt-2 text-primary text-sm font-semibold hover:underline">Ver todos</button>
       </div>`;
@@ -382,7 +393,7 @@ function renderBots() {
       <!-- Icon + Name -->
       <div class="flex items-start gap-3 mb-3">
         <div class="bot-icon">
-          ${bot.icon}
+          ${botIcon(bot.id)}
         </div>
         <div class="flex-1 min-w-0 pr-10">
           <h3 class="font-bold text-sm text-white leading-tight mb-0.5">${bot.name}</h3>
@@ -395,7 +406,7 @@ function renderBots() {
 
       <!-- Run button -->
       <button class="btn-run ${locked ? 'opacity-70' : ''}" onclick="event.stopPropagation(); runBot('${bot.id}', ${locked})">
-        ${locked ? '🔒 Requiere PRO' : 'Ejecutar Bot →'}
+        ${locked ? '<span class="material-symbols-outlined" style="font-size:14px;font-variation-settings:\'FILL\' 1">lock</span> Requiere PRO' : '<span class="material-symbols-outlined" style="font-size:14px;font-variation-settings:\'FILL\' 1">play_arrow</span> Ejecutar Bot'}
       </button>
     </div>`;
   }).join('');
