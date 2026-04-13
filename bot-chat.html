@@ -6,6 +6,7 @@
 <title>Bot Lab – Luminous Studio</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <script src="./supabase-config.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 :root{--bg:#080810;--sidebar:#0d0d1a;--card:#13131f;--border:rgba(255,255,255,0.06);--text:#e2e8f0;--muted:#94a3b8;--accent:#a78bfa;--accent2:#7c3aed;--user-msg:linear-gradient(135deg,#7c3aed,#a78bfa)}
@@ -20,7 +21,8 @@ html,body{height:100%;font-family:'Inter',system-ui,sans-serif;background:var(--
 #sidebar-body::-webkit-scrollbar{width:4px}
 #sidebar-body::-webkit-scrollbar-track{background:transparent}
 #sidebar-body::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px}
-.bot-icon-lg{font-size:48px;text-align:center;margin-bottom:12px}
+.bot-icon-lg{text-align:center;margin-bottom:12px}
+  .icon-gradient{background:linear-gradient(135deg,#4d7cff,#a78bfa);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
 .bot-name-lg{font-size:18px;font-weight:700;text-align:center;margin-bottom:6px}
 .bot-cat-chip{display:inline-block;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600;background:rgba(167,139,250,0.15);color:var(--accent);margin:0 auto 12px;display:block;width:fit-content;margin-left:auto;margin-right:auto}
 .bot-desc-lg{font-size:13px;color:var(--muted);text-align:center;line-height:1.6;margin-bottom:24px}
@@ -37,7 +39,7 @@ html,body{height:100%;font-family:'Inter',system-ui,sans-serif;background:var(--
 .chat-header-icon{font-size:24px}
 .chat-header-name{font-weight:700;font-size:16px}
 .chat-header-model{font-size:12px;color:var(--muted);margin-left:auto;display:flex;align-items:center;gap:6px}
-.model-dot{width:7px;height:7px;background:#22c55e;border-radius:50%}
+.model-dot{width:7px;height:7px;background:var(--accent);border-radius:50%}
 #messages{flex:1;overflow-y:auto;padding:24px;display:flex;flex-direction:column;gap:16px}
 #messages::-webkit-scrollbar{width:4px}
 #messages::-webkit-scrollbar-track{background:transparent}
@@ -97,7 +99,7 @@ html,body{height:100%;font-family:'Inter',system-ui,sans-serif;background:var(--
       <a href="./bots.html" class="back-link">← Volver al Lab</a>
     </div>
     <div id="sidebar-body">
-      <div class="bot-icon-lg" id="sb-icon">🤖</div>
+      <div class="bot-icon-lg" id="sb-icon"><span class="material-symbols-outlined icon-gradient" style="font-size:48px;font-variation-settings:'FILL' 1">smart_toy</span></div>
       <div class="bot-name-lg" id="sb-name">Bot</div>
       <div class="bot-cat-chip" id="sb-cat">General</div>
       <div class="bot-desc-lg" id="sb-desc"></div>
@@ -110,8 +112,8 @@ html,body{height:100%;font-family:'Inter',system-ui,sans-serif;background:var(--
   </aside>
   <main id="main" style="position:relative">
     <div id="chat-header">
-      <button id="mobile-toggle" onclick="toggleSidebar()">☰</button>
-      <span class="chat-header-icon" id="hdr-icon">🤖</span>
+      <button id="mobile-toggle" onclick="toggleSidebar()"><span class="material-symbols-outlined" style="font-size:20px">menu</span></button>
+      <span class="chat-header-icon" id="hdr-icon"><span class="material-symbols-outlined icon-gradient" style="font-size:24px;font-variation-settings:'FILL' 1">smart_toy</span></span>
       <span class="chat-header-name" id="hdr-name">Bot</span>
       <div class="chat-header-model">
         <span class="model-dot"></span>
@@ -129,7 +131,7 @@ html,body{height:100%;font-family:'Inter',system-ui,sans-serif;background:var(--
     </div>
     <div id="locked-overlay" style="display:none">
       <div class="locked-card">
-        <div class="locked-icon">🔒</div>
+        <div class="locked-icon"><span class="material-symbols-outlined icon-gradient" style="font-size:48px;font-variation-settings:'FILL' 1">lock</span></div>
         <div class="locked-title">Bot PRO</div>
         <div class="locked-desc">Este bot especializado requiere un plan PRO. Desbloquea todos los bots y herramientas avanzadas.</div>
         <a href="./precios.html" class="locked-btn">Ver Planes PRO</a>
@@ -138,23 +140,33 @@ html,body{height:100%;font-family:'Inter',system-ui,sans-serif;background:var(--
   </main>
 </div>
 <script>
+const CHAT_BOT_ICONS={
+  'quiz-creator':'quiz','quiz-profiles':'psychology','quiz-questions':'help','sales-copy':'edit_note',
+  'email-sequence':'mail','whatsapp-closer':'forum','fb-ads':'campaign','andromeda-ads':'rocket_launch',
+  'video-script':'videocam','product-name':'lightbulb','offer-stack':'inventory_2','lead-magnet':'magnet',
+  'content-ideas':'tips_and_updates','reels-hook':'link','identity-copy':'auto_fix_high','launch-plan':'event_note',
+};
+function chatBotIcon(id,size){
+  const icon=CHAT_BOT_ICONS[id]||'smart_toy';
+  return `<span class="material-symbols-outlined icon-gradient" style="font-size:${size||24}px;font-variation-settings:'FILL' 1">${icon}</span>`;
+}
 const BOTS=[
-  {id:'quiz-creator',icon:'🎯',name:'Quiz Creator Pro',category:'Quiz',plan:'free',desc:'Crea quizzes de diagnóstico completos con preguntas, perfiles y mensajes personalizados.'},
-  {id:'quiz-profiles',icon:'🧬',name:'Perfiles de Resultado',category:'Quiz',plan:'pro',desc:'Diseña perfiles de resultado irresistibles que conectan emocionalmente con tu audiencia.'},
-  {id:'quiz-questions',icon:'❓',name:'Generador de Preguntas',category:'Quiz',plan:'free',desc:'Genera preguntas de quiz optimizadas para máximo engagement y segmentación.'},
-  {id:'sales-copy',icon:'✍️',name:'Copy de Ventas',category:'Copywriting',plan:'pro',desc:'Escribe copy de ventas persuasivo al estilo Gary Halbert y Dan Kennedy.'},
-  {id:'email-sequence',icon:'📧',name:'Secuencia de Emails',category:'Copywriting',plan:'pro',desc:'Crea secuencias de email marketing que nutren y convierten a tus leads.'},
-  {id:'whatsapp-closer',icon:'💬',name:'Cierre por WhatsApp',category:'Copywriting',plan:'free',desc:'Genera scripts de cierre de ventas por WhatsApp naturales y efectivos.'},
-  {id:'fb-ads',icon:'📱',name:'Anuncios Facebook/IG',category:'Ads',plan:'pro',desc:'Crea anuncios de Facebook e Instagram que capturan atención y generan clicks.'},
-  {id:'andromeda-ads',icon:'🚀',name:'Método Andrómeda Ads',category:'Ads',plan:'pro',desc:'Implementa el Método Andrómeda: quiz como landing + retargeting de completadores.'},
-  {id:'video-script',icon:'🎬',name:'Script de Video VSL',category:'Ads',plan:'pro',desc:'Escribe scripts de Video Sales Letter que enganchan y convierten.'},
-  {id:'product-name',icon:'💡',name:'Nombre de Producto',category:'Producto',plan:'free',desc:'Genera nombres memorables y estratégicos para tu infoproducto o servicio.'},
-  {id:'offer-stack',icon:'🎁',name:'Stack de Oferta',category:'Producto',plan:'pro',desc:'Construye una oferta irresistible con bonos, garantías y elementos de valor.'},
-  {id:'lead-magnet',icon:'🧲',name:'Lead Magnet Creator',category:'Producto',plan:'free',desc:'Diseña lead magnets de alto valor que atraen leads perfectamente cualificados.'},
-  {id:'content-ideas',icon:'💭',name:'Ideas de Contenido',category:'Contenido',plan:'free',desc:'Genera ideas de contenido para redes sociales alineadas con tu nicho y producto.'},
-  {id:'reels-hook',icon:'🎣',name:'Hooks para Reels',category:'Contenido',plan:'free',desc:'Crea hooks irresistibles para tus Reels que detienen el scroll en los primeros 3 segundos.'},
-  {id:'identity-copy',icon:'🪄',name:'Copy de Identidad',category:'Contenido',plan:'pro',desc:'Escribe copy basado en identidad que hace que tu audiencia diga "esto es para mí".'},
-  {id:'launch-plan',icon:'📅',name:'Plan de Lanzamiento',category:'Producto',plan:'pro',desc:'Crea un plan de lanzamiento completo con fases, contenido y estrategia de ventas.'},
+  {id:'quiz-creator',name:'Quiz Creator Pro',category:'Quiz',plan:'free',desc:'Crea quizzes de diagnóstico completos con preguntas, perfiles y mensajes personalizados.'},
+  {id:'quiz-profiles',name:'Perfiles de Resultado',category:'Quiz',plan:'pro',desc:'Diseña perfiles de resultado irresistibles que conectan emocionalmente con tu audiencia.'},
+  {id:'quiz-questions',name:'Generador de Preguntas',category:'Quiz',plan:'free',desc:'Genera preguntas de quiz optimizadas para máximo engagement y segmentación.'},
+  {id:'sales-copy',name:'Copy de Ventas',category:'Copywriting',plan:'pro',desc:'Escribe copy de ventas persuasivo al estilo Gary Halbert y Dan Kennedy.'},
+  {id:'email-sequence',name:'Secuencia de Emails',category:'Copywriting',plan:'pro',desc:'Crea secuencias de email marketing que nutren y convierten a tus leads.'},
+  {id:'whatsapp-closer',name:'Cierre por WhatsApp',category:'Copywriting',plan:'free',desc:'Genera scripts de cierre de ventas por WhatsApp naturales y efectivos.'},
+  {id:'fb-ads',name:'Anuncios Facebook/IG',category:'Ads',plan:'pro',desc:'Crea anuncios de Facebook e Instagram que capturan atención y generan clicks.'},
+  {id:'andromeda-ads',name:'Método Andrómeda Ads',category:'Ads',plan:'pro',desc:'Implementa el Método Andrómeda: quiz como landing + retargeting de completadores.'},
+  {id:'video-script',name:'Script de Video VSL',category:'Ads',plan:'pro',desc:'Escribe scripts de Video Sales Letter que enganchan y convierten.'},
+  {id:'product-name',name:'Nombre de Producto',category:'Producto',plan:'free',desc:'Genera nombres memorables y estratégicos para tu infoproducto o servicio.'},
+  {id:'offer-stack',name:'Stack de Oferta',category:'Producto',plan:'pro',desc:'Construye una oferta irresistible con bonos, garantías y elementos de valor.'},
+  {id:'lead-magnet',name:'Lead Magnet Creator',category:'Producto',plan:'free',desc:'Diseña lead magnets de alto valor que atraen leads perfectamente cualificados.'},
+  {id:'content-ideas',name:'Ideas de Contenido',category:'Contenido',plan:'free',desc:'Genera ideas de contenido para redes sociales alineadas con tu nicho y producto.'},
+  {id:'reels-hook',name:'Hooks para Reels',category:'Contenido',plan:'free',desc:'Crea hooks irresistibles para tus Reels que detienen el scroll en los primeros 3 segundos.'},
+  {id:'identity-copy',name:'Copy de Identidad',category:'Contenido',plan:'pro',desc:'Escribe copy basado en identidad que hace que tu audiencia diga "esto es para mí".'},
+  {id:'launch-plan',name:'Plan de Lanzamiento',category:'Producto',plan:'pro',desc:'Crea un plan de lanzamiento completo con fases, contenido y estrategia de ventas.'},
 ];
 
 const BOT_PROMPTS={
@@ -224,7 +236,7 @@ function timeStr(){const d=new Date();return d.getHours()+':'+String(d.getMinute
 function renderMessages(){
   const el=document.getElementById('messages');
   if(messages.length===0){
-    el.innerHTML=`<div id="empty-state"><div class="es-icon">${currentBot?currentBot.icon:'🤖'}</div><p>Hola, soy <b>${currentBot?currentBot.name:'el bot'}</b>. ¿En qué puedo ayudarte hoy?</p></div>`;
+    el.innerHTML=`<div id="empty-state"><div class="es-icon">${currentBot?chatBotIcon(currentBot.id,56):'<span class="material-symbols-outlined icon-gradient" style="font-size:56px;font-variation-settings:\'FILL\' 1">smart_toy</span>'}</div><p>Hola, soy <b>${currentBot?currentBot.name:'el bot'}</b>. ¿En qué puedo ayudarte hoy?</p></div>`;
     return;
   }
   el.innerHTML=messages.map(m=>`
@@ -320,11 +332,11 @@ async function init(){
   }catch(e){console.warn(e)}
   const botId=getParam('bot');
   currentBot=BOTS.find(b=>b.id===botId)||BOTS[0];
-  document.getElementById('sb-icon').textContent=currentBot.icon;
+  document.getElementById('sb-icon').innerHTML=chatBotIcon(currentBot.id,48);
   document.getElementById('sb-name').textContent=currentBot.name;
   document.getElementById('sb-cat').textContent=currentBot.category;
   document.getElementById('sb-desc').textContent=currentBot.desc;
-  document.getElementById('hdr-icon').textContent=currentBot.icon;
+  document.getElementById('hdr-icon').innerHTML=chatBotIcon(currentBot.id,24);
   document.getElementById('hdr-name').textContent=currentBot.name;
   document.title=currentBot.name+' – Luminous Studio';
   const starters=BOT_STARTERS[currentBot.id]||[];
