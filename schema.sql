@@ -184,6 +184,32 @@ create trigger on_auth_user_created_apply_upgrade
 --         metaCapiToken, whatsappNumber, leadCapture, miniAppId, etc.
 alter table public.quizzes add column if not exists settings jsonb default '{}'::jsonb;
 
+-- ── Response Events (para tracking de uso mensual) ──────────
+create table if not exists public.response_events (
+  id           uuid        default uuid_generate_v4() primary key,
+  owner_id     uuid        references auth.users on delete cascade not null,
+  content_type text        not null,        -- 'quiz' | 'miniapp'
+  content_id   text        not null,
+  visitor_id   text        not null,
+  month        text        not null,        -- 'YYYY-MM'
+  created_at   timestamptz default now(),
+  unique (owner_id, content_type, content_id, visitor_id, month)
+);
+create index if not exists idx_response_events_owner_month
+  on public.response_events (owner_id, month);
+alter table public.response_events enable row level security;
+create policy "responses_select_own" on public.response_events
+  for select using (auth.uid() = owner_id);
+create policy "responses_insert_any"  on public.response_events
+  for insert with check (true);
+
+-- ── White-label + Custom Domain + Subdomains ────────────────
+alter table public.profiles add column if not exists custom_domain    text default '';
+alter table public.profiles add column if not exists white_label      boolean default false;
+alter table public.profiles add column if not exists white_label_logo text default '';
+alter table public.profiles add column if not exists white_label_name text default '';
+alter table public.profiles add column if not exists subdomains       jsonb default '[]'::jsonb;
+
 -- (Legacy columns, no longer needed with settings jsonb)
 -- alter table public.quizzes add column if not exists meta_pixel_id   text default '';
 -- alter table public.quizzes add column if not exists meta_capi_token text default '';

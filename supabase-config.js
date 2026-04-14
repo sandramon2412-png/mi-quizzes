@@ -283,6 +283,30 @@ const DB = {
     },
   },
 
+  // ── Responses (uso mensual por creador) ──────────────────
+  responses: {
+    async track({ ownerId, contentType, contentId, visitorId, month }) {
+      const { error } = await db.from('response_events').insert({
+        owner_id:     ownerId,
+        content_type: contentType,
+        content_id:   contentId,
+        visitor_id:   visitorId,
+        month,
+      });
+      if (error && !String(error.message).includes('duplicate')) {
+        console.warn('Response tracking error:', error.message);
+      }
+    },
+    async getMonthCount(ownerId, month) {
+      const { count, error } = await db.from('response_events')
+        .select('*', { count: 'exact', head: true })
+        .eq('owner_id', ownerId)
+        .eq('month', month);
+      if (error) { console.warn('Response count error:', error.message); return null; }
+      return count || 0;
+    },
+  },
+
   // ── Analytics ──────────────────────────────────────────────
   analytics: {
     async track(quizId, userId, eventType, profileId = null) {

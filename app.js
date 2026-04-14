@@ -843,10 +843,10 @@ function getPlanBadge(plan) {
 
 // ── Plan capabilities ─────────────────────────────────────
 const PlanLimits = {
-  free:    { quizzes: 1,   responses: 100,      leads: false, ai: false, miniApps: 2,       customDomain: false, metaPixel: false, integrations: false, whiteLabel: false, subdomains: 0, nicheAssistant: false, botLab: false },
-  starter: { quizzes: 3,   responses: 1000,     leads: true,  ai: false, miniApps: 5,       customDomain: false, metaPixel: false, integrations: false, whiteLabel: false, subdomains: 0, nicheAssistant: false, botLab: false },
-  pro:     { quizzes: 999, responses: 10000,    leads: true,  ai: true,  miniApps: 999,     customDomain: true,  metaPixel: true,  integrations: true,  whiteLabel: false, subdomains: 0, nicheAssistant: false, botLab: true  },
-  growth:  { quizzes: 999, responses: 25000,    leads: true,  ai: true,  miniApps: 999,     customDomain: true,  metaPixel: true,  integrations: true,  whiteLabel: false, subdomains: 0, nicheAssistant: true,  botLab: true  },
+  free:    { quizzes: 1,   responses: 500,      leads: false, ai: false, miniApps: 2,       customDomain: false, metaPixel: false, integrations: false, whiteLabel: false, subdomains: 0, nicheAssistant: false, botLab: false },
+  starter: { quizzes: 3,   responses: 5000,     leads: true,  ai: false, miniApps: 5,       customDomain: false, metaPixel: false, integrations: false, whiteLabel: false, subdomains: 0, nicheAssistant: false, botLab: false },
+  pro:     { quizzes: 999, responses: 50000,    leads: true,  ai: true,  miniApps: 999,     customDomain: true,  metaPixel: true,  integrations: true,  whiteLabel: false, subdomains: 0, nicheAssistant: false, botLab: true  },
+  growth:  { quizzes: 999, responses: 150000,   leads: true,  ai: true,  miniApps: 999,     customDomain: true,  metaPixel: true,  integrations: true,  whiteLabel: false, subdomains: 0, nicheAssistant: true,  botLab: true  },
   elite:   { quizzes: 999, responses: Infinity, leads: true,  ai: true,  miniApps: 999,     customDomain: true,  metaPixel: true,  integrations: true,  whiteLabel: true,  subdomains: 5, nicheAssistant: true,  botLab: true  },
 };
 
@@ -863,14 +863,92 @@ function canUsePlanFeature(feature) {
 function getPlanUpgradeMsg(feature) {
   const msgs = {
     leads: 'La captura de leads requiere plan Starter o superior.',
-    ai: 'La generación con IA requiere plan Starter o superior.',
+    ai: 'La generación con IA requiere plan Pro o superior.',
     customDomain: 'El dominio personalizado requiere plan Pro o superior.',
     metaPixel: 'Meta Pixel requiere plan Pro o superior.',
     integrations: 'Las integraciones requieren plan Pro o superior.',
+    botLab: 'Bot Lab requiere plan Pro o superior.',
+    nicheAssistant: 'El Asistente IA del nicho requiere plan Growth o superior.',
     whiteLabel: 'White-label requiere plan Elite.',
+    subdomains: 'Los subdominios requieren plan Elite.',
   };
   return msgs[feature] || 'Esta función requiere un plan superior.';
 }
+
+// ── Response tracking ─────────────────────────────────────
+// Cuenta cada sesión única de un visitante en un quiz o mini-app.
+// Usa fingerprint local + mes actual para evitar duplicados.
+const ResponseTracker = {
+  _visitorId() {
+    let vid = localStorage.getItem('ls_visitor_id');
+    if (!vid) {
+      vid = 'v_' + Date.now().toString(36) + Math.random().toString(36).slice(2, 10);
+      localStorage.setItem('ls_visitor_id', vid);
+    }
+    return vid;
+  },
+  _monthKey() {
+    const d = new Date();
+    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+  },
+  _storageKey(ownerId) {
+    return `ls_responses_${ownerId}_${this._monthKey()}`;
+  },
+  // Registra una respuesta única (mismo visitante en el mismo contenido = no cuenta)
+  async track(ownerId, contentType, contentId) {
+    if (!ownerId || !contentId) return { counted: false };
+    const vid = this._visitorId();
+    const seenKey = `ls_seen_${contentType}_${contentId}_${this._monthKey()}`;
+    if (localStorage.getItem(seenKey)) return { counted: false, reason: 'already_counted' };
+    localStorage.setItem(seenKey, '1');
+    // localStorage counter (fast path)
+    const sk = this._storageKey(ownerId);
+    const current = parseInt(localStorage.getItem(sk) || '0', 10);
+    localStorage.setItem(sk, String(current + 1));
+    // Supabase persistence
+    try {
+      if (typeof DB !== 'undefined' && DB.responses?.track) {
+        await DB.responses.track({ ownerId, contentType, contentId, visitorId: vid, month: this._monthKey() });
+      }
+    } catch (_) {}
+    return { counted: true, total: current + 1 };
+  },
+  // Obtiene el conteo del mes actual para el usuario logueado
+  async getCurrentMonthCount(ownerId) {
+    if (!ownerId) return 0;
+    const sk = this._storageKey(ownerId);
+    let count = parseInt(localStorage.getItem(sk) || '0', 10);
+    try {
+      if (typeof DB !== 'undefined' && DB.responses?.getMonthCount) {
+        const remote = await DB.responses.getMonthCount(ownerId, this._monthKey());
+        if (remote != null) {
+          count = remote;
+          localStorage.setItem(sk, String(count));
+        }
+      }
+    } catch (_) {}
+    return count;
+  },
+  // Devuelve estado: usado, límite, porcentaje, si está cerca/excedido
+  async getUsageStatus(ownerId) {
+    const plan = Settings.get().plan || 'free';
+    const caps = getPlanCaps(plan);
+    const limit = caps.responses;
+    const used = await this.getCurrentMonthCount(ownerId);
+    const unlimited = limit === Infinity;
+    const pct = unlimited ? 0 : Math.min(100, Math.round((used / limit) * 100));
+    return {
+      used,
+      limit: unlimited ? '∞' : limit,
+      limitRaw: limit,
+      percent: pct,
+      unlimited,
+      nearLimit: !unlimited && pct >= 80 && pct < 100,
+      exceeded: !unlimited && used >= limit,
+      plan,
+    };
+  },
+};
 
 // ── Hotmart checkout URLs ──────────────────────────────────
 function getHotmartUrl(plan) {

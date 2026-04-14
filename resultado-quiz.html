@@ -228,6 +228,14 @@
     }
     if (!quiz) quiz = DEMO_QUIZ;
 
+    // Track response (único por visitante, por mes)
+    try {
+      const ownerId = quiz.user_id || quiz.owner_id || quiz.userId;
+      if (ownerId && quizId && quizId !== 'demo' && typeof ResponseTracker !== 'undefined') {
+        ResponseTracker.track(ownerId, 'quiz', quizId);
+      }
+    } catch (_) {}
+
     // Apply branding
     const brandColor = quiz.brandColor || quiz.themeColor;
     if (brandColor) {

@@ -241,6 +241,14 @@ document.addEventListener('DOMContentLoaded', async () => {
   if (app && !MiniApps.get(id)) MiniApps.save(app);
   currentApp = app;
 
+  // Track response (único por visitante, por mes)
+  try {
+    const ownerId = app.owner_id || app.userId || app.user_id;
+    if (ownerId && typeof ResponseTracker !== 'undefined') {
+      ResponseTracker.track(ownerId, 'miniapp', id);
+    }
+  } catch (_) {}
+
   // Fallback theme if no AI-generated theme data
   if (!app.mode && !app.accent) {
     const n = (app.niche || '').toLowerCase();
@@ -300,11 +308,13 @@ document.addEventListener('DOMContentLoaded', async () => {
   }
   document.getElementById('access-title').textContent = app.name;
   document.getElementById('access-desc').textContent = app.description || (app.niche ? `${app.niche}` : 'Aplicación interactiva');
-  document.title = app.name + ' | Luminous Studio';
-  // Update OG tags dynamically for better sharing
-  document.querySelector('meta[property="og:title"]')?.setAttribute('content', app.name + ' | Luminous Studio');
-  document.querySelector('meta[property="og:description"]')?.setAttribute('content', app.description || 'Aplicación interactiva creada con Luminous Studio');
-  document.querySelector('meta[name="description"]')?.setAttribute('content', app.description || 'Aplicación interactiva creada con Luminous Studio');
+  // White-label: si el creador tiene Elite + white-label activo, ocultar marca Luminous Studio
+  const brandSuffix = app.whiteLabel && app.whiteLabelName ? ' | ' + app.whiteLabelName : (app.whiteLabel ? '' : ' | Luminous Studio');
+  const brandDesc = app.whiteLabel && app.whiteLabelName ? `Aplicación interactiva de ${app.whiteLabelName}` : 'Aplicación interactiva creada con Luminous Studio';
+  document.title = app.name + brandSuffix;
+  document.querySelector('meta[property="og:title"]')?.setAttribute('content', app.name + brandSuffix);
+  document.querySelector('meta[property="og:description"]')?.setAttribute('content', app.description || brandDesc);
+  document.querySelector('meta[name="description"]')?.setAttribute('content', app.description || brandDesc);
   if (app.accessCodes?.length) {
     document.getElementById('access-code-section').style.display = 'block';
   } else {
