@@ -74,13 +74,33 @@ El player soporta **19 tipos de sección** que se combinan en una sola app:
 ## Planes de Suscripción
 | Plan | Precio | Quizzes | Mini-Apps | Respuestas/mes | IA | Leads | Bot Lab |
 |------|--------|---------|-----------|----------------|----|-------|---------|
-| Free | $0 | 1 | 2 | 100 | No | No | No |
-| Starter | $5/mes | 3 | 5 | 1,000 | **No** | Sí | No |
-| Pro | $9/mes | Ilimitados | Ilimitadas | 10,000 | Sí | Sí | Sí |
-| Growth | $19/mes | Ilimitados | Ilimitadas | 25,000 | Sí | Sí | Sí |
+| Free | $0 | 1 | 2 | 500 | No | No | No |
+| Starter | $5/mes | 3 | 5 | 5,000 | **No** | Sí | No |
+| Pro | $9/mes | Ilimitados | Ilimitadas | 50,000 | Sí | Sí | Sí |
+| Growth | $19/mes | Ilimitados | Ilimitadas | 150,000 | Sí | Sí | Sí |
 | Elite | $49/mes | Ilimitados | Ilimitadas | Ilimitadas | Sí | Sí | Sí |
 
-**Decisión**: Starter NO incluye IA — la IA es el diferenciador clave para upgrade a Pro ($9).
+**Decisiones clave**:
+- Starter NO incluye IA — la IA es el diferenciador para upgrade a Pro ($9)
+- Límites generosos porque Groq es gratis (cada creador usa su propia API key)
+- Una "respuesta" = un visitante único completando un quiz o abriendo una mini-app (contado por mes)
+- El tracking usa `localStorage ls_visitor_id` + tabla Supabase `response_events` (con UNIQUE constraint)
+
+## Features del Dashboard
+- Widget de uso mensual: barra de progreso con % y avisos al 80% y 100%
+- `loadUsageWidget()` llama a `ResponseTracker.getUsageStatus(ownerId)`
+- Al pasar límite: advertencia visible pero NO bloquea el contenido
+
+## White-label, Custom Domain, Subdominios
+- **Dominio propio** (Pro+): `custom_domain` en profile + guía DNS en Settings + verificación via Google DNS
+- **White-label** (Elite): `white_label`, `white_label_name`, `white_label_logo` en profile. Oculta "Luminous Studio" del título/meta tags del player
+- **Subdominios** (Elite): array `subdomains` en profile, máximo 5
+
+## Groq API Key (para crear contenido con IA)
+Cada creador configura su propia Groq API key en Settings:
+- Obtener en console.groq.com/keys (gratis)
+- Se guarda encriptada en `profiles.groq_api_key`
+- Si falla, sistema usa Claude como fallback (via Supabase Edge Function)
 
 La matriz de capacidades está en `app.js` → `PlanLimits`.
 

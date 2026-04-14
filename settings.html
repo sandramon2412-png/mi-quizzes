@@ -175,19 +175,69 @@
           </div>
           <div>
             <h2 class="text-lg font-bold text-on-surface section-accent">Integración con IA (Groq)</h2>
-            <p class="text-sm text-on-surface-variant mt-1">Conecta tu API key de Groq para generar quizzes y mini-app ideas a mayor velocidad con modelos open source.</p>
+            <p class="text-sm text-on-surface-variant mt-1">Conecta tu propia API key gratis de Groq para generar quizzes y contenido de mini-apps con IA sin límite.</p>
           </div>
         </div>
+
+        <!-- Guía paso a paso -->
+        <div class="mb-6 rounded-xl p-5 border border-primary/15" style="background:rgba(77,124,255,0.05);">
+          <div class="flex items-center gap-2 mb-4">
+            <span class="material-symbols-outlined icon-gradient" style="font-size:20px;">menu_book</span>
+            <h3 class="text-sm font-bold text-on-surface">Cómo obtener tu API key de Groq (2 minutos)</h3>
+          </div>
+          <ol class="space-y-3 text-sm text-on-surface-variant">
+            <li class="flex gap-3">
+              <span class="flex-shrink-0 w-6 h-6 rounded-full text-white text-xs font-bold flex items-center justify-center primary-gradient">1</span>
+              <div>
+                Entra a <a href="https://console.groq.com/login" target="_blank" class="text-primary hover:underline font-bold">console.groq.com/login</a> y crea una cuenta gratis (con Google o email).
+              </div>
+            </li>
+            <li class="flex gap-3">
+              <span class="flex-shrink-0 w-6 h-6 rounded-full text-white text-xs font-bold flex items-center justify-center primary-gradient">2</span>
+              <div>
+                Ve a <a href="https://console.groq.com/keys" target="_blank" class="text-primary hover:underline font-bold">console.groq.com/keys</a> y haz clic en <strong class="text-on-surface">"Create API Key"</strong>.
+              </div>
+            </li>
+            <li class="flex gap-3">
+              <span class="flex-shrink-0 w-6 h-6 rounded-full text-white text-xs font-bold flex items-center justify-center primary-gradient">3</span>
+              <div>
+                Dale un nombre (ej: <em class="text-on-surface">"Luminous Studio"</em>) y copia la clave que empieza con <code class="font-mono text-primary">gsk_...</code>
+                <p class="text-xs mt-1 text-on-surface-variant/70">Importante: solo podrás ver la clave una vez. Cópiala de inmediato.</p>
+              </div>
+            </li>
+            <li class="flex gap-3">
+              <span class="flex-shrink-0 w-6 h-6 rounded-full text-white text-xs font-bold flex items-center justify-center primary-gradient">4</span>
+              <div>
+                Pégala en el campo de abajo y haz clic en <strong class="text-on-surface">"Guardar API Key"</strong>. Luego prueba la conexión.
+              </div>
+            </li>
+          </ol>
+          <div class="mt-4 pt-4 border-t border-primary/10 text-xs text-on-surface-variant space-y-1.5">
+            <p class="flex items-start gap-2">
+              <span class="material-symbols-outlined text-primary" style="font-size:14px;">info</span>
+              <span><strong class="text-on-surface">Es 100% gratis.</strong> Groq ofrece acceso gratuito con límites generosos (30 peticiones/min) suficientes para cualquier creador.</span>
+            </p>
+            <p class="flex items-start gap-2">
+              <span class="material-symbols-outlined text-primary" style="font-size:14px;">lock</span>
+              <span><strong class="text-on-surface">Tu clave es tuya.</strong> Se guarda encriptada en tu cuenta y nunca la compartimos. Solo tú la usas.</span>
+            </p>
+            <p class="flex items-start gap-2">
+              <span class="material-symbols-outlined text-primary" style="font-size:14px;">help</span>
+              <span>¿Tienes problemas? Puedes <a href="https://console.groq.com/docs/quickstart" target="_blank" class="text-primary hover:underline font-bold">ver la documentación oficial</a>.</span>
+            </p>
+          </div>
+        </div>
+
         <div class="space-y-4">
           <div>
-            <label class="block text-xs font-bold text-on-surface-variant uppercase tracking-widest mb-2">Groq API Key</label>
+            <label class="block text-xs font-bold text-on-surface-variant uppercase tracking-widest mb-2">Tu Groq API Key</label>
             <div class="relative">
               <input id="input-groq-api-key" type="password" placeholder="gsk_..." class="w-full bg-surface-container-lowest border border-outline-variant/20 rounded-lg px-4 py-3 pr-12 text-on-surface focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all font-mono text-sm"/>
               <button onclick="toggleGroqApiKeyVisibility()" class="absolute right-3 top-1/2 -translate-y-1/2 text-on-surface-variant hover:text-on-surface transition-colors">
                 <span id="groq-eye-icon" class="material-symbols-outlined text-lg">visibility</span>
               </button>
             </div>
-            <p class="text-xs text-on-surface-variant mt-2">Obtén tu API key en <a href="https://console.groq.com" target="_blank" class="text-primary hover:underline">console.groq.com</a>. Se guarda solo en tu navegador, nunca en nuestros servidores.</p>
+            <p class="text-xs text-on-surface-variant mt-2">Formato: empieza con <code class="font-mono text-primary">gsk_</code> seguido de una cadena larga.</p>
           </div>
           <div id="groq-api-key-status" class="hidden flex items-center gap-2 p-3 rounded-lg text-sm font-medium"></div>
           <div class="flex gap-3">
@@ -240,10 +290,106 @@
               </li>
             </ol>
           </div>
-          <div class="bg-primary/5 border border-primary/20 rounded-xl p-4">
-            <p class="text-xs text-primary font-bold mb-1"><span class="material-symbols-outlined text-sm align-middle" style="font-variation-settings:'FILL' 1">lightbulb</span> ¿Ya tienes el CNAME configurado?</p>
-            <p class="text-xs text-on-surface-variant">Escríbenos a <span class="text-primary font-medium">soporte@luminous-studio.com</span> con tu dominio y te lo activamos.</p>
+          <!-- Guardar dominio -->
+          <div class="bg-surface-container rounded-xl p-5 border border-outline-variant/10">
+            <label class="block text-xs font-bold text-on-surface-variant uppercase tracking-widest mb-2">Tu dominio personalizado</label>
+            <input id="input-custom-domain" type="text" placeholder="quiz.tu-dominio.com" class="w-full bg-surface-container-lowest border border-outline-variant/20 rounded-lg px-4 py-3 text-on-surface focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all font-mono text-sm"/>
+            <p class="text-xs text-on-surface-variant mt-2">Una vez configurado el CNAME, escribe aquí tu dominio completo.</p>
+            <div id="custom-domain-status" class="hidden mt-3 p-3 rounded-lg text-sm font-medium"></div>
+            <div class="flex gap-3 mt-4">
+              <button onclick="saveCustomDomain()" class="px-6 py-3 primary-gradient text-white rounded-lg font-bold text-sm hover:brightness-110 transition-all">
+                Guardar dominio
+              </button>
+              <button onclick="verifyCustomDomain()" class="px-6 py-3 border border-primary/30 text-primary rounded-lg font-bold text-sm hover:bg-primary/5 transition-colors">
+                Verificar DNS
+              </button>
+            </div>
           </div>
+
+          <div class="bg-primary/5 border border-primary/20 rounded-xl p-4">
+            <p class="text-xs text-primary font-bold mb-1"><span class="material-symbols-outlined text-sm align-middle" style="font-variation-settings:'FILL' 1">lightbulb</span> ¿Necesitas ayuda?</p>
+            <p class="text-xs text-on-surface-variant">Escríbenos a <span class="text-primary font-medium">soporte@luminous-studio.com</span> con tu dominio y te lo activamos en Vercel.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- White-label (Elite) -->
+      <section class="bg-surface-container-low rounded-xl p-8 border border-outline-variant/5" id="section-whitelabel">
+        <div class="flex items-center justify-between mb-6">
+          <div class="flex items-start gap-4">
+            <div class="w-10 h-10 rounded-lg flex items-center justify-center shrink-0" style="background:rgba(77,124,255,0.1);">
+              <span class="material-symbols-outlined icon-gradient">branding_watermark</span>
+            </div>
+            <div>
+              <h2 class="text-lg font-bold text-on-surface section-accent">White-label</h2>
+              <p class="text-sm text-on-surface-variant mt-1">Oculta la marca Luminous Studio en tus quizzes y mini-apps. Muestra la tuya.</p>
+            </div>
+          </div>
+          <span class="text-xs font-bold px-2.5 py-1 rounded-full" style="background:rgba(245,158,11,0.15);color:#f59e0b;">Elite</span>
+        </div>
+        <div id="whitelabel-locked" class="hidden bg-surface-container rounded-xl p-5 border border-outline-variant/10 text-center">
+          <span class="material-symbols-outlined text-on-surface-variant mb-2" style="font-size:32px;">lock</span>
+          <p class="text-sm text-on-surface font-bold mb-1">Función exclusiva del plan Elite</p>
+          <p class="text-xs text-on-surface-variant mb-4">Quita la marca Luminous Studio y usa la tuya en todo tu contenido.</p>
+          <a href="./precios.html" class="inline-block px-5 py-2 primary-gradient text-white rounded-lg font-bold text-xs">Ver plan Elite</a>
+        </div>
+        <div id="whitelabel-content" class="space-y-4">
+          <div class="flex items-center justify-between bg-surface-container rounded-xl p-4 border border-outline-variant/10">
+            <div>
+              <p class="text-sm font-bold text-on-surface">Activar white-label</p>
+              <p class="text-xs text-on-surface-variant mt-0.5">Oculta el footer "Hecho con Luminous Studio".</p>
+            </div>
+            <label class="relative inline-flex items-center cursor-pointer">
+              <input type="checkbox" id="toggle-whitelabel" class="sr-only peer">
+              <div class="w-11 h-6 bg-surface-container-highest rounded-full peer peer-checked:bg-primary transition-colors"></div>
+              <span class="absolute left-1 top-1 w-4 h-4 bg-white rounded-full peer-checked:translate-x-5 transition-transform"></span>
+            </label>
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-on-surface-variant uppercase tracking-widest mb-2">Nombre de tu marca</label>
+            <input id="input-wl-name" type="text" placeholder="Mi Marca" class="w-full bg-surface-container-lowest border border-outline-variant/20 rounded-lg px-4 py-3 text-on-surface focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all text-sm"/>
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-on-surface-variant uppercase tracking-widest mb-2">URL de tu logo</label>
+            <input id="input-wl-logo" type="url" placeholder="https://mi-dominio.com/logo.png" class="w-full bg-surface-container-lowest border border-outline-variant/20 rounded-lg px-4 py-3 text-on-surface focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all text-sm font-mono"/>
+            <p class="text-xs text-on-surface-variant mt-2">Recomendado: PNG transparente, 200x50px.</p>
+          </div>
+          <div id="whitelabel-status" class="hidden p-3 rounded-lg text-sm font-medium"></div>
+          <button onclick="saveWhiteLabel()" class="px-6 py-3 primary-gradient text-white rounded-lg font-bold text-sm hover:brightness-110 transition-all">
+            Guardar configuración
+          </button>
+        </div>
+      </section>
+
+      <!-- Subdominios (Elite) -->
+      <section class="bg-surface-container-low rounded-xl p-8 border border-outline-variant/5" id="section-subdomains">
+        <div class="flex items-center justify-between mb-6">
+          <div class="flex items-start gap-4">
+            <div class="w-10 h-10 rounded-lg flex items-center justify-center shrink-0" style="background:rgba(77,124,255,0.1);">
+              <span class="material-symbols-outlined icon-gradient">dns</span>
+            </div>
+            <div>
+              <h2 class="text-lg font-bold text-on-surface section-accent">Subdominios</h2>
+              <p class="text-sm text-on-surface-variant mt-1">Gestiona hasta 5 subdominios diferentes para diferentes marcas o negocios.</p>
+            </div>
+          </div>
+          <span class="text-xs font-bold px-2.5 py-1 rounded-full" style="background:rgba(245,158,11,0.15);color:#f59e0b;">Elite</span>
+        </div>
+        <div id="subdomains-locked" class="hidden bg-surface-container rounded-xl p-5 border border-outline-variant/10 text-center">
+          <span class="material-symbols-outlined text-on-surface-variant mb-2" style="font-size:32px;">lock</span>
+          <p class="text-sm text-on-surface font-bold mb-1">Función exclusiva del plan Elite</p>
+          <p class="text-xs text-on-surface-variant mb-4">Administra múltiples marcas bajo una sola cuenta.</p>
+          <a href="./precios.html" class="inline-block px-5 py-2 primary-gradient text-white rounded-lg font-bold text-xs">Ver plan Elite</a>
+        </div>
+        <div id="subdomains-content" class="space-y-4">
+          <div id="subdomains-list" class="space-y-2"></div>
+          <div class="flex gap-2">
+            <input id="input-new-subdomain" type="text" placeholder="marca1.luminous-studio.com" class="flex-1 bg-surface-container-lowest border border-outline-variant/20 rounded-lg px-4 py-3 text-on-surface focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all text-sm font-mono"/>
+            <button onclick="addSubdomain()" class="px-5 py-3 primary-gradient text-white rounded-lg font-bold text-sm hover:brightness-110 transition-all whitespace-nowrap">
+              <span class="material-symbols-outlined align-middle" style="font-size:18px;">add</span> Agregar
+            </button>
+          </div>
+          <p class="text-xs text-on-surface-variant">Usa <span class="font-mono text-primary">tu-marca.luminous-studio.com</span> o tu propio dominio.</p>
         </div>
       </section>
 
@@ -607,10 +753,16 @@
         showGroqApiStatus('API key guardada ✓', true);
       }
       const plan = profile?.plan || 'free';
+      Settings.save({ plan });
       const planLimits = { free: 'Quizzes básicos', pro: 'Quizzes ilimitados', business: 'Proyectos ilimitados' };
       document.getElementById('plan-name').textContent = plan.charAt(0).toUpperCase() + plan.slice(1);
       const quizzes = await DB.quizzes.getAll(_settingsUser.id);
       document.getElementById('plan-desc').textContent = `${quizzes.length} quizzes creados · ${planLimits[plan] || planLimits.free}`;
+      // Custom domain + white-label + subdomains
+      document.getElementById('input-custom-domain').value = profile?.custom_domain || '';
+      loadWhiteLabel(profile);
+      loadSubdomains(profile);
+      checkWhiteLabelAccess();
     } catch {
       // Fallback to localStorage
       const s = Settings.get();
@@ -694,6 +846,133 @@
     t.textContent = msg;
     t.style.opacity = '1';
     setTimeout(() => t.style.opacity = '0', 2800);
+  }
+
+  // ===== DOMINIO PROPIO =====
+  async function saveCustomDomain() {
+    const domain = document.getElementById('input-custom-domain').value.trim().toLowerCase()
+      .replace(/^https?:\/\//, '').replace(/\/$/, '');
+    if (!domain) { showCustomDomainStatus('Ingresa un dominio válido.', false); return; }
+    if (!/^[a-z0-9.-]+\.[a-z]{2,}$/.test(domain)) { showCustomDomainStatus('Formato inválido. Ej: quiz.mi-dominio.com', false); return; }
+    try {
+      if (_settingsUser && typeof DB !== 'undefined') {
+        await DB.profiles.upsert(_settingsUser.id, { custom_domain: domain });
+      }
+      Settings.save({ customDomain: domain });
+      showCustomDomainStatus('Dominio guardado ✓. Recuerda configurar el CNAME.', true);
+      showToast('Dominio guardado correctamente ✓');
+    } catch (e) { showCustomDomainStatus('Error al guardar: ' + e.message, false); }
+  }
+  async function verifyCustomDomain() {
+    const domain = document.getElementById('input-custom-domain').value.trim();
+    if (!domain) { showCustomDomainStatus('Primero ingresa tu dominio.', false); return; }
+    showCustomDomainStatus('Verificando DNS...', null);
+    try {
+      const res = await fetch(`https://dns.google/resolve?name=${encodeURIComponent(domain)}&type=CNAME`);
+      const data = await res.json();
+      const hasVercel = (data.Answer || []).some(a => /vercel-dns\.com/i.test(a.data || ''));
+      if (hasVercel) {
+        showCustomDomainStatus('¡DNS configurado correctamente! Contacta soporte para activarlo en Vercel.', true);
+      } else {
+        showCustomDomainStatus('El CNAME todavía no apunta a cname.vercel-dns.com. Los DNS pueden tardar hasta 24h.', false);
+      }
+    } catch (e) { showCustomDomainStatus('No se pudo verificar. Intenta de nuevo.', false); }
+  }
+  function showCustomDomainStatus(msg, success) {
+    const el = document.getElementById('custom-domain-status');
+    el.textContent = msg;
+    el.classList.remove('hidden', 'bg-primary/10', 'text-primary', 'bg-red-500/10', 'text-red-400', 'bg-surface-container');
+    if (success === true) el.classList.add('bg-primary/10', 'text-primary');
+    else if (success === false) el.classList.add('bg-red-500/10', 'text-red-400');
+    else el.classList.add('bg-surface-container');
+  }
+
+  // ===== WHITE-LABEL =====
+  function checkWhiteLabelAccess() {
+    const plan = Settings.get().plan || 'free';
+    const isElite = plan === 'elite';
+    document.getElementById('whitelabel-locked').classList.toggle('hidden', isElite);
+    document.getElementById('whitelabel-content').classList.toggle('hidden', !isElite);
+    document.getElementById('subdomains-locked').classList.toggle('hidden', isElite);
+    document.getElementById('subdomains-content').classList.toggle('hidden', !isElite);
+  }
+  async function loadWhiteLabel(profile) {
+    if (!profile) return;
+    document.getElementById('toggle-whitelabel').checked = !!profile.white_label;
+    document.getElementById('input-wl-name').value = profile.white_label_name || '';
+    document.getElementById('input-wl-logo').value = profile.white_label_logo || '';
+    Settings.save({
+      whiteLabel: !!profile.white_label,
+      whiteLabelName: profile.white_label_name || '',
+      whiteLabelLogo: profile.white_label_logo || '',
+    });
+  }
+  async function saveWhiteLabel() {
+    const enabled = document.getElementById('toggle-whitelabel').checked;
+    const name = document.getElementById('input-wl-name').value.trim();
+    const logo = document.getElementById('input-wl-logo').value.trim();
+    try {
+      if (_settingsUser && typeof DB !== 'undefined') {
+        await DB.profiles.upsert(_settingsUser.id, {
+          white_label: enabled,
+          white_label_name: name,
+          white_label_logo: logo,
+        });
+      }
+      Settings.save({ whiteLabel: enabled, whiteLabelName: name, whiteLabelLogo: logo });
+      const s = document.getElementById('whitelabel-status');
+      s.textContent = 'Configuración guardada ✓';
+      s.classList.remove('hidden'); s.classList.add('bg-primary/10', 'text-primary');
+      showToast('White-label actualizado ✓');
+      setTimeout(() => s.classList.add('hidden'), 3000);
+    } catch (e) { showToast('Error: ' + e.message, 'error'); }
+  }
+
+  // ===== SUBDOMINIOS =====
+  let _subdomains = [];
+  function loadSubdomains(profile) {
+    _subdomains = Array.isArray(profile?.subdomains) ? profile.subdomains : [];
+    renderSubdomains();
+  }
+  function renderSubdomains() {
+    const list = document.getElementById('subdomains-list');
+    if (!list) return;
+    if (!_subdomains.length) {
+      list.innerHTML = '<p class="text-xs text-on-surface-variant text-center py-4">No hay subdominios configurados. Agrega uno abajo.</p>';
+      return;
+    }
+    list.innerHTML = _subdomains.map((sd, i) => `
+      <div class="flex items-center justify-between bg-surface-container rounded-lg px-4 py-3 border border-outline-variant/10">
+        <span class="font-mono text-sm text-on-surface">${sd}</span>
+        <button onclick="removeSubdomain(${i})" class="text-on-surface-variant hover:text-red-400 transition-colors">
+          <span class="material-symbols-outlined" style="font-size:20px;">delete</span>
+        </button>
+      </div>
+    `).join('');
+  }
+  async function addSubdomain() {
+    const input = document.getElementById('input-new-subdomain');
+    const sd = input.value.trim().toLowerCase().replace(/^https?:\/\//, '').replace(/\/$/, '');
+    if (!sd) return;
+    if (!/^[a-z0-9.-]+\.[a-z]{2,}$/.test(sd)) { showToast('Formato inválido. Ej: marca1.mi-dominio.com', 'error'); return; }
+    if (_subdomains.includes(sd)) { showToast('Ese subdominio ya existe', 'error'); return; }
+    if (_subdomains.length >= 5) { showToast('Máximo 5 subdominios', 'error'); return; }
+    _subdomains.push(sd);
+    await saveSubdomains();
+    input.value = '';
+  }
+  async function removeSubdomain(i) {
+    _subdomains.splice(i, 1);
+    await saveSubdomains();
+  }
+  async function saveSubdomains() {
+    try {
+      if (_settingsUser && typeof DB !== 'undefined') {
+        await DB.profiles.upsert(_settingsUser.id, { subdomains: _subdomains });
+      }
+      renderSubdomains();
+      showToast('Subdominios actualizados ✓');
+    } catch (e) { showToast('Error: ' + e.message, 'error'); }
   }
 
   // ===== INTEGRACIONES =====

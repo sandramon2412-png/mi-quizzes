@@ -174,6 +174,31 @@
     </div>
   </div>
 
+  <!-- ── Uso mensual (respuestas) ── -->
+  <div id="usage-widget" class="hidden mb-6 rounded-2xl p-5 border border-primary/15 bg-surface-container-low">
+    <div class="flex items-center justify-between mb-3">
+      <div>
+        <p class="text-[11px] font-bold text-on-surface-variant uppercase tracking-widest flex items-center gap-1.5">
+          <span class="material-symbols-outlined text-primary" style="font-size:14px;font-variation-settings:'FILL' 1">speed</span>
+          Uso del mes
+        </p>
+        <p class="text-sm text-on-surface mt-1"><span id="usage-used" class="font-bold">0</span> / <span id="usage-limit">0</span> respuestas</p>
+      </div>
+      <div class="text-right">
+        <span id="usage-percent" class="text-2xl font-black text-primary">0%</span>
+        <p id="usage-plan-label" class="text-[10px] text-on-surface-variant uppercase tracking-widest mt-0.5">Plan Free</p>
+      </div>
+    </div>
+    <div class="h-2 bg-surface-container-highest rounded-full overflow-hidden">
+      <div id="usage-bar" class="h-full rounded-full transition-all duration-500" style="width:0%;background:linear-gradient(90deg,#4d7cff,#a78bfa);"></div>
+    </div>
+    <div id="usage-warning" class="hidden mt-3 p-3 rounded-lg text-xs" style="background:rgba(251,146,60,0.1);border:1px solid rgba(251,146,60,0.3);color:#fb923c;">
+      <span class="material-symbols-outlined align-middle" style="font-size:14px;">warning</span>
+      <span id="usage-warning-text">Estás cerca del límite.</span>
+      <a href="./precios.html" class="underline font-bold ml-1">Actualizar plan</a>
+    </div>
+  </div>
+
   <!-- ── Stats (unified bar) ── -->
   <div class="stats-bar flex mb-8">
 
@@ -803,6 +828,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   if (!_currentUser) return;
   await Promise.all([loadUserInfo(), renderMiniApps(), renderQuizzes()]);
   loadLeadsCount();
+  loadUsageWidget();
   // Show onboarding on first visit
   const onboardingKey = `onboarding_done_${_currentUser.id}`;
   if (!localStorage.getItem(onboardingKey)) {
@@ -832,6 +858,32 @@ async function loadUserInfo() {
       Settings.save({ groqApiKey: profile.groq_api_key });
     }
   } catch {}
+}
+
+// ── Usage widget (respuestas del mes) ─────────────────────
+async function loadUsageWidget() {
+  try {
+    if (typeof ResponseTracker === 'undefined' || !_currentUser?.id) return;
+    const status = await ResponseTracker.getUsageStatus(_currentUser.id);
+    const widget = document.getElementById('usage-widget');
+    if (!widget) return;
+    widget.classList.remove('hidden');
+    document.getElementById('usage-used').textContent = status.used.toLocaleString('es');
+    document.getElementById('usage-limit').textContent = status.unlimited ? '∞' : status.limit.toLocaleString('es');
+    document.getElementById('usage-percent').textContent = status.unlimited ? '∞' : status.percent + '%';
+    document.getElementById('usage-plan-label').textContent = 'Plan ' + (status.plan.charAt(0).toUpperCase() + status.plan.slice(1));
+    const bar = document.getElementById('usage-bar');
+    bar.style.width = status.unlimited ? '100%' : status.percent + '%';
+    if (status.exceeded) {
+      bar.style.background = 'linear-gradient(90deg,#ef4444,#dc2626)';
+      document.getElementById('usage-warning').classList.remove('hidden');
+      document.getElementById('usage-warning-text').textContent = '¡Límite alcanzado! Tus quizzes y mini-apps siguen funcionando, pero considera subir de plan.';
+    } else if (status.nearLimit) {
+      bar.style.background = 'linear-gradient(90deg,#fb923c,#f97316)';
+      document.getElementById('usage-warning').classList.remove('hidden');
+      document.getElementById('usage-warning-text').textContent = `Vas en el ${status.percent}% de tu límite mensual.`;
+    }
+  } catch (e) { console.warn('Usage widget error:', e); }
 }
 
 // ── Leads count + sparkline ───────────────────────────────
