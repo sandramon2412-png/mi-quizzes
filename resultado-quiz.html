@@ -187,13 +187,18 @@
     <div id="all-profiles-grid" class="grid grid-cols-1 md:grid-cols-3 gap-4"></div>
   </div>
 
-  <!-- ── FOOTER CTA ── -->
-  <div class="text-center py-8 border-t border-gray-100 space-y-3 fade-up-3">
+  <!-- ── FOOTER CTA (hide when white-label) ── -->
+  <div id="cta-footer" class="text-center py-8 border-t border-gray-100 space-y-3 fade-up-3">
     <p class="text-gray-400 text-sm">¿Quieres este quiz para tu propio producto?</p>
     <a href="./generador-ia.html"
       class="inline-flex items-center gap-2 px-6 py-3 bg-brand text-white rounded-full text-xs font-bold tracking-wide hover:bg-brand/90 transition-colors">
       + Crear mi quiz con IA
     </a>
+  </div>
+
+  <!-- ── BRAND FOOTER ── -->
+  <div id="brand-footer" class="text-center py-6" style="display:none">
+    <p id="brand-footer-text" class="text-xs text-gray-400 inline-flex items-center gap-1.5"></p>
   </div>
 
 </main>
@@ -229,12 +234,43 @@
     if (!quiz) quiz = DEMO_QUIZ;
 
     // Track response (único por visitante, por mes)
+    const ownerId = quiz.user_id || quiz.owner_id || quiz.userId;
     try {
-      const ownerId = quiz.user_id || quiz.owner_id || quiz.userId;
       if (ownerId && quizId && quizId !== 'demo' && typeof ResponseTracker !== 'undefined') {
         ResponseTracker.track(ownerId, 'quiz', quizId);
       }
     } catch (_) {}
+
+    // White-label: load creator's profile to know if we should show Luminous branding
+    let whiteLabel = false, whiteLabelName = '', whiteLabelLogo = '';
+    try {
+      if (ownerId && typeof DB !== 'undefined') {
+        const prof = await DB.profiles.get(ownerId);
+        if (prof) {
+          whiteLabel     = !!prof.white_label;
+          whiteLabelName = prof.white_label_name || '';
+          whiteLabelLogo = prof.white_label_logo || '';
+        }
+      }
+    } catch (_) {}
+
+    // Render footer based on white-label status
+    const brandFooter = document.getElementById('brand-footer');
+    const brandFooterText = document.getElementById('brand-footer-text');
+    const ctaFooter = document.getElementById('cta-footer');
+    if (!whiteLabel) {
+      brandFooterText.innerHTML = 'Hecho con <a href="https://luminous.studio" target="_blank" rel="noopener" class="text-brand font-semibold hover:underline">Luminous Studio</a>';
+      brandFooter.style.display = 'block';
+    } else if (whiteLabelName) {
+      const logoHtml = whiteLabelLogo ? `<img src="${whiteLabelLogo}" alt="" class="h-4 w-auto mr-1 inline-block align-middle">` : '';
+      brandFooterText.innerHTML = `${logoHtml}<span class="font-semibold text-gray-500">${whiteLabelName}</span>`;
+      brandFooter.style.display = 'block';
+      // Hide "crear mi quiz" CTA when white-label is active
+      if (ctaFooter) ctaFooter.style.display = 'none';
+    } else {
+      brandFooter.style.display = 'none';
+      if (ctaFooter) ctaFooter.style.display = 'none';
+    }
 
     // Apply branding
     const brandColor = quiz.brandColor || quiz.themeColor;
@@ -261,7 +297,8 @@
     document.getElementById('result-recommendation').textContent = profile.recommendation || '';
     document.getElementById('result-subtitle').textContent     =
       `Basado en tus respuestas al quiz "${quiz.title || ''}", este es tu perfil.`;
-    document.title = `Tu perfil: ${profile.name} | ${quiz.product || 'Luminous Studio'}`;
+    const titleBrand = whiteLabel ? (whiteLabelName || quiz.product || '') : (quiz.product || 'Luminous Studio');
+    document.title = `Tu perfil: ${profile.name}${titleBrand ? ' | ' + titleBrand : ''}`;
 
     // Match bar
     const matchPct = profile.matchScore || (Math.floor(Math.random() * 18) + 82);

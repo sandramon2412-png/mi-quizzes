@@ -186,6 +186,8 @@ const DB = {
       questions:        r.questions,
       profiles:         r.profiles,
       userId:           r.user_id,
+      user_id:          r.user_id,
+      owner_id:         r.user_id,
       // Spread all settings fields back to top level
       ...(r.settings || {}),
     }),
@@ -246,6 +248,8 @@ const DB = {
 
     _norm: (r) => ({
       id:          r.id,
+      user_id:     r.user_id,
+      owner_id:    r.user_id,
       created:     r.created_at,
       status:      r.status,
       name:        r.name,
