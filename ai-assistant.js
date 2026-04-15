@@ -660,23 +660,7 @@
 
         let reply = null;
 
-        // ── 1. Intentar Groq (no necesita sesión Supabase) ──
-        const groqKey = Settings.getGroqApiKey();
-        if (groqKey) {
-          const groqRes = await fetch('https://api.groq.com/openai/v1/chat/completions', {
-            method: 'POST',
-            headers: { 'Authorization': `Bearer ${groqKey}`, 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              model: 'llama-3.3-70b-versatile',
-              max_tokens: 1024,
-              messages: [{ role: 'system', content: _currentMode.prompt }, ...cleanMessages],
-            }),
-          });
-          const groqData = await groqRes.json();
-          if (groqRes.ok) reply = groqData.choices?.[0]?.message?.content;
-        }
-
-        // ── 2. Fallback: Claude proxy ──
+        // ── Lloyd usa SIEMPRE Claude proxy (plataforma paga) ──
         if (!reply) {
           // Obtener token, intentando refresh primero
           let token = null;
@@ -695,7 +679,7 @@
             // Sin sesión válida: mostrar mensaje con links de acción
             _activeSession.messages.push({
               role: 'assistant',
-              content: '⚠️ Tu sesión expiró o no tienes Groq configurado.\n\n**Opciones:**\n• [Iniciar sesión de nuevo](./login.html)\n• Añade tu API key de Groq en [Ajustes](./settings.html) para usar el asistente sin depender de la sesión.',
+              content: 'Tu sesión expiró. Por favor [inicia sesión de nuevo](./login.html) para seguir usando el asistente.',
               _isError: true,
             });
             _isThinking = false;

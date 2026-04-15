@@ -686,16 +686,13 @@ IMPORTANTE: Devuelve SOLO el JSON válido, sin markdown, sin texto antes ni desp
   },
 };
 
-// ── Groq API ───────────────────────────────────────────────
+// ── Groq API (vía proxy con master key de la plataforma) ───
 const Groq = {
   async _call(messages, maxTokens = 3000) {
-    const apiKey = Settings.getGroqApiKey();
-    if (!apiKey) throw new Error('NO_GROQ_KEY');
-
-    const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+    const doRequest = async (token) => fetch(`${SUPABASE_URL}/functions/v1/groq-proxy`, {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${apiKey}`,
+        'Authorization': `Bearer ${token}`,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
@@ -705,12 +702,21 @@ const Groq = {
       }),
     });
 
+    let token = await Auth.getToken();
+    if (!token) throw new Error('Sesión inválida. Inicia sesión de nuevo.');
+
+    let res = await doRequest(token);
+    if (res.status === 401) {
+      // Retry once with fresh token
+      token = await Auth.getToken();
+      if (token) res = await doRequest(token);
+    }
     if (!res.ok) {
       const err = await res.json().catch(() => ({}));
       throw new Error(err.error?.message || `Error ${res.status}`);
     }
     const data = await res.json();
-    return data.choices[0].message.content;
+    return data.choices?.[0]?.message?.content || '';
   },
 
   _parseJSON(text) {
@@ -767,27 +773,33 @@ const Groq = {
   },
 };
 
-// ── AI helper: Groq primero, Claude como fallback ──────────
+// ── AI helper: CREACIÓN paga por la plataforma ─────────────
+// Tareas complejas/críticas → Claude (mejor calidad).
+// Tareas simples/listas → Groq (rápido y económico).
+// Si Groq falla, fallback automático a Claude.
 const AI = {
+  // Complejo: quiz completo con preguntas + perfiles + CTAs
   async generateQuiz(product, desc, niche, numQ, numOpts) {
-    if (Settings.getGroqApiKey()) return Groq.generateQuiz(product, desc, niche, numQ, numOpts);
     return Claude.generateQuiz(product, desc, niche, numQ, numOpts);
   },
+  // Simple: lista de ideas — si falla Groq, cae a Claude
   async generateMiniAppIdeas(product, desc, niche) {
-    if (Settings.getGroqApiKey()) return Groq.generateMiniAppIdeas(product, desc, niche);
-    return Claude.generateMiniAppIdeas(product, desc, niche);
+    try { return await Groq.generateMiniAppIdeas(product, desc, niche); }
+    catch (e) { console.warn('Groq falló, cayendo a Claude:', e.message); return Claude.generateMiniAppIdeas(product, desc, niche); }
   },
+  // Simple: mejora breve de una pregunta
   async improveQuestion(question, context) {
-    if (Settings.getGroqApiKey()) return Groq.improveQuestion(question, context);
-    return Claude.improveQuestion(question, context);
+    try { return await Groq.improveQuestion(question, context); }
+    catch (e) { return Claude.improveQuestion(question, context); }
   },
+  // Complejo: contenido estructurado de mini-app (días, scripts, etc.)
   async generateMiniAppContent(appIdea, product, niche, creatorCtx = null) {
-    if (Settings.getGroqApiKey()) return Groq.generateMiniAppContent(appIdea, product, niche, creatorCtx);
     return Claude.generateMiniAppContent(appIdea, product, niche, creatorCtx);
   },
+  // Simple: paleta de colores
   async generateAppTheme(niche, product) {
-    if (Settings.getGroqApiKey()) return Groq.generateAppTheme(niche, product);
-    return Claude.generateAppTheme(niche, product);
+    try { return await Groq.generateAppTheme(niche, product); }
+    catch (e) { return Claude.generateAppTheme(niche, product); }
   },
 };
 

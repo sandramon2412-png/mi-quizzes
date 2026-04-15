@@ -6,7 +6,10 @@ Plataforma SaaS para creadores de infoproductos hispanohablantes. Permite crear 
 ## Stack Técnico
 - **Frontend**: HTML estático, JavaScript vanilla, Tailwind CSS via CDN
 - **Backend**: Supabase (auth, PostgreSQL, Edge Functions)
-- **IA**: Groq API (Llama 3.3 70B) como primario, Claude como proxy fallback via Supabase Edge Function
+- **IA**: Arquitectura dividida en tres capas:
+  1. **Creación — complejo** (quiz completo, contenido estructurado de mini-apps, Bot Lab, Lloyd): Claude via `claude-proxy` (master key ANTHROPIC_API_KEY de la plataforma).
+  2. **Creación — simple** (ideas de mini-apps, mejorar una pregunta, paletas de color): Groq master via `groq-proxy` (master key GROQ_API_KEY de la plataforma). Si Groq falla, cae automáticamente a Claude.
+  3. **Runtime** (chatbot y generador dentro de mini-apps publicadas): Groq del **creador** via `creator-ai-proxy` (key en `profiles.groq_api_key`). Si el creador no tiene Groq configurada, cae a Claude master.
 - **Deploy**: Vercel desde `main` branch. Pushes a ramas `claude/*` se auto-mergean a `main` via GitHub Actions
 - **Iconos**: Material Symbols Outlined (Google Fonts). NO usar emojis en la UI
 - **Fuente**: Plus Jakarta Sans
@@ -96,11 +99,12 @@ El player soporta **19 tipos de sección** que se combinan en una sola app:
 - **White-label** (Elite): `white_label`, `white_label_name`, `white_label_logo` en profile. Oculta "Luminous Studio" del título/meta tags del player
 - **Subdominios** (Elite): array `subdomains` en profile, máximo 5
 
-## Groq API Key (para crear contenido con IA)
-Cada creador configura su propia Groq API key en Settings:
-- Obtener en console.groq.com/keys (gratis)
-- Se guarda encriptada en `profiles.groq_api_key`
-- Si falla, sistema usa Claude como fallback (via Supabase Edge Function)
+## Groq API Key (runtime de quizzes/mini-apps publicados)
+Cada creador configura su propia Groq API key en Settings. **Se usa solo en runtime** — cuando los visitantes del creador interactúan con chatbots/generadores dentro de sus mini-apps publicadas.
+- Obtener en console.groq.com/keys (gratis — 30 req/min)
+- Se guarda en `profiles.groq_api_key`
+- El Edge Function `creator-ai-proxy` (público, sin auth) recibe `{contentType, contentId, messages, ...}`, hace lookup del owner, y llama a Groq con la key del creador. Si no hay key o falla, cae a Claude con la master key de la plataforma.
+- **Creación** de contenido (quizzes, mini-apps, Bot Lab, Lloyd) NO usa la Groq del creador — lo cubre la plataforma via `claude-proxy`.
 
 La matriz de capacidades está en `app.js` → `PlanLimits`.
 

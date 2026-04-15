@@ -288,18 +288,9 @@ async function sendMessage(text){
 }
 
 async function callAI(userMsg){
+  // Bot Lab SIEMPRE usa Claude proxy (plataforma paga el uso del creador)
   const systemPrompt=BOT_PROMPTS[currentBot.id]||'Eres un asistente útil. Responde en español.';
   const history=messages.slice(-10).map(m=>({role:m.role==='user'?'user':'assistant',content:m.content}));
-  if(groqKey){
-    try{
-      const r=await fetch('https://api.groq.com/openai/v1/chat/completions',{
-        method:'POST',
-        headers:{'Authorization':'Bearer '+groqKey,'Content-Type':'application/json'},
-        body:JSON.stringify({model:'llama-3.3-70b-versatile',messages:[{role:'system',content:systemPrompt},...history],max_tokens:2048,temperature:0.7})
-      });
-      if(r.ok){const d=await r.json();return d.choices[0].message.content}
-    }catch(e){console.warn('Groq failed, trying proxy',e)}
-  }
   const token=await Auth.getToken();
   const r=await fetch(SUPABASE_URL+'/functions/v1/claude-proxy',{
     method:'POST',

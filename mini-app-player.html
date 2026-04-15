@@ -791,7 +791,6 @@ function renderCalculadora(el) {
 
 // ── GENERADOR ─────────────────────────────────────────────
 function renderGenerador(el) {
-  const groqKey=(typeof Settings!=='undefined'&&Settings.getGroqApiKey)?Settings.getGroqApiKey():'';
   el.innerHTML=sectionHdr(currentApp.icon||sectionIcon('generador'), currentApp.name, currentApp.description||'Generador con IA') +
   `<div class="fade-up" style="padding:20px">
     <div class="card" style="padding:16px;margin-bottom:12px">
@@ -823,18 +822,14 @@ function renderGenerador(el) {
     const rawPrompt=currentApp.generatorPrompt||`Genera contenido útil y accionable. Responde en español con formato claro.`;
     const prompt=rawPrompt.replace('[input del usuario]',input).includes(input)?rawPrompt.replace('[input del usuario]',input):`${rawPrompt}\n\nSolicitud del usuario: ${input}`;
     try{
-      let result='';
-      if(groqKey){
-        const r=await fetch('https://api.groq.com/openai/v1/chat/completions',{method:'POST',headers:{'Authorization':'Bearer '+groqKey,'Content-Type':'application/json'},body:JSON.stringify({model:'llama-3.3-70b-versatile',messages:[{role:'user',content:prompt}],max_tokens:700})});
-        const d=await r.json();result=d.choices?.[0]?.message?.content||'Sin respuesta';
-      }else{
-        const token=await Auth.getToken().catch(()=>null);
-        if(!token){result='Configura tu API key de Groq en Ajustes para usar el generador.';}
-        else{
-          const r=await fetch(`${SUPABASE_URL}/functions/v1/claude-proxy`,{method:'POST',headers:{'Authorization':'Bearer '+token,'Content-Type':'application/json'},body:JSON.stringify({messages:[{role:'user',content:prompt}],max_tokens:700})});
-          const d=await r.json();result=d.content?.[0]?.text||'Sin respuesta';
-        }
-      }
+      // Llama al proxy server-side que usa la groq key del CREADOR
+      const r=await fetch(`${SUPABASE_URL}/functions/v1/creator-ai-proxy`,{
+        method:'POST',
+        headers:{'apikey':SUPABASE_ANON_KEY,'Content-Type':'application/json'},
+        body:JSON.stringify({contentType:'miniapp',contentId:currentApp.id,messages:[{role:'user',content:prompt}],maxTokens:700})
+      });
+      const d=await r.json();
+      const result=d.content||d?.error?.message||'Sin respuesta';
       _lastResult=result;
       const resEl=document.getElementById('gen-result');
       resEl.textContent=result;resEl.style.display='block';
@@ -850,7 +845,6 @@ function renderChatbot(el) {
   const botName=app.chatbotName||app.name||'Asistente';
   const botIcon=app.icon||msIcon('smart_toy',22);
   const systemPrompt=app.chatbotSystemPrompt||`Eres un asistente experto en ${app.niche||'este tema'}. Responde en español, de forma cálida, empática y útil. Máximo 4 oraciones.`;
-  const groqKey=(typeof Settings!=='undefined'&&Settings.getGroqApiKey)?Settings.getGroqApiKey():'';
   let msgs=[], chatVoiceOn=false;
   el.innerHTML=`<div style="display:flex;flex-direction:column;height:calc(100dvh - 130px);min-height:400px">
     <div style="padding:14px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:12px;flex-shrink:0">
@@ -894,18 +888,14 @@ function renderChatbot(el) {
     if(statusEl)statusEl.innerHTML=`<span style="width:6px;height:6px;border-radius:50%;background:var(--accent);display:inline-block;animation:pulseRing 1.4s infinite"></span><span style="color:var(--accent)">Escribiendo...</span>`;
     try{
       let reply='';
-      if(groqKey){
-        const r=await fetch('https://api.groq.com/openai/v1/chat/completions',{method:'POST',headers:{'Authorization':'Bearer '+groqKey,'Content-Type':'application/json'},body:JSON.stringify({model:'llama-3.1-8b-instant',messages:[{role:'system',content:systemPrompt},...msgs],max_tokens:250,temperature:.75})});
-        const d=await r.json();reply=d.choices?.[0]?.message?.content||'No pude responder.';
-      }else{
-        const token=await Auth.getToken().catch(()=>null);
-        if(token){
-          const r=await fetch(`${SUPABASE_URL}/functions/v1/claude-proxy`,{method:'POST',headers:{'Authorization':'Bearer '+token,'Content-Type':'application/json'},body:JSON.stringify({messages:[{role:'system',content:systemPrompt},{role:'user',content:text}],max_tokens:250})});
-          const d=await r.json();reply=d.content?.[0]?.text||'No pude responder.';
-        }else{
-          reply=`Soy ${botName}. Configura tu API key de Groq en Ajustes para activar la IA.`;
-        }
-      }
+      // Llama al proxy server-side que usa la groq key del CREADOR del mini-app
+      const r=await fetch(`${SUPABASE_URL}/functions/v1/creator-ai-proxy`,{
+        method:'POST',
+        headers:{'apikey':SUPABASE_ANON_KEY,'Content-Type':'application/json'},
+        body:JSON.stringify({contentType:'miniapp',contentId:currentApp.id,systemPrompt,messages:msgs,maxTokens:250,model:'llama-3.1-8b-instant'})
+      });
+      const d=await r.json();
+      reply=d.content||d?.error?.message||'No pude responder.';
       msgs.push({role:'assistant',content:reply});
       document.getElementById(tid)?.remove();
       appendChatMsg('bot',reply);
