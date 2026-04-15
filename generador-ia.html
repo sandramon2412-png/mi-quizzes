@@ -519,10 +519,9 @@ document.addEventListener('DOMContentLoaded', async () => {
 
 // ── Generate with AI ──────────────────────────────────────
 async function generateWithAI() {
-  // Plan enforcement: free plan cannot use AI generation
-  const plan = Settings.get().plan || 'free';
-  if (plan === 'free') {
-    showToast('La generación con IA requiere plan Starter o superior. Puedes crear el quiz manualmente.', 'error');
+  // Plan enforcement: only Pro+ can use AI generation
+  if (typeof canUsePlanFeature === 'function' && !canUsePlanFeature('ai')) {
+    showToast('La generación con IA requiere plan Pro o superior. Puedes crear el quiz manualmente.', 'error');
     setTimeout(() => {
       if (confirm('¿Quieres ver los planes disponibles?')) window.location.href = './precios.html';
     }, 500);
