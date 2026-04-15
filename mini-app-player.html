@@ -223,6 +223,11 @@
   </div>
 
   <div id="app-content" style="flex:1;overflow-y:auto;width:100%"><!-- filled by renderApp() --></div>
+
+  <!-- Footer (se oculta/reemplaza con white-label) -->
+  <footer id="app-footer" style="display:none;padding:14px 16px;text-align:center;font-size:11px;color:var(--muted);border-top:1px solid var(--border);background:var(--bg);">
+    <span id="footer-text">Hecho con <a href="https://luminous-studio.com" target="_blank" rel="noopener" style="color:var(--accent);text-decoration:none;font-weight:600;">Luminous Studio</a></span>
+  </footer>
 </div>
 
 <script>
@@ -242,10 +247,22 @@ document.addEventListener('DOMContentLoaded', async () => {
   currentApp = app;
 
   // Track response (único por visitante, por mes)
+  const ownerId = app.owner_id || app.userId || app.user_id;
   try {
-    const ownerId = app.owner_id || app.userId || app.user_id;
     if (ownerId && typeof ResponseTracker !== 'undefined') {
       ResponseTracker.track(ownerId, 'miniapp', id);
+    }
+  } catch (_) {}
+
+  // Cargar white-label del creador (si existe)
+  try {
+    if (ownerId && typeof DB !== 'undefined') {
+      const profile = await DB.profiles.get(ownerId);
+      if (profile) {
+        app.whiteLabel     = !!profile.white_label;
+        app.whiteLabelName = profile.white_label_name || '';
+        app.whiteLabelLogo = profile.white_label_logo || '';
+      }
     }
   } catch (_) {}
 
@@ -315,6 +332,23 @@ document.addEventListener('DOMContentLoaded', async () => {
   document.querySelector('meta[property="og:title"]')?.setAttribute('content', app.name + brandSuffix);
   document.querySelector('meta[property="og:description"]')?.setAttribute('content', app.description || brandDesc);
   document.querySelector('meta[name="description"]')?.setAttribute('content', app.description || brandDesc);
+
+  // Footer: si no es white-label, mostrar "Hecho con Luminous Studio".
+  // Si es white-label CON marca personalizada → mostrarla. Si es white-label SIN marca → ocultar todo.
+  const footer     = document.getElementById('app-footer');
+  const footerText = document.getElementById('footer-text');
+  if (footer && footerText) {
+    if (!app.whiteLabel) {
+      footerText.innerHTML = 'Hecho con <a href="https://luminous-studio.com" target="_blank" rel="noopener" style="color:var(--accent);text-decoration:none;font-weight:600;">Luminous Studio</a>';
+      footer.style.display = 'block';
+    } else if (app.whiteLabelName) {
+      const logoHtml = app.whiteLabelLogo ? `<img src="${app.whiteLabelLogo}" alt="${app.whiteLabelName}" style="height:18px;vertical-align:middle;margin-right:6px;">` : '';
+      footerText.innerHTML = `${logoHtml}<span style="font-weight:600;color:var(--text);">${app.whiteLabelName}</span>`;
+      footer.style.display = 'block';
+    } else {
+      footer.style.display = 'none';
+    }
+  }
   if (app.accessCodes?.length) {
     document.getElementById('access-code-section').style.display = 'block';
   } else {

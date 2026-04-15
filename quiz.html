@@ -508,6 +508,18 @@
       }
     } catch (err) { console.warn('Lead save error:', err.message); }
 
+    // Fire integrations webhooks (Zapier, Mailchimp queue, etc.)
+    try {
+      if (typeof Integrations !== 'undefined') {
+        Integrations.fireLeadCaptured({
+          name, email,
+          quizId: QUIZ.id, quizTitle: QUIZ.title, product: QUIZ.product,
+          profileId: _calculatedProfile?.id || null,
+          profileName: _calculatedProfile?.name || null,
+        });
+      }
+    } catch (_) {}
+
     // Send result email if enabled
     if (QUIZ.emailResultEnabled && email && _calculatedProfile) {
       fetch('/api/send-email', {

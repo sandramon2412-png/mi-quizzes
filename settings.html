@@ -542,18 +542,21 @@
               </div>
             </div>
             <div class="integration-form hidden px-4 pb-4 space-y-3 border-t border-outline-variant/10 pt-4" id="form-zapier">
-              <p class="text-xs text-on-surface-variant">Copia esta URL y pégala en <span class="text-primary font-medium">Zapier → Trigger → Webhook → URL</span></p>
-              <div>
-                <label class="text-xs font-bold uppercase tracking-widest text-on-surface-variant block mb-1.5">Tu Webhook URL</label>
-                <div class="flex gap-2">
-                  <input type="text" readonly value="https://hooks.luminousstudio.com/wh/xxxxxxxx-xxxx" id="webhook-url-zapier" class="flex-1 bg-surface-container-lowest border border-outline-variant/20 rounded-lg px-4 py-2.5 text-sm text-on-surface-variant font-mono outline-none cursor-text"/>
-                  <button onclick="copyWebhook('zapier')" class="px-4 py-2.5 rounded-lg text-sm font-bold border border-outline-variant/20 hover:bg-surface-container text-on-surface transition-colors flex items-center gap-1.5">
-                    <span class="material-symbols-outlined text-sm">content_copy</span> Copiar
-                  </button>
-                </div>
+              <div class="text-xs text-on-surface-variant p-3 rounded-lg bg-primary/5 border border-primary/20 space-y-1.5">
+                <p class="font-semibold text-on-surface">Cómo conectar:</p>
+                <p>1. En Zapier, crea un Zap con trigger <strong>Webhooks by Zapier → Catch Hook</strong>.</p>
+                <p>2. Copia la URL que te da Zapier (formato <code class="font-mono">https://hooks.zapier.com/hooks/catch/...</code>).</p>
+                <p>3. Pégala abajo y haz clic en <strong>Conectar</strong>.</p>
+                <p>4. Completa un quiz de prueba para que Zapier reciba el primer evento.</p>
               </div>
-              <p class="text-xs text-on-surface-variant">Una vez pegado en Zapier, haz clic en <span class="text-secondary font-medium">Activar</span> para confirmar la conexión.</p>
-              <button onclick="connectIntegration('zapier')" class="px-5 py-2 rounded-lg text-sm font-bold text-white primary-gradient hover:brightness-110 transition-all">Marcar como activo</button>
+              <div>
+                <label class="text-xs font-bold uppercase tracking-widest text-on-surface-variant block mb-1.5">Tu Webhook URL de Zapier</label>
+                <input type="url" placeholder="https://hooks.zapier.com/hooks/catch/XXXXXX/YYYYYY/" id="input-zapier-url" class="w-full bg-surface-container-lowest border border-outline-variant/20 rounded-lg px-4 py-2.5 text-sm text-on-surface font-mono focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all"/>
+              </div>
+              <div class="flex gap-2 pt-1">
+                <button onclick="connectIntegration('zapier')" class="px-5 py-2 rounded-lg text-sm font-bold text-white primary-gradient hover:brightness-110 transition-all">Conectar</button>
+                <button onclick="toggleIntegration('zapier')" class="px-5 py-2 rounded-lg text-sm font-semibold text-on-surface-variant border border-outline-variant/20 hover:bg-surface-container transition-colors">Cancelar</button>
+              </div>
             </div>
           </div>
 
@@ -997,6 +1000,19 @@
       arrow.style.transform = 'rotate(180deg)';
       // Load Hotmart URLs when opening that panel
       if (key === 'hotmart') loadHotmartUrls();
+      // Pre-fill saved values for other integrations
+      const saved = integrationState[key];
+      if (saved) {
+        if (key === 'zapier' && saved.webhookUrl) {
+          const el = document.getElementById('input-zapier-url');
+          if (el) el.value = saved.webhookUrl;
+        } else if (key === 'mailchimp') {
+          const a = document.getElementById('input-mailchimp');
+          const l = document.getElementById('input-mailchimp-list');
+          if (a && saved.apiKey) a.value = saved.apiKey;
+          if (l && saved.listId) l.value = saved.listId;
+        }
+      }
     }
   }
 
@@ -1031,12 +1047,45 @@
   }
 
   function connectIntegration(key) {
-    integrationState[key] = { connected: true, ts: Date.now() };
+    const config = { connected: true, ts: Date.now() };
+
+    // Capturar campos específicos por integración
+    if (key === 'zapier') {
+      const url = (document.getElementById('input-zapier-url')?.value || '').trim();
+      if (!url || !/^https:\/\/hooks\.zapier\.com\//i.test(url)) {
+        showToast('URL inválida. Debe empezar con https://hooks.zapier.com/');
+        return;
+      }
+      config.webhookUrl = url;
+    } else if (key === 'mailchimp') {
+      const apiKey = (document.getElementById('input-mailchimp')?.value || '').trim();
+      const listId = (document.getElementById('input-mailchimp-list')?.value || '').trim();
+      if (!apiKey || !/-us\d+$/i.test(apiKey)) {
+        showToast('API key inválida. Debe terminar en -usXX (ej: -us1)');
+        return;
+      }
+      if (!listId) { showToast('Falta el Audience/List ID'); return; }
+      config.apiKey = apiKey;
+      config.listId = listId;
+      config.dc = apiKey.split('-').pop(); // data center
+    } else if (key === 'stripe') {
+      const pub = (document.getElementById('input-stripe-pub')?.value || document.querySelector('#form-stripe input[type=password]')?.value || '').trim();
+      if (pub) config.publicKey = pub;
+    } else if (key === 'meta') {
+      const pixel = (document.querySelector('#form-meta input[type=text]')?.value || '').trim();
+      if (pixel) config.pixelId = pixel;
+    } else if (key === 'whatsapp') {
+      const number = (document.querySelector('#form-whatsapp input[type=tel]')?.value || document.querySelector('#form-whatsapp input[type=text]')?.value || '').trim();
+      if (number) config.number = number;
+    }
+
+    integrationState[key] = config;
     localStorage.setItem('ls_integrations', JSON.stringify(integrationState));
     markConnected(key);
     document.getElementById('form-' + key).classList.add('hidden');
-    document.getElementById('arrow-' + key).style.transform = 'rotate(0deg)';
-    showToast('✓ ' + key.charAt(0).toUpperCase() + key.slice(1) + ' conectado correctamente');
+    const arrow = document.getElementById('arrow-' + key);
+    if (arrow) arrow.style.transform = 'rotate(0deg)';
+    showToast('Conectado: ' + key.charAt(0).toUpperCase() + key.slice(1));
   }
 
 

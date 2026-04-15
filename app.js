@@ -950,6 +950,51 @@ const ResponseTracker = {
   },
 };
 
+// ── Integrations (Zapier / Mailchimp / etc.) ─────────────
+// Dispara webhooks reales cuando se captura un lead.
+// Configuración se guarda en localStorage bajo 'ls_integrations'.
+const Integrations = {
+  _getState() {
+    try { return JSON.parse(localStorage.getItem('ls_integrations') || '{}'); }
+    catch { return {}; }
+  },
+
+  // Envía lead a todas las integraciones conectadas (fire-and-forget, no bloquea)
+  async fireLeadCaptured(lead) {
+    const state = this._getState();
+
+    // Zapier: POST directo al webhook URL del usuario (no requiere CORS proxy)
+    try {
+      const zap = state.zapier;
+      if (zap?.connected && zap.webhookUrl && /^https?:\/\//.test(zap.webhookUrl)) {
+        fetch(zap.webhookUrl, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            event: 'lead_captured',
+            timestamp: new Date().toISOString(),
+            ...lead,
+          }),
+          mode: 'no-cors', // Zapier acepta no-cors
+        }).catch(() => {});
+      }
+    } catch (_) {}
+
+    // Mailchimp: CORS bloquea la API directa. Se usa webhook de Zapier como puente
+    // o el creador debe conectar via Zapier. Guardamos el intento para auditoría.
+    try {
+      const mc = state.mailchimp;
+      if (mc?.connected && mc.apiKey && mc.listId) {
+        // Log local (no llamada directa por CORS)
+        const queue = JSON.parse(localStorage.getItem('ls_mailchimp_queue') || '[]');
+        queue.push({ ...lead, ts: Date.now() });
+        if (queue.length > 100) queue.shift();
+        localStorage.setItem('ls_mailchimp_queue', JSON.stringify(queue));
+      }
+    } catch (_) {}
+  },
+};
+
 // ── Hotmart checkout URLs ──────────────────────────────────
 function getHotmartUrl(plan) {
   const s = Settings.get();
