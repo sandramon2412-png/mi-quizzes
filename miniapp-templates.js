@@ -849,5 +849,221 @@ function getBuiltinMiniAppTemplates() {
   journalPrompts:['¿Qué significa libertad para mí, más allá del dinero?','Si no necesitara el dinero, ¿qué haría con mi tiempo?','¿Cuál es mi número FIRE? ¿Cómo me hace sentir saberlo?','¿Qué creencias sobre el dinero me sabotean?','¿Qué estilo de vida es realmente esencial para mí?','¿De qué me arrepentiría a los 80 años de no haber hecho?','¿Qué pequeña acción puedo tomar HOY hacia mi libertad?']
 },
 
+// ═══════════════ NEGOCIOS Y MARKETING ═══════════════
+
+{
+  id:'tpl-infoproducto', name:'Lanzar tu Infoproducto',
+  types:['roadmap','checklist','planificador','faq'],
+  niche:'infoproducto, curso online, emprendimiento digital', category:'Negocios', subcategory:'Infoproductos',
+  description:'Plan paso a paso para crear, lanzar y vender tu primer infoproducto digital.',
+  icon:'🚀', primaryColor:'#2563eb', secondaryColor:'#93c5fd', bgColor:'#0e0e0e',
+  headerGradient:'linear-gradient(135deg,#2563eb,#93c5fd)',
+  roadmapSteps:[
+    {title:'Paso 1: Valida la idea', description:'Habla con 10 personas de tu audiencia. ¿Pagarían por esto? Si no obtienes 3 "sí claros", pivota.'},
+    {title:'Paso 2: Define la transformación', description:'¿De qué punto A llevas al cliente al punto B? La promesa clara vende, las features no.'},
+    {title:'Paso 3: Crea el esqueleto', description:'Esquema de módulos o capítulos. No es perfecto, es claro. 5-8 módulos para un curso típico.'},
+    {title:'Paso 4: Graba el MVP', description:'Producción básica primero. Audio claro > video perfecto. Siempre mejorarás después con feedback real.'},
+    {title:'Paso 5: Crea la página de ventas', description:'Una sola página. Estructura: problema → solución → beneficios → quién eres → prueba social → precio → FAQ → CTA.'},
+    {title:'Paso 6: Lista de espera', description:'Antes del lanzamiento, construye lista con contenido gratis. Conversión 5x mayor que tráfico frío.'},
+    {title:'Paso 7: Lanzamiento', description:'Ventana de venta cerrada (7-10 días). Urgencia real + bonos por acción rápida. Email diario en ventana.'},
+    {title:'Paso 8: Iterar con feedback', description:'Pregunta a compradores qué falta, qué sobra. Lanza v2 mejorada. Los infoproductos son ciclos, no one-shot.'}
+  ],
+  initialItems:['Audiencia de mínimo 500 seguidores','Tema validado con entrevistas','Promesa clara en 1 frase','Plataforma de venta (Hotmart, Teachable, Gumroad)','Página de ventas escrita','Email automation básico','Pasarela de pago funcional','Plan de contenido de prelanzamiento (2-4 semanas)'],
+  initialTasks:['Sem 1: Validar idea y encuestar','Sem 2: Esqueleto y guion','Sem 3-4: Grabación de contenido','Sem 5: Montar plataforma y página ventas','Sem 6: Prelanzamiento y lista espera','Sem 7: Lanzamiento','Sem 8: Entrega + feedback'],
+  faqItems:[
+    {q:'¿Cuántos seguidores necesito?', a:'500 reales y comprometidos valen más que 50k fríos. Validación de idea > tamaño de audiencia.'},
+    {q:'¿Qué plataforma usar?', a:'Hotmart (España/LATAM), Gumroad (simple), Teachable/Kajabi (cursos grandes), Systeme.io (todo-en-uno barato).'},
+    {q:'¿Qué precio poner?', a:'Mínimo 50€ para que sea negocio. Los baratos atraen peores clientes. Mejor resolver problema caro a pocos.'},
+    {q:'¿Cuánto se tarda en crear?', a:'Primer MVP: 4-8 semanas. No busques perfección. Perfección después del primer lanzamiento.'},
+    {q:'¿Y si no vendo nada?', a:'Problema 1: audiencia no calificada. Problema 2: promesa débil. Problema 3: falta prueba social. Itera y relánza.'}
+  ]
+},
+
+{
+  id:'tpl-freelance', name:'Primer Cliente Freelance',
+  types:['roadmap','checklist','flashcards'],
+  niche:'freelance, cliente, trabajo independiente', category:'Negocios', subcategory:'Freelance',
+  description:'De cero a tu primer cliente pagando en 30 días, con servicios que sí se venden.',
+  icon:'💼', primaryColor:'#7c2d12', secondaryColor:'#fed7aa', bgColor:'#0e0e0e',
+  headerGradient:'linear-gradient(135deg,#7c2d12,#fed7aa)',
+  roadmapSteps:[
+    {title:'Paso 1: Elige 1 servicio específico', description:'NO "diseño gráfico". SÍ "diseño Reels para nutricionistas". Nicho + servicio = cliente claro.'},
+    {title:'Paso 2: Crea portafolio aunque no tengas clientes', description:'3-5 trabajos conceptuales. Inventa briefs para marcas reales. Demuestra habilidad, no solo lista.'},
+    {title:'Paso 3: Precio claro', description:'Paquete cerrado: "3 Reels al mes, 300€". Evita cotizar por hora al principio.'},
+    {title:'Paso 4: Prospección directa', description:'Lista de 50 clientes ideales. Mensaje personalizado a cada uno. Ofrece algo de valor antes de pedir.'},
+    {title:'Paso 5: Primera propuesta', description:'Email/DM con: problema que ves, solución concreta, resultado esperado, precio, siguiente paso.'},
+    {title:'Paso 6: Cierra la primera venta', description:'No tengas miedo de cerrar. Agenda una llamada. Escucha más que hablas. Cierra con plazo.'},
+    {title:'Paso 7: Entrega por encima', description:'Primer cliente = testimonio crucial. Entrega antes, comunica más, supera expectativas.'},
+    {title:'Paso 8: Pide testimonio y referidos', description:'Apenas entregas, pide testimonio. "¿Conoces a alguien que necesite esto?" Los mejores clientes llegan por referidos.'}
+  ],
+  initialItems:['Servicio específico definido','Portafolio público (web, Behance, Instagram)','Precio paquete claro','Lista de 50 prospects','10 mensajes de prospección enviados por día','Perfil profesional (LinkedIn actualizado)','Contrato básico tipo','Facturación (autónomo, freelance tax)'],
+  cards:[
+    {front:'Scope creep', back:'Cliente pide más de lo acordado sin pagar extra. Soluciónalo con contrato claro y "eso está fuera del scope, cotizo aparte".'},
+    {front:'Discovery call', back:'Primera llamada con prospect. Escucha problemas, no vendas. Vendes en la propuesta, no en la call.'},
+    {front:'Retainer', back:'Pago mensual fijo por trabajo continuo. Más estable que proyectos sueltos.'},
+    {front:'Red flag de cliente', back:'Regatea desde el primer mensaje. Exige urgencia sin pagar rush. No acepta contrato. Trabajo previo impago.'},
+    {front:'Anticipo / deposit', back:'50% al firmar, 50% al entregar. Estándar. Nunca empieces sin al menos 30% pagado.'},
+    {front:'Nicho vertical', back:'Especialización en tipo de cliente (nutricionistas, abogados, cafeterías). Menos competencia, precios más altos.'}
+  ]
+},
+
+{
+  id:'tpl-ventas', name:'Framework de Ventas',
+  types:['flashcards','roadmap','glosario','faq'],
+  niche:'ventas, cierre, persuasión ética', category:'Negocios', subcategory:'Ventas',
+  description:'Metodología de ventas consultiva: vender sin vender, escuchar más que hablar.',
+  icon:'🤝', primaryColor:'#b45309', secondaryColor:'#fcd34d', bgColor:'#0e0e0e',
+  headerGradient:'linear-gradient(135deg,#b45309,#fcd34d)',
+  roadmapSteps:[
+    {title:'Paso 1: Prospectar correctamente', description:'Cliente ideal claro. Calidad > cantidad. 10 prospects bien calificados > 100 fríos.'},
+    {title:'Paso 2: Calificar (BANT)', description:'Budget, Authority, Need, Timing. Si no califica, no pierdas tiempo.'},
+    {title:'Paso 3: Descubrir dolor profundo', description:'3 niveles: superficial → real → impacto emocional. Pregunta hasta llegar al dolor emocional del problema.'},
+    {title:'Paso 4: Presentar solución como puente', description:'Del dolor al resultado deseado, tu servicio es el puente. No vendes features, vendes transformación.'},
+    {title:'Paso 5: Manejar objeciones', description:'Precio, tiempo, urgencia. Usa "sí, y..." en lugar de "pero...". Entiende antes de responder.'},
+    {title:'Paso 6: Cierre con compromiso', description:'Pregunta de cierre directa: "¿Qué necesitas para empezar hoy?" Silencio después. Primera persona que habla, pierde.'},
+    {title:'Paso 7: Post-venta', description:'La venta empieza después de firmar. Onboarding claro, comunicación proactiva, underpromise/overdeliver.'}
+  ],
+  glossaryTerms:[
+    {term:'SPIN Selling', def:'Situation, Problem, Implication, Need-payoff. Framework de preguntas para descubrir dolor.'},
+    {term:'BANT', def:'Budget, Authority, Need, Timing. Criterios para calificar si un prospect vale la pena.'},
+    {term:'Objeción', def:'Resistencia del prospect. No es un "no", es un "no me has convencido aún".'},
+    {term:'Follow up', def:'Seguimiento tras la primera interacción. 80% de ventas se cierran en el follow up 5-12.'},
+    {term:'Pipeline', def:'Prospects en cada etapa del proceso de venta. Te muestra cuánto cerrarás este mes.'},
+    {term:'Cierre por alternativa', def:'"¿Prefieres empezar el lunes o miércoles?" Asume la venta, elimina la opción de "no".'},
+    {term:'Prueba social', def:'Casos, testimonios, logos de clientes. Reduce riesgo percibido del prospect.'},
+    {term:'LTV (Lifetime Value)', def:'Valor total que un cliente aporta. Define cuánto puedes gastar en adquirirlo.'}
+  ],
+  cards:[
+    {front:'"Está caro"', back:'"Entiendo. ¿Comparado con qué? ¿Y cuánto te está costando no resolverlo hoy?"'},
+    {front:'"Lo tengo que pensar"', back:'"Claro. ¿Qué específicamente necesitas resolver para decidir?"'},
+    {front:'"No tengo presupuesto"', back:'"Si tuvieras el presupuesto, ¿es lo que necesitas? Veamos opciones que funcionen para ambos."'},
+    {front:'"No es el momento"', back:'"¿Qué tendría que pasar para que sea el momento? ¿Cuánto te cuesta esperar?"'},
+    {front:'"Quiero comparar opciones"', back:'"Perfecto. ¿Qué criterios son clave en tu decisión? Te ayudo a compararnos."'}
+  ],
+  faqItems:[
+    {q:'¿Cómo vendo sin sentirme vendedor agresivo?', a:'Vende escuchando. Venta consultiva: más preguntas, menos discurso. Si tu solución ayuda, no estás presionando.'},
+    {q:'¿Qué hago si no cierro ninguna venta?', a:'Revisa: calificación (prospects correctos), descubrimiento (profundidad del dolor), pedido (¿pides el cierre claramente?).'}
+  ]
+},
+
+{
+  id:'tpl-copywriting', name:'Copywriting que Vende',
+  types:['flashcards','glosario','checklist','reto'],
+  niche:'copywriting, redacción persuasiva, escritura ventas', category:'Negocios', subcategory:'Copywriting',
+  description:'Aprende los frameworks de copywriting que convierten lectores en compradores.',
+  icon:'✍️', primaryColor:'#831843', secondaryColor:'#fbcfe8', bgColor:'#0e0e0e',
+  headerGradient:'linear-gradient(135deg,#831843,#fbcfe8)',
+  cards:[
+    {front:'AIDA', back:'Atención, Interés, Deseo, Acción. Framework clásico de toda pieza persuasiva.'},
+    {front:'PAS', back:'Problema, Agitar, Solución. Identificas el dolor, lo amplificas, ofreces salida.'},
+    {front:'Headline', back:'Lo más importante. 80% del tiempo se invierte aquí. Si falla, nadie lee el resto.'},
+    {front:'Lead (entrada)', back:'Primer párrafo. Engancha o pierdes al lector. Comienza con conflicto, dato impactante o pregunta.'},
+    {front:'CTA (Call to Action)', back:'Acción específica que pides. Verbo + beneficio. "Descarga gratis" mejor que "Click aquí".'},
+    {front:'Storytelling', back:'Historia con conflicto + transformación. Conecta emocionalmente, vende racionalmente.'},
+    {front:'Beneficios vs features', back:'Feature: lo que tiene. Beneficio: lo que cambia en la vida del cliente. Vende beneficios.'},
+    {front:'Objeciones preventivas', back:'Anticipa dudas y resuélvelas en el copy. "Sé que estás pensando..." muestra que conoces al lector.'},
+    {front:'Urgencia genuina', back:'Plazo real, stock limitado real. Falsa urgencia mata confianza a largo plazo.'},
+    {front:'Voz del cliente', back:'Usa palabras EXACTAS de tu cliente. Encuestas, reseñas, comentarios. Habla su idioma.'}
+  ],
+  glossaryTerms:[
+    {term:'Copy', def:'Texto escrito para persuadir o vender. Diferente de "contenido" (informativo).'},
+    {term:'Long-form sales page', def:'Página de ventas larga (3000+ palabras). Funciona para productos caros y complejos.'},
+    {term:'Hook', def:'Gancho. Las primeras 3-5 palabras o segundos. Decide si te leen o se van.'},
+    {term:'Bullet (fascinación)', def:'Puntos persuasivos en lista. Cada uno promete un beneficio o curiosidad.'},
+    {term:'Garantía', def:'Reduce riesgo percibido. "30 días devolución sin preguntas" aumenta conversión 30%+.'},
+    {term:'P.S.', def:'Postdata al final. Lo segundo más leído tras el headline. Úsalo para reforzar oferta o urgencia.'},
+    {term:'Emoción + lógica', def:'Compramos con emoción, justificamos con lógica. Tu copy debe activar ambas.'},
+    {term:'AB testing', def:'Probar dos versiones del mismo copy. Mide qué convierte más. Mejora continua.'}
+  ],
+  initialItems:['Investigar avatar (encuestas, reseñas)','Lista de beneficios reales (no features)','3-5 versiones de headline','Lead que enganche en 30 segundos','Bullet points específicos (no genéricos)','Prueba social (testimonios, casos)','CTA claro y único','Garantía o reducción de riesgo'],
+  retoContent:[
+    {title:'Día 1: Headline', instructions:'Escribe 25 versiones del mismo headline. Las primeras 10 son malas. Las últimas 5 brillan. Úsalo como práctica diaria.', reflectionPrompt:'¿Cuál te gustó más?'},
+    {title:'Día 2: Reescribir tu propia bio', instructions:'Tu bio de Instagram/LinkedIn. Aplica claridad, especificidad y promesa. ¿Por qué seguirte?', reflectionPrompt:'¿Cómo cambió?'},
+    {title:'Día 3: Email de lanzamiento', instructions:'Escribe el primer email de un lanzamiento ficticio. Solo 1 mensaje, 1 acción. Asunto matters más que cuerpo.', reflectionPrompt:'¿Asunto que elegiste?'},
+    {title:'Día 4: Análisis competencia', instructions:'Estudia 5 sales pages exitosas en tu nicho. Anota: estructura, hooks, palabras de poder. NO copies, identifica patrones.', reflectionPrompt:'¿Qué patrón viste?'},
+    {title:'Día 5: Reescribir un copy aburrido', instructions:'Toma cualquier descripción de producto aburrida (Amazon, web). Reescríbela aplicando todo lo aprendido.', reflectionPrompt:'¿Qué cambió más?'},
+    {title:'Día 6: Voz del cliente', instructions:'Lee 30 reseñas/comentarios de clientes ideales. Anota frases textuales. Esa es tu próxima copy.', reflectionPrompt:'¿Qué frase te impactó?'},
+    {title:'Día 7: Lanza algo', instructions:'Aplica todo a algo real: tu portfolio, oferta freelance, post de venta. La práctica supera la teoría.', reflectionPrompt:'¿Qué reacción tuvo?'}
+  ]
+},
+
+{
+  id:'tpl-seo', name:'SEO desde Cero',
+  types:['roadmap','checklist','glosario','flashcards'],
+  niche:'SEO, posicionamiento Google, tráfico orgánico', category:'Negocios', subcategory:'SEO',
+  description:'Aprende SEO desde fundamentos hasta ranking en Google con un plan paso a paso.',
+  icon:'🔍', primaryColor:'#1d4ed8', secondaryColor:'#bfdbfe', bgColor:'#0e0e0e',
+  headerGradient:'linear-gradient(135deg,#1d4ed8,#bfdbfe)',
+  roadmapSteps:[
+    {title:'Paso 1: Investigación de palabras clave', description:'Usa Google Keyword Planner, Ahrefs, Ubersuggest. Busca volumen + intención + dificultad baja al inicio.'},
+    {title:'Paso 2: Análisis de competencia', description:'Estudia top 10 resultados de tu palabra clave. ¿Qué responden? ¿Qué les falta? Ahí está tu oportunidad.'},
+    {title:'Paso 3: Optimización on-page', description:'Title, meta description, H1, H2s, URL, alt text imágenes, enlaces internos. Lo básico que muchos ignoran.'},
+    {title:'Paso 4: Contenido excepcional', description:'Más completo, mejor estructurado, más útil que la competencia. Google premia el mejor recurso, no el más largo.'},
+    {title:'Paso 5: Velocidad y experiencia', description:'Core Web Vitals: LCP, FID, CLS. PageSpeed Insights gratis. Hosting bueno + imágenes optimizadas.'},
+    {title:'Paso 6: Backlinks de calidad', description:'Guest posts, menciones en medios, recursos enlazables. 1 link de medio top vale más que 100 de directorios.'},
+    {title:'Paso 7: SEO técnico', description:'Sitemap.xml, robots.txt, schema markup, HTTPS, mobile friendly. Search Console te dice si fallas.'},
+    {title:'Paso 8: Mide e itera', description:'Search Console (Google) + GA4 + tracking de posiciones. Mide cada 30 días. Ajusta lo que no funciona.'}
+  ],
+  glossaryTerms:[
+    {term:'SERP', def:'Search Engine Results Page. Página de resultados de Google.'},
+    {term:'Keyword', def:'Palabra o frase que busca el usuario. Tu objetivo es rankear para las relevantes.'},
+    {term:'Long tail', def:'Keyword larga y específica (4+ palabras). Menos volumen, menos competencia, más conversión.'},
+    {term:'Intención de búsqueda', def:'Por qué busca el usuario: informativa, navegacional, transaccional. Tu contenido debe coincidir.'},
+    {term:'Backlink', def:'Enlace de otra web hacia la tuya. Voto de confianza para Google. Calidad > cantidad.'},
+    {term:'DA / DR', def:'Domain Authority / Rating. Métrica de fuerza de un dominio (Moz / Ahrefs). Más alto = más fácil rankear.'},
+    {term:'On-page SEO', def:'Lo que controlas en tu web: contenido, estructura, optimización técnica.'},
+    {term:'Off-page SEO', def:'Lo que ocurre fuera: backlinks, menciones, autoridad de marca.'},
+    {term:'Cannibalization', def:'Dos páginas tuyas compiten por la misma keyword. Confunde a Google. Fusiónalas.'},
+    {term:'EEAT', def:'Experience, Expertise, Authority, Trust. Lo que Google evalúa para temas YMYL (salud, finanzas).'}
+  ],
+  initialItems:['Google Search Console configurado','Google Analytics 4 instalado','Sitemap.xml enviado','Velocidad <3 segundos','Mobile friendly (test Google)','Imágenes con alt text','Enlaces internos en cada post','Backlink strategy mensual'],
+  cards:[
+    {front:'Title tag óptimo', back:'50-60 caracteres. Incluye keyword principal al inicio. Marca al final. Único por página.'},
+    {front:'Meta description', back:'150-160 caracteres. No es factor ranking pero sí CTR. Incluye keyword + beneficio + CTA.'},
+    {front:'URL ideal', back:'Corta, con keyword, sin números/fechas. /seo-desde-cero mejor que /post-2024-04-15-seo-tutorial.'},
+    {front:'H1 vs H2', back:'H1: uno por página, contiene keyword. H2: estructura del contenido, varios por página.'},
+    {front:'Pillar content', back:'Artículo extenso (3000+ palabras) que cubre tema completo. Atrae enlaces y rankea para múltiples keywords.'},
+    {front:'Featured snippet', back:'Caja destacada arriba de Google. Optimiza con definición clara, listas, tablas. Roba tráfico al #1.'}
+  ]
+},
+
+{
+  id:'tpl-email', name:'Email Marketing',
+  types:['roadmap','flashcards','checklist','glosario'],
+  niche:'email marketing, newsletter, automatización', category:'Negocios', subcategory:'Email',
+  description:'Construye una lista de email rentable desde cero con automatizaciones y secuencias que venden.',
+  icon:'📧', primaryColor:'#0891b2', secondaryColor:'#a5f3fc', bgColor:'#0e0e0e',
+  headerGradient:'linear-gradient(135deg,#0891b2,#a5f3fc)',
+  roadmapSteps:[
+    {title:'Paso 1: Elige plataforma', description:'MailerLite (gratis hasta 1000 subs), ActiveCampaign (más completo), ConvertKit (creators), Beehiiv (newsletters).'},
+    {title:'Paso 2: Lead magnet potente', description:'Algo gratis y específico que tu audiencia desea. PDF, mini-curso, checklist, plantilla. Resuelve un problema concreto.'},
+    {title:'Paso 3: Landing page de captura', description:'Una página, una promesa, un formulario. Conversión típica: 25-50% si lead magnet es bueno.'},
+    {title:'Paso 4: Bienvenida automática (5-7 emails)', description:'Email 1: lead magnet + bienvenida. Email 2-5: tu historia + contenido valioso. Email 6-7: soft pitch.'},
+    {title:'Paso 5: Newsletter regular', description:'Frecuencia consistente: semanal o quincenal. Mejor 1 email espectacular al mes que 4 mediocres.'},
+    {title:'Paso 6: Segmentación', description:'Etiqueta a tus suscriptores por interés/comportamiento. Email relevante = mejor engagement.'},
+    {title:'Paso 7: Lanzamientos por email', description:'Tu lista es tu activo más rentable. Bien construida, vende 5-10x más que redes sociales.'},
+    {title:'Paso 8: Limpieza periódica', description:'Cada 3-6 meses elimina inactivos. Lista limpia = mejor entregabilidad. Calidad > cantidad.'}
+  ],
+  cards:[
+    {front:'Open rate', back:'% de personas que abren tu email. Industria: 15-25%. Si bajas de 15%, revisa asuntos y entregabilidad.'},
+    {front:'Click rate', back:'% que clica en algún link. Industria: 2-5%. Mide cuánto enganchó el contenido.'},
+    {front:'Asunto que abre', back:'Curiosidad + brevedad + personalización. Pregunta, número, beneficio claro. NO mayúsculas ni emojis exagerados.'},
+    {front:'Pre-header', back:'Texto que aparece tras el asunto en bandeja. Complementa, no repite. Refuerza el motivo de abrir.'},
+    {front:'Plain text vs HTML', back:'Plain text se siente personal y entrega mejor. HTML más visual. Para newsletters: plain text gana.'},
+    {front:'Spam triggers', back:'GRATIS!!! Mayúsculas, signos de exclamación múltiples, palabras como "Viagra", "100% garantizado". Evita.'}
+  ],
+  initialItems:['Plataforma email elegida y configurada','Lead magnet creado','Landing page activa','Secuencia de bienvenida (5-7 emails)','Newsletter semanal/quincenal programado','Segmentación por etiquetas','Análisis mensual de métricas','Limpieza trimestral de inactivos'],
+  glossaryTerms:[
+    {term:'Open rate', def:'% de emails abiertos. Mide qué tan buenos son tus asuntos.'},
+    {term:'Click-through rate (CTR)', def:'% de receptores que hicieron click en algún enlace.'},
+    {term:'Bounce rate', def:'% de emails que no llegaron. Hard bounce = email inválido. Limpia regularmente.'},
+    {term:'Unsubscribe rate', def:'% que se borra. Normal: <0.5%. Si sube, revisa frecuencia y relevancia.'},
+    {term:'Lead magnet', def:'Recurso gratis a cambio del email. Mejor un mini-curso específico que un ebook genérico.'},
+    {term:'Tag/Segmento', def:'Etiqueta para clasificar suscriptores. Permite enviar emails relevantes a cada grupo.'},
+    {term:'Automatización', def:'Secuencia de emails programados que se envían según trigger (suscripción, compra, etc).'},
+    {term:'Deliverability', def:'Capacidad de llegar a inbox y no spam. Depende de reputación de remitente y calidad de lista.'}
+  ]
+},
+
   ];
 }
