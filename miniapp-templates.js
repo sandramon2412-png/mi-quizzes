@@ -569,5 +569,127 @@ function getBuiltinMiniAppTemplates() {
   initialItems:['B12 diaria o semanal','Vitamina D si poco sol','1.6g proteína por kg de peso','Legumbres en 2 comidas al día','Fruta fresca cada día','Frutos secos/semillas 30g','Verdura de hoja verde diaria','Variar fuentes (no solo tofu)']
 },
 
+// ═══════════════ FE Y ESPIRITUALIDAD ═══════════════
+
+{
+  id:'tpl-devocional-30', name:'Devocional Cristiano 30 Días',
+  types:['reto','devocional','diario','afirmaciones'],
+  niche:'fe cristiana, devocional, espiritualidad cristiana', category:'Fe', subcategory:'Cristianismo',
+  description:'30 días para profundizar tu caminar con Dios: lectura, oración y reflexión diaria.',
+  icon:'✝️', primaryColor:'#6d28d9', secondaryColor:'#c4b5fd', bgColor:'#0e0e0e',
+  headerGradient:'linear-gradient(135deg,#6d28d9,#c4b5fd)',
+  devotionalText:'Amado/a, el Señor te llama hoy a caminar con Él. Dios no busca tu perfección, busca tu corazón. Romanos 8:38-39 nos recuerda: "Estoy convencido de que ni la muerte ni la vida, ni ángeles ni demonios, ni lo presente ni lo porvenir... podrá apartarnos del amor que Dios nos ha manifestado en Cristo Jesús." Toma este momento para respirar profundo. Entrégale a Dios esa preocupación que cargas. Él cuida de ti más de lo que imaginas. Oración: "Padre, gracias por tu fidelidad constante. Hoy suelto mis cargas en tus manos. Ayúdame a confiar en tu tiempo y tu voluntad. En el nombre de Jesús, Amén."',
+  retoContent:[
+    {title:'Día 1: Salmo 23', instructions:'Lee el Salmo 23 lentamente. Léelo 3 veces. ¿Qué frase te resuena hoy? Anótala y llévala contigo.', reflectionPrompt:'¿En qué área necesitas que el Pastor te guíe hoy?'},
+    {title:'Día 2: Oración de entrega', instructions:'Dedica 10 min a orar sin pedir nada. Solo agradece y entrega tu día a Dios. La oración es conversación, no lista de peticiones.', reflectionPrompt:'¿Qué descubriste al orar sin pedir?'},
+    {title:'Día 3: Mateo 6:25-34', instructions:'Lee el pasaje sobre no angustiarse. Haz una lista de tus mayores preocupaciones y escribe al lado: "Dios tiene control de esto."', reflectionPrompt:'¿Qué preocupación te cuesta más soltar?'},
+    {title:'Día 4: Adoración', instructions:'Escoge 3 canciones de adoración. Canta, ora, llora si necesitas. La adoración transforma la atmósfera de tu día.', reflectionPrompt:'¿Cómo te sentiste después de adorar?'},
+    {title:'Día 5: Servir a alguien', instructions:'Hoy haz algo por alguien sin que te lo pidan: un mensaje, una oración, un favor pequeño. Así se manifiesta el amor de Cristo.', reflectionPrompt:'¿A quién bendijiste hoy?'},
+    {title:'Día 6: Perdón', instructions:'¿A quién debes perdonar? Escribe su nombre. Ora por esa persona. Perdonar no justifica, libera tu corazón.', reflectionPrompt:'¿Qué sentiste al orar por esa persona?'},
+    {title:'Día 7: Sábado de reposo', instructions:'Descansa. Dios descansó el 7º día. No es pereza, es obediencia. Comparte tiempo con familia, lee, ora sin agenda.', reflectionPrompt:'¿Qué te enseñó la semana sobre Dios?'}
+  ],
+  affirmations:['Soy hija/o amado/a de Dios','Por sus llagas fui sanado/a','Mi identidad está en Cristo','Dios tiene planes de bien para mí (Jer 29:11)','Todo lo puedo en Cristo que me fortalece','Soy más que vencedor/a','La paz de Dios guarda mi corazón','Mi Dios suplirá todas mis necesidades','Soy luz en este mundo','El Señor pelea por mí, yo solo descanso'],
+  journalPrompts:['¿Dónde sentí la presencia de Dios hoy?','¿Qué me está enseñando Dios en esta temporada?','¿Qué oración necesito hacer hoy?','¿A quién me pide Dios que perdone?','¿Qué le agradezco a Dios hoy?','¿Qué carga necesito entregarle?','¿Qué palabra o versículo me habló hoy?']
+},
+
+{
+  id:'tpl-manifestacion-21', name:'Manifestación y Abundancia',
+  types:['reto','afirmaciones','diario','meditacion'],
+  niche:'manifestación, ley atracción, abundancia', category:'Fe', subcategory:'Espiritualidad',
+  description:'21 días para alinear tu mente y energía con lo que deseas manifestar en tu vida.',
+  icon:'✨', primaryColor:'#a855f7', secondaryColor:'#e9d5ff', bgColor:'#0e0e0e',
+  headerGradient:'linear-gradient(135deg,#a855f7,#e9d5ff)',
+  retoContent:[
+    {title:'Día 1: Visión clara', instructions:'Escribe en detalle tu vida ideal en 1 año: trabajo, salud, relaciones, dinero. Sé específico/a. La claridad es el primer paso.', reflectionPrompt:'¿Qué parte te cuesta más creer posible?'},
+    {title:'Día 2: Identifica creencias limitantes', instructions:'Escribe 10 creencias que tienes sobre dinero/éxito (buenas y malas). Reconocerlas es sanarlas.', reflectionPrompt:'¿De quién heredaste esas creencias?'},
+    {title:'Día 3: Afirmaciones presentes', instructions:'Transforma cada creencia limitante en afirmación positiva. "No soy bueno con dinero" → "El dinero fluye hacia mí con facilidad."', reflectionPrompt:'¿Cuál afirmación te genera resistencia?'},
+    {title:'Día 4: Visualización guiada', instructions:'10 min visualizando tu vida ideal. Siente la emoción como si ya fuera. El universo responde a la vibración, no a las palabras.', reflectionPrompt:'¿Qué sentiste al visualizar?'},
+    {title:'Día 5: Gratitud por lo que vendrá', instructions:'Escribe 5 cosas que aún no tienes pero agradeces como si ya las tuvieras. "Gracias por mi nuevo empleo", "Gracias por mi salud."', reflectionPrompt:'¿Qué sentiste diferente?'},
+    {title:'Día 6: Acción alineada', instructions:'Manifestar no es solo pensar. Da UN paso físico hacia tu meta: envía ese CV, estudia 30 min, agenda esa llamada.', reflectionPrompt:'¿Qué acción tomaste?'},
+    {title:'Día 7: Suelta el control', instructions:'Lo más difícil: suelta el cómo y el cuándo. Confía en que lo que es para ti llega. Ocúpate de vibrar alto, no de controlar.', reflectionPrompt:'¿Qué necesitas soltar?'}
+  ],
+  meditationScript:'Cierra los ojos y respira profundo 3 veces. Siente cómo tu cuerpo se relaja. Imagina una luz dorada que desciende desde el cielo y envuelve todo tu cuerpo. Esta luz es la energía de la abundancia. La abundancia es tu estado natural. Ahora visualiza tu vida ideal, la que ya vive en ti. ¿Dónde estás? ¿Con quién? ¿Cómo te sientes? Permítete sentir esa alegría ahora mismo. No mañana, ahora. El universo no distingue entre lo que vives y lo que imaginas intensamente. Mientras respiras, repite: "Yo soy abundancia. Yo soy merecedor/a. El universo conspira a mi favor." Deja que esta energía llene cada célula de tu cuerpo. Cuando estés listo/a, abre los ojos lentamente.',
+  affirmations:['Soy un imán de abundancia','El dinero fluye hacia mí con facilidad','Merezco todo lo bueno','El universo conspira a mi favor','Soy merecedor/a de amor y éxito','Todo lo que necesito ya está viniendo','Confío en el tiempo perfecto','Vivo en estado de gratitud','Atraigo oportunidades maravillosas','Mi potencial es infinito'],
+  journalPrompts:['Escribe tu vida ideal en presente, como si ya fuera realidad.','¿Qué creencia sobre dinero heredaste de tu familia?','¿Qué sentirás cuando manifiestes tu deseo? Siéntelo ahora.','¿Qué acción pequeña puedes dar hoy hacia tu meta?','¿Qué te está costando soltar?','Describe al "yo futuro" que ya logró todo.']
+},
+
+{
+  id:'tpl-oracion-30', name:'Oración Intencional',
+  types:['reto','tracker','checklist','diario'],
+  niche:'oración, vida de oración, intimidad con Dios', category:'Fe', subcategory:'Cristianismo',
+  description:'30 días para construir una vida de oración profunda y constante.',
+  icon:'🙏', primaryColor:'#4338ca', secondaryColor:'#a5b4fc', bgColor:'#0e0e0e',
+  headerGradient:'linear-gradient(135deg,#4338ca,#a5b4fc)',
+  trackerHabit:'Oré hoy (al menos 15 minutos)',
+  retoContent:[
+    {title:'Día 1: Establece un lugar', instructions:'Designa un rincón para orar: silla, cojín en el suelo, un lugar del jardín. El lugar físico ayuda a construir el hábito.', reflectionPrompt:'¿Dónde elegiste orar?'},
+    {title:'Día 2: ACTS (Adoración, Confesión, Gratitud, Súplica)', instructions:'Estructura tu oración hoy con ACTS: 3 min adorando, 3 min confesando, 3 min agradeciendo, 3 min pidiendo.', reflectionPrompt:'¿Qué parte te costó más?'},
+    {title:'Día 3: Oración con Salmos', instructions:'Elige un Salmo y úsalo como tu oración. David, Asaf, los salmistas oraban emociones reales. Aprende de su honestidad.', reflectionPrompt:'¿Qué Salmo elegiste?'},
+    {title:'Día 4: Oración en silencio', instructions:'10 min sin decir nada. Solo estar. Escucha. La oración no es monólogo. Dios también habla en el silencio.', reflectionPrompt:'¿Qué fue difícil?'},
+    {title:'Día 5: Intercesión', instructions:'Haz una lista de 10 personas y ora específicamente por ellas. Pide por sus necesidades reales, no genéricas.', reflectionPrompt:'¿Por quién sentiste más carga?'},
+    {title:'Día 6: Oración con la Palabra', instructions:'Elige un versículo y ora a partir de él. Ej: Filipenses 4:6-7 → "Señor, no quiero angustiarme, te presento..."', reflectionPrompt:'¿Qué versículo elegiste?'},
+    {title:'Día 7: Ayuno de medios', instructions:'Hoy sustituye 1h de redes/TV por oración. Usa ese tiempo normalmente "perdido" para estar con Dios.', reflectionPrompt:'¿Qué descubriste?'}
+  ],
+  initialItems:['Orar al despertar (5 min)','Leer un pasaje bíblico','Orar por mi familia','Orar por alguien específico','Guardar silencio ante Dios','Agradecer 5 cosas','Confesar y soltar','Orar al dormir (5 min)'],
+  journalPrompts:['¿Qué me está pidiendo Dios en este tiempo?','¿Qué respuesta recibí en oración hoy?','¿Dónde veo a Dios moverse en mi vida?','¿Qué lista de oración tengo para esta semana?','¿Qué me impide orar más? ¿Puedo ajustar eso?']
+},
+
+{
+  id:'tpl-biblia-30', name:'Memoriza la Biblia',
+  types:['flashcards','reto','tracker'],
+  niche:'memorizar versículos, biblia, escritura', category:'Fe', subcategory:'Cristianismo',
+  description:'Memoriza 30 versículos clave de la Biblia en 30 días usando flashcards y repetición.',
+  icon:'📖', primaryColor:'#be123c', secondaryColor:'#fda4af', bgColor:'#0e0e0e',
+  headerGradient:'linear-gradient(135deg,#be123c,#fda4af)',
+  trackerHabit:'Memoricé el versículo de hoy',
+  cards:[
+    {front:'Juan 3:16', back:'"Porque de tal manera amó Dios al mundo, que ha dado a su Hijo unigénito, para que todo aquel que en él cree, no se pierda, mas tenga vida eterna."'},
+    {front:'Filipenses 4:13', back:'"Todo lo puedo en Cristo que me fortalece."'},
+    {front:'Jeremías 29:11', back:'"Porque yo sé los pensamientos que tengo acerca de vosotros, dice Jehová, pensamientos de paz, y no de mal, para daros el fin que esperáis."'},
+    {front:'Proverbios 3:5-6', back:'"Fíate de Jehová de todo tu corazón, y no te apoyes en tu propia prudencia. Reconócelo en todos tus caminos, y él enderezará tus veredas."'},
+    {front:'Romanos 8:28', back:'"Y sabemos que a los que aman a Dios, todas las cosas les ayudan a bien, esto es, a los que conforme a su propósito son llamados."'},
+    {front:'Salmo 23:1', back:'"Jehová es mi pastor; nada me faltará."'},
+    {front:'Isaías 40:31', back:'"Pero los que esperan a Jehová tendrán nuevas fuerzas; levantarán alas como las águilas; correrán, y no se cansarán; caminarán, y no se fatigarán."'},
+    {front:'Mateo 6:33', back:'"Mas buscad primeramente el reino de Dios y su justicia, y todas estas cosas os serán añadidas."'},
+    {front:'2 Timoteo 1:7', back:'"Porque no nos ha dado Dios espíritu de cobardía, sino de poder, de amor y de dominio propio."'},
+    {front:'Josué 1:9', back:'"Mira que te mando que te esfuerces y seas valiente; no temas ni desmayes, porque Jehová tu Dios estará contigo en dondequiera que vayas."'},
+    {front:'Salmo 46:10', back:'"Estad quietos, y conoced que yo soy Dios."'},
+    {front:'Romanos 12:2', back:'"No os conforméis a este siglo, sino transformaos por medio de la renovación de vuestro entendimiento."'},
+    {front:'Efesios 2:8-9', back:'"Porque por gracia sois salvos por medio de la fe; y esto no de vosotros, pues es don de Dios; no por obras, para que nadie se gloríe."'},
+    {front:'Salmo 119:105', back:'"Lámpara es a mis pies tu palabra, y lumbrera a mi camino."'},
+    {front:'Filipenses 4:6-7', back:'"Por nada estéis afanosos, sino sean conocidas vuestras peticiones delante de Dios en toda oración y ruego, con acción de gracias. Y la paz de Dios, que sobrepasa todo entendimiento, guardará vuestros corazones."'}
+  ],
+  retoContent:[
+    {title:'Día 1: Juan 3:16', instructions:'Escribe el versículo 5 veces. Dilo en voz alta 10 veces. Pégalo en tu espejo. Medita en él durante el día.', reflectionPrompt:'¿Qué significa "de tal manera amó" para ti?'},
+    {title:'Día 2: Filipenses 4:13', instructions:'Repite el versículo cada vez que enfrentes algo difícil hoy. "Todo lo puedo en Cristo..."', reflectionPrompt:'¿En qué necesitas fortaleza hoy?'},
+    {title:'Día 3: Salmo 23:1', instructions:'Copia el Salmo 23 completo. Medita especialmente en "nada me faltará". Dios como Pastor.', reflectionPrompt:'¿Qué te falta que puedas entregar a Dios?'},
+    {title:'Día 4: Jeremías 29:11', instructions:'Memoriza. Cuéntaselo a alguien que esté pasando por incertidumbre. Compartir sella la memoria.', reflectionPrompt:'¿En qué área necesitas recordar este versículo?'},
+    {title:'Día 5: Proverbios 3:5-6', instructions:'Medita en "no te apoyes en tu propia prudencia". Identifica 1 área donde quieres control y suéltala.', reflectionPrompt:'¿Qué decisión necesitas entregar?'},
+    {title:'Día 6: Revisa los 5 de esta semana', instructions:'Recita todos los versículos aprendidos sin mirar. Identifica cuál se te olvida más y refuérzalo.', reflectionPrompt:'¿Cuál recordaste más fácil?'},
+    {title:'Día 7: Día de descanso y meditación', instructions:'Sin versículo nuevo. Elige tu favorito de la semana y medita profundamente en él por 20 min.', reflectionPrompt:'¿Cuál fue tu favorito y por qué?'}
+  ]
+},
+
+{
+  id:'tpl-meditacion-espiritual', name:'Meditación Espiritual',
+  types:['meditacion','afirmaciones','diario','reto'],
+  niche:'meditación espiritual, conexión interior', category:'Fe', subcategory:'Espiritualidad',
+  description:'Conecta con tu esencia a través de la meditación, mantras y reflexión espiritual.',
+  icon:'🕯️', primaryColor:'#9333ea', secondaryColor:'#d8b4fe', bgColor:'#0e0e0e',
+  headerGradient:'linear-gradient(135deg,#9333ea,#d8b4fe)',
+  meditationScript:'Enciende una vela si puedes. Siéntate cómodo, columna erguida, palmas hacia arriba sobre los muslos. Cierra los ojos suavemente. Respira profundo 3 veces, liberando tensiones. Lleva tu atención al centro de tu pecho, tu corazón. Siente el latido, la presencia de vida. Imagina una luz cálida en ese lugar. Esa luz eres tú, tu esencia pura. Observa cómo esa luz se expande suavemente. Llena tu cuerpo. Trasciende tu cuerpo. Te conecta con todo lo que es. No eres tu mente. No eres tus pensamientos. Eres ese espacio consciente que los observa. Descansa en ese espacio. No hay nada que hacer, solo ser. Ahora repite mentalmente: "Soy paz. Soy luz. Soy amor." Siente cómo cada palabra vibra en ti. Quédate aquí el tiempo que necesites. Cuando estés listo/a, toca suavemente tu corazón, da gracias, y abre los ojos.',
+  affirmations:['Soy luz, soy amor, soy paz','Mi esencia es divina','Estoy conectado/a con todo lo que es','El universo me sostiene','Confío en mi camino','Mi intuición me guía','Soy un alma en experiencia humana','La paz que busco vive en mí','Soy uno con la fuente','Todo está bien en este momento'],
+  retoContent:[
+    {title:'Día 1: Meditación de presencia', instructions:'10 min sentado/a en silencio. Observa tus pensamientos sin engancharte. Son nubes pasando. Tú eres el cielo.', reflectionPrompt:'¿Qué pensamiento era más insistente?'},
+    {title:'Día 2: Mantra diario', instructions:'Elige un mantra ("So Ham", "Om", "Soy paz"). Repítelo 108 veces (mala). Mantiene la mente enfocada.', reflectionPrompt:'¿Qué mantra elegiste?'},
+    {title:'Día 3: Meditación caminando', instructions:'Camina 20 min en la naturaleza en silencio. Cada paso, un agradecimiento. Siente la tierra sostenerte.', reflectionPrompt:'¿Qué te conmovió?'},
+    {title:'Día 4: Respiración cuadrada', instructions:'Inhala 4, sostén 4, exhala 4, sostén 4. Repite 10 min. Balancea sistema nervioso y abre intuición.', reflectionPrompt:'¿Cómo te sentiste?'},
+    {title:'Día 5: Meditación del amor', instructions:'Metta: envía amor a ti, a alguien querido, a alguien neutral, a alguien difícil, a todos los seres. 3 min cada uno.', reflectionPrompt:'¿Cuál costó más?'},
+    {title:'Día 6: Silencio consciente', instructions:'3 horas sin hablar, sin pantallas, sin música. Solo ser. Observa qué emerge en el silencio.', reflectionPrompt:'¿Qué surgió?'},
+    {title:'Día 7: Ritual de gratitud', instructions:'Enciende vela, escribe 10 agradecimientos profundos, medita 15 min, cierra con una oración o intención.', reflectionPrompt:'¿Qué agradecimiento te emocionó?'}
+  ],
+  journalPrompts:['¿Qué mensaje me dio mi intuición hoy?','¿Qué sincronicidad noté?','¿Qué me está enseñando este momento de mi vida?','¿Dónde siento más conexión: naturaleza, meditación, música, arte?','¿Qué necesita soltar mi alma?','¿Qué me pide mi espíritu?']
+},
+
   ];
 }
