@@ -691,5 +691,163 @@ function getBuiltinMiniAppTemplates() {
   journalPrompts:['¿Qué mensaje me dio mi intuición hoy?','¿Qué sincronicidad noté?','¿Qué me está enseñando este momento de mi vida?','¿Dónde siento más conexión: naturaleza, meditación, música, arte?','¿Qué necesita soltar mi alma?','¿Qué me pide mi espíritu?']
 },
 
+// ═══════════════ FINANZAS ═══════════════
+
+{
+  id:'tpl-nogastos-30', name:'Sin Gastos Innecesarios',
+  types:['reto','tracker','checklist','diario'],
+  niche:'ahorro, finanzas personales, no spend', category:'Finanzas', subcategory:'Ahorro',
+  description:'30 días sin gastos innecesarios para reiniciar tu relación con el dinero y ahorrar.',
+  icon:'💰', primaryColor:'#15803d', secondaryColor:'#86efac', bgColor:'#0e0e0e',
+  headerGradient:'linear-gradient(135deg,#15803d,#86efac)',
+  trackerHabit:'Hoy NO gasté en nada innecesario',
+  retoContent:[
+    {title:'Día 1: Define las reglas', instructions:'Esenciales: comida básica, transporte, salud, facturas. Prohibido: ropa, restaurantes, delivery, suscripciones nuevas, antojos.', reflectionPrompt:'¿Qué te será más difícil evitar?'},
+    {title:'Día 2: Cancela suscripciones', instructions:'Revisa todas las suscripciones activas. Cancela las que no usas semanalmente. Streaming, gym, apps, cajas mensuales.', reflectionPrompt:'¿Cuántos pagos automáticos descubriste?'},
+    {title:'Día 3: Cocina todo en casa', instructions:'Cero comida fuera. Aprovecha lo que ya tienes en despensa antes de comprar más. Inventa recetas con lo disponible.', reflectionPrompt:'¿Qué inventaste?'},
+    {title:'Día 4: Lista antes de comprar', instructions:'Si DEBES comprar (esencial), haz lista antes y solo compra eso. Nada de "ya que estoy aquí".', reflectionPrompt:'¿Te tentaste con algo extra?'},
+    {title:'Día 5: Disfruta sin gastar', instructions:'Hoy diviértete sin dinero: caminata, parque, llamada larga con amiga, leer, película en casa. La diversión no necesita tarjeta.', reflectionPrompt:'¿Qué descubriste?'},
+    {title:'Día 6: Vende lo que no usas', instructions:'Identifica 5 cosas que no usaste en último año. Foto, publica en Wallapop/Marketplace. Espacio + dinero extra.', reflectionPrompt:'¿Qué pusiste en venta?'},
+    {title:'Día 7: Suma lo ahorrado', instructions:'Calcula cuánto NO gastaste esta semana vs. tu promedio normal. Transfiere ese monto a una cuenta de ahorro.', reflectionPrompt:'¿Cuánto ahorraste?'}
+  ],
+  initialItems:['Cero comida fuera de casa','Cero compras impulsivas','Cancelar suscripción sin uso','Llevar termo en lugar de comprar café','No abrir apps de compras','Pagar solo en efectivo (siente el gasto)','Dormir antes de comprar (regla 24h)','Anotar cada gasto'],
+  journalPrompts:['¿Cuándo compro impulsivamente? ¿Qué emoción busco?','¿Qué creencia tengo sobre el dinero?','¿En qué gastos siento culpa después?','¿Qué quiero hacer con el dinero ahorrado?','¿Cómo era el dinero en mi familia de origen?']
+},
+
+{
+  id:'tpl-deudas', name:'Salir de Deudas',
+  types:['roadmap','checklist','flashcards','faq'],
+  niche:'deudas, libertad financiera, plan de pago', category:'Finanzas', subcategory:'Deudas',
+  description:'Plan paso a paso para eliminar tus deudas usando el método bola de nieve o avalancha.',
+  icon:'🧗', primaryColor:'#dc2626', secondaryColor:'#fecaca', bgColor:'#0e0e0e',
+  headerGradient:'linear-gradient(135deg,#dc2626,#fecaca)',
+  roadmapSteps:[
+    {title:'Paso 1: Lista todas tus deudas', description:'Tarjetas, préstamos, deudas familiares. Anota: monto, interés, pago mínimo. La claridad es paso 1.'},
+    {title:'Paso 2: Construye fondo de emergencia mini', description:'Ahorra primero $1000 (o equivalente local) ANTES de atacar deudas. Sin esto, cualquier imprevisto te endeuda más.'},
+    {title:'Paso 3: Elige método: Bola de nieve o avalancha', description:'Bola de nieve: ataca la deuda más PEQUEÑA primero (motivación). Avalancha: ataca la de MAYOR interés (más eficiente).'},
+    {title:'Paso 4: Paga mínimos en todas + extra en la elegida', description:'Mantén mínimos para no caer en mora. Todo el dinero extra va a la deuda objetivo hasta liquidar.'},
+    {title:'Paso 5: Reduce gastos al máximo', description:'Cancela suscripciones, cocina todo, transporte público, cero compras innecesarias. Esto es temporal.'},
+    {title:'Paso 6: Aumenta ingresos', description:'Ventas de cosas no usadas, freelance, segundo trabajo, vender skills. Cada euro extra acelera la salida.'},
+    {title:'Paso 7: Negocia intereses', description:'Llama a tus tarjetas y pide reducción de interés. Si llevas tiempo siendo cliente, suelen ceder.'},
+    {title:'Paso 8: Liquida y celebra', description:'Cada deuda liquidada es una victoria. Marca el hito visualmente. La sensación es adictiva, te impulsa a seguir.'}
+  ],
+  initialItems:['Lista total de deudas con interés y monto','Fondo emergencia mini ($1000)','Método elegido (bola/avalancha)','Pagos mínimos al día (sin mora)','Presupuesto del mes con extra para deuda','Ingreso extra mensual identificado','Llamada a tarjetas para negociar interés','Cero deuda nueva durante el plan'],
+  cards:[
+    {front:'Bola de nieve', back:'Atacas la deuda MENOR primero. Pagas extra ahí, mínimos en el resto. Liquidas → sigues con la siguiente. Motivación alta.'},
+    {front:'Avalancha', back:'Atacas la deuda con MAYOR interés primero. Matemáticamente más eficiente. Menos motivación a corto plazo.'},
+    {front:'Pago mínimo', back:'Pagar solo el mínimo en tarjetas te tendrá pagando 20+ años. La mayor parte va al interés, no al capital.'},
+    {front:'Consolidación de deuda', back:'Unir varias deudas en un solo préstamo de menor interés. Útil pero solo si no generas más deuda nueva.'},
+    {front:'Mora', back:'No pagar a tiempo. Genera intereses adicionales y daña tu historial crediticio. Evítala a toda costa.'},
+    {front:'Tasa anual (TAE)', back:'Interés total que pagas al año (incluye comisiones). Compara siempre TAE, no solo "interés mensual".'},
+    {front:'Capital vs interés', back:'Capital: lo que pediste. Interés: lo que cobra el banco. Tus pagos primero cubren interés, luego capital.'},
+    {front:'Refinanciación', back:'Cambiar las condiciones de un préstamo (plazo, interés). Puede ayudar pero a veces alarga la deuda total.'}
+  ],
+  faqItems:[
+    {q:'¿Bola de nieve o avalancha?', a:'Si necesitas motivación: bola. Si eres muy disciplinado/a: avalancha. La mejor es la que te hace seguir.'},
+    {q:'¿Debo ahorrar o pagar deudas?', a:'Primero fondo emergencia mini ($1000). Luego enfoca todo en deuda. Después fondo emergencia completo (3-6 meses).'},
+    {q:'¿Cancelo tarjetas al pagarlas?', a:'No necesariamente. Cerrar tarjetas afecta tu score. Mejor déjalas activas pero no las uses.'},
+    {q:'¿Cuánto tarda salir de deudas?', a:'Depende del monto y tu capacidad de pago extra. Plan típico: 18-36 meses. Lo importante es empezar y no parar.'},
+    {q:'¿Y si pierdo el trabajo a mitad?', a:'Por eso primero el fondo emergencia mini. Si ocurre, pagas mínimos y enfocas en sobrevivir hasta nuevo ingreso.'},
+    {q:'¿Es legal negociar con bancos?', a:'Totalmente. Llama y pide quita o renegociación. Si llevas tiempo pagando, suelen aceptar.'}
+  ]
+},
+
+{
+  id:'tpl-presupuesto', name:'Presupuesto Inteligente',
+  types:['checklist','planificador','flashcards','faq'],
+  niche:'presupuesto, control de gastos, finanzas', category:'Finanzas', subcategory:'Presupuesto',
+  description:'Crea y mantén un presupuesto que realmente funcione usando el método 50/30/20.',
+  icon:'📊', primaryColor:'#1e40af', secondaryColor:'#93c5fd', bgColor:'#0e0e0e',
+  headerGradient:'linear-gradient(135deg,#1e40af,#93c5fd)',
+  initialItems:['Listar todos los ingresos del mes','Categorizar gastos: necesidades / deseos / ahorro','50% necesidades (techo, comida, transporte)','30% deseos (ocio, hobbies, restaurantes)','20% ahorro e inversión','Anotar cada gasto en app o cuaderno','Revisar presupuesto cada semana','Ajustar al final del mes según realidad'],
+  initialTasks:['Día 1: Calcular ingreso neto mensual','Día 2: Sumar gastos fijos (renta, luz, internet)','Día 3: Calcular promedio gastos variables (3 meses)','Día 4: Asignar % según método 50/30/20','Día 5: Configurar app de control (YNAB, Fintonic)','Día 7: Primera revisión semanal','Día 14: Ajuste de medio mes','Día 30: Cierre y planificar siguiente mes'],
+  cards:[
+    {front:'Método 50/30/20', back:'50% necesidades, 30% deseos, 20% ahorro/inversión. Equilibrio entre vivir hoy y construir mañana.'},
+    {front:'Gasto fijo vs variable', back:'Fijo: igual cada mes (renta, internet). Variable: cambia (comida, gasolina). Los variables son donde puedes recortar.'},
+    {front:'Ingreso neto', back:'Lo que te queda después de impuestos y deducciones. Es lo que realmente puedes presupuestar.'},
+    {front:'Pago a uno mismo primero', back:'Apenas cobras, transfiere ahorro a cuenta separada. Lo que queda es lo que puedes gastar. Truco psicológico clave.'},
+    {front:'Sobre/cuenta por categoría', back:'Asigna dinero específico a cada categoría. Cuando se acaba, se acaba. Gran disciplina.'},
+    {front:'Fondo emergencia', back:'3-6 meses de gastos esenciales en cuenta líquida. Te protege de imprevistos sin endeudarte.'},
+    {front:'Inflación silenciosa', back:'Gastos pequeños que crecen sin notar: suscripciones, café diario, deliveries. Suman cientos al mes.'},
+    {front:'Presupuesto base cero', back:'Cada euro tiene una asignación específica antes de empezar el mes. Ingresos - gastos = 0 (todo asignado).'}
+  ],
+  faqItems:[
+    {q:'¿Y si mis ingresos son irregulares?', a:'Calcula promedio de últimos 6-12 meses. Presupuesta sobre el ingreso más bajo. Lo extra va a ahorro/deuda.'},
+    {q:'¿Qué app me recomiendas?', a:'YNAB (paga, muy completa), Fintonic (gratis, España), Mint, o simplemente Excel. La mejor es la que usarás.'},
+    {q:'No puedo ahorrar 20%, ¿qué hago?', a:'Empieza con 5%. Lo importante es el hábito, no el monto. Cuando reduces gastos o subes ingresos, sube el %.'},
+    {q:'¿Debo presupuestar gastos pequeños?', a:'Sí, ahí se va el dinero sin notar. Asigna una categoría "varios" si te abruma detallar todo.'},
+    {q:'Mi pareja no quiere presupuestar', a:'Empieza solo/a. Cuando vea resultados, se sumará. Conversen sobre metas comunes, no sobre control.'},
+    {q:'¿Es para siempre?', a:'Los primeros 3-6 meses sí, hasta tener consciencia. Luego puedes aflojar y solo monitorear las grandes categorías.'}
+  ]
+},
+
+{
+  id:'tpl-inversion', name:'Inversión para Principiantes',
+  types:['roadmap','glosario','flashcards','faq'],
+  niche:'inversión, bolsa, fondos indexados', category:'Finanzas', subcategory:'Inversión',
+  description:'Empieza a invertir desde cero con conceptos claros y un plan simple a largo plazo.',
+  icon:'📈', primaryColor:'#0e7490', secondaryColor:'#67e8f9', bgColor:'#0e0e0e',
+  headerGradient:'linear-gradient(135deg,#0e7490,#67e8f9)',
+  roadmapSteps:[
+    {title:'Paso 1: Salud financiera primero', description:'NO inviertas si tienes deudas de alto interés (>8%) o sin fondo de emergencia. Resuelve eso antes.'},
+    {title:'Paso 2: Define tu horizonte', description:'¿Inviertes para 5, 10, 30 años? A más tiempo, más renta variable. A menos tiempo, más conservador.'},
+    {title:'Paso 3: Define tu perfil de riesgo', description:'¿Aguantas ver tu cartera bajar 30% sin vender? Si no, empieza con perfil conservador.'},
+    {title:'Paso 4: Abre cuenta en bróker', description:'Brokers populares en español: Renta4, ING Direct, Indexa Capital, Trade Republic. Compara comisiones.'},
+    {title:'Paso 5: Empieza con fondos indexados', description:'Lo más simple y estadísticamente mejor para principiantes. Diversificación automática y bajas comisiones.'},
+    {title:'Paso 6: Aporta sistemáticamente (DCA)', description:'Cantidad fija mensual, invertir siempre el día X. Elimina decidir cuándo entrar. Funciona mejor a largo plazo.'},
+    {title:'Paso 7: NO mires todos los días', description:'La bolsa baja. Sube. Repite. Mira tu cartera 1 vez al mes máximo. Pánico = mala decisión.'},
+    {title:'Paso 8: Aumenta aporte con cada subida de sueldo', description:'Pagarte primero a ti mismo crece tu patrimonio. La constancia bate al intento de "cazar el momento".'}
+  ],
+  glossaryTerms:[
+    {term:'Acción', def:'Parte de una empresa. Si compras 1 acción de Apple, eres dueño/a de una mini-fracción de Apple.'},
+    {term:'Bono', def:'Préstamo que haces a un gobierno o empresa. Te devuelven con interés. Más estable que acciones.'},
+    {term:'ETF', def:'Fondo cotizado. Compras una cesta de muchas acciones con una sola operación.'},
+    {term:'Fondo indexado', def:'Replica un índice (ej: S&P 500). Bajas comisiones, diversificación automática. Recomendado para principiantes.'},
+    {term:'DCA (Dollar Cost Averaging)', def:'Aporte regular fijo (mensual). Compras a precio promedio. Reduce riesgo de comprar en pico.'},
+    {term:'Diversificación', def:'No poner todos los huevos en una canasta. Reparte entre sectores, países, tipos de activo.'},
+    {term:'Volatilidad', def:'Cuánto sube/baja un activo. Más alta = más riesgo y más potencial.'},
+    {term:'Interés compuesto', def:'Interés sobre interés. La 8ª maravilla del mundo (Einstein). Por eso empezar joven importa tanto.'},
+    {term:'Rentabilidad histórica', def:'Lo que ha rentado en el pasado. Bolsa global: 7-10% anual histórico. NO garantiza futuro.'},
+    {term:'Comisión TER', def:'Total Expense Ratio. % anual que cobra un fondo. Busca menos de 0.3% en indexados.'}
+  ],
+  cards:[
+    {front:'¿Cuánto necesito para empezar?', back:'Desde 50€ al mes en fondos indexados. No necesitas miles. Lo importante es empezar y ser constante.'},
+    {front:'¿Mejor activo o pasivo?', back:'90% de fondos activos pierden contra el índice a 10 años. Para principiantes: indexados (pasivos) son mejor opción.'},
+    {front:'Regla del 72', back:'Divide 72 entre tu rentabilidad anual = años para duplicar tu inversión. Al 7%: 10 años. Al 10%: 7 años.'},
+    {front:'Asignación clásica', back:'(100 - tu edad)% en renta variable. Ej: 30 años → 70% acciones, 30% bonos. Ajusta según riesgo.'},
+    {front:'Cripto: ¿sí o no?', back:'Si decides, máximo 5-10% de cartera. Alta volatilidad, alto riesgo. Nunca dinero que necesites en corto plazo.'},
+    {front:'Mercado bajista', back:'Caída de 20%+ desde máximos. Suceden cada 5-10 años. NO vendas. Mantén el plan. Es cuando se compra barato.'}
+  ],
+  faqItems:[
+    {q:'¿Es buen momento para entrar?', a:'A largo plazo: siempre. Nadie predice el corto plazo. Empieza con DCA y olvida el "timing perfecto".'},
+    {q:'¿Cuánto puedo perder?', a:'A corto plazo, mucho (40%+ en crash). A largo plazo (10+ años), históricamente la bolsa global gana.'},
+    {q:'¿Hacienda?', a:'Pagas impuestos al vender (ganancia patrimonial). En España: 19-28% según tramos. Fondos pueden traspasarse sin tributar.'},
+    {q:'¿Necesito un asesor?', a:'No para empezar. Roboadvisors (Indexa, MyInvestor) ofrecen carteras automatizadas a bajo coste.'},
+    {q:'¿Qué pasa si quiebra el broker?', a:'Tus activos están a tu nombre, no del broker. Aún si quiebra, los recuperas. Garantía de inversiones cubre 100k€.'}
+  ]
+},
+
+{
+  id:'tpl-libertad', name:'Libertad Financiera',
+  types:['roadmap','tracker','diario','afirmaciones'],
+  niche:'libertad financiera, FIRE, independencia económica', category:'Finanzas', subcategory:'Libertad',
+  description:'Plan a largo plazo para alcanzar independencia financiera y vivir según tus términos.',
+  icon:'🦅', primaryColor:'#0c4a6e', secondaryColor:'#7dd3fc', bgColor:'#0e0e0e',
+  headerGradient:'linear-gradient(135deg,#0c4a6e,#7dd3fc)',
+  trackerHabit:'Hoy ahorré/invertí algo hacia mi libertad financiera',
+  roadmapSteps:[
+    {title:'Fase 1: Estabilidad', description:'Sin deudas malas, fondo emergencia 6 meses, presupuesto controlado. Base para construir.'},
+    {title:'Fase 2: Seguridad', description:'Inversiones que cubren gastos básicos si pierdes empleo. Plan B activo.'},
+    {title:'Fase 3: Flexibilidad', description:'Patrimonio que te permite sabbatical o cambio de carrera sin estrés.'},
+    {title:'Fase 4: Independencia', description:'Inversiones generan tu nivel de vida actual. Trabajar es opción, no obligación.'},
+    {title:'Fase 5: Abundancia', description:'Tu patrimonio crece más rápido que lo que gastas. Libertad total + capacidad de impacto.'},
+    {title:'Cálculo FIRE', description:'Multiplica tus gastos anuales × 25. Ese es tu número FIRE (regla 4%). Ej: 24k anuales → 600k para ser libre.'},
+    {title:'Tasas de ahorro y tiempo', description:'Ahorrando 25%: 32 años a libertad. 50%: 17 años. 75%: 7 años. La tasa de ahorro es lo que más importa.'},
+    {title:'Aumenta ingresos, no solo recortes', description:'Hay un techo en cuánto puedes recortar. No hay techo en cuánto puedes ganar. Invierte en habilidades.'}
+  ],
+  affirmations:['Soy capaz de construir mi libertad','Cada euro que invierto trabaja para mí','Soy disciplinado/a y constante','El tiempo es mi mejor aliado','Mi futuro yo me lo agradecerá','Vivo por debajo de mis posibilidades con orgullo','El dinero es una herramienta, no un fin','Estoy construyendo opciones, no solo riqueza','Mi patrimonio crece silenciosamente','La libertad financiera es para mí'],
+  journalPrompts:['¿Qué significa libertad para mí, más allá del dinero?','Si no necesitara el dinero, ¿qué haría con mi tiempo?','¿Cuál es mi número FIRE? ¿Cómo me hace sentir saberlo?','¿Qué creencias sobre el dinero me sabotean?','¿Qué estilo de vida es realmente esencial para mí?','¿De qué me arrepentiría a los 80 años de no haber hecho?','¿Qué pequeña acción puedo tomar HOY hacia mi libertad?']
+},
+
   ];
 }
