@@ -120,3 +120,165 @@ La matriz de capacidades está en `app.js` → `PlanLimits`.
 - Cada sección del player tiene fallbacks para datos vacíos (busca en `app.X` y `app.content.X`)
 - Afirmaciones genera contenido por defecto si no hay ninguno configurado
 - Meditación tiene guión de respiración por defecto si no hay script
+
+---
+
+## TRABAJO PENDIENTE (continuar en nuevo chat)
+
+### Problema detectado
+El plan Free/Starter no tiene IA, pero el flujo de creación de mini-apps (`dashboard.html → handleCreateMiniApp`) SIEMPRE llama a la IA (`AI.generateAppTheme` + `AI.generateMiniAppContent`). Para usuarios sin IA esto falla o produce una mini-app vacía. Los quizzes sí tienen camino manual (plantillas + "Crear Manualmente") pero las mini-apps no.
+
+### Solución acordada: Biblioteca de plantillas de mini-apps (Opción C — 58 plantillas)
+
+Crear 58 plantillas prearmadas con contenido real para que Free/Starter puedan clonarlas y usarlas sin IA. Pro+ también las puede usar como atajo.
+
+### Archivos a crear
+
+1. **`miniapp-templates.js`** — función `getBuiltinMiniAppTemplates()` que retorna array de 58 templates. Cada template tiene:
+   - Meta: `id`, `name`, `types[]`, `niche`, `category`, `subcategory`, `description`, `icon`, `primaryColor`, `secondaryColor`, `bgColor`, `headerGradient`
+   - Content fields (solo los que aplican a los `types` seleccionados):
+     - `retoContent: [{title, instructions, reflectionPrompt}]`
+     - `initialItems: []` (checklist)
+     - `trackerHabit: ''`
+     - `devotionalText: ''`
+     - `initialTasks: []` (planificador)
+     - `journalPrompts: []`
+     - `affirmations: []`
+     - `meditationScript: ''`
+     - `faqItems: [{q, a}]`
+     - `cards: [{front, back}]` (flashcards)
+     - `glossaryTerms: [{term, def}]`
+     - `roadmapSteps: []`
+     - `resources: [{title, url}]` (biblioteca)
+
+2. **`plantillas-miniapps.html`** — página de galería estilo `plantillas.html` con:
+   - Header "Biblioteca de Plantillas de Mini-Apps"
+   - Filtros por categoría (12 categorías)
+   - Buscador
+   - Grid de cards con preview
+   - Botón "Usar esta plantilla" que clona al dashboard
+
+3. **Modificar `dashboard.html`** — en `handleCreateMiniApp()`:
+   - Detectar plan: si `!canUsePlanFeature('ai')` → saltar las llamadas a `AI.generateAppTheme` y `AI.generateMiniAppContent`, guardar solo con `creatorContent`
+   - Cambiar texto del botón según plan ("Crear con IA" vs "Crear Mini-App")
+   - Agregar banner para Free/Starter linkeando a `plantillas-miniapps.html`
+
+### Lista completa de 58 plantillas a crear
+
+**BIENESTAR Y SALUD MENTAL (8):**
+1. `tpl-ansiedad-21` Calmar la Ansiedad en 21 Días [reto, meditacion, afirmaciones, diario, checklist]
+2. `tpl-burnout-30` Reset Mental: Superar el Burnout [reto, checklist, diario, afirmaciones, meditacion]
+3. `tpl-dormir-21` Mejor Sueño en 21 Días [reto, checklist, tracker, meditacion]
+4. `tpl-autoestima-30` Autoestima Inquebrantable [reto, afirmaciones, diario, flashcards]
+5. `tpl-mindfulness-21` Mindfulness para Principiantes [reto, meditacion, tracker, diario]
+6. `tpl-ruptura` Superar una Ruptura Emocional [diario, afirmaciones, checklist, roadmap]
+7. `tpl-tdah` Gestionar el TDAH [checklist, planificador, flashcards, faq]
+8. `tpl-gratitud-30` Diario de Gratitud 30 Días [diario, afirmaciones, tracker, reto]
+
+**FITNESS (6):**
+9. `tpl-fitness-30` Transformación Fitness 30 días [reto, tracker, checklist, faq]
+10. `tpl-yoga-21` Yoga para Principiantes [reto, glosario, meditacion, flashcards]
+11. `tpl-running-5k` De Cero a 5K [reto, roadmap, tracker, faq]
+12. `tpl-funcional` Rutina Funcional en Casa [reto, checklist, flashcards, tracker]
+13. `tpl-movilidad-21` Movilidad y Flexibilidad [reto, flashcards, checklist]
+14. `tpl-calistenia` Calistenia: Tu Primer Muscle-Up [roadmap, flashcards, glosario, tracker]
+
+**NUTRICIÓN (5):**
+15. `tpl-alimentacion-21` Alimentación Balanceada [reto, checklist, flashcards, faq]
+16. `tpl-keto-30` Reset Keto 30 Días [reto, glosario, faq, checklist]
+17. `tpl-mealprep` Meal Prep Semanal [planificador, checklist, flashcards]
+18. `tpl-ayuno` Ayuno Intermitente 16:8 [reto, tracker, faq, glosario]
+19. `tpl-vegano` Nutrición Vegana Completa [glosario, faq, flashcards, checklist]
+
+**FE Y ESPIRITUALIDAD (5):**
+20. `tpl-devocional-30` Devocional Cristiano 30 Días [reto, devocional, diario, afirmaciones]
+21. `tpl-manifestacion-21` Manifestación y Abundancia [reto, afirmaciones, diario, meditacion]
+22. `tpl-oracion-30` Oración Intencional [reto, tracker, checklist, diario]
+23. `tpl-biblia-30` Memoriza la Biblia [flashcards, reto, tracker]
+24. `tpl-meditacion-espiritual` Meditación Espiritual [meditacion, afirmaciones, diario, reto]
+
+**FINANZAS (5):**
+25. `tpl-nogastos-30` Sin Gastos Innecesarios [reto, tracker, checklist, diario]
+26. `tpl-deudas` Salir de Deudas [roadmap, checklist, flashcards, faq]
+27. `tpl-presupuesto` Presupuesto Inteligente [checklist, planificador, flashcards, faq]
+28. `tpl-inversion` Inversión para Principiantes [roadmap, glosario, flashcards, faq]
+29. `tpl-libertad` Libertad Financiera [roadmap, tracker, diario, afirmaciones]
+
+**NEGOCIOS Y MARKETING (6):**
+30. `tpl-infoproducto` Lanzar tu Infoproducto [roadmap, checklist, planificador, faq]
+31. `tpl-freelance` Primer Cliente Freelance [roadmap, checklist, flashcards]
+32. `tpl-ventas` Framework de Ventas [flashcards, roadmap, glosario, faq]
+33. `tpl-copywriting` Copywriting que Vende [flashcards, glosario, checklist, reto]
+34. `tpl-seo` SEO desde Cero [roadmap, checklist, glosario, flashcards]
+35. `tpl-email` Email Marketing [roadmap, flashcards, checklist, glosario]
+
+**EDUCACIÓN (6):**
+36. `tpl-ingles-30` Inglés desde Cero [reto, flashcards, glosario, faq]
+37. `tpl-habitos` Productividad y Hábitos [reto, tracker, checklist, flashcards]
+38. `tpl-escritura-30` Escritura Creativa [reto, diario, flashcards]
+39. `tpl-programacion` Aprende Programación [roadmap, glosario, flashcards, faq]
+40. `tpl-estudio` Técnicas de Estudio [flashcards, checklist, roadmap, faq]
+41. `tpl-lectura` Club de Lectura [reto, tracker, diario]
+
+**RELACIONES (5):**
+42. `tpl-pareja-21` Conexión en Pareja [reto, diario, checklist, afirmaciones]
+43. `tpl-embarazo` Primer Trimestre Embarazo [checklist, faq, tracker, diario]
+44. `tpl-crianza` Crianza Respetuosa 0-3 [faq, checklist, flashcards, glosario]
+45. `tpl-comunicacion` Comunicación Asertiva [reto, flashcards, diario, roadmap]
+46. `tpl-codependencia` Superar la Codependencia [diario, afirmaciones, roadmap, flashcards]
+
+**BELLEZA (3):**
+47. `tpl-skincare-30` Skincare Nocturna [reto, checklist, glosario, faq]
+48. `tpl-colorimetria` Descubre tus Colores [flashcards, glosario, faq, checklist]
+49. `tpl-capsula` Cápsula de Armario [checklist, roadmap, flashcards]
+
+**HOGAR (4):**
+50. `tpl-limpieza-21` Limpia tu Casa [reto, checklist, planificador]
+51. `tpl-minimalismo` Declutter 30 Días [reto, checklist, diario, afirmaciones]
+52. `tpl-jardin` Jardín en Casa [roadmap, checklist, glosario, faq]
+53. `tpl-zerowaste` Zero Waste [reto, checklist, flashcards, glosario]
+
+**MASCOTAS (2):**
+54. `tpl-cachorro` Tu Primer Cachorro [roadmap, checklist, faq, glosario]
+55. `tpl-adiestramiento` Adiestramiento Canino [reto, flashcards, roadmap, faq]
+
+**DESARROLLO PERSONAL (3):**
+56. `tpl-habitos-atomicos` Hábitos Atómicos 66 Días [reto, tracker, flashcards, diario]
+57. `tpl-proposito` Propósito de Vida [diario, roadmap, afirmaciones, flashcards]
+58. `tpl-inteligencia-emocional` Inteligencia Emocional [flashcards, diario, glosario, reto]
+
+### Inspiración visual (apps del usuario)
+- **Código Cuerpo** (`codigo-cuerpo.vercel.app`): método guiado 5 pasos, selector de zonas corporales, diccionario 60 entradas, diario libre, reto 7 días, meditaciones con audio, estilo suave/floral
+- **LittleStar** (`littlestar-app.vercel.app`): jornada 90 días en 4 fases, gamificación (puntos, racha, fases), quiz interactivo con audio, juego de sílabas, chatbot IA con personalidad y botones de sugerencias rápidas
+
+### Reglas de contenido
+- Todo en **español**
+- Reto: 5-7 días con `title` + `instructions` (2-3 oraciones) + opcional `reflectionPrompt`
+- Afirmaciones: estilo "Yo soy...", "Merezco...", "Elijo..." (8-12 por plantilla)
+- Journal prompts: preguntas abiertas con "¿" (5-8 por plantilla)
+- Flashcards: pares front/back útiles (8-15 por plantilla)
+- FAQ: preguntas reales con respuestas de 2-3 oraciones (6-10 por plantilla)
+- Glossary: término + definición clara (8-12 por plantilla)
+- Roadmap: 5-8 pasos específicos y accionables
+- Meditación: script 150-250 palabras en presente
+- Checklist: tareas diarias accionables (6-10 items)
+- `bgColor: '#0e0e0e'` siempre
+- `headerGradient: 'linear-gradient(135deg, primaryColor, secondaryColor)'`
+
+### Estrategia de escritura recomendada
+**Escribir el archivo `miniapp-templates.js` en CHUNKS pequeños (5-10 plantillas por Write tool call)** para evitar "Stream idle timeout". NO intentar escribir las 58 de una vez. NO delegar a agentes (se agotan por volumen).
+
+### Pasos de implementación (orden)
+1. Crear `miniapp-templates.js` incremental (Write inicial con 5-10 plantillas + `module export`, luego Edit para agregar más bloques)
+2. Crear `plantillas-miniapps.html` (copiar estructura de `plantillas.html`, adaptar a mini-apps)
+3. Modificar `dashboard.html` para detectar plan y mostrar botón correcto + banner para Free/Starter
+4. Commit + push a branch `claude/luminos-studio-dashboard-ATGR3`
+
+### Estado actual (16 abr 2026)
+- ✅ Arquitectura IA 3 capas deployed (claude-proxy + groq-proxy + creator-ai-proxy)
+- ✅ White-label footer en resultado-quiz
+- ✅ Gate IA en generador-ia.html corregido (requiere Pro, no Starter)
+- ✅ Integraciones Zapier wired
+- ❌ Plantillas mini-apps (58) — PENDIENTE, arrancar en nuevo chat
+- ❌ Página `plantillas-miniapps.html` — PENDIENTE
+- ❌ Dashboard manual path para Free/Starter — PENDIENTE
