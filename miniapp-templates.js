@@ -1065,5 +1065,212 @@ function getBuiltinMiniAppTemplates() {
   ]
 },
 
+// ═══════════════ EDUCACIÓN ═══════════════
+
+{
+  id:'tpl-ingles-30', name:'Inglés desde Cero',
+  types:['reto','flashcards','glosario','faq'],
+  niche:'inglés, idiomas, aprender inglés', category:'Educación', subcategory:'Idiomas',
+  description:'30 días para construir base sólida en inglés con vocabulario, gramática y práctica diaria.',
+  icon:'🇬🇧', primaryColor:'#1e3a8a', secondaryColor:'#bfdbfe', bgColor:'#0e0e0e',
+  headerGradient:'linear-gradient(135deg,#1e3a8a,#bfdbfe)',
+  retoContent:[
+    {title:'Día 1: Pronunciación básica', instructions:'Vocales del inglés. Hay 12 sonidos vocálicos vs 5 en español. Mira un video de "vowel sounds" y repite cada uno 5 veces.', reflectionPrompt:'¿Qué sonido te costó más?'},
+    {title:'Día 2: 50 palabras esenciales', instructions:'Aprende los 50 sustantivos más usados: water, food, time, day, year, man, woman... Crea oraciones simples con cada uno.', reflectionPrompt:'¿Cuántos pudiste recordar?'},
+    {title:'Día 3: Verbo "to be" en presente', instructions:'I am, you are, he/she/it is, we are, they are. Forma 10 oraciones afirmativas, 5 negativas, 5 preguntas.', reflectionPrompt:'¿Qué te confunde?'},
+    {title:'Día 4: Presente simple', instructions:'I work, you work, he works (tercera persona +s). Estructura: Sujeto + verbo. 15 oraciones sobre tu rutina diaria.', reflectionPrompt:'¿Cómo describes tu día?'},
+    {title:'Día 5: Escuchar 10 min nativo', instructions:'Podcast para principiantes (BBC Learning English, Coffee Break English). Sin subtítulos primero. Luego repite con subs.', reflectionPrompt:'¿Cuánto entendiste?'},
+    {title:'Día 6: Conversación contigo mismo', instructions:'5 minutos hablando solo en inglés. Describe lo que ves. Aunque sea con errores. Romper el bloqueo es clave.', reflectionPrompt:'¿Cómo te sentiste?'},
+    {title:'Día 7: App diaria', instructions:'Instala Duolingo o Babbel. 15 min al día sin falta. La consistencia es 90% del éxito en idiomas.', reflectionPrompt:'¿Qué app elegiste?'}
+  ],
+  cards:[
+    {front:'Hello / Hi', back:'Hola. "Hi" es más informal.'},
+    {front:'Thank you', back:'Gracias. Más formal: "Thanks a lot".'},
+    {front:'I am from Spain', back:'Soy de España. Estructura: Sujeto + verbo + lugar.'},
+    {front:'How are you?', back:'¿Cómo estás? Respuesta clásica: "I\'m fine, thanks. And you?"'},
+    {front:'What\'s your name?', back:'¿Cuál es tu nombre? Respuesta: "My name is..."'},
+    {front:'I don\'t understand', back:'No entiendo. Útil cuando alguien habla rápido.'},
+    {front:'Could you repeat?', back:'¿Podrías repetir? Más amable que "Repeat please".'},
+    {front:'Where is the bathroom?', back:'¿Dónde está el baño? Frase de supervivencia 101.'},
+    {front:'How much is it?', back:'¿Cuánto cuesta? Esencial para viajar.'},
+    {front:'I would like...', back:'Me gustaría... Forma educada de pedir cualquier cosa.'}
+  ],
+  glossaryTerms:[
+    {term:'Phrasal verb', def:'Verbo + preposición que cambia el significado. "Get up" = levantarse. "Look for" = buscar.'},
+    {term:'Idiom', def:'Expresión cuyo significado no es literal. "It\'s raining cats and dogs" = llueve a cántaros.'},
+    {term:'False friend', def:'Palabra que parece igual al español pero significa algo distinto. "Embarrassed" = avergonzado, NO embarazada.'},
+    {term:'Tense (tiempo verbal)', def:'Presente, pasado, futuro. El inglés tiene 12 tiempos verbales. Los más usados: simple present, simple past, present continuous.'},
+    {term:'Article', def:'A/An (indefinido), the (definido). Regla: "an" antes de sonido vocálico (an apple, NOT a apple).'},
+    {term:'Pronoun', def:'I, you, he, she, it, we, they. Sustituyen al sustantivo.'},
+    {term:'Conditional', def:'"Si... entonces". Cuatro tipos. El más usado: First conditional ("If it rains, I will stay home").'}
+  ],
+  faqItems:[
+    {q:'¿Cuánto tiempo para hablar inglés?', a:'15 min/día constante: 1-2 años para nivel B2 (conversación fluida). Sin constancia, nunca.'},
+    {q:'¿Mejor app o profesor?', a:'App para vocabulario y gramática. Profesor (incluso online) para conversación. Combinación es lo mejor.'},
+    {q:'¿Subtítulos en inglés o español?', a:'Empieza con español. Luego inglés. Luego sin subtítulos. Progresión natural.'},
+    {q:'¿Y el acento?', a:'No te obsesiones. La meta es ser entendido, no perfecto. El acento llega con años de práctica.'}
+  ]
+},
+
+{
+  id:'tpl-habitos', name:'Productividad y Hábitos',
+  types:['reto','tracker','checklist','flashcards'],
+  niche:'productividad, hábitos, gestión tiempo', category:'Educación', subcategory:'Productividad',
+  description:'Construye hábitos productivos sostenibles aplicando ciencia conductual y sistemas.',
+  icon:'⚡', primaryColor:'#facc15', secondaryColor:'#fef08a', bgColor:'#0e0e0e',
+  headerGradient:'linear-gradient(135deg,#facc15,#fef08a)',
+  trackerHabit:'Hoy completé mi rutina productiva clave',
+  retoContent:[
+    {title:'Día 1: Identifica los 3 grandes', instructions:'Cada noche, define las 3 tareas más importantes del día siguiente. Si solo logras esas, el día es exitoso.', reflectionPrompt:'¿Cuáles fueron tus 3?'},
+    {title:'Día 2: Time blocking', instructions:'Bloquea horas específicas para tareas. "10-12am: trabajo profundo. 12-1pm: emails." El calendario decide, no el humor.', reflectionPrompt:'¿Cómo te fue?'},
+    {title:'Día 3: Pomodoro', instructions:'25 min trabajo + 5 descanso. Cada 4 ciclos, descanso largo (15 min). Crea sentido de urgencia.', reflectionPrompt:'¿Lograste mantener foco?'},
+    {title:'Día 4: Eat the frog', instructions:'Haz primero la tarea más difícil/temida. Lo demás del día se siente fácil después.', reflectionPrompt:'¿Cuál era tu sapo?'},
+    {title:'Día 5: Single tasking', instructions:'Hoy SOLO una cosa a la vez. Cierra pestañas, silencia notificaciones. La multitarea es ineficiencia disfrazada.', reflectionPrompt:'¿Notas la diferencia?'},
+    {title:'Día 6: Habit stacking', instructions:'Encadena hábitos: "Después de mi café, escribo 30 min". Aprovecha hábitos existentes para construir nuevos.', reflectionPrompt:'¿Qué stack creaste?'},
+    {title:'Día 7: Review semanal', instructions:'Revisa la semana: qué funcionó, qué no, qué ajustar. Sin review no hay mejora real.', reflectionPrompt:'¿Mayor aprendizaje?'}
+  ],
+  initialItems:['Definir 3 tareas top de mañana','Bloque de trabajo profundo (90 min)','Cero notificaciones en bloque profundo','Pausas conscientes (no scroll)','Hidratación y movimiento','Cerrar laptop a hora fija','Review diario 5 min','Review semanal 30 min'],
+  cards:[
+    {front:'Trabajo profundo', back:'Concentración total sin interrupciones. Cal Newport. 2-4h al día son suficientes para gran impacto.'},
+    {front:'Trabajo superficial', back:'Tareas administrativas, emails, reuniones. Necesarias pero no muevan la aguja. Limítalas.'},
+    {front:'Ley de Parkinson', back:'El trabajo se expande para llenar el tiempo asignado. Pon plazos cortos para forzar eficiencia.'},
+    {front:'Regla de los 2 minutos', back:'Si toma menos de 2 min, hazlo ahora. Evita acumular pendientes triviales.'},
+    {front:'Inbox zero', back:'Procesar bandeja a vacío 1-2 veces/día. NO vivir en email. Decide: responder, archivar, agendar, eliminar.'},
+    {front:'Habit stacking', back:'Anclar hábito nuevo a uno existente. "Después de X, haré Y". Aumenta probabilidad de éxito.'},
+    {front:'2 minute rule (hábitos)', back:'Reduce hábito a 2 min para empezar. "Leer" → "abrir el libro". Después es fácil seguir.'},
+    {front:'Atomic habits', back:'Mejora 1% diaria = 37x al año. Pequeños cambios consistentes vencen grandes esfuerzos puntuales.'}
+  ]
+},
+
+{
+  id:'tpl-escritura-30', name:'Escritura Creativa',
+  types:['reto','diario','flashcards'],
+  niche:'escritura creativa, creatividad, contar historias', category:'Educación', subcategory:'Escritura',
+  description:'30 días de prompts creativos para desbloquear tu voz como escritor/a.',
+  icon:'📝', primaryColor:'#7c3aed', secondaryColor:'#ddd6fe', bgColor:'#0e0e0e',
+  headerGradient:'linear-gradient(135deg,#7c3aed,#ddd6fe)',
+  retoContent:[
+    {title:'Día 1: Página en blanco', instructions:'Escribe lo que sea durante 15 minutos sin parar. No edites. No juzgues. Free writing despeja la mente.', reflectionPrompt:'¿Qué descubriste?'},
+    {title:'Día 2: Describe un objeto', instructions:'Elige un objeto cotidiano y descríbelo en 200 palabras como si nunca lo hubieras visto. Ojo nuevo = creatividad.', reflectionPrompt:'¿Qué objeto elegiste?'},
+    {title:'Día 3: Diálogo', instructions:'Escribe una conversación de 1 página entre dos personajes que se acaban de conocer. Solo diálogo, sin descripciones.', reflectionPrompt:'¿Cómo se sintió?'},
+    {title:'Día 4: Memoria sensorial', instructions:'Elige un recuerdo y descríbelo enfocándote en los 5 sentidos: vista, oído, olfato, tacto, gusto.', reflectionPrompt:'¿Qué sentido fue más fuerte?'},
+    {title:'Día 5: Cambia el final', instructions:'Toma una historia conocida (cuento, película) y reescribe los últimos 200 palabras con un final completamente diferente.', reflectionPrompt:'¿Qué historia elegiste?'},
+    {title:'Día 6: Carta al pasado', instructions:'Escribe una carta a tu yo de hace 10 años. ¿Qué le dirías? ¿Qué le advertirías? ¿Qué celebrarías?', reflectionPrompt:'¿Qué sentiste?'},
+    {title:'Día 7: Microcuento (100 palabras)', instructions:'Cuenta una historia completa en exactamente 100 palabras: principio, conflicto, final. Disciplina de la concisión.', reflectionPrompt:'¿De qué trató?'}
+  ],
+  journalPrompts:['¿Qué historia llevo dentro y nunca conté?','Si escribiera un libro, ¿de qué sería?','¿Qué personaje me obsesiona y por qué?','Describe a tu mejor amigo/a sin nombrarlo/a.','¿Qué imagen recurrente aparece en mis sueños?','Escribe la primera línea de 5 historias diferentes.','¿Qué moraleja querría dejar?'],
+  cards:[
+    {front:'Show, don\'t tell', back:'Muestra a través de acción/diálogo, no expliques. "Estaba enojado" → "Cerró la puerta de un golpe."'},
+    {front:'Personaje memorable', back:'Tiene contradicciones, deseo claro, voz única. No son perfectos. Sus defectos los hacen humanos.'},
+    {front:'Conflicto', back:'Sin conflicto no hay historia. Interno (vs uno mismo), externo (vs otro), o contra entorno.'},
+    {front:'Tres actos', back:'Setup (planteamiento) → Confrontación (escalada) → Resolución. Estructura clásica que funciona.'},
+    {front:'Gancho de inicio', back:'Primera frase debe enganchar. Acción, pregunta, dato impactante. NO descripciones largas.'},
+    {front:'Voz del autor', back:'Tu sello único. Surge de escribir mucho. No la fuerces, encuéntrala escribiendo.'}
+  ]
+},
+
+{
+  id:'tpl-programacion', name:'Aprende Programación',
+  types:['roadmap','glosario','flashcards','faq'],
+  niche:'programación, código, desarrollador', category:'Educación', subcategory:'Programación',
+  description:'Roadmap para aprender a programar desde cero hasta tu primer proyecto real.',
+  icon:'💻', primaryColor:'#16a34a', secondaryColor:'#86efac', bgColor:'#0e0e0e',
+  headerGradient:'linear-gradient(135deg,#16a34a,#86efac)',
+  roadmapSteps:[
+    {title:'Paso 1: Elige el lenguaje correcto', description:'Web: JavaScript. Datos/IA: Python. Mobile: Swift/Kotlin. Para empezar: Python o JavaScript.'},
+    {title:'Paso 2: Fundamentos sólidos', description:'Variables, tipos de datos, condicionales, loops, funciones, estructuras (arrays, objetos). 4-6 semanas.'},
+    {title:'Paso 3: Resolver problemas', description:'Codewars, LeetCode (easy), exercism. La práctica vence a los tutoriales infinitos.'},
+    {title:'Paso 4: Primer proyecto pequeño', description:'Calculadora, lista de tareas, conversor. Pequeño pero completo. Mejor terminar 1 que empezar 10.'},
+    {title:'Paso 5: Git y GitHub', description:'Control de versiones es esencial. Aprende: clone, add, commit, push, pull, branch, merge.'},
+    {title:'Paso 6: Framework moderno', description:'Web: React, Vue. Backend: Node.js, Django. Especialízate en uno antes de saltar al siguiente.'},
+    {title:'Paso 7: Proyectos reales en GitHub', description:'3-5 proyectos completos públicos. Es tu portafolio. Mejor que cualquier diploma.'},
+    {title:'Paso 8: Aplica a empleos junior', description:'Después de 6-12 meses constantes. No esperes "saberlo todo". Aprenderás el 80% en el trabajo.'}
+  ],
+  glossaryTerms:[
+    {term:'Variable', def:'Espacio en memoria con un nombre que guarda un valor. Como una caja etiquetada.'},
+    {term:'Función', def:'Bloque de código reutilizable. Recibe entradas, devuelve resultado.'},
+    {term:'API', def:'Application Programming Interface. Forma estándar de comunicación entre programas.'},
+    {term:'Framework', def:'Conjunto de herramientas y reglas que aceleran el desarrollo. Ej: React para web.'},
+    {term:'Bug', def:'Error en el código que causa comportamiento inesperado. Debugging = corregirlos.'},
+    {term:'Stack', def:'Conjunto de tecnologías usadas. Frontend + backend + base de datos = full stack.'},
+    {term:'Open source', def:'Código libre y abierto. Cualquiera puede ver, usar, contribuir. Linux, React son open source.'},
+    {term:'Algoritmo', def:'Receta paso a paso para resolver un problema. Lo que escribes en cualquier lenguaje.'},
+    {term:'Variable global vs local', def:'Global: accesible desde todo el código. Local: solo dentro de una función.'},
+    {term:'Refactor', def:'Reescribir código para mejorarlo sin cambiar su funcionamiento. Limpieza necesaria.'}
+  ],
+  cards:[
+    {front:'Variable', back:'`let nombre = "Ana";` — Guarda un valor con un nombre.'},
+    {front:'Función', back:'`function saludar(nombre) { return "Hola " + nombre; }` — Bloque reutilizable.'},
+    {front:'If/else', back:'`if (edad >= 18) { console.log("adulto"); } else { console.log("menor"); }`'},
+    {front:'For loop', back:'`for (let i = 0; i < 10; i++) { console.log(i); }` — Repite código.'},
+    {front:'Array', back:'`let frutas = ["manzana", "pera", "uva"];` — Lista ordenada de elementos.'},
+    {front:'Object', back:'`let usuario = { nombre: "Ana", edad: 30 };` — Estructura clave-valor.'},
+    {front:'Comentario', back:'`// esto es un comentario` — No se ejecuta. Para explicar el código.'},
+    {front:'Console.log', back:'Imprime en consola. Tu mejor herramienta de debugging al inicio.'}
+  ],
+  faqItems:[
+    {q:'¿Qué lenguaje aprender primero?', a:'Python por simplicidad, JavaScript por versatilidad. Cualquiera de los dos es buena elección.'},
+    {q:'¿Necesito carrera universitaria?', a:'No. Bootcamps + autodidacta + portfolio fuerte funcionan. Muchas empresas ya no piden título.'},
+    {q:'¿Cuánto tiempo para conseguir empleo?', a:'6-18 meses con dedicación seria (3+ horas diarias). Depende de constancia y portfolio.'},
+    {q:'¿Soy muy mayor para empezar?', a:'No. Hay developers que empezaron a los 40+. Lo que importa es la actitud y constancia.'},
+    {q:'¿Necesito ser bueno en matemáticas?', a:'Para programación general no. Para ML/data science sí. Para web/apps básicas, álgebra básica basta.'}
+  ]
+},
+
+{
+  id:'tpl-estudio', name:'Técnicas de Estudio',
+  types:['flashcards','checklist','roadmap','faq'],
+  niche:'estudio, aprendizaje, técnicas estudiantiles', category:'Educación', subcategory:'Estudio',
+  description:'Aprende a estudiar mejor con técnicas científicamente probadas, no estudiando más horas.',
+  icon:'📚', primaryColor:'#0d9488', secondaryColor:'#5eead4', bgColor:'#0e0e0e',
+  headerGradient:'linear-gradient(135deg,#0d9488,#5eead4)',
+  roadmapSteps:[
+    {title:'Paso 1: Active recall', description:'En lugar de releer, hazte preguntas y responde sin mirar. La mejor técnica científicamente probada.'},
+    {title:'Paso 2: Repetición espaciada', description:'Repasa en intervalos crecientes (día 1, 3, 7, 14, 30). Anki es la mejor app gratis para esto.'},
+    {title:'Paso 3: Pomodoro', description:'25 min foco + 5 descanso. La pausa consolida memoria. Productivo > horas frente a libro.'},
+    {title:'Paso 4: Mapas mentales', description:'Conecta conceptos visualmente. Ayuda a ver el "todo" antes de profundizar partes.'},
+    {title:'Paso 5: Enseñar lo aprendido', description:'Técnica Feynman: explica el tema como si fueras profesor de un niño. Si no puedes, no lo entiendes.'},
+    {title:'Paso 6: Variar contextos', description:'Cambia de lugar de estudio. La memoria se asocia con entorno. Variarlo mejora retención.'},
+    {title:'Paso 7: Sueño y ejercicio', description:'El cerebro consolida durante el sueño. 7-9h. Ejercicio aeróbico aumenta neurogénesis.'}
+  ],
+  cards:[
+    {front:'Active recall', back:'Forzarte a recordar sin mirar el material. Hazte preguntas, responde, verifica. Mucho mejor que releer.'},
+    {front:'Repetición espaciada', back:'Repasar en intervalos crecientes (1, 3, 7, 14, 30 días). Aprovecha la curva del olvido.'},
+    {front:'Curva del olvido (Ebbinghaus)', back:'Olvidamos 50% en 1 hora si no repasamos. Repasos espaciados frenan el olvido.'},
+    {front:'Técnica Feynman', back:'1) Elige tema. 2) Explícalo simple (como a un niño). 3) Identifica huecos. 4) Vuelve al material y repite.'},
+    {front:'Interleaving', back:'Mezclar temas en una sesión vs estudiar uno solo (blocking). Mejor retención a largo plazo.'},
+    {front:'Doble codificación', back:'Combinar palabras + imágenes. Más rutas en cerebro = mejor recall.'},
+    {front:'Subrayado', back:'Sobrevalorado. Da ilusión de aprendizaje sin recall real. Mejor: notas con tus palabras.'},
+    {front:'Releer', back:'Técnica menos efectiva. Da familiaridad sin retención profunda. Sustituye por active recall.'}
+  ],
+  initialItems:['Plan semanal con metas claras','Sesiones Pomodoro (25/5)','Active recall en lugar de releer','Anki o flashcards físicas','Resumen con palabras propias','Sueño 7-9h','Ejercicio aeróbico 3x semana','Eliminar redes durante estudio'],
+  faqItems:[
+    {q:'¿Cuántas horas debo estudiar?', a:'Calidad > cantidad. 3-4h con Pomodoro y active recall vencen 8h pasivas. Es agotador; descansa.'},
+    {q:'¿Música mientras estudio?', a:'Instrumental o sonidos blancos sí. Música con letra distrae si lees/escribes.'},
+    {q:'¿Estudio mañana o noche?', a:'Cuando tu cerebro esté más alerta. Para la mayoría: mañana. Pero conoce tu cronotipo.'},
+    {q:'¿Anki o cuaderno?', a:'Anki para memorizar (vocabulario, fechas, fórmulas). Cuaderno para entender (mapas, esquemas).'}
+  ]
+},
+
+{
+  id:'tpl-lectura', name:'Club de Lectura',
+  types:['reto','tracker','diario'],
+  niche:'lectura, libros, hábito lector', category:'Educación', subcategory:'Lectura',
+  description:'Construye el hábito de leer todos los días con un reto progresivo de 30 días.',
+  icon:'📖', primaryColor:'#854d0e', secondaryColor:'#fde68a', bgColor:'#0e0e0e',
+  headerGradient:'linear-gradient(135deg,#854d0e,#fde68a)',
+  trackerHabit:'Hoy leí al menos 20 minutos',
+  retoContent:[
+    {title:'Día 1: Define tu por qué', instructions:'¿Por qué quieres leer más? ¿Aprender, escapar, crecer? Escribe tu motivo. Te guiará en días flojos.', reflectionPrompt:'¿Cuál es tu razón?'},
+    {title:'Día 2: Elige el libro adecuado', instructions:'No empieces con "Guerra y paz". Elige algo accesible que TE atrape. Ficción ligera, biografía, autoayuda.', reflectionPrompt:'¿Qué libro elegiste?'},
+    {title:'Día 3: Establece hora fija', instructions:'Lee a la misma hora cada día. Mañana al despertar o noche antes de dormir suelen ser ideales.', reflectionPrompt:'¿Qué hora elegiste?'},
+    {title:'Día 4: 15 minutos sin distracciones', instructions:'Teléfono en otra habitación. Solo tú y el libro. Sin pausas para revisar nada. Construye foco.', reflectionPrompt:'¿Cómo estuvo tu mente?'},
+    {title:'Día 5: Subraya o anota', instructions:'Marca pasajes que te impactan. Comprometerse con el libro fija ideas y te hace lector activo, no pasivo.', reflectionPrompt:'¿Qué subrayaste?'},
+    {title:'Día 6: Comparte una idea', instructions:'Escribe a alguien o publica una idea del libro. Compartir consolida lo aprendido.', reflectionPrompt:'¿Cuál compartiste?'},
+    {title:'Día 7: Aumenta a 30 min', instructions:'Si lograste 15 min consistentes, sube a 30. Avance gradual evita rebote.', reflectionPrompt:'¿Cómo va el libro?'}
+  ],
+  journalPrompts:['¿Qué idea del libro de hoy quiero recordar?','Si tuviera que resumir el capítulo en 3 frases, ¿cuáles serían?','¿Con qué personaje me identifico y por qué?','¿Cómo aplico esto a mi vida?','¿Qué pregunta me deja este libro?','¿Qué estoy evitando enfrentar que el libro toca?']
+},
+
   ];
 }
