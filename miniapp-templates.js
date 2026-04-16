@@ -1420,5 +1420,112 @@ function getBuiltinMiniAppTemplates() {
   ]
 },
 
+// ═══════════════ BELLEZA ═══════════════
+
+{
+  id:'tpl-skincare-30', name:'Skincare Nocturna',
+  types:['reto','checklist','glosario','faq'],
+  niche:'skincare, cuidado piel, rutina nocturna', category:'Belleza', subcategory:'Skincare',
+  description:'30 días para construir una rutina nocturna efectiva sin gastar fortunas en productos.',
+  icon:'✨', primaryColor:'#db2777', secondaryColor:'#fbcfe8', bgColor:'#0e0e0e',
+  headerGradient:'linear-gradient(135deg,#db2777,#fbcfe8)',
+  retoContent:[
+    {title:'Día 1: Conoce tu piel', instructions:'Identifica tu tipo: grasa, seca, mixta, sensible. Test del kleenex 2h tras lavar: brillos = mixta/grasa.', reflectionPrompt:'¿Qué tipo eres?'},
+    {title:'Día 2: Doble limpieza', instructions:'Aceite/balm primero (quita SPF, maquillaje), luego limpiador acuoso (limpia poro). Esencial si usas SPF a diario.', reflectionPrompt:'¿Notas diferencia?'},
+    {title:'Día 3: Tónico hidratante', instructions:'Olvida los astringentes con alcohol. Usa tónico hidratante (ácido hialurónico, glicerina). Capa fina, golpear con dedos.', reflectionPrompt:'¿Cómo se siente?'},
+    {title:'Día 4: Sérum de tratamiento', instructions:'Elige SOLO uno: vitamina C (mañana, antiox), niacinamida (poros, manchas), retinol (antiedad, lento). NO mezclar todos.', reflectionPrompt:'¿Cuál elegiste?'},
+    {title:'Día 5: Hidratante', instructions:'Crema según tipo. Grasa: gel ligero. Seca: textura rica. Sella la hidratación. Aplica en piel ligeramente húmeda.', reflectionPrompt:'¿Cómo amaneció tu piel?'},
+    {title:'Día 6: Contorno de ojos opcional', instructions:'No esencial pero útil. Cafeína para bolsas, péptidos para arrugas, hidratante para ojeras secas.', reflectionPrompt:'¿Lo necesitas?'},
+    {title:'Día 7: SPF mañana siempre', instructions:'El paso más importante. SPF50 todos los días, llueva o haga sol, en interior si hay ventanas. Previene 90% del envejecimiento.', reflectionPrompt:'¿Cuál SPF te gusta?'}
+  ],
+  initialItems:['Doble limpieza','Tónico hidratante','UN sérum de tratamiento','Hidratante adecuada al tipo','SPF50 cada mañana SIEMPRE','Cambiar funda almohada cada 3 días','Tomar 2L agua','Dormir 7-8 horas (skin sleep)'],
+  glossaryTerms:[
+    {term:'AHA', def:'Alfahidroxiácidos (glicólico, láctico). Exfolian superficie. Para luminosidad, manchas. Usar de noche.'},
+    {term:'BHA', def:'Ácido salicílico. Penetra poro graso. Ideal piel grasa, acné, comedones.'},
+    {term:'Niacinamida', def:'Vitamina B3. Reduce poros, manchas, regula sebo, calma rojeces. Apta todos los tipos.'},
+    {term:'Retinol', def:'Forma de vitamina A. Acelera renovación celular. Antiedad y antiacné. Empezar 1-2 veces/semana.'},
+    {term:'Ácido hialurónico', def:'Hidratante que retiene 1000x su peso en agua. Aplica en piel húmeda, sella con crema.'},
+    {term:'Vitamina C', def:'Antioxidante potente. Aclara, ilumina, protege. Aplicar de mañana antes de SPF.'},
+    {term:'Péptidos', def:'Cadenas de aminoácidos. Estimulan colágeno. Antiedad sin irritar.'},
+    {term:'Ceramidas', def:'Lípidos naturales de la piel. Restauran barrera cutánea. Pieles secas o sensibles los aman.'},
+    {term:'SPF (FPS)', def:'Factor de protección solar. SPF30 = 97%, SPF50 = 98%. Reaplica cada 2h al aire libre.'},
+    {term:'Comedón', def:'Poro obstruido. Abierto = punto negro. Cerrado = bolita blanca. Tratar con BHA, no apretar.'}
+  ],
+  faqItems:[
+    {q:'¿En qué orden aplico los productos?', a:'De más líquido a más denso: limpieza → tónico → sérum → contorno → crema → SPF (mañana).'},
+    {q:'¿Puedo usar retinol y vitamina C juntos?', a:'No al mismo tiempo. Vitamina C de mañana, retinol de noche. O alterna noches.'},
+    {q:'¿Por qué me sale más acné desde que empecé skincare?', a:'Purga inicial con ácidos/retinol. Dura 4-6 semanas. Si dura más, algo no funciona para ti.'},
+    {q:'¿Productos caros vs farmacia?', a:'Farmacia (CeraVe, La Roche-Posay, Eucerin) suele ser igual o mejor que lujo. El precio no garantiza calidad.'},
+    {q:'¿A qué edad empezar antiedad?', a:'25-30 años buen momento. Antes: solo SPF y limpieza/hidratación. La prevención es la mejor "antiedad".'},
+    {q:'¿Mancarillas sirven?', a:'Hidratantes sí, ocasionales. No sustituyen rutina. Las que prometen "borrar arrugas en 1 uso" son marketing.'}
+  ]
+},
+
+{
+  id:'tpl-colorimetria', name:'Descubre tus Colores',
+  types:['flashcards','glosario','faq','checklist'],
+  niche:'colorimetría, estilo personal, paleta de colores', category:'Belleza', subcategory:'Colorimetría',
+  description:'Identifica tu paleta personal y aprende a vestir colores que te favorecen.',
+  icon:'🎨', primaryColor:'#9333ea', secondaryColor:'#e9d5ff', bgColor:'#0e0e0e',
+  headerGradient:'linear-gradient(135deg,#9333ea,#e9d5ff)',
+  cards:[
+    {front:'Subtono cálido', back:'Venas verdosas, pelo dorado/cobre, piel marfil/dorada, ojos cálidos. Te favorecen tonos tierra, mostaza, coral.'},
+    {front:'Subtono frío', back:'Venas azuladas, pelo cenizo/oscuro, piel rosada/porcelana, ojos azules/grises. Te favorecen joya, fucsia, azul real.'},
+    {front:'Subtono neutro', back:'Venas mixtas, pelo castaño medio. Te favorecen tanto cálidos como fríos. Más versatilidad.'},
+    {front:'Primavera', back:'Cálida + clara + brillante. Coral, melocotón, turquesa, amarillo limón, verde primavera.'},
+    {front:'Verano', back:'Fría + clara + suave. Lavanda, rosa palo, azul cielo, gris perla, verde menta.'},
+    {front:'Otoño', back:'Cálida + oscura + suave. Mostaza, terracota, oliva, marrón chocolate, óxido.'},
+    {front:'Invierno', back:'Fría + oscura + brillante. Rojo cereza, fucsia, azul real, esmeralda, blanco puro, negro.'},
+    {front:'Test del oro y plata', back:'Pruébate joyería de oro vs plata sobre piel. La que te ilumina marca tu subtono (oro = cálido, plata = frío).'}
+  ],
+  glossaryTerms:[
+    {term:'Subtono', def:'Tono debajo de tu piel. Cálido (amarillo/dorado), frío (rosa/azul), neutro (mezcla).'},
+    {term:'Estación cromática', def:'Sistema 12 estaciones (4 base × 3 variantes). Define tu paleta personal.'},
+    {term:'Paleta personal', def:'Conjunto de colores que armonizan con tu coloración natural. Te ven más fresca/o.'},
+    {term:'Color de impacto', def:'Color que te hace destacar más. Suele ser uno saturado de tu paleta.'},
+    {term:'Color base', def:'Neutros de tu paleta (negro, blanco, beige, marrón, gris) que combinan con todo.'},
+    {term:'Drape test', def:'Prueba con telas de colores junto al rostro para ver cuáles iluminan vs apagan.'},
+    {term:'Saturación', def:'Intensidad del color. Brillante (saturado) vs apagado (suave).'},
+    {term:'Valor', def:'Claridad u oscuridad de un color. Pastel = claro. Burdeos = oscuro.'}
+  ],
+  faqItems:[
+    {q:'¿Cómo sé mi subtono sin ayuda?', a:'Mira tus venas con luz natural: verde = cálido, azul/violeta = frío. Test oro vs plata. ¿Te bronceas o te quemas?'},
+    {q:'¿Puedo usar colores fuera de mi paleta?', a:'Sí, pero úsalos en piezas alejadas del rostro (zapatos, pantalón). Cerca del rostro: tu paleta.'},
+    {q:'¿Y si soy un color "no recomendado" pero me encanta?', a:'Úsalo. La colorimetría es guía, no ley. Lo más importante es cómo te sientes.'},
+    {q:'¿Mi color de pelo afecta mi paleta?', a:'Sí. Si te tiñes radicalmente, tu paleta puede cambiar. Lo natural es la referencia base.'},
+    {q:'¿Vale la pena un análisis profesional?', a:'Si lo dudas mucho, sí. Detecta matices que solo ves en persona. Inversión de 50-150€ para mejorar todo tu armario.'}
+  ],
+  initialItems:['Identificar tu subtono','Identificar tu estación cromática','Lista de 5 colores que te favorecen','Lista de 3 colores a evitar cerca del rostro','Renovar 1 prenda al mes con tus colores','Probar colores nuevos en accesorios primero','Foto de cara con cada color (comparar)','Maquillaje en tonos de tu paleta']
+},
+
+{
+  id:'tpl-capsula', name:'Cápsula de Armario',
+  types:['checklist','roadmap','flashcards'],
+  niche:'armario cápsula, minimalismo, estilo personal', category:'Belleza', subcategory:'Estilo',
+  description:'Crea un armario cápsula con 30-40 piezas que combinan entre sí y reflejan tu estilo.',
+  icon:'👗', primaryColor:'#475569', secondaryColor:'#cbd5e1', bgColor:'#0e0e0e',
+  headerGradient:'linear-gradient(135deg,#475569,#cbd5e1)',
+  initialItems:['Camiseta blanca básica','Camiseta negra básica','Jeans bien cortados (azul oscuro)','Pantalón sastre','Vestido negro versátil','Camisa blanca clásica','Blazer atemporal','Cárdigan o suéter neutro','Falda midi','Chaqueta cuero o denim','Trench o gabardina','Zapatillas blancas','Botines neutros','Bailarinas o mocasines','Tacones nude/negros','Bolso medianos neutros','Cinturón básico','Pañuelo o accesorio statement','Pijama bonito','Ropa interior funcional'],
+  roadmapSteps:[
+    {title:'Paso 1: Vacía tu armario', description:'Saca TODO. Sí, todo. Es el único modo de ver lo que realmente tienes.'},
+    {title:'Paso 2: Categoriza por uso', description:'Tres montones: "uso semanal", "uso ocasional", "no uso hace 1 año". El último: regalar/vender.'},
+    {title:'Paso 3: Define tu estilo', description:'Crea moodboard en Pinterest. ¿Clásico, casual, romántico, edgy? Te guía en compras futuras.'},
+    {title:'Paso 4: Identifica vacíos', description:'¿Faltan básicos? ¿Te faltan zapatos cómodos? Lista lo que necesitas, no lo que quieres.'},
+    {title:'Paso 5: Compra calidad estratégica', description:'Una camisa blanca buena vs cinco baratas. Inversión en básicos paga 10 años, fast fashion 1 estación.'},
+    {title:'Paso 6: Regla 1 entra, 1 sale', description:'Si compras algo nuevo, sale algo viejo. Mantén el armario en su número óptimo.'},
+    {title:'Paso 7: Renueva por temporada', description:'2 veces al año revisa. Lo que no usaste en 1 año, fuera. Tu cápsula evoluciona contigo.'}
+  ],
+  cards:[
+    {front:'Cápsula de armario', back:'Conjunto reducido de prendas que combinan entre sí. Origen: Susie Faux, 1970s.'},
+    {front:'Pieza statement', back:'Prenda llamativa que es centro del look. Combina con básicos. Una a la vez en outfit.'},
+    {front:'Básicos', back:'Prendas neutras y atemporales que combinan con todo. Inversión justificada en calidad.'},
+    {front:'CPW (Cost Per Wear)', back:'Coste total ÷ veces usado. Una prenda de 200€ usada 100 veces = 2€ por uso. Más barato que fast fashion.'},
+    {front:'Slow fashion', back:'Comprar menos pero mejor. Marcas éticas, calidad, atemporalidad. Anti fast fashion.'},
+    {front:'Color base', back:'2-3 colores neutros principales (negro, blanco, beige, marino). 70% del armario.'},
+    {front:'Color acento', back:'1-2 colores adicionales que aportan personalidad. 20% del armario.'},
+    {front:'Versatilidad', back:'Una prenda que crea 5+ outfits diferentes. Métrica clave para incluir en tu cápsula.'}
+  ]
+},
+
   ];
 }
