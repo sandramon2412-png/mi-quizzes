@@ -394,5 +394,180 @@ function getBuiltinMiniAppTemplates() {
   ]
 },
 
+// ═══════════════ NUTRICIÓN ═══════════════
+
+{
+  id:'tpl-alimentacion-21', name:'Alimentación Balanceada',
+  types:['reto','checklist','flashcards','faq'],
+  niche:'nutrición, alimentación saludable', category:'Nutrición', subcategory:'General',
+  description:'21 días para crear hábitos de alimentación equilibrada sin dietas restrictivas.',
+  icon:'🥗', primaryColor:'#65a30d', secondaryColor:'#a3e635', bgColor:'#0e0e0e',
+  headerGradient:'linear-gradient(135deg,#65a30d,#a3e635)',
+  retoContent:[
+    {title:'Día 1: Vaso de agua al despertar', instructions:'Antes de café o desayuno, toma 500ml de agua. Hidrata tras 8h de ayuno nocturno y activa metabolismo.', reflectionPrompt:'¿Cómo te sentiste?'},
+    {title:'Día 2: Proteína en cada comida', instructions:'Asegura una fuente de proteína en desayuno, almuerzo y cena: huevos, pollo, pescado, lentejas, tofu, yogur griego.', reflectionPrompt:'¿Qué comida te costó más incluir proteína?'},
+    {title:'Día 3: Verduras en 2 comidas', instructions:'Incluye verduras en almuerzo Y cena. Mitad del plato idealmente. Variedad de colores = variedad de nutrientes.', reflectionPrompt:'¿Qué verdura nueva probaste?'},
+    {title:'Día 4: Elimina bebidas azucaradas', instructions:'Hoy cero refrescos, jugos envasados, café con azúcar. Solo agua, infusiones, café/té sin azúcar.', reflectionPrompt:'¿Cuántos gramos de azúcar líquida evitaste?'},
+    {title:'Día 5: Comer sin pantallas', instructions:'Todas las comidas sin TV, teléfono ni trabajo. Mastica despacio, nota sabores. Comer consciente reduce porciones.', reflectionPrompt:'¿Notaste saciedad antes que de costumbre?'},
+    {title:'Día 6: Planifica mañana', instructions:'Esta noche, planifica qué comerás mañana. Prepara lo que puedas. Evitas decisiones impulsivas cuando tienes hambre.', reflectionPrompt:'¿Qué te costará más seguir?'},
+    {title:'Día 7: Comida casera 100%', instructions:'Hoy cocina todas tus comidas. Sin pedidos, sin empacado. Tú controlas ingredientes y porciones.', reflectionPrompt:'¿Qué aprendiste sobre tu relación con la comida?'}
+  ],
+  initialItems:['Desayunar con proteína','Comer 5 porciones de frutas/verduras','Mínimo 2 litros de agua','Evitar ultraprocesados','Masticar despacio (20 veces)','Parar al 80% de saciedad','Planear comidas de la semana','Un día de comida libre (sin culpa)'],
+  cards:[
+    {front:'Proteínas', back:'1.2-1.6g por kg de peso. Reparan músculo y dan saciedad. Fuentes: carne, pescado, huevo, lácteos, legumbres.'},
+    {front:'Carbohidratos complejos', back:'Libera energía lenta. Avena, arroz integral, quinoa, tubérculos, legumbres, pan integral.'},
+    {front:'Grasas saludables', back:'Aguacate, aceite de oliva, frutos secos, pescado graso, semillas. Esenciales para hormonas.'},
+    {front:'Ultraprocesados', back:'Productos industriales con aditivos, azúcares añadidos, grasas trans. Evitar: galletas, snacks, embutidos baratos.'},
+    {front:'Método del plato', back:'1/2 verduras + 1/4 proteína + 1/4 carbohidrato complejo. Simple y efectivo.'},
+    {front:'Hambre real vs emocional', back:'Hambre real: aparece gradual, cualquier comida sirve. Emocional: súbita, antojo específico (dulce o salado).'},
+    {front:'Micronutrientes', back:'Vitaminas y minerales. Se obtienen variando colores de frutas y verduras.'},
+    {front:'Índice glucémico', back:'Rapidez con que un alimento eleva glucosa. Bajo (legumbres, avena) = saciedad prolongada.'}
+  ],
+  faqItems:[
+    {q:'¿Debo contar calorías?', a:'No es obligatorio. Empieza con método del plato y escucha tu cuerpo. Contar ayuda si tienes objetivo específico.'},
+    {q:'¿El desayuno es la comida más importante?', a:'No necesariamente. Lo importante es que todas tus comidas sean nutritivas. Si no tienes hambre, no fuerces.'},
+    {q:'¿Puedo comer carbohidratos en la noche?', a:'Sí. No engordan en la noche. Lo que importa es el total diario, no el horario.'},
+    {q:'¿Son malas las grasas?', a:'No. Las grasas saludables son esenciales. Evita trans (procesados) y modera saturadas.'},
+    {q:'¿Qué hago con antojos de dulce?', a:'Pregúntate si tienes hambre real. Si no, distráete 20 min. Si persiste, come la versión más natural posible (fruta, chocolate 70%+).'},
+    {q:'¿Necesito suplementos?', a:'Depende. Si tu dieta es variada, probablemente no. Vitamina D es común déficit. B12 si eres vegetariano/vegano.'}
+  ]
+},
+
+{
+  id:'tpl-keto-30', name:'Reset Keto 30 Días',
+  types:['reto','glosario','faq','checklist'],
+  niche:'keto, dieta cetogénica, low carb', category:'Nutrición', subcategory:'Keto',
+  description:'Plan de 30 días para entrar en cetosis, quemar grasa y estabilizar energía.',
+  icon:'🥑', primaryColor:'#047857', secondaryColor:'#6ee7b7', bgColor:'#0e0e0e',
+  headerGradient:'linear-gradient(135deg,#047857,#6ee7b7)',
+  retoContent:[
+    {title:'Día 1: Limpia la despensa', instructions:'Regala o tira: pan, pasta, arroz, galletas, azúcar, refrescos, cereales. Llena con: huevos, carne, pescado, aguacate, aceite oliva, verduras bajas en carbo.', reflectionPrompt:'¿Qué fue más difícil tirar?'},
+    {title:'Día 2: 20g carbos netos máximo', instructions:'Cuenta carbohidratos netos (totales - fibra). Apps útiles: MyFitnessPal, Carb Manager. Bebe mucha agua con sal.', reflectionPrompt:'¿Qué comiste hoy?'},
+    {title:'Día 3: Electrolitos', instructions:'Suma 3-5g de sal adicional, 300mg magnesio, 1000mg potasio. Previene la "keto flu" (gripe keto).', reflectionPrompt:'¿Síntomas de keto flu?'},
+    {title:'Día 4: Ayuno 16:8', instructions:'Come solo entre 12pm y 8pm. Acelera entrada en cetosis. Café con mantequilla (opcional) no rompe el ayuno.', reflectionPrompt:'¿Cómo manejaste el hambre?'},
+    {title:'Día 5: Revisa cetosis', instructions:'Tiras de orina (baratas) o sangre (precisas). 0.5-3.0 mmol/L = cetosis nutricional. Aliento con sabor afrutado = señal.', reflectionPrompt:'¿Estás en cetosis?'},
+    {title:'Día 6: Comida social', instructions:'Practica salir a comer keto: ensalada + proteína + aguacate, o bistec con verduras. Evita pan y postres.', reflectionPrompt:'¿Cómo fue socialmente?'},
+    {title:'Día 7: Semana 1 completa', instructions:'Mide cintura, pesa, nota energía y sueño. Los primeros kg son agua (glucógeno). Grasa viene después.', reflectionPrompt:'¿Qué cambios notaste?'}
+  ],
+  initialItems:['20g carbos netos máximo','3L agua + sal','Electrolitos (Na, K, Mg)','70% grasa, 25% proteína, 5% carbos','Cocinar en casa','Sin productos "keto procesados"','Dormir 7h+','Ayuno 14-16h'],
+  glossaryTerms:[
+    {term:'Cetosis', def:'Estado metabólico donde el cuerpo quema grasa (cuerpos cetónicos) en lugar de glucosa.'},
+    {term:'Cetoadaptación', def:'Proceso de 3-6 semanas donde el cuerpo optimiza el uso de cetonas. Energía estable tras esto.'},
+    {term:'Keto flu', def:'Síntomas gripales los primeros días: fatiga, dolor cabeza, irritabilidad. Se soluciona con electrolitos.'},
+    {term:'Carbos netos', def:'Carbohidratos totales menos fibra menos polialcoholes. Los que impactan glucosa.'},
+    {term:'BHB', def:'Beta-hidroxibutirato. Principal cuerpo cetónico. Se mide en sangre.'},
+    {term:'MCT oil', def:'Triglicéridos de cadena media (aceite de coco). Se convierte rápido en cetonas.'},
+    {term:'Lazy keto', def:'Versión simplificada: solo cuentas carbos, sin medir grasa ni proteína. Menos preciso.'},
+    {term:'Ayuno intermitente', def:'Comer en ventana restringida. Combina muy bien con keto.'}
+  ],
+  faqItems:[
+    {q:'¿Cuánto tiempo para entrar en cetosis?', a:'2-5 días con 20g carbos o menos. Ayuno acelera a 24-48h. Ejercicio también ayuda.'},
+    {q:'¿Puedo hacer ejercicio en keto?', a:'Sí. Los primeros días bajarás rendimiento. Tras cetoadaptación, cardio largo mejora; explosividad puede bajar algo.'},
+    {q:'¿Es peligroso keto?', a:'Para persona sana, no. Contraindicado en diabetes tipo 1, pancreatitis, problemas hepáticos/renales. Consulta médico.'},
+    {q:'¿Cuánto puedo bajar?', a:'Primera semana: 2-4 kg (agua). Luego 0.5-1 kg por semana de grasa real.'},
+    {q:'¿Puedo comer fruta?', a:'Solo berries (frambuesa, fresa) en cantidades pequeñas. Plátano, uva, mango = muchos carbos.'},
+    {q:'¿Qué pasa si como carbos?', a:'Sales de cetosis. Vuelves a glucógeno. Tardas 1-3 días en regresar. No arruina todo, solo reinicia.'}
+  ]
+},
+
+{
+  id:'tpl-mealprep', name:'Meal Prep Semanal',
+  types:['planificador','checklist','flashcards'],
+  niche:'meal prep, cocina semanal, organización', category:'Nutrición', subcategory:'Meal Prep',
+  description:'Organiza tu cocina semanal en 2 horas: comidas ricas, saludables y sin estrés.',
+  icon:'🥘', primaryColor:'#ea580c', secondaryColor:'#fdba74', bgColor:'#0e0e0e',
+  headerGradient:'linear-gradient(135deg,#ea580c,#fdba74)',
+  initialTasks:['Domingo 10am: Planear menú de la semana','Domingo 11am: Hacer lista de compras','Domingo 12pm: Comprar en el super','Domingo 2pm: Lavar y cortar verduras','Domingo 3pm: Cocinar proteínas de la semana','Domingo 4pm: Cocinar carbohidratos (arroz, quinoa)','Domingo 5pm: Preparar 2-3 salsas/aderezos','Domingo 6pm: Porcionar en taper','Lunes-Viernes 7am: Llevar taper al trabajo'],
+  initialItems:['10 tapers con tapa','Básculas digital','Cuchillo bien afilado','Tabla de cortar','Etiquetas para fecha','Olla arrocera o Instant Pot','Sartén antiadherente grande','Bolsas ziploc para congelar','Hierbas y especias básicas'],
+  cards:[
+    {front:'Fórmula base meal prep', back:'1 proteína + 1 carbohidrato complejo + 2 verduras + 1 salsa = comida completa. Varía la salsa para evitar aburrirte.'},
+    {front:'¿Cuántos días aguanta?', a:'Pollo cocido: 4 días. Pescado: 2 días. Arroz/quinoa: 5 días. Verduras cocidas: 4 días. Salsas con crema: 3 días.', back:'Pollo cocido: 4 días. Pescado: 2 días. Arroz/quinoa: 5 días. Verduras cocidas: 4 días. Salsas con crema: 3 días.'},
+    {front:'Verduras que aguantan crudas', back:'Zanahoria, pepino, apio, pimiento, brócoli, coliflor. Córtalas domingo, úsalas toda la semana.'},
+    {front:'Proteínas ideales meal prep', back:'Pollo desmechado, carne molida, atún, huevos duros, tofu horneado, lentejas. Se recalientan bien.'},
+    {front:'Congela porciones extra', back:'Cocina doble y congela la mitad. Etiqueta con fecha. Duración: 3 meses.'},
+    {front:'Regla de las 3 salsas', back:'Ten siempre 3 salsas listas (ej: vinagreta, pesto, yogur con hierbas). Mismo ingrediente se siente diferente.'},
+    {front:'Batch cooking vs meal prep', back:'Batch: cocinas ingredientes separados, combinas al momento. Meal prep: platos ya armados en taper.'}
+  ]
+},
+
+{
+  id:'tpl-ayuno', name:'Ayuno Intermitente 16:8',
+  types:['reto','tracker','faq','glosario'],
+  niche:'ayuno intermitente, ayuno 16:8', category:'Nutrición', subcategory:'Ayuno',
+  description:'Implementa el ayuno intermitente 16:8 de forma sostenible en 21 días.',
+  icon:'⏰', primaryColor:'#7c2d12', secondaryColor:'#fb923c', bgColor:'#0e0e0e',
+  headerGradient:'linear-gradient(135deg,#7c2d12,#fb923c)',
+  trackerHabit:'Completé mi ventana de ayuno 16h hoy',
+  retoContent:[
+    {title:'Día 1: Ayuno 12:12', instructions:'Empieza suave. Última comida 8pm, primera 8am. Si normalmente cenas tarde, ya has ayunado 12h muchas veces sin notarlo.', reflectionPrompt:'¿Cómo te sentiste?'},
+    {title:'Día 2: Ayuno 14:10', instructions:'Extiende ayuno a 14h. Última comida 8pm, primera 10am. Agua, café negro o té sin azúcar están permitidos.', reflectionPrompt:'¿Tuviste hambre en la mañana?'},
+    {title:'Día 3: Ayuno 16:8 (primera vez)', instructions:'La ventana oficial: 16h ayuno, 8h comida. Última comida 8pm, primera 12pm. Mantén hidratación alta.', reflectionPrompt:'¿Llegaste hasta las 12?'},
+    {title:'Día 4: Hidratación máxima', instructions:'3L agua mínimo durante el ayuno. Agrega pizca de sal rosa si sientes mareo. Café y té SIN azúcar.', reflectionPrompt:'¿Notas más energía sin desayuno?'},
+    {title:'Día 5: Rompe el ayuno bien', instructions:'Primera comida: proteína + verduras + grasas. Evita azúcar y carbos refinados al romper. Picos de glucosa = hambre de rebote.', reflectionPrompt:'¿Qué comiste primero?'},
+    {title:'Día 6: Ayuno y ejercicio', instructions:'Entrena durante el ayuno (si cardio ligero o fuerza corta). Luego come proteína + carbos. Recuperación post-ayuno es potente.', reflectionPrompt:'¿Cómo fue tu rendimiento?'},
+    {title:'Día 7: Revisión', instructions:'¿Te sientes con más energía? ¿Menos antojos? ¿Mejor digestión? El ayuno no es magia, es una herramienta. Úsala si te funciona.', reflectionPrompt:'¿Vas a seguir?'}
+  ],
+  glossaryTerms:[
+    {term:'Ayuno intermitente', def:'Patrón de comida que alterna ventanas de ayuno con ventanas de alimentación.'},
+    {term:'16:8', def:'Protocolo más popular: 16h sin comer, 8h para comer. Ejemplo: 12pm a 8pm.'},
+    {term:'OMAD', def:'One Meal A Day. Ayuno 23:1. Solo una comida al día. Avanzado.'},
+    {term:'Autofagia', def:'Proceso celular de "limpieza" que se activa tras 16-24h sin comer. Renueva células dañadas.'},
+    {term:'Ventana de alimentación', def:'Horas permitidas para comer (ej: 12pm-8pm).'},
+    {term:'Romper el ayuno', def:'Primera comida tras el ayuno. Importante que sea equilibrada, no azucarada.'},
+    {term:'Cetosis inducida', def:'Al alargar ayuno, el cuerpo entra en cetosis leve. Quema grasa.'},
+    {term:'5:2', def:'Protocolo alternativo: 5 días comida normal, 2 días a 500-600 kcal. Menos popular que 16:8.'}
+  ],
+  faqItems:[
+    {q:'¿El ayuno intermitente baja de peso?', a:'Sí, porque comprime las horas de comida. Pero solo si mantienes déficit calórico. No es magia.'},
+    {q:'¿Puedo tomar café o té durante el ayuno?', a:'Sí, sin azúcar ni leche. Agua, café negro, té, infusiones. Algo de sal está permitido.'},
+    {q:'¿Rompe el ayuno el chicle o los suplementos?', a:'Chicle con azúcar sí. Sin azúcar técnicamente no, pero puede activar digestión. Suplementos con calorías (BCAA, colágeno): sí rompen.'},
+    {q:'¿Es seguro para mujeres?', a:'En general sí, pero las mujeres son más sensibles. Empieza con 12:12 y aumenta gradual. Si se altera tu ciclo, reduce ayuno.'},
+    {q:'¿Puedo ayunar si hago ejercicio intenso?', a:'Sí pero ajusta. Entrena al final del ayuno o dentro de la ventana de comida. Carga de glucógeno es importante para fuerza.'},
+    {q:'¿Es bueno a largo plazo?', a:'La evidencia es reciente pero positiva: mejora sensibilidad a insulina, marcadores inflamatorios, pérdida de grasa visceral.'}
+  ]
+},
+
+{
+  id:'tpl-vegano', name:'Nutrición Vegana Completa',
+  types:['glosario','faq','flashcards','checklist'],
+  niche:'veganismo, plant based, nutrición vegetal', category:'Nutrición', subcategory:'Vegano',
+  description:'Guía completa para una alimentación vegana equilibrada y sin déficits nutricionales.',
+  icon:'🌱', primaryColor:'#15803d', secondaryColor:'#86efac', bgColor:'#0e0e0e',
+  headerGradient:'linear-gradient(135deg,#15803d,#86efac)',
+  glossaryTerms:[
+    {term:'Vegano', def:'No consume ningún producto de origen animal: carne, pescado, lácteos, huevos, miel.'},
+    {term:'Plant based', def:'Alimentación principalmente vegetal. No necesariamente estricta como veganismo.'},
+    {term:'Proteína completa', def:'Contiene los 9 aminoácidos esenciales. Ejemplos vegetales: quinoa, soja, garbanzo + arroz.'},
+    {term:'B12', def:'Vitamina solo en alimentos animales (o enriquecidos). Los veganos DEBEN suplementar. No negociable.'},
+    {term:'Hierro hemo/no hemo', def:'Hemo (animal) se absorbe mejor. No hemo (vegetal) se absorbe con vitamina C cerca.'},
+    {term:'Omega 3 vegetal', def:'ALA en semillas de lino, chía, nuez. Conversión a EPA/DHA es baja. Algunos suplementan con algas.'},
+    {term:'Tempeh', def:'Soja fermentada. Textura firme, sabor a nuez. Más digestible que tofu.'},
+    {term:'Seitán', def:'Gluten de trigo cocido. Alta proteína, textura de carne. No apto celíacos.'},
+    {term:'Levadura nutricional', def:'Copos amarillos con sabor a queso. Aporta B12 (enriquecida) y proteína.'},
+    {term:'Calcio vegetal', def:'Brócoli, col rizada, tofu con sulfato de calcio, tahini, almendras, bebidas vegetales fortificadas.'}
+  ],
+  faqItems:[
+    {q:'¿De dónde saco proteína?', a:'Legumbres (lentejas, garbanzos, alubias), soja (tofu, tempeh, edamame), seitán, quinoa, frutos secos, semillas.'},
+    {q:'¿Necesito combinar proteínas?', a:'No en la misma comida. Si comes variedad durante el día, obtienes todos los aminoácidos.'},
+    {q:'¿Qué suplementos son imprescindibles?', a:'B12 siempre. Vitamina D si poco sol. Omega 3 (algas) opcional pero recomendado.'},
+    {q:'¿Puedo hacer ejercicio y crecer músculo?', a:'Absolutamente. Requiere 1.6-2g proteína/kg, variedad de fuentes, y calorías suficientes.'},
+    {q:'¿Es caro ser vegano?', a:'Los básicos son baratísimos: legumbres, arroz, verduras, avena. Los procesados veganos sí son caros pero no necesarios.'},
+    {q:'¿Puedo ser vegano durante embarazo?', a:'Sí, con planificación y suplementación adecuada (B12, hierro, omega 3). Consulta nutricionista.'},
+    {q:'¿Los niños pueden ser veganos?', a:'Sí con seguimiento profesional. Requiere atención especial a B12, hierro, calcio, zinc, omega 3.'},
+    {q:'¿Qué pasa si solo reduzco carne?', a:'¡Excelente! Cualquier reducción es beneficiosa. No hace falta ser 100% para ver beneficios.'}
+  ],
+  cards:[
+    {front:'Proteínas vegetales top', back:'Seitán (75g/100g), soja (36g), lentejas (25g), quinoa (14g), avena (13g), garbanzos (19g).'},
+    {front:'Combinaciones proteicas clásicas', back:'Arroz + frijoles, hummus + pan, tortilla + frijoles, lentejas + arroz. Perfiles aminoácidos completos.'},
+    {front:'Hierro vegetal', back:'Lentejas, tofu, espinacas, semillas de calabaza, quinoa. Come con vitamina C (limón, pimiento) para mejor absorción.'},
+    {front:'Calcio sin lácteos', back:'Tofu (con calcio), bebidas vegetales fortificadas, brócoli, col rizada, tahini, almendras, higos secos.'},
+    {front:'Omega 3 vegetal', back:'2 cucharadas diarias de semillas de chía o lino molidas. Nueces como snack. Aceite de algas como suplemento.'},
+    {front:'Sustituto de huevo', back:'1 cda semillas de lino + 3 cdas agua = 1 huevo (para hornear). Tofu revuelto = huevos revueltos. Aquafaba = claras.'},
+    {front:'Zinc vegetal', back:'Semillas de calabaza, lentejas, garbanzos, avena, anacardos, tempeh. Absorción menor que animal, come variado.'},
+    {front:'Errores comunes', back:'No suplementar B12, abusar de procesados veganos, baja proteína, poca variedad, olvidar omega 3.'}
+  ],
+  initialItems:['B12 diaria o semanal','Vitamina D si poco sol','1.6g proteína por kg de peso','Legumbres en 2 comidas al día','Fruta fresca cada día','Frutos secos/semillas 30g','Verdura de hoja verde diaria','Variar fuentes (no solo tofu)']
+},
+
   ];
 }
