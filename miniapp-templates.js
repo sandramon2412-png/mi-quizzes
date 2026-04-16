@@ -124,5 +124,275 @@ function getBuiltinMiniAppTemplates() {
   journalPrompts:['¿En qué momento del día estuve más presente hoy?','¿Qué me saca del presente con más frecuencia?','¿Cómo se siente mi cuerpo cuando estoy en modo automático vs. cuando estoy presente?','¿Qué descubrí al comer/caminar con atención plena?','¿Cómo cambió mi experiencia al simplemente observar mis pensamientos?']
 },
 
+{
+  id:'tpl-ruptura', name:'Superar una Ruptura Emocional',
+  types:['diario','afirmaciones','checklist','roadmap'],
+  niche:'ruptura, duelo emocional, amor propio', category:'Bienestar', subcategory:'Sanación',
+  description:'Un camino guiado para procesar el duelo, reconstruirte y volver a ti misma/o con amor.',
+  icon:'💔', primaryColor:'#db2777', secondaryColor:'#f472b6', bgColor:'#0e0e0e',
+  headerGradient:'linear-gradient(135deg,#db2777,#f472b6)',
+  affirmations:['Merezco un amor que me sume, no que me reste','Esta pérdida está creando espacio para algo mejor','Mi valor no depende de nadie más','Elijo sanar a mi ritmo','Soltar es un acto de amor propio','Estoy reaprendiendo a habitarme','El amor empieza dentro de mí','Soy suficiente tal como soy','Permito que las emociones pasen por mí','Cada día me siento más completo/a'],
+  journalPrompts:['¿Qué extraño exactamente: a esta persona o lo que representaba?','¿Qué aprendí de mí en esta relación?','¿Qué patrones quiero dejar de repetir?','¿Qué necesito perdonarme?','¿Cómo sería mi vida si me pusiera primero?','¿Qué me da miedo de estar solo/a y por qué?','Carta que nunca enviaré: escribe todo lo que necesitas decir.'],
+  initialItems:['Dejar de revisar sus redes sociales','Escribir cómo me siento hoy','Hacer una actividad nueva o que disfrutaba','Salir a caminar o hacer ejercicio','Hablar con alguien de confianza','No enviar ese mensaje','Cuidar mi alimentación y sueño','Guardar fotos/recuerdos en una carpeta cerrada'],
+  roadmapSteps:[
+    {title:'Fase 1: Aceptación (días 1-14)', description:'Permítete sentir. No reprimas el llanto ni la rabia. Corta el contacto total con la persona.'},
+    {title:'Fase 2: Desintoxicación (días 15-30)', description:'Elimina recuerdos físicos, bloquea redes, evita lugares que duelen. Enfócate en rutinas de cuidado.'},
+    {title:'Fase 3: Reconexión contigo (días 31-60)', description:'Retoma hobbies, reconecta con amigos, descubre qué te gusta hacer sola/o.'},
+    {title:'Fase 4: Reflexión (días 61-75)', description:'Con distancia, analiza la relación con honestidad. ¿Qué fue real y qué idealizaste?'},
+    {title:'Fase 5: Crecimiento (días 76-90)', description:'Identifica qué quieres diferente en tu próxima relación. Trabaja en tus patrones.'},
+    {title:'Fase 6: Apertura (día 90+)', description:'Estás lista/o para abrirte a lo nuevo cuando sientas deseo genuino, no miedo a estar solo/a.'}
+  ]
+},
+
+{
+  id:'tpl-tdah', name:'Gestionar el TDAH',
+  types:['checklist','planificador','flashcards','faq'],
+  niche:'tdah, déficit de atención, productividad neurodivergente', category:'Bienestar', subcategory:'TDAH',
+  description:'Estrategias prácticas para personas con TDAH: organización, foco y autocompasión.',
+  icon:'🧠', primaryColor:'#7c3aed', secondaryColor:'#a78bfa', bgColor:'#0e0e0e',
+  headerGradient:'linear-gradient(135deg,#7c3aed,#a78bfa)',
+  initialItems:['Preparar la ropa la noche anterior','Usar la regla de los 2 minutos (si toma menos, hazlo ya)','Timer Pomodoro para tareas largas','Escribir TODO en un solo lugar (no confiar en memoria)','Dejar llaves/cartera siempre en el mismo lugar','Body doubling: trabajar junto a alguien (real o por video)','Tomar medicación/suplementos a la misma hora','Moverme al menos 20 minutos','Descansar sin culpa cuando la batería se acabó'],
+  initialTasks:['Revisar calendario y elegir 3 prioridades','Dividir tareas grandes en pasos de 15 min','Preparar agua, snacks y todo lo necesario ANTES de empezar','Usar timer visual (Time Timer) para no perder noción','Bloquear redes sociales en horas de foco','Cerrar el día anotando lo logrado (no lo faltante)'],
+  cards:[
+    {front:'¿Qué es el body doubling?', back:'Trabajar en presencia de otra persona (real o por videollamada) para aumentar el foco sin interacción directa.'},
+    {front:'Regla de los 2 minutos', back:'Si una tarea toma menos de 2 minutos, hazla inmediatamente. Evita la acumulación de micro-tareas.'},
+    {front:'Parálisis por análisis', back:'Incapacidad de empezar por exceso de opciones. Solución: elige la primera opción "suficientemente buena" y empieza.'},
+    {front:'Hiperfoco', back:'Concentración extrema en una tarea de interés. Úsalo a tu favor pero programa alarmas para no olvidar comer o dormir.'},
+    {front:'Disregulación emocional', back:'Reacciones emocionales intensas y rápidas. Técnica: pausa 5 segundos + respirar antes de responder.'},
+    {front:'Ceguera al tiempo', back:'Dificultad para percibir el paso del tiempo. Usa timers visuales y alarmas múltiples.'},
+    {front:'Decision fatigue', back:'Agotamiento por tomar muchas decisiones pequeñas. Automatiza (misma ropa, mismo desayuno) las que no importan.'},
+    {front:'Disfunción ejecutiva', back:'Saber qué hacer pero no poder empezar. No es pereza. Técnica: reducir el primer paso a algo ridículamente pequeño.'}
+  ],
+  faqItems:[
+    {q:'¿El TDAH en adultos existe?', a:'Sí. No es una "moda". Muchos adultos lo tienen sin diagnosticar, especialmente mujeres que lo compensan con perfeccionismo.'},
+    {q:'¿La medicación es adictiva?', a:'Los estimulantes a dosis terapéuticas no causan adicción en personas con TDAH. De hecho, reducen el riesgo de otras adicciones.'},
+    {q:'¿Puedo gestionarlo sin medicación?', a:'Sí, muchas personas lo logran con rutinas, ejercicio, terapia cognitivo-conductual y estructura. Otros necesitan medicación. No hay una sola respuesta.'},
+    {q:'¿Por qué procrastino si me importa?', a:'El TDAH es un problema de regulación, no de voluntad. Tu cerebro no libera la dopamina necesaria para iniciar tareas poco estimulantes.'},
+    {q:'¿Cómo lo explico a mi pareja/familia?', a:'Comparte recursos confiables. Pide paciencia, no condescendencia. Propón estrategias concretas (recordatorios, body doubling).'},
+    {q:'¿El TDAH desaparece con la edad?', a:'No desaparece pero puede transformarse. Los síntomas externos (hiperactividad) suelen disminuir; los internos (desorganización, procrastinación) persisten.'}
+  ]
+},
+
+{
+  id:'tpl-gratitud-30', name:'Diario de Gratitud 30 Días',
+  types:['diario','afirmaciones','tracker','reto'],
+  niche:'gratitud, mindset positivo, bienestar', category:'Bienestar', subcategory:'Gratitud',
+  description:'Cultiva el hábito de notar lo bueno con prompts diarios de gratitud durante 30 días.',
+  icon:'🌻', primaryColor:'#f59e0b', secondaryColor:'#fbbf24', bgColor:'#0e0e0e',
+  headerGradient:'linear-gradient(135deg,#f59e0b,#fbbf24)',
+  trackerHabit:'Escribir 3 cosas por las que estoy agradecido/a hoy',
+  affirmations:['Mi vida está llena de razones para agradecer','La gratitud atrae más bendiciones','Aprecio las pequeñas cosas','Soy afortunado/a de estar donde estoy','Elijo enfocarme en lo que tengo','Cada día descubro nuevas razones para agradecer','Mi corazón está abierto al bien','Agradezco mi cuerpo, mi mente y mi camino','Reconozco la belleza en lo cotidiano','La gratitud me conecta con el presente'],
+  journalPrompts:['Escribe 3 cosas simples por las que estás agradecido/a hoy.','¿Qué persona hizo tu día mejor hoy y por qué?','Recuerda un reto del pasado que ahora agradeces haber vivido.','¿Qué parte de tu cuerpo agradeces hoy y por qué?','¿Qué comodidad das por sentada y en realidad es un privilegio?','Escribe una carta de gratitud (sin enviar) a alguien que te marcó.','¿Qué habilidad tuya agradeces tener?','Describe tu lugar favorito y por qué agradeces poder estar ahí.'],
+  retoContent:[
+    {title:'Día 1: Gratitud básica', instructions:'Escribe 3 cosas por las que estás agradecido/a hoy. Sé específico: no "mi familia" sino "que mi hermana me llamó".', reflectionPrompt:'¿Cuál te costó más reconocer?'},
+    {title:'Día 2: Tu cuerpo', instructions:'Escribe 5 cosas que tu cuerpo hace por ti que normalmente no aprecias: respirar, digerir, ver colores...', reflectionPrompt:'¿Qué parte de tu cuerpo criticas y podrías empezar a agradecer?'},
+    {title:'Día 3: Carta de gratitud', instructions:'Escribe una carta detallada a alguien que te haya ayudado (no tienes que enviarla). Sé específico sobre cómo te impactó.', reflectionPrompt:'¿Qué sentiste al escribirla?'},
+    {title:'Día 4: Agradecer un reto', instructions:'Piensa en una dificultad pasada que ahora agradeces. ¿Qué aprendiste? ¿Quién te hizo ser?', reflectionPrompt:'¿Qué reto actual podrías empezar a ver diferente?'},
+    {title:'Día 5: Gratitud en lo cotidiano', instructions:'Durante el día, pausa 5 veces y agradece mentalmente algo del momento: el café caliente, la luz del sol, un mensaje.', reflectionPrompt:'¿Cómo cambió tu ánimo al hacer pausas de gratitud?'},
+    {title:'Día 6: Gratitud hacia ti', instructions:'Escribe 5 cosas que agradeces de ti: una cualidad, una decisión, un logro, una fortaleza, una forma de tratar a otros.', reflectionPrompt:'¿Cuál te costó más? ¿Por qué?'},
+    {title:'Día 7: Gratitud en voz alta', instructions:'Dile a 3 personas hoy algo específico que agradeces de ellas. En persona, llamada o mensaje.', reflectionPrompt:'¿Cómo reaccionaron? ¿Cómo te sentiste tú?'}
+  ]
+},
+
+// ═══════════════ FITNESS ═══════════════
+
+{
+  id:'tpl-fitness-30', name:'Transformación Fitness 30 días',
+  types:['reto','tracker','checklist','faq'],
+  niche:'fitness, ejercicio, transformación corporal', category:'Fitness', subcategory:'General',
+  description:'Plan progresivo de 30 días con entrenamiento en casa, alimentación y hábitos clave.',
+  icon:'💪', primaryColor:'#dc2626', secondaryColor:'#f87171', bgColor:'#0e0e0e',
+  headerGradient:'linear-gradient(135deg,#dc2626,#f87171)',
+  trackerHabit:'Entrené y seguí mi plan de alimentación hoy',
+  retoContent:[
+    {title:'Día 1: Evaluación y foto', instructions:'Toma fotos frontales y laterales, mide cintura, cadera y brazo. Anota peso. Estos datos son tu punto de partida, no un juicio.', reflectionPrompt:'¿Qué te motivó a empezar hoy?'},
+    {title:'Día 2: Full body básico', instructions:'20 sentadillas, 10 flexiones (pueden ser de rodillas), 20 crunches, 30 seg plancha. Repite 3 rondas con 1 min de descanso.', reflectionPrompt:'¿Qué ejercicio te costó más?'},
+    {title:'Día 3: Cardio ligero', instructions:'30 minutos de caminata rápida o trote suave. Mantén la capacidad de hablar pero sintiendo esfuerzo.', reflectionPrompt:'¿Cómo se sintió tu cuerpo al día siguiente del entrenamiento de fuerza?'},
+    {title:'Día 4: Tren superior', instructions:'15 flexiones, 20 remo con botella de agua, 15 fondos en silla, 20 elevaciones laterales. 3 rondas.', reflectionPrompt:'¿Qué músculo sentiste trabajar más?'},
+    {title:'Día 5: Tren inferior y core', instructions:'20 sentadillas, 20 zancadas (10 por pierna), 15 puentes de glúteo, 30 seg plancha. 3 rondas.', reflectionPrompt:'¿Notas más energía en las actividades cotidianas?'},
+    {title:'Día 6: HIIT 20 min', instructions:'20 seg máximo esfuerzo + 40 seg descanso × 20 minutos. Alterna: burpees, jumping jacks, mountain climbers, high knees.', reflectionPrompt:'¿Cómo manejaste la intensidad?'},
+    {title:'Día 7: Descanso activo', instructions:'Caminata de 30 min + estiramiento de 15 min. El descanso es parte del progreso, no lo saltes.', reflectionPrompt:'¿Qué has aprendido sobre tu cuerpo esta semana?'}
+  ],
+  initialItems:['Entrenar mínimo 30 min','Tomar 2-3 litros de agua','Dormir 7-8 horas','Comer proteína en cada comida','Reducir azúcar añadido','Sumar pasos (objetivo 8000+)','Estirar después de entrenar','No pesarme a diario (solo semanal)'],
+  faqItems:[
+    {q:'¿Puedo hacerlo sin equipo?', a:'Sí. Todos los ejercicios usan peso corporal. Opcional: una mochila cargada o botellas de agua como pesas.'},
+    {q:'¿Cuántas calorías debo comer?', a:'Depende de tu objetivo y peso actual. Regla general: déficit de 300-500 kcal para bajar grasa. Prioriza proteína (1.6-2g por kg).'},
+    {q:'Me duelen los músculos, ¿entreno igual?', a:'El dolor muscular leve (DOMS) es normal y puedes entrenar otro grupo muscular. Si es dolor agudo o articular, descansa.'},
+    {q:'¿Puedo bajar grasa y ganar músculo a la vez?', a:'Sí, si eres principiante o regresas tras pausa larga (recomposición). Requiere suficiente proteína y entrenamiento de fuerza.'},
+    {q:'¿Cuánto tardo en ver resultados?', a:'Energía: 1 semana. Ropa más holgada: 3-4 semanas. Cambios visibles en espejo: 6-8 semanas. Sé paciente.'},
+    {q:'¿Necesito suplementos?', a:'No son imprescindibles. Los más útiles: proteína en polvo (si no llegas con comida), creatina, vitamina D, magnesio.'}
+  ]
+},
+
+{
+  id:'tpl-yoga-21', name:'Yoga para Principiantes',
+  types:['reto','glosario','meditacion','flashcards'],
+  niche:'yoga, flexibilidad, mente-cuerpo', category:'Fitness', subcategory:'Yoga',
+  description:'21 días para construir una práctica de yoga estable desde cero, con posturas y filosofía.',
+  icon:'🧘‍♀️', primaryColor:'#0891b2', secondaryColor:'#22d3ee', bgColor:'#0e0e0e',
+  headerGradient:'linear-gradient(135deg,#0891b2,#22d3ee)',
+  retoContent:[
+    {title:'Día 1: Saludo al sol básico', instructions:'Aprende el Surya Namaskar (saludo al sol A): montaña → flexión → plancha → cobra → perro boca abajo → flexión → montaña. 5 rondas.', reflectionPrompt:'¿Qué postura sentiste más extraña?'},
+    {title:'Día 2: Apertura de caderas', instructions:'15 minutos enfocados en caderas: mariposa, paloma, guirnalda (malasana), media paloma. Mantén cada postura 5 respiraciones.', reflectionPrompt:'¿Cómo tenías las caderas, flexibles o rígidas?'},
+    {title:'Día 3: Equilibrio', instructions:'Árbol (vrksasana), guerrero III, silla en puntillas. 5 respiraciones por lado. Usa una pared si necesitas apoyo.', reflectionPrompt:'¿Qué aprendiste sobre tu concentración?'},
+    {title:'Día 4: Vinyasa suave', instructions:'Enlaza 5 saludos al sol B con guerrero I y II. Fluye al ritmo de tu respiración.', reflectionPrompt:'¿Lograste sincronizar respiración y movimiento?'},
+    {title:'Día 5: Yin yoga', instructions:'Mantén cada postura 2-3 minutos: mariposa, dragón, deshilachado (thread the needle), savasana. Suelta y respira.', reflectionPrompt:'¿Qué sentiste al permanecer tanto tiempo en una postura?'},
+    {title:'Día 6: Inversiones suaves', instructions:'Práctica piernas arriba de la pared (viparita karani) 10 min, flexión adelante, postura del niño. Día de calma.', reflectionPrompt:'¿Cómo se siente tu sistema nervioso?'},
+    {title:'Día 7: Práctica libre 20 min', instructions:'Diseña tu propia secuencia con las posturas aprendidas. Confía en lo que tu cuerpo pide hoy.', reflectionPrompt:'¿Qué postura elegiste como favorita y por qué?'}
+  ],
+  meditationScript:'Siéntate en postura cómoda con la columna recta. Junta las palmas al corazón. Inhala por la nariz... exhala por la nariz. Llamamos a esto Ujjayi, la respiración del océano. Siente el aire pasar por la parte trasera de tu garganta creando un sonido suave. Este es tu ancla durante toda la práctica. Establece una intención (sankalpa): una palabra o frase para hoy. Puede ser "presencia", "apertura", "paciencia". Repítela mentalmente. Ahora déjala ir y simplemente respira. Tu práctica es tu ofrenda. Namaste.',
+  glossaryTerms:[
+    {term:'Asana', def:'Postura física. Cada nombre en sánscrito termina en -asana (ej: tadasana = postura de la montaña).'},
+    {term:'Pranayama', def:'Control consciente de la respiración. Técnicas para regular energía vital.'},
+    {term:'Vinyasa', def:'Flujo donde cada movimiento se sincroniza con una respiración.'},
+    {term:'Yin yoga', def:'Estilo pasivo donde las posturas se mantienen 2-5 minutos para trabajar fascia y tejido profundo.'},
+    {term:'Savasana', def:'Postura del cadáver. Relajación final, considerada la postura más importante.'},
+    {term:'Om / Aum', def:'Mantra primordial. El sonido universal. Se canta al inicio y final de la práctica.'},
+    {term:'Namaste', def:'"La luz en mí honra la luz en ti". Saludo respetuoso con las palmas al corazón.'},
+    {term:'Drishti', def:'Punto de enfoque visual. Ayuda a mantener equilibrio y concentración.'},
+    {term:'Chakra', def:'Centros energéticos del cuerpo. Los 7 principales se alinean a lo largo de la columna.'},
+    {term:'Sankalpa', def:'Intención o propósito que se establece al inicio de la práctica.'}
+  ],
+  cards:[
+    {front:'Tadasana', back:'Postura de la montaña. Base de todas las posturas de pie. Pies juntos, columna alargada.'},
+    {front:'Adho Mukha Svanasana', back:'Perro boca abajo. Forma de V invertida. Estira piernas, columna y hombros.'},
+    {front:'Balasana', back:'Postura del niño. Descanso activo. Rodillas abiertas, frente al suelo, brazos extendidos.'},
+    {front:'Virabhadrasana I', back:'Guerrero I. Pie delantero doblado a 90°, trasero en diagonal, brazos arriba.'},
+    {front:'Bhujangasana', back:'Cobra. De boca abajo, elevas pecho apoyando las manos. Abre el pecho.'},
+    {front:'Utkatasana', back:'Silla. De pie con rodillas dobladas como sentado en silla imaginaria, brazos arriba.'}
+  ]
+},
+
+{
+  id:'tpl-running-5k', name:'De Cero a 5K',
+  types:['reto','roadmap','tracker','faq'],
+  niche:'running, correr, cardio', category:'Fitness', subcategory:'Running',
+  description:'Plan de 8 semanas para personas sedentarias que quieren completar su primer 5K corriendo.',
+  icon:'🏃', primaryColor:'#ea580c', secondaryColor:'#fb923c', bgColor:'#0e0e0e',
+  headerGradient:'linear-gradient(135deg,#ea580c,#fb923c)',
+  trackerHabit:'Completé mi sesión de running de hoy',
+  retoContent:[
+    {title:'Semana 1: Caminar con intervalos', instructions:'3 sesiones. Alterna 1 min trote suave + 2 min caminata. Total 20 min. Descansa un día entre sesiones.', reflectionPrompt:'¿Cómo estuvo tu respiración?'},
+    {title:'Semana 2: Aumentando el trote', instructions:'3 sesiones. Alterna 90 seg trote + 90 seg caminata. Total 22 min. Zapatillas adecuadas son clave.', reflectionPrompt:'¿Qué notas diferente del cuerpo respecto a la semana 1?'},
+    {title:'Semana 3: Intervalos más largos', instructions:'3 sesiones. Alterna 2 min trote + 1 min caminata. Total 24 min. Calienta con 5 min de caminata.', reflectionPrompt:'¿Dónde sientes tensión al correr?'},
+    {title:'Semana 4: Primer intervalo de 5 min', instructions:'3 sesiones. 3 min trote + 1 min caminata, luego 5 min trote + 2 min caminata, luego 3 min trote. Calienta + enfría.', reflectionPrompt:'¿Cómo manejaste el intervalo de 5 min?'},
+    {title:'Semana 5: Corriendo más que caminando', instructions:'3 sesiones. 5 min trote + 1 min caminata + 8 min trote + 1 min caminata + 5 min trote. Respira por nariz si puedes.', reflectionPrompt:'¿Qué ritmo te sientes cómodo/a manteniendo?'},
+    {title:'Semana 6: Trotes continuos', instructions:'3 sesiones. 10 min trote + 2 min caminata + 10 min trote. Te acercas mucho al objetivo.', reflectionPrompt:'¿Estás disfrutando más o menos que al empezar?'},
+    {title:'Semana 7: 25 min continuos', instructions:'3 sesiones. 25 minutos trotando sin parar. Ritmo conversacional, no te importe ir lento/a.', reflectionPrompt:'¿Qué cambió en tu mente en 7 semanas?'},
+    {title:'Semana 8: ¡Tu 5K!', instructions:'Sesión 1 y 2: 25-30 min trote. Sesión 3: completa tus 5K. Celebra — empezaste desde cero.', reflectionPrompt:'¿Qué aprendiste sobre ti?'}
+  ],
+  roadmapSteps:[
+    {title:'Paso 1: Zapatillas adecuadas', description:'Invierte en zapatillas de running según tu pisada. Visita una tienda especializada si puedes.'},
+    {title:'Paso 2: Calentar siempre', description:'5 min de caminata + movilidad articular antes de cada sesión. Previene lesiones.'},
+    {title:'Paso 3: Técnica básica', description:'Cadencia 170-180 pasos/min, mirada al frente, hombros relajados, pisar bajo tu centro de gravedad.'},
+    {title:'Paso 4: Respiración', description:'3 pasos inhalando, 2 pasos exhalando. Ajusta según ritmo. Si no puedes hablar, vas demasiado rápido.'},
+    {title:'Paso 5: Descanso y sueño', description:'El progreso ocurre en el descanso. Mínimo 7h de sueño y un día de descanso completo por semana.'},
+    {title:'Paso 6: Hidratación y alimentación', description:'Agua antes, durante (si pasa 40 min) y después. Come carbos complejos 2h antes de correr.'},
+    {title:'Paso 7: Tu primer 5K', description:'Inscríbete en una carrera popular. El ambiente y la meta física son increíbles. No busques ritmo, busca terminar.'}
+  ],
+  faqItems:[
+    {q:'¿Debo correr todos los días?', a:'No. 3 sesiones por semana con descanso es óptimo para principiantes. Más aumenta riesgo de lesión.'},
+    {q:'Me duelen las rodillas, ¿debo parar?', a:'Reduce distancia y revisa calzado + técnica. Si el dolor persiste tras descansar 3 días, consulta fisio.'},
+    {q:'¿Es normal caminar durante la sesión?', a:'Totalmente. El método run-walk es usado incluso por corredores avanzados en entrenamientos largos.'},
+    {q:'¿Correr daña las rodillas?', a:'Hecho bien, correr fortalece articulaciones. El problema es aumentar distancia muy rápido o mala técnica.'},
+    {q:'¿Necesito GPS/reloj?', a:'No al principio. Apps gratuitas como Strava usan el GPS del teléfono y son suficientes.'}
+  ]
+},
+
+{
+  id:'tpl-funcional', name:'Rutina Funcional en Casa',
+  types:['reto','checklist','flashcards','tracker'],
+  niche:'entrenamiento funcional, fitness en casa', category:'Fitness', subcategory:'Funcional',
+  description:'Entrenamiento funcional sin equipo: fuerza, cardio y movilidad en 30 min diarios.',
+  icon:'🏋️', primaryColor:'#16a34a', secondaryColor:'#4ade80', bgColor:'#0e0e0e',
+  headerGradient:'linear-gradient(135deg,#16a34a,#4ade80)',
+  trackerHabit:'Entrené funcional hoy',
+  retoContent:[
+    {title:'Día 1: Patrones básicos', instructions:'10 sentadillas, 10 flexiones, 10 zancadas por pierna, 10 remos con mochila, 30 seg plancha. 3 rondas.', reflectionPrompt:'¿Qué ejercicio tienes que mejorar técnica?'},
+    {title:'Día 2: Circuito metabólico', instructions:'Tabata: 20 seg trabajo / 10 seg descanso × 8 rondas. Ejercicios: burpees, jumping jacks, mountain climbers, squat jumps.', reflectionPrompt:'¿Cómo manejaste la intensidad?'},
+    {title:'Día 3: Fuerza tren inferior', instructions:'Sentadilla goblet con mochila 3×12, zancadas búlgaras 3×10 por pierna, puente de glúteo 3×15, sentadilla en pared 3×45 seg.', reflectionPrompt:'¿Qué pierna es más débil?'},
+    {title:'Día 4: Core avanzado', instructions:'Plancha 3×45 seg, plancha lateral 3×30 seg por lado, hollow body 3×20 seg, dead bug 3×10 por lado, bicicleta 3×20.', reflectionPrompt:'¿Sientes tu core más fuerte?'},
+    {title:'Día 5: EMOM 20 min', instructions:'Cada minuto en el minuto: 5 burpees + 10 sentadillas + resto del minuto descanso. Por 20 minutos.', reflectionPrompt:'¿Cuándo perdiste forma?'},
+    {title:'Día 6: Tren superior', instructions:'Flexiones 3×max, flexiones diamante 3×max, fondos silla 3×15, remos mochila 3×12, pike push-ups 3×8.', reflectionPrompt:'¿Qué empujón o jalón te cuesta más?'},
+    {title:'Día 7: Movilidad y recuperación', instructions:'30 min de movilidad: caderas, columna, hombros, tobillos. Foam roller si tienes. Estiramiento profundo.', reflectionPrompt:'¿Qué zona está más tensa?'}
+  ],
+  initialItems:['Calentar 5 min antes','Tomar 500ml agua durante sesión','Grabar video de técnica 1 vez/semana','Registrar reps y cargas','Comer proteína post-entreno','Estirar 10 min post-entreno','Dormir 7h+','1 día de descanso completo'],
+  cards:[
+    {front:'Sentadilla goblet', back:'Sostén peso frente al pecho a la altura del esternón. Baja con espalda recta hasta que codos toquen rodillas.'},
+    {front:'Burpee completo', back:'Desde pie → sentadilla → plancha → flexión → salto → arriba con aplauso. Movimiento explosivo.'},
+    {front:'Plancha correcta', back:'Alineación cabeza-espalda-caderas-talones. Glúteos y core contraídos. NO hundas caderas ni las eleves.'},
+    {front:'Zancada búlgara', back:'Pie trasero elevado en silla. Baja la rodilla delantera 90°. Desafía glúteos y equilibrio.'},
+    {front:'EMOM', back:'Every Minute On the Minute. Ejecutas reps al inicio de cada minuto. El resto descansas.'},
+    {front:'Hollow body', back:'Tumbado boca arriba, brazos extendidos atrás, piernas elevadas. Lumbar pegada al suelo. Isométrico brutal.'},
+    {front:'Pike push-ups', back:'Flexión con caderas elevadas (V invertida). Trabaja hombros. Progresión hacia handstand.'},
+    {front:'Dead bug', back:'Tumbado boca arriba, brazos arriba, piernas 90°. Alternas brazo y pierna contraria sin arquear lumbar.'}
+  ]
+},
+
+{
+  id:'tpl-movilidad-21', name:'Movilidad y Flexibilidad',
+  types:['reto','flashcards','checklist'],
+  niche:'movilidad articular, flexibilidad, recuperación', category:'Fitness', subcategory:'Movilidad',
+  description:'21 días para mejorar tu rango de movimiento, prevenir lesiones y aliviar rigidez.',
+  icon:'🤸', primaryColor:'#0d9488', secondaryColor:'#5eead4', bgColor:'#0e0e0e',
+  headerGradient:'linear-gradient(135deg,#0d9488,#5eead4)',
+  retoContent:[
+    {title:'Día 1: Cadera profunda', instructions:'Malasana (sentadilla profunda) 2 min + mariposa 2 min + 90/90 stretch 1 min por lado + paloma 1 min por lado.', reflectionPrompt:'¿Qué cadera está más rígida?'},
+    {title:'Día 2: Columna y espalda', instructions:'Gato-vaca 2 min, cobra 30 seg × 5, rotaciones torácicas 10 por lado, estiramiento de niño 2 min.', reflectionPrompt:'¿Dónde sientes más tensión en la espalda?'},
+    {title:'Día 3: Isquios y piernas', instructions:'Flexión de pie 2 min, piernas arriba de pared 5 min, estocada con isquio estirado 1 min por lado.', reflectionPrompt:'¿Tus isquios están muy rígidos? Es normal tras años sentado/a.'},
+    {title:'Día 4: Hombros y pecho', instructions:'Doorway stretch 1 min por lado, thread the needle 1 min por lado, rotaciones de hombro 20, dislocates con toalla 15.', reflectionPrompt:'¿Notas asimetría entre hombro derecho e izquierdo?'},
+    {title:'Día 5: Tobillos y pies', instructions:'Sentadilla mantenida 2 min, movilidad de tobillo en pared 15 por lado, rolling de planta del pie 2 min por lado.', reflectionPrompt:'¿Cómo está tu rango de dorsiflexión?'},
+    {title:'Día 6: Full body flow', instructions:'Secuencia de 20 min combinando todo lo aprendido. Fluye sin pausa larga, mantén cada postura 30-60 seg.', reflectionPrompt:'¿Cómo se siente tu cuerpo después?'},
+    {title:'Día 7: Foam rolling', instructions:'Si tienes foam roller: 2 min por cuadríceps, isquios, glúteos, espalda alta, pantorrillas. Sin roller: pelota de tenis.', reflectionPrompt:'¿Encontraste puntos gatillo dolorosos?'}
+  ],
+  initialItems:['Movilidad articular 10 min al despertar','Pausas de 2 min cada hora de trabajo','Estirar después de entrenar','Dormir en postura neutra','Hidratarme bien (fascia sana)','Respiraciones profundas al estirar','No forzar, escuchar al cuerpo','Consistencia > intensidad'],
+  cards:[
+    {front:'Movilidad vs flexibilidad', back:'Flexibilidad es rango pasivo (cuánto estiras). Movilidad es rango activo (cuánto controlas ese rango).'},
+    {front:'Dorsiflexión', back:'Capacidad del tobillo de acercar los dedos del pie a la espinilla. Clave para sentadilla profunda y correr.'},
+    {front:'Anteversión pélvica', back:'Cadera inclinada hacia adelante. Común por estar sentado. Causa dolor lumbar y glúteos débiles.'},
+    {front:'Kifosis torácica', back:'Espalda redondeada en zona alta. Por pantallas y mala postura. Se corrige con movilidad torácica.'},
+    {front:'Cadera 90/90', back:'Sentado con una pierna delante 90° y otra al lado 90°. Excelente para rotación interna y externa de cadera.'},
+    {front:'Fascia', back:'Tejido conectivo que envuelve músculos. Se adhiere y causa rigidez. Foam rolling ayuda a hidratarla.'}
+  ]
+},
+
+{
+  id:'tpl-calistenia', name:'Calistenia: Tu Primer Muscle-Up',
+  types:['roadmap','flashcards','glosario','tracker'],
+  niche:'calistenia, peso corporal, street workout', category:'Fitness', subcategory:'Calistenia',
+  description:'Plan progresivo hacia tu primer muscle-up con progresiones de pull-up, dip y core.',
+  icon:'🤾', primaryColor:'#1e40af', secondaryColor:'#60a5fa', bgColor:'#0e0e0e',
+  headerGradient:'linear-gradient(135deg,#1e40af,#60a5fa)',
+  trackerHabit:'Entrené calistenia hoy',
+  roadmapSteps:[
+    {title:'Paso 1: Dominadas con banda elástica', description:'Objetivo: 3×8 con banda gruesa. Enfócate en bajar despacio (excéntrica 3 seg).'},
+    {title:'Paso 2: Dominadas con salto + negativa', description:'Salta a la posición alta y baja lentamente 5 segundos. 5 reps × 3 series.'},
+    {title:'Paso 3: Primera dominada completa', description:'Cuando logres 1-2 completas, enfócate en acumular volumen: 10 dominadas totales al día en sets cortos.'},
+    {title:'Paso 4: Dominadas al pecho', description:'Jala hasta que pecho toque la barra. Requiere fuerza extra en dorsales y bíceps. Trabaja hasta 3×5.'},
+    {title:'Paso 5: Fondos profundos en paralelas', description:'Baja hasta que hombros queden bajo codos. Objetivo: 3×10. Esencial para muscle-up.'},
+    {title:'Paso 6: Explosividad', description:'Dominadas explosivas (tocar pecho o por encima de la barra). Trabaja potencia, no solo fuerza. 5×3.'},
+    {title:'Paso 7: Transición asistida', description:'Con banda elástica, practica el "false grip" y la transición de pull a dip. 3-5 reps × 5 series.'},
+    {title:'Paso 8: Tu primer muscle-up', description:'Usa banda ligera primero, luego sin asistencia. Impulso limpio: pull explosivo + volteo de muñecas + push.'}
+  ],
+  cards:[
+    {front:'False grip', back:'Agarre con la muñeca por encima de la barra. Esencial para la transición del muscle-up.'},
+    {front:'Dominada estricta', back:'Sin impulso. Cuerpo estable, solo trabajan brazos y espalda.'},
+    {front:'Dominada kipping', back:'Usa impulso de cadera. Más fácil pero menos fuerza pura.'},
+    {front:'L-sit', back:'Sentado en paralelas con piernas extendidas al frente. Core + hombros. Progresión hacia V-sit.'},
+    {front:'Front lever', back:'Colgado horizontal frente a la barra, cuerpo paralelo al suelo. Nivel avanzado.'},
+    {front:'Progresión', back:'Variación más fácil de un ejercicio que permite entrenar el patrón antes de dominarlo completo.'}
+  ],
+  glossaryTerms:[
+    {term:'Rep (repetición)', def:'Una ejecución completa del ejercicio.'},
+    {term:'Set (serie)', def:'Grupo de repeticiones consecutivas sin descanso.'},
+    {term:'RPE', def:'Rate of Perceived Exertion. Escala 1-10 de qué tan duro fue el esfuerzo. 8-9 para hipertrofia.'},
+    {term:'Tempo', def:'Velocidad de ejecución. Ej: 3-1-1 = 3 seg bajada, 1 seg pausa, 1 seg subida.'},
+    {term:'Excéntrica', def:'Fase de alargamiento muscular (bajada en dominada). Controlarla genera mucha fuerza.'},
+    {term:'Isométrica', def:'Contracción sin movimiento (mantener una postura).'},
+    {term:'Greasing the groove', def:'Técnica de hacer muchas series cortas a lo largo del día, lejos del fallo. Acelera skill.'},
+    {term:'Muscle-up', def:'Movimiento avanzado: dominada explosiva + transición + fondo. Símbolo de fuerza en calistenia.'}
+  ]
+},
+
   ];
 }
