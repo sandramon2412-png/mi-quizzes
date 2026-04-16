@@ -1272,5 +1272,153 @@ function getBuiltinMiniAppTemplates() {
   journalPrompts:['¿Qué idea del libro de hoy quiero recordar?','Si tuviera que resumir el capítulo en 3 frases, ¿cuáles serían?','¿Con qué personaje me identifico y por qué?','¿Cómo aplico esto a mi vida?','¿Qué pregunta me deja este libro?','¿Qué estoy evitando enfrentar que el libro toca?']
 },
 
+// ═══════════════ RELACIONES ═══════════════
+
+{
+  id:'tpl-pareja-21', name:'Conexión en Pareja',
+  types:['reto','diario','checklist','afirmaciones'],
+  niche:'pareja, relación, conexión emocional', category:'Relaciones', subcategory:'Pareja',
+  description:'21 días para reavivar la conexión y profundizar la intimidad emocional con tu pareja.',
+  icon:'💕', primaryColor:'#e11d48', secondaryColor:'#fda4af', bgColor:'#0e0e0e',
+  headerGradient:'linear-gradient(135deg,#e11d48,#fda4af)',
+  retoContent:[
+    {title:'Día 1: Las 36 preguntas', instructions:'Existen 36 preguntas (Arthur Aron) que generan intimidad. Hagan las primeras 12 hoy en una cita relajada.', reflectionPrompt:'¿Qué descubrieron?'},
+    {title:'Día 2: Cita sin tecnología', instructions:'2 horas sin teléfonos. Una caminata, un café. Solo presencia mutua. Redescubre lo que les hizo enamorarse.', reflectionPrompt:'¿Cómo se sintió?'},
+    {title:'Día 3: 5 cosas que admiras', instructions:'Dile a tu pareja 5 cosas específicas que admiras de él/ella. Que sean concretas, no genéricas.', reflectionPrompt:'¿Cómo reaccionó?'},
+    {title:'Día 4: Lenguaje del amor', instructions:'Identifica el lenguaje principal de tu pareja: palabras, tiempo, regalos, contacto, actos de servicio. Hoy expresa amor en SU lenguaje.', reflectionPrompt:'¿Cuál es el suyo?'},
+    {title:'Día 5: Conversación profunda', instructions:'Hagan una pregunta poderosa: "¿Qué sueño que aún no has cumplido?" Escuchen sin interrumpir, sin juzgar.', reflectionPrompt:'¿Qué aprendiste?'},
+    {title:'Día 6: Reparación de un pequeño conflicto', instructions:'Si hay algo pendiente sin hablar, ábrelo con ternura. "Me gustaría hablar de... ¿es un buen momento?"', reflectionPrompt:'¿Cómo lo manejaron?'},
+    {title:'Día 7: Ritual de cierre semanal', instructions:'Cada domingo: "¿Qué fue lo mejor de la semana? ¿Qué nos gustaría diferente la próxima?" Crea hábito de revisar juntos.', reflectionPrompt:'¿Lo continuarán?'}
+  ],
+  initialItems:['Cita semanal sin pantallas','Conversación de 30 min sin tema "logístico"','Demostrar amor en SU lenguaje','Agradecer 1 cosa específica al día','Contacto físico no sexual (abrazo largo)','Apoyar un sueño/proyecto del otro','Resolver conflictos sin "ganar"','Ritual de cierre semanal'],
+  affirmations:['Elijo el amor cada día','Mi pareja es mi compañero/a, no mi adversario/a','Comunico desde el corazón, no desde el ego','Soy capaz de amar y ser amado/a profundamente','Construyo este amor con acciones diarias','Escucho para entender, no para responder','Honro las diferencias entre nosotros','Soy paciente conmigo y con mi pareja','Nuestra relación crece cada día','Merecemos ser felices juntos'],
+  journalPrompts:['¿Qué admiré de mi pareja hoy?','¿En qué necesito mejorar como pareja?','¿Qué emoción no me atrevo a expresarle?','¿Qué hábito está dañando nuestra conexión?','¿Cómo era nuestra relación al principio? ¿Qué se perdió?','¿Qué le pediría a mi pareja si supiera que diría sí?']
+},
+
+{
+  id:'tpl-embarazo', name:'Primer Trimestre Embarazo',
+  types:['checklist','faq','tracker','diario'],
+  niche:'embarazo, primer trimestre, maternidad', category:'Relaciones', subcategory:'Embarazo',
+  description:'Acompaña tu primer trimestre con información clara, checklists y journaling.',
+  icon:'🤰', primaryColor:'#ec4899', secondaryColor:'#fbcfe8', bgColor:'#0e0e0e',
+  headerGradient:'linear-gradient(135deg,#ec4899,#fbcfe8)',
+  trackerHabit:'Tomé ácido fólico hoy',
+  initialItems:['Confirmar embarazo (test + análisis sangre)','Cita con ginecólogo/a','Ácido fólico 400mcg diario','Eliminar alcohol y tabaco','Reducir cafeína (<200mg/día)','Evitar carnes crudas y pescados altos en mercurio','Hidratarse 2-2.5L agua diarios','Vitaminas prenatales','Investigar baja por maternidad','Empezar diario de embarazo'],
+  faqItems:[
+    {q:'¿Qué puedo y qué no puedo comer?', a:'Sí: variedad nutritiva. No: alcohol, sushi crudo, embutidos sin curar, quesos sin pasteurizar, atún rojo, hígado en exceso.'},
+    {q:'¿Es normal tanto cansancio?', a:'Sí. La progesterona dispara fatiga en T1. Descansa más, no luches contra ello. Mejorará en T2.'},
+    {q:'¿Las náuseas son malas señales?', a:'Al contrario. Asociadas con embarazo más estable. Suelen mejorar en semana 12-14.'},
+    {q:'¿Puedo hacer ejercicio?', a:'Sí, si ya entrenabas. Adapta intensidad. Caminar, yoga prenatal, natación son ideales. Evita deportes de impacto/contacto.'},
+    {q:'¿Cuándo debo decirlo?', a:'Decisión personal. Muchos esperan a semana 12 (pasado mayor riesgo de aborto). Otros lo dicen antes para tener apoyo.'},
+    {q:'¿Cuántas ecografías hay?', a:'En España: 3 obligatorias (semana 12, 20, 32). Pueden hacer más según seguimiento.'},
+    {q:'¿Puedo seguir trabajando?', a:'Sí, salvo riesgos específicos. Comunica si tu trabajo implica químicos, peso, radiación.'},
+    {q:'¿Y los antojos extraños?', a:'Normal y aún sin explicación científica clara. Si son por sustancias no comestibles (tierra, hielo): hierro bajo, consulta.'}
+  ],
+  journalPrompts:['¿Cómo me sentí hoy físicamente y emocionalmente?','¿Qué miedos tengo sobre la maternidad/paternidad?','¿Qué le quiero decir a mi bebé hoy?','¿Cómo está respondiendo mi pareja/familia?','¿Qué cambio me cuesta más asumir?','¿Qué expectativa quiero soltar?']
+},
+
+{
+  id:'tpl-crianza', name:'Crianza Respetuosa 0-3',
+  types:['faq','checklist','flashcards','glosario'],
+  niche:'crianza respetuosa, primeros años, parentalidad positiva', category:'Relaciones', subcategory:'Crianza',
+  description:'Guía de crianza respetuosa para los primeros 3 años con bases científicas.',
+  icon:'👶', primaryColor:'#7e22ce', secondaryColor:'#e9d5ff', bgColor:'#0e0e0e',
+  headerGradient:'linear-gradient(135deg,#7e22ce,#e9d5ff)',
+  faqItems:[
+    {q:'¿Hasta qué edad colechar?', a:'Decisión familiar. Es seguro siguiendo guías AEPED. Algunos hasta 1-2 años, otros más. No hay edad correcta.'},
+    {q:'¿Lactancia o biberón?', a:'OMS recomienda lactancia exclusiva 6m, complementada hasta 2 años. Biberón también es opción válida si no se puede o no se elige amamantar.'},
+    {q:'¿Cómo manejar las rabietas?', a:'Valida la emoción ("entiendo que estás enfadado"). Mantén calma. No castigues. La emoción no se controla, se acompaña.'},
+    {q:'¿Cuándo introducir BLW o purés?', a:'A partir de 6m si cumple señales (sienta solo, interés, pinza). BLW respeta autonomía. Purés son válidos también.'},
+    {q:'¿Pantallas a esta edad?', a:'AEPED recomienda 0 pantallas <2 años. Entre 2-5 años: máximo 1h diaria de contenido educativo con adulto.'},
+    {q:'¿Cómo enseñar límites sin castigos?', a:'Límites claros + empatía + consecuencias naturales. "No puedo dejarte pegar. Veo que estás enfadado." Sin amenazas.'},
+    {q:'¿Cuándo dejar pañal?', a:'Entre 2-3 años, según señales del niño (interés, control esfínteres, comunica). NO antes ni con presión.'},
+    {q:'¿Es malo el chupete?', a:'No. Útil para succión no nutritiva. Retirar gradualmente entre 2-3 años para evitar maloclusión dental.'}
+  ],
+  initialItems:['Validar emociones siempre','Establecer rutinas predecibles','Tiempo de juego sin pantallas','Lectura diaria (5-15 min)','Contacto físico abundante','No comparar con otros niños','Cuidar mi propio descanso','Pareja unida en criterios de crianza'],
+  cards:[
+    {front:'Apego seguro', back:'Vínculo emocional estable. Bebé sabe que su cuidador responde. Base de salud mental adulta.'},
+    {front:'Autorregulación', back:'Capacidad de manejar emociones. NO se aprende sola. Se desarrolla con co-regulación del adulto (calma compartida).'},
+    {front:'Berrinche/rabieta', back:'Descarga emocional normal. Cerebro inmaduro no puede regular. Acompañar > castigar.'},
+    {front:'Periodo sensible (Montessori)', back:'Etapas óptimas para aprender ciertas habilidades: orden (0-3), lenguaje (0-6), movimiento (0-5).'},
+    {front:'BLW (Baby-Led Weaning)', back:'Alimentación dirigida por el bebé. Sin purés. Trozos blandos para que coma con manos. Promueve autonomía.'},
+    {front:'Co-regulación', back:'El adulto regula su propia emoción primero. Su calma se transmite al niño que aún no sabe regularse solo.'}
+  ],
+  glossaryTerms:[
+    {term:'Crianza respetuosa', def:'Estilo basado en respeto a las necesidades infantiles, sin gritos, castigos ni amenazas. Pone límites con empatía.'},
+    {term:'Disciplina positiva', def:'Marco creado por Jane Nelsen. Combina firmeza y amabilidad. Enseña habilidades sin castigos.'},
+    {term:'Consecuencia natural', def:'Resultado lógico de una acción, sin imponer. "Si no te abrigas, tendrás frío." Aprendizaje real.'},
+    {term:'Rabieta vs berrinche', def:'Misma cosa. Crisis emocional normal en niños 1-4 años. Cerebro inmaduro no regula aún.'},
+    {term:'Lactancia a demanda', def:'Amamantar cuando el bebé pida, sin horarios. OMS recomienda esto al menos hasta 6m.'},
+    {term:'Apego (teoría)', def:'John Bowlby. Vínculo emocional bebé-cuidador determina su sentido de seguridad y relaciones futuras.'},
+    {term:'Hito del desarrollo', def:'Logro esperado a cierta edad: caminar (12-18m), primeras palabras (12m), frases (24m).'}
+  ]
+},
+
+{
+  id:'tpl-comunicacion', name:'Comunicación Asertiva',
+  types:['reto','flashcards','diario','roadmap'],
+  niche:'comunicación, asertividad, relaciones', category:'Relaciones', subcategory:'Comunicación',
+  description:'Aprende a expresar lo que sientes y necesitas con respeto, claridad y firmeza.',
+  icon:'🗣️', primaryColor:'#0369a1', secondaryColor:'#7dd3fc', bgColor:'#0e0e0e',
+  headerGradient:'linear-gradient(135deg,#0369a1,#7dd3fc)',
+  retoContent:[
+    {title:'Día 1: Identifica tu estilo', instructions:'¿Pasivo (no dices lo que sientes), agresivo (atacas), pasivo-agresivo (sarcasmo, indirectas) o asertivo? Reconócelo sin juicio.', reflectionPrompt:'¿Cuál es tu patrón?'},
+    {title:'Día 2: Mensajes en YO', instructions:'Sustituye "tú me haces enojar" por "yo me siento enojada cuando...". Te apropias de tu emoción sin atacar.', reflectionPrompt:'¿Cómo se sintió?'},
+    {title:'Día 3: Decir NO sin culpa', instructions:'Hoy di NO a algo que normalmente aceptarías por compromiso. "No puedo en este momento" es suficiente, sin justificar.', reflectionPrompt:'¿A quién y a qué dijiste no?'},
+    {title:'Día 4: Pedir lo que necesitas', instructions:'Identifica algo que necesitas y nadie sabe porque no lo has pedido. Pídelo claro y directo, sin esperar que adivinen.', reflectionPrompt:'¿Qué pediste?'},
+    {title:'Día 5: Escucha activa', instructions:'En tu próxima conversación: parafrasea lo que el otro dice antes de responder. "Entonces, lo que escucho es..."', reflectionPrompt:'¿Cómo cambió la conversación?'},
+    {title:'Día 6: Manejar críticas', instructions:'Si te critican, no contraataques. Pregunta: "¿Puedes ser más específico?" Distingue crítica útil de descalificación.', reflectionPrompt:'¿Cómo lo manejaste?'},
+    {title:'Día 7: Conversación difícil pendiente', instructions:'Esa conversación que evitas. Hoy ábrela con: "Necesito hablar de algo importante. ¿Cuándo es buen momento?"', reflectionPrompt:'¿La tuviste?'}
+  ],
+  cards:[
+    {front:'Comunicación asertiva', back:'Expresar pensamientos, sentimientos y necesidades con respeto. Ni pasivo ni agresivo. Punto medio sano.'},
+    {front:'Mensaje en YO', back:'"Yo me siento [emoción] cuando [situación]". No acusa. Permite al otro escuchar sin defenderse.'},
+    {front:'Escucha activa', back:'Atención plena al otro. Parafrasear, hacer preguntas, validar antes de opinar.'},
+    {front:'Disco rayado', back:'Repetir tu posición con calma cuando el otro insiste. "Entiendo, y mi respuesta sigue siendo no."'},
+    {front:'Banco de niebla', back:'Reconocer parte de la crítica sin ceder lo esencial. "Puede que tengas razón. Aún así, mi decisión es..."'},
+    {front:'Aserción negativa', back:'Aceptar errores sin desmoronarse. "Sí, fue mi error, lo corrijo." Sin sobreexplicar ni autoflagelarse.'},
+    {front:'Preguntar para clarificar', back:'En lugar de asumir, pregunta. "¿A qué te refieres exactamente?" Evita malentendidos.'},
+    {front:'Validar emoción del otro', back:'"Entiendo que te sientas así." NO es estar de acuerdo, es reconocer su experiencia. Reduce conflicto.'}
+  ],
+  journalPrompts:['¿Qué necesidad estoy callando?','¿A quién no me atrevo a decirle algo importante?','¿Qué patrón heredé de mi familia en comunicación?','¿Cuándo evito conflicto a costa mía?','¿Cómo me sentí la última vez que dije NO?','Carta que escribiría sin enviar a alguien que me hizo daño.'],
+  roadmapSteps:[
+    {title:'Paso 1: Auto-conocimiento', description:'Identifica tu estilo actual y disparadores. Sin juicio. La consciencia es el primer paso.'},
+    {title:'Paso 2: Vocabulario emocional', description:'Aprende a nombrar lo que sientes con precisión. No "mal" sino "frustrado, decepcionado, herido".'},
+    {title:'Paso 3: Mensajes en YO', description:'Reescribe tus quejas habituales como mensajes en YO. Practica en bajo riesgo.'},
+    {title:'Paso 4: Decir NO', description:'Empieza diciendo no a cosas pequeñas. Construye músculo. No requiere justificación.'},
+    {title:'Paso 5: Pedir explícitamente', description:'Identifica necesidades no expresadas. Pídelas con claridad. La gente no lee mentes.'},
+    {title:'Paso 6: Conversaciones difíciles', description:'Aborda lo que evitabas. Prepárate, pide momento adecuado, mantén foco. La incomodidad pasa.'}
+  ]
+},
+
+{
+  id:'tpl-codependencia', name:'Superar la Codependencia',
+  types:['diario','afirmaciones','roadmap','flashcards'],
+  niche:'codependencia, dependencia emocional, amor propio', category:'Relaciones', subcategory:'Codependencia',
+  description:'Identifica patrones de codependencia y construye relaciones saludables desde el amor propio.',
+  icon:'🪢', primaryColor:'#9f1239', secondaryColor:'#fda4af', bgColor:'#0e0e0e',
+  headerGradient:'linear-gradient(135deg,#9f1239,#fda4af)',
+  affirmations:['Yo no soy responsable de las emociones de otros','Mi valor no depende de ser necesitado/a','Puedo amar sin perderme','Soltar no es abandonar','Merezco amor que no exija renunciar a mí','Pongo límites desde el amor, no desde el miedo','Mi felicidad es mi responsabilidad','No tengo que rescatar a nadie','Estoy completo/a sin pareja','Mi paz vale más que su aprobación'],
+  journalPrompts:['¿En qué relaciones me pierdo a mí mismo/a?','¿A quién intento "salvar" y por qué?','¿Qué necesidades propias ignoro por atender a otros?','¿Cómo era el amor en mi familia de origen?','¿Qué temo si pongo un límite?','¿Quién soy cuando estoy sola/o?','¿Qué emoción evito cuando la otra persona se molesta?'],
+  roadmapSteps:[
+    {title:'Paso 1: Reconocer los patrones', description:'Necesitar aprobación constante, dificultad para decir no, sentirte responsable de emociones ajenas, perderte en relaciones.'},
+    {title:'Paso 2: Sanar la herida raíz', description:'La codependencia suele venir de heridas de infancia (abandono, rechazo, padres ausentes/exigentes). Reconócelo.'},
+    {title:'Paso 3: Reconstruir identidad propia', description:'¿Quién eres fuera de tus relaciones? Hobbies, valores, sueños. Recupera lo perdido.'},
+    {title:'Paso 4: Aprender a poner límites', description:'Empezar pequeño. "No, gracias." "Necesito tiempo para pensar." "Esto no me funciona." Práctica.'},
+    {title:'Paso 5: Tolerar el malestar del otro', description:'Cuando pones límites, otros se molestan. Aprender a NO ceder por su incomodidad. Su reacción no es tu responsabilidad.'},
+    {title:'Paso 6: Diferenciar empatía de absorber', description:'Sentir CON el otro, no SER el otro. Puedes acompañar sin perderte.'},
+    {title:'Paso 7: Soltar el rol de salvador/a', description:'Las personas tienen su propio camino. Tú no puedes/debes resolverles la vida. Es respeto, no abandono.'},
+    {title:'Paso 8: Disfrutar de tu propia compañía', description:'Aprender a estar contigo. Comer sola/o, viajar sola/o, disfrutar el silencio. Es liberador.'}
+  ],
+  cards:[
+    {front:'Codependencia', back:'Patrón donde tu autoestima depende de los demás. Necesitas ser necesitado/a. Pierdes identidad en relaciones.'},
+    {front:'Síndrome del rescatador', back:'Sentirte responsable de "salvar" a otros (parejas con problemas, familia disfuncional). Drena tu energía.'},
+    {front:'Hipervigilancia emocional', back:'Estar siempre pendiente de cómo se siente el otro para anticipar y agradar. Agotador.'},
+    {front:'Límite saludable', back:'Decirle al otro qué te funciona y qué no. No es muralla. Es claridad sobre tu espacio.'},
+    {front:'Amor propio', back:'Tratar a ti mismo/a con la misma compasión que a un buen amigo. Base de relaciones sanas.'},
+    {front:'Apego ansioso', back:'Estilo de apego donde necesitas reasegurarte constantemente. Miedo intenso al abandono. Trabajable en terapia.'}
+  ]
+},
+
   ];
 }
