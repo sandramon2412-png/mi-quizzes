@@ -641,6 +641,19 @@ function toggleFbGuide() {
     </div>
 
     <form id="mini-app-form" onsubmit="handleCreateMiniApp(event)" class="space-y-4">
+      <!-- Banner para planes sin IA (Free/Starter) -->
+      <div id="ma-no-ai-banner" class="hidden p-3 bg-primary/5 border border-primary/20 rounded-xl flex items-start gap-3">
+        <span class="material-symbols-outlined text-primary text-xl">collections_bookmark</span>
+        <div class="flex-1">
+          <p class="text-xs font-bold text-on-surface">Crea sin IA con plantillas prearmadas</p>
+          <p class="text-[11px] text-on-surface-variant mt-0.5">Tu plan incluye acceso a la biblioteca de plantillas con contenido listo para usar. Tú también puedes escribir tu propio contenido abajo.</p>
+          <a href="plantillas-miniapps.html" class="inline-flex items-center gap-1 mt-1.5 text-[11px] font-bold text-primary hover:opacity-70 transition-opacity">
+            Ver biblioteca de plantillas
+            <span class="material-symbols-outlined text-xs">arrow_forward</span>
+          </a>
+        </div>
+      </div>
+
       <!-- Nombre + Emoji -->
       <div class="flex gap-3">
         <div class="w-20">
@@ -1355,6 +1368,27 @@ async function toggleQuizStatus(id, currentStatus) {
 function openCreateModal() {
   document.getElementById('modal-overlay').classList.remove('hidden');
   document.getElementById('ma-name').focus();
+  updateMiniAppModalForPlan();
+}
+
+// Adjusts the mini-app modal UI based on whether the plan includes AI.
+// Free/Starter plans don't have AI, so we hide the AI toggle/ideas button,
+// change the submit button label, and show a banner linking to templates.
+function updateMiniAppModalForPlan() {
+  const hasAI = typeof canUsePlanFeature === 'function' ? canUsePlanFeature('ai') : true;
+  const submitBtn = document.getElementById('ma-submit-btn');
+  const aiToggle = document.getElementById('ma-ai')?.closest('.flex.items-center.gap-3');
+  const aiIdeasBtn = document.getElementById('ai-btn');
+  const banner = document.getElementById('ma-no-ai-banner');
+
+  if (submitBtn) {
+    submitBtn.innerHTML = hasAI
+      ? '<span class="material-symbols-outlined text-sm" style="font-variation-settings:\'FILL\' 1">auto_awesome</span> Crear con IA'
+      : '<span class="material-symbols-outlined text-sm">add</span> Crear Mini-App';
+  }
+  if (aiToggle) aiToggle.classList.toggle('hidden', !hasAI);
+  if (aiIdeasBtn) aiIdeasBtn.classList.toggle('hidden', !hasAI);
+  if (banner) banner.classList.toggle('hidden', hasAI);
 }
 
 function closeModal() {
@@ -1411,54 +1445,63 @@ async function handleCreateMiniApp(e) {
     if (msg) progressMsg.textContent = msg;
   }
 
+  const hasAI = typeof canUsePlanFeature === 'function' ? canUsePlanFeature('ai') : true;
+
   try {
     submitBtn.disabled = true;
-    submitBtn.textContent = 'Generando...';
+    submitBtn.textContent = hasAI ? 'Generando...' : 'Creando...';
     progressEl.classList.remove('hidden');
-    setProgress(3, 'Verificando sesión...');
 
-    // Pre-check: ensure we have a valid session or Groq key before starting
-    if (!Settings.getGroqApiKey()) {
-      const { data } = await db.auth.refreshSession().catch(() => ({ data: null }));
-      if (!data?.session?.access_token) {
-        // Try current session
-        const { data: d2 } = await db.auth.getSession().catch(() => ({ data: null }));
-        if (!d2?.session?.access_token) {
-          throw new Error('Sesión expirada. Recarga la página e inicia sesión. O configura tu API key de Groq en Ajustes → IA.');
+    let theme = {};
+    let allContent = {};
+
+    if (hasAI) {
+      setProgress(3, 'Verificando sesión...');
+
+      // Pre-check: ensure we have a valid session or Groq key before starting
+      if (!Settings.getGroqApiKey()) {
+        const { data } = await db.auth.refreshSession().catch(() => ({ data: null }));
+        if (!data?.session?.access_token) {
+          // Try current session
+          const { data: d2 } = await db.auth.getSession().catch(() => ({ data: null }));
+          if (!d2?.session?.access_token) {
+            throw new Error('Sesión expirada. Recarga la página e inicia sesión. O configura tu API key de Groq en Ajustes → IA.');
+          }
         }
       }
-    }
 
-    setProgress(5, 'Analizando estilo visual...');
+      setProgress(5, 'Analizando estilo visual...');
 
-    // Generate theme based on niche/product
-    let theme = {};
-    try {
-      theme = await AI.generateAppTheme(niche, product || name) || {};
-    } catch(e) {
-      console.warn('Theme gen failed:', e.message);
-    }
-
-    // Generate content for each type (up to 5 to avoid too many calls)
-    const typesToGenerate = types.slice(0, 5);
-    let allContent = {};
-    for (let i = 0; i < typesToGenerate.length; i++) {
-      const t = typesToGenerate[i];
-      const pct = Math.round(15 + (i / typesToGenerate.length) * 75);
-      setProgress(pct, `Generando ${t} (${i+1}/${typesToGenerate.length})...`);
+      // Generate theme based on niche/product
       try {
-        const idea = { type: t, name, description: description || '', features: [] };
-        // Build per-type creator context so AI respects it as base content
-        const cfg = CONTENT_CFG[t];
-        const ctxKey = cfg?.key;
-        const creatorCtx = (ctxKey && creatorContent[ctxKey] !== undefined)
-          ? { [ctxKey]: creatorContent[ctxKey] }
-          : null;
-        const content = await AI.generateMiniAppContent(idea, product || name, niche, creatorCtx);
-        if (content) allContent = { ...allContent, ...content };
-      } catch(err) {
-        console.warn(`Content gen failed for ${t}:`, err.message);
+        theme = await AI.generateAppTheme(niche, product || name) || {};
+      } catch(e) {
+        console.warn('Theme gen failed:', e.message);
       }
+
+      // Generate content for each type (up to 5 to avoid too many calls)
+      const typesToGenerate = types.slice(0, 5);
+      for (let i = 0; i < typesToGenerate.length; i++) {
+        const t = typesToGenerate[i];
+        const pct = Math.round(15 + (i / typesToGenerate.length) * 75);
+        setProgress(pct, `Generando ${t} (${i+1}/${typesToGenerate.length})...`);
+        try {
+          const idea = { type: t, name, description: description || '', features: [] };
+          // Build per-type creator context so AI respects it as base content
+          const cfg = CONTENT_CFG[t];
+          const ctxKey = cfg?.key;
+          const creatorCtx = (ctxKey && creatorContent[ctxKey] !== undefined)
+            ? { [ctxKey]: creatorContent[ctxKey] }
+            : null;
+          const content = await AI.generateMiniAppContent(idea, product || name, niche, creatorCtx);
+          if (content) allContent = { ...allContent, ...content };
+        } catch(err) {
+          console.warn(`Content gen failed for ${t}:`, err.message);
+        }
+      }
+    } else {
+      // Plan sin IA: usar solo el contenido manual del creador.
+      setProgress(30, 'Preparando tu mini-app...');
     }
 
     setProgress(90, 'Guardando...');
@@ -1484,7 +1527,8 @@ async function handleCreateMiniApp(e) {
       closeModal();
       renderMiniApps();
       const usedCreator = Object.keys(creatorContent).length > 0;
-      showToast(`"${name}" creada${usedCreator ? ' con tu contenido' : ' con contenido IA'}`);
+      const suffix = hasAI ? (usedCreator ? ' con tu contenido' : ' con contenido IA') : '';
+      showToast(`"${name}" creada${suffix}`);
     }, 400);
 
   } catch (err) {
@@ -1494,7 +1538,9 @@ async function handleCreateMiniApp(e) {
       : 'Error al crear: ' + err.message;
     showToast(msg, 'error');
     submitBtn.disabled = false;
-    submitBtn.innerHTML = '<span class="material-symbols-outlined text-sm" style="font-variation-settings:\'FILL\' 1">auto_awesome</span> Crear con IA';
+    submitBtn.innerHTML = hasAI
+      ? '<span class="material-symbols-outlined text-sm" style="font-variation-settings:\'FILL\' 1">auto_awesome</span> Crear con IA'
+      : '<span class="material-symbols-outlined text-sm">add</span> Crear Mini-App';
     progressEl.classList.add('hidden');
   }
 }
