@@ -1527,5 +1527,119 @@ function getBuiltinMiniAppTemplates() {
   ]
 },
 
+// ═══════════════ HOGAR ═══════════════
+
+{
+  id:'tpl-limpieza-21', name:'Limpia tu Casa',
+  types:['reto','checklist','planificador'],
+  niche:'limpieza, hogar, organización', category:'Hogar', subcategory:'Limpieza',
+  description:'21 días para una limpieza profunda zona por zona, sin agotarte un fin de semana entero.',
+  icon:'🧹', primaryColor:'#0891b2', secondaryColor:'#a5f3fc', bgColor:'#0e0e0e',
+  headerGradient:'linear-gradient(135deg,#0891b2,#a5f3fc)',
+  retoContent:[
+    {title:'Día 1: Cocina - encimeras', instructions:'Despeja todo, limpia a fondo encimeras, azulejos y campana. Solo deja lo esencial visible.', reflectionPrompt:'¿Qué quitarás permanentemente?'},
+    {title:'Día 2: Cocina - electrodomésticos', instructions:'Microondas (vapor con limón), nevera (vacía y limpia), horno. 30 min cada uno máximo.', reflectionPrompt:'¿Cuál estaba peor?'},
+    {title:'Día 3: Baño - sanitarios', instructions:'Inodoro, lavamanos, ducha/bañera. Antical en grifería. Vinagre + bicarbonato son tus aliados.', reflectionPrompt:'¿Olor diferente?'},
+    {title:'Día 4: Salón - polvo y superficies', instructions:'Quita polvo de muebles, marcos, electrónica. De arriba a abajo. Aspirar después.', reflectionPrompt:'¿Cuánto polvo?'},
+    {title:'Día 5: Dormitorio - sábanas y colchón', instructions:'Cambia sábanas, aspira colchón, voltéalo si es posible. Bicarbonato 30 min antes de aspirar quita olores.', reflectionPrompt:'¿Mejor descanso?'},
+    {title:'Día 6: Suelos toda la casa', instructions:'Aspirar y fregar TODA la casa. Esquinas y debajo de muebles incluidos. Música ayuda mucho.', reflectionPrompt:'¿Cuánto tardaste?'},
+    {title:'Día 7: Mantenimiento diario', instructions:'15 min al día: cama hecha, cocina recogida, baño con paño rápido. Previene grandes limpiezas.', reflectionPrompt:'¿Cuál hábito mantendrás?'}
+  ],
+  initialItems:['Hacer la cama al despertar','Lavar trastes después de cada comida','15 min de orden antes de dormir','Lavadora 2-3 veces por semana','Aspirar zonas de paso 2x semana','Limpieza profunda una zona por semana','Tirar 1 cosa al día (declutter)','Cambiar sábanas semanal'],
+  initialTasks:['Lunes: Cocina','Martes: Baño','Miércoles: Salón','Jueves: Dormitorio','Viernes: Lavandería + suelos','Sábado: Limpieza profunda zona del mes','Domingo: Descanso o planificación'],
+},
+
+{
+  id:'tpl-minimalismo', name:'Declutter 30 Días',
+  types:['reto','checklist','diario','afirmaciones'],
+  niche:'minimalismo, declutter, ordenar', category:'Hogar', subcategory:'Minimalismo',
+  description:'30 días para soltar lo que no necesitas y ganar espacio físico y mental.',
+  icon:'📦', primaryColor:'#525252', secondaryColor:'#d4d4d4', bgColor:'#0e0e0e',
+  headerGradient:'linear-gradient(135deg,#525252,#d4d4d4)',
+  retoContent:[
+    {title:'Día 1: Tira 1 cosa', instructions:'Cualquier cosa. Algo roto, vencido, sin uso. Establece el ritual: 1 cosa al día = 30 cosas al mes.', reflectionPrompt:'¿Qué tiraste?'},
+    {title:'Día 2: Suelta 5 prendas', instructions:'Ropa que no usas hace 1 año. Si dudas, ponla en una caja "¿la extraño?". Si en 3 meses no la abriste, fuera.', reflectionPrompt:'¿Por qué la guardabas?'},
+    {title:'Día 3: Cajón del cajón', instructions:'Ese cajón con cosas misceláneas. Vacíalo. Tira basura. Encuentra hogar a lo útil. 30 min.', reflectionPrompt:'¿Qué encontraste?'},
+    {title:'Día 4: Libros que no leerás', instructions:'Sé honesto. ¿Lo leerás? Si no en este año, dónalo. Otro lo disfrutará. Liberar libros = liberar expectativas.', reflectionPrompt:'¿Cuántos donaste?'},
+    {title:'Día 5: Productos vencidos', instructions:'Cocina, baño, botiquín. Tira lo vencido sin culpa. Caducó porque no lo necesitabas.', reflectionPrompt:'¿Cuántos productos?'},
+    {title:'Día 6: Sentimentales', instructions:'Lo más difícil. Foto de objetos antes de soltar. El recuerdo no vive en el objeto, vive en ti.', reflectionPrompt:'¿Qué soltaste?'},
+    {title:'Día 7: Digital declutter', instructions:'Borra apps que no usas, fotos repetidas, mails viejos. El espacio digital también pesa.', reflectionPrompt:'¿Cuánto liberaste?'}
+  ],
+  initialItems:['Tirar 1 cosa al día','Caja "¿la extraño?" para dudas','Donar mensual','Cero compras impulsivas','Pregúntate "¿lo amo o uso?" antes de comprar','Espacio antes de comprar nuevo','Una entrada, una salida','Mantenimiento mensual'],
+  affirmations:['Menos cosas, más libertad','Mi valor no está en lo que poseo','Suelto sin culpa lo que ya cumplió su propósito','Mi espacio es mi paz','Compro con intención, no con impulso','Menos es realmente más','Mi mente se calma con espacio físico','Lo que sale crea lugar para lo nuevo','El recuerdo vive en mí, no en el objeto','Menos tener, más ser'],
+  journalPrompts:['¿Por qué guardo cosas que no uso?','¿Qué emoción me cuesta soltar junto a este objeto?','¿Cómo me siento en mi espacio actual?','¿Qué definición de éxito heredé que incluía "tener mucho"?','¿Qué haría con el dinero que no gasté esta semana?']
+},
+
+{
+  id:'tpl-jardin', name:'Jardín en Casa',
+  types:['roadmap','checklist','glosario','faq'],
+  niche:'jardinería, plantas, huerto urbano', category:'Hogar', subcategory:'Jardinería',
+  description:'Crea tu primer jardín o huerto urbano paso a paso, aunque tengas poco espacio.',
+  icon:'🪴', primaryColor:'#16a34a', secondaryColor:'#86efac', bgColor:'#0e0e0e',
+  headerGradient:'linear-gradient(135deg,#16a34a,#86efac)',
+  roadmapSteps:[
+    {title:'Paso 1: Evalúa tu espacio', description:'Luz: ¿cuántas horas de sol directo? Eso define qué plantas pueden vivir ahí.'},
+    {title:'Paso 2: Empieza fácil', description:'Plantas resistentes para principiantes: pothos, sansevieria, suculentas, cintas, monstera mini.'},
+    {title:'Paso 3: Macetas con drenaje', description:'Crítico. Sin agujeros = raíz podrida = planta muerta. Plato debajo o autoriego.'},
+    {title:'Paso 4: Sustrato adecuado', description:'No tierra del jardín. Sustrato universal o específico (cactus para suculentas, ácido para hortensias).'},
+    {title:'Paso 5: Riego según planta', description:'No riegues por calendario. Mete dedo en tierra: si está húmeda, NO riegues. Mata más exceso que falta.'},
+    {title:'Paso 6: Luz adecuada', description:'Plantas tropicales: luz indirecta brillante. Suculentas/cactus: sol directo. Cero luz = mueren todas.'},
+    {title:'Paso 7: Reproducción', description:'Esquejes en agua o tierra. Multiplica gratis. Pothos, monstera, suculentas son fáciles de reproducir.'}
+  ],
+  initialItems:['Identificar luz disponible','Elegir 3 plantas resistentes','Macetas con drenaje','Sustrato universal de calidad','Regadera o pulverizador','Calendario de riego adaptado','Limpieza ocasional de hojas','Fertilizar primavera-verano'],
+  glossaryTerms:[
+    {term:'Sustrato', def:'Mezcla donde crece la planta. NO es tierra de jardín. Tiene perlita, turba, compost.'},
+    {term:'Drenaje', def:'Capacidad de la maceta de evacuar agua. Esencial. Sin él, raíces se pudren.'},
+    {term:'Esqueje', def:'Trozo de planta cortado para reproducir. Algunas en agua, otras directo en tierra.'},
+    {term:'Trasplante', def:'Cambiar planta a maceta más grande cuando raíces llenan la actual. Cada 1-2 años.'},
+    {term:'Fertilizante NPK', def:'Nitrógeno (hojas), Fósforo (flores), Potasio (raíces/frutos). Diluir bien siempre.'},
+    {term:'Cochinilla / pulgón', def:'Plagas comunes. Tratar con jabón potásico, agua + alcohol, o aceite de neem.'},
+    {term:'Estrés hídrico', def:'Falta o exceso de agua. Síntomas: hojas amarillas (exceso), caídas (falta).'},
+    {term:'Floración', def:'Periodo en que la planta da flores. Algunas necesitan reposo invernal para florecer en primavera.'}
+  ],
+  faqItems:[
+    {q:'¿Cuánto regar mis plantas?', a:'Depende de la planta, maceta, luz, humedad. Mete el dedo: si está húmedo, NO. Mejor regar menos.'},
+    {q:'¿Por qué se ponen amarillas las hojas?', a:'Causa más común: exceso de agua. También: falta de luz, falta de nutrientes, o cambio de estación normal.'},
+    {q:'¿Mis plantas pueden vivir sin sol directo?', a:'Sí, muchas. Pothos, sansevieria, ZZ, monstera viven con luz indirecta brillante.'},
+    {q:'¿Necesito fertilizar?', a:'En primavera-verano sí, cada 2-4 semanas diluido. Otoño-invierno no.'},
+    {q:'¿Por qué mi suculenta se "estira"?', a:'Falta de luz. Se llama etiolación. Mueve a sitio más luminoso. Es irreversible la parte estirada.'}
+  ]
+},
+
+{
+  id:'tpl-zerowaste', name:'Zero Waste',
+  types:['reto','checklist','flashcards','glosario'],
+  niche:'zero waste, sostenibilidad, vida sin residuos', category:'Hogar', subcategory:'Sostenibilidad',
+  description:'30 días para reducir tus residuos y vivir más sostenible sin volverse extremo.',
+  icon:'♻️', primaryColor:'#15803d', secondaryColor:'#bbf7d0', bgColor:'#0e0e0e',
+  headerGradient:'linear-gradient(135deg,#15803d,#bbf7d0)',
+  retoContent:[
+    {title:'Día 1: Auditoría de tu basura', instructions:'Una semana sin tirar nada (lleva contigo en bolsa). El final de semana revisa: ¿de qué es 80% tu basura?', reflectionPrompt:'¿Qué descubriste?'},
+    {title:'Día 2: Botella reutilizable', instructions:'Compra una botella buena (acero, vidrio). NUNCA más agua embotellada. Ahorras dinero + plástico.', reflectionPrompt:'¿Cuántas botellas evitarás?'},
+    {title:'Día 3: Bolsas de tela', instructions:'5+ bolsas de tela siempre en mochila/coche. Cero bolsas plásticas en compra. Hábito que dura años.', reflectionPrompt:'¿Las llevaste hoy?'},
+    {title:'Día 4: Termo para café', instructions:'Si tomas café fuera, lleva termo. Cafeterías suelen aceptarlo y a veces dan descuento.', reflectionPrompt:'¿Lo probaste?'},
+    {title:'Día 5: Compra a granel', instructions:'Identifica tienda granel cerca. Frutos secos, legumbres, cereales sin envase. Lleva tarros propios.', reflectionPrompt:'¿Encontraste alguna?'},
+    {title:'Día 6: Compostaje básico', instructions:'Restos orgánicos (cáscaras, café, hojas) en compostera. 30% de tu basura desaparece y nutres plantas.', reflectionPrompt:'¿Es viable para ti?'},
+    {title:'Día 7: Productos higiene reutilizables', instructions:'Discos desmaquillantes lavables, copa menstrual, cepillo de bambú, navaja. Pequeños cambios, gran impacto.', reflectionPrompt:'¿Cuál cambiaste?'}
+  ],
+  initialItems:['Botella reutilizable siempre','Bolsas de tela en mochila','Termo para café','Tuppers para llevar','Comprar a granel','Compostaje básico','Productos higiene reutilizables','Cero comida desperdiciada'],
+  cards:[
+    {front:'5R del zero waste', back:'Refuse (rechazar lo innecesario), Reduce, Reuse, Recycle, Rot (compostar). En ese orden.'},
+    {front:'Compostaje doméstico', back:'Restos orgánicos + secos (hojas, cartón) + aire + tiempo = abono gratis. 6 meses para tener.'},
+    {front:'Compra a granel', back:'Lleva tarros propios. Compras la cantidad exacta que necesitas. Cero envases.'},
+    {front:'Greenwashing', back:'Marketing engañoso de "ecológico". Lee etiquetas. Productos realmente sostenibles son discretos.'},
+    {front:'Huella de carbono', back:'CO2 que tu vida emite. Calcula con apps. Identifica dónde reducir más impacto.'},
+    {front:'Microplásticos', back:'Partículas <5mm. Vienen de ropa sintética, cosméticos, embalajes. Acaban en agua y alimentos.'}
+  ],
+  glossaryTerms:[
+    {term:'Zero waste', def:'Filosofía de generar la menor basura posible. No es perfección, es progreso constante.'},
+    {term:'Granel', def:'Compra sin envase. Llevas tu propio recipiente. Disponible en mercados, tiendas eco.'},
+    {term:'Compostaje', def:'Descomposición controlada de materia orgánica para obtener abono. Reduce 30% de basura doméstica.'},
+    {term:'Upcycling', def:'Convertir algo viejo en algo de mayor valor (no solo reciclar). Ej: jeans → bolso.'},
+    {term:'Slow living', def:'Estilo de vida basado en lo esencial. Conexión con naturaleza, consumo consciente.'},
+    {term:'Economía circular', def:'Modelo donde nada se desperdicia. Productos diseñados para repararse, reutilizarse, reciclarse.'}
+  ]
+},
+
   ];
 }
