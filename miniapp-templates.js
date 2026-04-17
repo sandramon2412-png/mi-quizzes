@@ -394,5 +394,1252 @@ function getBuiltinMiniAppTemplates() {
   ]
 },
 
+// ═══════════════ NUTRICIÓN ═══════════════
+
+{
+  id:'tpl-alimentacion-21', name:'Alimentación Balanceada',
+  types:['reto','checklist','flashcards','faq'],
+  niche:'nutrición, alimentación saludable', category:'Nutrición', subcategory:'General',
+  description:'21 días para crear hábitos de alimentación equilibrada sin dietas restrictivas.',
+  icon:'🥗', primaryColor:'#65a30d', secondaryColor:'#a3e635', bgColor:'#0e0e0e',
+  headerGradient:'linear-gradient(135deg,#65a30d,#a3e635)',
+  retoContent:[
+    {title:'Día 1: Vaso de agua al despertar', instructions:'Antes de café o desayuno, toma 500ml de agua. Hidrata tras 8h de ayuno nocturno y activa metabolismo.', reflectionPrompt:'¿Cómo te sentiste?'},
+    {title:'Día 2: Proteína en cada comida', instructions:'Asegura una fuente de proteína en desayuno, almuerzo y cena: huevos, pollo, pescado, lentejas, tofu, yogur griego.', reflectionPrompt:'¿Qué comida te costó más incluir proteína?'},
+    {title:'Día 3: Verduras en 2 comidas', instructions:'Incluye verduras en almuerzo Y cena. Mitad del plato idealmente. Variedad de colores = variedad de nutrientes.', reflectionPrompt:'¿Qué verdura nueva probaste?'},
+    {title:'Día 4: Elimina bebidas azucaradas', instructions:'Hoy cero refrescos, jugos envasados, café con azúcar. Solo agua, infusiones, café/té sin azúcar.', reflectionPrompt:'¿Cuántos gramos de azúcar líquida evitaste?'},
+    {title:'Día 5: Comer sin pantallas', instructions:'Todas las comidas sin TV, teléfono ni trabajo. Mastica despacio, nota sabores. Comer consciente reduce porciones.', reflectionPrompt:'¿Notaste saciedad antes que de costumbre?'},
+    {title:'Día 6: Planifica mañana', instructions:'Esta noche, planifica qué comerás mañana. Prepara lo que puedas. Evitas decisiones impulsivas cuando tienes hambre.', reflectionPrompt:'¿Qué te costará más seguir?'},
+    {title:'Día 7: Comida casera 100%', instructions:'Hoy cocina todas tus comidas. Sin pedidos, sin empacado. Tú controlas ingredientes y porciones.', reflectionPrompt:'¿Qué aprendiste sobre tu relación con la comida?'}
+  ],
+  initialItems:['Desayunar con proteína','Comer 5 porciones de frutas/verduras','Mínimo 2 litros de agua','Evitar ultraprocesados','Masticar despacio (20 veces)','Parar al 80% de saciedad','Planear comidas de la semana','Un día de comida libre (sin culpa)'],
+  cards:[
+    {front:'Proteínas', back:'1.2-1.6g por kg de peso. Reparan músculo y dan saciedad. Fuentes: carne, pescado, huevo, lácteos, legumbres.'},
+    {front:'Carbohidratos complejos', back:'Libera energía lenta. Avena, arroz integral, quinoa, tubérculos, legumbres, pan integral.'},
+    {front:'Grasas saludables', back:'Aguacate, aceite de oliva, frutos secos, pescado graso, semillas. Esenciales para hormonas.'},
+    {front:'Ultraprocesados', back:'Productos industriales con aditivos, azúcares añadidos, grasas trans. Evitar: galletas, snacks, embutidos baratos.'},
+    {front:'Método del plato', back:'1/2 verduras + 1/4 proteína + 1/4 carbohidrato complejo. Simple y efectivo.'},
+    {front:'Hambre real vs emocional', back:'Hambre real: aparece gradual, cualquier comida sirve. Emocional: súbita, antojo específico (dulce o salado).'},
+    {front:'Micronutrientes', back:'Vitaminas y minerales. Se obtienen variando colores de frutas y verduras.'},
+    {front:'Índice glucémico', back:'Rapidez con que un alimento eleva glucosa. Bajo (legumbres, avena) = saciedad prolongada.'}
+  ],
+  faqItems:[
+    {q:'¿Debo contar calorías?', a:'No es obligatorio. Empieza con método del plato y escucha tu cuerpo. Contar ayuda si tienes objetivo específico.'},
+    {q:'¿El desayuno es la comida más importante?', a:'No necesariamente. Lo importante es que todas tus comidas sean nutritivas. Si no tienes hambre, no fuerces.'},
+    {q:'¿Puedo comer carbohidratos en la noche?', a:'Sí. No engordan en la noche. Lo que importa es el total diario, no el horario.'},
+    {q:'¿Son malas las grasas?', a:'No. Las grasas saludables son esenciales. Evita trans (procesados) y modera saturadas.'},
+    {q:'¿Qué hago con antojos de dulce?', a:'Pregúntate si tienes hambre real. Si no, distráete 20 min. Si persiste, come la versión más natural posible (fruta, chocolate 70%+).'},
+    {q:'¿Necesito suplementos?', a:'Depende. Si tu dieta es variada, probablemente no. Vitamina D es común déficit. B12 si eres vegetariano/vegano.'}
+  ]
+},
+
+{
+  id:'tpl-keto-30', name:'Reset Keto 30 Días',
+  types:['reto','glosario','faq','checklist'],
+  niche:'keto, dieta cetogénica, low carb', category:'Nutrición', subcategory:'Keto',
+  description:'Plan de 30 días para entrar en cetosis, quemar grasa y estabilizar energía.',
+  icon:'🥑', primaryColor:'#047857', secondaryColor:'#6ee7b7', bgColor:'#0e0e0e',
+  headerGradient:'linear-gradient(135deg,#047857,#6ee7b7)',
+  retoContent:[
+    {title:'Día 1: Limpia la despensa', instructions:'Regala o tira: pan, pasta, arroz, galletas, azúcar, refrescos, cereales. Llena con: huevos, carne, pescado, aguacate, aceite oliva, verduras bajas en carbo.', reflectionPrompt:'¿Qué fue más difícil tirar?'},
+    {title:'Día 2: 20g carbos netos máximo', instructions:'Cuenta carbohidratos netos (totales - fibra). Apps útiles: MyFitnessPal, Carb Manager. Bebe mucha agua con sal.', reflectionPrompt:'¿Qué comiste hoy?'},
+    {title:'Día 3: Electrolitos', instructions:'Suma 3-5g de sal adicional, 300mg magnesio, 1000mg potasio. Previene la "keto flu" (gripe keto).', reflectionPrompt:'¿Síntomas de keto flu?'},
+    {title:'Día 4: Ayuno 16:8', instructions:'Come solo entre 12pm y 8pm. Acelera entrada en cetosis. Café con mantequilla (opcional) no rompe el ayuno.', reflectionPrompt:'¿Cómo manejaste el hambre?'},
+    {title:'Día 5: Revisa cetosis', instructions:'Tiras de orina (baratas) o sangre (precisas). 0.5-3.0 mmol/L = cetosis nutricional. Aliento con sabor afrutado = señal.', reflectionPrompt:'¿Estás en cetosis?'},
+    {title:'Día 6: Comida social', instructions:'Practica salir a comer keto: ensalada + proteína + aguacate, o bistec con verduras. Evita pan y postres.', reflectionPrompt:'¿Cómo fue socialmente?'},
+    {title:'Día 7: Semana 1 completa', instructions:'Mide cintura, pesa, nota energía y sueño. Los primeros kg son agua (glucógeno). Grasa viene después.', reflectionPrompt:'¿Qué cambios notaste?'}
+  ],
+  initialItems:['20g carbos netos máximo','3L agua + sal','Electrolitos (Na, K, Mg)','70% grasa, 25% proteína, 5% carbos','Cocinar en casa','Sin productos "keto procesados"','Dormir 7h+','Ayuno 14-16h'],
+  glossaryTerms:[
+    {term:'Cetosis', def:'Estado metabólico donde el cuerpo quema grasa (cuerpos cetónicos) en lugar de glucosa.'},
+    {term:'Cetoadaptación', def:'Proceso de 3-6 semanas donde el cuerpo optimiza el uso de cetonas. Energía estable tras esto.'},
+    {term:'Keto flu', def:'Síntomas gripales los primeros días: fatiga, dolor cabeza, irritabilidad. Se soluciona con electrolitos.'},
+    {term:'Carbos netos', def:'Carbohidratos totales menos fibra menos polialcoholes. Los que impactan glucosa.'},
+    {term:'BHB', def:'Beta-hidroxibutirato. Principal cuerpo cetónico. Se mide en sangre.'},
+    {term:'MCT oil', def:'Triglicéridos de cadena media (aceite de coco). Se convierte rápido en cetonas.'},
+    {term:'Lazy keto', def:'Versión simplificada: solo cuentas carbos, sin medir grasa ni proteína. Menos preciso.'},
+    {term:'Ayuno intermitente', def:'Comer en ventana restringida. Combina muy bien con keto.'}
+  ],
+  faqItems:[
+    {q:'¿Cuánto tiempo para entrar en cetosis?', a:'2-5 días con 20g carbos o menos. Ayuno acelera a 24-48h. Ejercicio también ayuda.'},
+    {q:'¿Puedo hacer ejercicio en keto?', a:'Sí. Los primeros días bajarás rendimiento. Tras cetoadaptación, cardio largo mejora; explosividad puede bajar algo.'},
+    {q:'¿Es peligroso keto?', a:'Para persona sana, no. Contraindicado en diabetes tipo 1, pancreatitis, problemas hepáticos/renales. Consulta médico.'},
+    {q:'¿Cuánto puedo bajar?', a:'Primera semana: 2-4 kg (agua). Luego 0.5-1 kg por semana de grasa real.'},
+    {q:'¿Puedo comer fruta?', a:'Solo berries (frambuesa, fresa) en cantidades pequeñas. Plátano, uva, mango = muchos carbos.'},
+    {q:'¿Qué pasa si como carbos?', a:'Sales de cetosis. Vuelves a glucógeno. Tardas 1-3 días en regresar. No arruina todo, solo reinicia.'}
+  ]
+},
+
+{
+  id:'tpl-mealprep', name:'Meal Prep Semanal',
+  types:['planificador','checklist','flashcards'],
+  niche:'meal prep, cocina semanal, organización', category:'Nutrición', subcategory:'Meal Prep',
+  description:'Organiza tu cocina semanal en 2 horas: comidas ricas, saludables y sin estrés.',
+  icon:'🥘', primaryColor:'#ea580c', secondaryColor:'#fdba74', bgColor:'#0e0e0e',
+  headerGradient:'linear-gradient(135deg,#ea580c,#fdba74)',
+  initialTasks:['Domingo 10am: Planear menú de la semana','Domingo 11am: Hacer lista de compras','Domingo 12pm: Comprar en el super','Domingo 2pm: Lavar y cortar verduras','Domingo 3pm: Cocinar proteínas de la semana','Domingo 4pm: Cocinar carbohidratos (arroz, quinoa)','Domingo 5pm: Preparar 2-3 salsas/aderezos','Domingo 6pm: Porcionar en taper','Lunes-Viernes 7am: Llevar taper al trabajo'],
+  initialItems:['10 tapers con tapa','Básculas digital','Cuchillo bien afilado','Tabla de cortar','Etiquetas para fecha','Olla arrocera o Instant Pot','Sartén antiadherente grande','Bolsas ziploc para congelar','Hierbas y especias básicas'],
+  cards:[
+    {front:'Fórmula base meal prep', back:'1 proteína + 1 carbohidrato complejo + 2 verduras + 1 salsa = comida completa. Varía la salsa para evitar aburrirte.'},
+    {front:'¿Cuántos días aguanta?', a:'Pollo cocido: 4 días. Pescado: 2 días. Arroz/quinoa: 5 días. Verduras cocidas: 4 días. Salsas con crema: 3 días.', back:'Pollo cocido: 4 días. Pescado: 2 días. Arroz/quinoa: 5 días. Verduras cocidas: 4 días. Salsas con crema: 3 días.'},
+    {front:'Verduras que aguantan crudas', back:'Zanahoria, pepino, apio, pimiento, brócoli, coliflor. Córtalas domingo, úsalas toda la semana.'},
+    {front:'Proteínas ideales meal prep', back:'Pollo desmechado, carne molida, atún, huevos duros, tofu horneado, lentejas. Se recalientan bien.'},
+    {front:'Congela porciones extra', back:'Cocina doble y congela la mitad. Etiqueta con fecha. Duración: 3 meses.'},
+    {front:'Regla de las 3 salsas', back:'Ten siempre 3 salsas listas (ej: vinagreta, pesto, yogur con hierbas). Mismo ingrediente se siente diferente.'},
+    {front:'Batch cooking vs meal prep', back:'Batch: cocinas ingredientes separados, combinas al momento. Meal prep: platos ya armados en taper.'}
+  ]
+},
+
+{
+  id:'tpl-ayuno', name:'Ayuno Intermitente 16:8',
+  types:['reto','tracker','faq','glosario'],
+  niche:'ayuno intermitente, ayuno 16:8', category:'Nutrición', subcategory:'Ayuno',
+  description:'Implementa el ayuno intermitente 16:8 de forma sostenible en 21 días.',
+  icon:'⏰', primaryColor:'#7c2d12', secondaryColor:'#fb923c', bgColor:'#0e0e0e',
+  headerGradient:'linear-gradient(135deg,#7c2d12,#fb923c)',
+  trackerHabit:'Completé mi ventana de ayuno 16h hoy',
+  retoContent:[
+    {title:'Día 1: Ayuno 12:12', instructions:'Empieza suave. Última comida 8pm, primera 8am. Si normalmente cenas tarde, ya has ayunado 12h muchas veces sin notarlo.', reflectionPrompt:'¿Cómo te sentiste?'},
+    {title:'Día 2: Ayuno 14:10', instructions:'Extiende ayuno a 14h. Última comida 8pm, primera 10am. Agua, café negro o té sin azúcar están permitidos.', reflectionPrompt:'¿Tuviste hambre en la mañana?'},
+    {title:'Día 3: Ayuno 16:8 (primera vez)', instructions:'La ventana oficial: 16h ayuno, 8h comida. Última comida 8pm, primera 12pm. Mantén hidratación alta.', reflectionPrompt:'¿Llegaste hasta las 12?'},
+    {title:'Día 4: Hidratación máxima', instructions:'3L agua mínimo durante el ayuno. Agrega pizca de sal rosa si sientes mareo. Café y té SIN azúcar.', reflectionPrompt:'¿Notas más energía sin desayuno?'},
+    {title:'Día 5: Rompe el ayuno bien', instructions:'Primera comida: proteína + verduras + grasas. Evita azúcar y carbos refinados al romper. Picos de glucosa = hambre de rebote.', reflectionPrompt:'¿Qué comiste primero?'},
+    {title:'Día 6: Ayuno y ejercicio', instructions:'Entrena durante el ayuno (si cardio ligero o fuerza corta). Luego come proteína + carbos. Recuperación post-ayuno es potente.', reflectionPrompt:'¿Cómo fue tu rendimiento?'},
+    {title:'Día 7: Revisión', instructions:'¿Te sientes con más energía? ¿Menos antojos? ¿Mejor digestión? El ayuno no es magia, es una herramienta. Úsala si te funciona.', reflectionPrompt:'¿Vas a seguir?'}
+  ],
+  glossaryTerms:[
+    {term:'Ayuno intermitente', def:'Patrón de comida que alterna ventanas de ayuno con ventanas de alimentación.'},
+    {term:'16:8', def:'Protocolo más popular: 16h sin comer, 8h para comer. Ejemplo: 12pm a 8pm.'},
+    {term:'OMAD', def:'One Meal A Day. Ayuno 23:1. Solo una comida al día. Avanzado.'},
+    {term:'Autofagia', def:'Proceso celular de "limpieza" que se activa tras 16-24h sin comer. Renueva células dañadas.'},
+    {term:'Ventana de alimentación', def:'Horas permitidas para comer (ej: 12pm-8pm).'},
+    {term:'Romper el ayuno', def:'Primera comida tras el ayuno. Importante que sea equilibrada, no azucarada.'},
+    {term:'Cetosis inducida', def:'Al alargar ayuno, el cuerpo entra en cetosis leve. Quema grasa.'},
+    {term:'5:2', def:'Protocolo alternativo: 5 días comida normal, 2 días a 500-600 kcal. Menos popular que 16:8.'}
+  ],
+  faqItems:[
+    {q:'¿El ayuno intermitente baja de peso?', a:'Sí, porque comprime las horas de comida. Pero solo si mantienes déficit calórico. No es magia.'},
+    {q:'¿Puedo tomar café o té durante el ayuno?', a:'Sí, sin azúcar ni leche. Agua, café negro, té, infusiones. Algo de sal está permitido.'},
+    {q:'¿Rompe el ayuno el chicle o los suplementos?', a:'Chicle con azúcar sí. Sin azúcar técnicamente no, pero puede activar digestión. Suplementos con calorías (BCAA, colágeno): sí rompen.'},
+    {q:'¿Es seguro para mujeres?', a:'En general sí, pero las mujeres son más sensibles. Empieza con 12:12 y aumenta gradual. Si se altera tu ciclo, reduce ayuno.'},
+    {q:'¿Puedo ayunar si hago ejercicio intenso?', a:'Sí pero ajusta. Entrena al final del ayuno o dentro de la ventana de comida. Carga de glucógeno es importante para fuerza.'},
+    {q:'¿Es bueno a largo plazo?', a:'La evidencia es reciente pero positiva: mejora sensibilidad a insulina, marcadores inflamatorios, pérdida de grasa visceral.'}
+  ]
+},
+
+{
+  id:'tpl-vegano', name:'Nutrición Vegana Completa',
+  types:['glosario','faq','flashcards','checklist'],
+  niche:'veganismo, plant based, nutrición vegetal', category:'Nutrición', subcategory:'Vegano',
+  description:'Guía completa para una alimentación vegana equilibrada y sin déficits nutricionales.',
+  icon:'🌱', primaryColor:'#15803d', secondaryColor:'#86efac', bgColor:'#0e0e0e',
+  headerGradient:'linear-gradient(135deg,#15803d,#86efac)',
+  glossaryTerms:[
+    {term:'Vegano', def:'No consume ningún producto de origen animal: carne, pescado, lácteos, huevos, miel.'},
+    {term:'Plant based', def:'Alimentación principalmente vegetal. No necesariamente estricta como veganismo.'},
+    {term:'Proteína completa', def:'Contiene los 9 aminoácidos esenciales. Ejemplos vegetales: quinoa, soja, garbanzo + arroz.'},
+    {term:'B12', def:'Vitamina solo en alimentos animales (o enriquecidos). Los veganos DEBEN suplementar. No negociable.'},
+    {term:'Hierro hemo/no hemo', def:'Hemo (animal) se absorbe mejor. No hemo (vegetal) se absorbe con vitamina C cerca.'},
+    {term:'Omega 3 vegetal', def:'ALA en semillas de lino, chía, nuez. Conversión a EPA/DHA es baja. Algunos suplementan con algas.'},
+    {term:'Tempeh', def:'Soja fermentada. Textura firme, sabor a nuez. Más digestible que tofu.'},
+    {term:'Seitán', def:'Gluten de trigo cocido. Alta proteína, textura de carne. No apto celíacos.'},
+    {term:'Levadura nutricional', def:'Copos amarillos con sabor a queso. Aporta B12 (enriquecida) y proteína.'},
+    {term:'Calcio vegetal', def:'Brócoli, col rizada, tofu con sulfato de calcio, tahini, almendras, bebidas vegetales fortificadas.'}
+  ],
+  faqItems:[
+    {q:'¿De dónde saco proteína?', a:'Legumbres (lentejas, garbanzos, alubias), soja (tofu, tempeh, edamame), seitán, quinoa, frutos secos, semillas.'},
+    {q:'¿Necesito combinar proteínas?', a:'No en la misma comida. Si comes variedad durante el día, obtienes todos los aminoácidos.'},
+    {q:'¿Qué suplementos son imprescindibles?', a:'B12 siempre. Vitamina D si poco sol. Omega 3 (algas) opcional pero recomendado.'},
+    {q:'¿Puedo hacer ejercicio y crecer músculo?', a:'Absolutamente. Requiere 1.6-2g proteína/kg, variedad de fuentes, y calorías suficientes.'},
+    {q:'¿Es caro ser vegano?', a:'Los básicos son baratísimos: legumbres, arroz, verduras, avena. Los procesados veganos sí son caros pero no necesarios.'},
+    {q:'¿Puedo ser vegano durante embarazo?', a:'Sí, con planificación y suplementación adecuada (B12, hierro, omega 3). Consulta nutricionista.'},
+    {q:'¿Los niños pueden ser veganos?', a:'Sí con seguimiento profesional. Requiere atención especial a B12, hierro, calcio, zinc, omega 3.'},
+    {q:'¿Qué pasa si solo reduzco carne?', a:'¡Excelente! Cualquier reducción es beneficiosa. No hace falta ser 100% para ver beneficios.'}
+  ],
+  cards:[
+    {front:'Proteínas vegetales top', back:'Seitán (75g/100g), soja (36g), lentejas (25g), quinoa (14g), avena (13g), garbanzos (19g).'},
+    {front:'Combinaciones proteicas clásicas', back:'Arroz + frijoles, hummus + pan, tortilla + frijoles, lentejas + arroz. Perfiles aminoácidos completos.'},
+    {front:'Hierro vegetal', back:'Lentejas, tofu, espinacas, semillas de calabaza, quinoa. Come con vitamina C (limón, pimiento) para mejor absorción.'},
+    {front:'Calcio sin lácteos', back:'Tofu (con calcio), bebidas vegetales fortificadas, brócoli, col rizada, tahini, almendras, higos secos.'},
+    {front:'Omega 3 vegetal', back:'2 cucharadas diarias de semillas de chía o lino molidas. Nueces como snack. Aceite de algas como suplemento.'},
+    {front:'Sustituto de huevo', back:'1 cda semillas de lino + 3 cdas agua = 1 huevo (para hornear). Tofu revuelto = huevos revueltos. Aquafaba = claras.'},
+    {front:'Zinc vegetal', back:'Semillas de calabaza, lentejas, garbanzos, avena, anacardos, tempeh. Absorción menor que animal, come variado.'},
+    {front:'Errores comunes', back:'No suplementar B12, abusar de procesados veganos, baja proteína, poca variedad, olvidar omega 3.'}
+  ],
+  initialItems:['B12 diaria o semanal','Vitamina D si poco sol','1.6g proteína por kg de peso','Legumbres en 2 comidas al día','Fruta fresca cada día','Frutos secos/semillas 30g','Verdura de hoja verde diaria','Variar fuentes (no solo tofu)']
+},
+
+// ═══════════════ FE Y ESPIRITUALIDAD ═══════════════
+
+{
+  id:'tpl-devocional-30', name:'Devocional Cristiano 30 Días',
+  types:['reto','devocional','diario','afirmaciones'],
+  niche:'fe cristiana, devocional, espiritualidad cristiana', category:'Fe', subcategory:'Cristianismo',
+  description:'30 días para profundizar tu caminar con Dios: lectura, oración y reflexión diaria.',
+  icon:'✝️', primaryColor:'#6d28d9', secondaryColor:'#c4b5fd', bgColor:'#0e0e0e',
+  headerGradient:'linear-gradient(135deg,#6d28d9,#c4b5fd)',
+  devotionalText:'Amado/a, el Señor te llama hoy a caminar con Él. Dios no busca tu perfección, busca tu corazón. Romanos 8:38-39 nos recuerda: "Estoy convencido de que ni la muerte ni la vida, ni ángeles ni demonios, ni lo presente ni lo porvenir... podrá apartarnos del amor que Dios nos ha manifestado en Cristo Jesús." Toma este momento para respirar profundo. Entrégale a Dios esa preocupación que cargas. Él cuida de ti más de lo que imaginas. Oración: "Padre, gracias por tu fidelidad constante. Hoy suelto mis cargas en tus manos. Ayúdame a confiar en tu tiempo y tu voluntad. En el nombre de Jesús, Amén."',
+  retoContent:[
+    {title:'Día 1: Salmo 23', instructions:'Lee el Salmo 23 lentamente. Léelo 3 veces. ¿Qué frase te resuena hoy? Anótala y llévala contigo.', reflectionPrompt:'¿En qué área necesitas que el Pastor te guíe hoy?'},
+    {title:'Día 2: Oración de entrega', instructions:'Dedica 10 min a orar sin pedir nada. Solo agradece y entrega tu día a Dios. La oración es conversación, no lista de peticiones.', reflectionPrompt:'¿Qué descubriste al orar sin pedir?'},
+    {title:'Día 3: Mateo 6:25-34', instructions:'Lee el pasaje sobre no angustiarse. Haz una lista de tus mayores preocupaciones y escribe al lado: "Dios tiene control de esto."', reflectionPrompt:'¿Qué preocupación te cuesta más soltar?'},
+    {title:'Día 4: Adoración', instructions:'Escoge 3 canciones de adoración. Canta, ora, llora si necesitas. La adoración transforma la atmósfera de tu día.', reflectionPrompt:'¿Cómo te sentiste después de adorar?'},
+    {title:'Día 5: Servir a alguien', instructions:'Hoy haz algo por alguien sin que te lo pidan: un mensaje, una oración, un favor pequeño. Así se manifiesta el amor de Cristo.', reflectionPrompt:'¿A quién bendijiste hoy?'},
+    {title:'Día 6: Perdón', instructions:'¿A quién debes perdonar? Escribe su nombre. Ora por esa persona. Perdonar no justifica, libera tu corazón.', reflectionPrompt:'¿Qué sentiste al orar por esa persona?'},
+    {title:'Día 7: Sábado de reposo', instructions:'Descansa. Dios descansó el 7º día. No es pereza, es obediencia. Comparte tiempo con familia, lee, ora sin agenda.', reflectionPrompt:'¿Qué te enseñó la semana sobre Dios?'}
+  ],
+  affirmations:['Soy hija/o amado/a de Dios','Por sus llagas fui sanado/a','Mi identidad está en Cristo','Dios tiene planes de bien para mí (Jer 29:11)','Todo lo puedo en Cristo que me fortalece','Soy más que vencedor/a','La paz de Dios guarda mi corazón','Mi Dios suplirá todas mis necesidades','Soy luz en este mundo','El Señor pelea por mí, yo solo descanso'],
+  journalPrompts:['¿Dónde sentí la presencia de Dios hoy?','¿Qué me está enseñando Dios en esta temporada?','¿Qué oración necesito hacer hoy?','¿A quién me pide Dios que perdone?','¿Qué le agradezco a Dios hoy?','¿Qué carga necesito entregarle?','¿Qué palabra o versículo me habló hoy?']
+},
+
+{
+  id:'tpl-manifestacion-21', name:'Manifestación y Abundancia',
+  types:['reto','afirmaciones','diario','meditacion'],
+  niche:'manifestación, ley atracción, abundancia', category:'Fe', subcategory:'Espiritualidad',
+  description:'21 días para alinear tu mente y energía con lo que deseas manifestar en tu vida.',
+  icon:'✨', primaryColor:'#a855f7', secondaryColor:'#e9d5ff', bgColor:'#0e0e0e',
+  headerGradient:'linear-gradient(135deg,#a855f7,#e9d5ff)',
+  retoContent:[
+    {title:'Día 1: Visión clara', instructions:'Escribe en detalle tu vida ideal en 1 año: trabajo, salud, relaciones, dinero. Sé específico/a. La claridad es el primer paso.', reflectionPrompt:'¿Qué parte te cuesta más creer posible?'},
+    {title:'Día 2: Identifica creencias limitantes', instructions:'Escribe 10 creencias que tienes sobre dinero/éxito (buenas y malas). Reconocerlas es sanarlas.', reflectionPrompt:'¿De quién heredaste esas creencias?'},
+    {title:'Día 3: Afirmaciones presentes', instructions:'Transforma cada creencia limitante en afirmación positiva. "No soy bueno con dinero" → "El dinero fluye hacia mí con facilidad."', reflectionPrompt:'¿Cuál afirmación te genera resistencia?'},
+    {title:'Día 4: Visualización guiada', instructions:'10 min visualizando tu vida ideal. Siente la emoción como si ya fuera. El universo responde a la vibración, no a las palabras.', reflectionPrompt:'¿Qué sentiste al visualizar?'},
+    {title:'Día 5: Gratitud por lo que vendrá', instructions:'Escribe 5 cosas que aún no tienes pero agradeces como si ya las tuvieras. "Gracias por mi nuevo empleo", "Gracias por mi salud."', reflectionPrompt:'¿Qué sentiste diferente?'},
+    {title:'Día 6: Acción alineada', instructions:'Manifestar no es solo pensar. Da UN paso físico hacia tu meta: envía ese CV, estudia 30 min, agenda esa llamada.', reflectionPrompt:'¿Qué acción tomaste?'},
+    {title:'Día 7: Suelta el control', instructions:'Lo más difícil: suelta el cómo y el cuándo. Confía en que lo que es para ti llega. Ocúpate de vibrar alto, no de controlar.', reflectionPrompt:'¿Qué necesitas soltar?'}
+  ],
+  meditationScript:'Cierra los ojos y respira profundo 3 veces. Siente cómo tu cuerpo se relaja. Imagina una luz dorada que desciende desde el cielo y envuelve todo tu cuerpo. Esta luz es la energía de la abundancia. La abundancia es tu estado natural. Ahora visualiza tu vida ideal, la que ya vive en ti. ¿Dónde estás? ¿Con quién? ¿Cómo te sientes? Permítete sentir esa alegría ahora mismo. No mañana, ahora. El universo no distingue entre lo que vives y lo que imaginas intensamente. Mientras respiras, repite: "Yo soy abundancia. Yo soy merecedor/a. El universo conspira a mi favor." Deja que esta energía llene cada célula de tu cuerpo. Cuando estés listo/a, abre los ojos lentamente.',
+  affirmations:['Soy un imán de abundancia','El dinero fluye hacia mí con facilidad','Merezco todo lo bueno','El universo conspira a mi favor','Soy merecedor/a de amor y éxito','Todo lo que necesito ya está viniendo','Confío en el tiempo perfecto','Vivo en estado de gratitud','Atraigo oportunidades maravillosas','Mi potencial es infinito'],
+  journalPrompts:['Escribe tu vida ideal en presente, como si ya fuera realidad.','¿Qué creencia sobre dinero heredaste de tu familia?','¿Qué sentirás cuando manifiestes tu deseo? Siéntelo ahora.','¿Qué acción pequeña puedes dar hoy hacia tu meta?','¿Qué te está costando soltar?','Describe al "yo futuro" que ya logró todo.']
+},
+
+{
+  id:'tpl-oracion-30', name:'Oración Intencional',
+  types:['reto','tracker','checklist','diario'],
+  niche:'oración, vida de oración, intimidad con Dios', category:'Fe', subcategory:'Cristianismo',
+  description:'30 días para construir una vida de oración profunda y constante.',
+  icon:'🙏', primaryColor:'#4338ca', secondaryColor:'#a5b4fc', bgColor:'#0e0e0e',
+  headerGradient:'linear-gradient(135deg,#4338ca,#a5b4fc)',
+  trackerHabit:'Oré hoy (al menos 15 minutos)',
+  retoContent:[
+    {title:'Día 1: Establece un lugar', instructions:'Designa un rincón para orar: silla, cojín en el suelo, un lugar del jardín. El lugar físico ayuda a construir el hábito.', reflectionPrompt:'¿Dónde elegiste orar?'},
+    {title:'Día 2: ACTS (Adoración, Confesión, Gratitud, Súplica)', instructions:'Estructura tu oración hoy con ACTS: 3 min adorando, 3 min confesando, 3 min agradeciendo, 3 min pidiendo.', reflectionPrompt:'¿Qué parte te costó más?'},
+    {title:'Día 3: Oración con Salmos', instructions:'Elige un Salmo y úsalo como tu oración. David, Asaf, los salmistas oraban emociones reales. Aprende de su honestidad.', reflectionPrompt:'¿Qué Salmo elegiste?'},
+    {title:'Día 4: Oración en silencio', instructions:'10 min sin decir nada. Solo estar. Escucha. La oración no es monólogo. Dios también habla en el silencio.', reflectionPrompt:'¿Qué fue difícil?'},
+    {title:'Día 5: Intercesión', instructions:'Haz una lista de 10 personas y ora específicamente por ellas. Pide por sus necesidades reales, no genéricas.', reflectionPrompt:'¿Por quién sentiste más carga?'},
+    {title:'Día 6: Oración con la Palabra', instructions:'Elige un versículo y ora a partir de él. Ej: Filipenses 4:6-7 → "Señor, no quiero angustiarme, te presento..."', reflectionPrompt:'¿Qué versículo elegiste?'},
+    {title:'Día 7: Ayuno de medios', instructions:'Hoy sustituye 1h de redes/TV por oración. Usa ese tiempo normalmente "perdido" para estar con Dios.', reflectionPrompt:'¿Qué descubriste?'}
+  ],
+  initialItems:['Orar al despertar (5 min)','Leer un pasaje bíblico','Orar por mi familia','Orar por alguien específico','Guardar silencio ante Dios','Agradecer 5 cosas','Confesar y soltar','Orar al dormir (5 min)'],
+  journalPrompts:['¿Qué me está pidiendo Dios en este tiempo?','¿Qué respuesta recibí en oración hoy?','¿Dónde veo a Dios moverse en mi vida?','¿Qué lista de oración tengo para esta semana?','¿Qué me impide orar más? ¿Puedo ajustar eso?']
+},
+
+{
+  id:'tpl-biblia-30', name:'Memoriza la Biblia',
+  types:['flashcards','reto','tracker'],
+  niche:'memorizar versículos, biblia, escritura', category:'Fe', subcategory:'Cristianismo',
+  description:'Memoriza 30 versículos clave de la Biblia en 30 días usando flashcards y repetición.',
+  icon:'📖', primaryColor:'#be123c', secondaryColor:'#fda4af', bgColor:'#0e0e0e',
+  headerGradient:'linear-gradient(135deg,#be123c,#fda4af)',
+  trackerHabit:'Memoricé el versículo de hoy',
+  cards:[
+    {front:'Juan 3:16', back:'"Porque de tal manera amó Dios al mundo, que ha dado a su Hijo unigénito, para que todo aquel que en él cree, no se pierda, mas tenga vida eterna."'},
+    {front:'Filipenses 4:13', back:'"Todo lo puedo en Cristo que me fortalece."'},
+    {front:'Jeremías 29:11', back:'"Porque yo sé los pensamientos que tengo acerca de vosotros, dice Jehová, pensamientos de paz, y no de mal, para daros el fin que esperáis."'},
+    {front:'Proverbios 3:5-6', back:'"Fíate de Jehová de todo tu corazón, y no te apoyes en tu propia prudencia. Reconócelo en todos tus caminos, y él enderezará tus veredas."'},
+    {front:'Romanos 8:28', back:'"Y sabemos que a los que aman a Dios, todas las cosas les ayudan a bien, esto es, a los que conforme a su propósito son llamados."'},
+    {front:'Salmo 23:1', back:'"Jehová es mi pastor; nada me faltará."'},
+    {front:'Isaías 40:31', back:'"Pero los que esperan a Jehová tendrán nuevas fuerzas; levantarán alas como las águilas; correrán, y no se cansarán; caminarán, y no se fatigarán."'},
+    {front:'Mateo 6:33', back:'"Mas buscad primeramente el reino de Dios y su justicia, y todas estas cosas os serán añadidas."'},
+    {front:'2 Timoteo 1:7', back:'"Porque no nos ha dado Dios espíritu de cobardía, sino de poder, de amor y de dominio propio."'},
+    {front:'Josué 1:9', back:'"Mira que te mando que te esfuerces y seas valiente; no temas ni desmayes, porque Jehová tu Dios estará contigo en dondequiera que vayas."'},
+    {front:'Salmo 46:10', back:'"Estad quietos, y conoced que yo soy Dios."'},
+    {front:'Romanos 12:2', back:'"No os conforméis a este siglo, sino transformaos por medio de la renovación de vuestro entendimiento."'},
+    {front:'Efesios 2:8-9', back:'"Porque por gracia sois salvos por medio de la fe; y esto no de vosotros, pues es don de Dios; no por obras, para que nadie se gloríe."'},
+    {front:'Salmo 119:105', back:'"Lámpara es a mis pies tu palabra, y lumbrera a mi camino."'},
+    {front:'Filipenses 4:6-7', back:'"Por nada estéis afanosos, sino sean conocidas vuestras peticiones delante de Dios en toda oración y ruego, con acción de gracias. Y la paz de Dios, que sobrepasa todo entendimiento, guardará vuestros corazones."'}
+  ],
+  retoContent:[
+    {title:'Día 1: Juan 3:16', instructions:'Escribe el versículo 5 veces. Dilo en voz alta 10 veces. Pégalo en tu espejo. Medita en él durante el día.', reflectionPrompt:'¿Qué significa "de tal manera amó" para ti?'},
+    {title:'Día 2: Filipenses 4:13', instructions:'Repite el versículo cada vez que enfrentes algo difícil hoy. "Todo lo puedo en Cristo..."', reflectionPrompt:'¿En qué necesitas fortaleza hoy?'},
+    {title:'Día 3: Salmo 23:1', instructions:'Copia el Salmo 23 completo. Medita especialmente en "nada me faltará". Dios como Pastor.', reflectionPrompt:'¿Qué te falta que puedas entregar a Dios?'},
+    {title:'Día 4: Jeremías 29:11', instructions:'Memoriza. Cuéntaselo a alguien que esté pasando por incertidumbre. Compartir sella la memoria.', reflectionPrompt:'¿En qué área necesitas recordar este versículo?'},
+    {title:'Día 5: Proverbios 3:5-6', instructions:'Medita en "no te apoyes en tu propia prudencia". Identifica 1 área donde quieres control y suéltala.', reflectionPrompt:'¿Qué decisión necesitas entregar?'},
+    {title:'Día 6: Revisa los 5 de esta semana', instructions:'Recita todos los versículos aprendidos sin mirar. Identifica cuál se te olvida más y refuérzalo.', reflectionPrompt:'¿Cuál recordaste más fácil?'},
+    {title:'Día 7: Día de descanso y meditación', instructions:'Sin versículo nuevo. Elige tu favorito de la semana y medita profundamente en él por 20 min.', reflectionPrompt:'¿Cuál fue tu favorito y por qué?'}
+  ]
+},
+
+{
+  id:'tpl-meditacion-espiritual', name:'Meditación Espiritual',
+  types:['meditacion','afirmaciones','diario','reto'],
+  niche:'meditación espiritual, conexión interior', category:'Fe', subcategory:'Espiritualidad',
+  description:'Conecta con tu esencia a través de la meditación, mantras y reflexión espiritual.',
+  icon:'🕯️', primaryColor:'#9333ea', secondaryColor:'#d8b4fe', bgColor:'#0e0e0e',
+  headerGradient:'linear-gradient(135deg,#9333ea,#d8b4fe)',
+  meditationScript:'Enciende una vela si puedes. Siéntate cómodo, columna erguida, palmas hacia arriba sobre los muslos. Cierra los ojos suavemente. Respira profundo 3 veces, liberando tensiones. Lleva tu atención al centro de tu pecho, tu corazón. Siente el latido, la presencia de vida. Imagina una luz cálida en ese lugar. Esa luz eres tú, tu esencia pura. Observa cómo esa luz se expande suavemente. Llena tu cuerpo. Trasciende tu cuerpo. Te conecta con todo lo que es. No eres tu mente. No eres tus pensamientos. Eres ese espacio consciente que los observa. Descansa en ese espacio. No hay nada que hacer, solo ser. Ahora repite mentalmente: "Soy paz. Soy luz. Soy amor." Siente cómo cada palabra vibra en ti. Quédate aquí el tiempo que necesites. Cuando estés listo/a, toca suavemente tu corazón, da gracias, y abre los ojos.',
+  affirmations:['Soy luz, soy amor, soy paz','Mi esencia es divina','Estoy conectado/a con todo lo que es','El universo me sostiene','Confío en mi camino','Mi intuición me guía','Soy un alma en experiencia humana','La paz que busco vive en mí','Soy uno con la fuente','Todo está bien en este momento'],
+  retoContent:[
+    {title:'Día 1: Meditación de presencia', instructions:'10 min sentado/a en silencio. Observa tus pensamientos sin engancharte. Son nubes pasando. Tú eres el cielo.', reflectionPrompt:'¿Qué pensamiento era más insistente?'},
+    {title:'Día 2: Mantra diario', instructions:'Elige un mantra ("So Ham", "Om", "Soy paz"). Repítelo 108 veces (mala). Mantiene la mente enfocada.', reflectionPrompt:'¿Qué mantra elegiste?'},
+    {title:'Día 3: Meditación caminando', instructions:'Camina 20 min en la naturaleza en silencio. Cada paso, un agradecimiento. Siente la tierra sostenerte.', reflectionPrompt:'¿Qué te conmovió?'},
+    {title:'Día 4: Respiración cuadrada', instructions:'Inhala 4, sostén 4, exhala 4, sostén 4. Repite 10 min. Balancea sistema nervioso y abre intuición.', reflectionPrompt:'¿Cómo te sentiste?'},
+    {title:'Día 5: Meditación del amor', instructions:'Metta: envía amor a ti, a alguien querido, a alguien neutral, a alguien difícil, a todos los seres. 3 min cada uno.', reflectionPrompt:'¿Cuál costó más?'},
+    {title:'Día 6: Silencio consciente', instructions:'3 horas sin hablar, sin pantallas, sin música. Solo ser. Observa qué emerge en el silencio.', reflectionPrompt:'¿Qué surgió?'},
+    {title:'Día 7: Ritual de gratitud', instructions:'Enciende vela, escribe 10 agradecimientos profundos, medita 15 min, cierra con una oración o intención.', reflectionPrompt:'¿Qué agradecimiento te emocionó?'}
+  ],
+  journalPrompts:['¿Qué mensaje me dio mi intuición hoy?','¿Qué sincronicidad noté?','¿Qué me está enseñando este momento de mi vida?','¿Dónde siento más conexión: naturaleza, meditación, música, arte?','¿Qué necesita soltar mi alma?','¿Qué me pide mi espíritu?']
+},
+
+// ═══════════════ FINANZAS ═══════════════
+
+{
+  id:'tpl-nogastos-30', name:'Sin Gastos Innecesarios',
+  types:['reto','tracker','checklist','diario'],
+  niche:'ahorro, finanzas personales, no spend', category:'Finanzas', subcategory:'Ahorro',
+  description:'30 días sin gastos innecesarios para reiniciar tu relación con el dinero y ahorrar.',
+  icon:'💰', primaryColor:'#15803d', secondaryColor:'#86efac', bgColor:'#0e0e0e',
+  headerGradient:'linear-gradient(135deg,#15803d,#86efac)',
+  trackerHabit:'Hoy NO gasté en nada innecesario',
+  retoContent:[
+    {title:'Día 1: Define las reglas', instructions:'Esenciales: comida básica, transporte, salud, facturas. Prohibido: ropa, restaurantes, delivery, suscripciones nuevas, antojos.', reflectionPrompt:'¿Qué te será más difícil evitar?'},
+    {title:'Día 2: Cancela suscripciones', instructions:'Revisa todas las suscripciones activas. Cancela las que no usas semanalmente. Streaming, gym, apps, cajas mensuales.', reflectionPrompt:'¿Cuántos pagos automáticos descubriste?'},
+    {title:'Día 3: Cocina todo en casa', instructions:'Cero comida fuera. Aprovecha lo que ya tienes en despensa antes de comprar más. Inventa recetas con lo disponible.', reflectionPrompt:'¿Qué inventaste?'},
+    {title:'Día 4: Lista antes de comprar', instructions:'Si DEBES comprar (esencial), haz lista antes y solo compra eso. Nada de "ya que estoy aquí".', reflectionPrompt:'¿Te tentaste con algo extra?'},
+    {title:'Día 5: Disfruta sin gastar', instructions:'Hoy diviértete sin dinero: caminata, parque, llamada larga con amiga, leer, película en casa. La diversión no necesita tarjeta.', reflectionPrompt:'¿Qué descubriste?'},
+    {title:'Día 6: Vende lo que no usas', instructions:'Identifica 5 cosas que no usaste en último año. Foto, publica en Wallapop/Marketplace. Espacio + dinero extra.', reflectionPrompt:'¿Qué pusiste en venta?'},
+    {title:'Día 7: Suma lo ahorrado', instructions:'Calcula cuánto NO gastaste esta semana vs. tu promedio normal. Transfiere ese monto a una cuenta de ahorro.', reflectionPrompt:'¿Cuánto ahorraste?'}
+  ],
+  initialItems:['Cero comida fuera de casa','Cero compras impulsivas','Cancelar suscripción sin uso','Llevar termo en lugar de comprar café','No abrir apps de compras','Pagar solo en efectivo (siente el gasto)','Dormir antes de comprar (regla 24h)','Anotar cada gasto'],
+  journalPrompts:['¿Cuándo compro impulsivamente? ¿Qué emoción busco?','¿Qué creencia tengo sobre el dinero?','¿En qué gastos siento culpa después?','¿Qué quiero hacer con el dinero ahorrado?','¿Cómo era el dinero en mi familia de origen?']
+},
+
+{
+  id:'tpl-deudas', name:'Salir de Deudas',
+  types:['roadmap','checklist','flashcards','faq'],
+  niche:'deudas, libertad financiera, plan de pago', category:'Finanzas', subcategory:'Deudas',
+  description:'Plan paso a paso para eliminar tus deudas usando el método bola de nieve o avalancha.',
+  icon:'🧗', primaryColor:'#dc2626', secondaryColor:'#fecaca', bgColor:'#0e0e0e',
+  headerGradient:'linear-gradient(135deg,#dc2626,#fecaca)',
+  roadmapSteps:[
+    {title:'Paso 1: Lista todas tus deudas', description:'Tarjetas, préstamos, deudas familiares. Anota: monto, interés, pago mínimo. La claridad es paso 1.'},
+    {title:'Paso 2: Construye fondo de emergencia mini', description:'Ahorra primero $1000 (o equivalente local) ANTES de atacar deudas. Sin esto, cualquier imprevisto te endeuda más.'},
+    {title:'Paso 3: Elige método: Bola de nieve o avalancha', description:'Bola de nieve: ataca la deuda más PEQUEÑA primero (motivación). Avalancha: ataca la de MAYOR interés (más eficiente).'},
+    {title:'Paso 4: Paga mínimos en todas + extra en la elegida', description:'Mantén mínimos para no caer en mora. Todo el dinero extra va a la deuda objetivo hasta liquidar.'},
+    {title:'Paso 5: Reduce gastos al máximo', description:'Cancela suscripciones, cocina todo, transporte público, cero compras innecesarias. Esto es temporal.'},
+    {title:'Paso 6: Aumenta ingresos', description:'Ventas de cosas no usadas, freelance, segundo trabajo, vender skills. Cada euro extra acelera la salida.'},
+    {title:'Paso 7: Negocia intereses', description:'Llama a tus tarjetas y pide reducción de interés. Si llevas tiempo siendo cliente, suelen ceder.'},
+    {title:'Paso 8: Liquida y celebra', description:'Cada deuda liquidada es una victoria. Marca el hito visualmente. La sensación es adictiva, te impulsa a seguir.'}
+  ],
+  initialItems:['Lista total de deudas con interés y monto','Fondo emergencia mini ($1000)','Método elegido (bola/avalancha)','Pagos mínimos al día (sin mora)','Presupuesto del mes con extra para deuda','Ingreso extra mensual identificado','Llamada a tarjetas para negociar interés','Cero deuda nueva durante el plan'],
+  cards:[
+    {front:'Bola de nieve', back:'Atacas la deuda MENOR primero. Pagas extra ahí, mínimos en el resto. Liquidas → sigues con la siguiente. Motivación alta.'},
+    {front:'Avalancha', back:'Atacas la deuda con MAYOR interés primero. Matemáticamente más eficiente. Menos motivación a corto plazo.'},
+    {front:'Pago mínimo', back:'Pagar solo el mínimo en tarjetas te tendrá pagando 20+ años. La mayor parte va al interés, no al capital.'},
+    {front:'Consolidación de deuda', back:'Unir varias deudas en un solo préstamo de menor interés. Útil pero solo si no generas más deuda nueva.'},
+    {front:'Mora', back:'No pagar a tiempo. Genera intereses adicionales y daña tu historial crediticio. Evítala a toda costa.'},
+    {front:'Tasa anual (TAE)', back:'Interés total que pagas al año (incluye comisiones). Compara siempre TAE, no solo "interés mensual".'},
+    {front:'Capital vs interés', back:'Capital: lo que pediste. Interés: lo que cobra el banco. Tus pagos primero cubren interés, luego capital.'},
+    {front:'Refinanciación', back:'Cambiar las condiciones de un préstamo (plazo, interés). Puede ayudar pero a veces alarga la deuda total.'}
+  ],
+  faqItems:[
+    {q:'¿Bola de nieve o avalancha?', a:'Si necesitas motivación: bola. Si eres muy disciplinado/a: avalancha. La mejor es la que te hace seguir.'},
+    {q:'¿Debo ahorrar o pagar deudas?', a:'Primero fondo emergencia mini ($1000). Luego enfoca todo en deuda. Después fondo emergencia completo (3-6 meses).'},
+    {q:'¿Cancelo tarjetas al pagarlas?', a:'No necesariamente. Cerrar tarjetas afecta tu score. Mejor déjalas activas pero no las uses.'},
+    {q:'¿Cuánto tarda salir de deudas?', a:'Depende del monto y tu capacidad de pago extra. Plan típico: 18-36 meses. Lo importante es empezar y no parar.'},
+    {q:'¿Y si pierdo el trabajo a mitad?', a:'Por eso primero el fondo emergencia mini. Si ocurre, pagas mínimos y enfocas en sobrevivir hasta nuevo ingreso.'},
+    {q:'¿Es legal negociar con bancos?', a:'Totalmente. Llama y pide quita o renegociación. Si llevas tiempo pagando, suelen aceptar.'}
+  ]
+},
+
+{
+  id:'tpl-presupuesto', name:'Presupuesto Inteligente',
+  types:['checklist','planificador','flashcards','faq'],
+  niche:'presupuesto, control de gastos, finanzas', category:'Finanzas', subcategory:'Presupuesto',
+  description:'Crea y mantén un presupuesto que realmente funcione usando el método 50/30/20.',
+  icon:'📊', primaryColor:'#1e40af', secondaryColor:'#93c5fd', bgColor:'#0e0e0e',
+  headerGradient:'linear-gradient(135deg,#1e40af,#93c5fd)',
+  initialItems:['Listar todos los ingresos del mes','Categorizar gastos: necesidades / deseos / ahorro','50% necesidades (techo, comida, transporte)','30% deseos (ocio, hobbies, restaurantes)','20% ahorro e inversión','Anotar cada gasto en app o cuaderno','Revisar presupuesto cada semana','Ajustar al final del mes según realidad'],
+  initialTasks:['Día 1: Calcular ingreso neto mensual','Día 2: Sumar gastos fijos (renta, luz, internet)','Día 3: Calcular promedio gastos variables (3 meses)','Día 4: Asignar % según método 50/30/20','Día 5: Configurar app de control (YNAB, Fintonic)','Día 7: Primera revisión semanal','Día 14: Ajuste de medio mes','Día 30: Cierre y planificar siguiente mes'],
+  cards:[
+    {front:'Método 50/30/20', back:'50% necesidades, 30% deseos, 20% ahorro/inversión. Equilibrio entre vivir hoy y construir mañana.'},
+    {front:'Gasto fijo vs variable', back:'Fijo: igual cada mes (renta, internet). Variable: cambia (comida, gasolina). Los variables son donde puedes recortar.'},
+    {front:'Ingreso neto', back:'Lo que te queda después de impuestos y deducciones. Es lo que realmente puedes presupuestar.'},
+    {front:'Pago a uno mismo primero', back:'Apenas cobras, transfiere ahorro a cuenta separada. Lo que queda es lo que puedes gastar. Truco psicológico clave.'},
+    {front:'Sobre/cuenta por categoría', back:'Asigna dinero específico a cada categoría. Cuando se acaba, se acaba. Gran disciplina.'},
+    {front:'Fondo emergencia', back:'3-6 meses de gastos esenciales en cuenta líquida. Te protege de imprevistos sin endeudarte.'},
+    {front:'Inflación silenciosa', back:'Gastos pequeños que crecen sin notar: suscripciones, café diario, deliveries. Suman cientos al mes.'},
+    {front:'Presupuesto base cero', back:'Cada euro tiene una asignación específica antes de empezar el mes. Ingresos - gastos = 0 (todo asignado).'}
+  ],
+  faqItems:[
+    {q:'¿Y si mis ingresos son irregulares?', a:'Calcula promedio de últimos 6-12 meses. Presupuesta sobre el ingreso más bajo. Lo extra va a ahorro/deuda.'},
+    {q:'¿Qué app me recomiendas?', a:'YNAB (paga, muy completa), Fintonic (gratis, España), Mint, o simplemente Excel. La mejor es la que usarás.'},
+    {q:'No puedo ahorrar 20%, ¿qué hago?', a:'Empieza con 5%. Lo importante es el hábito, no el monto. Cuando reduces gastos o subes ingresos, sube el %.'},
+    {q:'¿Debo presupuestar gastos pequeños?', a:'Sí, ahí se va el dinero sin notar. Asigna una categoría "varios" si te abruma detallar todo.'},
+    {q:'Mi pareja no quiere presupuestar', a:'Empieza solo/a. Cuando vea resultados, se sumará. Conversen sobre metas comunes, no sobre control.'},
+    {q:'¿Es para siempre?', a:'Los primeros 3-6 meses sí, hasta tener consciencia. Luego puedes aflojar y solo monitorear las grandes categorías.'}
+  ]
+},
+
+{
+  id:'tpl-inversion', name:'Inversión para Principiantes',
+  types:['roadmap','glosario','flashcards','faq'],
+  niche:'inversión, bolsa, fondos indexados', category:'Finanzas', subcategory:'Inversión',
+  description:'Empieza a invertir desde cero con conceptos claros y un plan simple a largo plazo.',
+  icon:'📈', primaryColor:'#0e7490', secondaryColor:'#67e8f9', bgColor:'#0e0e0e',
+  headerGradient:'linear-gradient(135deg,#0e7490,#67e8f9)',
+  roadmapSteps:[
+    {title:'Paso 1: Salud financiera primero', description:'NO inviertas si tienes deudas de alto interés (>8%) o sin fondo de emergencia. Resuelve eso antes.'},
+    {title:'Paso 2: Define tu horizonte', description:'¿Inviertes para 5, 10, 30 años? A más tiempo, más renta variable. A menos tiempo, más conservador.'},
+    {title:'Paso 3: Define tu perfil de riesgo', description:'¿Aguantas ver tu cartera bajar 30% sin vender? Si no, empieza con perfil conservador.'},
+    {title:'Paso 4: Abre cuenta en bróker', description:'Brokers populares en español: Renta4, ING Direct, Indexa Capital, Trade Republic. Compara comisiones.'},
+    {title:'Paso 5: Empieza con fondos indexados', description:'Lo más simple y estadísticamente mejor para principiantes. Diversificación automática y bajas comisiones.'},
+    {title:'Paso 6: Aporta sistemáticamente (DCA)', description:'Cantidad fija mensual, invertir siempre el día X. Elimina decidir cuándo entrar. Funciona mejor a largo plazo.'},
+    {title:'Paso 7: NO mires todos los días', description:'La bolsa baja. Sube. Repite. Mira tu cartera 1 vez al mes máximo. Pánico = mala decisión.'},
+    {title:'Paso 8: Aumenta aporte con cada subida de sueldo', description:'Pagarte primero a ti mismo crece tu patrimonio. La constancia bate al intento de "cazar el momento".'}
+  ],
+  glossaryTerms:[
+    {term:'Acción', def:'Parte de una empresa. Si compras 1 acción de Apple, eres dueño/a de una mini-fracción de Apple.'},
+    {term:'Bono', def:'Préstamo que haces a un gobierno o empresa. Te devuelven con interés. Más estable que acciones.'},
+    {term:'ETF', def:'Fondo cotizado. Compras una cesta de muchas acciones con una sola operación.'},
+    {term:'Fondo indexado', def:'Replica un índice (ej: S&P 500). Bajas comisiones, diversificación automática. Recomendado para principiantes.'},
+    {term:'DCA (Dollar Cost Averaging)', def:'Aporte regular fijo (mensual). Compras a precio promedio. Reduce riesgo de comprar en pico.'},
+    {term:'Diversificación', def:'No poner todos los huevos en una canasta. Reparte entre sectores, países, tipos de activo.'},
+    {term:'Volatilidad', def:'Cuánto sube/baja un activo. Más alta = más riesgo y más potencial.'},
+    {term:'Interés compuesto', def:'Interés sobre interés. La 8ª maravilla del mundo (Einstein). Por eso empezar joven importa tanto.'},
+    {term:'Rentabilidad histórica', def:'Lo que ha rentado en el pasado. Bolsa global: 7-10% anual histórico. NO garantiza futuro.'},
+    {term:'Comisión TER', def:'Total Expense Ratio. % anual que cobra un fondo. Busca menos de 0.3% en indexados.'}
+  ],
+  cards:[
+    {front:'¿Cuánto necesito para empezar?', back:'Desde 50€ al mes en fondos indexados. No necesitas miles. Lo importante es empezar y ser constante.'},
+    {front:'¿Mejor activo o pasivo?', back:'90% de fondos activos pierden contra el índice a 10 años. Para principiantes: indexados (pasivos) son mejor opción.'},
+    {front:'Regla del 72', back:'Divide 72 entre tu rentabilidad anual = años para duplicar tu inversión. Al 7%: 10 años. Al 10%: 7 años.'},
+    {front:'Asignación clásica', back:'(100 - tu edad)% en renta variable. Ej: 30 años → 70% acciones, 30% bonos. Ajusta según riesgo.'},
+    {front:'Cripto: ¿sí o no?', back:'Si decides, máximo 5-10% de cartera. Alta volatilidad, alto riesgo. Nunca dinero que necesites en corto plazo.'},
+    {front:'Mercado bajista', back:'Caída de 20%+ desde máximos. Suceden cada 5-10 años. NO vendas. Mantén el plan. Es cuando se compra barato.'}
+  ],
+  faqItems:[
+    {q:'¿Es buen momento para entrar?', a:'A largo plazo: siempre. Nadie predice el corto plazo. Empieza con DCA y olvida el "timing perfecto".'},
+    {q:'¿Cuánto puedo perder?', a:'A corto plazo, mucho (40%+ en crash). A largo plazo (10+ años), históricamente la bolsa global gana.'},
+    {q:'¿Hacienda?', a:'Pagas impuestos al vender (ganancia patrimonial). En España: 19-28% según tramos. Fondos pueden traspasarse sin tributar.'},
+    {q:'¿Necesito un asesor?', a:'No para empezar. Roboadvisors (Indexa, MyInvestor) ofrecen carteras automatizadas a bajo coste.'},
+    {q:'¿Qué pasa si quiebra el broker?', a:'Tus activos están a tu nombre, no del broker. Aún si quiebra, los recuperas. Garantía de inversiones cubre 100k€.'}
+  ]
+},
+
+{
+  id:'tpl-libertad', name:'Libertad Financiera',
+  types:['roadmap','tracker','diario','afirmaciones'],
+  niche:'libertad financiera, FIRE, independencia económica', category:'Finanzas', subcategory:'Libertad',
+  description:'Plan a largo plazo para alcanzar independencia financiera y vivir según tus términos.',
+  icon:'🦅', primaryColor:'#0c4a6e', secondaryColor:'#7dd3fc', bgColor:'#0e0e0e',
+  headerGradient:'linear-gradient(135deg,#0c4a6e,#7dd3fc)',
+  trackerHabit:'Hoy ahorré/invertí algo hacia mi libertad financiera',
+  roadmapSteps:[
+    {title:'Fase 1: Estabilidad', description:'Sin deudas malas, fondo emergencia 6 meses, presupuesto controlado. Base para construir.'},
+    {title:'Fase 2: Seguridad', description:'Inversiones que cubren gastos básicos si pierdes empleo. Plan B activo.'},
+    {title:'Fase 3: Flexibilidad', description:'Patrimonio que te permite sabbatical o cambio de carrera sin estrés.'},
+    {title:'Fase 4: Independencia', description:'Inversiones generan tu nivel de vida actual. Trabajar es opción, no obligación.'},
+    {title:'Fase 5: Abundancia', description:'Tu patrimonio crece más rápido que lo que gastas. Libertad total + capacidad de impacto.'},
+    {title:'Cálculo FIRE', description:'Multiplica tus gastos anuales × 25. Ese es tu número FIRE (regla 4%). Ej: 24k anuales → 600k para ser libre.'},
+    {title:'Tasas de ahorro y tiempo', description:'Ahorrando 25%: 32 años a libertad. 50%: 17 años. 75%: 7 años. La tasa de ahorro es lo que más importa.'},
+    {title:'Aumenta ingresos, no solo recortes', description:'Hay un techo en cuánto puedes recortar. No hay techo en cuánto puedes ganar. Invierte en habilidades.'}
+  ],
+  affirmations:['Soy capaz de construir mi libertad','Cada euro que invierto trabaja para mí','Soy disciplinado/a y constante','El tiempo es mi mejor aliado','Mi futuro yo me lo agradecerá','Vivo por debajo de mis posibilidades con orgullo','El dinero es una herramienta, no un fin','Estoy construyendo opciones, no solo riqueza','Mi patrimonio crece silenciosamente','La libertad financiera es para mí'],
+  journalPrompts:['¿Qué significa libertad para mí, más allá del dinero?','Si no necesitara el dinero, ¿qué haría con mi tiempo?','¿Cuál es mi número FIRE? ¿Cómo me hace sentir saberlo?','¿Qué creencias sobre el dinero me sabotean?','¿Qué estilo de vida es realmente esencial para mí?','¿De qué me arrepentiría a los 80 años de no haber hecho?','¿Qué pequeña acción puedo tomar HOY hacia mi libertad?']
+},
+
+// ═══════════════ NEGOCIOS Y MARKETING ═══════════════
+
+{
+  id:'tpl-infoproducto', name:'Lanzar tu Infoproducto',
+  types:['roadmap','checklist','planificador','faq'],
+  niche:'infoproducto, curso online, emprendimiento digital', category:'Negocios', subcategory:'Infoproductos',
+  description:'Plan paso a paso para crear, lanzar y vender tu primer infoproducto digital.',
+  icon:'🚀', primaryColor:'#2563eb', secondaryColor:'#93c5fd', bgColor:'#0e0e0e',
+  headerGradient:'linear-gradient(135deg,#2563eb,#93c5fd)',
+  roadmapSteps:[
+    {title:'Paso 1: Valida la idea', description:'Habla con 10 personas de tu audiencia. ¿Pagarían por esto? Si no obtienes 3 "sí claros", pivota.'},
+    {title:'Paso 2: Define la transformación', description:'¿De qué punto A llevas al cliente al punto B? La promesa clara vende, las features no.'},
+    {title:'Paso 3: Crea el esqueleto', description:'Esquema de módulos o capítulos. No es perfecto, es claro. 5-8 módulos para un curso típico.'},
+    {title:'Paso 4: Graba el MVP', description:'Producción básica primero. Audio claro > video perfecto. Siempre mejorarás después con feedback real.'},
+    {title:'Paso 5: Crea la página de ventas', description:'Una sola página. Estructura: problema → solución → beneficios → quién eres → prueba social → precio → FAQ → CTA.'},
+    {title:'Paso 6: Lista de espera', description:'Antes del lanzamiento, construye lista con contenido gratis. Conversión 5x mayor que tráfico frío.'},
+    {title:'Paso 7: Lanzamiento', description:'Ventana de venta cerrada (7-10 días). Urgencia real + bonos por acción rápida. Email diario en ventana.'},
+    {title:'Paso 8: Iterar con feedback', description:'Pregunta a compradores qué falta, qué sobra. Lanza v2 mejorada. Los infoproductos son ciclos, no one-shot.'}
+  ],
+  initialItems:['Audiencia de mínimo 500 seguidores','Tema validado con entrevistas','Promesa clara en 1 frase','Plataforma de venta (Hotmart, Teachable, Gumroad)','Página de ventas escrita','Email automation básico','Pasarela de pago funcional','Plan de contenido de prelanzamiento (2-4 semanas)'],
+  initialTasks:['Sem 1: Validar idea y encuestar','Sem 2: Esqueleto y guion','Sem 3-4: Grabación de contenido','Sem 5: Montar plataforma y página ventas','Sem 6: Prelanzamiento y lista espera','Sem 7: Lanzamiento','Sem 8: Entrega + feedback'],
+  faqItems:[
+    {q:'¿Cuántos seguidores necesito?', a:'500 reales y comprometidos valen más que 50k fríos. Validación de idea > tamaño de audiencia.'},
+    {q:'¿Qué plataforma usar?', a:'Hotmart (España/LATAM), Gumroad (simple), Teachable/Kajabi (cursos grandes), Systeme.io (todo-en-uno barato).'},
+    {q:'¿Qué precio poner?', a:'Mínimo 50€ para que sea negocio. Los baratos atraen peores clientes. Mejor resolver problema caro a pocos.'},
+    {q:'¿Cuánto se tarda en crear?', a:'Primer MVP: 4-8 semanas. No busques perfección. Perfección después del primer lanzamiento.'},
+    {q:'¿Y si no vendo nada?', a:'Problema 1: audiencia no calificada. Problema 2: promesa débil. Problema 3: falta prueba social. Itera y relánza.'}
+  ]
+},
+
+{
+  id:'tpl-freelance', name:'Primer Cliente Freelance',
+  types:['roadmap','checklist','flashcards'],
+  niche:'freelance, cliente, trabajo independiente', category:'Negocios', subcategory:'Freelance',
+  description:'De cero a tu primer cliente pagando en 30 días, con servicios que sí se venden.',
+  icon:'💼', primaryColor:'#7c2d12', secondaryColor:'#fed7aa', bgColor:'#0e0e0e',
+  headerGradient:'linear-gradient(135deg,#7c2d12,#fed7aa)',
+  roadmapSteps:[
+    {title:'Paso 1: Elige 1 servicio específico', description:'NO "diseño gráfico". SÍ "diseño Reels para nutricionistas". Nicho + servicio = cliente claro.'},
+    {title:'Paso 2: Crea portafolio aunque no tengas clientes', description:'3-5 trabajos conceptuales. Inventa briefs para marcas reales. Demuestra habilidad, no solo lista.'},
+    {title:'Paso 3: Precio claro', description:'Paquete cerrado: "3 Reels al mes, 300€". Evita cotizar por hora al principio.'},
+    {title:'Paso 4: Prospección directa', description:'Lista de 50 clientes ideales. Mensaje personalizado a cada uno. Ofrece algo de valor antes de pedir.'},
+    {title:'Paso 5: Primera propuesta', description:'Email/DM con: problema que ves, solución concreta, resultado esperado, precio, siguiente paso.'},
+    {title:'Paso 6: Cierra la primera venta', description:'No tengas miedo de cerrar. Agenda una llamada. Escucha más que hablas. Cierra con plazo.'},
+    {title:'Paso 7: Entrega por encima', description:'Primer cliente = testimonio crucial. Entrega antes, comunica más, supera expectativas.'},
+    {title:'Paso 8: Pide testimonio y referidos', description:'Apenas entregas, pide testimonio. "¿Conoces a alguien que necesite esto?" Los mejores clientes llegan por referidos.'}
+  ],
+  initialItems:['Servicio específico definido','Portafolio público (web, Behance, Instagram)','Precio paquete claro','Lista de 50 prospects','10 mensajes de prospección enviados por día','Perfil profesional (LinkedIn actualizado)','Contrato básico tipo','Facturación (autónomo, freelance tax)'],
+  cards:[
+    {front:'Scope creep', back:'Cliente pide más de lo acordado sin pagar extra. Soluciónalo con contrato claro y "eso está fuera del scope, cotizo aparte".'},
+    {front:'Discovery call', back:'Primera llamada con prospect. Escucha problemas, no vendas. Vendes en la propuesta, no en la call.'},
+    {front:'Retainer', back:'Pago mensual fijo por trabajo continuo. Más estable que proyectos sueltos.'},
+    {front:'Red flag de cliente', back:'Regatea desde el primer mensaje. Exige urgencia sin pagar rush. No acepta contrato. Trabajo previo impago.'},
+    {front:'Anticipo / deposit', back:'50% al firmar, 50% al entregar. Estándar. Nunca empieces sin al menos 30% pagado.'},
+    {front:'Nicho vertical', back:'Especialización en tipo de cliente (nutricionistas, abogados, cafeterías). Menos competencia, precios más altos.'}
+  ]
+},
+
+{
+  id:'tpl-ventas', name:'Framework de Ventas',
+  types:['flashcards','roadmap','glosario','faq'],
+  niche:'ventas, cierre, persuasión ética', category:'Negocios', subcategory:'Ventas',
+  description:'Metodología de ventas consultiva: vender sin vender, escuchar más que hablar.',
+  icon:'🤝', primaryColor:'#b45309', secondaryColor:'#fcd34d', bgColor:'#0e0e0e',
+  headerGradient:'linear-gradient(135deg,#b45309,#fcd34d)',
+  roadmapSteps:[
+    {title:'Paso 1: Prospectar correctamente', description:'Cliente ideal claro. Calidad > cantidad. 10 prospects bien calificados > 100 fríos.'},
+    {title:'Paso 2: Calificar (BANT)', description:'Budget, Authority, Need, Timing. Si no califica, no pierdas tiempo.'},
+    {title:'Paso 3: Descubrir dolor profundo', description:'3 niveles: superficial → real → impacto emocional. Pregunta hasta llegar al dolor emocional del problema.'},
+    {title:'Paso 4: Presentar solución como puente', description:'Del dolor al resultado deseado, tu servicio es el puente. No vendes features, vendes transformación.'},
+    {title:'Paso 5: Manejar objeciones', description:'Precio, tiempo, urgencia. Usa "sí, y..." en lugar de "pero...". Entiende antes de responder.'},
+    {title:'Paso 6: Cierre con compromiso', description:'Pregunta de cierre directa: "¿Qué necesitas para empezar hoy?" Silencio después. Primera persona que habla, pierde.'},
+    {title:'Paso 7: Post-venta', description:'La venta empieza después de firmar. Onboarding claro, comunicación proactiva, underpromise/overdeliver.'}
+  ],
+  glossaryTerms:[
+    {term:'SPIN Selling', def:'Situation, Problem, Implication, Need-payoff. Framework de preguntas para descubrir dolor.'},
+    {term:'BANT', def:'Budget, Authority, Need, Timing. Criterios para calificar si un prospect vale la pena.'},
+    {term:'Objeción', def:'Resistencia del prospect. No es un "no", es un "no me has convencido aún".'},
+    {term:'Follow up', def:'Seguimiento tras la primera interacción. 80% de ventas se cierran en el follow up 5-12.'},
+    {term:'Pipeline', def:'Prospects en cada etapa del proceso de venta. Te muestra cuánto cerrarás este mes.'},
+    {term:'Cierre por alternativa', def:'"¿Prefieres empezar el lunes o miércoles?" Asume la venta, elimina la opción de "no".'},
+    {term:'Prueba social', def:'Casos, testimonios, logos de clientes. Reduce riesgo percibido del prospect.'},
+    {term:'LTV (Lifetime Value)', def:'Valor total que un cliente aporta. Define cuánto puedes gastar en adquirirlo.'}
+  ],
+  cards:[
+    {front:'"Está caro"', back:'"Entiendo. ¿Comparado con qué? ¿Y cuánto te está costando no resolverlo hoy?"'},
+    {front:'"Lo tengo que pensar"', back:'"Claro. ¿Qué específicamente necesitas resolver para decidir?"'},
+    {front:'"No tengo presupuesto"', back:'"Si tuvieras el presupuesto, ¿es lo que necesitas? Veamos opciones que funcionen para ambos."'},
+    {front:'"No es el momento"', back:'"¿Qué tendría que pasar para que sea el momento? ¿Cuánto te cuesta esperar?"'},
+    {front:'"Quiero comparar opciones"', back:'"Perfecto. ¿Qué criterios son clave en tu decisión? Te ayudo a compararnos."'}
+  ],
+  faqItems:[
+    {q:'¿Cómo vendo sin sentirme vendedor agresivo?', a:'Vende escuchando. Venta consultiva: más preguntas, menos discurso. Si tu solución ayuda, no estás presionando.'},
+    {q:'¿Qué hago si no cierro ninguna venta?', a:'Revisa: calificación (prospects correctos), descubrimiento (profundidad del dolor), pedido (¿pides el cierre claramente?).'}
+  ]
+},
+
+{
+  id:'tpl-copywriting', name:'Copywriting que Vende',
+  types:['flashcards','glosario','checklist','reto'],
+  niche:'copywriting, redacción persuasiva, escritura ventas', category:'Negocios', subcategory:'Copywriting',
+  description:'Aprende los frameworks de copywriting que convierten lectores en compradores.',
+  icon:'✍️', primaryColor:'#831843', secondaryColor:'#fbcfe8', bgColor:'#0e0e0e',
+  headerGradient:'linear-gradient(135deg,#831843,#fbcfe8)',
+  cards:[
+    {front:'AIDA', back:'Atención, Interés, Deseo, Acción. Framework clásico de toda pieza persuasiva.'},
+    {front:'PAS', back:'Problema, Agitar, Solución. Identificas el dolor, lo amplificas, ofreces salida.'},
+    {front:'Headline', back:'Lo más importante. 80% del tiempo se invierte aquí. Si falla, nadie lee el resto.'},
+    {front:'Lead (entrada)', back:'Primer párrafo. Engancha o pierdes al lector. Comienza con conflicto, dato impactante o pregunta.'},
+    {front:'CTA (Call to Action)', back:'Acción específica que pides. Verbo + beneficio. "Descarga gratis" mejor que "Click aquí".'},
+    {front:'Storytelling', back:'Historia con conflicto + transformación. Conecta emocionalmente, vende racionalmente.'},
+    {front:'Beneficios vs features', back:'Feature: lo que tiene. Beneficio: lo que cambia en la vida del cliente. Vende beneficios.'},
+    {front:'Objeciones preventivas', back:'Anticipa dudas y resuélvelas en el copy. "Sé que estás pensando..." muestra que conoces al lector.'},
+    {front:'Urgencia genuina', back:'Plazo real, stock limitado real. Falsa urgencia mata confianza a largo plazo.'},
+    {front:'Voz del cliente', back:'Usa palabras EXACTAS de tu cliente. Encuestas, reseñas, comentarios. Habla su idioma.'}
+  ],
+  glossaryTerms:[
+    {term:'Copy', def:'Texto escrito para persuadir o vender. Diferente de "contenido" (informativo).'},
+    {term:'Long-form sales page', def:'Página de ventas larga (3000+ palabras). Funciona para productos caros y complejos.'},
+    {term:'Hook', def:'Gancho. Las primeras 3-5 palabras o segundos. Decide si te leen o se van.'},
+    {term:'Bullet (fascinación)', def:'Puntos persuasivos en lista. Cada uno promete un beneficio o curiosidad.'},
+    {term:'Garantía', def:'Reduce riesgo percibido. "30 días devolución sin preguntas" aumenta conversión 30%+.'},
+    {term:'P.S.', def:'Postdata al final. Lo segundo más leído tras el headline. Úsalo para reforzar oferta o urgencia.'},
+    {term:'Emoción + lógica', def:'Compramos con emoción, justificamos con lógica. Tu copy debe activar ambas.'},
+    {term:'AB testing', def:'Probar dos versiones del mismo copy. Mide qué convierte más. Mejora continua.'}
+  ],
+  initialItems:['Investigar avatar (encuestas, reseñas)','Lista de beneficios reales (no features)','3-5 versiones de headline','Lead que enganche en 30 segundos','Bullet points específicos (no genéricos)','Prueba social (testimonios, casos)','CTA claro y único','Garantía o reducción de riesgo'],
+  retoContent:[
+    {title:'Día 1: Headline', instructions:'Escribe 25 versiones del mismo headline. Las primeras 10 son malas. Las últimas 5 brillan. Úsalo como práctica diaria.', reflectionPrompt:'¿Cuál te gustó más?'},
+    {title:'Día 2: Reescribir tu propia bio', instructions:'Tu bio de Instagram/LinkedIn. Aplica claridad, especificidad y promesa. ¿Por qué seguirte?', reflectionPrompt:'¿Cómo cambió?'},
+    {title:'Día 3: Email de lanzamiento', instructions:'Escribe el primer email de un lanzamiento ficticio. Solo 1 mensaje, 1 acción. Asunto matters más que cuerpo.', reflectionPrompt:'¿Asunto que elegiste?'},
+    {title:'Día 4: Análisis competencia', instructions:'Estudia 5 sales pages exitosas en tu nicho. Anota: estructura, hooks, palabras de poder. NO copies, identifica patrones.', reflectionPrompt:'¿Qué patrón viste?'},
+    {title:'Día 5: Reescribir un copy aburrido', instructions:'Toma cualquier descripción de producto aburrida (Amazon, web). Reescríbela aplicando todo lo aprendido.', reflectionPrompt:'¿Qué cambió más?'},
+    {title:'Día 6: Voz del cliente', instructions:'Lee 30 reseñas/comentarios de clientes ideales. Anota frases textuales. Esa es tu próxima copy.', reflectionPrompt:'¿Qué frase te impactó?'},
+    {title:'Día 7: Lanza algo', instructions:'Aplica todo a algo real: tu portfolio, oferta freelance, post de venta. La práctica supera la teoría.', reflectionPrompt:'¿Qué reacción tuvo?'}
+  ]
+},
+
+{
+  id:'tpl-seo', name:'SEO desde Cero',
+  types:['roadmap','checklist','glosario','flashcards'],
+  niche:'SEO, posicionamiento Google, tráfico orgánico', category:'Negocios', subcategory:'SEO',
+  description:'Aprende SEO desde fundamentos hasta ranking en Google con un plan paso a paso.',
+  icon:'🔍', primaryColor:'#1d4ed8', secondaryColor:'#bfdbfe', bgColor:'#0e0e0e',
+  headerGradient:'linear-gradient(135deg,#1d4ed8,#bfdbfe)',
+  roadmapSteps:[
+    {title:'Paso 1: Investigación de palabras clave', description:'Usa Google Keyword Planner, Ahrefs, Ubersuggest. Busca volumen + intención + dificultad baja al inicio.'},
+    {title:'Paso 2: Análisis de competencia', description:'Estudia top 10 resultados de tu palabra clave. ¿Qué responden? ¿Qué les falta? Ahí está tu oportunidad.'},
+    {title:'Paso 3: Optimización on-page', description:'Title, meta description, H1, H2s, URL, alt text imágenes, enlaces internos. Lo básico que muchos ignoran.'},
+    {title:'Paso 4: Contenido excepcional', description:'Más completo, mejor estructurado, más útil que la competencia. Google premia el mejor recurso, no el más largo.'},
+    {title:'Paso 5: Velocidad y experiencia', description:'Core Web Vitals: LCP, FID, CLS. PageSpeed Insights gratis. Hosting bueno + imágenes optimizadas.'},
+    {title:'Paso 6: Backlinks de calidad', description:'Guest posts, menciones en medios, recursos enlazables. 1 link de medio top vale más que 100 de directorios.'},
+    {title:'Paso 7: SEO técnico', description:'Sitemap.xml, robots.txt, schema markup, HTTPS, mobile friendly. Search Console te dice si fallas.'},
+    {title:'Paso 8: Mide e itera', description:'Search Console (Google) + GA4 + tracking de posiciones. Mide cada 30 días. Ajusta lo que no funciona.'}
+  ],
+  glossaryTerms:[
+    {term:'SERP', def:'Search Engine Results Page. Página de resultados de Google.'},
+    {term:'Keyword', def:'Palabra o frase que busca el usuario. Tu objetivo es rankear para las relevantes.'},
+    {term:'Long tail', def:'Keyword larga y específica (4+ palabras). Menos volumen, menos competencia, más conversión.'},
+    {term:'Intención de búsqueda', def:'Por qué busca el usuario: informativa, navegacional, transaccional. Tu contenido debe coincidir.'},
+    {term:'Backlink', def:'Enlace de otra web hacia la tuya. Voto de confianza para Google. Calidad > cantidad.'},
+    {term:'DA / DR', def:'Domain Authority / Rating. Métrica de fuerza de un dominio (Moz / Ahrefs). Más alto = más fácil rankear.'},
+    {term:'On-page SEO', def:'Lo que controlas en tu web: contenido, estructura, optimización técnica.'},
+    {term:'Off-page SEO', def:'Lo que ocurre fuera: backlinks, menciones, autoridad de marca.'},
+    {term:'Cannibalization', def:'Dos páginas tuyas compiten por la misma keyword. Confunde a Google. Fusiónalas.'},
+    {term:'EEAT', def:'Experience, Expertise, Authority, Trust. Lo que Google evalúa para temas YMYL (salud, finanzas).'}
+  ],
+  initialItems:['Google Search Console configurado','Google Analytics 4 instalado','Sitemap.xml enviado','Velocidad <3 segundos','Mobile friendly (test Google)','Imágenes con alt text','Enlaces internos en cada post','Backlink strategy mensual'],
+  cards:[
+    {front:'Title tag óptimo', back:'50-60 caracteres. Incluye keyword principal al inicio. Marca al final. Único por página.'},
+    {front:'Meta description', back:'150-160 caracteres. No es factor ranking pero sí CTR. Incluye keyword + beneficio + CTA.'},
+    {front:'URL ideal', back:'Corta, con keyword, sin números/fechas. /seo-desde-cero mejor que /post-2024-04-15-seo-tutorial.'},
+    {front:'H1 vs H2', back:'H1: uno por página, contiene keyword. H2: estructura del contenido, varios por página.'},
+    {front:'Pillar content', back:'Artículo extenso (3000+ palabras) que cubre tema completo. Atrae enlaces y rankea para múltiples keywords.'},
+    {front:'Featured snippet', back:'Caja destacada arriba de Google. Optimiza con definición clara, listas, tablas. Roba tráfico al #1.'}
+  ]
+},
+
+{
+  id:'tpl-email', name:'Email Marketing',
+  types:['roadmap','flashcards','checklist','glosario'],
+  niche:'email marketing, newsletter, automatización', category:'Negocios', subcategory:'Email',
+  description:'Construye una lista de email rentable desde cero con automatizaciones y secuencias que venden.',
+  icon:'📧', primaryColor:'#0891b2', secondaryColor:'#a5f3fc', bgColor:'#0e0e0e',
+  headerGradient:'linear-gradient(135deg,#0891b2,#a5f3fc)',
+  roadmapSteps:[
+    {title:'Paso 1: Elige plataforma', description:'MailerLite (gratis hasta 1000 subs), ActiveCampaign (más completo), ConvertKit (creators), Beehiiv (newsletters).'},
+    {title:'Paso 2: Lead magnet potente', description:'Algo gratis y específico que tu audiencia desea. PDF, mini-curso, checklist, plantilla. Resuelve un problema concreto.'},
+    {title:'Paso 3: Landing page de captura', description:'Una página, una promesa, un formulario. Conversión típica: 25-50% si lead magnet es bueno.'},
+    {title:'Paso 4: Bienvenida automática (5-7 emails)', description:'Email 1: lead magnet + bienvenida. Email 2-5: tu historia + contenido valioso. Email 6-7: soft pitch.'},
+    {title:'Paso 5: Newsletter regular', description:'Frecuencia consistente: semanal o quincenal. Mejor 1 email espectacular al mes que 4 mediocres.'},
+    {title:'Paso 6: Segmentación', description:'Etiqueta a tus suscriptores por interés/comportamiento. Email relevante = mejor engagement.'},
+    {title:'Paso 7: Lanzamientos por email', description:'Tu lista es tu activo más rentable. Bien construida, vende 5-10x más que redes sociales.'},
+    {title:'Paso 8: Limpieza periódica', description:'Cada 3-6 meses elimina inactivos. Lista limpia = mejor entregabilidad. Calidad > cantidad.'}
+  ],
+  cards:[
+    {front:'Open rate', back:'% de personas que abren tu email. Industria: 15-25%. Si bajas de 15%, revisa asuntos y entregabilidad.'},
+    {front:'Click rate', back:'% que clica en algún link. Industria: 2-5%. Mide cuánto enganchó el contenido.'},
+    {front:'Asunto que abre', back:'Curiosidad + brevedad + personalización. Pregunta, número, beneficio claro. NO mayúsculas ni emojis exagerados.'},
+    {front:'Pre-header', back:'Texto que aparece tras el asunto en bandeja. Complementa, no repite. Refuerza el motivo de abrir.'},
+    {front:'Plain text vs HTML', back:'Plain text se siente personal y entrega mejor. HTML más visual. Para newsletters: plain text gana.'},
+    {front:'Spam triggers', back:'GRATIS!!! Mayúsculas, signos de exclamación múltiples, palabras como "Viagra", "100% garantizado". Evita.'}
+  ],
+  initialItems:['Plataforma email elegida y configurada','Lead magnet creado','Landing page activa','Secuencia de bienvenida (5-7 emails)','Newsletter semanal/quincenal programado','Segmentación por etiquetas','Análisis mensual de métricas','Limpieza trimestral de inactivos'],
+  glossaryTerms:[
+    {term:'Open rate', def:'% de emails abiertos. Mide qué tan buenos son tus asuntos.'},
+    {term:'Click-through rate (CTR)', def:'% de receptores que hicieron click en algún enlace.'},
+    {term:'Bounce rate', def:'% de emails que no llegaron. Hard bounce = email inválido. Limpia regularmente.'},
+    {term:'Unsubscribe rate', def:'% que se borra. Normal: <0.5%. Si sube, revisa frecuencia y relevancia.'},
+    {term:'Lead magnet', def:'Recurso gratis a cambio del email. Mejor un mini-curso específico que un ebook genérico.'},
+    {term:'Tag/Segmento', def:'Etiqueta para clasificar suscriptores. Permite enviar emails relevantes a cada grupo.'},
+    {term:'Automatización', def:'Secuencia de emails programados que se envían según trigger (suscripción, compra, etc).'},
+    {term:'Deliverability', def:'Capacidad de llegar a inbox y no spam. Depende de reputación de remitente y calidad de lista.'}
+  ]
+},
+
+// ═══════════════ EDUCACIÓN ═══════════════
+
+{
+  id:'tpl-ingles-30', name:'Inglés desde Cero',
+  types:['reto','flashcards','glosario','faq'],
+  niche:'inglés, idiomas, aprender inglés', category:'Educación', subcategory:'Idiomas',
+  description:'30 días para construir base sólida en inglés con vocabulario, gramática y práctica diaria.',
+  icon:'🇬🇧', primaryColor:'#1e3a8a', secondaryColor:'#bfdbfe', bgColor:'#0e0e0e',
+  headerGradient:'linear-gradient(135deg,#1e3a8a,#bfdbfe)',
+  retoContent:[
+    {title:'Día 1: Pronunciación básica', instructions:'Vocales del inglés. Hay 12 sonidos vocálicos vs 5 en español. Mira un video de "vowel sounds" y repite cada uno 5 veces.', reflectionPrompt:'¿Qué sonido te costó más?'},
+    {title:'Día 2: 50 palabras esenciales', instructions:'Aprende los 50 sustantivos más usados: water, food, time, day, year, man, woman... Crea oraciones simples con cada uno.', reflectionPrompt:'¿Cuántos pudiste recordar?'},
+    {title:'Día 3: Verbo "to be" en presente', instructions:'I am, you are, he/she/it is, we are, they are. Forma 10 oraciones afirmativas, 5 negativas, 5 preguntas.', reflectionPrompt:'¿Qué te confunde?'},
+    {title:'Día 4: Presente simple', instructions:'I work, you work, he works (tercera persona +s). Estructura: Sujeto + verbo. 15 oraciones sobre tu rutina diaria.', reflectionPrompt:'¿Cómo describes tu día?'},
+    {title:'Día 5: Escuchar 10 min nativo', instructions:'Podcast para principiantes (BBC Learning English, Coffee Break English). Sin subtítulos primero. Luego repite con subs.', reflectionPrompt:'¿Cuánto entendiste?'},
+    {title:'Día 6: Conversación contigo mismo', instructions:'5 minutos hablando solo en inglés. Describe lo que ves. Aunque sea con errores. Romper el bloqueo es clave.', reflectionPrompt:'¿Cómo te sentiste?'},
+    {title:'Día 7: App diaria', instructions:'Instala Duolingo o Babbel. 15 min al día sin falta. La consistencia es 90% del éxito en idiomas.', reflectionPrompt:'¿Qué app elegiste?'}
+  ],
+  cards:[
+    {front:'Hello / Hi', back:'Hola. "Hi" es más informal.'},
+    {front:'Thank you', back:'Gracias. Más formal: "Thanks a lot".'},
+    {front:'I am from Spain', back:'Soy de España. Estructura: Sujeto + verbo + lugar.'},
+    {front:'How are you?', back:'¿Cómo estás? Respuesta clásica: "I\'m fine, thanks. And you?"'},
+    {front:'What\'s your name?', back:'¿Cuál es tu nombre? Respuesta: "My name is..."'},
+    {front:'I don\'t understand', back:'No entiendo. Útil cuando alguien habla rápido.'},
+    {front:'Could you repeat?', back:'¿Podrías repetir? Más amable que "Repeat please".'},
+    {front:'Where is the bathroom?', back:'¿Dónde está el baño? Frase de supervivencia 101.'},
+    {front:'How much is it?', back:'¿Cuánto cuesta? Esencial para viajar.'},
+    {front:'I would like...', back:'Me gustaría... Forma educada de pedir cualquier cosa.'}
+  ],
+  glossaryTerms:[
+    {term:'Phrasal verb', def:'Verbo + preposición que cambia el significado. "Get up" = levantarse. "Look for" = buscar.'},
+    {term:'Idiom', def:'Expresión cuyo significado no es literal. "It\'s raining cats and dogs" = llueve a cántaros.'},
+    {term:'False friend', def:'Palabra que parece igual al español pero significa algo distinto. "Embarrassed" = avergonzado, NO embarazada.'},
+    {term:'Tense (tiempo verbal)', def:'Presente, pasado, futuro. El inglés tiene 12 tiempos verbales. Los más usados: simple present, simple past, present continuous.'},
+    {term:'Article', def:'A/An (indefinido), the (definido). Regla: "an" antes de sonido vocálico (an apple, NOT a apple).'},
+    {term:'Pronoun', def:'I, you, he, she, it, we, they. Sustituyen al sustantivo.'},
+    {term:'Conditional', def:'"Si... entonces". Cuatro tipos. El más usado: First conditional ("If it rains, I will stay home").'}
+  ],
+  faqItems:[
+    {q:'¿Cuánto tiempo para hablar inglés?', a:'15 min/día constante: 1-2 años para nivel B2 (conversación fluida). Sin constancia, nunca.'},
+    {q:'¿Mejor app o profesor?', a:'App para vocabulario y gramática. Profesor (incluso online) para conversación. Combinación es lo mejor.'},
+    {q:'¿Subtítulos en inglés o español?', a:'Empieza con español. Luego inglés. Luego sin subtítulos. Progresión natural.'},
+    {q:'¿Y el acento?', a:'No te obsesiones. La meta es ser entendido, no perfecto. El acento llega con años de práctica.'}
+  ]
+},
+
+{
+  id:'tpl-habitos', name:'Productividad y Hábitos',
+  types:['reto','tracker','checklist','flashcards'],
+  niche:'productividad, hábitos, gestión tiempo', category:'Educación', subcategory:'Productividad',
+  description:'Construye hábitos productivos sostenibles aplicando ciencia conductual y sistemas.',
+  icon:'⚡', primaryColor:'#facc15', secondaryColor:'#fef08a', bgColor:'#0e0e0e',
+  headerGradient:'linear-gradient(135deg,#facc15,#fef08a)',
+  trackerHabit:'Hoy completé mi rutina productiva clave',
+  retoContent:[
+    {title:'Día 1: Identifica los 3 grandes', instructions:'Cada noche, define las 3 tareas más importantes del día siguiente. Si solo logras esas, el día es exitoso.', reflectionPrompt:'¿Cuáles fueron tus 3?'},
+    {title:'Día 2: Time blocking', instructions:'Bloquea horas específicas para tareas. "10-12am: trabajo profundo. 12-1pm: emails." El calendario decide, no el humor.', reflectionPrompt:'¿Cómo te fue?'},
+    {title:'Día 3: Pomodoro', instructions:'25 min trabajo + 5 descanso. Cada 4 ciclos, descanso largo (15 min). Crea sentido de urgencia.', reflectionPrompt:'¿Lograste mantener foco?'},
+    {title:'Día 4: Eat the frog', instructions:'Haz primero la tarea más difícil/temida. Lo demás del día se siente fácil después.', reflectionPrompt:'¿Cuál era tu sapo?'},
+    {title:'Día 5: Single tasking', instructions:'Hoy SOLO una cosa a la vez. Cierra pestañas, silencia notificaciones. La multitarea es ineficiencia disfrazada.', reflectionPrompt:'¿Notas la diferencia?'},
+    {title:'Día 6: Habit stacking', instructions:'Encadena hábitos: "Después de mi café, escribo 30 min". Aprovecha hábitos existentes para construir nuevos.', reflectionPrompt:'¿Qué stack creaste?'},
+    {title:'Día 7: Review semanal', instructions:'Revisa la semana: qué funcionó, qué no, qué ajustar. Sin review no hay mejora real.', reflectionPrompt:'¿Mayor aprendizaje?'}
+  ],
+  initialItems:['Definir 3 tareas top de mañana','Bloque de trabajo profundo (90 min)','Cero notificaciones en bloque profundo','Pausas conscientes (no scroll)','Hidratación y movimiento','Cerrar laptop a hora fija','Review diario 5 min','Review semanal 30 min'],
+  cards:[
+    {front:'Trabajo profundo', back:'Concentración total sin interrupciones. Cal Newport. 2-4h al día son suficientes para gran impacto.'},
+    {front:'Trabajo superficial', back:'Tareas administrativas, emails, reuniones. Necesarias pero no muevan la aguja. Limítalas.'},
+    {front:'Ley de Parkinson', back:'El trabajo se expande para llenar el tiempo asignado. Pon plazos cortos para forzar eficiencia.'},
+    {front:'Regla de los 2 minutos', back:'Si toma menos de 2 min, hazlo ahora. Evita acumular pendientes triviales.'},
+    {front:'Inbox zero', back:'Procesar bandeja a vacío 1-2 veces/día. NO vivir en email. Decide: responder, archivar, agendar, eliminar.'},
+    {front:'Habit stacking', back:'Anclar hábito nuevo a uno existente. "Después de X, haré Y". Aumenta probabilidad de éxito.'},
+    {front:'2 minute rule (hábitos)', back:'Reduce hábito a 2 min para empezar. "Leer" → "abrir el libro". Después es fácil seguir.'},
+    {front:'Atomic habits', back:'Mejora 1% diaria = 37x al año. Pequeños cambios consistentes vencen grandes esfuerzos puntuales.'}
+  ]
+},
+
+{
+  id:'tpl-escritura-30', name:'Escritura Creativa',
+  types:['reto','diario','flashcards'],
+  niche:'escritura creativa, creatividad, contar historias', category:'Educación', subcategory:'Escritura',
+  description:'30 días de prompts creativos para desbloquear tu voz como escritor/a.',
+  icon:'📝', primaryColor:'#7c3aed', secondaryColor:'#ddd6fe', bgColor:'#0e0e0e',
+  headerGradient:'linear-gradient(135deg,#7c3aed,#ddd6fe)',
+  retoContent:[
+    {title:'Día 1: Página en blanco', instructions:'Escribe lo que sea durante 15 minutos sin parar. No edites. No juzgues. Free writing despeja la mente.', reflectionPrompt:'¿Qué descubriste?'},
+    {title:'Día 2: Describe un objeto', instructions:'Elige un objeto cotidiano y descríbelo en 200 palabras como si nunca lo hubieras visto. Ojo nuevo = creatividad.', reflectionPrompt:'¿Qué objeto elegiste?'},
+    {title:'Día 3: Diálogo', instructions:'Escribe una conversación de 1 página entre dos personajes que se acaban de conocer. Solo diálogo, sin descripciones.', reflectionPrompt:'¿Cómo se sintió?'},
+    {title:'Día 4: Memoria sensorial', instructions:'Elige un recuerdo y descríbelo enfocándote en los 5 sentidos: vista, oído, olfato, tacto, gusto.', reflectionPrompt:'¿Qué sentido fue más fuerte?'},
+    {title:'Día 5: Cambia el final', instructions:'Toma una historia conocida (cuento, película) y reescribe los últimos 200 palabras con un final completamente diferente.', reflectionPrompt:'¿Qué historia elegiste?'},
+    {title:'Día 6: Carta al pasado', instructions:'Escribe una carta a tu yo de hace 10 años. ¿Qué le dirías? ¿Qué le advertirías? ¿Qué celebrarías?', reflectionPrompt:'¿Qué sentiste?'},
+    {title:'Día 7: Microcuento (100 palabras)', instructions:'Cuenta una historia completa en exactamente 100 palabras: principio, conflicto, final. Disciplina de la concisión.', reflectionPrompt:'¿De qué trató?'}
+  ],
+  journalPrompts:['¿Qué historia llevo dentro y nunca conté?','Si escribiera un libro, ¿de qué sería?','¿Qué personaje me obsesiona y por qué?','Describe a tu mejor amigo/a sin nombrarlo/a.','¿Qué imagen recurrente aparece en mis sueños?','Escribe la primera línea de 5 historias diferentes.','¿Qué moraleja querría dejar?'],
+  cards:[
+    {front:'Show, don\'t tell', back:'Muestra a través de acción/diálogo, no expliques. "Estaba enojado" → "Cerró la puerta de un golpe."'},
+    {front:'Personaje memorable', back:'Tiene contradicciones, deseo claro, voz única. No son perfectos. Sus defectos los hacen humanos.'},
+    {front:'Conflicto', back:'Sin conflicto no hay historia. Interno (vs uno mismo), externo (vs otro), o contra entorno.'},
+    {front:'Tres actos', back:'Setup (planteamiento) → Confrontación (escalada) → Resolución. Estructura clásica que funciona.'},
+    {front:'Gancho de inicio', back:'Primera frase debe enganchar. Acción, pregunta, dato impactante. NO descripciones largas.'},
+    {front:'Voz del autor', back:'Tu sello único. Surge de escribir mucho. No la fuerces, encuéntrala escribiendo.'}
+  ]
+},
+
+{
+  id:'tpl-programacion', name:'Aprende Programación',
+  types:['roadmap','glosario','flashcards','faq'],
+  niche:'programación, código, desarrollador', category:'Educación', subcategory:'Programación',
+  description:'Roadmap para aprender a programar desde cero hasta tu primer proyecto real.',
+  icon:'💻', primaryColor:'#16a34a', secondaryColor:'#86efac', bgColor:'#0e0e0e',
+  headerGradient:'linear-gradient(135deg,#16a34a,#86efac)',
+  roadmapSteps:[
+    {title:'Paso 1: Elige el lenguaje correcto', description:'Web: JavaScript. Datos/IA: Python. Mobile: Swift/Kotlin. Para empezar: Python o JavaScript.'},
+    {title:'Paso 2: Fundamentos sólidos', description:'Variables, tipos de datos, condicionales, loops, funciones, estructuras (arrays, objetos). 4-6 semanas.'},
+    {title:'Paso 3: Resolver problemas', description:'Codewars, LeetCode (easy), exercism. La práctica vence a los tutoriales infinitos.'},
+    {title:'Paso 4: Primer proyecto pequeño', description:'Calculadora, lista de tareas, conversor. Pequeño pero completo. Mejor terminar 1 que empezar 10.'},
+    {title:'Paso 5: Git y GitHub', description:'Control de versiones es esencial. Aprende: clone, add, commit, push, pull, branch, merge.'},
+    {title:'Paso 6: Framework moderno', description:'Web: React, Vue. Backend: Node.js, Django. Especialízate en uno antes de saltar al siguiente.'},
+    {title:'Paso 7: Proyectos reales en GitHub', description:'3-5 proyectos completos públicos. Es tu portafolio. Mejor que cualquier diploma.'},
+    {title:'Paso 8: Aplica a empleos junior', description:'Después de 6-12 meses constantes. No esperes "saberlo todo". Aprenderás el 80% en el trabajo.'}
+  ],
+  glossaryTerms:[
+    {term:'Variable', def:'Espacio en memoria con un nombre que guarda un valor. Como una caja etiquetada.'},
+    {term:'Función', def:'Bloque de código reutilizable. Recibe entradas, devuelve resultado.'},
+    {term:'API', def:'Application Programming Interface. Forma estándar de comunicación entre programas.'},
+    {term:'Framework', def:'Conjunto de herramientas y reglas que aceleran el desarrollo. Ej: React para web.'},
+    {term:'Bug', def:'Error en el código que causa comportamiento inesperado. Debugging = corregirlos.'},
+    {term:'Stack', def:'Conjunto de tecnologías usadas. Frontend + backend + base de datos = full stack.'},
+    {term:'Open source', def:'Código libre y abierto. Cualquiera puede ver, usar, contribuir. Linux, React son open source.'},
+    {term:'Algoritmo', def:'Receta paso a paso para resolver un problema. Lo que escribes en cualquier lenguaje.'},
+    {term:'Variable global vs local', def:'Global: accesible desde todo el código. Local: solo dentro de una función.'},
+    {term:'Refactor', def:'Reescribir código para mejorarlo sin cambiar su funcionamiento. Limpieza necesaria.'}
+  ],
+  cards:[
+    {front:'Variable', back:'`let nombre = "Ana";` — Guarda un valor con un nombre.'},
+    {front:'Función', back:'`function saludar(nombre) { return "Hola " + nombre; }` — Bloque reutilizable.'},
+    {front:'If/else', back:'`if (edad >= 18) { console.log("adulto"); } else { console.log("menor"); }`'},
+    {front:'For loop', back:'`for (let i = 0; i < 10; i++) { console.log(i); }` — Repite código.'},
+    {front:'Array', back:'`let frutas = ["manzana", "pera", "uva"];` — Lista ordenada de elementos.'},
+    {front:'Object', back:'`let usuario = { nombre: "Ana", edad: 30 };` — Estructura clave-valor.'},
+    {front:'Comentario', back:'`// esto es un comentario` — No se ejecuta. Para explicar el código.'},
+    {front:'Console.log', back:'Imprime en consola. Tu mejor herramienta de debugging al inicio.'}
+  ],
+  faqItems:[
+    {q:'¿Qué lenguaje aprender primero?', a:'Python por simplicidad, JavaScript por versatilidad. Cualquiera de los dos es buena elección.'},
+    {q:'¿Necesito carrera universitaria?', a:'No. Bootcamps + autodidacta + portfolio fuerte funcionan. Muchas empresas ya no piden título.'},
+    {q:'¿Cuánto tiempo para conseguir empleo?', a:'6-18 meses con dedicación seria (3+ horas diarias). Depende de constancia y portfolio.'},
+    {q:'¿Soy muy mayor para empezar?', a:'No. Hay developers que empezaron a los 40+. Lo que importa es la actitud y constancia.'},
+    {q:'¿Necesito ser bueno en matemáticas?', a:'Para programación general no. Para ML/data science sí. Para web/apps básicas, álgebra básica basta.'}
+  ]
+},
+
+{
+  id:'tpl-estudio', name:'Técnicas de Estudio',
+  types:['flashcards','checklist','roadmap','faq'],
+  niche:'estudio, aprendizaje, técnicas estudiantiles', category:'Educación', subcategory:'Estudio',
+  description:'Aprende a estudiar mejor con técnicas científicamente probadas, no estudiando más horas.',
+  icon:'📚', primaryColor:'#0d9488', secondaryColor:'#5eead4', bgColor:'#0e0e0e',
+  headerGradient:'linear-gradient(135deg,#0d9488,#5eead4)',
+  roadmapSteps:[
+    {title:'Paso 1: Active recall', description:'En lugar de releer, hazte preguntas y responde sin mirar. La mejor técnica científicamente probada.'},
+    {title:'Paso 2: Repetición espaciada', description:'Repasa en intervalos crecientes (día 1, 3, 7, 14, 30). Anki es la mejor app gratis para esto.'},
+    {title:'Paso 3: Pomodoro', description:'25 min foco + 5 descanso. La pausa consolida memoria. Productivo > horas frente a libro.'},
+    {title:'Paso 4: Mapas mentales', description:'Conecta conceptos visualmente. Ayuda a ver el "todo" antes de profundizar partes.'},
+    {title:'Paso 5: Enseñar lo aprendido', description:'Técnica Feynman: explica el tema como si fueras profesor de un niño. Si no puedes, no lo entiendes.'},
+    {title:'Paso 6: Variar contextos', description:'Cambia de lugar de estudio. La memoria se asocia con entorno. Variarlo mejora retención.'},
+    {title:'Paso 7: Sueño y ejercicio', description:'El cerebro consolida durante el sueño. 7-9h. Ejercicio aeróbico aumenta neurogénesis.'}
+  ],
+  cards:[
+    {front:'Active recall', back:'Forzarte a recordar sin mirar el material. Hazte preguntas, responde, verifica. Mucho mejor que releer.'},
+    {front:'Repetición espaciada', back:'Repasar en intervalos crecientes (1, 3, 7, 14, 30 días). Aprovecha la curva del olvido.'},
+    {front:'Curva del olvido (Ebbinghaus)', back:'Olvidamos 50% en 1 hora si no repasamos. Repasos espaciados frenan el olvido.'},
+    {front:'Técnica Feynman', back:'1) Elige tema. 2) Explícalo simple (como a un niño). 3) Identifica huecos. 4) Vuelve al material y repite.'},
+    {front:'Interleaving', back:'Mezclar temas en una sesión vs estudiar uno solo (blocking). Mejor retención a largo plazo.'},
+    {front:'Doble codificación', back:'Combinar palabras + imágenes. Más rutas en cerebro = mejor recall.'},
+    {front:'Subrayado', back:'Sobrevalorado. Da ilusión de aprendizaje sin recall real. Mejor: notas con tus palabras.'},
+    {front:'Releer', back:'Técnica menos efectiva. Da familiaridad sin retención profunda. Sustituye por active recall.'}
+  ],
+  initialItems:['Plan semanal con metas claras','Sesiones Pomodoro (25/5)','Active recall en lugar de releer','Anki o flashcards físicas','Resumen con palabras propias','Sueño 7-9h','Ejercicio aeróbico 3x semana','Eliminar redes durante estudio'],
+  faqItems:[
+    {q:'¿Cuántas horas debo estudiar?', a:'Calidad > cantidad. 3-4h con Pomodoro y active recall vencen 8h pasivas. Es agotador; descansa.'},
+    {q:'¿Música mientras estudio?', a:'Instrumental o sonidos blancos sí. Música con letra distrae si lees/escribes.'},
+    {q:'¿Estudio mañana o noche?', a:'Cuando tu cerebro esté más alerta. Para la mayoría: mañana. Pero conoce tu cronotipo.'},
+    {q:'¿Anki o cuaderno?', a:'Anki para memorizar (vocabulario, fechas, fórmulas). Cuaderno para entender (mapas, esquemas).'}
+  ]
+},
+
+{
+  id:'tpl-lectura', name:'Club de Lectura',
+  types:['reto','tracker','diario'],
+  niche:'lectura, libros, hábito lector', category:'Educación', subcategory:'Lectura',
+  description:'Construye el hábito de leer todos los días con un reto progresivo de 30 días.',
+  icon:'📖', primaryColor:'#854d0e', secondaryColor:'#fde68a', bgColor:'#0e0e0e',
+  headerGradient:'linear-gradient(135deg,#854d0e,#fde68a)',
+  trackerHabit:'Hoy leí al menos 20 minutos',
+  retoContent:[
+    {title:'Día 1: Define tu por qué', instructions:'¿Por qué quieres leer más? ¿Aprender, escapar, crecer? Escribe tu motivo. Te guiará en días flojos.', reflectionPrompt:'¿Cuál es tu razón?'},
+    {title:'Día 2: Elige el libro adecuado', instructions:'No empieces con "Guerra y paz". Elige algo accesible que TE atrape. Ficción ligera, biografía, autoayuda.', reflectionPrompt:'¿Qué libro elegiste?'},
+    {title:'Día 3: Establece hora fija', instructions:'Lee a la misma hora cada día. Mañana al despertar o noche antes de dormir suelen ser ideales.', reflectionPrompt:'¿Qué hora elegiste?'},
+    {title:'Día 4: 15 minutos sin distracciones', instructions:'Teléfono en otra habitación. Solo tú y el libro. Sin pausas para revisar nada. Construye foco.', reflectionPrompt:'¿Cómo estuvo tu mente?'},
+    {title:'Día 5: Subraya o anota', instructions:'Marca pasajes que te impactan. Comprometerse con el libro fija ideas y te hace lector activo, no pasivo.', reflectionPrompt:'¿Qué subrayaste?'},
+    {title:'Día 6: Comparte una idea', instructions:'Escribe a alguien o publica una idea del libro. Compartir consolida lo aprendido.', reflectionPrompt:'¿Cuál compartiste?'},
+    {title:'Día 7: Aumenta a 30 min', instructions:'Si lograste 15 min consistentes, sube a 30. Avance gradual evita rebote.', reflectionPrompt:'¿Cómo va el libro?'}
+  ],
+  journalPrompts:['¿Qué idea del libro de hoy quiero recordar?','Si tuviera que resumir el capítulo en 3 frases, ¿cuáles serían?','¿Con qué personaje me identifico y por qué?','¿Cómo aplico esto a mi vida?','¿Qué pregunta me deja este libro?','¿Qué estoy evitando enfrentar que el libro toca?']
+},
+
+// ═══════════════ RELACIONES ═══════════════
+
+{
+  id:'tpl-pareja-21', name:'Conexión en Pareja',
+  types:['reto','diario','checklist','afirmaciones'],
+  niche:'pareja, relación, conexión emocional', category:'Relaciones', subcategory:'Pareja',
+  description:'21 días para reavivar la conexión y profundizar la intimidad emocional con tu pareja.',
+  icon:'💕', primaryColor:'#e11d48', secondaryColor:'#fda4af', bgColor:'#0e0e0e',
+  headerGradient:'linear-gradient(135deg,#e11d48,#fda4af)',
+  retoContent:[
+    {title:'Día 1: Las 36 preguntas', instructions:'Existen 36 preguntas (Arthur Aron) que generan intimidad. Hagan las primeras 12 hoy en una cita relajada.', reflectionPrompt:'¿Qué descubrieron?'},
+    {title:'Día 2: Cita sin tecnología', instructions:'2 horas sin teléfonos. Una caminata, un café. Solo presencia mutua. Redescubre lo que les hizo enamorarse.', reflectionPrompt:'¿Cómo se sintió?'},
+    {title:'Día 3: 5 cosas que admiras', instructions:'Dile a tu pareja 5 cosas específicas que admiras de él/ella. Que sean concretas, no genéricas.', reflectionPrompt:'¿Cómo reaccionó?'},
+    {title:'Día 4: Lenguaje del amor', instructions:'Identifica el lenguaje principal de tu pareja: palabras, tiempo, regalos, contacto, actos de servicio. Hoy expresa amor en SU lenguaje.', reflectionPrompt:'¿Cuál es el suyo?'},
+    {title:'Día 5: Conversación profunda', instructions:'Hagan una pregunta poderosa: "¿Qué sueño que aún no has cumplido?" Escuchen sin interrumpir, sin juzgar.', reflectionPrompt:'¿Qué aprendiste?'},
+    {title:'Día 6: Reparación de un pequeño conflicto', instructions:'Si hay algo pendiente sin hablar, ábrelo con ternura. "Me gustaría hablar de... ¿es un buen momento?"', reflectionPrompt:'¿Cómo lo manejaron?'},
+    {title:'Día 7: Ritual de cierre semanal', instructions:'Cada domingo: "¿Qué fue lo mejor de la semana? ¿Qué nos gustaría diferente la próxima?" Crea hábito de revisar juntos.', reflectionPrompt:'¿Lo continuarán?'}
+  ],
+  initialItems:['Cita semanal sin pantallas','Conversación de 30 min sin tema "logístico"','Demostrar amor en SU lenguaje','Agradecer 1 cosa específica al día','Contacto físico no sexual (abrazo largo)','Apoyar un sueño/proyecto del otro','Resolver conflictos sin "ganar"','Ritual de cierre semanal'],
+  affirmations:['Elijo el amor cada día','Mi pareja es mi compañero/a, no mi adversario/a','Comunico desde el corazón, no desde el ego','Soy capaz de amar y ser amado/a profundamente','Construyo este amor con acciones diarias','Escucho para entender, no para responder','Honro las diferencias entre nosotros','Soy paciente conmigo y con mi pareja','Nuestra relación crece cada día','Merecemos ser felices juntos'],
+  journalPrompts:['¿Qué admiré de mi pareja hoy?','¿En qué necesito mejorar como pareja?','¿Qué emoción no me atrevo a expresarle?','¿Qué hábito está dañando nuestra conexión?','¿Cómo era nuestra relación al principio? ¿Qué se perdió?','¿Qué le pediría a mi pareja si supiera que diría sí?']
+},
+
+{
+  id:'tpl-embarazo', name:'Primer Trimestre Embarazo',
+  types:['checklist','faq','tracker','diario'],
+  niche:'embarazo, primer trimestre, maternidad', category:'Relaciones', subcategory:'Embarazo',
+  description:'Acompaña tu primer trimestre con información clara, checklists y journaling.',
+  icon:'🤰', primaryColor:'#ec4899', secondaryColor:'#fbcfe8', bgColor:'#0e0e0e',
+  headerGradient:'linear-gradient(135deg,#ec4899,#fbcfe8)',
+  trackerHabit:'Tomé ácido fólico hoy',
+  initialItems:['Confirmar embarazo (test + análisis sangre)','Cita con ginecólogo/a','Ácido fólico 400mcg diario','Eliminar alcohol y tabaco','Reducir cafeína (<200mg/día)','Evitar carnes crudas y pescados altos en mercurio','Hidratarse 2-2.5L agua diarios','Vitaminas prenatales','Investigar baja por maternidad','Empezar diario de embarazo'],
+  faqItems:[
+    {q:'¿Qué puedo y qué no puedo comer?', a:'Sí: variedad nutritiva. No: alcohol, sushi crudo, embutidos sin curar, quesos sin pasteurizar, atún rojo, hígado en exceso.'},
+    {q:'¿Es normal tanto cansancio?', a:'Sí. La progesterona dispara fatiga en T1. Descansa más, no luches contra ello. Mejorará en T2.'},
+    {q:'¿Las náuseas son malas señales?', a:'Al contrario. Asociadas con embarazo más estable. Suelen mejorar en semana 12-14.'},
+    {q:'¿Puedo hacer ejercicio?', a:'Sí, si ya entrenabas. Adapta intensidad. Caminar, yoga prenatal, natación son ideales. Evita deportes de impacto/contacto.'},
+    {q:'¿Cuándo debo decirlo?', a:'Decisión personal. Muchos esperan a semana 12 (pasado mayor riesgo de aborto). Otros lo dicen antes para tener apoyo.'},
+    {q:'¿Cuántas ecografías hay?', a:'En España: 3 obligatorias (semana 12, 20, 32). Pueden hacer más según seguimiento.'},
+    {q:'¿Puedo seguir trabajando?', a:'Sí, salvo riesgos específicos. Comunica si tu trabajo implica químicos, peso, radiación.'},
+    {q:'¿Y los antojos extraños?', a:'Normal y aún sin explicación científica clara. Si son por sustancias no comestibles (tierra, hielo): hierro bajo, consulta.'}
+  ],
+  journalPrompts:['¿Cómo me sentí hoy físicamente y emocionalmente?','¿Qué miedos tengo sobre la maternidad/paternidad?','¿Qué le quiero decir a mi bebé hoy?','¿Cómo está respondiendo mi pareja/familia?','¿Qué cambio me cuesta más asumir?','¿Qué expectativa quiero soltar?']
+},
+
+{
+  id:'tpl-crianza', name:'Crianza Respetuosa 0-3',
+  types:['faq','checklist','flashcards','glosario'],
+  niche:'crianza respetuosa, primeros años, parentalidad positiva', category:'Relaciones', subcategory:'Crianza',
+  description:'Guía de crianza respetuosa para los primeros 3 años con bases científicas.',
+  icon:'👶', primaryColor:'#7e22ce', secondaryColor:'#e9d5ff', bgColor:'#0e0e0e',
+  headerGradient:'linear-gradient(135deg,#7e22ce,#e9d5ff)',
+  faqItems:[
+    {q:'¿Hasta qué edad colechar?', a:'Decisión familiar. Es seguro siguiendo guías AEPED. Algunos hasta 1-2 años, otros más. No hay edad correcta.'},
+    {q:'¿Lactancia o biberón?', a:'OMS recomienda lactancia exclusiva 6m, complementada hasta 2 años. Biberón también es opción válida si no se puede o no se elige amamantar.'},
+    {q:'¿Cómo manejar las rabietas?', a:'Valida la emoción ("entiendo que estás enfadado"). Mantén calma. No castigues. La emoción no se controla, se acompaña.'},
+    {q:'¿Cuándo introducir BLW o purés?', a:'A partir de 6m si cumple señales (sienta solo, interés, pinza). BLW respeta autonomía. Purés son válidos también.'},
+    {q:'¿Pantallas a esta edad?', a:'AEPED recomienda 0 pantallas <2 años. Entre 2-5 años: máximo 1h diaria de contenido educativo con adulto.'},
+    {q:'¿Cómo enseñar límites sin castigos?', a:'Límites claros + empatía + consecuencias naturales. "No puedo dejarte pegar. Veo que estás enfadado." Sin amenazas.'},
+    {q:'¿Cuándo dejar pañal?', a:'Entre 2-3 años, según señales del niño (interés, control esfínteres, comunica). NO antes ni con presión.'},
+    {q:'¿Es malo el chupete?', a:'No. Útil para succión no nutritiva. Retirar gradualmente entre 2-3 años para evitar maloclusión dental.'}
+  ],
+  initialItems:['Validar emociones siempre','Establecer rutinas predecibles','Tiempo de juego sin pantallas','Lectura diaria (5-15 min)','Contacto físico abundante','No comparar con otros niños','Cuidar mi propio descanso','Pareja unida en criterios de crianza'],
+  cards:[
+    {front:'Apego seguro', back:'Vínculo emocional estable. Bebé sabe que su cuidador responde. Base de salud mental adulta.'},
+    {front:'Autorregulación', back:'Capacidad de manejar emociones. NO se aprende sola. Se desarrolla con co-regulación del adulto (calma compartida).'},
+    {front:'Berrinche/rabieta', back:'Descarga emocional normal. Cerebro inmaduro no puede regular. Acompañar > castigar.'},
+    {front:'Periodo sensible (Montessori)', back:'Etapas óptimas para aprender ciertas habilidades: orden (0-3), lenguaje (0-6), movimiento (0-5).'},
+    {front:'BLW (Baby-Led Weaning)', back:'Alimentación dirigida por el bebé. Sin purés. Trozos blandos para que coma con manos. Promueve autonomía.'},
+    {front:'Co-regulación', back:'El adulto regula su propia emoción primero. Su calma se transmite al niño que aún no sabe regularse solo.'}
+  ],
+  glossaryTerms:[
+    {term:'Crianza respetuosa', def:'Estilo basado en respeto a las necesidades infantiles, sin gritos, castigos ni amenazas. Pone límites con empatía.'},
+    {term:'Disciplina positiva', def:'Marco creado por Jane Nelsen. Combina firmeza y amabilidad. Enseña habilidades sin castigos.'},
+    {term:'Consecuencia natural', def:'Resultado lógico de una acción, sin imponer. "Si no te abrigas, tendrás frío." Aprendizaje real.'},
+    {term:'Rabieta vs berrinche', def:'Misma cosa. Crisis emocional normal en niños 1-4 años. Cerebro inmaduro no regula aún.'},
+    {term:'Lactancia a demanda', def:'Amamantar cuando el bebé pida, sin horarios. OMS recomienda esto al menos hasta 6m.'},
+    {term:'Apego (teoría)', def:'John Bowlby. Vínculo emocional bebé-cuidador determina su sentido de seguridad y relaciones futuras.'},
+    {term:'Hito del desarrollo', def:'Logro esperado a cierta edad: caminar (12-18m), primeras palabras (12m), frases (24m).'}
+  ]
+},
+
+{
+  id:'tpl-comunicacion', name:'Comunicación Asertiva',
+  types:['reto','flashcards','diario','roadmap'],
+  niche:'comunicación, asertividad, relaciones', category:'Relaciones', subcategory:'Comunicación',
+  description:'Aprende a expresar lo que sientes y necesitas con respeto, claridad y firmeza.',
+  icon:'🗣️', primaryColor:'#0369a1', secondaryColor:'#7dd3fc', bgColor:'#0e0e0e',
+  headerGradient:'linear-gradient(135deg,#0369a1,#7dd3fc)',
+  retoContent:[
+    {title:'Día 1: Identifica tu estilo', instructions:'¿Pasivo (no dices lo que sientes), agresivo (atacas), pasivo-agresivo (sarcasmo, indirectas) o asertivo? Reconócelo sin juicio.', reflectionPrompt:'¿Cuál es tu patrón?'},
+    {title:'Día 2: Mensajes en YO', instructions:'Sustituye "tú me haces enojar" por "yo me siento enojada cuando...". Te apropias de tu emoción sin atacar.', reflectionPrompt:'¿Cómo se sintió?'},
+    {title:'Día 3: Decir NO sin culpa', instructions:'Hoy di NO a algo que normalmente aceptarías por compromiso. "No puedo en este momento" es suficiente, sin justificar.', reflectionPrompt:'¿A quién y a qué dijiste no?'},
+    {title:'Día 4: Pedir lo que necesitas', instructions:'Identifica algo que necesitas y nadie sabe porque no lo has pedido. Pídelo claro y directo, sin esperar que adivinen.', reflectionPrompt:'¿Qué pediste?'},
+    {title:'Día 5: Escucha activa', instructions:'En tu próxima conversación: parafrasea lo que el otro dice antes de responder. "Entonces, lo que escucho es..."', reflectionPrompt:'¿Cómo cambió la conversación?'},
+    {title:'Día 6: Manejar críticas', instructions:'Si te critican, no contraataques. Pregunta: "¿Puedes ser más específico?" Distingue crítica útil de descalificación.', reflectionPrompt:'¿Cómo lo manejaste?'},
+    {title:'Día 7: Conversación difícil pendiente', instructions:'Esa conversación que evitas. Hoy ábrela con: "Necesito hablar de algo importante. ¿Cuándo es buen momento?"', reflectionPrompt:'¿La tuviste?'}
+  ],
+  cards:[
+    {front:'Comunicación asertiva', back:'Expresar pensamientos, sentimientos y necesidades con respeto. Ni pasivo ni agresivo. Punto medio sano.'},
+    {front:'Mensaje en YO', back:'"Yo me siento [emoción] cuando [situación]". No acusa. Permite al otro escuchar sin defenderse.'},
+    {front:'Escucha activa', back:'Atención plena al otro. Parafrasear, hacer preguntas, validar antes de opinar.'},
+    {front:'Disco rayado', back:'Repetir tu posición con calma cuando el otro insiste. "Entiendo, y mi respuesta sigue siendo no."'},
+    {front:'Banco de niebla', back:'Reconocer parte de la crítica sin ceder lo esencial. "Puede que tengas razón. Aún así, mi decisión es..."'},
+    {front:'Aserción negativa', back:'Aceptar errores sin desmoronarse. "Sí, fue mi error, lo corrijo." Sin sobreexplicar ni autoflagelarse.'},
+    {front:'Preguntar para clarificar', back:'En lugar de asumir, pregunta. "¿A qué te refieres exactamente?" Evita malentendidos.'},
+    {front:'Validar emoción del otro', back:'"Entiendo que te sientas así." NO es estar de acuerdo, es reconocer su experiencia. Reduce conflicto.'}
+  ],
+  journalPrompts:['¿Qué necesidad estoy callando?','¿A quién no me atrevo a decirle algo importante?','¿Qué patrón heredé de mi familia en comunicación?','¿Cuándo evito conflicto a costa mía?','¿Cómo me sentí la última vez que dije NO?','Carta que escribiría sin enviar a alguien que me hizo daño.'],
+  roadmapSteps:[
+    {title:'Paso 1: Auto-conocimiento', description:'Identifica tu estilo actual y disparadores. Sin juicio. La consciencia es el primer paso.'},
+    {title:'Paso 2: Vocabulario emocional', description:'Aprende a nombrar lo que sientes con precisión. No "mal" sino "frustrado, decepcionado, herido".'},
+    {title:'Paso 3: Mensajes en YO', description:'Reescribe tus quejas habituales como mensajes en YO. Practica en bajo riesgo.'},
+    {title:'Paso 4: Decir NO', description:'Empieza diciendo no a cosas pequeñas. Construye músculo. No requiere justificación.'},
+    {title:'Paso 5: Pedir explícitamente', description:'Identifica necesidades no expresadas. Pídelas con claridad. La gente no lee mentes.'},
+    {title:'Paso 6: Conversaciones difíciles', description:'Aborda lo que evitabas. Prepárate, pide momento adecuado, mantén foco. La incomodidad pasa.'}
+  ]
+},
+
+{
+  id:'tpl-codependencia', name:'Superar la Codependencia',
+  types:['diario','afirmaciones','roadmap','flashcards'],
+  niche:'codependencia, dependencia emocional, amor propio', category:'Relaciones', subcategory:'Codependencia',
+  description:'Identifica patrones de codependencia y construye relaciones saludables desde el amor propio.',
+  icon:'🪢', primaryColor:'#9f1239', secondaryColor:'#fda4af', bgColor:'#0e0e0e',
+  headerGradient:'linear-gradient(135deg,#9f1239,#fda4af)',
+  affirmations:['Yo no soy responsable de las emociones de otros','Mi valor no depende de ser necesitado/a','Puedo amar sin perderme','Soltar no es abandonar','Merezco amor que no exija renunciar a mí','Pongo límites desde el amor, no desde el miedo','Mi felicidad es mi responsabilidad','No tengo que rescatar a nadie','Estoy completo/a sin pareja','Mi paz vale más que su aprobación'],
+  journalPrompts:['¿En qué relaciones me pierdo a mí mismo/a?','¿A quién intento "salvar" y por qué?','¿Qué necesidades propias ignoro por atender a otros?','¿Cómo era el amor en mi familia de origen?','¿Qué temo si pongo un límite?','¿Quién soy cuando estoy sola/o?','¿Qué emoción evito cuando la otra persona se molesta?'],
+  roadmapSteps:[
+    {title:'Paso 1: Reconocer los patrones', description:'Necesitar aprobación constante, dificultad para decir no, sentirte responsable de emociones ajenas, perderte en relaciones.'},
+    {title:'Paso 2: Sanar la herida raíz', description:'La codependencia suele venir de heridas de infancia (abandono, rechazo, padres ausentes/exigentes). Reconócelo.'},
+    {title:'Paso 3: Reconstruir identidad propia', description:'¿Quién eres fuera de tus relaciones? Hobbies, valores, sueños. Recupera lo perdido.'},
+    {title:'Paso 4: Aprender a poner límites', description:'Empezar pequeño. "No, gracias." "Necesito tiempo para pensar." "Esto no me funciona." Práctica.'},
+    {title:'Paso 5: Tolerar el malestar del otro', description:'Cuando pones límites, otros se molestan. Aprender a NO ceder por su incomodidad. Su reacción no es tu responsabilidad.'},
+    {title:'Paso 6: Diferenciar empatía de absorber', description:'Sentir CON el otro, no SER el otro. Puedes acompañar sin perderte.'},
+    {title:'Paso 7: Soltar el rol de salvador/a', description:'Las personas tienen su propio camino. Tú no puedes/debes resolverles la vida. Es respeto, no abandono.'},
+    {title:'Paso 8: Disfrutar de tu propia compañía', description:'Aprender a estar contigo. Comer sola/o, viajar sola/o, disfrutar el silencio. Es liberador.'}
+  ],
+  cards:[
+    {front:'Codependencia', back:'Patrón donde tu autoestima depende de los demás. Necesitas ser necesitado/a. Pierdes identidad en relaciones.'},
+    {front:'Síndrome del rescatador', back:'Sentirte responsable de "salvar" a otros (parejas con problemas, familia disfuncional). Drena tu energía.'},
+    {front:'Hipervigilancia emocional', back:'Estar siempre pendiente de cómo se siente el otro para anticipar y agradar. Agotador.'},
+    {front:'Límite saludable', back:'Decirle al otro qué te funciona y qué no. No es muralla. Es claridad sobre tu espacio.'},
+    {front:'Amor propio', back:'Tratar a ti mismo/a con la misma compasión que a un buen amigo. Base de relaciones sanas.'},
+    {front:'Apego ansioso', back:'Estilo de apego donde necesitas reasegurarte constantemente. Miedo intenso al abandono. Trabajable en terapia.'}
+  ]
+},
+
+// ═══════════════ BELLEZA ═══════════════
+
+{
+  id:'tpl-skincare-30', name:'Skincare Nocturna',
+  types:['reto','checklist','glosario','faq'],
+  niche:'skincare, cuidado piel, rutina nocturna', category:'Belleza', subcategory:'Skincare',
+  description:'30 días para construir una rutina nocturna efectiva sin gastar fortunas en productos.',
+  icon:'✨', primaryColor:'#db2777', secondaryColor:'#fbcfe8', bgColor:'#0e0e0e',
+  headerGradient:'linear-gradient(135deg,#db2777,#fbcfe8)',
+  retoContent:[
+    {title:'Día 1: Conoce tu piel', instructions:'Identifica tu tipo: grasa, seca, mixta, sensible. Test del kleenex 2h tras lavar: brillos = mixta/grasa.', reflectionPrompt:'¿Qué tipo eres?'},
+    {title:'Día 2: Doble limpieza', instructions:'Aceite/balm primero (quita SPF, maquillaje), luego limpiador acuoso (limpia poro). Esencial si usas SPF a diario.', reflectionPrompt:'¿Notas diferencia?'},
+    {title:'Día 3: Tónico hidratante', instructions:'Olvida los astringentes con alcohol. Usa tónico hidratante (ácido hialurónico, glicerina). Capa fina, golpear con dedos.', reflectionPrompt:'¿Cómo se siente?'},
+    {title:'Día 4: Sérum de tratamiento', instructions:'Elige SOLO uno: vitamina C (mañana, antiox), niacinamida (poros, manchas), retinol (antiedad, lento). NO mezclar todos.', reflectionPrompt:'¿Cuál elegiste?'},
+    {title:'Día 5: Hidratante', instructions:'Crema según tipo. Grasa: gel ligero. Seca: textura rica. Sella la hidratación. Aplica en piel ligeramente húmeda.', reflectionPrompt:'¿Cómo amaneció tu piel?'},
+    {title:'Día 6: Contorno de ojos opcional', instructions:'No esencial pero útil. Cafeína para bolsas, péptidos para arrugas, hidratante para ojeras secas.', reflectionPrompt:'¿Lo necesitas?'},
+    {title:'Día 7: SPF mañana siempre', instructions:'El paso más importante. SPF50 todos los días, llueva o haga sol, en interior si hay ventanas. Previene 90% del envejecimiento.', reflectionPrompt:'¿Cuál SPF te gusta?'}
+  ],
+  initialItems:['Doble limpieza','Tónico hidratante','UN sérum de tratamiento','Hidratante adecuada al tipo','SPF50 cada mañana SIEMPRE','Cambiar funda almohada cada 3 días','Tomar 2L agua','Dormir 7-8 horas (skin sleep)'],
+  glossaryTerms:[
+    {term:'AHA', def:'Alfahidroxiácidos (glicólico, láctico). Exfolian superficie. Para luminosidad, manchas. Usar de noche.'},
+    {term:'BHA', def:'Ácido salicílico. Penetra poro graso. Ideal piel grasa, acné, comedones.'},
+    {term:'Niacinamida', def:'Vitamina B3. Reduce poros, manchas, regula sebo, calma rojeces. Apta todos los tipos.'},
+    {term:'Retinol', def:'Forma de vitamina A. Acelera renovación celular. Antiedad y antiacné. Empezar 1-2 veces/semana.'},
+    {term:'Ácido hialurónico', def:'Hidratante que retiene 1000x su peso en agua. Aplica en piel húmeda, sella con crema.'},
+    {term:'Vitamina C', def:'Antioxidante potente. Aclara, ilumina, protege. Aplicar de mañana antes de SPF.'},
+    {term:'Péptidos', def:'Cadenas de aminoácidos. Estimulan colágeno. Antiedad sin irritar.'},
+    {term:'Ceramidas', def:'Lípidos naturales de la piel. Restauran barrera cutánea. Pieles secas o sensibles los aman.'},
+    {term:'SPF (FPS)', def:'Factor de protección solar. SPF30 = 97%, SPF50 = 98%. Reaplica cada 2h al aire libre.'},
+    {term:'Comedón', def:'Poro obstruido. Abierto = punto negro. Cerrado = bolita blanca. Tratar con BHA, no apretar.'}
+  ],
+  faqItems:[
+    {q:'¿En qué orden aplico los productos?', a:'De más líquido a más denso: limpieza → tónico → sérum → contorno → crema → SPF (mañana).'},
+    {q:'¿Puedo usar retinol y vitamina C juntos?', a:'No al mismo tiempo. Vitamina C de mañana, retinol de noche. O alterna noches.'},
+    {q:'¿Por qué me sale más acné desde que empecé skincare?', a:'Purga inicial con ácidos/retinol. Dura 4-6 semanas. Si dura más, algo no funciona para ti.'},
+    {q:'¿Productos caros vs farmacia?', a:'Farmacia (CeraVe, La Roche-Posay, Eucerin) suele ser igual o mejor que lujo. El precio no garantiza calidad.'},
+    {q:'¿A qué edad empezar antiedad?', a:'25-30 años buen momento. Antes: solo SPF y limpieza/hidratación. La prevención es la mejor "antiedad".'},
+    {q:'¿Mancarillas sirven?', a:'Hidratantes sí, ocasionales. No sustituyen rutina. Las que prometen "borrar arrugas en 1 uso" son marketing.'}
+  ]
+},
+
+{
+  id:'tpl-colorimetria', name:'Descubre tus Colores',
+  types:['flashcards','glosario','faq','checklist'],
+  niche:'colorimetría, estilo personal, paleta de colores', category:'Belleza', subcategory:'Colorimetría',
+  description:'Identifica tu paleta personal y aprende a vestir colores que te favorecen.',
+  icon:'🎨', primaryColor:'#9333ea', secondaryColor:'#e9d5ff', bgColor:'#0e0e0e',
+  headerGradient:'linear-gradient(135deg,#9333ea,#e9d5ff)',
+  cards:[
+    {front:'Subtono cálido', back:'Venas verdosas, pelo dorado/cobre, piel marfil/dorada, ojos cálidos. Te favorecen tonos tierra, mostaza, coral.'},
+    {front:'Subtono frío', back:'Venas azuladas, pelo cenizo/oscuro, piel rosada/porcelana, ojos azules/grises. Te favorecen joya, fucsia, azul real.'},
+    {front:'Subtono neutro', back:'Venas mixtas, pelo castaño medio. Te favorecen tanto cálidos como fríos. Más versatilidad.'},
+    {front:'Primavera', back:'Cálida + clara + brillante. Coral, melocotón, turquesa, amarillo limón, verde primavera.'},
+    {front:'Verano', back:'Fría + clara + suave. Lavanda, rosa palo, azul cielo, gris perla, verde menta.'},
+    {front:'Otoño', back:'Cálida + oscura + suave. Mostaza, terracota, oliva, marrón chocolate, óxido.'},
+    {front:'Invierno', back:'Fría + oscura + brillante. Rojo cereza, fucsia, azul real, esmeralda, blanco puro, negro.'},
+    {front:'Test del oro y plata', back:'Pruébate joyería de oro vs plata sobre piel. La que te ilumina marca tu subtono (oro = cálido, plata = frío).'}
+  ],
+  glossaryTerms:[
+    {term:'Subtono', def:'Tono debajo de tu piel. Cálido (amarillo/dorado), frío (rosa/azul), neutro (mezcla).'},
+    {term:'Estación cromática', def:'Sistema 12 estaciones (4 base × 3 variantes). Define tu paleta personal.'},
+    {term:'Paleta personal', def:'Conjunto de colores que armonizan con tu coloración natural. Te ven más fresca/o.'},
+    {term:'Color de impacto', def:'Color que te hace destacar más. Suele ser uno saturado de tu paleta.'},
+    {term:'Color base', def:'Neutros de tu paleta (negro, blanco, beige, marrón, gris) que combinan con todo.'},
+    {term:'Drape test', def:'Prueba con telas de colores junto al rostro para ver cuáles iluminan vs apagan.'},
+    {term:'Saturación', def:'Intensidad del color. Brillante (saturado) vs apagado (suave).'},
+    {term:'Valor', def:'Claridad u oscuridad de un color. Pastel = claro. Burdeos = oscuro.'}
+  ],
+  faqItems:[
+    {q:'¿Cómo sé mi subtono sin ayuda?', a:'Mira tus venas con luz natural: verde = cálido, azul/violeta = frío. Test oro vs plata. ¿Te bronceas o te quemas?'},
+    {q:'¿Puedo usar colores fuera de mi paleta?', a:'Sí, pero úsalos en piezas alejadas del rostro (zapatos, pantalón). Cerca del rostro: tu paleta.'},
+    {q:'¿Y si soy un color "no recomendado" pero me encanta?', a:'Úsalo. La colorimetría es guía, no ley. Lo más importante es cómo te sientes.'},
+    {q:'¿Mi color de pelo afecta mi paleta?', a:'Sí. Si te tiñes radicalmente, tu paleta puede cambiar. Lo natural es la referencia base.'},
+    {q:'¿Vale la pena un análisis profesional?', a:'Si lo dudas mucho, sí. Detecta matices que solo ves en persona. Inversión de 50-150€ para mejorar todo tu armario.'}
+  ],
+  initialItems:['Identificar tu subtono','Identificar tu estación cromática','Lista de 5 colores que te favorecen','Lista de 3 colores a evitar cerca del rostro','Renovar 1 prenda al mes con tus colores','Probar colores nuevos en accesorios primero','Foto de cara con cada color (comparar)','Maquillaje en tonos de tu paleta']
+},
+
+{
+  id:'tpl-capsula', name:'Cápsula de Armario',
+  types:['checklist','roadmap','flashcards'],
+  niche:'armario cápsula, minimalismo, estilo personal', category:'Belleza', subcategory:'Estilo',
+  description:'Crea un armario cápsula con 30-40 piezas que combinan entre sí y reflejan tu estilo.',
+  icon:'👗', primaryColor:'#475569', secondaryColor:'#cbd5e1', bgColor:'#0e0e0e',
+  headerGradient:'linear-gradient(135deg,#475569,#cbd5e1)',
+  initialItems:['Camiseta blanca básica','Camiseta negra básica','Jeans bien cortados (azul oscuro)','Pantalón sastre','Vestido negro versátil','Camisa blanca clásica','Blazer atemporal','Cárdigan o suéter neutro','Falda midi','Chaqueta cuero o denim','Trench o gabardina','Zapatillas blancas','Botines neutros','Bailarinas o mocasines','Tacones nude/negros','Bolso medianos neutros','Cinturón básico','Pañuelo o accesorio statement','Pijama bonito','Ropa interior funcional'],
+  roadmapSteps:[
+    {title:'Paso 1: Vacía tu armario', description:'Saca TODO. Sí, todo. Es el único modo de ver lo que realmente tienes.'},
+    {title:'Paso 2: Categoriza por uso', description:'Tres montones: "uso semanal", "uso ocasional", "no uso hace 1 año". El último: regalar/vender.'},
+    {title:'Paso 3: Define tu estilo', description:'Crea moodboard en Pinterest. ¿Clásico, casual, romántico, edgy? Te guía en compras futuras.'},
+    {title:'Paso 4: Identifica vacíos', description:'¿Faltan básicos? ¿Te faltan zapatos cómodos? Lista lo que necesitas, no lo que quieres.'},
+    {title:'Paso 5: Compra calidad estratégica', description:'Una camisa blanca buena vs cinco baratas. Inversión en básicos paga 10 años, fast fashion 1 estación.'},
+    {title:'Paso 6: Regla 1 entra, 1 sale', description:'Si compras algo nuevo, sale algo viejo. Mantén el armario en su número óptimo.'},
+    {title:'Paso 7: Renueva por temporada', description:'2 veces al año revisa. Lo que no usaste en 1 año, fuera. Tu cápsula evoluciona contigo.'}
+  ],
+  cards:[
+    {front:'Cápsula de armario', back:'Conjunto reducido de prendas que combinan entre sí. Origen: Susie Faux, 1970s.'},
+    {front:'Pieza statement', back:'Prenda llamativa que es centro del look. Combina con básicos. Una a la vez en outfit.'},
+    {front:'Básicos', back:'Prendas neutras y atemporales que combinan con todo. Inversión justificada en calidad.'},
+    {front:'CPW (Cost Per Wear)', back:'Coste total ÷ veces usado. Una prenda de 200€ usada 100 veces = 2€ por uso. Más barato que fast fashion.'},
+    {front:'Slow fashion', back:'Comprar menos pero mejor. Marcas éticas, calidad, atemporalidad. Anti fast fashion.'},
+    {front:'Color base', back:'2-3 colores neutros principales (negro, blanco, beige, marino). 70% del armario.'},
+    {front:'Color acento', back:'1-2 colores adicionales que aportan personalidad. 20% del armario.'},
+    {front:'Versatilidad', back:'Una prenda que crea 5+ outfits diferentes. Métrica clave para incluir en tu cápsula.'}
+  ]
+},
+
+// ═══════════════ HOGAR ═══════════════
+
+{
+  id:'tpl-limpieza-21', name:'Limpia tu Casa',
+  types:['reto','checklist','planificador'],
+  niche:'limpieza, hogar, organización', category:'Hogar', subcategory:'Limpieza',
+  description:'21 días para una limpieza profunda zona por zona, sin agotarte un fin de semana entero.',
+  icon:'🧹', primaryColor:'#0891b2', secondaryColor:'#a5f3fc', bgColor:'#0e0e0e',
+  headerGradient:'linear-gradient(135deg,#0891b2,#a5f3fc)',
+  retoContent:[
+    {title:'Día 1: Cocina - encimeras', instructions:'Despeja todo, limpia a fondo encimeras, azulejos y campana. Solo deja lo esencial visible.', reflectionPrompt:'¿Qué quitarás permanentemente?'},
+    {title:'Día 2: Cocina - electrodomésticos', instructions:'Microondas (vapor con limón), nevera (vacía y limpia), horno. 30 min cada uno máximo.', reflectionPrompt:'¿Cuál estaba peor?'},
+    {title:'Día 3: Baño - sanitarios', instructions:'Inodoro, lavamanos, ducha/bañera. Antical en grifería. Vinagre + bicarbonato son tus aliados.', reflectionPrompt:'¿Olor diferente?'},
+    {title:'Día 4: Salón - polvo y superficies', instructions:'Quita polvo de muebles, marcos, electrónica. De arriba a abajo. Aspirar después.', reflectionPrompt:'¿Cuánto polvo?'},
+    {title:'Día 5: Dormitorio - sábanas y colchón', instructions:'Cambia sábanas, aspira colchón, voltéalo si es posible. Bicarbonato 30 min antes de aspirar quita olores.', reflectionPrompt:'¿Mejor descanso?'},
+    {title:'Día 6: Suelos toda la casa', instructions:'Aspirar y fregar TODA la casa. Esquinas y debajo de muebles incluidos. Música ayuda mucho.', reflectionPrompt:'¿Cuánto tardaste?'},
+    {title:'Día 7: Mantenimiento diario', instructions:'15 min al día: cama hecha, cocina recogida, baño con paño rápido. Previene grandes limpiezas.', reflectionPrompt:'¿Cuál hábito mantendrás?'}
+  ],
+  initialItems:['Hacer la cama al despertar','Lavar trastes después de cada comida','15 min de orden antes de dormir','Lavadora 2-3 veces por semana','Aspirar zonas de paso 2x semana','Limpieza profunda una zona por semana','Tirar 1 cosa al día (declutter)','Cambiar sábanas semanal'],
+  initialTasks:['Lunes: Cocina','Martes: Baño','Miércoles: Salón','Jueves: Dormitorio','Viernes: Lavandería + suelos','Sábado: Limpieza profunda zona del mes','Domingo: Descanso o planificación'],
+},
+
+{
+  id:'tpl-minimalismo', name:'Declutter 30 Días',
+  types:['reto','checklist','diario','afirmaciones'],
+  niche:'minimalismo, declutter, ordenar', category:'Hogar', subcategory:'Minimalismo',
+  description:'30 días para soltar lo que no necesitas y ganar espacio físico y mental.',
+  icon:'📦', primaryColor:'#525252', secondaryColor:'#d4d4d4', bgColor:'#0e0e0e',
+  headerGradient:'linear-gradient(135deg,#525252,#d4d4d4)',
+  retoContent:[
+    {title:'Día 1: Tira 1 cosa', instructions:'Cualquier cosa. Algo roto, vencido, sin uso. Establece el ritual: 1 cosa al día = 30 cosas al mes.', reflectionPrompt:'¿Qué tiraste?'},
+    {title:'Día 2: Suelta 5 prendas', instructions:'Ropa que no usas hace 1 año. Si dudas, ponla en una caja "¿la extraño?". Si en 3 meses no la abriste, fuera.', reflectionPrompt:'¿Por qué la guardabas?'},
+    {title:'Día 3: Cajón del cajón', instructions:'Ese cajón con cosas misceláneas. Vacíalo. Tira basura. Encuentra hogar a lo útil. 30 min.', reflectionPrompt:'¿Qué encontraste?'},
+    {title:'Día 4: Libros que no leerás', instructions:'Sé honesto. ¿Lo leerás? Si no en este año, dónalo. Otro lo disfrutará. Liberar libros = liberar expectativas.', reflectionPrompt:'¿Cuántos donaste?'},
+    {title:'Día 5: Productos vencidos', instructions:'Cocina, baño, botiquín. Tira lo vencido sin culpa. Caducó porque no lo necesitabas.', reflectionPrompt:'¿Cuántos productos?'},
+    {title:'Día 6: Sentimentales', instructions:'Lo más difícil. Foto de objetos antes de soltar. El recuerdo no vive en el objeto, vive en ti.', reflectionPrompt:'¿Qué soltaste?'},
+    {title:'Día 7: Digital declutter', instructions:'Borra apps que no usas, fotos repetidas, mails viejos. El espacio digital también pesa.', reflectionPrompt:'¿Cuánto liberaste?'}
+  ],
+  initialItems:['Tirar 1 cosa al día','Caja "¿la extraño?" para dudas','Donar mensual','Cero compras impulsivas','Pregúntate "¿lo amo o uso?" antes de comprar','Espacio antes de comprar nuevo','Una entrada, una salida','Mantenimiento mensual'],
+  affirmations:['Menos cosas, más libertad','Mi valor no está en lo que poseo','Suelto sin culpa lo que ya cumplió su propósito','Mi espacio es mi paz','Compro con intención, no con impulso','Menos es realmente más','Mi mente se calma con espacio físico','Lo que sale crea lugar para lo nuevo','El recuerdo vive en mí, no en el objeto','Menos tener, más ser'],
+  journalPrompts:['¿Por qué guardo cosas que no uso?','¿Qué emoción me cuesta soltar junto a este objeto?','¿Cómo me siento en mi espacio actual?','¿Qué definición de éxito heredé que incluía "tener mucho"?','¿Qué haría con el dinero que no gasté esta semana?']
+},
+
+{
+  id:'tpl-jardin', name:'Jardín en Casa',
+  types:['roadmap','checklist','glosario','faq'],
+  niche:'jardinería, plantas, huerto urbano', category:'Hogar', subcategory:'Jardinería',
+  description:'Crea tu primer jardín o huerto urbano paso a paso, aunque tengas poco espacio.',
+  icon:'🪴', primaryColor:'#16a34a', secondaryColor:'#86efac', bgColor:'#0e0e0e',
+  headerGradient:'linear-gradient(135deg,#16a34a,#86efac)',
+  roadmapSteps:[
+    {title:'Paso 1: Evalúa tu espacio', description:'Luz: ¿cuántas horas de sol directo? Eso define qué plantas pueden vivir ahí.'},
+    {title:'Paso 2: Empieza fácil', description:'Plantas resistentes para principiantes: pothos, sansevieria, suculentas, cintas, monstera mini.'},
+    {title:'Paso 3: Macetas con drenaje', description:'Crítico. Sin agujeros = raíz podrida = planta muerta. Plato debajo o autoriego.'},
+    {title:'Paso 4: Sustrato adecuado', description:'No tierra del jardín. Sustrato universal o específico (cactus para suculentas, ácido para hortensias).'},
+    {title:'Paso 5: Riego según planta', description:'No riegues por calendario. Mete dedo en tierra: si está húmeda, NO riegues. Mata más exceso que falta.'},
+    {title:'Paso 6: Luz adecuada', description:'Plantas tropicales: luz indirecta brillante. Suculentas/cactus: sol directo. Cero luz = mueren todas.'},
+    {title:'Paso 7: Reproducción', description:'Esquejes en agua o tierra. Multiplica gratis. Pothos, monstera, suculentas son fáciles de reproducir.'}
+  ],
+  initialItems:['Identificar luz disponible','Elegir 3 plantas resistentes','Macetas con drenaje','Sustrato universal de calidad','Regadera o pulverizador','Calendario de riego adaptado','Limpieza ocasional de hojas','Fertilizar primavera-verano'],
+  glossaryTerms:[
+    {term:'Sustrato', def:'Mezcla donde crece la planta. NO es tierra de jardín. Tiene perlita, turba, compost.'},
+    {term:'Drenaje', def:'Capacidad de la maceta de evacuar agua. Esencial. Sin él, raíces se pudren.'},
+    {term:'Esqueje', def:'Trozo de planta cortado para reproducir. Algunas en agua, otras directo en tierra.'},
+    {term:'Trasplante', def:'Cambiar planta a maceta más grande cuando raíces llenan la actual. Cada 1-2 años.'},
+    {term:'Fertilizante NPK', def:'Nitrógeno (hojas), Fósforo (flores), Potasio (raíces/frutos). Diluir bien siempre.'},
+    {term:'Cochinilla / pulgón', def:'Plagas comunes. Tratar con jabón potásico, agua + alcohol, o aceite de neem.'},
+    {term:'Estrés hídrico', def:'Falta o exceso de agua. Síntomas: hojas amarillas (exceso), caídas (falta).'},
+    {term:'Floración', def:'Periodo en que la planta da flores. Algunas necesitan reposo invernal para florecer en primavera.'}
+  ],
+  faqItems:[
+    {q:'¿Cuánto regar mis plantas?', a:'Depende de la planta, maceta, luz, humedad. Mete el dedo: si está húmedo, NO. Mejor regar menos.'},
+    {q:'¿Por qué se ponen amarillas las hojas?', a:'Causa más común: exceso de agua. También: falta de luz, falta de nutrientes, o cambio de estación normal.'},
+    {q:'¿Mis plantas pueden vivir sin sol directo?', a:'Sí, muchas. Pothos, sansevieria, ZZ, monstera viven con luz indirecta brillante.'},
+    {q:'¿Necesito fertilizar?', a:'En primavera-verano sí, cada 2-4 semanas diluido. Otoño-invierno no.'},
+    {q:'¿Por qué mi suculenta se "estira"?', a:'Falta de luz. Se llama etiolación. Mueve a sitio más luminoso. Es irreversible la parte estirada.'}
+  ]
+},
+
+{
+  id:'tpl-zerowaste', name:'Zero Waste',
+  types:['reto','checklist','flashcards','glosario'],
+  niche:'zero waste, sostenibilidad, vida sin residuos', category:'Hogar', subcategory:'Sostenibilidad',
+  description:'30 días para reducir tus residuos y vivir más sostenible sin volverse extremo.',
+  icon:'♻️', primaryColor:'#15803d', secondaryColor:'#bbf7d0', bgColor:'#0e0e0e',
+  headerGradient:'linear-gradient(135deg,#15803d,#bbf7d0)',
+  retoContent:[
+    {title:'Día 1: Auditoría de tu basura', instructions:'Una semana sin tirar nada (lleva contigo en bolsa). El final de semana revisa: ¿de qué es 80% tu basura?', reflectionPrompt:'¿Qué descubriste?'},
+    {title:'Día 2: Botella reutilizable', instructions:'Compra una botella buena (acero, vidrio). NUNCA más agua embotellada. Ahorras dinero + plástico.', reflectionPrompt:'¿Cuántas botellas evitarás?'},
+    {title:'Día 3: Bolsas de tela', instructions:'5+ bolsas de tela siempre en mochila/coche. Cero bolsas plásticas en compra. Hábito que dura años.', reflectionPrompt:'¿Las llevaste hoy?'},
+    {title:'Día 4: Termo para café', instructions:'Si tomas café fuera, lleva termo. Cafeterías suelen aceptarlo y a veces dan descuento.', reflectionPrompt:'¿Lo probaste?'},
+    {title:'Día 5: Compra a granel', instructions:'Identifica tienda granel cerca. Frutos secos, legumbres, cereales sin envase. Lleva tarros propios.', reflectionPrompt:'¿Encontraste alguna?'},
+    {title:'Día 6: Compostaje básico', instructions:'Restos orgánicos (cáscaras, café, hojas) en compostera. 30% de tu basura desaparece y nutres plantas.', reflectionPrompt:'¿Es viable para ti?'},
+    {title:'Día 7: Productos higiene reutilizables', instructions:'Discos desmaquillantes lavables, copa menstrual, cepillo de bambú, navaja. Pequeños cambios, gran impacto.', reflectionPrompt:'¿Cuál cambiaste?'}
+  ],
+  initialItems:['Botella reutilizable siempre','Bolsas de tela en mochila','Termo para café','Tuppers para llevar','Comprar a granel','Compostaje básico','Productos higiene reutilizables','Cero comida desperdiciada'],
+  cards:[
+    {front:'5R del zero waste', back:'Refuse (rechazar lo innecesario), Reduce, Reuse, Recycle, Rot (compostar). En ese orden.'},
+    {front:'Compostaje doméstico', back:'Restos orgánicos + secos (hojas, cartón) + aire + tiempo = abono gratis. 6 meses para tener.'},
+    {front:'Compra a granel', back:'Lleva tarros propios. Compras la cantidad exacta que necesitas. Cero envases.'},
+    {front:'Greenwashing', back:'Marketing engañoso de "ecológico". Lee etiquetas. Productos realmente sostenibles son discretos.'},
+    {front:'Huella de carbono', back:'CO2 que tu vida emite. Calcula con apps. Identifica dónde reducir más impacto.'},
+    {front:'Microplásticos', back:'Partículas <5mm. Vienen de ropa sintética, cosméticos, embalajes. Acaban en agua y alimentos.'}
+  ],
+  glossaryTerms:[
+    {term:'Zero waste', def:'Filosofía de generar la menor basura posible. No es perfección, es progreso constante.'},
+    {term:'Granel', def:'Compra sin envase. Llevas tu propio recipiente. Disponible en mercados, tiendas eco.'},
+    {term:'Compostaje', def:'Descomposición controlada de materia orgánica para obtener abono. Reduce 30% de basura doméstica.'},
+    {term:'Upcycling', def:'Convertir algo viejo en algo de mayor valor (no solo reciclar). Ej: jeans → bolso.'},
+    {term:'Slow living', def:'Estilo de vida basado en lo esencial. Conexión con naturaleza, consumo consciente.'},
+    {term:'Economía circular', def:'Modelo donde nada se desperdicia. Productos diseñados para repararse, reutilizarse, reciclarse.'}
+  ]
+},
+
   ];
 }
