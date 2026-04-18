@@ -862,7 +862,7 @@ function applyPendingMiniAppTemplate() {
     localStorage.removeItem('ls_miniapp_template_pending');
     const tpl = JSON.parse(raw);
     // Open the mini-app creation modal pre-filled with template data
-    openMiniAppModal();
+    openCreateModal();
     // Fill in name and description
     const nameEl = document.getElementById('ma-name');
     const descEl = document.getElementById('ma-desc');

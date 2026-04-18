@@ -1641,7 +1641,7 @@ function getBuiltinMiniAppTemplates() {
   ]
 },
 
-  ,{
+  {
   id:'tpl-cachorro',
   name:'Tu Primer Cachorro',
   types:['roadmap','checklist','faq','glosario'],
