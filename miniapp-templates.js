@@ -1641,5 +1641,260 @@ function getBuiltinMiniAppTemplates() {
   ]
 },
 
+  ,{
+  id:'tpl-cachorro',
+  name:'Tu Primer Cachorro',
+  types:['roadmap','checklist','faq','glosario'],
+  niche:'mascotas',
+  category:'Mascotas',
+  subcategory:'Perros',
+  description:'Guía completa para recibir y cuidar a tu cachorro en los primeros meses.',
+  icon:'pets',
+  primaryColor:'#f59e0b',
+  secondaryColor:'#d97706',
+  bgColor:'#0e0e0e',
+  headerGradient:'linear-gradient(135deg, #f59e0b, #d97706)',
+  roadmapSteps:[
+    'Prepara el hogar: retira cables, plantas tóxicas y objetos peligrosos a ras del suelo',
+    'Compra lo esencial: cama, crate, comedero, bebedero, juguetes de mordida y correa',
+    'Elige veterinario y agenda primera visita en las 48h de llegada del cachorro',
+    'Inicia protocolo de vacunas y desparasitación según calendario veterinario',
+    'Comienza socialización: expón al cachorro a sonidos, personas y lugares nuevos antes de los 3 meses',
+    'Establece rutina de comidas, salidas y hora de dormir desde el primer día',
+    'Inscríbete en clases básicas de adiestramiento: sienta, quieto, ven y no'
+  ],
+  initialItems:[
+    'Cama o crate en lugar tranquilo','Comedero y bebedero de acero inoxidable','Comida específica para cachorros',
+    'Juguetes de mordida seguros','Collar + placa con tu teléfono','Correa de 2 metros',
+    'Bolsas para excrementos','Champú específico cachorros'
+  ],
+  faqItems:[
+    {q:'¿Cuándo puede salir a la calle?',a:'Tras completar el ciclo de vacunas (aprox. 12-16 semanas). Antes puede salir en brazos para socializar.'},
+    {q:'¿Cuántas veces al día come un cachorro?',a:'3-4 veces al día hasta los 6 meses, luego 2-3 veces. Sigue las indicaciones del pienso según peso.'},
+    {q:'¿Por qué muerde tanto?',a:'Es normal durante la dentición (2-5 meses). Redirige a juguetes apropiados y di "no" firme cuando muerda piel.'},
+    {q:'¿Cómo enseñarle a hacer sus necesidades fuera?',a:'Sácalo cada 2h, después de comer y al despertar. Premio inmediato si lo hace fuera. Nunca castigues accidentes en casa.'},
+    {q:'¿Necesita bañarse seguido?',a:'Máximo una vez al mes. El baño excesivo elimina aceites naturales del pelo y puede causar irritación.'},
+    {q:'¿Cuándo esterilizar?',a:'Consulta con tu vet. Generalmente entre 6-12 meses según raza y sexo. Reduce ciertos riesgos de salud.'},
+    {q:'¿Puede dormir en mi cama?',a:'Es decisión personal, pero establece la norma desde el inicio. Cambiarla después es muy difícil.'},
+    {q:'¿Qué alimentos son tóxicos para los perros?',a:'Chocolate, uvas, pasas, cebolla, ajo, xilitol (edulcorante), aguacate y macadamia. Nunca los des.'}
+  ],
+  glossaryTerms:[
+    {term:'Crate',def:'Jaula o transportín que se usa como espacio seguro del perro. Bien introducida, el perro la ve como su cueva.'},
+    {term:'Socialización',def:'Proceso de exponer al cachorro a estímulos (personas, animales, sonidos) para que los acepte con normalidad de adulto.'},
+    {term:'Refuerzo positivo',def:'Técnica de adiestramiento basada en premiar la conducta correcta en vez de castigar la incorrecta.'},
+    {term:'Pienso',def:'Alimento seco granulado formulado específicamente para perros. Elige uno con carne como primer ingrediente.'},
+    {term:'Desparasitación',def:'Tratamiento contra parásitos internos (lombrices) y externos (pulgas, garrapatas). Se hace según calendario vet.'},
+    {term:'Microchip',def:'Identificador electrónico implantado bajo la piel. Obligatorio en muchos países. Registra al dueño y permite recuperar al perro si se pierde.'},
+    {term:'Leishmaniasis',def:'Enfermedad transmitida por mosquitos, grave en perros. Vacuna disponible en zonas de riesgo.'},
+    {term:'Rescisión de contrato',def:'En muchos criaderos, derecho de devolver al cachorro si el vet detecta problema grave en 72h.'}
+  ]
+},
+
+{
+  id:'tpl-adiestramiento',
+  name:'Adiestramiento Canino',
+  types:['reto','flashcards','roadmap','faq'],
+  niche:'mascotas',
+  category:'Mascotas',
+  subcategory:'Adiestramiento',
+  description:'Aprende los fundamentos del adiestramiento en positivo y enseña comandos básicos a tu perro.',
+  icon:'sports_score',
+  primaryColor:'#10b981',
+  secondaryColor:'#059669',
+  bgColor:'#0e0e0e',
+  headerGradient:'linear-gradient(135deg, #10b981, #059669)',
+  retoContent:[
+    {title:'Día 1: Responde a su nombre', instructions:'10 repeticiones, di el nombre en tono alegre, cuando te mire premia con golosina pequeña. Breve, 5 min máximo.', reflectionPrompt:'¿Cuántas veces respondió de 10?'},
+    {title:'Día 2: Sienta', instructions:'Golosina sobre su nariz, muévela hacia atrás. Al sentarse di "sienta" y premia. 10 repeticiones en 2 sesiones.', reflectionPrompt:'¿Lo logró antes del intento 10?'},
+    {title:'Día 3: Quieto', instructions:'Pide sienta, abre palma frente a su cara y di "quieto". Un segundo, luego premia. Aumenta el tiempo gradualmente.', reflectionPrompt:'¿Cuántos segundos aguantó?'},
+    {title:'Día 4: Ven', instructions:'Distancia corta, abre brazos y di su nombre + "ven" con entusiasmo. Premio y elogio exagerado al llegar.', reflectionPrompt:'¿Vino sin dudar?'},
+    {title:'Día 5: No', instructions:'Cuando haga algo indeseado, di "no" en tono firme (no gritar). Redirige a comportamiento correcto y premia ese.', reflectionPrompt:'¿Lo redirigiste con éxito?'},
+    {title:'Día 6: Echado', instructions:'Desde sienta, golosina al suelo entre sus patas. Al echarse di "echado" y premia. Más difícil, sé paciente.', reflectionPrompt:'¿Lo logró sin ayuda al final?'},
+    {title:'Día 7: Repaso general', instructions:'Practica los 5 comandos en orden. Varía el contexto (jardín, sala, calle). Sesión de 10 minutos con juego al final.', reflectionPrompt:'¿Cuál fue el más fluido?'}
+  ],
+  cards:[
+    {front:'Timing del premio', back:'El refuerzo debe llegar en los 2 segundos posteriores a la conducta correcta. Después el perro no asocia.'},
+    {front:'Sesiones cortas', back:'5-10 minutos máximo por sesión. El perro se cansa y aburre. Mejor 3 sesiones cortas que una larga.'},
+    {front:'Jackpot', back:'Premio extra grande por un logro excepcional. Refuerza comportamientos difíciles o nuevos.'},
+    {front:'Extinción', back:'Ignorar completamente una conducta indeseada. Sin atención, la conducta desaparece. Funciona para saltar o ladrar por atención.'},
+    {front:'Clicker', back:'Sonido neutro que marca exactamente el momento correcto. Más preciso que la voz. Se asocia con premio.'},
+    {front:'Luring', back:'Guiar con golosina para inducir postura. Luego se retira el cebo y se trabaja solo con señal.'},
+    {front:'Señal de manos', back:'Los perros aprenden mejor señales visuales que verbales. Combina ambas desde el inicio.'},
+    {front:'Generalización', back:'Practicar el comando en distintos lugares, con distracciones. El perro debe obedecer en cualquier contexto.'},
+    {front:'Curva de aprendizaje', back:'Normal que empeore antes de mejorar. El perro prueba nuevas respuestas. Sé consistente.'},
+    {front:'Conducta base', back:'Sienta y contacto visual son base de todo. Perro que se sienta y te mira está listo para aprender.'}
+  ],
+  roadmapSteps:[
+    'Establece comunicación: nombre + contacto visual + un premio cada vez que te mire',
+    'Domina los 5 básicos: sienta, quieto, ven, echado, no',
+    'Trabaja el paseo con correa: que no tire, que camine a tu lado',
+    'Introduce el crate como espacio positivo para gestionar ausencias',
+    'Practica en entornos con distracciones: parque, calle, visitas en casa',
+    'Añade comandos de seguridad: suelta, déjalo, quieto a distancia',
+    'Considera clase grupal para socialización y trabajo con distracciones reales'
+  ],
+  faqItems:[
+    {q:'¿Qué tipo de premio funciona mejor?',a:'Golosinas blandas y pequeñas (tamaño de un guisante). Que el perro pueda comerlas rápido. Varía para mantener motivación.'},
+    {q:'¿Puedo adiestrar a un perro adulto?',a:'Absolutamente. Los perros aprenden a cualquier edad. Puede tomar más tiempo desaprender hábitos, pero es totalmente posible.'},
+    {q:'¿Cuándo usar castigo?',a:'Nunca castigo físico. El "no" firme y la redirección son suficientes. El castigo crea miedo e inhibe el aprendizaje.'},
+    {q:'¿Por qué obedece en casa pero no en la calle?',a:'La calle tiene más distracciones. Hay que generalizar el entrenamiento: practicar en distintos entornos con distracción progresiva.'},
+    {q:'¿Mi perro es dominante?',a:'El concepto de dominancia está desactualizado. Los problemas de comportamiento vienen de falta de guía, ejercicio o socialiación, no de dominancia.'},
+    {q:'¿Cuánto tiempo al día hay que dedicar al adiestramiento?',a:'15-20 minutos diarios en 2-3 sesiones cortas. La consistencia diaria supera a una hora semanal.'}
+  ]
+}
+
+  ,{
+  id:'tpl-habitos-atomicos',
+  name:'Hábitos Atómicos 66 Días',
+  types:['reto','tracker','flashcards','diario'],
+  niche:'desarrollo_personal',
+  category:'Desarrollo Personal',
+  subcategory:'Hábitos',
+  description:'Construye hábitos que duran aplicando los principios de los hábitos atómicos durante 66 días.',
+  icon:'loop',
+  primaryColor:'#6366f1',
+  secondaryColor:'#4f46e5',
+  bgColor:'#0e0e0e',
+  headerGradient:'linear-gradient(135deg, #6366f1, #4f46e5)',
+  retoContent:[
+    {title:'Día 1: Elige tu hábito ancla', instructions:'Escoge UN hábito pequeño que quieras instalar. Tan pequeño que no puedas negarte: "Leer 1 página", "5 flexiones". Escríbelo exactamente.', reflectionPrompt:'¿Cuál es tu hábito atómico?'},
+    {title:'Día 2: Diseña el cue', instructions:'Define el disparador: hora, lugar, emoción o acción anterior que activará tu hábito. Ej: "Después de café de mañana, leo 1 página".', reflectionPrompt:'¿Cuál es tu cue exacto?'},
+    {title:'Día 3: Reducción a 2 minutos', instructions:'Si tu hábito tarda más de 2 minutos, reduce aún más. El objetivo es aparecer, no el rendimiento. Haz solo la versión mínima.', reflectionPrompt:'¿Cuánto duró tu versión mínima?'},
+    {title:'Día 7: Revisión de semana 1', instructions:'¿Cuántos días de 7 cumpliste? No busques perfección. 4/7 es éxito. Identifica qué obstáculo apareció y cómo sortearlo.', reflectionPrompt:'¿Qué patrón ves en los días que fallaste?'},
+    {title:'Día 21: Punto de inflexión', instructions:'Los estudios muestran que a las 3 semanas el hábito empieza a automatizarse. ¿Lo sientes más natural? Ahora puedes crecer un 10%.', reflectionPrompt:'¿Qué tan automático se siente ya?'},
+    {title:'Día 66: Certificación del hábito', instructions:'66 días es el promedio para automatizar un hábito. Celebra. Elige el siguiente hábito atómico y repite el proceso.', reflectionPrompt:'¿Qué hábito construirás ahora?'}
+  ],
+  trackerHabit:'Mi hábito atómico diario',
+  cards:[
+    {front:'Ley 1: Hazlo obvio', back:'Diseña tu entorno para que el cue sea visible. Zapatos de correr junto a la cama = más probabilidad de ejercitar.'},
+    {front:'Ley 2: Hazlo atractivo', back:'Vincula el hábito a algo que te guste (temptation bundling). Ej: solo música favorita mientras corres.'},
+    {front:'Ley 3: Hazlo fácil', back:'Reduce la fricción al mínimo. Prepara todo la noche anterior. La regla de los 2 minutos.'},
+    {front:'Ley 4: Hazlo satisfactorio', back:'Agrega recompensa inmediata. Marca el hábito en un tracker visual. La racha es motivación.'},
+    {front:'Regla de los 2 minutos', back:'Si un hábito tarda menos de 2 minutos, hazlo ahora. Si no, hazlo tan pequeño que tome 2 minutos.'},
+    {front:'Stacking de hábitos', back:'Encadena hábitos: "Después de X, haré Y". Usa un hábito establecido como ancla para el nuevo.'},
+    {front:'Plateau de potencial latente', back:'Los cambios no son lineales. Semanas sin resultado visible → cambio brusco. Sigue aunque no veas progreso.'},
+    {front:'Identidad > Resultados', back:'No "quiero correr 5K". Sé "soy alguien que corre". El hábito es evidencia de tu identidad deseada.'},
+    {front:'Entorno > Motivación', back:'No dependas de fuerza de voluntad. Diseña tu ambiente para que el comportamiento correcto sea el fácil.'},
+    {front:'Nunca faltes dos veces seguidas', back:'Un mal día no rompe el hábito. Dos días seguidos sí crean el hábito contrario. Mínimo viable siempre.'}
+  ],
+  journalPrompts:[
+    '¿Qué identidad quiero construir con este hábito? ¿Qué tipo de persona quiero ser?',
+    '¿Qué fricción está impidiendo que realice mi hábito? ¿Cómo puedo reducirla?',
+    '¿Hubo días que fallé esta semana? ¿Qué situación lo causó y qué haré diferente?',
+    '¿Qué recompensa inmediata podría agregar para hacer el hábito más satisfactorio?',
+    '¿En qué momento del día me resulta más fácil mantener este hábito? ¿Por qué?',
+    '¿Qué evidencia tengo esta semana de que me estoy convirtiendo en la persona que quiero ser?'
+  ]
+}
+
+  ,{
+  id:'tpl-proposito',
+  name:'Propósito de Vida',
+  types:['diario','roadmap','afirmaciones','flashcards'],
+  niche:'desarrollo_personal',
+  category:'Desarrollo Personal',
+  subcategory:'Propósito',
+  description:'Un viaje guiado para descubrir tu propósito, alinear tu vida con tus valores y diseñar el camino hacia quien quieres ser.',
+  icon:'self_improvement',
+  primaryColor:'#8b5cf6',
+  secondaryColor:'#7c3aed',
+  bgColor:'#0e0e0e',
+  headerGradient:'linear-gradient(135deg, #8b5cf6, #7c3aed)',
+  journalPrompts:[
+    '¿Qué actividades te hacen perder la noción del tiempo? ¿Cuándo fue la última vez que entraste en "flujo"?',
+    '¿Qué problemas del mundo te duelen profundamente? ¿Cuáles no puedes ignorar cuando los ves?',
+    '¿Qué talentos tienes que la gente cercana reconoce aunque tú los des por normales?',
+    '¿Por qué cosas estarías dispuesto a trabajar incluso si no te pagaran?',
+    '¿Qué quieres que digan de ti en tu funeral? ¿Cómo quieres ser recordado?',
+    '¿Qué versión de ti mismo imaginas en 10 años? Descríbela con el máximo detalle posible.',
+    '¿Qué miedos te han impedido perseguir lo que realmente quieres?',
+    '¿Cuál es la brecha entre quien eres ahora y quien quieres ser?'
+  ],
+  roadmapSteps:[
+    'Autoevaluación: completa los journals de descubrimiento durante 7 días sin filtros',
+    'Identifica intersecciones: busca dónde convergen tus talentos, pasiones, valores y lo que el mundo necesita',
+    'Escribe tu enunciado de propósito: "Mi propósito es [verbo] [quién] para [resultado]"',
+    'Mapea tu vida actual vs. tu propósito: ¿qué está alineado? ¿qué no?',
+    'Define 3 proyectos o experimentos concretos que te acerquen a vivir tu propósito',
+    'Establece hábitos de alineación: rituales diarios que te conecten con quien quieres ser',
+    'Revisa y ajusta: tu propósito evolucionará. Revísalo cada 90 días'
+  ],
+  affirmations:[
+    'Tengo algo único para ofrecer al mundo que nadie más puede dar exactamente como yo',
+    'Mi propósito se revela cuando actúo con valentía y escucho mi intuición',
+    'Merezco vivir una vida alineada con mis valores más profundos',
+    'Cada paso que doy hacia mi propósito crea ondas positivas en quienes me rodean',
+    'Soy capaz de diseñar la vida que quiero vivir, una decisión a la vez',
+    'Mi historia y mis cicatrices son parte de lo que me hace único y valioso',
+    'Elijo priorizar lo que realmente importa sobre lo urgente pero vacío',
+    'Estoy exactamente donde necesito estar para aprender lo que me llevará al siguiente nivel',
+    'Mi propósito no depende de la aprobación de otros, solo de mi autenticidad',
+    'Tengo el coraje de soltar lo que ya no sirve y espacio para lo que está por venir'
+  ],
+  cards:[
+    {front:'Ikigai', back:'Concepto japonés: intersección de lo que amas, lo que haces bien, lo que el mundo necesita y por lo que te pagan.'},
+    {front:'Propósito vs. Pasión', back:'La pasión sigue al dominio, no al revés. El propósito emerge al ser muy bueno en algo que importa.'},
+    {front:'Flujo (Flow)', back:'Estado de concentración total donde pierdes noción del tiempo. Señal de que estás en algo alineado con tus fortalezas.'},
+    {front:'Valores nucleares', back:'Principios no negociables que guían tus decisiones. Cuando los violas, sientes incomodidad. Identifica tus 5 valores core.'},
+    {front:'Legado', back:'Huella que dejas en otros. ¿Qué quieres que exista en el mundo porque tú exististe?'},
+    {front:'Zona de genialidad', back:'El nivel más alto de Gay Hendricks: actividades donde eres extraordinario y el tiempo vuela. Vive aquí el máximo posible.'},
+    {front:'Contrato con el futuro yo', back:'Carta escrita hoy al yo de dentro de 5 años describiendo quien querías ser. Crea responsabilidad y visión.'},
+    {front:'El miedo como brújula', back:'Lo que más te asusta perseguir suele estar más cerca de tu propósito que lo que te resulta fácil.'}
+  ]
+}
+
+  ,{
+  id:'tpl-inteligencia-emocional',
+  name:'Inteligencia Emocional',
+  types:['flashcards','diario','glosario','reto'],
+  niche:'desarrollo_personal',
+  category:'Desarrollo Personal',
+  subcategory:'IE',
+  description:'Desarrolla tu inteligencia emocional: reconoce tus emociones, gestiónalas con madurez y mejora tus relaciones.',
+  icon:'psychology',
+  primaryColor:'#ec4899',
+  secondaryColor:'#db2777',
+  bgColor:'#0e0e0e',
+  headerGradient:'linear-gradient(135deg, #ec4899, #db2777)',
+  cards:[
+    {front:'Autoconciencia', back:'Capacidad de reconocer tus propias emociones en el momento en que ocurren. La base de toda IE.'},
+    {front:'Autorregulación', back:'Habilidad de manejar emociones perturbadoras e impulsos. No suprimir sino gestionar constructivamente.'},
+    {front:'Motivación intrínseca', back:'Impulsarte por pasión y valores propios, no por dinero o reconocimiento externo.'},
+    {front:'Empatía', back:'Sentir lo que otro siente. No "te entiendo" sino "puedo imaginar cómo se siente eso para ti".'},
+    {front:'Habilidades sociales', back:'Gestionar relaciones para mover a personas hacia metas compartidas. Escucha activa, comunicación asertiva.'},
+    {front:'Secuestro amigdalino', back:'Cuando la amígdala toma el control y reacciones sin pensar. 6-8 segundos para que el córtex retome el control.'},
+    {front:'Ventana de tolerancia', back:'Zona de activación óptima donde puedes pensar y sentir al mismo tiempo. Objetivo de la regulación emocional.'},
+    {front:'Validación emocional', back:'Reconocer que la emoción del otro tiene sentido dado su contexto, aunque no estés de acuerdo con su conducta.'},
+    {front:'Emoción vs. Sentimiento', back:'Emoción: respuesta fisiológica automática. Sentimiento: interpretación consciente de esa emoción.'},
+    {front:'Granularidad emocional', back:'Capacidad de distinguir emociones con precisión. "Ansioso" vs. "avergonzado" vs. "solo". Más palabras = mejor regulación.'}
+  ],
+  journalPrompts:[
+    '¿Qué emoción fue la más intensa de hoy? ¿En qué parte del cuerpo la sentiste?',
+    '¿Hubo algún momento en que reaccionaste de forma que luego lamentaste? ¿Qué emoción lo disparó?',
+    '¿Cuándo fue la última vez que genuinamente empatizaste con alguien que piensa diferente a ti?',
+    '¿Qué necesidad emocional no está siendo satisfecha en este momento de tu vida?',
+    '¿Cómo describes tus emociones al hablar? ¿Usas palabras precisas o categorías amplias (bien/mal)?',
+    '¿Qué persona en tu vida activa regularmente emociones difíciles en ti? ¿Qué necesidad tuya está tocando?',
+    '¿Cuándo fue la última vez que te permitiste sentir una emoción difícil sin actuar desde ella ni suprimirla?'
+  ],
+  glossaryTerms:[
+    {term:'IE (Inteligencia Emocional)',def:'Conjunto de habilidades para reconocer, comprender, gestionar y usar las emociones propias y ajenas. Modelo de Goleman.'},
+    {term:'Amígdala',def:'Estructura cerebral responsable de la respuesta emocional rápida. Activa el modo lucha/huida/parálisis antes que el pensamiento racional.'},
+    {term:'Mindfulness emocional',def:'Observar las emociones sin identificarse con ellas. "Siento tristeza" en vez de "soy triste".'},
+    {term:'Apego',def:'Estilo relacional formado en la infancia que determina cómo te vinculas de adulto. Seguro, ansioso, evitativo o desorganizado.'},
+    {term:'Regulación emocional',def:'Estrategias para modular la intensidad y duración de las emociones. Incluye respiración, reencuadre cognitivo, movimiento.'},
+    {term:'Escucha activa',def:'Atención plena a lo que el otro dice, sin preparar respuesta. Incluye parafrasear y validar.'},
+    {term:'Comunicación no violenta',def:'Modelo de Rosenberg: observación neutra + emoción + necesidad + petición concreta. Sin juicio ni crítica.'},
+    {term:'Zona de confort emocional',def:'Emociones familiares que el sistema nervioso tolera aunque sean negativas. Salir de ella requiere práctica gradual.'}
+  ],
+  retoContent:[
+    {title:'Día 1: Diario emocional', instructions:'3 veces al día, anota: situación, emoción exacta, intensidad 1-10, sensación corporal. Solo observar, sin juzgar.', reflectionPrompt:'¿Cuántas emociones distintas registraste?'},
+    {title:'Día 2: Pausa antes de reaccionar', instructions:'Cada vez que sientas emoción fuerte, haz pausa de 10 respiraciones antes de responder. Si puedes, espera 24h para conversaciones difíciles.', reflectionPrompt:'¿Lograste pausar? ¿Cambió tu respuesta?'},
+    {title:'Día 3: Practica empatía', instructions:'En cada conversación de hoy, intenta identificar qué emoción está sintiendo el otro antes de responder. Pregunta "¿cómo te sientes con eso?"', reflectionPrompt:'¿Qué descubriste del otro?'},
+    {title:'Día 4: Identifica tus disparadores', instructions:'Haz lista de situaciones, personas o frases que te sacan de tu centro emocional. Sin juzgar. Solo mapear tu paisaje interno.', reflectionPrompt:'¿Qué patrón ves?'},
+    {title:'Día 5: Comunicación asertiva', instructions:'Exprés UNA necesidad emocional hoy usando: "Cuando X ocurre, yo siento Y, y necesito Z". Sin crítica ni queja.', reflectionPrompt:'¿Cómo respondió el otro?'}
+  ]
+}
+
   ];
 }

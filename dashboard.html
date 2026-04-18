@@ -12,6 +12,7 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="./supabase-config.js"></script>
 <script src="./app.js"></script>
+<script src="./miniapp-templates.js"></script>
 <script src="./ai-assistant.js" defer></script>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
@@ -842,12 +843,48 @@ document.addEventListener('DOMContentLoaded', async () => {
   await Promise.all([loadUserInfo(), renderMiniApps(), renderQuizzes()]);
   loadLeadsCount();
   loadUsageWidget();
+  // Apply mini-app template if coming from plantillas-miniapps.html
+  if (new URLSearchParams(window.location.search).get('miniapp_template')) {
+    applyPendingMiniAppTemplate();
+  }
   // Show onboarding on first visit
   const onboardingKey = `onboarding_done_${_currentUser.id}`;
   if (!localStorage.getItem(onboardingKey)) {
     setTimeout(() => showOnboarding(onboardingKey), 800);
   }
 });
+
+// ── Apply mini-app template from gallery ─────────────────
+function applyPendingMiniAppTemplate() {
+  try {
+    const raw = localStorage.getItem('ls_miniapp_template_pending');
+    if (!raw) return;
+    localStorage.removeItem('ls_miniapp_template_pending');
+    const tpl = JSON.parse(raw);
+    // Open the mini-app creation modal pre-filled with template data
+    openMiniAppModal();
+    // Fill in name and description
+    const nameEl = document.getElementById('ma-name');
+    const descEl = document.getElementById('ma-desc');
+    if (nameEl) nameEl.value = tpl.name || '';
+    if (descEl) descEl.value = tpl.description || '';
+    // Fill niche if field exists
+    const nicheEl = document.getElementById('ma-niche');
+    if (nicheEl && tpl.niche) nicheEl.value = tpl.niche;
+    // Check the right type checkboxes
+    if (tpl.types && tpl.types.length) {
+      document.querySelectorAll('input[name="ma-type"]').forEach(cb => {
+        cb.checked = tpl.types.includes(cb.value);
+      });
+    }
+    // Store template content so handleCreateMiniApp can merge it
+    window._pendingTemplateContent = tpl;
+    // Show toast
+    showToast(`Plantilla "${tpl.name}" cargada. Personaliza y crea.`);
+  } catch (e) {
+    console.warn('applyPendingMiniAppTemplate:', e);
+  }
+}
 
 // ── User info ────────────────────────────────────────────
 async function loadUserInfo() {
@@ -1432,7 +1469,17 @@ async function handleCreateMiniApp(e) {
   const appData = { name, type: types[0], types, niche, product, description, icon, accessCodes };
 
   // Collect any content the creator typed in (optional — overrides AI where provided)
-  const creatorContent = getCreatorContent();
+  // Also merge template content if a template was loaded from the gallery
+  const templateContent = window._pendingTemplateContent
+    ? (({ id, name: _n, types: _t, niche: _ni, category, subcategory, description: _d,
+           icon, primaryColor, secondaryColor, bgColor, headerGradient, ...rest }) => rest)(window._pendingTemplateContent)
+    : {};
+  if (window._pendingTemplateContent) {
+    const tpl = window._pendingTemplateContent;
+    if (!document.getElementById('ma-icon').value && tpl.icon) document.getElementById('ma-icon').value = tpl.icon;
+    window._pendingTemplateContent = null;
+  }
+  const creatorContent = { ...templateContent, ...getCreatorContent() };
   const submitBtn = document.getElementById('ma-submit-btn');
   const progressEl = document.getElementById('ma-progress');
   const progressMsg = document.getElementById('ma-progress-msg');

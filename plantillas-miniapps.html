@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html class="dark" lang="es">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Plantillas de Mini-Apps | Luminous Studio</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="./supabase-config.js"></script>
+<script src="./app.js"></script>
+<script src="./miniapp-templates.js"></script>
+<script src="./ai-assistant.js" defer></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+  tailwind.config = {
+    darkMode: "class",
+    theme: {
+      extend: {
+        colors: {
+          "on-error": "#490013",
+          "primary-fixed-dim": "#6d8cff",
+          "on-tertiary-fixed-variant": "#6a1460",
+          "on-surface": "#ffffff",
+          "surface-container": "#1a1a1a",
+          "on-primary": "#00257d",
+          "error-container": "#a70138",
+          "on-secondary-fixed-variant": "#006544",
+          "on-primary-fixed-variant": "#002377",
+          "on-primary-container": "#001b62",
+          "error-dim": "#d73357",
+          "inverse-primary": "#144fe5",
+          "background": "#0e0e0e",
+          "secondary": "#69f6b8",
+          "secondary-fixed": "#69f6b8",
+          "error": "#ff6e84",
+          "on-surface-variant": "#adaaaa",
+          "surface-tint": "#2E5BFF",
+          "secondary-fixed-dim": "#58e7ab",
+          "on-secondary-fixed": "#00452d",
+          "surface-container-low": "#131313",
+          "secondary-container": "#006c49",
+          "outline": "#767575",
+          "surface-container-lowest": "#000000",
+          "primary-dim": "#3867fb",
+          "secondary-dim": "#58e7ab",
+          "on-secondary": "#005a3c",
+          "surface-container-highest": "#262626",
+          "primary": "#2E5BFF",
+          "on-tertiary-fixed": "#380033",
+          "on-error-container": "#ffb2b9",
+          "tertiary-dim": "#e883d2",
+          "on-primary-fixed": "#000000",
+          "surface-variant": "#262626",
+          "tertiary": "#ffa3e9",
+          "inverse-surface": "#fcf9f8",
+          "tertiary-fixed-dim": "#e883d2",
+          "tertiary-container": "#f790e0",
+          "surface": "#0e0e0e",
+          "primary-fixed": "#819bff",
+          "surface-dim": "#0e0e0e",
+          "on-tertiary-container": "#5f0656",
+          "on-background": "#ffffff",
+          "on-tertiary": "#6c1561",
+          "surface-bright": "#2c2c2c",
+          "primary-container": "#819bff",
+          "on-secondary-container": "#e1ffec",
+          "inverse-on-surface": "#565555",
+          "tertiary-fixed": "#f790e0",
+          "outline-variant": "#484847",
+          "surface-container-high": "#20201f"
+        },
+        fontFamily: {
+          "headline": ["Plus Jakarta Sans"],
+          "body": ["Plus Jakarta Sans"],
+          "label": ["Plus Jakarta Sans"]
+        },
+        borderRadius: {"DEFAULT": "0.5rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+      },
+    },
+  }
+</script>
+<style>
+  body { font-family: 'Plus Jakarta Sans', sans-serif; min-height: max(884px, 100dvh); }
+  .material-symbols-outlined {
+    font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+  }
+  .glass-panel {
+    background: rgba(38,38,38,0.6);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+  }
+  .primary-gradient { background: linear-gradient(135deg, #2E5BFF 0%, #7c3aed 100%); }
+  .recessed-input { background-color: #000000; }
+  .recessed-input:focus-within { outline: 1px solid #95AAFF; }
+  .active-cat { background: #2E5BFF; border-color: #2E5BFF; color: #fff; }
+  .type-badge {
+    display: inline-flex; align-items: center; gap: 2px;
+    font-size: 10px; font-weight: 600;
+    padding: 1px 7px; border-radius: 999px;
+    background: rgba(46,91,255,0.12); color: #819bff;
+  }
+</style>
+</head>
+<body class="bg-background text-on-background min-h-screen">
+
+<!-- TopAppBar -->
+<header class="bg-[#0E0E0E] w-full top-0 sticky z-50">
+  <div class="flex justify-between items-center px-6 py-4 w-full">
+    <div class="flex items-center gap-3">
+      <a class="text-xl font-bold tracking-tighter text-primary" href="./dashboard.html">Luminous Studio</a>
+    </div>
+    <div class="flex items-center gap-6">
+      <nav class="hidden md:flex items-center gap-8 font-plus-jakarta text-sm font-medium tracking-tight">
+        <a class="text-on-surface-variant hover:text-primary transition-colors duration-400" href="./dashboard.html">Dashboard</a>
+        <a class="text-primary font-semibold" href="./plantillas-miniapps.html">Mini-Apps</a>
+        <a class="text-on-surface-variant hover:text-primary transition-colors duration-400" href="./plantillas.html">Plantillas Quiz</a>
+        <a class="text-on-surface-variant hover:text-primary transition-colors duration-400" href="./precios.html">Plan</a>
+      </nav>
+    </div>
+  </div>
+</header>
+
+<main class="max-w-7xl mx-auto px-6 pt-12 pb-32">
+
+  <!-- Header & Search -->
+  <section class="mb-12">
+    <div class="flex flex-col md:flex-row md:items-end justify-between gap-8 mb-10">
+      <div class="space-y-2">
+        <h2 class="text-5xl font-extrabold tracking-tight text-on-surface leading-tight">
+          Plantillas de<br/>
+          <span class="bg-gradient-to-r from-[#4d7cff] to-[#a78bfa] bg-clip-text text-transparent">Mini-Apps</span>
+        </h2>
+        <p class="text-on-surface-variant text-lg max-w-md">
+          58 mini-apps listas para clonar y publicar. Sin IA, sin esperas.
+        </p>
+      </div>
+      <div class="w-full max-w-md">
+        <div class="recessed-input flex items-center px-4 py-3 rounded-xl border border-outline-variant/15 transition-all duration-400">
+          <span class="material-symbols-outlined text-on-surface-variant mr-3">search</span>
+          <input id="search-input"
+            class="bg-transparent border-none focus:ring-0 text-on-surface w-full font-medium placeholder:text-on-surface-variant/50"
+            placeholder="Buscar plantillas..."
+            type="text"
+            oninput="filterBySearch(this.value)"/>
+        </div>
+      </div>
+    </div>
+
+    <!-- Category Pills -->
+    <div class="flex flex-wrap gap-3" id="category-filters">
+      <button onclick="setCategory(this, '')" class="category-pill flex items-center gap-2 px-4 py-2 rounded-full text-sm font-bold border transition-all active-cat" data-cat="">
+        <span class="material-symbols-outlined text-base" style="font-variation-settings:'FILL' 1;">apps</span>
+        Todas
+      </button>
+      <button onclick="setCategory(this, 'Bienestar')" class="category-pill flex items-center gap-2 px-4 py-2 rounded-full text-sm font-bold border border-outline-variant/30 text-on-surface-variant hover:border-primary/50 hover:text-primary transition-all" data-cat="Bienestar">
+        <span class="material-symbols-outlined text-base" style="font-variation-settings:'FILL' 1;">spa</span>
+        Bienestar
+      </button>
+      <button onclick="setCategory(this, 'Fitness')" class="category-pill flex items-center gap-2 px-4 py-2 rounded-full text-sm font-bold border border-outline-variant/30 text-on-surface-variant hover:border-primary/50 hover:text-primary transition-all" data-cat="Fitness">
+        <span class="material-symbols-outlined text-base" style="font-variation-settings:'FILL' 1;">fitness_center</span>
+        Fitness
+      </button>
+      <button onclick="setCategory(this, 'Nutrición')" class="category-pill flex items-center gap-2 px-4 py-2 rounded-full text-sm font-bold border border-outline-variant/30 text-on-surface-variant hover:border-primary/50 hover:text-primary transition-all" data-cat="Nutrición">
+        <span class="material-symbols-outlined text-base" style="font-variation-settings:'FILL' 1;">nutrition</span>
+        Nutrición
+      </button>
+      <button onclick="setCategory(this, 'Fe')" class="category-pill flex items-center gap-2 px-4 py-2 rounded-full text-sm font-bold border border-outline-variant/30 text-on-surface-variant hover:border-primary/50 hover:text-primary transition-all" data-cat="Fe">
+        <span class="material-symbols-outlined text-base" style="font-variation-settings:'FILL' 1;">auto_awesome</span>
+        Fe
+      </button>
+      <button onclick="setCategory(this, 'Finanzas')" class="category-pill flex items-center gap-2 px-4 py-2 rounded-full text-sm font-bold border border-outline-variant/30 text-on-surface-variant hover:border-primary/50 hover:text-primary transition-all" data-cat="Finanzas">
+        <span class="material-symbols-outlined text-base" style="font-variation-settings:'FILL' 1;">trending_up</span>
+        Finanzas
+      </button>
+      <button onclick="setCategory(this, 'Negocios')" class="category-pill flex items-center gap-2 px-4 py-2 rounded-full text-sm font-bold border border-outline-variant/30 text-on-surface-variant hover:border-primary/50 hover:text-primary transition-all" data-cat="Negocios">
+        <span class="material-symbols-outlined text-base" style="font-variation-settings:'FILL' 1;">business_center</span>
+        Negocios
+      </button>
+      <button onclick="setCategory(this, 'Educación')" class="category-pill flex items-center gap-2 px-4 py-2 rounded-full text-sm font-bold border border-outline-variant/30 text-on-surface-variant hover:border-primary/50 hover:text-primary transition-all" data-cat="Educación">
+        <span class="material-symbols-outlined text-base" style="font-variation-settings:'FILL' 1;">school</span>
+        Educación
+      </button>
+      <button onclick="setCategory(this, 'Relaciones')" class="category-pill flex items-center gap-2 px-4 py-2 rounded-full text-sm font-bold border border-outline-variant/30 text-on-surface-variant hover:border-primary/50 hover:text-primary transition-all" data-cat="Relaciones">
+        <span class="material-symbols-outlined text-base" style="font-variation-settings:'FILL' 1;">favorite</span>
+        Relaciones
+      </button>
+      <button onclick="setCategory(this, 'Belleza')" class="category-pill flex items-center gap-2 px-4 py-2 rounded-full text-sm font-bold border border-outline-variant/30 text-on-surface-variant hover:border-primary/50 hover:text-primary transition-all" data-cat="Belleza">
+        <span class="material-symbols-outlined text-base" style="font-variation-settings:'FILL' 1;">face_retouching_natural</span>
+        Belleza
+      </button>
+      <button onclick="setCategory(this, 'Hogar')" class="category-pill flex items-center gap-2 px-4 py-2 rounded-full text-sm font-bold border border-outline-variant/30 text-on-surface-variant hover:border-primary/50 hover:text-primary transition-all" data-cat="Hogar">
+        <span class="material-symbols-outlined text-base" style="font-variation-settings:'FILL' 1;">home</span>
+        Hogar
+      </button>
+      <button onclick="setCategory(this, 'Mascotas')" class="category-pill flex items-center gap-2 px-4 py-2 rounded-full text-sm font-bold border border-outline-variant/30 text-on-surface-variant hover:border-primary/50 hover:text-primary transition-all" data-cat="Mascotas">
+        <span class="material-symbols-outlined text-base" style="font-variation-settings:'FILL' 1;">pets</span>
+        Mascotas
+      </button>
+      <button onclick="setCategory(this, 'Desarrollo Personal')" class="category-pill flex items-center gap-2 px-4 py-2 rounded-full text-sm font-bold border border-outline-variant/30 text-on-surface-variant hover:border-primary/50 hover:text-primary transition-all" data-cat="Desarrollo Personal">
+        <span class="material-symbols-outlined text-base" style="font-variation-settings:'FILL' 1;">psychology</span>
+        Desarrollo Personal
+      </button>
+    </div>
+  </section>
+
+  <!-- Templates Grid -->
+  <section>
+    <div id="templates-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+      <!-- Populated by JS -->
+    </div>
+    <p id="empty-state" class="hidden text-on-surface-variant text-center py-16 text-lg">No se encontraron plantillas.</p>
+  </section>
+</main>
+
+<!-- Success toast -->
+<div id="toast" class="fixed bottom-24 left-1/2 -translate-x-1/2 z-[100] pointer-events-none">
+  <div id="toast-inner" class="hidden px-5 py-3 rounded-xl glass-panel border border-outline-variant/20 text-sm font-semibold text-on-surface shadow-xl flex items-center gap-3">
+    <span class="material-symbols-outlined text-[#4d7cff]" style="font-variation-settings:'FILL' 1;">check_circle</span>
+    <span id="toast-msg"></span>
+  </div>
+</div>
+
+<!-- Bottom nav -->
+<nav class="fixed bottom-8 left-0 right-0 z-50 flex justify-around items-center p-2 pointer-events-none">
+  <div class="fixed bottom-8 left-1/2 -translate-x-1/2 w-[90%] max-w-md rounded-2xl border border-[#484847]/15 bg-[#262626]/60 backdrop-blur-xl shadow-[0_20px_40px_rgba(20,79,229,0.08)] flex justify-around items-center p-2 pointer-events-auto">
+    <a class="flex flex-col items-center justify-center text-[#ADAAAA] px-4 py-2 hover:bg-[#131313] rounded-xl transition-all duration-400 scale-95 active:scale-90" href="./generador-ia.html">
+      <span class="material-symbols-outlined">hand_package</span>
+      <span class="font-plus-jakarta text-[10px] font-medium uppercase tracking-widest mt-1">Build</span>
+    </a>
+    <a class="flex flex-col items-center justify-center text-primary bg-[#2C2C2C] rounded-xl px-4 py-2 transition-all duration-400 scale-100" href="./plantillas-miniapps.html">
+      <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">local_library</span>
+      <span class="font-plus-jakarta text-[10px] font-medium uppercase tracking-widest mt-1">Library</span>
+    </a>
+    <a class="flex flex-col items-center justify-center text-[#ADAAAA] px-4 py-2 hover:bg-[#131313] rounded-xl transition-all duration-400 scale-95 active:scale-90" href="./dashboard.html">
+      <span class="material-symbols-outlined">leaderboard</span>
+      <span class="font-plus-jakarta text-[10px] font-medium uppercase tracking-widest mt-1">Sales</span>
+    </a>
+    <a class="flex flex-col items-center justify-center text-[#ADAAAA] px-4 py-2 hover:bg-[#131313] rounded-xl transition-all duration-400 scale-95 active:scale-90" href="./precios.html">
+      <span class="material-symbols-outlined">person</span>
+      <span class="font-plus-jakarta text-[10px] font-medium uppercase tracking-widest mt-1">Account</span>
+    </a>
+  </div>
+</nav>
+
+<script>
+const TYPE_LABELS = {
+  reto:'Reto', checklist:'Checklist', tracker:'Tracker', devocional:'Devocional',
+  planificador:'Planificador', calculadora:'Calculadora', diario:'Diario',
+  chatbot:'Chatbot', generador:'Generador', simulador:'Simulador',
+  afirmaciones:'Afirmaciones', meditacion:'Meditación', faq:'FAQ',
+  flashcards:'Flashcards', glosario:'Glosario', roadmap:'Roadmap',
+  diagnostico:'Diagnóstico', comparador:'Comparador', biblioteca:'Biblioteca'
+};
+
+let _activeCategory = '';
+let _activeSearch = '';
+
+document.addEventListener('DOMContentLoaded', async () => {
+  const user = await Auth.requireAuth();
+  if (!user) return;
+  renderTemplates(getBuiltinMiniAppTemplates());
+});
+
+function renderTemplates(templates) {
+  const grid = document.getElementById('templates-grid');
+  const empty = document.getElementById('empty-state');
+  if (!templates.length) {
+    grid.innerHTML = '';
+    empty.classList.remove('hidden');
+    return;
+  }
+  empty.classList.add('hidden');
+  grid.innerHTML = templates.map(t => {
+    const typeBadges = (t.types || []).slice(0,3).map(tp =>
+      `<span class="type-badge">${esc(TYPE_LABELS[tp] || tp)}</span>`
+    ).join('');
+    const extra = (t.types || []).length > 3
+      ? `<span class="type-badge">+${t.types.length - 3}</span>` : '';
+    return `
+    <div class="group bg-surface-container-low rounded-xl overflow-hidden border border-outline-variant/5 hover:border-primary/20 transition-all duration-400 flex flex-col">
+      <div class="h-36 relative flex items-center justify-center overflow-hidden"
+           style="background:${t.headerGradient || 'linear-gradient(135deg,#2E5BFF,#7c3aed)'}">
+        <span class="material-symbols-outlined text-white/15 absolute"
+          style="font-size:140px; font-variation-settings:'FILL' 1,'wght' 100;">${esc(t.icon || 'widgets')}</span>
+        <span class="material-symbols-outlined text-white drop-shadow-lg relative z-10"
+          style="font-size:48px; font-variation-settings:'FILL' 1,'wght' 400;">${esc(t.icon || 'widgets')}</span>
+        <div class="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-3">
+          <button onclick="useTemplate('${esc(t.id)}')"
+            class="primary-gradient w-full py-2 rounded-lg text-xs font-bold text-white">
+            Usar plantilla
+          </button>
+        </div>
+      </div>
+      <div class="p-4 flex-1 flex flex-col">
+        <h5 class="font-semibold text-on-surface text-sm mb-1 leading-snug">${esc(t.name)}</h5>
+        <p class="text-xs text-on-surface-variant flex-1 mb-3 line-clamp-2">${esc(t.description || '')}</p>
+        <div class="flex flex-wrap gap-1 mb-3">${typeBadges}${extra}</div>
+        <button onclick="useTemplate('${esc(t.id)}')"
+          class="w-full py-2 rounded-lg border border-primary/20 text-primary text-xs font-bold hover:bg-primary/5 transition-colors">
+          Usar esta plantilla
+        </button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function applyFilters() {
+  const all = getBuiltinMiniAppTemplates();
+  const filtered = all.filter(t => {
+    const matchCat = !_activeCategory || t.category === _activeCategory;
+    const q = _activeSearch.toLowerCase().trim();
+    const matchSearch = !q ||
+      (t.name || '').toLowerCase().includes(q) ||
+      (t.description || '').toLowerCase().includes(q) ||
+      (t.category || '').toLowerCase().includes(q) ||
+      (t.niche || '').toLowerCase().includes(q) ||
+      (t.subcategory || '').toLowerCase().includes(q);
+    return matchCat && matchSearch;
+  });
+  renderTemplates(filtered);
+}
+
+function filterBySearch(query) {
+  _activeSearch = query;
+  applyFilters();
+}
+
+function setCategory(btn, cat) {
+  _activeCategory = cat;
+  document.querySelectorAll('.category-pill').forEach(p => p.classList.remove('active-cat'));
+  btn.classList.add('active-cat');
+  applyFilters();
+}
+
+function useTemplate(id) {
+  const tpl = getBuiltinMiniAppTemplates().find(t => t.id === id);
+  if (!tpl) return;
+  localStorage.setItem('ls_miniapp_template_pending', JSON.stringify(tpl));
+  showToast('Plantilla lista. Redirigiendo al dashboard...');
+  setTimeout(() => { window.location.href = './dashboard.html?miniapp_template=1'; }, 1200);
+}
+
+function showToast(msg) {
+  const inner = document.getElementById('toast-inner');
+  document.getElementById('toast-msg').textContent = msg;
+  inner.classList.remove('hidden');
+  setTimeout(() => inner.classList.add('hidden'), 3000);
+}
+
+function esc(s) {
+  return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+</script>
+</body>
+</html>
