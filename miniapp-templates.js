@@ -1896,5 +1896,123 @@ function getBuiltinMiniAppTemplates() {
   ]
 }
 
+  ,{
+  id:'tpl-ingles-speaking',
+  name:'Inglés: Habla con IA desde el Día 1',
+  types:['chatbot','reto','flashcards','faq'],
+  niche:'inglés, idiomas, speaking, conversación',
+  category:'Educación',
+  subcategory:'Idiomas',
+  description:'Practica conversación real en inglés con un chatbot IA que te corrige, responde y te ayuda a perder el miedo a hablar.',
+  icon:'record_voice_over',
+  primaryColor:'#2E5BFF',
+  secondaryColor:'#7c3aed',
+  bgColor:'#0e0e0e',
+  headerGradient:'linear-gradient(135deg, #2E5BFF, #7c3aed)',
+  retoContent:[
+    {title:'Día 1: Preséntate en inglés', instructions:'Ve al chatbot y escribe: "Hi! My name is [tu nombre]. I am from [país]. Nice to meet you!" El chatbot te responderá y continuará la conversación. Objetivo: 5 intercambios sin parar.', reflectionPrompt:'¿Cuántos mensajes enviaste sin rendirte?'},
+    {title:'Día 2: Habla de tu rutina', instructions:'Cuéntale al chatbot qué haces cada día. Empieza con: "Every morning I..." — usa el presente simple. Si te equivocas, el bot te corregirá con amabilidad.', reflectionPrompt:'¿Qué palabras nuevas aprendiste hoy?'},
+    {title:'Día 3: Haz preguntas', instructions:'Practica preguntas: "What do you think about...?", "Can you explain...?", "How do I say... in English?". Haz al menos 5 preguntas seguidas al chatbot.', reflectionPrompt:'¿Cuál pregunta te costó más construir?'},
+    {title:'Día 4: Simula una situación real', instructions:'Pide al chatbot: "Let\'s practice: I am at a restaurant and you are the waiter." Simula ordenar comida completamente en inglés. Pide la cuenta, pregunta por ingredientes.', reflectionPrompt:'¿Cómo te sentiste roleplaying en inglés?'},
+    {title:'Día 5: Debate una opinión', instructions:'Escribe al chatbot tu opinión sobre un tema: trabajo, viajes, tecnología. Usa "I think...", "In my opinion...", "I disagree because...". Mínimo 8 intercambios.', reflectionPrompt:'¿Lograste defender tu opinión en inglés?'},
+    {title:'Día 6: Pide correcciones', instructions:'Escribe al chatbot: "Please correct every mistake I make today and explain why." Luego habla libremente 10 minutos. Guarda las correcciones que te dé.', reflectionPrompt:'¿Cuál error repites más seguido?'},
+    {title:'Día 7: Conversación libre', instructions:'Sin tema específico. Abre el chatbot y habla de cualquier cosa que quieras por 15 minutos seguidos. No te detengas a traducir — adivina, pregunta, improvisa.', reflectionPrompt:'¿En qué momento te sentiste más fluido?'}
+  ],
+  cards:[
+    {front:'Filler words para ganar tiempo', back:'"Well...", "You know...", "Let me think...", "Actually...", "I mean..." — los nativos los usan constantemente. Úsalos tú también.'},
+    {front:'Cómo pedir que repitan', back:'"Could you say that again?", "Sorry, I didn\'t catch that.", "Can you speak more slowly please?"'},
+    {front:'Cómo preguntar vocabulario', back:'"How do you say [palabra en español] in English?", "What does [palabra] mean?", "Can you give me an example?"'},
+    {front:'Cómo expresar duda', back:'"I\'m not sure, but...", "I think it\'s...", "Correct me if I\'m wrong, but..." — muestra que intentas aunque no estés seguro.'},
+    {front:'Para empezar una opinión', back:'"In my opinion...", "I believe that...", "From my perspective...", "Personally, I think..."'},
+    {front:'Para estar de acuerdo', back:'"Exactly!", "That\'s a good point.", "I totally agree.", "You\'re right about that."'},
+    {front:'Para estar en desacuerdo educadamente', back:'"I see your point, but...", "I\'m not sure I agree because...", "That\'s interesting, however..."'},
+    {front:'Phrasal verbs cotidianos', back:'"Wake up", "get up", "work out", "hang out", "look forward to", "give up", "figure out" — aprende 2 por día.'},
+    {front:'Small talk starters', back:'"How\'s it going?", "What have you been up to?", "Did you do anything fun this weekend?", "How do you find [ciudad/trabajo]?"'},
+    {front:'Cómo el chatbot te ayuda', back:'Escríbele en inglés y pídele que corrija tus errores, que simplifique, que use más vocabulario o que hable más rápido. Personaliza tu práctica.'}
+  ],
+  faqItems:[
+    {q:'¿El chatbot entiende si escribo con errores?',a:'Sí, el chatbot entiende aunque cometas errores gramaticales. De hecho, puedes pedirle explícitamente que los corrija y explique el por qué.'},
+    {q:'¿Puedo practicar pronunciación con el chatbot?',a:'El chatbot es texto, pero puedes leer tus respuestas en voz alta antes de enviarlas. Usa el tipo "Listening" para escuchar inglés hablado con audio.'},
+    {q:'¿En qué nivel de inglés funciona mejor?',a:'Desde principiante. Si no sabes cómo decir algo, mezcla español e inglés y el bot te ayudará a expresarlo correctamente.'},
+    {q:'¿Cómo le pido al chatbot que haga un roleplay?',a:'Simplemente escríbele: "Let\'s do a roleplay. You are [personaje] and I am [personaje]. The situation is [escena]." Y empieza.'},
+    {q:'¿Puedo pedirle que use solo inglés?',a:'Sí: escríbele "Please respond only in English, even if I write in Spanish." Ideal cuando quieres inmersión total.'},
+    {q:'¿Cuántos minutos al día debo practicar?',a:'15-20 minutos diarios de conversación activa equivalen a una clase particular. La constancia supera la duración.'}
+  ]
+}
+
+  ,{
+  id:'tpl-ingles-listening',
+  name:'Inglés B2: Listening & Pronunciación',
+  types:['meditacion','flashcards','glosario','checklist','reto'],
+  niche:'inglés, idiomas, listening, pronunciación, avanzado',
+  category:'Educación',
+  subcategory:'Idiomas',
+  description:'Entrena tu oído con audios reales en inglés (TTS), aprende idioms avanzados y ejercita pronunciación con retos diarios.',
+  icon:'hearing',
+  primaryColor:'#0891b2',
+  secondaryColor:'#0e7490',
+  bgColor:'#0e0e0e',
+  headerGradient:'linear-gradient(135deg, #0891b2, #0e7490)',
+  meditationScript:`Welcome to your English listening session. Close your eyes, relax, and focus on the words.
+
+Today we are going to talk about habits and how they shape our lives.
+
+Every single day, we make hundreds of small decisions. What to eat. What to wear. Whether to exercise or stay in bed. Most of these decisions do not feel like decisions at all — they feel automatic. That is because they are habits.
+
+A habit is a behavior that has been repeated so many times that it becomes almost unconscious. Your brain runs it on autopilot to save energy for more complex tasks.
+
+The good news is that habits can be changed. Research shows that if you repeat a new behavior consistently for about 66 days, it starts to feel natural. The key is consistency, not perfection.
+
+Here is a powerful strategy: attach your new habit to something you already do every day. For example — "After I brush my teeth, I will study English for ten minutes." This is called habit stacking, and it works because your existing routine becomes the trigger for the new one.
+
+Remember: you do not have to be motivated to start. You just have to start. Motivation follows action, not the other way around.
+
+Take a deep breath. Now, think of one habit you want to build this week. Keep it small. Keep it simple. And remember — every expert was once a beginner.
+
+Well done. Open your eyes and keep going.`,
+  cards:[
+    {front:'To be on the fence', back:'Estar indeciso entre dos opciones. "I\'m still on the fence about changing jobs."'},
+    {front:'To bite the bullet', back:'Hacer algo difícil o desagradable que no puedes evitar. "I just bit the bullet and went to the dentist."'},
+    {front:'To break the ice', back:'Hacer algo para aliviar la tensión o incomodidad al inicio de una situación. "He told a joke to break the ice."'},
+    {front:'To hit the nail on the head', back:'Describir exactamente la situación o problema. "You hit the nail on the head with that analysis."'},
+    {front:'Once in a blue moon', back:'Muy raramente. "I only eat fast food once in a blue moon."'},
+    {front:'To pull someone\'s leg', back:'Bromear con alguien. "Don\'t worry, I\'m just pulling your leg!"'},
+    {front:'To be under the weather', back:'Sentirse enfermo o indispuesto. "I\'m feeling a bit under the weather today."'},
+    {front:'To cost an arm and a leg', back:'Ser muy caro. "That new phone costs an arm and a leg."'},
+    {front:'To spill the beans', back:'Revelar un secreto accidentalmente. "Don\'t spill the beans about the surprise party!"'},
+    {front:'Blessing in disguise', back:'Algo que parece malo al principio pero resulta ser bueno. "Losing that job was a blessing in disguise."'},
+    {front:'Phrasal verb: to come across', back:'Encontrar algo por accidente / dar una impresión. "I came across an old photo." / "She comes across as confident."'},
+    {front:'Phrasal verb: to bring up', back:'Mencionar un tema / criar un hijo. "He brought up an interesting point." / "She was brought up in Madrid."'}
+  ],
+  glossaryTerms:[
+    {term:'Intonation',def:'La melodía de la voz al hablar. El inglés sube y baja mucho más que el español. Practícala imitando a nativos.'},
+    {term:'Stress (acento tónico)',def:'En inglés, ciertas sílabas se pronuncian más fuerte. "PHOtograph" vs "phoTOGraphy" — el significado puede cambiar.'},
+    {term:'Schwa /ə/',def:'El sonido más común en inglés. Es una "a" muy débil y relajada. Aparece en palabras como "about", "the", "better".'},
+    {term:'Connected speech',def:'Los nativos conectan palabras al hablar. "What are you" suena como "Whadda ya". Aprende a escucharlo, no a hablarlo.'},
+    {term:'False friends',def:'Palabras parecidas al español pero con distinto significado. "Embarrassed" = avergonzado (no embarazada). "Eventually" = finalmente (no eventualmente).'},
+    {term:'Idiom',def:'Expresión cuyo significado no se puede deducir de las palabras individuales. Esenciales para sonar natural.'},
+    {term:'Phrasal verb',def:'Verbo + preposición o adverbio con significado propio. "Give up" = rendirse. No se traduce literal.'},
+    {term:'Register',def:'Nivel de formalidad del lenguaje. Formal (business), neutral (daily), informal (slang). Adapta tu inglés al contexto.'},
+    {term:'Chunk',def:'Grupo de palabras que se aprenden y usan juntas. "As far as I know", "It depends on". Más eficiente que traducir palabra por palabra.'},
+    {term:'Shadowing',def:'Técnica de imitar a un hablante nativo en tiempo real. Mejora pronunciación, ritmo y entonación. Usa podcasts o YouTube.'}
+  ],
+  initialItems:[
+    'Escucha el audio de listening al menos 2 veces por sesión',
+    'La primera vez: escucha sin leer el script',
+    'La segunda vez: lee el script mientras escuchas',
+    'Aprende 2 flashcards nuevas (idioms) por día',
+    'Practica shadowing: imita la voz del audio en voz alta',
+    'Aprende 1 término nuevo del glosario de pronunciación',
+    'Grábate hablando inglés 1 minuto y escúchate'
+  ],
+  retoContent:[
+    {title:'Día 1: Escucha sin leer', instructions:'Reproduce el audio del listening sin mirar el script. Escríbelo que entendiste en español. Luego escúchalo de nuevo leyendo. ¿Cuánto captaste?', reflectionPrompt:'¿Qué porcentaje entendiste a la primera?'},
+    {title:'Día 2: Shadowing en voz alta', instructions:'Reproduce el audio y habla AL MISMO TIEMPO que la voz. Imita ritmo, entonación y velocidad. Se siente raro — es exactamente lo que debes sentir.', reflectionPrompt:'¿Qué parte fue más difícil de imitar?'},
+    {title:'Día 3: Aprende 4 idioms', instructions:'Elige 4 flashcards de idioms. Léelas, memoriza el significado y escribe una oración original con cada una en tu idioma de destino.', reflectionPrompt:'¿Cuál idiom puedes usar hoy en una conversación?'},
+    {title:'Día 4: Pronunciación focalizada', instructions:'Elige 3 términos del glosario (schwa, stress, connected speech). Busca un video de YouTube sobre cada uno y practica 5 minutos cada uno.', reflectionPrompt:'¿Cuál cambió más cómo suenas?'},
+    {title:'Día 5: Grábate hablando', instructions:'Graba un audio de 1 minuto hablando inglés sobre cualquier tema. Escúchalo. ¿Qué noti en tu pronunciación? ¿Dónde pausas demasiado?', reflectionPrompt:'¿Cuál es tu mayor área de mejora al escucharte?'}
+  ]
+}
+
   ];
 }
