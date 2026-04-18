@@ -254,6 +254,12 @@
               <input id="quiz-brand-logo" type="url" placeholder="https://tu-logo.com/logo.png"
                 class="w-full bg-surface-container-high border border-outline-variant/10 rounded-lg px-3 py-2 text-xs text-on-surface outline-none focus:border-primary transition-colors"/>
             </div>
+            <div>
+              <label class="text-[10px] text-on-surface-variant block mb-1">Imagen de portada <span class="text-on-surface-variant/50">(opcional — se muestra al inicio)</span></label>
+              <input id="quiz-cover-image" type="url" placeholder="https://imagen.com/portada.jpg"
+                class="w-full bg-surface-container-high border border-outline-variant/10 rounded-lg px-3 py-2 text-xs text-on-surface outline-none focus:border-primary transition-colors"/>
+              <p class="text-[10px] text-on-surface-variant/50 mt-1">Recomendado: 1200×630px. Usa Unsplash, Pexels o tu propia imagen.</p>
+            </div>
           </div>
 
           <!-- Post-quiz action -->
@@ -610,7 +616,8 @@ function loadQuizIntoEditor(quiz) {
   document.getElementById('quiz-brand-name').value  = quiz.brandName  || '';
   document.getElementById('quiz-brand-color').value = quiz.brandColor || '#8B6AA0';
   document.getElementById('quiz-brand-color-hex').textContent = quiz.brandColor || '#8B6AA0';
-  document.getElementById('quiz-brand-logo').value  = quiz.brandLogo  || '';
+  document.getElementById('quiz-brand-logo').value   = quiz.brandLogo   || '';
+  document.getElementById('quiz-cover-image').value  = quiz.coverImage  || '';
   document.getElementById('quiz-lead-capture').checked      = leadOn;
   document.getElementById('quiz-wa-lead-capture').checked   = leadOn;
   document.getElementById('quiz-pay-lead-capture').checked  = leadOn;
@@ -819,9 +826,10 @@ async function saveQuiz() {
         : document.getElementById('quiz-land-lead-capture').checked;
 
   currentQuiz.emailResultEnabled = document.getElementById('quiz-email-result').checked;
-  currentQuiz.brandName  = document.getElementById('quiz-brand-name').value.trim() || '';
-  currentQuiz.brandColor = document.getElementById('quiz-brand-color').value || '#8B6AA0';
-  currentQuiz.brandLogo  = document.getElementById('quiz-brand-logo').value.trim() || '';
+  currentQuiz.brandName   = document.getElementById('quiz-brand-name').value.trim() || '';
+  currentQuiz.brandColor  = document.getElementById('quiz-brand-color').value || '#8B6AA0';
+  currentQuiz.brandLogo   = document.getElementById('quiz-brand-logo').value.trim() || '';
+  currentQuiz.coverImage  = document.getElementById('quiz-cover-image').value.trim() || '';
 
   // Meta Pixel / CAPI
   const pixelEnabled = document.getElementById('quiz-meta-pixel-enabled').checked;
