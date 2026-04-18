@@ -417,7 +417,7 @@ function renderBots() {
 
       <!-- Run button -->
       <button class="btn-run ${locked ? 'opacity-70' : ''}" onclick="event.stopPropagation(); runBot('${bot.id}', ${locked})">
-        ${locked ? '<span class="material-symbols-outlined" style="font-size:14px;font-variation-settings:\'FILL\' 1">lock</span> Requiere PRO' : '<span class="material-symbols-outlined" style="font-size:14px;font-variation-settings:\'FILL\' 1">play_arrow</span> Ejecutar Bot'}
+        ${locked ? `<span class="material-symbols-outlined" style="font-size:14px;font-variation-settings:'FILL' 1">lock</span> Requiere ${bot.plan === 'starter' ? 'STARTER' : 'PRO'}` : '<span class="material-symbols-outlined" style="font-size:14px;font-variation-settings:\'FILL\' 1">play_arrow</span> Ejecutar Bot'}
       </button>
     </div>`;
   }).join('');
