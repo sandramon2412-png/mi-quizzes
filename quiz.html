@@ -110,8 +110,16 @@
 
     <!-- ═══ INTRO SCREEN ═══ -->
     <div id="screen-intro" class="text-center space-y-6 slide-in">
-      <!-- Brand icon -->
-      <div class="float-icon inline-block">
+
+      <!-- Cover image (shown when quiz has coverImage) -->
+      <div id="intro-cover-wrap" class="hidden -mx-5 -mt-6 mb-2 relative overflow-hidden rounded-b-2xl" style="max-height:320px">
+        <img id="intro-cover-img" src="" alt="" loading="eager"
+          class="w-full object-cover" style="max-height:320px;min-height:180px"/>
+        <div class="absolute inset-0 pointer-events-none" style="background:linear-gradient(to bottom,transparent 40%,rgba(255,255,255,0.85) 100%)"></div>
+      </div>
+
+      <!-- Brand icon (hidden when cover image is shown) -->
+      <div id="intro-icon-wrap" class="float-icon inline-block">
         <div id="intro-icon" class="w-16 h-16 mx-auto rounded-2xl bg-brand-bg border border-brand-light/30 flex items-center justify-center text-3xl shadow-sm">🌸</div>
       </div>
 
@@ -312,6 +320,16 @@
     document.getElementById('intro-subtitle').textContent = QUIZ.subtitle || `Responde ${QUIZ.questions?.length || 5} preguntas y descubre el origen de lo que te está frenando — personalizado para ti.`;
     document.getElementById('intro-time').textContent = `Solo ${QUIZ.questions?.length || 5} preguntas · Menos de ${QUIZ.estimatedMinutes || 2} minutos`;
     document.title = (QUIZ.title || 'Quiz') + ' | Luminous Studio';
+
+    // Cover image
+    if (QUIZ.coverImage) {
+      const img = document.getElementById('intro-cover-img');
+      const wrap = document.getElementById('intro-cover-wrap');
+      img.src = QUIZ.coverImage;
+      wrap.classList.remove('hidden');
+      document.getElementById('intro-icon-wrap').classList.add('hidden');
+      document.getElementById('intro-brand').classList.add('hidden');
+    }
   });
 
   // ── Quiz flow ──────────────────────────────────────────
