@@ -89,6 +89,11 @@
     border: 1px solid rgba(124,58,237,0.4);
     color: #b388ff;
   }
+  .badge-starter {
+    background: linear-gradient(135deg, rgba(8,145,178,0.15), rgba(14,116,144,0.15));
+    border: 1px solid rgba(8,145,178,0.4);
+    color: #67e8f9;
+  }
 
   /* Category pills */
   .cat-pill {
@@ -278,8 +283,8 @@
   <div class="absolute inset-0 bg-black/70" onclick="closeUpgradeModal()"></div>
   <div class="relative z-10 rounded-2xl p-8 max-w-sm w-full text-center" style="background:#0d0d1a;border:1px solid rgba(124,58,237,0.4);box-shadow:0 32px 80px rgba(0,0,0,0.8);">
     <div class="w-14 h-14 rounded-2xl flex items-center justify-center mx-auto mb-4" style="background:linear-gradient(135deg,#2E5BFF,#7c3aed);"><span class="material-symbols-outlined text-white" style="font-size:28px;font-variation-settings:'FILL' 1">bolt</span></div>
-    <h3 class="text-xl font-black mb-2">Bot PRO</h3>
-    <p class="text-on-surface-variant/70 text-sm mb-6">Este bot está disponible en el plan <span class="text-[#b388ff] font-bold">PRO</span>. Actualiza tu plan para desbloquearlo.</p>
+    <h3 class="text-xl font-black mb-2" id="upgrade-modal-title">Bot PRO</h3>
+    <p class="text-on-surface-variant/70 text-sm mb-6" id="upgrade-modal-desc">Este bot está disponible en el plan <span class="text-[#b388ff] font-bold">PRO</span>. Actualiza tu plan para desbloquearlo.</p>
     <div class="flex flex-col gap-3">
       <a href="./precios.html" class="px-6 py-3 rounded-xl text-sm font-bold text-white" style="background:linear-gradient(135deg,#2E5BFF,#7c3aed);box-shadow:0 4px 16px rgba(46,91,255,0.35);">Ver planes →</a>
       <button onclick="closeUpgradeModal()" class="px-6 py-3 rounded-xl text-sm font-semibold text-on-surface-variant hover:text-on-surface transition-colors">Cancelar</button>
@@ -300,8 +305,9 @@ function initHeader() {
   const badge = document.getElementById('plan-badge');
   const avatar = document.getElementById('user-avatar');
   if (badge) {
-    badge.textContent = s.plan === 'pro' ? 'PRO' : 'Free';
-    if (s.plan === 'pro') {
+    const planLabels = { free:'Free', starter:'Starter', pro:'Pro', growth:'Growth', elite:'Elite' };
+    badge.textContent = planLabels[s.plan] || 'Free';
+    if (s.plan && s.plan !== 'free') {
       badge.classList.remove('border-primary/40', 'text-primary');
       badge.classList.add('text-[#b388ff]');
       badge.style.borderColor = 'rgba(124,58,237,0.4)';
@@ -333,7 +339,7 @@ const BOTS = [
   { id: 'hook-gen',            name: 'Hook Generator',        desc: 'Genera 10 hooks virales para Reels, TikTok y anuncios en segundos.',                            category: 'Copywriting', plan: 'free' },
   { id: 'email-seq',           name: 'Email Sequence',        desc: 'Secuencia de 5 emails de nurturing adaptada a cada perfil del quiz.',                           category: 'Copywriting', plan: 'pro'  },
   // ADS
-  { id: 'andromeda',           name: 'Andromeda Meta Ads',    desc: 'Campañas de FB/IG con el Método Andromeda usando quiz como landing.',                           category: 'Ads',         plan: 'pro'  },
+  { id: 'andromeda',           name: 'Andromeda Meta Ads',    desc: 'Campañas de FB/IG con el Método Andromeda usando quiz como landing.',                           category: 'Ads',         plan: 'starter' },
   { id: 'meta-decision',       name: 'Meta Ads Decision',     desc: 'Toma decisiones sobre tus campañas basadas en datos y métricas reales.',                        category: 'Ads',         plan: 'pro'  },
   { id: 'ad-copy',             name: 'Master Script Ads',     desc: 'Scripts y copies de anuncios UGC, testimonial y problema-solución.',                            category: 'Ads',         plan: 'pro'  },
   { id: 'ad-library',          name: 'Ad Library Analyzer',   desc: 'Analiza anuncios de tu competencia y extrae las mejores estrategias.',                          category: 'Ads',         plan: 'pro'  },
@@ -378,15 +384,20 @@ function renderBots() {
     return;
   }
 
+  const planRank = { free: 0, starter: 1, pro: 2, growth: 3, elite: 4 };
+  const userRank = planRank[userPlan] ?? 0;
+
   grid.innerHTML = filtered.map((bot, i) => {
-    const isPro = bot.plan === 'pro';
-    const locked = isPro && userPlan === 'free';
+    const botRank = planRank[bot.plan] ?? 0;
+    const locked = botRank > userRank;
+    const badgeLabel = bot.plan === 'pro' ? 'PRO' : bot.plan === 'starter' ? 'STARTER' : 'FREE';
+    const badgeClass = bot.plan === 'pro' ? 'badge-pro' : bot.plan === 'starter' ? 'badge-starter' : 'badge-free';
     return `
     <div class="bot-card" style="animation-delay:${i * 40}ms" onclick="runBot('${bot.id}', ${locked})">
       <!-- Plan badge -->
       <div class="absolute top-3 right-3">
-        <span class="text-[10px] font-black px-2 py-0.5 rounded-full ${isPro ? 'badge-pro' : 'badge-free'}">
-          ${isPro ? 'PRO' : 'FREE'}
+        <span class="text-[10px] font-black px-2 py-0.5 rounded-full ${badgeClass}">
+          ${badgeLabel}
         </span>
       </div>
 
@@ -414,6 +425,12 @@ function renderBots() {
 
 function runBot(id, locked) {
   if (locked) {
+    const bot = BOTS.find(b => b.id === id);
+    const isStarter = bot?.plan === 'starter';
+    document.getElementById('upgrade-modal-title').textContent = isStarter ? 'Bot Starter' : 'Bot PRO';
+    document.getElementById('upgrade-modal-desc').innerHTML = isStarter
+      ? 'Este bot está disponible desde el plan <span class="font-bold" style="color:#67e8f9">Starter ($5/mes)</span>. Actualiza para desbloquearlo.'
+      : 'Este bot está disponible en el plan <span class="text-[#b388ff] font-bold">PRO ($9/mes)</span>. Actualiza tu plan para desbloquearlo.';
     document.getElementById('upgrade-modal').classList.remove('hidden');
     return;
   }

@@ -115,6 +115,18 @@ const MiniApps = {
   delete(id) {
     Store.set(KEYS.MINI_APPS, this.getAll().filter(a => a.id !== id));
   },
+  canCreate() {
+    const plan = Settings.get().plan;
+    const count = this.getAll().length;
+    const limits = { free: 2, starter: 5, pro: 999, growth: 999, elite: 999 };
+    const max = limits[plan] ?? 999;
+    return count < max;
+  },
+  getLimit() {
+    const plan = Settings.get().plan;
+    const limits = { free: 2, starter: 5, pro: Infinity, growth: Infinity, elite: Infinity };
+    return limits[plan] ?? Infinity;
+  },
   validateCode(id, code) {
     const app = this.get(id);
     if (!app) return false;
@@ -856,7 +868,7 @@ function getPlanBadge(plan) {
 // ── Plan capabilities ─────────────────────────────────────
 const PlanLimits = {
   free:    { quizzes: 1,   responses: 500,      leads: false, ai: false, miniApps: 2,       customDomain: false, metaPixel: false, integrations: false, whiteLabel: false, subdomains: 0, nicheAssistant: false, botLab: false },
-  starter: { quizzes: 3,   responses: 5000,     leads: true,  ai: false, miniApps: 5,       customDomain: false, metaPixel: false, integrations: false, whiteLabel: false, subdomains: 0, nicheAssistant: false, botLab: false },
+  starter: { quizzes: 3,   responses: 5000,     leads: true,  ai: false, miniApps: 5,       customDomain: false, metaPixel: true,  integrations: false, whiteLabel: false, subdomains: 0, nicheAssistant: false, botLab: true  },
   pro:     { quizzes: 999, responses: 50000,    leads: true,  ai: true,  miniApps: 999,     customDomain: true,  metaPixel: true,  integrations: true,  whiteLabel: false, subdomains: 0, nicheAssistant: false, botLab: true  },
   growth:  { quizzes: 999, responses: 150000,   leads: true,  ai: true,  miniApps: 999,     customDomain: true,  metaPixel: true,  integrations: true,  whiteLabel: false, subdomains: 0, nicheAssistant: true,  botLab: true  },
   elite:   { quizzes: 999, responses: Infinity, leads: true,  ai: true,  miniApps: 999,     customDomain: true,  metaPixel: true,  integrations: true,  whiteLabel: true,  subdomains: 5, nicheAssistant: true,  botLab: true  },
@@ -879,7 +891,7 @@ function getPlanUpgradeMsg(feature) {
     customDomain: 'El dominio personalizado requiere plan Pro o superior.',
     metaPixel: 'Meta Pixel requiere plan Pro o superior.',
     integrations: 'Las integraciones requieren plan Pro o superior.',
-    botLab: 'Bot Lab requiere plan Pro o superior.',
+    botLab: 'Bot Lab requiere plan Starter o superior.',
     nicheAssistant: 'El Asistente IA del nicho requiere plan Growth o superior.',
     whiteLabel: 'White-label requiere plan Elite.',
     subdomains: 'Los subdominios requieren plan Elite.',

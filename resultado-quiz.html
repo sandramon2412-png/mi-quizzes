@@ -233,11 +233,22 @@
     }
     if (!quiz) quiz = DEMO_QUIZ;
 
-    // Track response (único por visitante, por mes)
+    // Track response (único por visitante, por mes) y verificar límite del plan
     const ownerId = quiz.user_id || quiz.owner_id || quiz.userId;
     try {
       if (ownerId && quizId && quizId !== 'demo' && typeof ResponseTracker !== 'undefined') {
-        ResponseTracker.track(ownerId, 'quiz', quizId);
+        await ResponseTracker.track(ownerId, 'quiz', quizId);
+        const usage = await ResponseTracker.getUsageStatus(ownerId);
+        if (usage.exceeded) {
+          document.body.innerHTML = `<div style="min-height:100dvh;display:flex;align-items:center;justify-content:center;background:#0e0e0e;font-family:'Plus Jakarta Sans',sans-serif;padding:24px;">
+            <div style="max-width:360px;text-align:center;">
+              <span style="font-family:'Material Symbols Outlined';font-size:48px;color:#484847;">pause_circle</span>
+              <h2 style="color:#fff;font-size:20px;font-weight:800;margin:16px 0 8px">Contenido pausado</h2>
+              <p style="color:#adaaaa;font-size:14px;line-height:1.6">Este quiz está temporalmente pausado. El creador ha alcanzado su límite mensual de visitas.</p>
+            </div>
+          </div>`;
+          return;
+        }
       }
     } catch (_) {}
 

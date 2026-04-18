@@ -246,11 +246,17 @@ document.addEventListener('DOMContentLoaded', async () => {
   if (app && !MiniApps.get(id)) MiniApps.save(app);
   currentApp = app;
 
-  // Track response (único por visitante, por mes)
+  // Track response (único por visitante, por mes) y verificar límite del plan
   const ownerId = app.owner_id || app.userId || app.user_id;
   try {
     if (ownerId && typeof ResponseTracker !== 'undefined') {
-      ResponseTracker.track(ownerId, 'miniapp', id);
+      await ResponseTracker.track(ownerId, 'miniapp', id);
+      // Bloquear si el creador superó su límite mensual de respuestas
+      const usage = await ResponseTracker.getUsageStatus(ownerId);
+      if (usage.exceeded) {
+        showError('Este contenido está temporalmente pausado. El creador ha alcanzado su límite mensual de visitas.');
+        return;
+      }
     }
   } catch (_) {}
 
