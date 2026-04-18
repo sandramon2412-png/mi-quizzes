@@ -150,7 +150,7 @@
       <button onclick="openCreateModal()" class="flex items-center gap-2 px-5 py-2.5 text-white text-sm font-bold rounded-xl hover:brightness-110 transition-all" style="background:linear-gradient(135deg,rgba(105,246,184,0.15),rgba(46,91,255,0.1));border:1px solid rgba(105,246,184,0.3);box-shadow:0 4px 16px rgba(105,246,184,0.1);">
         <span class="material-symbols-outlined text-base text-secondary" style="font-variation-settings:'FILL' 1">deployed_code</span><span class="text-secondary">Nueva Mini-App</span>
       </button>
-      <a href="./generador-ia.html" class="flex items-center gap-2 px-5 py-2.5 text-white text-sm font-bold rounded-xl hover:brightness-110 transition-all" style="background:linear-gradient(135deg,#2E5BFF,#7c3aed);box-shadow:0 4px 16px rgba(46,91,255,0.35);">
+      <a href="./generador-ia.html" onclick="guardAiNav(event,'./generador-ia.html')" class="flex items-center gap-2 px-5 py-2.5 text-white text-sm font-bold rounded-xl hover:brightness-110 transition-all" style="background:linear-gradient(135deg,#2E5BFF,#7c3aed);box-shadow:0 4px 16px rgba(46,91,255,0.35);">
         <span class="material-symbols-outlined text-base" style="font-variation-settings:'FILL' 1">add_circle</span>Nuevo Quiz
       </a>
     </div>
@@ -264,7 +264,7 @@
         <h2 class="text-lg font-black text-on-surface tracking-tight">Mis Quizzes</h2>
         <p class="text-xs text-on-surface-variant/55 mt-0.5">Embudos de conversión para Facebook Ads y landing pages</p>
       </div>
-      <a href="./generador-ia.html" class="flex items-center gap-1.5 px-4 py-2 bg-primary/10 border border-primary/25 text-primary text-xs font-bold rounded-xl hover:bg-primary/15 transition-colors">
+      <a href="./generador-ia.html" onclick="guardAiNav(event,'./generador-ia.html')" class="flex items-center gap-1.5 px-4 py-2 bg-primary/10 border border-primary/25 text-primary text-xs font-bold rounded-xl hover:bg-primary/15 transition-colors">
         <span class="material-symbols-outlined text-sm">add</span>Nuevo Quiz
       </a>
     </div>
@@ -344,7 +344,7 @@
               Un buen quiz tiene 4–6 preguntas y al menos 2 resultados distintos.
             </p>
           </div>
-          <a href="./generador-ia.html" class="flex items-center justify-center gap-2 w-full py-2.5 bg-primary/10 border border-primary/25 text-primary text-xs font-bold rounded-xl hover:bg-primary/15 transition-all">
+          <a href="./generador-ia.html" onclick="guardAiNav(event,'./generador-ia.html')" class="flex items-center justify-center gap-2 w-full py-2.5 bg-primary/10 border border-primary/25 text-primary text-xs font-bold rounded-xl hover:bg-primary/15 transition-all">
             <span class="material-symbols-outlined text-sm">auto_awesome</span>
             Crear quiz con IA
           </a>
@@ -1032,7 +1032,7 @@ async function renderQuizzes() {
       <div class="text-center py-12 bg-surface-container rounded-2xl border border-outline-variant/10">
         <span class="material-symbols-outlined text-4xl text-on-surface-variant/20">quiz</span>
         <p class="text-on-surface-variant text-sm mt-3">Aún no tienes quizzes.</p>
-        <a href="./generador-ia.html" class="inline-block mt-4 px-5 py-2.5 bg-primary text-white rounded-xl text-xs font-bold hover:opacity-90 transition-opacity">
+        <a href="./generador-ia.html" onclick="guardAiNav(event,'./generador-ia.html')" class="inline-block mt-4 px-5 py-2.5 bg-primary text-white rounded-xl text-xs font-bold hover:opacity-90 transition-opacity">
           Crear mi primer quiz con IA
         </a>
       </div>`;
@@ -1184,7 +1184,7 @@ const OB_STEPS = [
     title: '¿Listo para crear tu primer quiz?',
     desc: 'Solo necesitas el nombre de tu producto y una descripción. La IA hace el resto.',
     cta: '¡Crear mi primer quiz!',
-    ctaAction: () => window.location.href = './generador-ia.html',
+    ctaAction: () => { const hasAI = typeof canUsePlanFeature === 'function' ? canUsePlanFeature('ai') : true; if (!hasAI) { showUpgradeModal(); } else { window.location.href = './generador-ia.html'; } },
   },
 ];
 
@@ -1848,6 +1848,13 @@ const UPGRADE_PLANS = [
     features: ['Todo lo de Pro', 'Respuestas ilimitadas', '5 subdominios', 'White-label', 'Soporte dedicado'],
   },
 ];
+
+function guardAiNav(e, href) {
+  e.preventDefault();
+  const hasAI = typeof canUsePlanFeature === 'function' ? canUsePlanFeature('ai') : true;
+  if (!hasAI) { showUpgradeModal(); return; }
+  window.location.href = href;
+}
 
 function showUpgradeModal() {
   const grid = document.getElementById('upgrade-plans-grid');
