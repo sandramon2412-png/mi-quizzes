@@ -272,13 +272,67 @@ Crear 58 plantillas prearmadas con contenido real para que Free/Starter puedan c
 1. Crear `miniapp-templates.js` incremental (Write inicial con 5-10 plantillas + `module export`, luego Edit para agregar más bloques)
 2. Crear `plantillas-miniapps.html` (copiar estructura de `plantillas.html`, adaptar a mini-apps)
 3. Modificar `dashboard.html` para detectar plan y mostrar botón correcto + banner para Free/Starter
-4. Commit + push a branch `claude/luminos-studio-dashboard-ATGR3`
+4. Commit + push a branch `claude/fix-free-tier-ai-calls-CM1dL`
 
-### Estado actual (16 abr 2026)
+### Estado actual (18 abr 2026)
 - ✅ Arquitectura IA 3 capas deployed (claude-proxy + groq-proxy + creator-ai-proxy)
 - ✅ White-label footer en resultado-quiz
 - ✅ Gate IA en generador-ia.html corregido (requiere Pro, no Starter)
 - ✅ Integraciones Zapier wired
-- ❌ Plantillas mini-apps (58) — PENDIENTE, arrancar en nuevo chat
-- ❌ Página `plantillas-miniapps.html` — PENDIENTE
-- ❌ Dashboard manual path para Free/Starter — PENDIENTE
+- ✅ **Dashboard manual path para Free/Starter** — LISTO (commit `4974aaf` en `dashboard.html`: `updateMiniAppModalForPlan()` + banner `#ma-no-ai-banner` + gate `if (hasAI)` en `handleCreateMiniApp`)
+- 🟡 **Plantillas mini-apps (53/58)** — EN PROGRESO, pusheadas a `claude/fix-free-tier-ai-calls-CM1dL`. Faltan las últimas 5:
+  - 54. `tpl-cachorro` Tu Primer Cachorro [roadmap, checklist, faq, glosario]
+  - 55. `tpl-adiestramiento` Adiestramiento Canino [reto, flashcards, roadmap, faq]
+  - 56. `tpl-habitos-atomicos` Hábitos Atómicos 66 Días [reto, tracker, flashcards, diario]
+  - 57. `tpl-proposito` Propósito de Vida [diario, roadmap, afirmaciones, flashcards]
+  - 58. `tpl-inteligencia-emocional` Inteligencia Emocional [flashcards, diario, glosario, reto]
+- ❌ **Página `plantillas-miniapps.html`** — PENDIENTE (copiar estructura de `plantillas.html`)
+
+### Para continuar en nuevo chat
+**Branch activa**: `claude/fix-free-tier-ai-calls-CM1dL` (ya pusheada, 5 commits adelante de su estado inicial)
+
+**Paso 1 — Agregar templates 54-58 a `miniapp-templates.js`**:
+- El archivo termina con `]\n},\n\n  ];\n}` en las últimas líneas (~1641-1645)
+- Usar Edit tool: `old_string` = `  ];\n}` al final, `new_string` = 5 templates nuevos + `  ];\n}`
+- Estructura de cada template: mismo patrón que `tpl-zerowaste` (último agregado, líneas 1622-1642)
+- Campos por tipo:
+  - `roadmap` → `roadmapSteps: ['paso 1', 'paso 2', ...]` (5-8 pasos)
+  - `checklist` → `initialItems: ['tarea 1', ...]` (6-10 items)
+  - `faq` → `faqItems: [{q:'?', a:'...'}]` (6-10)
+  - `glosario` → `glossaryTerms: [{term:'', def:''}]` (8-12)
+  - `reto` → `retoContent: [{title:'Día 1: ...', instructions:'...', reflectionPrompt:'?'}]` (5-7 días)
+  - `flashcards` → `cards: [{front:'', back:''}]` (8-15)
+  - `tracker` → `trackerHabit: '...'`
+  - `diario` → `journalPrompts: ['¿...?', ...]` (5-8)
+  - `afirmaciones` → `affirmations: ['Yo soy...', ...]` (8-12)
+
+**Paso 2 — Crear `plantillas-miniapps.html`**:
+- Copiar estructura de `plantillas.html` (galería de quizzes existente)
+- Adaptar: cargar desde `getBuiltinMiniAppTemplates()` en vez de plantillas de quiz
+- Botón "Usar esta plantilla" que pase el template al dashboard via localStorage + redirect
+- Filtros por categoría (Bienestar, Fitness, Nutrición, Fe, Finanzas, Negocios, Educación, Relaciones, Belleza, Hogar, Mascotas, Desarrollo Personal)
+
+**Paso 3 — Commit + push**:
+```bash
+git add miniapp-templates.js plantillas-miniapps.html
+git commit -m "Complete 58 mini-app templates + gallery page"
+git push -u origin claude/fix-free-tier-ai-calls-CM1dL
+```
+
+### Commits ya pusheados en esta rama
+- `4974aaf` Fix free tier mini-app creation: skip AI calls for Free/Starter plans
+- `44faadc` Add mini-app templates 6-14 (Bienestar + Fitness)
+- `21839b6` Add nutrition templates 15-19
+- `bfc6ad5` Add Fe y Espiritualidad templates 20-24
+- `9914767` Add Finanzas templates 25-29
+- `50ab41d` Add Negocios y Marketing templates 30-35
+- `cb9f208` Add Educación templates 36-41
+- `3b81250` Add Relaciones templates 42-46
+- `e730c23` Add Belleza templates 47-49
+- `44e8111` Add Hogar templates 50-53
+
+### Lecciones aprendidas (evitar en próximo chat)
+- **NO** anunciar "voy a hacer X" sin ejecutar el tool call en el mismo turn — causa respuestas vacías
+- **NO** intentar agregar 5+ templates en un solo Edit — fallar por timeout del stream
+- **SÍ** hacer los Edits de 1-2 templates por turn y commit seguido
+- **SÍ** leer las últimas 15 líneas del archivo antes de cada Edit para conocer el estado exacto
