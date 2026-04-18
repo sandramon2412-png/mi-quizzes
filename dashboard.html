@@ -585,7 +585,7 @@ function toggleFbGuide() {
     <div class="px-7 pt-6 pb-4 flex items-center justify-between">
       <div>
         <h2 class="text-xl font-extrabold text-white tracking-tight">Elige tu plan</h2>
-        <p class="text-sm mt-0.5" style="color:rgba(255,255,255,0.4);">14 días gratis · Sin tarjeta · Cancela cuando quieras</p>
+        <p id="upgrade-modal-ctx" class="text-sm mt-0.5" style="color:rgba(255,255,255,0.4);">14 días gratis · Sin tarjeta · Cancela cuando quieras</p>
       </div>
       <button onclick="closeUpgradeModal()" class="w-8 h-8 rounded-lg flex items-center justify-center transition-colors" style="background:rgba(255,255,255,0.06);color:rgba(255,255,255,0.5);">
         <span class="material-symbols-outlined text-base">close</span>
@@ -1403,6 +1403,12 @@ async function toggleQuizStatus(id, currentStatus) {
 
 // ── Modal ────────────────────────────────────────────────
 function openCreateModal() {
+  if (typeof MiniApps !== 'undefined' && !MiniApps.canCreate()) {
+    const limit = MiniApps.getLimit();
+    _upgradeModalContext = `Alcanzaste el límite de ${limit} mini-app${limit !== 1 ? 's' : ''} de tu plan. Sube de plan para crear más.`;
+    showUpgradeModal();
+    return;
+  }
   document.getElementById('modal-overlay').classList.remove('hidden');
   document.getElementById('ma-name').focus();
   updateMiniAppModalForPlan();
@@ -1849,14 +1855,25 @@ const UPGRADE_PLANS = [
   },
 ];
 
+let _upgradeModalContext = '';
+
 function guardAiNav(e, href) {
   e.preventDefault();
+  if (typeof Quizzes !== 'undefined' && !Quizzes.canCreate()) {
+    const limit = Quizzes.getLimit();
+    _upgradeModalContext = `Alcanzaste el límite de ${limit} quiz${limit !== 1 ? 'zes' : ''} de tu plan. Sube de plan para crear más.`;
+    showUpgradeModal();
+    return;
+  }
   const hasAI = typeof canUsePlanFeature === 'function' ? canUsePlanFeature('ai') : true;
-  if (!hasAI) { showUpgradeModal(); return; }
+  if (!hasAI) { _upgradeModalContext = ''; showUpgradeModal(); return; }
   window.location.href = href;
 }
 
 function showUpgradeModal() {
+  const ctxEl = document.getElementById('upgrade-modal-ctx');
+  if (ctxEl) ctxEl.textContent = _upgradeModalContext || '14 días gratis · Sin tarjeta · Cancela cuando quieras';
+  _upgradeModalContext = '';
   const grid = document.getElementById('upgrade-plans-grid');
   grid.innerHTML = UPGRADE_PLANS.map(p => {
     const url = getHotmartUrl(p.id);
