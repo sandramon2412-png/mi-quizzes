@@ -217,17 +217,35 @@ Plantillas de Quiz
 </nav>
 <script>
 const CATEGORY_COLORS = {
-  'Finanzas':           'text-secondary bg-secondary/10',
-  'Marketing Digital':  'text-primary bg-primary/10',
-  'Productividad':      'text-tertiary bg-tertiary/10',
-  'Salud & Bienestar':  'text-emerald-400 bg-emerald-400/10',
+  'Finanzas':              'text-secondary bg-secondary/10',
+  'Marketing Digital':     'text-primary bg-primary/10',
+  'Productividad':         'text-tertiary bg-tertiary/10',
+  'Salud & Bienestar':     'text-emerald-400 bg-emerald-400/10',
+  'Bienestar':             'text-purple-300 bg-purple-400/10',
+  'Fitness':               'text-blue-300 bg-blue-400/10',
+  'Nutrición':             'text-cyan-300 bg-cyan-400/10',
+  'Relaciones':            'text-pink-300 bg-pink-400/10',
+  'Fe y Espiritualidad':   'text-amber-300 bg-amber-400/10',
+  'Negocios':              'text-indigo-300 bg-indigo-400/10',
+  'Educación':             'text-violet-300 bg-violet-400/10',
+  'Belleza':               'text-fuchsia-300 bg-fuchsia-400/10',
+  'Mascotas':              'text-sky-300 bg-sky-400/10',
 };
 
 const CATEGORY_BG = {
-  'Finanzas':          'background: linear-gradient(135deg, #006c49 0%, #004d34 100%)',
-  'Marketing Digital': 'background: linear-gradient(135deg, #1a3a8f 0%, #0d1f5c 100%)',
-  'Productividad':     'background: linear-gradient(135deg, #5b1f8a 0%, #3a0f6b 100%)',
-  'Salud & Bienestar': 'background: linear-gradient(135deg, #1a6b4a 0%, #0f4a30 100%)',
+  'Finanzas':              'background: linear-gradient(135deg, #006c49 0%, #004d34 100%)',
+  'Marketing Digital':     'background: linear-gradient(135deg, #1a3a8f 0%, #0d1f5c 100%)',
+  'Productividad':         'background: linear-gradient(135deg, #5b1f8a 0%, #3a0f6b 100%)',
+  'Salud & Bienestar':     'background: linear-gradient(135deg, #1a6b4a 0%, #0f4a30 100%)',
+  'Bienestar':             'background: linear-gradient(135deg, #4c1d95 0%, #2e1065 100%)',
+  'Fitness':               'background: linear-gradient(135deg, #1e40af 0%, #1e3a8a 100%)',
+  'Nutrición':             'background: linear-gradient(135deg, #0e7490 0%, #164e63 100%)',
+  'Relaciones':            'background: linear-gradient(135deg, #9d174d 0%, #701a3e 100%)',
+  'Fe y Espiritualidad':   'background: linear-gradient(135deg, #b45309 0%, #78350f 100%)',
+  'Negocios':              'background: linear-gradient(135deg, #3730a3 0%, #1e1b4b 100%)',
+  'Educación':             'background: linear-gradient(135deg, #6d28d9 0%, #4c1d95 100%)',
+  'Belleza':               'background: linear-gradient(135deg, #a21caf 0%, #6b21a8 100%)',
+  'Mascotas':              'background: linear-gradient(135deg, #0369a1 0%, #075985 100%)',
 };
 
 document.addEventListener('DOMContentLoaded', async () => {
