@@ -173,16 +173,17 @@
 
 /* ── Mode tabs ── */
 #lsa-mode-tabs {
-  display: flex; gap: 4px; padding: 8px 12px 7px;
+  display: flex; align-items: center; gap: 4px; padding: 10px 12px;
   background: rgba(0,0,0,0.3);
   border-bottom: 1px solid rgba(255,255,255,0.05);
-  overflow-x: auto; scrollbar-width: none;
+  overflow-x: auto; overflow-y: hidden; scrollbar-width: none;
+  white-space: nowrap;
 }
 #lsa-mode-tabs::-webkit-scrollbar { display: none; }
 .lsa-tab {
-  flex-shrink: 0; padding: 4px 11px; border-radius: 20px;
-  font-size: 11px; font-weight: 700; cursor: pointer; border: none;
-  background: rgba(255,255,255,0.05); color: rgba(255,255,255,0.35);
+  flex-shrink: 0; padding: 6px 12px; border-radius: 20px; line-height: 1.2;
+  font-size: 11px; font-weight: 700; cursor: pointer; border: 1px solid transparent;
+  background: rgba(255,255,255,0.05); color: rgba(255,255,255,0.45);
   transition: all 0.15s; white-space: nowrap;
 }
 .lsa-tab:hover { background: rgba(255,255,255,0.09); color: rgba(255,255,255,0.7); }
