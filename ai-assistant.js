@@ -57,11 +57,32 @@
     },
   ];
 
+  // Modo público (landing): Lloyd solo responde preguntas sobre la plataforma
+  const PUBLIC_MODE = {
+    id: 'luminous-info',
+    label: 'Luminous Studio',
+    icon: 'auto_awesome',
+    prompt: `Eres Lloyd, el asistente oficial de Luminous Studio. Estás en la landing pública — tu única misión es explicar qué es Luminous Studio y ayudar a visitantes a decidir si la plataforma les sirve. NO generes copy, quizzes, cartas de venta ni estrategias de marketing — si te piden algo así, responde amable que esa funcionalidad está dentro de la plataforma para usuarios registrados y sugiere crear una cuenta.
+
+INFORMACIÓN SOBRE LUMINOUS STUDIO:
+- Es una plataforma SaaS para creadores de infoproductos hispanohablantes
+- Permite crear quizzes interactivos (como landing pages de alta conversión) y mini-apps (retos, devocionales, trackers, chatbots IA, diarios, planificadores, meditaciones guiadas, flashcards, glosarios, roadmaps, FAQs, generadores, y más — 19 tipos de sección combinables)
+- Captura leads automáticamente y los segmenta según el resultado del quiz
+- Tiene IA generativa integrada (Claude + Groq) para crear quizzes y mini-apps desde una idea
+- Integraciones: Hotmart, Stripe, WhatsApp, Calendly, Discord, Mailchimp, Meta Ads, TikTok Pixel, Google Analytics, Zapier, Webhooks
+- Planes: Free ($0 — 1 quiz, 2 mini-apps, 500 respuestas/mes), Starter ($5 — 3 quizzes, 5 mini-apps, sin IA), Pro ($9 — ilimitado + IA), Growth ($19 — ilimitado + dominio propio), Elite ($49 — todo + white-label + subdominios)
+- Usa Bot Lab: 16 bots IA especializados en copywriting, ads, producto, contenido
+- Dominio propio desde Pro, white-label desde Elite
+
+TONO: cercano, directo, entusiasta pero sin exagerar. Respuestas cortas (2-4 oraciones). Cuando tenga sentido, invita al visitante a crear cuenta gratis o a ver los planes. No uses jerga técnica innecesaria. Responde siempre en español.`
+  };
+
   // ── Estado ────────────────────────────────────────────────
   const SESSIONS_KEY = 'lsa_sessions';
   let _sessions = JSON.parse(localStorage.getItem(SESSIONS_KEY) || '[]');
   let _activeSession = null;
   let _currentMode = MODES[0];
+  let _isPublic = false;
   let _isThinking = false;
   let _isMinimized = false;
   let _showSessions = false;
@@ -463,6 +484,7 @@
   function _renderModeTabs() {
     const el = document.getElementById('lsa-mode-tabs');
     if (!el) return;
+    if (_isPublic) { el.style.display = 'none'; return; }
     el.innerHTML = MODES.map(m => `
       <button class="lsa-tab ${m.id === _currentMode.id ? 'active' : ''}" onclick="LSA._selectMode('${m.id}')">
         <span class="material-symbols-outlined lsa-tab-icon">${m.icon || 'bolt'}</span>
@@ -696,16 +718,19 @@
           }
 
           if (!token) {
-            // Sin sesión válida: mostrar mensaje con links de acción
-            _activeSession.messages.push({
-              role: 'assistant',
-              content: 'Tu sesión expiró. Por favor [inicia sesión de nuevo](./login.html) para seguir usando el asistente.',
-              _isError: true,
-            });
-            _isThinking = false;
-            document.getElementById('lsa-send-btn').disabled = false;
-            _renderMessages();
-            return;
+            if (_isPublic && typeof SUPABASE_ANON_KEY !== 'undefined') {
+              token = SUPABASE_ANON_KEY;
+            } else {
+              _activeSession.messages.push({
+                role: 'assistant',
+                content: 'Tu sesión expiró. Por favor [inicia sesión de nuevo](./login.html) para seguir usando el asistente.',
+                _isError: true,
+              });
+              _isThinking = false;
+              document.getElementById('lsa-send-btn').disabled = false;
+              _renderMessages();
+              return;
+            }
           }
 
           const res = await fetch(`${SUPABASE_URL}/functions/v1/claude-proxy`, {
@@ -752,8 +777,13 @@
   };
 
   // ── Init ──────────────────────────────────────────────────
-  async function _checkNicheAssistantAccess() {
-    // Lloyd (asistente flotante) disponible para todos los usuarios autenticados.
+  async function _checkAccess() {
+    // Si hay body[data-lloyd-public], Lloyd corre en modo público (solo info de Luminous).
+    if (document.body?.dataset?.lloydPublic === 'true') {
+      _isPublic = true;
+      _currentMode = PUBLIC_MODE;
+      return true;
+    }
     try {
       if (typeof Auth === 'undefined') return false;
       const user = await Auth.user();
@@ -762,8 +792,8 @@
   }
 
   async function init() {
-    if (typeof Auth === 'undefined' || typeof SUPABASE_URL === 'undefined') return;
-    const allowed = await _checkNicheAssistantAccess();
+    if (typeof SUPABASE_URL === 'undefined') return;
+    const allowed = await _checkAccess();
     if (!allowed) return;
     injectHTML();
     _initVoice();
