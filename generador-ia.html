@@ -308,10 +308,19 @@
                 <input type="checkbox" id="quiz-lead-capture" class="rounded accent-primary"/>
                 <span class="text-xs text-on-surface">Pedir correo antes de mostrar resultado</span>
               </label>
-              <label class="flex items-center gap-2 cursor-pointer select-none">
-                <input type="checkbox" id="quiz-email-result" class="rounded accent-primary"/>
-                <span class="text-xs text-on-surface">Enviar resultado por email al lead <span class="text-on-surface-variant/60">(requiere Resend configurado)</span></span>
-              </label>
+              <!-- Email automático nativo -->
+              <div class="p-3 rounded-lg border border-primary/20 bg-primary/5 space-y-2">
+                <label class="flex items-center gap-2 cursor-pointer select-none">
+                  <input type="checkbox" id="quiz-email-result" class="rounded accent-primary"/>
+                  <span class="text-xs text-on-surface font-semibold flex items-center gap-1.5">
+                    <span class="material-symbols-outlined text-sm icon-gradient">forward_to_inbox</span>
+                    Enviar resultado por email automáticamente
+                  </span>
+                </label>
+                <p class="text-[10px] text-on-surface-variant/80 pl-6">
+                  Cuando alguien complete el quiz y deje su email, le llegará su resultado personalizado al instante — con tu marca. No necesitás conectar nada externo.
+                </p>
+              </div>
               <div>
                 <label class="text-xs font-bold text-primary uppercase tracking-widest block mb-1"><span class="material-symbols-outlined text-sm align-middle">link</span> URL del botón "Comprar" en el resultado</label>
                 <p class="text-[10px] text-on-surface-variant/60 mb-1.5">Tu landing, Hotmart, Stripe, checkout… Si lo dejas vacío el botón no irá a ningún lado.</p>
