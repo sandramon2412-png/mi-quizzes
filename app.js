@@ -987,19 +987,34 @@ const Integrations = {
   async fireLeadCaptured(lead) {
     const state = this._getState();
 
-    // Zapier: POST directo al webhook URL del usuario (no requiere CORS proxy)
+    const payload = {
+      event: 'lead_captured',
+      timestamp: new Date().toISOString(),
+      ...lead,
+    };
+
+    // Zapier: POST al webhook del usuario (no requiere CORS proxy)
     try {
       const zap = state.zapier;
       if (zap?.connected && zap.webhookUrl && /^https?:\/\//.test(zap.webhookUrl)) {
         fetch(zap.webhookUrl, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            event: 'lead_captured',
-            timestamp: new Date().toISOString(),
-            ...lead,
-          }),
-          mode: 'no-cors', // Zapier acepta no-cors
+          body: JSON.stringify(payload),
+          mode: 'no-cors',
+        }).catch(() => {});
+      }
+    } catch (_) {}
+
+    // Webhook genérico (Make, n8n, endpoints custom)
+    try {
+      const wh = state.webhook;
+      if (wh?.connected && wh.webhookUrl && /^https?:\/\//.test(wh.webhookUrl)) {
+        fetch(wh.webhookUrl, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+          mode: 'no-cors',
         }).catch(() => {});
       }
     } catch (_) {}

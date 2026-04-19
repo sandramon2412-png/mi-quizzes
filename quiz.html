@@ -260,6 +260,22 @@
     if (typeof fbq === 'function') fbq('track', event, params || {});
   }
 
+  // ── Google Analytics (GA4) ───────────────────────────────
+  function initGA(measurementId) {
+    if (!measurementId) return;
+    const s = document.createElement('script');
+    s.async = true;
+    s.src = 'https://www.googletagmanager.com/gtag/js?id=' + encodeURIComponent(measurementId);
+    document.head.appendChild(s);
+    window.dataLayer = window.dataLayer || [];
+    window.gtag = function(){ window.dataLayer.push(arguments); };
+    gtag('js', new Date());
+    gtag('config', measurementId);
+  }
+  function gaTrack(event, params) {
+    if (typeof window.gtag === 'function') window.gtag('event', event, params || {});
+  }
+
   // ── State ────────────────────────────────────────────────
   let QUIZ = null;
   let currentQ = 0;
@@ -307,6 +323,16 @@
       initMetaPixel(QUIZ.metaPixelId);
       fbTrack('ViewContent', { content_name: QUIZ.title || 'Quiz', content_type: 'quiz' });
     }
+
+    // Google Analytics (desde integraciones globales del creador)
+    try {
+      const integrations = JSON.parse(localStorage.getItem('ls_integrations') || '{}');
+      const gaId = integrations.ga?.connected && integrations.ga?.measurementId;
+      if (gaId) {
+        initGA(gaId);
+        gaTrack('quiz_view', { quiz_id: QUIZ.id || '', quiz_title: QUIZ.title || '' });
+      }
+    } catch (_) {}
 
     Session.setCurrentQuiz(QUIZ.id || 'demo');
     Session.setAnswers([]);
@@ -557,6 +583,7 @@
     }
 
     fbTrack('Lead', { content_name: QUIZ.title || 'Quiz' });
+    gaTrack('generate_lead', { quiz_id: QUIZ.id || '', quiz_title: QUIZ.title || '' });
     _goToResultPage();
   }
 
