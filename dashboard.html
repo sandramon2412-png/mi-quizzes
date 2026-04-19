@@ -257,6 +257,22 @@
     </div>
   </section>
 
+  <!-- ══════════════ MIS LANDINGS ══════════════ -->
+  <section class="mb-10" id="section-landings">
+    <div class="flex items-center justify-between mb-5">
+      <div class="section-head border-primary">
+        <h2 class="text-lg font-black text-on-surface tracking-tight">Mis Landings</h2>
+        <p class="text-xs text-on-surface-variant/55 mt-0.5">Páginas de venta generadas con IA · Claude Sonnet · desde plan Pro</p>
+      </div>
+      <a href="./landing-builder.html" id="btn-new-landing" class="flex items-center gap-1.5 px-4 py-2 bg-primary/10 border border-primary/25 text-primary text-xs font-bold rounded-xl hover:bg-primary/15 transition-colors">
+        <span class="material-symbols-outlined text-sm">add</span>Nueva Landing
+      </a>
+    </div>
+    <div id="landings-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+      <!-- populated by JS -->
+    </div>
+  </section>
+
   <!-- ══════════════ MIS QUIZZES ══════════════ -->
   <section>
     <div class="flex items-center justify-between mb-5">
@@ -840,7 +856,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   _currentUser = await Auth.requireAuth();
   if (!_currentUser) return;
-  await Promise.all([loadUserInfo(), renderMiniApps(), renderQuizzes()]);
+  await Promise.all([loadUserInfo(), renderMiniApps(), renderQuizzes(), renderLandings()]);
   loadLeadsCount();
   loadUsageWidget();
   // Apply mini-app template if coming from plantillas-miniapps.html
@@ -1009,6 +1025,101 @@ async function renderMiniApps() {
     const quizzes = await DB.quizzes.getAll(_currentUser.id);
     await updateStats(quizzes, apps);
   } catch {}
+}
+
+// ── Landings ─────────────────────────────────────────────
+async function renderLandings() {
+  const container = document.getElementById('landings-grid');
+  const section = document.getElementById('section-landings');
+  const newBtn = document.getElementById('btn-new-landing');
+  if (!container) return;
+
+  const caps = getPlanCaps(Settings.get().plan || 'free');
+  const maxLandings = caps.landings || 0;
+
+  // Hide the section entirely for plans with zero landings allowed
+  if (maxLandings < 1) {
+    if (section) section.style.display = 'none';
+    return;
+  }
+
+  container.innerHTML = '<p class="text-xs text-on-surface-variant py-6 col-span-full text-center animate-pulse">Cargando landings...</p>';
+
+  let landings = [];
+  try {
+    landings = await DB.landings.getAll(_currentUser.id);
+  } catch (e) {
+    landings = Landings.getAll();
+  }
+
+  const atLimit = landings.length >= maxLandings;
+  if (newBtn) {
+    if (atLimit) {
+      newBtn.classList.add('opacity-40', 'cursor-not-allowed');
+      newBtn.addEventListener('click', (e) => { e.preventDefault(); alert(`Llegaste al límite de ${maxLandings} landings de tu plan`); }, { once: true });
+    }
+  }
+
+  const cards = landings.map(l => {
+    const statusBadge = l.published
+      ? '<span class="text-[9px] px-1.5 py-0.5 rounded-full bg-green-500/15 text-green-400 font-bold uppercase tracking-wider">Publicada</span>'
+      : '<span class="text-[9px] px-1.5 py-0.5 rounded-full bg-outline-variant/20 text-on-surface-variant font-bold uppercase tracking-wider">Borrador</span>';
+    const visits = Number(l.visits || 0).toLocaleString('es');
+    return `
+      <div class="rounded-2xl border border-outline-variant/20 bg-surface-container overflow-hidden hover:border-primary/40 transition-all group">
+        <div class="h-28 primary-gradient flex items-center justify-center relative">
+          <span class="material-symbols-outlined text-white/80" style="font-size:44px;font-variation-settings:'FILL' 1">web</span>
+          <div class="absolute top-2 right-2">${statusBadge}</div>
+        </div>
+        <div class="p-4">
+          <h3 class="text-sm font-extrabold tracking-tight mb-1 truncate">${escapeHtml(l.title || 'Sin título')}</h3>
+          <p class="text-[10px] text-on-surface-variant/60 font-mono truncate mb-3">/l/${escapeHtml(l.slug || '')}</p>
+          <div class="flex items-center gap-1.5 text-[10px] text-on-surface-variant/70 mb-3">
+            <span class="material-symbols-outlined" style="font-size:12px">visibility</span>${visits} visitas
+          </div>
+          <div class="flex gap-1.5">
+            <a href="./landing-builder.html?id=${l.id}" class="flex-1 h-8 rounded-lg bg-surface-container-high hover:bg-surface-container-highest text-[11px] font-semibold flex items-center justify-center gap-1 transition-colors">
+              <span class="material-symbols-outlined" style="font-size:13px">edit</span>Editar
+            </a>
+            ${l.published ? `<a href="./landing-view.html?slug=${l.slug}" target="_blank" class="w-8 h-8 rounded-lg bg-surface-container-high hover:bg-surface-container-highest flex items-center justify-center transition-colors" title="Ver landing">
+              <span class="material-symbols-outlined" style="font-size:13px">open_in_new</span>
+            </a>` : ''}
+            <button onclick="deleteLanding('${l.id}')" class="w-8 h-8 rounded-lg bg-surface-container-high hover:bg-red-500/20 hover:text-red-400 flex items-center justify-center transition-colors" title="Eliminar">
+              <span class="material-symbols-outlined" style="font-size:13px">delete</span>
+            </button>
+          </div>
+        </div>
+      </div>`;
+  }).join('');
+
+  const addCard = atLimit ? '' : `
+    <a href="./landing-builder.html" class="rounded-2xl flex flex-col items-center justify-center text-center gap-2 cursor-pointer border border-dashed border-outline-variant/20 hover:border-primary/50 hover:bg-primary/[0.04] transition-all min-h-[220px] group">
+      <div class="w-10 h-10 rounded-xl bg-surface-container-high border border-outline-variant/20 flex items-center justify-center group-hover:bg-primary/10 group-hover:border-primary/30 transition-all">
+        <span class="material-symbols-outlined text-on-surface-variant/40 group-hover:text-primary transition-colors">add</span>
+      </div>
+      <p class="text-xs font-semibold text-on-surface-variant/40 group-hover:text-primary/80 transition-colors">Nueva Landing</p>
+      <p class="text-[10px] text-on-surface-variant/40">${landings.length} de ${maxLandings === 999 ? '∞' : maxLandings}</p>
+    </a>`;
+
+  container.innerHTML = cards + addCard;
+  if (!landings.length && atLimit) {
+    container.innerHTML = '<p class="text-xs text-on-surface-variant py-6 col-span-full text-center">Aún no tenés landings.</p>';
+  }
+}
+
+async function deleteLanding(id) {
+  if (!confirm('¿Eliminar esta landing? Esta acción no se puede deshacer.')) return;
+  try {
+    await DB.landings.delete(id);
+    Landings.delete(id);
+    renderLandings();
+  } catch (e) {
+    alert('Error al eliminar: ' + e.message);
+  }
+}
+
+function escapeHtml(s) {
+  return (s || '').toString().replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 }
 
 // ── Quizzes ──────────────────────────────────────────────

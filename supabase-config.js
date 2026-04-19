@@ -264,6 +264,64 @@ const DB = {
     }),
   },
 
+  // ── Landings (Landing Builder) ─────────────────────────────
+  landings: {
+    async getAll(userId) {
+      const { data, error } = await db.from('landings')
+        .select('*').eq('user_id', userId)
+        .order('updated_at', { ascending: false });
+      if (error) throw error;
+      return data || [];
+    },
+
+    async get(id) {
+      const { data, error } = await db.from('landings').select('*').eq('id', id).single();
+      if (error) return null;
+      return data;
+    },
+
+    async getBySlug(slug) {
+      const { data, error } = await db.from('landings').select('*').eq('slug', slug).maybeSingle();
+      if (error) return null;
+      return data;
+    },
+
+    async save(landing, userId) {
+      const row = {
+        user_id:    userId,
+        slug:       landing.slug,
+        title:      landing.title,
+        brief:      landing.brief || '',
+        html:       landing.html || '',
+        messages:   landing.messages || [],
+        published:  !!landing.published,
+        settings:   landing.settings || {},
+        updated_at: new Date().toISOString(),
+      };
+      if (landing.id) {
+        const { data, error } = await db.from('landings').update(row).eq('id', landing.id).select().single();
+        if (error) throw error;
+        return data;
+      }
+      const { data, error } = await db.from('landings').insert(row).select().single();
+      if (error) throw error;
+      return data;
+    },
+
+    async delete(id) {
+      const { error } = await db.from('landings').delete().eq('id', id);
+      if (error) throw error;
+    },
+
+    async incrementVisits(slug) {
+      try {
+        const { data } = await db.from('landings').select('id,visits').eq('slug', slug).maybeSingle();
+        if (!data) return;
+        await db.from('landings').update({ visits: (data.visits || 0) + 1 }).eq('id', data.id);
+      } catch {}
+    },
+  },
+
   // ── Leads ──────────────────────────────────────────────────
   leads: {
     async getAll(userId) {

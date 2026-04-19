@@ -8,6 +8,7 @@ const KEYS = {
   SETTINGS: 'ls_settings',
   QUIZZES:  'ls_quizzes',
   MINI_APPS: 'ls_mini_apps',
+  LANDINGS: 'ls_landings',
   CURRENT_QUIZ_ID: 'ls_current_quiz_id',
   CURRENT_ANSWERS: 'ls_current_answers',
   ANALYTICS: 'ls_analytics',
@@ -132,6 +133,56 @@ const MiniApps = {
     if (!app) return false;
     if (!app.accessCodes || app.accessCodes.length === 0) return true;
     return app.accessCodes.map(c => c.trim().toLowerCase()).includes(code.trim().toLowerCase());
+  },
+};
+
+// ── Landings (Landing Builder) ────────────────────────────
+const Landings = {
+  getAll() { return Store.get(KEYS.LANDINGS) || []; },
+  get(id) { return this.getAll().find(l => l.id === id) || null; },
+  save(landing) {
+    const all = this.getAll();
+    const idx = all.findIndex(l => l.id === landing.id);
+    landing.updated_at = new Date().toISOString();
+    if (idx >= 0) all[idx] = landing;
+    else all.unshift(landing);
+    Store.set(KEYS.LANDINGS, all);
+    return landing;
+  },
+  create(data) {
+    const landing = {
+      id: crypto.randomUUID(),
+      slug: data.slug || this._genSlug(data.title || 'landing'),
+      title: data.title || 'Nueva landing',
+      brief: data.brief || '',
+      html: data.html || '',
+      messages: data.messages || [],
+      published: false,
+      visits: 0,
+      settings: data.settings || {},
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+    };
+    return this.save(landing);
+  },
+  delete(id) {
+    Store.set(KEYS.LANDINGS, this.getAll().filter(l => l.id !== id));
+  },
+  canCreate() {
+    const plan = Settings.get().plan;
+    const cap = getPlanCaps(plan).landings || 0;
+    return this.getAll().length < cap;
+  },
+  getLimit() {
+    const plan = Settings.get().plan;
+    return getPlanCaps(plan).landings || 0;
+  },
+  _genSlug(title) {
+    const base = (title || 'landing').toString()
+      .toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+      .replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 40) || 'landing';
+    const suffix = Math.random().toString(36).slice(2, 6);
+    return `${base}-${suffix}`;
   },
 };
 
@@ -317,11 +368,14 @@ ARQUETIPOS de personas en este nicho: ${ctx.archetypes.join('; ')}`;
 
 // ── Claude API ─────────────────────────────────────────────
 const Claude = {
-  async _call(messages, maxTokens = 3000) {
+  async _call(messages, maxTokens = 3000, opts = {}) {
+    const model = opts.model || 'claude-haiku-4-5-20251001';
+    const body = { model, max_tokens: maxTokens, messages };
+    if (opts.system) body.system = opts.system;
     const doRequest = async (token) => fetch(`${SUPABASE_URL}/functions/v1/claude-proxy`, {
       method: 'POST',
       headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
-      body: JSON.stringify({ model: 'claude-haiku-4-5-20251001', max_tokens: maxTokens, messages }),
+      body: JSON.stringify(body),
     });
 
     // Always get a fresh token via forced refresh
@@ -696,6 +750,47 @@ IMPORTANTE: Devuelve SOLO el JSON válido, sin markdown, sin texto antes ni desp
     const text = await this._call([{ role: 'user', content: prompt }], 2000);
     return this._parseJSON(text);
   },
+
+  // ── Landing Builder ───────────────────────────────────────
+  _landingSystemPrompt() {
+    return `Eres un diseñador web senior que genera landings de alta conversión en HTML+Tailwind para infoproductos hispanohablantes.
+
+REGLAS ABSOLUTAS:
+1. Devuelve SIEMPRE una landing COMPLETA como un único fragmento HTML autocontenido.
+2. Empieza DIRECTAMENTE con <!DOCTYPE html>. NO envuelvas en markdown, NO agregues explicaciones antes o después.
+3. Incluye <script src="https://cdn.tailwindcss.com"></script> en el <head>.
+4. Usa la fuente Plus Jakarta Sans via Google Fonts.
+5. NUNCA uses emojis en la UI — usa iconos Material Symbols Outlined: <link href="https://fonts.googleapis.com/icon?family=Material+Symbols+Outlined" rel="stylesheet">
+6. Paleta base: dark mode con fondo #0e0e0e, textos claros. Gradiente de marca: #2E5BFF → #7c3aed. Si el usuario pide otros colores, úsalos.
+7. La landing debe ser 100% RESPONSIVE (mobile first) y cargar sin JavaScript externo.
+8. Estructura típica (ajustar según pida el usuario):
+   - Hero con titular magnético + subtítulo + CTA primario
+   - Bullets de beneficios (6 mínimo)
+   - Prueba social / testimonios (3+)
+   - Stack de valor / qué incluye
+   - Garantía
+   - Preguntas frecuentes (collapsible con <details>)
+   - CTA final con urgencia o escasez
+   - Footer minimalista
+9. Los botones CTA deben tener href="#" por defecto — el creador los configurará después.
+10. Prohibido incluir <script> externo que no sea Tailwind CDN, ni fetches a otros dominios.
+11. SI EL USUARIO PIDE CAMBIOS, devuelve la landing COMPLETA con los cambios aplicados — no diffs ni parches.
+12. Textos en español latinoamericano neutro, tono profesional pero cercano.`;
+  },
+
+  async generateLanding(brief, history = []) {
+    const messages = [...history, { role: 'user', content: brief }];
+    const text = await this._call(messages, 8000, {
+      model: 'claude-sonnet-4-6',
+      system: this._landingSystemPrompt(),
+    });
+    // Extract pure HTML: strip any markdown fences or preamble
+    let html = text.trim();
+    html = html.replace(/^```html\s*/i, '').replace(/^```\s*/i, '').replace(/```\s*$/i, '').trim();
+    const docStart = html.search(/<!DOCTYPE\s+html/i);
+    if (docStart > 0) html = html.slice(docStart);
+    return html;
+  },
 };
 
 // ── Groq API (vía proxy con master key de la plataforma) ───
@@ -813,6 +908,10 @@ const AI = {
     try { return await Groq.generateAppTheme(niche, product); }
     catch (e) { return Claude.generateAppTheme(niche, product); }
   },
+  // Complejo: landing completa en HTML+Tailwind con Sonnet 4.6
+  async generateLanding(brief, history = []) {
+    return Claude.generateLanding(brief, history);
+  },
 };
 
 // ── URL helpers ────────────────────────────────────────────
@@ -867,11 +966,11 @@ function getPlanBadge(plan) {
 
 // ── Plan capabilities ─────────────────────────────────────
 const PlanLimits = {
-  free:    { quizzes: 1,   responses: 500,      leads: false, ai: false, miniApps: 2,       customDomain: false, metaPixel: false, integrations: false, whiteLabel: false, subdomains: 0, nicheAssistant: false, botLab: false },
-  starter: { quizzes: 3,   responses: 5000,     leads: true,  ai: false, miniApps: 5,       customDomain: false, metaPixel: true,  integrations: false, whiteLabel: false, subdomains: 0, nicheAssistant: false, botLab: true  },
-  pro:     { quizzes: 999, responses: 50000,    leads: true,  ai: true,  miniApps: 999,     customDomain: true,  metaPixel: true,  integrations: true,  whiteLabel: false, subdomains: 0, nicheAssistant: false, botLab: true  },
-  growth:  { quizzes: 999, responses: 150000,   leads: true,  ai: true,  miniApps: 999,     customDomain: true,  metaPixel: true,  integrations: true,  whiteLabel: false, subdomains: 0, nicheAssistant: true,  botLab: true  },
-  elite:   { quizzes: 999, responses: Infinity, leads: true,  ai: true,  miniApps: 999,     customDomain: true,  metaPixel: true,  integrations: true,  whiteLabel: true,  subdomains: 5, nicheAssistant: true,  botLab: true  },
+  free:    { quizzes: 1,   responses: 500,      leads: false, ai: false, miniApps: 2,       customDomain: false, metaPixel: false, integrations: false, whiteLabel: false, subdomains: 0, nicheAssistant: false, botLab: false, landings: 0   },
+  starter: { quizzes: 3,   responses: 5000,     leads: true,  ai: false, miniApps: 5,       customDomain: false, metaPixel: true,  integrations: false, whiteLabel: false, subdomains: 0, nicheAssistant: false, botLab: true,  landings: 0   },
+  pro:     { quizzes: 999, responses: 50000,    leads: true,  ai: true,  miniApps: 999,     customDomain: true,  metaPixel: true,  integrations: true,  whiteLabel: false, subdomains: 0, nicheAssistant: false, botLab: true,  landings: 5   },
+  growth:  { quizzes: 999, responses: 150000,   leads: true,  ai: true,  miniApps: 999,     customDomain: true,  metaPixel: true,  integrations: true,  whiteLabel: false, subdomains: 0, nicheAssistant: true,  botLab: true,  landings: 20  },
+  elite:   { quizzes: 999, responses: Infinity, leads: true,  ai: true,  miniApps: 999,     customDomain: true,  metaPixel: true,  integrations: true,  whiteLabel: true,  subdomains: 5, nicheAssistant: true,  botLab: true,  landings: 999 },
 };
 
 function getPlanCaps(plan) {
