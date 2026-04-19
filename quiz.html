@@ -260,6 +260,15 @@
     if (typeof fbq === 'function') fbq('track', event, params || {});
   }
 
+  // ── TikTok Pixel ─────────────────────────────────────────
+  function initTikTokPixel(pixelId) {
+    if (!pixelId) return;
+    !function (w, d, t) { w.TiktokAnalyticsObject = t; var ttq = w[t] = w[t] || []; ttq.methods = ["page","track","identify","instances","debug","on","off","once","ready","alias","group","enableCookie","disableCookie","holdConsent","revokeConsent","grantConsent"]; ttq.setAndDefer = function (t, e) { t[e] = function () { t.push([e].concat(Array.prototype.slice.call(arguments, 0))) } }; for (var i = 0; i < ttq.methods.length; i++)ttq.setAndDefer(ttq, ttq.methods[i]); ttq.instance = function (t) { for (var e = ttq._i[t] || [], n = 0; n < ttq.methods.length; n++)ttq.setAndDefer(e, ttq.methods[n]); return e }; ttq.load = function (e, n) { var r = "https://analytics.tiktok.com/i18n/pixel/events.js", o = n && n.partner; ttq._i = ttq._i || {}, ttq._i[e] = [], ttq._i[e]._u = r, ttq._t = ttq._t || {}, ttq._t[e] = +new Date, ttq._o = ttq._o || {}, ttq._o[e] = n || {}; var s = document.createElement("script"); s.type = "text/javascript", s.async = !0, s.src = r + "?sdkid=" + e + "&lib=" + t; var a = document.getElementsByTagName("script")[0]; a.parentNode.insertBefore(s, a) }; ttq.load(pixelId); ttq.page(); }(window, document, 'ttq');
+  }
+  function ttTrack(event, params) {
+    if (window.ttq && typeof window.ttq.track === 'function') window.ttq.track(event, params || {});
+  }
+
   // ── Google Analytics (GA4) ───────────────────────────────
   function initGA(measurementId) {
     if (!measurementId) return;
@@ -324,13 +333,18 @@
       fbTrack('ViewContent', { content_name: QUIZ.title || 'Quiz', content_type: 'quiz' });
     }
 
-    // Google Analytics (desde integraciones globales del creador)
+    // Google Analytics + TikTok Pixel (desde integraciones globales del creador)
     try {
       const integrations = JSON.parse(localStorage.getItem('ls_integrations') || '{}');
       const gaId = integrations.ga?.connected && integrations.ga?.measurementId;
       if (gaId) {
         initGA(gaId);
         gaTrack('quiz_view', { quiz_id: QUIZ.id || '', quiz_title: QUIZ.title || '' });
+      }
+      const ttkId = integrations.tiktok?.connected && integrations.tiktok?.pixelId;
+      if (ttkId) {
+        initTikTokPixel(ttkId);
+        ttTrack('ViewContent', { content_name: QUIZ.title || 'Quiz', content_type: 'quiz' });
       }
     } catch (_) {}
 
@@ -584,6 +598,7 @@
 
     fbTrack('Lead', { content_name: QUIZ.title || 'Quiz' });
     gaTrack('generate_lead', { quiz_id: QUIZ.id || '', quiz_title: QUIZ.title || '' });
+    ttTrack('CompleteRegistration', { content_name: QUIZ.title || 'Quiz' });
     _goToResultPage();
   }
 

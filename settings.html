@@ -678,6 +678,101 @@
             </div>
           </div>
 
+          <!-- TikTok Pixel -->
+          <div class="integration-card border border-outline-variant/10 rounded-xl overflow-hidden" data-key="tiktok">
+            <div class="flex items-center justify-between p-4 cursor-pointer hover:bg-surface-container transition-colors" onclick="toggleIntegration('tiktok')">
+              <div class="flex items-center gap-3">
+                <div class="w-9 h-9 rounded-lg flex items-center justify-center" style="background:rgba(77,124,255,0.1);">
+                  <span class="material-symbols-outlined text-base icon-gradient">music_note</span>
+                </div>
+                <div>
+                  <p class="font-semibold text-sm text-on-surface">TikTok Pixel <span class="text-[10px] font-bold px-1.5 py-0.5 rounded-full ml-1" style="background:#2E5BFF20;color:#4d7cff;">Pro</span></p>
+                  <p class="text-xs text-on-surface-variant">Mide conversiones de tus anuncios en TikTok Ads</p>
+                </div>
+              </div>
+              <div class="flex items-center gap-2">
+                <span class="integration-status text-xs font-bold px-2 py-0.5 rounded-full bg-surface-container-highest text-on-surface-variant" id="status-tiktok">Desconectado</span>
+                <span class="material-symbols-outlined text-on-surface-variant text-sm transition-transform duration-200" id="arrow-tiktok">expand_more</span>
+              </div>
+            </div>
+            <div class="integration-form hidden px-4 pb-4 space-y-3 border-t border-outline-variant/10 pt-4" id="form-tiktok">
+              <p class="text-xs text-on-surface-variant">Encuentra tu Pixel ID en <span class="text-primary font-medium">TikTok Ads Manager → Assets → Events</span></p>
+              <div>
+                <label class="text-xs font-bold uppercase tracking-widest text-on-surface-variant block mb-1.5">TikTok Pixel ID</label>
+                <input type="text" placeholder="C4XXXXXXXXXXXXXXXXXX" id="input-tiktok" class="w-full bg-surface-container-lowest border border-outline-variant/20 rounded-lg px-4 py-2.5 text-sm text-on-surface font-mono focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all"/>
+              </div>
+              <div class="flex gap-2 pt-1">
+                <button onclick="connectIntegration('tiktok')" class="px-5 py-2 rounded-lg text-sm font-bold text-white primary-gradient hover:brightness-110 transition-all">Activar</button>
+                <button onclick="toggleIntegration('tiktok')" class="px-5 py-2 rounded-lg text-sm font-semibold text-on-surface-variant border border-outline-variant/20 hover:bg-surface-container transition-colors">Cancelar</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Calendly -->
+          <div class="integration-card border border-outline-variant/10 rounded-xl overflow-hidden" data-key="calendly">
+            <div class="flex items-center justify-between p-4 cursor-pointer hover:bg-surface-container transition-colors" onclick="toggleIntegration('calendly')">
+              <div class="flex items-center gap-3">
+                <div class="w-9 h-9 rounded-lg flex items-center justify-center" style="background:rgba(77,124,255,0.1);">
+                  <span class="material-symbols-outlined text-base icon-gradient">event</span>
+                </div>
+                <div>
+                  <p class="font-semibold text-sm text-on-surface">Calendly <span class="text-[10px] font-bold px-1.5 py-0.5 rounded-full ml-1" style="background:rgba(77,124,255,0.12);color:#a78bfa;">Free</span></p>
+                  <p class="text-xs text-on-surface-variant">Agregá un botón "Agendar llamada" en el resultado</p>
+                </div>
+              </div>
+              <div class="flex items-center gap-2">
+                <span class="integration-status text-xs font-bold px-2 py-0.5 rounded-full bg-surface-container-highest text-on-surface-variant" id="status-calendly">Desconectado</span>
+                <span class="material-symbols-outlined text-on-surface-variant text-sm transition-transform duration-200" id="arrow-calendly">expand_more</span>
+              </div>
+            </div>
+            <div class="integration-form hidden px-4 pb-4 space-y-3 border-t border-outline-variant/10 pt-4" id="form-calendly">
+              <p class="text-xs text-on-surface-variant">Copiá el link público de tu evento en <span class="text-primary font-medium">Calendly → Event Types</span></p>
+              <div>
+                <label class="text-xs font-bold uppercase tracking-widest text-on-surface-variant block mb-1.5">URL de Calendly</label>
+                <input type="url" placeholder="https://calendly.com/tu-usuario/30min" id="input-calendly" class="w-full bg-surface-container-lowest border border-outline-variant/20 rounded-lg px-4 py-2.5 text-sm text-on-surface font-mono focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all"/>
+              </div>
+              <div class="flex gap-2 pt-1">
+                <button onclick="connectIntegration('calendly')" class="px-5 py-2 rounded-lg text-sm font-bold text-white primary-gradient hover:brightness-110 transition-all">Guardar</button>
+                <button onclick="toggleIntegration('calendly')" class="px-5 py-2 rounded-lg text-sm font-semibold text-on-surface-variant border border-outline-variant/20 hover:bg-surface-container transition-colors">Cancelar</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Discord -->
+          <div class="integration-card border border-outline-variant/10 rounded-xl overflow-hidden" data-key="discord">
+            <div class="flex items-center justify-between p-4 cursor-pointer hover:bg-surface-container transition-colors" onclick="toggleIntegration('discord')">
+              <div class="flex items-center gap-3">
+                <div class="w-9 h-9 rounded-lg flex items-center justify-center" style="background:rgba(77,124,255,0.1);">
+                  <span class="material-symbols-outlined text-base icon-gradient">forum</span>
+                </div>
+                <div>
+                  <p class="font-semibold text-sm text-on-surface">Discord <span class="text-[10px] font-bold px-1.5 py-0.5 rounded-full ml-1" style="background:rgba(77,124,255,0.12);color:#a78bfa;">Free</span></p>
+                  <p class="text-xs text-on-surface-variant">Recibe una notificación en tu servidor por cada lead</p>
+                </div>
+              </div>
+              <div class="flex items-center gap-2">
+                <span class="integration-status text-xs font-bold px-2 py-0.5 rounded-full bg-surface-container-highest text-on-surface-variant" id="status-discord">Desconectado</span>
+                <span class="material-symbols-outlined text-on-surface-variant text-sm transition-transform duration-200" id="arrow-discord">expand_more</span>
+              </div>
+            </div>
+            <div class="integration-form hidden px-4 pb-4 space-y-3 border-t border-outline-variant/10 pt-4" id="form-discord">
+              <div class="text-xs text-on-surface-variant p-3 rounded-lg bg-primary/5 border border-primary/20 space-y-1.5">
+                <p class="font-semibold text-on-surface">Cómo conectar:</p>
+                <p>1. En tu servidor Discord, abre los ajustes del canal donde querés recibir las notificaciones.</p>
+                <p>2. Ve a <strong>Integraciones → Webhooks → Crear webhook</strong>.</p>
+                <p>3. Copiá la URL del webhook y pegala abajo.</p>
+              </div>
+              <div>
+                <label class="text-xs font-bold uppercase tracking-widest text-on-surface-variant block mb-1.5">URL del webhook de Discord</label>
+                <input type="url" placeholder="https://discord.com/api/webhooks/..." id="input-discord" class="w-full bg-surface-container-lowest border border-outline-variant/20 rounded-lg px-4 py-2.5 text-sm text-on-surface font-mono focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all"/>
+              </div>
+              <div class="flex gap-2 pt-1">
+                <button onclick="connectIntegration('discord')" class="px-5 py-2 rounded-lg text-sm font-bold text-white primary-gradient hover:brightness-110 transition-all">Conectar</button>
+                <button onclick="toggleIntegration('discord')" class="px-5 py-2 rounded-lg text-sm font-semibold text-on-surface-variant border border-outline-variant/20 hover:bg-surface-container transition-colors">Cancelar</button>
+              </div>
+            </div>
+          </div>
+
           <!-- WhatsApp -->
           <div class="integration-card border border-outline-variant/10 rounded-xl overflow-hidden" data-key="whatsapp">
             <div class="flex items-center justify-between p-4 cursor-pointer hover:bg-surface-container transition-colors" onclick="toggleIntegration('whatsapp')">
@@ -1105,6 +1200,15 @@
         } else if (key === 'webhook' && saved.webhookUrl) {
           const el = document.getElementById('input-webhook-url');
           if (el) el.value = saved.webhookUrl;
+        } else if (key === 'tiktok' && saved.pixelId) {
+          const el = document.getElementById('input-tiktok');
+          if (el) el.value = saved.pixelId;
+        } else if (key === 'calendly' && saved.url) {
+          const el = document.getElementById('input-calendly');
+          if (el) el.value = saved.url;
+        } else if (key === 'discord' && saved.webhookUrl) {
+          const el = document.getElementById('input-discord');
+          if (el) el.value = saved.webhookUrl;
         }
       }
     }
@@ -1182,6 +1286,24 @@
       const url = (document.getElementById('input-webhook-url')?.value || '').trim();
       if (!url || !/^https?:\/\//i.test(url)) {
         showToast('URL inválida. Debe empezar con http:// o https://');
+        return;
+      }
+      config.webhookUrl = url;
+    } else if (key === 'tiktok') {
+      const pixel = (document.getElementById('input-tiktok')?.value || '').trim();
+      if (!pixel) { showToast('Ingresa tu TikTok Pixel ID'); return; }
+      config.pixelId = pixel;
+    } else if (key === 'calendly') {
+      const url = (document.getElementById('input-calendly')?.value || '').trim();
+      if (!url || !/^https:\/\/calendly\.com\//i.test(url)) {
+        showToast('URL inválida. Debe empezar con https://calendly.com/');
+        return;
+      }
+      config.url = url;
+    } else if (key === 'discord') {
+      const url = (document.getElementById('input-discord')?.value || '').trim();
+      if (!url || !/^https:\/\/(discord|discordapp)\.com\/api\/webhooks\//i.test(url)) {
+        showToast('URL inválida. Debe ser un webhook de Discord');
         return;
       }
       config.webhookUrl = url;

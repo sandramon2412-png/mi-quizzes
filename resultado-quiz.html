@@ -137,6 +137,12 @@
         Ver la solución →
       </a>
 
+      <!-- Calendly secondary CTA (hidden unless creator has Calendly integration) -->
+      <a id="btn-calendly" href="#" target="_blank" rel="noopener noreferrer"
+        class="hidden w-full text-center py-3 rounded-full font-bold text-sm tracking-wide transition-all duration-300 active:scale-[0.98] border border-brand/30 text-brand hover:bg-brand/5">
+        📅 Agendar una llamada
+      </a>
+
       <!-- Share row -->
       <div class="flex gap-2 pt-1">
         <button onclick="shareWhatsApp()"
@@ -371,6 +377,19 @@
         fbTrack('InitiateCheckout', { content_name: quiz.title || 'Quiz', content_ids: [profile.id || 'profile'] });
       });
     }
+
+    // Calendly CTA (integración global del creador)
+    try {
+      const integrations = JSON.parse(localStorage.getItem('ls_integrations') || '{}');
+      const cal = integrations.calendly;
+      if (cal?.connected && cal.url && /^https:\/\/calendly\.com\//i.test(cal.url)) {
+        const btnCal = document.getElementById('btn-calendly');
+        if (btnCal) {
+          btnCal.href = cal.url;
+          btnCal.classList.remove('hidden');
+        }
+      }
+    } catch (_) {}
 
     // Mini-App bonus
     if (quiz.miniAppId) {
