@@ -548,6 +548,38 @@
                 </div>
               </div>
 
+              <!-- Webhook genérico (Make, n8n, custom endpoints) -->
+              <div class="integration-card border border-outline-variant/10 rounded-xl overflow-hidden" data-key="webhook">
+                <div class="flex items-center justify-between p-4 cursor-pointer hover:bg-surface-container transition-colors" onclick="toggleIntegration('webhook')">
+                  <div class="flex items-center gap-3">
+                    <div class="w-9 h-9 rounded-lg flex items-center justify-center" style="background:rgba(77,124,255,0.1);">
+                      <span class="material-symbols-outlined text-base icon-gradient">webhook</span>
+                    </div>
+                    <div>
+                      <p class="font-semibold text-sm text-on-surface">Webhook personalizado <span class="text-[10px] font-bold px-1.5 py-0.5 rounded-full ml-1" style="background:#2E5BFF20;color:#4d7cff;">Pro</span></p>
+                      <p class="text-xs text-on-surface-variant">Envía cada lead a tu endpoint (Make, n8n, API propia)</p>
+                    </div>
+                  </div>
+                  <div class="flex items-center gap-2">
+                    <span class="integration-status text-xs font-bold px-2 py-0.5 rounded-full bg-surface-container-highest text-on-surface-variant" id="status-webhook">Desconectado</span>
+                    <span class="material-symbols-outlined text-on-surface-variant text-sm transition-transform duration-200" id="arrow-webhook">expand_more</span>
+                  </div>
+                </div>
+                <div class="integration-form hidden px-4 pb-4 space-y-3 border-t border-outline-variant/10 pt-4" id="form-webhook">
+                  <div class="text-xs text-on-surface-variant p-3 rounded-lg bg-primary/5 border border-primary/20">
+                    <p>Luminous enviará un <strong>POST JSON</strong> a tu endpoint cada vez que alguien complete un quiz. Payload: <code class="font-mono">{event, name, email, quizId, quizTitle, profileName, ...}</code>.</p>
+                  </div>
+                  <div>
+                    <label class="text-xs font-bold uppercase tracking-widest text-on-surface-variant block mb-1.5">URL del webhook</label>
+                    <input type="url" placeholder="https://tu-endpoint.com/webhook" id="input-webhook-url" class="w-full bg-surface-container-lowest border border-outline-variant/20 rounded-lg px-4 py-2.5 text-sm text-on-surface font-mono focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all"/>
+                  </div>
+                  <div class="flex gap-2 pt-1">
+                    <button onclick="connectIntegration('webhook')" class="px-5 py-2 rounded-lg text-sm font-bold text-white primary-gradient hover:brightness-110 transition-all">Conectar</button>
+                    <button onclick="toggleIntegration('webhook')" class="px-5 py-2 rounded-lg text-sm font-semibold text-on-surface-variant border border-outline-variant/20 hover:bg-surface-container transition-colors">Cancelar</button>
+                  </div>
+                </div>
+              </div>
+
               <!-- Zapier - Webhook -->
               <div class="integration-card border border-outline-variant/10 rounded-xl overflow-hidden" data-key="zapier">
                 <div class="flex items-center justify-between p-4 cursor-pointer hover:bg-surface-container transition-colors" onclick="toggleIntegration('zapier')">
@@ -612,6 +644,36 @@
               <div class="flex gap-2 pt-1">
                 <button onclick="connectIntegration('meta')" class="px-5 py-2 rounded-lg text-sm font-bold text-white primary-gradient hover:brightness-110 transition-all">Activar Pixel</button>
                 <button onclick="toggleIntegration('meta')" class="px-5 py-2 rounded-lg text-sm font-semibold text-on-surface-variant border border-outline-variant/20 hover:bg-surface-container transition-colors">Cancelar</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Google Analytics -->
+          <div class="integration-card border border-outline-variant/10 rounded-xl overflow-hidden" data-key="ga">
+            <div class="flex items-center justify-between p-4 cursor-pointer hover:bg-surface-container transition-colors" onclick="toggleIntegration('ga')">
+              <div class="flex items-center gap-3">
+                <div class="w-9 h-9 rounded-lg flex items-center justify-center" style="background:rgba(77,124,255,0.1);">
+                  <span class="material-symbols-outlined text-base icon-gradient">analytics</span>
+                </div>
+                <div>
+                  <p class="font-semibold text-sm text-on-surface">Google Analytics <span class="text-[10px] font-bold px-1.5 py-0.5 rounded-full ml-1" style="background:rgba(77,124,255,0.12);color:#a78bfa;">Free</span></p>
+                  <p class="text-xs text-on-surface-variant">Mide visitas y conversiones de tus quizzes en GA4</p>
+                </div>
+              </div>
+              <div class="flex items-center gap-2">
+                <span class="integration-status text-xs font-bold px-2 py-0.5 rounded-full bg-surface-container-highest text-on-surface-variant" id="status-ga">Desconectado</span>
+                <span class="material-symbols-outlined text-on-surface-variant text-sm transition-transform duration-200" id="arrow-ga">expand_more</span>
+              </div>
+            </div>
+            <div class="integration-form hidden px-4 pb-4 space-y-3 border-t border-outline-variant/10 pt-4" id="form-ga">
+              <p class="text-xs text-on-surface-variant">Encuentra tu ID en <span class="text-primary font-medium">Google Analytics → Admin → Streams de datos → Web</span>. Debe empezar con <code class="font-mono">G-</code></p>
+              <div>
+                <label class="text-xs font-bold uppercase tracking-widest text-on-surface-variant block mb-1.5">Measurement ID (GA4)</label>
+                <input type="text" placeholder="G-XXXXXXXXXX" id="input-ga" class="w-full bg-surface-container-lowest border border-outline-variant/20 rounded-lg px-4 py-2.5 text-sm text-on-surface font-mono focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all"/>
+              </div>
+              <div class="flex gap-2 pt-1">
+                <button onclick="connectIntegration('ga')" class="px-5 py-2 rounded-lg text-sm font-bold text-white primary-gradient hover:brightness-110 transition-all">Activar</button>
+                <button onclick="toggleIntegration('ga')" class="px-5 py-2 rounded-lg text-sm font-semibold text-on-surface-variant border border-outline-variant/20 hover:bg-surface-container transition-colors">Cancelar</button>
               </div>
             </div>
           </div>
@@ -1037,6 +1099,12 @@
           const l = document.getElementById('input-mailchimp-list');
           if (a && saved.apiKey) a.value = saved.apiKey;
           if (l && saved.listId) l.value = saved.listId;
+        } else if (key === 'ga' && saved.measurementId) {
+          const el = document.getElementById('input-ga');
+          if (el) el.value = saved.measurementId;
+        } else if (key === 'webhook' && saved.webhookUrl) {
+          const el = document.getElementById('input-webhook-url');
+          if (el) el.value = saved.webhookUrl;
         }
       }
     }
@@ -1103,6 +1171,20 @@
     } else if (key === 'whatsapp') {
       const number = (document.querySelector('#form-whatsapp input[type=tel]')?.value || document.querySelector('#form-whatsapp input[type=text]')?.value || '').trim();
       if (number) config.number = number;
+    } else if (key === 'ga') {
+      const id = (document.getElementById('input-ga')?.value || '').trim();
+      if (!id || !/^G-[A-Z0-9]{6,}$/i.test(id)) {
+        showToast('ID inválido. Debe tener formato G-XXXXXXXXXX');
+        return;
+      }
+      config.measurementId = id;
+    } else if (key === 'webhook') {
+      const url = (document.getElementById('input-webhook-url')?.value || '').trim();
+      if (!url || !/^https?:\/\//i.test(url)) {
+        showToast('URL inválida. Debe empezar con http:// o https://');
+        return;
+      }
+      config.webhookUrl = url;
     }
 
     integrationState[key] = config;
