@@ -513,7 +513,17 @@ TONO: cercano, directo, entusiasta pero sin exagerar. Respuestas cortas (2-4 ora
     'default':      ['Crea una oferta irresistible', 'Escríbeme una carta de ventas', 'Campaña con Método Andromeda'],
   };
 
+  const PUBLIC_CHIPS = [
+    '¿Qué es Luminous Studio?',
+    '¿Cuánto cuesta?',
+    '¿Qué es una mini-app?',
+    '¿Tiene IA?',
+    '¿Qué integraciones tiene?',
+    '¿Cómo empiezo?',
+  ];
+
   function _getChips() {
+    if (_isPublic) return PUBLIC_CHIPS;
     const path = window.location.pathname;
     for (const [k, v] of Object.entries(PAGE_CHIPS)) {
       if (path.includes(k)) return v;
@@ -524,11 +534,15 @@ TONO: cercano, directo, entusiasta pero sin exagerar. Respuestas cortas (2-4 ora
   function _renderMessages() {
     const el = document.getElementById('lsa-messages');
     if (!_activeSession || !_activeSession.messages.length) {
+      const welcomeTitle = _isPublic ? 'Hola, soy Lloyd' : 'Hola, soy Lloyd';
+      const welcomeBody  = _isPublic
+        ? 'Estoy acá para resolverte dudas sobre Luminous Studio. ¿Qué querés saber?'
+        : 'Tu asistente IA especializado en quizzes, marketing y ventas digitales. ¿En qué puedo ayudarte hoy?';
       el.innerHTML = `
         <div class="lsa-empty">
           <div class="lsa-empty-logo">✦</div>
-          <h4>Hola, soy Lloyd</h4>
-          <p>Tu asistente IA especializado en quizzes, marketing y ventas digitales. ¿En qué puedo ayudarte hoy?</p>
+          <h4>${welcomeTitle}</h4>
+          <p>${welcomeBody}</p>
           <div class="lsa-chips">
             ${_getChips().map(c => `<button class="lsa-chip" onclick="LSA._chip('${c.replace(/'/g,"\\'")}')">${c}</button>`).join('')}
           </div>
@@ -878,6 +892,14 @@ TONO: cercano, directo, entusiasta pero sin exagerar. Respuestas cortas (2-4 ora
     const allowed = await _checkAccess();
     if (!allowed) return;
     injectHTML();
+    if (_isPublic) {
+      const sub = document.querySelector('.lsa-header-sub');
+      if (sub) sub.innerHTML = '<span class="lsa-status-dot"></span> Atención al cliente · Luminous Studio';
+      const floatBtn = document.getElementById('lsa-float-btn');
+      if (floatBtn) floatBtn.title = 'Lloyd · ¿Dudas sobre Luminous? (Ctrl+Space)';
+      const input = document.getElementById('lsa-input');
+      if (input) input.placeholder = '¿En qué te puedo ayudar?';
+    }
     _initVoice();
     document.getElementById('lsa-float-btn').onclick = () => LSA.toggle();
     document.addEventListener('keydown', (e) => {
