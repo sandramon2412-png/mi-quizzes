@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Landing Builder · Luminous Studio</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/icon?family=Material+Symbols+Outlined" rel="stylesheet"/>
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        colors: {
+          "primary": "#2E5BFF", "primary-dim": "#3867fb",
+          "background": "#0e0e0e", "surface": "#0e0e0e",
+          "surface-container": "#1a1a1a", "surface-container-high": "#20201f",
+          "surface-container-highest": "#262626", "surface-container-low": "#131313",
+          "surface-variant": "#262626", "on-surface": "#ffffff",
+          "on-surface-variant": "#adaaaa", "outline": "#767575",
+          "outline-variant": "#484847", "on-background": "#ffffff",
+          "on-primary": "#ffffff",
+        },
+        fontFamily: { 'jakarta': ['Plus Jakarta Sans', 'sans-serif'] },
+      },
+    },
+  };
+</script>
+<style>
+  body { font-family: 'Plus Jakarta Sans', sans-serif; background: #0e0e0e; color: #fff; overflow: hidden; }
+  .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+  .icon-gradient { background: linear-gradient(135deg, #4d7cff, #a78bfa); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+  .primary-gradient { background: linear-gradient(135deg, #2E5BFF 0%, #7c3aed 100%); }
+
+  .msg { animation: in 0.25s ease both; }
+  @keyframes in { from { opacity:0; transform: translateY(6px); } to { opacity:1; transform: translateY(0); } }
+
+  #chat-log::-webkit-scrollbar, #chat-log { scrollbar-width: thin; }
+  #chat-log::-webkit-scrollbar { width: 6px; }
+  #chat-log::-webkit-scrollbar-thumb { background: #333; border-radius: 3px; }
+
+  .thinking-dot { width:6px; height:6px; border-radius:50%; background:#7a9aff; display:inline-block; margin:0 2px; animation: pulse 1s infinite; }
+  .thinking-dot:nth-child(2) { animation-delay: 0.15s; }
+  .thinking-dot:nth-child(3) { animation-delay: 0.3s; }
+  @keyframes pulse { 0%,100% { opacity: .3; transform: scale(0.9);} 50% { opacity: 1; transform: scale(1.1);} }
+
+  .toast { animation: toast-in .25s ease both; }
+  @keyframes toast-in { from { opacity:0; transform: translateY(-6px);} to { opacity:1; transform:translateY(0);} }
+</style>
+</head>
+<body class="bg-background text-on-background">
+
+<!-- Top bar -->
+<header class="h-14 border-b border-outline-variant/20 bg-surface-container-low flex items-center px-4 gap-3 shrink-0">
+  <a href="./dashboard.html" class="flex items-center gap-2 text-sm text-on-surface-variant hover:text-primary transition-colors">
+    <span class="material-symbols-outlined" style="font-size:18px">arrow_back</span>
+    <span class="hidden sm:inline">Dashboard</span>
+  </a>
+  <div class="w-px h-6 bg-outline-variant/30"></div>
+  <div class="flex items-center gap-2 min-w-0 flex-1">
+    <div class="w-8 h-8 rounded-lg primary-gradient flex items-center justify-center shrink-0">
+      <span class="material-symbols-outlined text-white" style="font-size:16px">web</span>
+    </div>
+    <input id="ld-title" type="text" placeholder="Título de tu landing"
+           class="bg-transparent border-none outline-none text-sm font-bold tracking-tight flex-1 min-w-0 focus:ring-0"/>
+  </div>
+  <span id="ld-status" class="text-[11px] text-on-surface-variant/70 hidden sm:inline"></span>
+  <button id="btn-open" class="hidden h-9 px-3 rounded-lg bg-surface-container-high hover:bg-surface-container-highest text-xs font-semibold flex items-center gap-1.5 transition-colors" title="Abrir en nueva pestaña">
+    <span class="material-symbols-outlined" style="font-size:16px">open_in_new</span>
+    <span class="hidden md:inline">Abrir</span>
+  </button>
+  <button id="btn-publish" class="h-9 px-4 rounded-lg primary-gradient text-white text-xs font-bold flex items-center gap-1.5 hover:opacity-90 transition">
+    <span class="material-symbols-outlined" style="font-size:16px">rocket_launch</span>
+    Publicar
+  </button>
+</header>
+
+<!-- Split view -->
+<main class="flex h-[calc(100vh-56px)]">
+  <!-- Chat pane -->
+  <aside class="w-[38%] max-w-[480px] min-w-[320px] border-r border-outline-variant/20 flex flex-col bg-surface-container-low">
+
+    <!-- Starter form (only shown on empty state) -->
+    <div id="starter" class="p-5 overflow-y-auto">
+      <div class="flex items-center gap-2 mb-3">
+        <span class="material-symbols-outlined icon-gradient" style="font-size:20px">auto_awesome</span>
+        <h2 class="text-base font-extrabold tracking-tight">Describí tu landing</h2>
+      </div>
+      <p class="text-[11px] text-on-surface-variant mb-4">Claude Sonnet diseña tu página en ~15 segundos. Podés iterar por chat después.</p>
+
+      <div class="space-y-3">
+        <div>
+          <label class="text-[11px] font-semibold text-on-surface-variant block mb-1">¿Qué vendés?</label>
+          <input id="fld-product" type="text" placeholder="Ej: Curso de repostería para emprendedoras"
+                 class="w-full bg-surface-container border border-outline-variant/40 rounded-lg px-3 py-2 text-sm focus:border-primary focus:ring-0 outline-none"/>
+        </div>
+        <div>
+          <label class="text-[11px] font-semibold text-on-surface-variant block mb-1">¿A quién le vendés?</label>
+          <input id="fld-audience" type="text" placeholder="Ej: Mujeres 30-50 que quieren emprender desde casa"
+                 class="w-full bg-surface-container border border-outline-variant/40 rounded-lg px-3 py-2 text-sm focus:border-primary focus:ring-0 outline-none"/>
+        </div>
+        <div>
+          <label class="text-[11px] font-semibold text-on-surface-variant block mb-1">Precio</label>
+          <input id="fld-price" type="text" placeholder="Ej: $97 o Gratis con lead magnet"
+                 class="w-full bg-surface-container border border-outline-variant/40 rounded-lg px-3 py-2 text-sm focus:border-primary focus:ring-0 outline-none"/>
+        </div>
+        <div>
+          <label class="text-[11px] font-semibold text-on-surface-variant block mb-1">Detalles extra (opcional)</label>
+          <textarea id="fld-extras" rows="3" placeholder="Testimonios, bonos, garantía, colores de marca, FAQs…"
+                    class="w-full bg-surface-container border border-outline-variant/40 rounded-lg px-3 py-2 text-sm focus:border-primary focus:ring-0 outline-none resize-none"></textarea>
+        </div>
+      </div>
+
+      <button id="btn-generate" class="mt-5 w-full h-11 primary-gradient rounded-lg text-white font-bold text-sm flex items-center justify-center gap-2 hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed transition">
+        <span class="material-symbols-outlined" style="font-size:18px">bolt</span>
+        Generar mi landing
+      </button>
+
+      <p class="mt-3 text-[10px] text-on-surface-variant/70 leading-relaxed">
+        Claude generará una landing completa con hero, beneficios, testimonios, FAQ, garantía y CTA. Después podés pedir cambios por chat.
+      </p>
+    </div>
+
+    <!-- Chat messages (hidden until first generation) -->
+    <div id="chat-log" class="hidden flex-1 overflow-y-auto p-4 space-y-3"></div>
+
+    <!-- Chat input (hidden until first generation) -->
+    <div id="chat-input-wrap" class="hidden border-t border-outline-variant/20 p-3 bg-surface-container-low">
+      <div class="flex items-end gap-2">
+        <textarea id="chat-input" rows="1" placeholder="Pedile a Claude un cambio — 'cambiá el color', 'agregá una sección de bonos'..."
+                  class="flex-1 bg-surface-container border border-outline-variant/40 rounded-lg px-3 py-2 text-sm outline-none focus:border-primary resize-none max-h-32"></textarea>
+        <button id="btn-send" class="w-10 h-10 shrink-0 rounded-lg primary-gradient flex items-center justify-center hover:opacity-90 disabled:opacity-40 disabled:cursor-not-allowed transition">
+          <span class="material-symbols-outlined text-white" style="font-size:18px">arrow_upward</span>
+        </button>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Preview pane -->
+  <section class="flex-1 flex flex-col bg-surface-container-low">
+    <div class="h-10 border-b border-outline-variant/20 flex items-center px-4 gap-3 bg-surface-container text-[11px] text-on-surface-variant">
+      <span class="material-symbols-outlined" style="font-size:14px">preview</span>
+      <span id="preview-url" class="font-mono truncate">tudominio.com/l/<span id="slug-preview">pendiente</span></span>
+      <span class="ml-auto hidden md:flex items-center gap-1 text-[10px]">
+        <span class="w-2 h-2 rounded-full bg-green-500"></span>
+        Preview en vivo
+      </span>
+    </div>
+    <div id="preview-empty" class="flex-1 flex flex-col items-center justify-center text-center p-8 text-on-surface-variant">
+      <div class="w-16 h-16 rounded-2xl primary-gradient flex items-center justify-center mb-4 opacity-50">
+        <span class="material-symbols-outlined text-white" style="font-size:32px">web</span>
+      </div>
+      <h3 class="text-lg font-bold mb-1">Tu landing va a aparecer acá</h3>
+      <p class="text-sm max-w-md">Completá el formulario de la izquierda y Claude Sonnet te genera la landing completa en ~15 segundos. Vas a poder iterarla por chat hasta que quede como querés.</p>
+    </div>
+    <iframe id="preview-frame" class="hidden flex-1 w-full bg-white" sandbox="allow-same-origin allow-popups" title="Preview"></iframe>
+  </section>
+</main>
+
+<!-- Toast -->
+<div id="toast" class="fixed bottom-6 right-6 hidden toast px-4 py-3 rounded-lg bg-surface-container-highest border border-outline-variant/30 text-sm font-semibold shadow-xl flex items-center gap-2 z-50"></div>
+
+<script src="./supabase-config.js"></script>
+<script src="./app.js"></script>
+<script>
+  (async () => {
+    // ── Auth gate ──
+    const user = await Auth.user();
+    if (!user) { window.location.href = './login.html'; return; }
+
+    const profile = await DB.profiles.get(user.id).catch(() => null);
+    const plan = profile?.plan || 'free';
+    Settings.set({ plan });
+    const caps = getPlanCaps(plan);
+
+    // Gate: only Pro+ (landings > 0)
+    if (!caps.landings || caps.landings < 1) {
+      document.body.innerHTML = `
+        <div class="min-h-screen flex flex-col items-center justify-center p-8 text-center">
+          <div class="w-20 h-20 rounded-2xl primary-gradient flex items-center justify-center mb-6">
+            <span class="material-symbols-outlined text-white" style="font-size:40px">lock</span>
+          </div>
+          <h1 class="text-2xl font-extrabold tracking-tight mb-2">Landing Builder requiere plan Pro</h1>
+          <p class="text-on-surface-variant max-w-md mb-6">Generá landings completas con IA (Claude Sonnet) desde el plan Pro. Incluye hero, beneficios, testimonios, FAQ, garantía y CTA — listas para publicar.</p>
+          <div class="flex gap-3">
+            <a href="./precios.html" class="h-11 px-6 rounded-lg primary-gradient text-white font-bold text-sm flex items-center gap-2">Ver planes</a>
+            <a href="./dashboard.html" class="h-11 px-6 rounded-lg bg-surface-container-highest text-sm font-semibold flex items-center gap-2">Volver</a>
+          </div>
+        </div>`;
+      return;
+    }
+
+    // ── State ──
+    const params = new URLSearchParams(window.location.search);
+    const editingId = params.get('id');
+    let landing = null;      // full row (with id once saved)
+    let history = [];        // chat history for Claude (user+assistant messages)
+
+    // ── DOM refs ──
+    const titleEl = document.getElementById('ld-title');
+    const statusEl = document.getElementById('ld-status');
+    const starter = document.getElementById('starter');
+    const chatLog = document.getElementById('chat-log');
+    const chatInputWrap = document.getElementById('chat-input-wrap');
+    const chatInput = document.getElementById('chat-input');
+    const sendBtn = document.getElementById('btn-send');
+    const genBtn = document.getElementById('btn-generate');
+    const previewEmpty = document.getElementById('preview-empty');
+    const previewFrame = document.getElementById('preview-frame');
+    const slugPreview = document.getElementById('slug-preview');
+    const publishBtn = document.getElementById('btn-publish');
+    const openBtn = document.getElementById('btn-open');
+    const toastEl = document.getElementById('toast');
+
+    // ── Helpers ──
+    const toast = (msg, kind = 'ok') => {
+      toastEl.textContent = msg;
+      toastEl.className = `fixed bottom-6 right-6 toast px-4 py-3 rounded-lg border text-sm font-semibold shadow-xl flex items-center gap-2 z-50 ${kind === 'err' ? 'bg-red-500/10 border-red-500/40 text-red-400' : 'bg-surface-container-highest border-outline-variant/30'}`;
+      toastEl.classList.remove('hidden');
+      setTimeout(() => toastEl.classList.add('hidden'), 2500);
+    };
+
+    const setStatus = (s) => { statusEl.textContent = s; };
+
+    const renderPreview = (html) => {
+      previewEmpty.classList.add('hidden');
+      previewFrame.classList.remove('hidden');
+      previewFrame.srcdoc = html || '';
+    };
+
+    const renderMessages = () => {
+      chatLog.innerHTML = history.map(m => {
+        if (m.role === 'user') {
+          return `<div class="msg flex justify-end">
+            <div class="max-w-[85%] px-3 py-2 rounded-lg primary-gradient text-white text-xs leading-relaxed whitespace-pre-wrap">${escapeHtml(m.content)}</div>
+          </div>`;
+        }
+        return `<div class="msg flex gap-2">
+          <div class="w-7 h-7 rounded-lg primary-gradient flex items-center justify-center shrink-0">
+            <span class="material-symbols-outlined text-white" style="font-size:14px">auto_awesome</span>
+          </div>
+          <div class="max-w-[85%] px-3 py-2 rounded-lg bg-surface-container border border-outline-variant/20 text-xs leading-relaxed">${escapeHtml(m.display || 'Landing actualizada')}</div>
+        </div>`;
+      }).join('');
+      chatLog.scrollTop = chatLog.scrollHeight;
+    };
+
+    const showThinking = () => {
+      chatLog.insertAdjacentHTML('beforeend', `
+        <div id="thinking" class="msg flex gap-2">
+          <div class="w-7 h-7 rounded-lg primary-gradient flex items-center justify-center shrink-0">
+            <span class="material-symbols-outlined text-white" style="font-size:14px">auto_awesome</span>
+          </div>
+          <div class="px-3 py-3 rounded-lg bg-surface-container border border-outline-variant/20">
+            <span class="thinking-dot"></span><span class="thinking-dot"></span><span class="thinking-dot"></span>
+          </div>
+        </div>`);
+      chatLog.scrollTop = chatLog.scrollHeight;
+    };
+    const removeThinking = () => document.getElementById('thinking')?.remove();
+
+    const escapeHtml = (s) => (s || '').toString().replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+
+    const switchToChatMode = () => {
+      starter.classList.add('hidden');
+      chatLog.classList.remove('hidden');
+      chatLog.classList.add('flex-1');
+      chatInputWrap.classList.remove('hidden');
+    };
+
+    const persistLanding = async () => {
+      if (!landing) return;
+      landing.title = titleEl.value.trim() || landing.title;
+      landing.messages = history;
+      try {
+        setStatus('Guardando…');
+        const saved = await DB.landings.save(landing, user.id);
+        landing = { ...landing, ...saved };
+        Landings.save(landing);
+        setStatus('Guardado');
+        setTimeout(() => setStatus(landing.published ? 'Publicada' : 'Borrador'), 1200);
+      } catch (e) {
+        console.error(e);
+        setStatus('Error al guardar');
+        toast('Error al guardar: ' + e.message, 'err');
+      }
+    };
+
+    const updatePublishUI = () => {
+      if (landing?.published) {
+        publishBtn.innerHTML = `<span class="material-symbols-outlined" style="font-size:16px">check_circle</span>Publicada`;
+        publishBtn.classList.remove('primary-gradient');
+        publishBtn.classList.add('bg-green-500/15', 'text-green-400', 'border', 'border-green-500/30');
+        openBtn.classList.remove('hidden');
+      } else {
+        publishBtn.innerHTML = `<span class="material-symbols-outlined" style="font-size:16px">rocket_launch</span>Publicar`;
+        publishBtn.classList.add('primary-gradient');
+        publishBtn.classList.remove('bg-green-500/15', 'text-green-400', 'border', 'border-green-500/30');
+        openBtn.classList.add('hidden');
+      }
+      if (landing?.slug) slugPreview.textContent = landing.slug;
+    };
+
+    // ── Load existing landing if editing ──
+    if (editingId) {
+      try {
+        const row = await DB.landings.get(editingId);
+        if (row && row.user_id === user.id) {
+          landing = row;
+          history = Array.isArray(row.messages) ? row.messages : [];
+          titleEl.value = row.title || '';
+          slugPreview.textContent = row.slug;
+          if (row.html) {
+            renderPreview(row.html);
+            switchToChatMode();
+            renderMessages();
+          }
+          updatePublishUI();
+          setStatus(row.published ? 'Publicada' : 'Borrador');
+        }
+      } catch (e) { console.warn('No se pudo cargar:', e); }
+    }
+
+    // ── Check quota before creating new ──
+    const canCreate = async () => {
+      if (editingId) return true;
+      try {
+        const all = await DB.landings.getAll(user.id);
+        return all.length < caps.landings;
+      } catch { return true; }
+    };
+
+    // ── Generate (first time, from form) ──
+    genBtn.onclick = async () => {
+      const product = document.getElementById('fld-product').value.trim();
+      const audience = document.getElementById('fld-audience').value.trim();
+      const price = document.getElementById('fld-price').value.trim();
+      const extras = document.getElementById('fld-extras').value.trim();
+
+      if (!product) { toast('Contanos qué vendés', 'err'); return; }
+
+      if (!(await canCreate())) {
+        toast(`Llegaste al límite de ${caps.landings} landings de tu plan`, 'err');
+        return;
+      }
+
+      const brief = [
+        `Necesito una landing page para: ${product}.`,
+        audience ? `Audiencia: ${audience}.` : '',
+        price ? `Precio/oferta: ${price}.` : '',
+        extras ? `Detalles extra: ${extras}` : '',
+      ].filter(Boolean).join(' ');
+
+      if (!titleEl.value.trim()) titleEl.value = product.slice(0, 60);
+
+      genBtn.disabled = true;
+      genBtn.innerHTML = `<span class="thinking-dot"></span><span class="thinking-dot"></span><span class="thinking-dot"></span>`;
+      setStatus('Generando con Claude Sonnet…');
+
+      try {
+        const html = await AI.generateLanding(brief, []);
+        history = [
+          { role: 'user', content: brief },
+          { role: 'assistant', content: html, display: 'Acá tenés la primera versión. Pedime cambios si querés.' },
+        ];
+
+        if (!landing) {
+          landing = Landings.create({
+            title: titleEl.value.trim() || product.slice(0, 60),
+            brief,
+            html,
+            messages: history,
+          });
+        } else {
+          landing.html = html;
+          landing.messages = history;
+        }
+
+        renderPreview(html);
+        switchToChatMode();
+        renderMessages();
+        updatePublishUI();
+        await persistLanding();
+      } catch (e) {
+        console.error(e);
+        toast('Error generando: ' + e.message, 'err');
+        setStatus('Error');
+      } finally {
+        genBtn.disabled = false;
+        genBtn.innerHTML = `<span class="material-symbols-outlined" style="font-size:18px">bolt</span>Generar mi landing`;
+      }
+    };
+
+    // ── Chat iteration ──
+    const sendChat = async () => {
+      const msg = chatInput.value.trim();
+      if (!msg || !landing) return;
+      chatInput.value = '';
+      chatInput.style.height = 'auto';
+
+      history.push({ role: 'user', content: msg });
+      renderMessages();
+      showThinking();
+      sendBtn.disabled = true;
+      setStatus('Actualizando…');
+
+      try {
+        // Only send role+content to Claude (strip display)
+        const apiHistory = history.map(m => ({ role: m.role, content: m.content }));
+        const html = await AI.generateLanding(msg, apiHistory.slice(0, -1));
+        removeThinking();
+        history.push({ role: 'assistant', content: html, display: 'Listo, apliqué los cambios.' });
+        landing.html = html;
+        renderPreview(html);
+        renderMessages();
+        await persistLanding();
+      } catch (e) {
+        removeThinking();
+        history.push({ role: 'assistant', content: '', display: `Error: ${e.message}` });
+        renderMessages();
+        toast('Error: ' + e.message, 'err');
+      } finally {
+        sendBtn.disabled = false;
+      }
+    };
+
+    sendBtn.onclick = sendChat;
+    chatInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendChat(); }
+    });
+    chatInput.addEventListener('input', () => {
+      chatInput.style.height = 'auto';
+      chatInput.style.height = Math.min(chatInput.scrollHeight, 130) + 'px';
+    });
+
+    // ── Publish / unpublish ──
+    publishBtn.onclick = async () => {
+      if (!landing) { toast('Primero generá la landing', 'err'); return; }
+      landing.published = !landing.published;
+      updatePublishUI();
+      await persistLanding();
+      if (landing.published) {
+        const url = `${window.location.origin}/landing-view.html?slug=${landing.slug}`;
+        toast('¡Publicada! URL copiada al portapapeles');
+        try { await navigator.clipboard.writeText(url); } catch {}
+      } else {
+        toast('Despublicada');
+      }
+    };
+
+    openBtn.onclick = () => {
+      if (landing?.slug) window.open(`./landing-view.html?slug=${landing.slug}`, '_blank');
+    };
+
+    // ── Title autosave ──
+    let titleTimer = null;
+    titleEl.addEventListener('input', () => {
+      clearTimeout(titleTimer);
+      titleTimer = setTimeout(() => { if (landing) persistLanding(); }, 800);
+    });
+  })();
+</script>
+</body>
+</html>

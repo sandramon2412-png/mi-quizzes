@@ -212,4 +212,27 @@ alter table public.profiles add column if not exists subdomains       jsonb defa
 
 -- (Legacy columns, no longer needed with settings jsonb)
 -- alter table public.quizzes add column if not exists meta_pixel_id   text default '';
+
+-- ── Landings (Landing Builder — Claude-generated HTML) ──────
+create table if not exists public.landings (
+  id          uuid primary key default uuid_generate_v4(),
+  user_id     uuid references public.profiles(id) on delete cascade not null,
+  slug        text unique not null,
+  title       text,
+  brief       text,
+  html        text    default '',
+  messages    jsonb   default '[]'::jsonb,   -- historial de chat con Claude
+  published   boolean default false,
+  visits      int     default 0,
+  settings    jsonb   default '{}'::jsonb,
+  created_at  timestamptz default now(),
+  updated_at  timestamptz default now()
+);
+create index if not exists idx_landings_slug on public.landings (slug);
+create index if not exists idx_landings_owner on public.landings (user_id);
+alter table public.landings enable row level security;
+create policy "landings_select_all"   on public.landings for select using (true);
+create policy "landings_insert_own"   on public.landings for insert with check (auth.uid() = user_id);
+create policy "landings_update_own"   on public.landings for update using (auth.uid() = user_id);
+create policy "landings_delete_own"   on public.landings for delete using (auth.uid() = user_id);
 -- alter table public.quizzes add column if not exists meta_capi_token text default '';
