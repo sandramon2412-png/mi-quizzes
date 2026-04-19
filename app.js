@@ -1019,6 +1019,29 @@ const Integrations = {
       }
     } catch (_) {}
 
+    // Discord: mensaje formateado con embed
+    try {
+      const dc = state.discord;
+      if (dc?.connected && dc.webhookUrl && /^https:\/\/(discord|discordapp)\.com\/api\/webhooks\//.test(dc.webhookUrl)) {
+        const embed = {
+          title: '🎯 Nuevo lead capturado',
+          color: 0x7c3aed,
+          fields: [
+            { name: 'Nombre', value: lead.name || '—', inline: true },
+            { name: 'Email', value: lead.email || '—', inline: true },
+            { name: 'Quiz', value: lead.quizTitle || lead.quizId || '—' },
+            ...(lead.profileName ? [{ name: 'Perfil', value: lead.profileName, inline: true }] : []),
+          ],
+          timestamp: new Date().toISOString(),
+        };
+        fetch(dc.webhookUrl, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ embeds: [embed] }),
+        }).catch(() => {});
+      }
+    } catch (_) {}
+
     // Mailchimp: CORS bloquea la API directa. Se usa webhook de Zapier como puente
     // o el creador debe conectar via Zapier. Guardamos el intento para auditoría.
     try {
