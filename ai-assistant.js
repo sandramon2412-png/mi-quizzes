@@ -694,6 +694,20 @@ TONO: cercano, directo, entusiasta pero sin exagerar. Respuestas cortas (2-4 ora
       document.getElementById('lsa-send-btn').disabled = true;
       _renderMessages();
 
+      // Modo público (landing): responder localmente con FAQ, sin hit al API
+      if (_isPublic) {
+        setTimeout(() => {
+          const reply = _publicFaqReply(text);
+          _activeSession.messages.push({ role: 'assistant', content: reply });
+          saveSession();
+          _isThinking = false;
+          document.getElementById('lsa-send-btn').disabled = false;
+          _renderMessages();
+          input?.focus();
+        }, 350);
+        return;
+      }
+
       try {
         // Solo mensajes válidos, sin errores anteriores
         const cleanMessages = _activeSession.messages
@@ -775,6 +789,74 @@ TONO: cercano, directo, entusiasta pero sin exagerar. Respuestas cortas (2-4 ora
       }
     },
   };
+
+  // ── FAQ pregrabado para modo público (landing) ────────────
+  const PUBLIC_FAQ = [
+    {
+      keys: ['qué es', 'que es', 'qué hace', 'que hace', 'luminous', 'plataforma', 'para qué sirve', 'para que sirve'],
+      answer: `**Luminous Studio** es una plataforma para creadores de infoproductos hispanohablantes. Te permite crear:\n\n• **Quizzes interactivos** que capturan leads y los segmentan\n• **Mini-apps personalizadas** (retos, diarios, trackers, meditaciones, flashcards, chatbots IA y 13 tipos más)\n• **Landing pages de alta conversión** para vender cursos, ebooks o servicios\n\nTodo con IA integrada, integraciones con las herramientas que ya usas, y tu propia marca.`
+    },
+    {
+      keys: ['precio', 'costo', 'cuánto', 'cuanto', 'plan', 'pagar', 'cuesta', 'tarifa', 'suscripción'],
+      answer: `Tenemos 5 planes:\n\n• **Free** — $0 · 1 quiz, 2 mini-apps, 500 respuestas/mes\n• **Starter** — $5/mes · 3 quizzes, 5 mini-apps, sin IA\n• **Pro** — $9/mes · ilimitado + IA generativa + leads\n• **Growth** — $19/mes · + dominio propio + Bot Lab\n• **Elite** — $49/mes · + white-label + subdominios\n\nPodés empezar [gratis acá](./registro.html) y subir cuando lo necesites.`
+    },
+    {
+      keys: ['ia', 'inteligencia artificial', 'ai', 'claude', 'groq', 'chatgpt', 'gpt'],
+      answer: `Sí — Luminous tiene **IA generativa** integrada (Claude + Groq). Con ella podés:\n\n• Crear un quiz completo desde una idea en 8 segundos\n• Generar mini-apps con contenido real (retos, afirmaciones, meditaciones, etc.)\n• Chatear con 16 bots especializados en copywriting, ads, ofertas y más\n\nLa IA viene desde el plan **Pro ($9/mes)**. En Free y Starter usás plantillas prearmadas.`
+    },
+    {
+      keys: ['mini-app', 'miniapp', 'mini app', 'app', 'sección', 'seccion', 'módulo', 'modulo'],
+      answer: `Las **mini-apps** son experiencias interactivas que podés combinar en una sola página. Hay **19 tipos de sección**:\n\nreto · checklist · tracker · devocional · planificador · calculadora · diario · chatbot · generador · simulador · afirmaciones · meditación · FAQ · flashcards · glosario · roadmap · diagnóstico · comparador · biblioteca\n\nMezclás las que quieras y tu audiencia las abre como si fuera una mini-app nativa.`
+    },
+    {
+      keys: ['integración', 'integracion', 'conecta', 'herramienta', 'hotmart', 'stripe', 'whatsapp', 'calendly', 'mailchimp', 'zapier', 'webhook', 'meta', 'tiktok', 'analytics', 'discord'],
+      answer: `Integraciones disponibles:\n\n**Pagos**: Hotmart · Stripe\n**Comunicación**: WhatsApp · Calendly · Discord\n**Email**: Mailchimp · Email nativo de Luminous\n**Ads y tracking**: Meta Pixel · TikTok Pixel · Google Analytics\n**Automatización**: Zapier · Webhooks personalizados\n\nSe conectan en 2 minutos desde Ajustes, sin código.`
+    },
+    {
+      keys: ['quiz', 'quizzes', 'cuestionario', 'test'],
+      answer: `Los **quizzes** de Luminous son landing pages interactivas. Tu visitante responde 5-10 preguntas, obtiene un resultado personalizado y vos capturás su email segmentado por perfil.\n\nPodés crearlos con IA (desde una idea), con plantillas prearmadas (más de 30 nichos), o desde cero. Soportan Meta Pixel, GA y TikTok para tracking, y se integran con tu CRM/embudo.`
+    },
+    {
+      keys: ['dominio', 'subdominio', 'url', 'marca', 'white label', 'whitelabel', 'white-label', 'personalizar'],
+      answer: `• **Dominio propio**: desde el plan Pro ($9). Conectás tu dominio y tus quizzes salen bajo tu marca.\n• **White-label**: desde el plan Elite ($49). Oculta toda mención de Luminous — tu cliente final ve solo tu marca.\n• **Subdominios**: hasta 5 en Elite, útil si manejás varios negocios o marcas.`
+    },
+    {
+      keys: ['bot', 'bots', 'chatbot', 'bot lab', 'asistente'],
+      answer: `**Bot Lab** (plan Growth/Elite) es una biblioteca de **16 bots IA especializados** en copywriting, ads, ofertas, VSL, lanzamientos, email, contenido, y más. Cada uno con un prompt afinado para su tarea.\n\nAdemás, podés crear chatbots personalizados para tus propios infoproductos (tu cliente chatea con un bot entrenado con tu contenido).`
+    },
+    {
+      keys: ['lead', 'leads', 'contacto', 'email', 'lista', 'captura'],
+      answer: `Cada quiz y mini-app **captura leads** automáticamente. Los segmentás por el resultado del quiz (ej: perfil A, B o C) y podés:\n\n• Exportarlos a CSV\n• Enviarlos a Mailchimp, Zapier o tu CRM\n• Verlos en el panel de Leads con filtros y métricas\n• Enviarles el resultado por email con tu marca automáticamente`
+    },
+    {
+      keys: ['cómo empiezo', 'como empiezo', 'empezar', 'registrar', 'cuenta', 'crear cuenta', 'registro', 'sign up', 'signup'],
+      answer: `Podés crear tu cuenta [gratis acá](./registro.html) — no necesitás tarjeta. Te lleva 30 segundos y ya tenés:\n\n• 1 quiz\n• 2 mini-apps\n• 500 respuestas al mes\n\nCuando quieras más, subís al plan que te sirva.`
+    },
+    {
+      keys: ['idioma', 'español', 'ingles', 'inglés', 'portugués', 'portugues'],
+      answer: `Luminous está pensado para el mercado **hispanohablante**. Toda la plataforma, plantillas, IA y documentación están en español. Podés crear contenido en cualquier idioma que quieras — la IA genera en el idioma que le pidas.`
+    },
+    {
+      keys: ['cómo funciona', 'como funciona', 'funciona', 'proceso', 'pasos', 'tutorial'],
+      answer: `En 3 pasos:\n\n**1.** Creás un quiz o mini-app (con IA, plantilla o desde cero)\n**2.** Lo compartís con un link (o lo pegás en tu landing)\n**3.** Recibís leads segmentados + métricas en tiempo real\n\nCada pieza queda conectada a tu CRM, Meta Pixel, WhatsApp o lo que uses.`
+    },
+  ];
+
+  function _publicFaqReply(msg) {
+    const q = (msg || '').toLowerCase();
+
+    // Detectar intentos de usar Lloyd como bot especialista
+    const bannedIntents = ['escribe', 'escríbeme', 'escribeme', 'redacta', 'crea un quiz', 'crea una', 'dame un copy', 'hazme', 'generá', 'genera', 'campaña', 'campaign', 'anuncio', 'vsl', 'carta de venta', 'andromeda'];
+    if (bannedIntents.some(b => q.includes(b))) {
+      return `Esa es una tarea que resuelven los bots internos de Luminous Studio — están disponibles dentro de la plataforma para usuarios registrados.\n\nPodés [crear tu cuenta gratis acá](./registro.html) y probarlos sin tarjeta.`;
+    }
+
+    for (const f of PUBLIC_FAQ) {
+      if (f.keys.some(k => q.includes(k))) return f.answer;
+    }
+
+    return `Puedo contarte sobre Luminous Studio. Preguntame, por ejemplo:\n\n• ¿Qué es Luminous?\n• ¿Cuánto cuesta?\n• ¿Qué es una mini-app?\n• ¿Qué integraciones tiene?\n• ¿Cómo empiezo?\n\nO si preferís probarlo, [creá tu cuenta gratis](./registro.html).`;
+  }
 
   // ── Init ──────────────────────────────────────────────────
   async function _checkAccess() {
