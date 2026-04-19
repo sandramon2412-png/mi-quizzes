@@ -494,75 +494,97 @@
             </div>
           </div>
 
-          <!-- Mailchimp -->
-          <div class="integration-card border border-outline-variant/10 rounded-xl overflow-hidden" data-key="mailchimp">
-            <div class="flex items-center justify-between p-4 cursor-pointer hover:bg-surface-container transition-colors" onclick="toggleIntegration('mailchimp')">
+          <!-- Integraciones Avanzadas (collapsible) -->
+          <details class="integration-card border border-outline-variant/10 rounded-xl overflow-hidden group">
+            <summary class="flex items-center justify-between p-4 cursor-pointer hover:bg-surface-container transition-colors list-none">
               <div class="flex items-center gap-3">
                 <div class="w-9 h-9 rounded-lg flex items-center justify-center" style="background:rgba(77,124,255,0.1);">
-                  <span class="material-symbols-outlined text-base icon-gradient">mail</span>
+                  <span class="material-symbols-outlined text-base icon-gradient">tune</span>
                 </div>
                 <div>
-                  <p class="font-semibold text-sm text-on-surface">Mailchimp</p>
-                  <p class="text-xs text-on-surface-variant">Agrega leads del quiz a tu lista de email marketing</p>
+                  <p class="font-semibold text-sm text-on-surface">Integraciones Avanzadas</p>
+                  <p class="text-xs text-on-surface-variant">Conecta Mailchimp y Zapier con tu propia cuenta (opcional)</p>
                 </div>
               </div>
-              <div class="flex items-center gap-2">
-                <span class="integration-status text-xs font-bold px-2 py-0.5 rounded-full bg-surface-container-highest text-on-surface-variant" id="status-mailchimp">Desconectado</span>
-                <span class="material-symbols-outlined text-on-surface-variant text-sm transition-transform duration-200" id="arrow-mailchimp">expand_more</span>
+              <span class="material-symbols-outlined text-on-surface-variant text-sm transition-transform duration-200 group-open:rotate-180">expand_more</span>
+            </summary>
+            <div class="px-4 pb-4 pt-2 space-y-3 border-t border-outline-variant/10">
+              <div class="text-xs text-on-surface-variant p-3 rounded-lg bg-primary/5 border border-primary/20">
+                <p class="font-semibold text-on-surface mb-1">¿No sabes si necesitas esto?</p>
+                <p>Luminous ya captura tus leads automáticamente. Podés verlos y exportarlos a Excel en la sección <strong>Leads</strong>. Estas integraciones son opcionales, solo si querés enviarlos a otras herramientas que ya usás.</p>
               </div>
-            </div>
-            <div class="integration-form hidden px-4 pb-4 space-y-3 border-t border-outline-variant/10 pt-4" id="form-mailchimp">
-              <p class="text-xs text-on-surface-variant">Obtén tu API key en <span class="text-primary font-medium">Mailchimp → Account → Extras → API Keys</span></p>
-              <div>
-                <label class="text-xs font-bold uppercase tracking-widest text-on-surface-variant block mb-1.5">API Key</label>
-                <input type="password" placeholder="xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx-us1" id="input-mailchimp" class="w-full bg-surface-container-lowest border border-outline-variant/20 rounded-lg px-4 py-2.5 text-sm text-on-surface font-mono focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all"/>
-              </div>
-              <div>
-                <label class="text-xs font-bold uppercase tracking-widest text-on-surface-variant block mb-1.5">Audience ID (List ID)</label>
-                <input type="text" placeholder="a1b2c3d4e5" id="input-mailchimp-list" class="w-full bg-surface-container-lowest border border-outline-variant/20 rounded-lg px-4 py-2.5 text-sm text-on-surface font-mono focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all"/>
-              </div>
-              <div class="flex gap-2 pt-1">
-                <button onclick="connectIntegration('mailchimp')" class="px-5 py-2 rounded-lg text-sm font-bold text-white primary-gradient hover:brightness-110 transition-all">Conectar</button>
-                <button onclick="toggleIntegration('mailchimp')" class="px-5 py-2 rounded-lg text-sm font-semibold text-on-surface-variant border border-outline-variant/20 hover:bg-surface-container transition-colors">Cancelar</button>
-              </div>
-            </div>
-          </div>
 
-          <!-- Zapier - Webhook -->
-          <div class="integration-card border border-outline-variant/10 rounded-xl overflow-hidden" data-key="zapier">
-            <div class="flex items-center justify-between p-4 cursor-pointer hover:bg-surface-container transition-colors" onclick="toggleIntegration('zapier')">
-              <div class="flex items-center gap-3">
-                <div class="w-9 h-9 rounded-lg flex items-center justify-center" style="background:rgba(77,124,255,0.1);">
-                  <span class="material-symbols-outlined text-base icon-gradient">bolt</span>
+              <!-- Mailchimp -->
+              <div class="integration-card border border-outline-variant/10 rounded-xl overflow-hidden" data-key="mailchimp">
+                <div class="flex items-center justify-between p-4 cursor-pointer hover:bg-surface-container transition-colors" onclick="toggleIntegration('mailchimp')">
+                  <div class="flex items-center gap-3">
+                    <div class="w-9 h-9 rounded-lg flex items-center justify-center" style="background:rgba(77,124,255,0.1);">
+                      <span class="material-symbols-outlined text-base icon-gradient">mail</span>
+                    </div>
+                    <div>
+                      <p class="font-semibold text-sm text-on-surface">Mailchimp</p>
+                      <p class="text-xs text-on-surface-variant">Agrega leads del quiz a tu lista de email marketing</p>
+                    </div>
+                  </div>
+                  <div class="flex items-center gap-2">
+                    <span class="integration-status text-xs font-bold px-2 py-0.5 rounded-full bg-surface-container-highest text-on-surface-variant" id="status-mailchimp">Desconectado</span>
+                    <span class="material-symbols-outlined text-on-surface-variant text-sm transition-transform duration-200" id="arrow-mailchimp">expand_more</span>
+                  </div>
                 </div>
-                <div>
-                  <p class="font-semibold text-sm text-on-surface">Zapier <span class="text-[10px] font-bold px-1.5 py-0.5 rounded-full ml-1" style="background:#a855f720;color:#a855f7;">Elite</span></p>
-                  <p class="text-xs text-on-surface-variant">Automatiza flujos con cualquier app vía webhook</p>
+                <div class="integration-form hidden px-4 pb-4 space-y-3 border-t border-outline-variant/10 pt-4" id="form-mailchimp">
+                  <p class="text-xs text-on-surface-variant">Obtén tu API key en <span class="text-primary font-medium">Mailchimp → Account → Extras → API Keys</span></p>
+                  <div>
+                    <label class="text-xs font-bold uppercase tracking-widest text-on-surface-variant block mb-1.5">API Key</label>
+                    <input type="password" placeholder="xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx-us1" id="input-mailchimp" class="w-full bg-surface-container-lowest border border-outline-variant/20 rounded-lg px-4 py-2.5 text-sm text-on-surface font-mono focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all"/>
+                  </div>
+                  <div>
+                    <label class="text-xs font-bold uppercase tracking-widest text-on-surface-variant block mb-1.5">Audience ID (List ID)</label>
+                    <input type="text" placeholder="a1b2c3d4e5" id="input-mailchimp-list" class="w-full bg-surface-container-lowest border border-outline-variant/20 rounded-lg px-4 py-2.5 text-sm text-on-surface font-mono focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all"/>
+                  </div>
+                  <div class="flex gap-2 pt-1">
+                    <button onclick="connectIntegration('mailchimp')" class="px-5 py-2 rounded-lg text-sm font-bold text-white primary-gradient hover:brightness-110 transition-all">Conectar</button>
+                    <button onclick="toggleIntegration('mailchimp')" class="px-5 py-2 rounded-lg text-sm font-semibold text-on-surface-variant border border-outline-variant/20 hover:bg-surface-container transition-colors">Cancelar</button>
+                  </div>
                 </div>
               </div>
-              <div class="flex items-center gap-2">
-                <span class="integration-status text-xs font-bold px-2 py-0.5 rounded-full bg-surface-container-highest text-on-surface-variant" id="status-zapier">Desconectado</span>
-                <span class="material-symbols-outlined text-on-surface-variant text-sm transition-transform duration-200" id="arrow-zapier">expand_more</span>
+
+              <!-- Zapier - Webhook -->
+              <div class="integration-card border border-outline-variant/10 rounded-xl overflow-hidden" data-key="zapier">
+                <div class="flex items-center justify-between p-4 cursor-pointer hover:bg-surface-container transition-colors" onclick="toggleIntegration('zapier')">
+                  <div class="flex items-center gap-3">
+                    <div class="w-9 h-9 rounded-lg flex items-center justify-center" style="background:rgba(77,124,255,0.1);">
+                      <span class="material-symbols-outlined text-base icon-gradient">bolt</span>
+                    </div>
+                    <div>
+                      <p class="font-semibold text-sm text-on-surface">Zapier <span class="text-[10px] font-bold px-1.5 py-0.5 rounded-full ml-1" style="background:#a855f720;color:#a855f7;">Elite</span></p>
+                      <p class="text-xs text-on-surface-variant">Automatiza flujos con cualquier app vía webhook</p>
+                    </div>
+                  </div>
+                  <div class="flex items-center gap-2">
+                    <span class="integration-status text-xs font-bold px-2 py-0.5 rounded-full bg-surface-container-highest text-on-surface-variant" id="status-zapier">Desconectado</span>
+                    <span class="material-symbols-outlined text-on-surface-variant text-sm transition-transform duration-200" id="arrow-zapier">expand_more</span>
+                  </div>
+                </div>
+                <div class="integration-form hidden px-4 pb-4 space-y-3 border-t border-outline-variant/10 pt-4" id="form-zapier">
+                  <div class="text-xs text-on-surface-variant p-3 rounded-lg bg-primary/5 border border-primary/20 space-y-1.5">
+                    <p class="font-semibold text-on-surface">Cómo conectar:</p>
+                    <p>1. En Zapier, crea un Zap con trigger <strong>Webhooks by Zapier → Catch Hook</strong>.</p>
+                    <p>2. Copia la URL que te da Zapier (formato <code class="font-mono">https://hooks.zapier.com/hooks/catch/...</code>).</p>
+                    <p>3. Pégala abajo y haz clic en <strong>Conectar</strong>.</p>
+                    <p>4. Completa un quiz de prueba para que Zapier reciba el primer evento.</p>
+                  </div>
+                  <div>
+                    <label class="text-xs font-bold uppercase tracking-widest text-on-surface-variant block mb-1.5">Tu Webhook URL de Zapier</label>
+                    <input type="url" placeholder="https://hooks.zapier.com/hooks/catch/XXXXXX/YYYYYY/" id="input-zapier-url" class="w-full bg-surface-container-lowest border border-outline-variant/20 rounded-lg px-4 py-2.5 text-sm text-on-surface font-mono focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all"/>
+                  </div>
+                  <div class="flex gap-2 pt-1">
+                    <button onclick="connectIntegration('zapier')" class="px-5 py-2 rounded-lg text-sm font-bold text-white primary-gradient hover:brightness-110 transition-all">Conectar</button>
+                    <button onclick="toggleIntegration('zapier')" class="px-5 py-2 rounded-lg text-sm font-semibold text-on-surface-variant border border-outline-variant/20 hover:bg-surface-container transition-colors">Cancelar</button>
+                  </div>
+                </div>
               </div>
             </div>
-            <div class="integration-form hidden px-4 pb-4 space-y-3 border-t border-outline-variant/10 pt-4" id="form-zapier">
-              <div class="text-xs text-on-surface-variant p-3 rounded-lg bg-primary/5 border border-primary/20 space-y-1.5">
-                <p class="font-semibold text-on-surface">Cómo conectar:</p>
-                <p>1. En Zapier, crea un Zap con trigger <strong>Webhooks by Zapier → Catch Hook</strong>.</p>
-                <p>2. Copia la URL que te da Zapier (formato <code class="font-mono">https://hooks.zapier.com/hooks/catch/...</code>).</p>
-                <p>3. Pégala abajo y haz clic en <strong>Conectar</strong>.</p>
-                <p>4. Completa un quiz de prueba para que Zapier reciba el primer evento.</p>
-              </div>
-              <div>
-                <label class="text-xs font-bold uppercase tracking-widest text-on-surface-variant block mb-1.5">Tu Webhook URL de Zapier</label>
-                <input type="url" placeholder="https://hooks.zapier.com/hooks/catch/XXXXXX/YYYYYY/" id="input-zapier-url" class="w-full bg-surface-container-lowest border border-outline-variant/20 rounded-lg px-4 py-2.5 text-sm text-on-surface font-mono focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all"/>
-              </div>
-              <div class="flex gap-2 pt-1">
-                <button onclick="connectIntegration('zapier')" class="px-5 py-2 rounded-lg text-sm font-bold text-white primary-gradient hover:brightness-110 transition-all">Conectar</button>
-                <button onclick="toggleIntegration('zapier')" class="px-5 py-2 rounded-lg text-sm font-semibold text-on-surface-variant border border-outline-variant/20 hover:bg-surface-container transition-colors">Cancelar</button>
-              </div>
-            </div>
-          </div>
+          </details>
 
           <!-- Meta Ads - OAuth -->
           <div class="integration-card border border-outline-variant/10 rounded-xl overflow-hidden" data-key="meta">
