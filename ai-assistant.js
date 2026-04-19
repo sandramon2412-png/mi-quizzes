@@ -181,11 +181,10 @@
 
 /* ── Mode tabs ── */
 #lsa-mode-tabs {
-  display: flex; align-items: center; gap: 4px; padding: 10px 12px;
+  display: flex; flex-wrap: wrap; align-items: center; gap: 5px;
+  padding: 10px 12px;
   background: rgba(0,0,0,0.3);
   border-bottom: 1px solid rgba(255,255,255,0.05);
-  overflow-x: auto; scrollbar-width: none;
-  white-space: nowrap;
   flex-shrink: 0;
 }
 #lsa-mode-tabs::-webkit-scrollbar { display: none; }
