@@ -733,24 +733,16 @@
 
   // ── Init ──────────────────────────────────────────────────
   async function _checkNicheAssistantAccess() {
-    // Asistente IA del nicho requiere Growth o superior (nicheAssistant: true)
+    // Lloyd (asistente flotante) disponible para todos los usuarios autenticados.
     try {
-      if (typeof Auth === 'undefined' || typeof DB === 'undefined') return false;
+      if (typeof Auth === 'undefined') return false;
       const user = await Auth.user();
-      if (!user) return false;
-      let plan = 'free';
-      try {
-        const profile = await DB.profiles.get(user.id);
-        plan = (profile && profile.plan) || 'free';
-      } catch (_) {}
-      const caps = (typeof getPlanCaps === 'function') ? getPlanCaps(plan) : null;
-      return !!(caps && caps.nicheAssistant);
+      return !!user;
     } catch (_) { return false; }
   }
 
   async function init() {
     if (typeof Auth === 'undefined' || typeof SUPABASE_URL === 'undefined') return;
-    // Gate: solo planes Growth y Elite pueden ver el asistente IA flotante
     const allowed = await _checkNicheAssistantAccess();
     if (!allowed) return;
     injectHTML();
