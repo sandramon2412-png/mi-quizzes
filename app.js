@@ -425,8 +425,8 @@ const Claude = {
 
     let res = await doRequest(token);
 
-    // Retry once on 504 (gateway timeout — often transient on long prompts)
-    if (res.status === 504 || res.status === 502 || res.status === 524) {
+    // Retry once on 504/502/524/546 (transient gateway/CPU limits on long prompts)
+    if (res.status === 504 || res.status === 502 || res.status === 524 || res.status === 546) {
       await new Promise(r => setTimeout(r, 1500));
       res = await doRequest(token);
     }
@@ -440,8 +440,8 @@ const Claude = {
       const err = await res.json().catch(() => ({}));
       const msg = err.error?.message || `Error ${res.status}`;
       if (res.status === 429) throw new Error('Límite de peticiones alcanzado. Espera un momento e intenta de nuevo.');
-      if (res.status === 504 || res.status === 502 || res.status === 524) {
-        throw new Error('La IA tardó demasiado (timeout). Probá con menos capítulos o un material más corto.');
+      if (res.status === 504 || res.status === 502 || res.status === 524 || res.status === 546) {
+        throw new Error('La IA excedió el tiempo permitido. Reducí los capítulos (probá 6) o acortá el material de entrada.');
       }
       throw new Error(msg);
     }
@@ -890,23 +890,107 @@ REGLAS DE CONTENIDO:
 - Si el brief menciona audiencia, nicho o tono, priorizá eso sobre tu estilo por defecto.`;
   },
 
-  async generateEbook(brief, history = []) {
-    const messages = [...history, { role: 'user', content: brief }];
-    const text = await this._call(messages, 8000, {
-      model: 'claude-sonnet-4-6',
-      system: this._ebookSystemPrompt(),
-    });
-    // Parse JSON (may be wrapped in ```json fences)
-    let json = text.trim();
+  _parseJSONLoose(text) {
+    let json = (text || '').trim();
     json = json.replace(/^```json\s*/i, '').replace(/^```\s*/i, '').replace(/```\s*$/i, '').trim();
     const start = json.indexOf('{');
     const end = json.lastIndexOf('}');
     if (start >= 0 && end > start) json = json.slice(start, end + 1);
-    try {
-      return JSON.parse(json);
-    } catch (e) {
-      throw new Error('El ebook generado no tiene formato JSON válido. Intentá de nuevo.');
+    return JSON.parse(json);
+  },
+
+  async generateEbookOutline(brief) {
+    const system = `Eres un editor profesional de ebooks en español. Tu tarea es generar SOLO el outline.
+Devolvé ÚNICAMENTE JSON válido, sin markdown, sin \`\`\`. Schema exacto:
+{
+  "title": "Título del ebook",
+  "subtitle": "Subtítulo (1 frase vendedora)",
+  "chapterTitles": ["Capítulo 1: Introducción — ...", "Capítulo 2: ...", ..., "Capítulo N: Conclusión y próximos pasos"]
+}
+REGLAS:
+- El primer capítulo es siempre "Introducción" con un hook fuerte.
+- El último es "Conclusión y próximos pasos" con CTA.
+- Títulos de capítulo específicos, accionables, no genéricos.
+- Si el brief indica material de base, los títulos deben reflejar ese contenido.`;
+    const text = await this._call([{ role: 'user', content: brief }], 1200, {
+      model: 'claude-sonnet-4-6', system,
+    });
+    try { return this._parseJSONLoose(text); }
+    catch { throw new Error('No pude generar el outline. Intentá de nuevo.'); }
+  },
+
+  async generateEbookChapter({ bookTitle, bookSubtitle, chapterTitle, chapterIndex, totalChapters, tone, sourceExcerpt, audience }) {
+    const system = `Eres un escritor profesional de ebooks en español. Tu tarea es escribir UN capítulo completo.
+Devolvé ÚNICAMENTE JSON válido, sin markdown, sin \`\`\`. Schema exacto:
+{ "title": "Título del capítulo", "body_md": "Contenido en markdown..." }
+REGLAS:
+- 350–600 palabras en markdown.
+- Usá ## para subsecciones, **negrita** para conceptos clave, > para citas, listas con - o 1..
+- Entrá directo al contenido. NO saludes, NO digas "en este capítulo...".
+- Valor concreto: ejemplos, pasos, datos, frameworks.
+- Segunda persona (tú/vos según tono).
+- NO inventes datos que no estén en el material de base (si lo hay).`;
+    const userMsg = [
+      `Ebook: "${bookTitle}"${bookSubtitle ? ` — ${bookSubtitle}` : ''}.`,
+      audience ? `Audiencia: ${audience}.` : '',
+      `Tono: ${tone}.`,
+      `Capítulo ${chapterIndex + 1} de ${totalChapters}: "${chapterTitle}".`,
+      sourceExcerpt ? `\nMaterial de base relevante para este capítulo:\n---\n${sourceExcerpt}\n---\nUsá este material como fuente principal. Preservá ejemplos y datos.` : '',
+      `\nEscribí el capítulo completo ahora.`,
+    ].filter(Boolean).join(' ');
+    const text = await this._call([{ role: 'user', content: userMsg }], 2200, {
+      model: 'claude-sonnet-4-6', system,
+    });
+    try { return this._parseJSONLoose(text); }
+    catch { return { title: chapterTitle, body_md: text }; }
+  },
+
+  async generateEbook(brief, history = [], onProgress) {
+    // If this is a chat iteration (has history), use old single-shot path with smaller token budget
+    if (history.length > 0) {
+      const messages = [...history, { role: 'user', content: brief }];
+      const text = await this._call(messages, 6000, {
+        model: 'claude-sonnet-4-6',
+        system: this._ebookSystemPrompt(),
+      });
+      try { return this._parseJSONLoose(text); }
+      catch { throw new Error('El ebook generado no tiene formato JSON válido. Intentá de nuevo.'); }
     }
+
+    // Fresh generation: outline then chapter-by-chapter (avoids CPU/timeout limits)
+    onProgress?.({ stage: 'outline' });
+    const outline = await this.generateEbookOutline(brief);
+    const chapterTitles = outline.chapterTitles || [];
+    if (!chapterTitles.length) throw new Error('El outline no tiene capítulos.');
+
+    // Extract tone/audience/source from brief for chapter calls
+    const toneMatch = brief.match(/Tono:\s*([^.]+)\./i);
+    const tone = toneMatch?.[1]?.trim() || 'conversacional';
+    const audienceMatch = brief.match(/Audiencia:\s*([^.]+)\./i);
+    const audience = audienceMatch?.[1]?.trim() || '';
+    const sourceMatch = brief.match(/---MATERIAL---\n([\s\S]*?)\n---FIN MATERIAL---/);
+    const source = sourceMatch?.[1] || '';
+
+    const chapters = [];
+    const total = chapterTitles.length;
+    // Slice source into equal chunks per chapter (if material is provided)
+    const chunkSize = source ? Math.floor(source.length / total) : 0;
+
+    for (let i = 0; i < total; i++) {
+      onProgress?.({ stage: 'chapter', current: i + 1, total });
+      const sourceExcerpt = source ? source.slice(i * chunkSize, (i + 1) * chunkSize + 400).trim() : '';
+      const ch = await this.generateEbookChapter({
+        bookTitle: outline.title,
+        bookSubtitle: outline.subtitle,
+        chapterTitle: chapterTitles[i],
+        chapterIndex: i,
+        totalChapters: total,
+        tone, audience, sourceExcerpt,
+      });
+      chapters.push(ch);
+    }
+
+    return { title: outline.title, subtitle: outline.subtitle, chapters };
   },
 };
 
@@ -1030,8 +1114,8 @@ const AI = {
     return Claude.generateLanding(brief, history);
   },
   // Complejo: ebook estructurado (JSON con capítulos en Markdown)
-  async generateEbook(brief, history = []) {
-    return Claude.generateEbook(brief, history);
+  async generateEbook(brief, history = [], onProgress) {
+    return Claude.generateEbook(brief, history, onProgress);
   },
 };
 
