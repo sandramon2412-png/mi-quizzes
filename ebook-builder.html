@@ -733,23 +733,24 @@
       downloadBtn.innerHTML = `<span class="thinking-dot"></span><span class="thinking-dot"></span><span class="thinking-dot"></span>`;
       setStatus('Generando PDF…');
 
-      // Build a clean off-screen container with page-break wrappers
+      // Render wrapper in the actual viewport (fixed + opacity 0) so html2canvas
+      // can compute real layout. Off-screen with left:-9999px breaks font/flex rendering.
       const wrapper = document.createElement('div');
-      wrapper.style.cssText = 'position:absolute;left:-9999px;top:0;width:794px;background:#fff;';
+      wrapper.style.cssText = 'position:fixed;left:0;top:0;width:794px;background:#fff;opacity:0;pointer-events:none;z-index:-1;';
       const cover = ebook.cover || {};
       const gradFrom = cover.gradientFrom || '#2E5BFF';
       const gradTo = cover.gradientTo || '#7c3aed';
       wrapper.innerHTML = `
-        <div class="ebook-page" style="width:794px;height:1123px;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;padding:64px;color:#fff;background:linear-gradient(135deg, ${gradFrom}, ${gradTo})">
+        <div class="ebook-page" style="width:794px;height:1123px;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;padding:64px;box-sizing:border-box;color:#fff;background:linear-gradient(135deg, ${gradFrom}, ${gradTo})">
           <div style="width:72px;height:72px;border-radius:20px;background:rgba(255,255,255,0.15);display:flex;align-items:center;justify-content:center;margin-bottom:40px">
             <span class="material-symbols-outlined" style="font-size:36px;color:#fff">menu_book</span>
           </div>
-          <h1 style="font-family:'Plus Jakarta Sans',sans-serif;font-size:52px;font-weight:800;line-height:1.05;letter-spacing:-0.03em;margin:0 0 20px">${escapeHtml(ebook.title || 'Mi ebook')}</h1>
-          ${cover.subtitle ? `<p style="font-family:'Lora',serif;font-size:22px;opacity:0.92;max-width:90%;line-height:1.45">${escapeHtml(cover.subtitle)}</p>` : ''}
+          <h1 style="font-family:'Plus Jakarta Sans',sans-serif;font-size:52px;font-weight:800;line-height:1.05;letter-spacing:-0.03em;margin:0 0 20px;color:#fff">${escapeHtml(ebook.title || 'Mi ebook')}</h1>
+          ${cover.subtitle ? `<p style="font-family:'Lora',serif;font-size:22px;opacity:0.92;max-width:90%;line-height:1.45;color:#fff">${escapeHtml(cover.subtitle)}</p>` : ''}
         </div>
       ` + ebook.chapters.map((ch, i) => `
-        <div class="page-break"></div>
-        <div class="ebook-page" style="width:794px;min-height:1123px;padding:72px 80px">
+        <div class="html2pdf__page-break" style="height:0"></div>
+        <div class="ebook-page" style="width:794px;min-height:1123px;padding:72px 80px;box-sizing:border-box;background:#fff;color:#1a1a1a">
           <div class="chapter-num">Capítulo ${i + 1}</div>
           <h1 class="chapter-title">${escapeHtml(ch.title || `Capítulo ${i + 1}`)}</h1>
           <div style="margin-top:28px">${marked.parse(ch.body_md || '')}</div>
@@ -757,14 +758,18 @@
       `).join('');
       document.body.appendChild(wrapper);
 
+      // Wait for fonts to load before rasterizing (otherwise text can render blank)
+      try { if (document.fonts && document.fonts.ready) await document.fonts.ready; } catch {}
+      await new Promise(r => setTimeout(r, 250));
+
       try {
         await html2pdf().set({
           margin: 0,
           filename: `${(ebook.title || 'ebook').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '')}.pdf`,
           image: { type: 'jpeg', quality: 0.95 },
-          html2canvas: { scale: 2, useCORS: true, logging: false, backgroundColor: '#ffffff' },
+          html2canvas: { scale: 2, useCORS: true, allowTaint: true, logging: false, backgroundColor: '#ffffff', windowWidth: 794 },
           jsPDF: { unit: 'px', format: [794, 1123], orientation: 'portrait', hotfixes: ['px_scaling'] },
-          pagebreak: { mode: ['css', 'legacy'] },
+          pagebreak: { mode: ['css', 'legacy'], before: '.html2pdf__page-break' },
         }).from(wrapper).save();
         try { await DB.ebooks.incrementDownloads(ebook.id); } catch {}
         toast('PDF descargado');
