@@ -425,6 +425,12 @@ const Claude = {
 
     let res = await doRequest(token);
 
+    // Retry once on 504 (gateway timeout — often transient on long prompts)
+    if (res.status === 504 || res.status === 502 || res.status === 524) {
+      await new Promise(r => setTimeout(r, 1500));
+      res = await doRequest(token);
+    }
+
     // On 401, sign out and tell user to re-login
     if (res.status === 401) {
       throw new Error('Sesión expirada. Por favor recarga la página e inicia sesión de nuevo. O configura tu API key de Groq en Ajustes para no depender del proxy.');
@@ -434,6 +440,9 @@ const Claude = {
       const err = await res.json().catch(() => ({}));
       const msg = err.error?.message || `Error ${res.status}`;
       if (res.status === 429) throw new Error('Límite de peticiones alcanzado. Espera un momento e intenta de nuevo.');
+      if (res.status === 504 || res.status === 502 || res.status === 524) {
+        throw new Error('La IA tardó demasiado (timeout). Probá con menos capítulos o un material más corto.');
+      }
       throw new Error(msg);
     }
     const data = await res.json();
