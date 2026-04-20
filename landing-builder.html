@@ -259,7 +259,7 @@
 
     const setStatus = (s) => { statusEl.textContent = s; };
 
-    const PREVIEW_INJECTION = `<base target="_blank"><script>document.addEventListener('click',function(e){var a=e.target.closest('a,button');if(a&&(!a.href||a.getAttribute('href')==='#'||a.tagName==='BUTTON')){e.preventDefault();}},true);</script>`;
+    const PREVIEW_INJECTION = `<base target="_blank"><script>document.addEventListener('click',function(e){var a=e.target.closest('a,button');if(a&&(!a.href||a.getAttribute('href')==='#'||a.tagName==='BUTTON')){e.preventDefault();}},true);<\/script>`;
     const PREVIEW_INJECTION_RE = /<base target="_blank">\s*<script>[^<]*<\/script>\s*/;
 
     const renderPreview = (html) => {
