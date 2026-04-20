@@ -32,7 +32,13 @@
 <script>
   (async () => {
     const params = new URLSearchParams(window.location.search);
-    const slug = params.get('slug') || window.location.pathname.split('/l/')[1]?.replace(/\/$/, '');
+    // Slug priority: ?slug= (from Vercel rewrite) > /l/<slug> > /<slug>
+    let slug = params.get('slug');
+    if (!slug) {
+      const path = window.location.pathname.replace(/\/$/, '');
+      if (path.startsWith('/l/')) slug = path.slice(3);
+      else if (path && path !== '/') slug = path.slice(1);
+    }
     const loading = document.getElementById('loading');
     const errorEl = document.getElementById('error');
     const showError = () => { loading.style.display = 'none'; errorEl.style.display = 'flex'; };

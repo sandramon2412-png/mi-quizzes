@@ -1073,7 +1073,7 @@ async function renderLandings() {
         </div>
         <div class="p-4">
           <h3 class="text-sm font-extrabold tracking-tight mb-1 truncate">${escapeHtml(l.title || 'Sin título')}</h3>
-          <p class="text-[10px] text-on-surface-variant/60 font-mono truncate mb-3">/l/${escapeHtml(l.slug || '')}</p>
+          <p class="text-[10px] text-on-surface-variant/60 font-mono truncate mb-3">/${escapeHtml(l.slug || '')}</p>
           <div class="flex items-center gap-1.5 text-[10px] text-on-surface-variant/70 mb-3">
             <span class="material-symbols-outlined" style="font-size:12px">visibility</span>${visits} visitas
           </div>
@@ -1081,7 +1081,7 @@ async function renderLandings() {
             <a href="./landing-builder.html?id=${l.id}" class="flex-1 h-8 rounded-lg bg-surface-container-high hover:bg-surface-container-highest text-[11px] font-semibold flex items-center justify-center gap-1 transition-colors">
               <span class="material-symbols-outlined" style="font-size:13px">edit</span>Editar
             </a>
-            ${l.published ? `<a href="/l/${l.slug}" target="_blank" class="w-8 h-8 rounded-lg bg-surface-container-high hover:bg-surface-container-highest flex items-center justify-center transition-colors" title="Ver landing">
+            ${l.published ? `<a href="/${l.slug}" target="_blank" class="w-8 h-8 rounded-lg bg-surface-container-high hover:bg-surface-container-highest flex items-center justify-center transition-colors" title="Ver landing">
               <span class="material-symbols-outlined" style="font-size:13px">open_in_new</span>
             </a>` : ''}
             <button onclick="deleteLanding('${l.id}')" class="w-8 h-8 rounded-lg bg-surface-container-high hover:bg-red-500/20 hover:text-red-400 flex items-center justify-center transition-colors" title="Eliminar">

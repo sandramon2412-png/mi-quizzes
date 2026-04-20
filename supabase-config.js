@@ -287,8 +287,20 @@ const DB = {
     },
 
     async save(landing, userId) {
-      // Ensure unique slug: if taken by another row, append short suffix
+      // Ensure unique slug: if taken by another row, append short suffix.
+      // Also reject reserved paths that would collide with real pages.
+      const RESERVED = new Set([
+        'l','api','admin','assets','public','static',
+        'acceso-exito','bot-chat','bots','dashboard','generador-ia','index',
+        'landing-builder','landing-view','leads','login','manna-acceso','manna-app',
+        'mini-app-player','pago-exitoso','plantillas-miniapps','plantillas',
+        'precios','quiz','recuperar-contrasena','registro','reset-password',
+        'resultado-quiz','settings','favicon','robots','sitemap',
+      ]);
       let slug = landing.slug;
+      if (slug && RESERVED.has(slug.toLowerCase())) {
+        slug = `${slug}-landing`;
+      }
       if (slug) {
         try {
           const { data: existing } = await db.from('landings')

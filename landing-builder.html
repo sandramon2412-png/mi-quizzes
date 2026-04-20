@@ -159,7 +159,7 @@
   <section class="flex-1 flex flex-col bg-surface-container-low">
     <div class="h-10 border-b border-outline-variant/20 flex items-center px-4 gap-3 bg-surface-container text-[11px] text-on-surface-variant">
       <span class="material-symbols-outlined" style="font-size:14px">preview</span>
-      <span id="preview-url" class="font-mono truncate flex items-center gap-0.5">tudominio.com/l/<input id="slug-preview" type="text" placeholder="pendiente" class="bg-transparent border-none outline-none font-mono text-[11px] p-0 focus:ring-0 hover:bg-surface-container-high rounded px-1 transition-colors" style="width:auto;min-width:80px"/></span>
+      <span id="preview-url" class="font-mono truncate flex items-center gap-0.5">tudominio.com/<input id="slug-preview" type="text" placeholder="pendiente" class="bg-transparent border-none outline-none font-mono text-[11px] p-0 focus:ring-0 hover:bg-surface-container-high rounded px-1 transition-colors" style="width:auto;min-width:80px"/></span>
       <span class="ml-auto hidden md:flex items-center gap-1 text-[10px]">
         <span class="w-2 h-2 rounded-full bg-green-500"></span>
         Preview en vivo
@@ -580,7 +580,7 @@
       updatePublishUI();
       await persistLanding();
       if (landing.published) {
-        const url = `${window.location.origin}/l/${landing.slug}`;
+        const url = `${window.location.origin}/${landing.slug}`;
         toast('¡Publicada! URL copiada al portapapeles');
         try { await navigator.clipboard.writeText(url); } catch {}
       } else {
@@ -589,7 +589,7 @@
     };
 
     openBtn.onclick = () => {
-      if (landing?.slug) window.open(`/l/${landing.slug}`, '_blank');
+      if (landing?.slug) window.open(`/${landing.slug}`, '_blank');
     };
 
     // ── Title autosave ──
