@@ -748,37 +748,76 @@
         </section>
       `).join('');
 
+      const hint = `<div class="hint">En el diálogo de impresión elegí destino <strong>"Guardar como PDF"</strong> y activá <strong>"Gráficos de fondo"</strong> (en Más ajustes) para que se impriman los colores.</div>`;
+
       const html = `<!DOCTYPE html>
 <html lang="es"><head>
 <meta charset="utf-8"/>
 <title>${escapeHtml(ebook.title || 'Ebook')}</title>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Lora:wght@400;500;600;700&display=swap" rel="stylesheet"/>
 <style>
+  /* Page setup — named pages for cover (full bleed) vs chapter (with margin) */
   @page { size: A4; margin: 0; }
-  @media print { body { -webkit-print-color-adjust: exact; print-color-adjust: exact; } .toolbar { display: none !important; } }
+  @page chapter { size: A4; margin: 20mm 22mm; }
+
+  /* Force background colors to print (default Chrome strips them) */
+  @media print {
+    *, *::before, *::after {
+      -webkit-print-color-adjust: exact !important;
+      print-color-adjust: exact !important;
+      color-adjust: exact !important;
+    }
+    .toolbar { display: none !important; }
+    body { background: #fff !important; }
+    .page { margin: 0 !important; box-shadow: none !important; }
+  }
+
   * { box-sizing: border-box; }
   html, body { margin: 0; padding: 0; background: #e8e8ea; font-family: 'Lora', serif; color: #1a1a1a; }
   .toolbar { position: fixed; top: 12px; right: 12px; z-index: 10; display: flex; gap: 8px; background: #fff; padding: 8px 10px; border-radius: 10px; box-shadow: 0 6px 20px rgba(0,0,0,0.12); font-family: 'Plus Jakarta Sans', sans-serif; font-size: 12px; }
   .toolbar button { cursor: pointer; padding: 6px 14px; border-radius: 6px; border: none; font-weight: 700; font-size: 12px; }
   .toolbar .primary { background: linear-gradient(135deg, #2E5BFF, #7c3aed); color: #fff; }
   .toolbar .secondary { background: #f0f0f3; color: #333; }
-  .page { width: 210mm; min-height: 297mm; padding: 22mm 24mm; background: #fff; margin: 20px auto; box-shadow: 0 4px 16px rgba(0,0,0,0.08); page-break-after: always; break-after: page; position: relative; overflow: hidden; }
-  .page:last-child { page-break-after: auto; }
+  .hint { max-width: 210mm; margin: 40px auto 0; padding: 14px 18px; background: #fffbe6; border-left: 4px solid #f59e0b; border-radius: 8px; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 13px; color: #5a4a1a; line-height: 1.5; }
+  @media print { .hint { display: none !important; } }
+
+  /* Cover: full-bleed page with gradient */
   .page.cover {
-    background: linear-gradient(135deg, ${gradFrom}, ${gradTo}); color: #fff;
-    display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center;
+    page: auto; /* use root @page (margin 0) */
+    page-break-after: always; break-after: page;
+    width: 210mm; height: 297mm;
+    background: linear-gradient(135deg, ${gradFrom}, ${gradTo});
+    color: #fff;
+    display: flex; flex-direction: column; justify-content: center; align-items: center;
+    text-align: center; padding: 30mm;
+    margin: 20px auto;
   }
   .page.cover h1 { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 52px; font-weight: 800; line-height: 1.05; letter-spacing: -0.03em; margin: 0 0 20px; color: #fff; }
   .page.cover .subtitle { font-family: 'Lora', serif; font-size: 22px; opacity: 0.92; line-height: 1.45; margin: 0; max-width: 88%; color: #fff; }
+
+  /* Chapter: flows naturally; margins come from @page chapter */
+  .page.chapter {
+    page: chapter;
+    page-break-before: always; break-before: page;
+    width: 210mm;
+    padding: 22mm 24mm;
+    background: #fff;
+    margin: 20px auto;
+    min-height: 297mm;
+  }
+  .page.chapter:last-child { page-break-after: auto; break-after: auto; }
+
   .chapter-num { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.14em; color: #7c3aed; margin-bottom: 8px; }
-  .chapter-title { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 34px; font-weight: 800; line-height: 1.1; letter-spacing: -0.03em; margin: 0 0 28px; color: #1a1a1a; }
-  .chapter-body h2 { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 22px; font-weight: 800; color: #2E5BFF; margin: 28px 0 14px; letter-spacing: -0.02em; }
-  .chapter-body h3 { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 17px; font-weight: 700; color: #333; margin: 22px 0 10px; }
-  .chapter-body p { font-size: 14px; line-height: 1.75; margin: 0 0 14px; }
+  .chapter-title { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 34px; font-weight: 800; line-height: 1.1; letter-spacing: -0.03em; margin: 0 0 28px; color: #1a1a1a; page-break-after: avoid; break-after: avoid; }
+
+  .chapter-body h2 { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 22px; font-weight: 800; color: #2E5BFF; margin: 28px 0 14px; letter-spacing: -0.02em; page-break-after: avoid; break-after: avoid; }
+  .chapter-body h3 { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 17px; font-weight: 700; color: #333; margin: 22px 0 10px; page-break-after: avoid; break-after: avoid; }
+  .chapter-body p { font-size: 14px; line-height: 1.75; margin: 0 0 14px; orphans: 3; widows: 3; }
   .chapter-body ul, .chapter-body ol { font-size: 14px; line-height: 1.75; margin: 0 0 14px 20px; }
   .chapter-body li { margin-bottom: 6px; }
   .chapter-body strong { color: #2E5BFF; font-weight: 700; }
-  .chapter-body blockquote { border-left: 3px solid #7c3aed; padding: 8px 0 8px 16px; margin: 16px 0; color: #555; font-style: italic; }
+  .chapter-body blockquote { border-left: 3px solid #7c3aed; padding: 8px 0 8px 16px; margin: 16px 0; color: #555; font-style: italic; page-break-inside: avoid; break-inside: avoid; }
+
   /* Callouts */
   .chapter-body .callout { display: block; margin: 20px 0; padding: 16px 18px; border-radius: 12px; border-left: 4px solid; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 13px; line-height: 1.6; page-break-inside: avoid; break-inside: avoid; }
   .chapter-body .callout strong { display: block; font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 6px; }
@@ -792,10 +831,12 @@
   .chapter-body .callout-info strong { color: #7c3aed; }
   .chapter-body .callout-quote { background: linear-gradient(135deg, #f0f5ff, #f5f0ff); border-color: #7c3aed; font-style: italic; }
   .chapter-body .callout-quote p { font-size: 15px; color: #333; }
+
   /* Stat cards */
   .chapter-body .stat-card { display: inline-flex; flex-direction: column; padding: 18px 22px; margin: 16px 12px 16px 0; border-radius: 14px; background: linear-gradient(135deg, #2E5BFF, #7c3aed); color: #fff; min-width: 160px; font-family: 'Plus Jakarta Sans', sans-serif; page-break-inside: avoid; break-inside: avoid; }
   .chapter-body .stat-card .stat-number { font-size: 32px; font-weight: 800; line-height: 1; letter-spacing: -0.02em; }
   .chapter-body .stat-card .stat-label { font-size: 12px; opacity: 0.9; margin-top: 6px; font-weight: 500; }
+
   /* Step lists */
   .chapter-body ol.steps { list-style: none; counter-reset: step; margin: 20px 0; padding: 0; }
   .chapter-body ol.steps li { counter-increment: step; position: relative; padding: 12px 16px 12px 52px; margin: 0 0 10px; border-radius: 10px; background: #f7f8fb; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 13px; line-height: 1.6; page-break-inside: avoid; break-inside: avoid; }
@@ -807,6 +848,7 @@
   <button class="primary" onclick="window.print()">Guardar como PDF</button>
   <button class="secondary" onclick="window.close()">Cerrar</button>
 </div>
+${hint}
 ${pagesHtml}
 <script>
   // Auto-open print dialog once fonts are ready
