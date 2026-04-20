@@ -563,8 +563,8 @@
 
       // Build brief for source-based modes
       if (sourceMaterial) {
-        // Truncate very long material to fit context (keep first ~60k chars)
-        const MAX = 60000;
+        // Truncate very long material — long inputs cause claude-proxy 504 timeouts
+        const MAX = 25000;
         const truncated = sourceMaterial.length > MAX ? sourceMaterial.slice(0, MAX) + '\n\n[... truncado ...]' : sourceMaterial;
         const toneInstruction = tone === 'preservar'
           ? 'Preservá el tono y la voz del material original.'

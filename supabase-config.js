@@ -352,14 +352,20 @@ const DB = {
       const { data, error } = await db.from('ebooks')
         .select('*').eq('user_id', userId)
         .order('updated_at', { ascending: false });
-      if (error) throw error;
+      // Table may not exist yet — degrade gracefully
+      if (error) {
+        if (error.code === 'PGRST205' || error.code === '42P01' || error.message?.includes('does not exist') || error.message?.includes('Could not find')) return [];
+        throw error;
+      }
       return data || [];
     },
 
     async get(id) {
-      const { data, error } = await db.from('ebooks').select('*').eq('id', id).single();
-      if (error) return null;
-      return data;
+      try {
+        const { data, error } = await db.from('ebooks').select('*').eq('id', id).single();
+        if (error) return null;
+        return data;
+      } catch { return null; }
     },
 
     async save(ebook, userId) {
@@ -376,19 +382,32 @@ const DB = {
         settings:   ebook.settings || {},
         updated_at: new Date().toISOString(),
       };
-      if (ebook.id) {
-        const { data: updated } = await db.from('ebooks').update(row).eq('id', ebook.id).select().maybeSingle();
-        if (updated) return updated;
-        row.id = ebook.id;
+      try {
+        if (ebook.id) {
+          const { data: updated } = await db.from('ebooks').update(row).eq('id', ebook.id).select().maybeSingle();
+          if (updated) return updated;
+          row.id = ebook.id;
+        }
+        const { data, error } = await db.from('ebooks').insert(row).select().single();
+        if (error) throw error;
+        return data;
+      } catch (e) {
+        // If the table doesn't exist, return the ebook as-is so localStorage still works
+        if (e.code === 'PGRST205' || e.code === '42P01' || e.message?.includes('does not exist') || e.message?.includes('Could not find')) {
+          console.warn('[DB.ebooks.save] Table ebooks not found — using localStorage only. Run schema.sql to enable cloud sync.');
+          return { ...row, id: ebook.id || ('local-' + Date.now()) };
+        }
+        throw e;
       }
-      const { data, error } = await db.from('ebooks').insert(row).select().single();
-      if (error) throw error;
-      return data;
     },
 
     async delete(id) {
-      const { error } = await db.from('ebooks').delete().eq('id', id);
-      if (error) throw error;
+      try {
+        const { error } = await db.from('ebooks').delete().eq('id', id);
+        if (error && !(error.code === 'PGRST205' || error.code === '42P01')) throw error;
+      } catch (e) {
+        if (!(e.code === 'PGRST205' || e.code === '42P01' || e.message?.includes('does not exist'))) throw e;
+      }
     },
 
     async incrementDownloads(id) {
