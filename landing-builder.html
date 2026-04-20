@@ -196,6 +196,36 @@
 <!-- Toast -->
 <div id="toast" class="fixed bottom-6 right-6 hidden toast px-4 py-3 rounded-lg bg-surface-container-highest border border-outline-variant/30 text-sm font-semibold shadow-xl flex items-center gap-2 z-50"></div>
 
+<!-- Floating edit toolbar (appears when user clicks on an editable element) -->
+<div id="edit-toolbar" class="hidden fixed z-40 flex items-center gap-1 bg-surface-container-highest border border-outline-variant/30 rounded-lg px-2 py-1.5 shadow-2xl text-xs">
+  <label class="flex items-center gap-1 px-1.5 hover:bg-surface-container-high rounded cursor-pointer" title="Color del texto">
+    <span class="material-symbols-outlined" style="font-size:14px">format_color_text</span>
+    <input id="tb-text-color" type="color" class="w-4 h-4 border-none cursor-pointer bg-transparent p-0" value="#000000"/>
+  </label>
+  <label class="flex items-center gap-1 px-1.5 hover:bg-surface-container-high rounded cursor-pointer" title="Color de fondo">
+    <span class="material-symbols-outlined" style="font-size:14px">format_color_fill</span>
+    <input id="tb-bg-color" type="color" class="w-4 h-4 border-none cursor-pointer bg-transparent p-0" value="#ffffff"/>
+  </label>
+  <button id="tb-bold" class="px-1.5 py-0.5 hover:bg-surface-container-high rounded font-bold" title="Negrita">B</button>
+  <button id="tb-italic" class="px-1.5 py-0.5 hover:bg-surface-container-high rounded italic" title="Cursiva">I</button>
+  <div id="tb-image-section" class="hidden flex items-center gap-1 border-l border-outline-variant/30 pl-1.5 ml-1">
+    <button id="tb-image-url" class="px-2 py-0.5 hover:bg-surface-container-high rounded text-[10px] font-semibold" title="Cambiar imagen por URL">
+      <span class="material-symbols-outlined" style="font-size:13px;vertical-align:middle">image</span> URL
+    </button>
+  </div>
+  <div class="border-l border-outline-variant/30 pl-1.5 ml-1 flex items-center gap-0.5">
+    <button id="tb-move-up" class="px-1.5 py-0.5 hover:bg-surface-container-high rounded" title="Mover sección arriba">
+      <span class="material-symbols-outlined" style="font-size:14px">arrow_upward</span>
+    </button>
+    <button id="tb-move-down" class="px-1.5 py-0.5 hover:bg-surface-container-high rounded" title="Mover sección abajo">
+      <span class="material-symbols-outlined" style="font-size:14px">arrow_downward</span>
+    </button>
+    <button id="tb-delete" class="px-1.5 py-0.5 hover:bg-red-500/20 hover:text-red-400 rounded" title="Borrar esta sección">
+      <span class="material-symbols-outlined" style="font-size:14px">delete</span>
+    </button>
+  </div>
+</div>
+
 <script src="./supabase-config.js"></script>
 <script src="./app.js"></script>
 <script src="./ai-assistant.js"></script>
@@ -291,37 +321,100 @@
 
     // ── Visual edit mode ──
     let _isEditing = false;
+    let _selectedEl = null;
     const EDITABLE_SELECTORS = 'h1,h2,h3,h4,h5,h6,p,span,a,li,button,strong,em,td,th,label,small,figcaption,blockquote,summary';
+    const SECTION_SELECTORS = 'section,header,footer,article,aside,div[class*="section"],div[class*="hero"]';
+
+    const showSelectionToolbar = (el) => {
+      const toolbar = document.getElementById('edit-toolbar');
+      if (!toolbar) return;
+      _selectedEl = el;
+      const rect = el.getBoundingClientRect();
+      const frameRect = previewFrame.getBoundingClientRect();
+      toolbar.style.left = (frameRect.left + rect.left + window.scrollX) + 'px';
+      toolbar.style.top = (frameRect.top + rect.top + window.scrollY - 44) + 'px';
+      toolbar.classList.remove('hidden');
+      // Pre-fill inputs based on current element
+      const computed = previewFrame.contentWindow.getComputedStyle(el);
+      document.getElementById('tb-text-color').value = rgbToHex(computed.color);
+      document.getElementById('tb-bg-color').value = rgbToHex(computed.backgroundColor) || '#ffffff';
+      const isImg = el.tagName === 'IMG';
+      document.getElementById('tb-image-section').classList.toggle('hidden', !isImg);
+    };
+
+    const hideSelectionToolbar = () => {
+      const toolbar = document.getElementById('edit-toolbar');
+      toolbar?.classList.add('hidden');
+      _selectedEl = null;
+    };
+
+    const rgbToHex = (rgb) => {
+      if (!rgb || rgb === 'transparent' || rgb.includes('rgba(0, 0, 0, 0)')) return '';
+      const m = rgb.match(/rgb\((\d+),\s*(\d+),\s*(\d+)\)/);
+      if (!m) return '';
+      return '#' + [m[1], m[2], m[3]].map(n => parseInt(n).toString(16).padStart(2, '0')).join('');
+    };
 
     const enterEditMode = () => {
       if (!landing?.html) { toast('Primero generá una landing', 'err'); return; }
       const doc = previewFrame.contentDocument;
       if (!doc) return;
+      // Text elements: editable
       doc.querySelectorAll(EDITABLE_SELECTORS).forEach(el => {
         if (el.innerText && el.innerText.trim()) {
           el.contentEditable = 'true';
           el.style.outline = '1px dashed rgba(124,58,237,.45)';
           el.style.outlineOffset = '2px';
           el.style.cursor = 'text';
-          el.addEventListener('focus', () => { el.style.outline = '2px solid #7c3aed'; });
+          el.addEventListener('focus', () => { el.style.outline = '2px solid #7c3aed'; showSelectionToolbar(el); });
           el.addEventListener('blur', () => { el.style.outline = '1px dashed rgba(124,58,237,.45)'; });
         }
+      });
+      // Image elements: clickable for replacement
+      doc.querySelectorAll('img').forEach(img => {
+        img.style.outline = '1px dashed rgba(45,91,255,.45)';
+        img.style.outlineOffset = '2px';
+        img.style.cursor = 'pointer';
+        img.addEventListener('click', (e) => {
+          e.preventDefault(); e.stopPropagation();
+          showSelectionToolbar(img);
+        });
+      });
+      // Section elements: hoverable with delete button
+      doc.querySelectorAll('section,header,footer').forEach(sec => {
+        sec.style.position = sec.style.position || 'relative';
+        sec.addEventListener('mouseenter', () => {
+          sec.style.outline = '2px solid rgba(239,68,68,.35)';
+          sec.style.outlineOffset = '-2px';
+        });
+        sec.addEventListener('mouseleave', () => {
+          sec.style.outline = '';
+        });
       });
       _isEditing = true;
       editVisualBtn.innerHTML = `<span class="material-symbols-outlined" style="font-size:16px">check</span><span class="hidden md:inline">Terminar</span>`;
       editVisualBtn.classList.remove('bg-surface-container-high', 'hover:bg-surface-container-highest');
       editVisualBtn.classList.add('bg-green-500/15', 'text-green-400', 'border', 'border-green-500/30');
-      toast('Click en cualquier texto para editarlo');
+      toast('Click en texto para editar · Click en imágenes para reemplazar');
     };
 
     const exitEditMode = async () => {
       const doc = previewFrame.contentDocument;
       if (!doc) return;
+      hideSelectionToolbar();
       doc.querySelectorAll('[contenteditable]').forEach(el => {
         el.removeAttribute('contenteditable');
         el.style.outline = '';
         el.style.outlineOffset = '';
         el.style.cursor = '';
+      });
+      doc.querySelectorAll('img').forEach(img => {
+        img.style.outline = '';
+        img.style.outlineOffset = '';
+        img.style.cursor = '';
+      });
+      doc.querySelectorAll('section,header,footer').forEach(sec => {
+        sec.style.outline = '';
       });
       const full = '<!DOCTYPE html>\n' + doc.documentElement.outerHTML;
       const cleaned = full.replace(PREVIEW_INJECTION_RE, '');
@@ -628,6 +721,48 @@
     slugPreview.addEventListener('keydown', (e) => {
       if (e.key === 'Enter') { e.preventDefault(); slugPreview.blur(); }
     });
+
+    // ── Edit toolbar handlers ──
+    document.getElementById('tb-text-color').addEventListener('input', (e) => {
+      if (_selectedEl) _selectedEl.style.color = e.target.value;
+    });
+    document.getElementById('tb-bg-color').addEventListener('input', (e) => {
+      if (_selectedEl) _selectedEl.style.backgroundColor = e.target.value;
+    });
+    document.getElementById('tb-bold').onclick = () => {
+      const doc = previewFrame.contentDocument;
+      try { doc.execCommand('bold'); } catch {}
+    };
+    document.getElementById('tb-italic').onclick = () => {
+      const doc = previewFrame.contentDocument;
+      try { doc.execCommand('italic'); } catch {}
+    };
+    document.getElementById('tb-image-url').onclick = () => {
+      if (!_selectedEl || _selectedEl.tagName !== 'IMG') return;
+      const url = prompt('URL de la nueva imagen:', _selectedEl.src);
+      if (url) _selectedEl.src = url;
+    };
+    document.getElementById('tb-move-up').onclick = () => {
+      const section = _selectedEl?.closest('section,header,footer,article,aside');
+      if (section?.previousElementSibling) {
+        section.parentNode.insertBefore(section, section.previousElementSibling);
+        hideSelectionToolbar();
+      }
+    };
+    document.getElementById('tb-move-down').onclick = () => {
+      const section = _selectedEl?.closest('section,header,footer,article,aside');
+      if (section?.nextElementSibling) {
+        section.parentNode.insertBefore(section.nextElementSibling, section);
+        hideSelectionToolbar();
+      }
+    };
+    document.getElementById('tb-delete').onclick = () => {
+      const section = _selectedEl?.closest('section,header,footer,article,aside');
+      if (section && confirm('¿Borrar esta sección? No se puede deshacer.')) {
+        section.remove();
+        hideSelectionToolbar();
+      }
+    };
   })();
 </script>
 </body>
