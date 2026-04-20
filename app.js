@@ -9,6 +9,7 @@ const KEYS = {
   QUIZZES:  'ls_quizzes',
   MINI_APPS: 'ls_mini_apps',
   LANDINGS: 'ls_landings',
+  EBOOKS:   'ls_ebooks',
   CURRENT_QUIZ_ID: 'ls_current_quiz_id',
   CURRENT_ANSWERS: 'ls_current_answers',
   ANALYTICS: 'ls_analytics',
@@ -182,6 +183,40 @@ const Landings = {
       .toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '')
       .replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 40) || 'landing';
   },
+};
+
+// ── Ebooks (Ebook Packager) ────────────────────────────────
+const Ebooks = {
+  getAll() { return Store.get(KEYS.EBOOKS) || []; },
+  get(id) { return this.getAll().find(e => e.id === id) || null; },
+  save(ebook) {
+    const all = this.getAll();
+    const idx = all.findIndex(e => e.id === ebook.id);
+    ebook.updated_at = new Date().toISOString();
+    if (idx >= 0) all[idx] = ebook;
+    else all.unshift(ebook);
+    Store.set(KEYS.EBOOKS, all);
+    return ebook;
+  },
+  create(data) {
+    const ebook = {
+      id: crypto.randomUUID(),
+      title: data.title || 'Mi ebook',
+      brief: data.brief || '',
+      topic: data.topic || '',
+      audience: data.audience || '',
+      tone: data.tone || '',
+      chapters: data.chapters || [],
+      cover: data.cover || { gradientFrom: '#2E5BFF', gradientTo: '#7c3aed', subtitle: '' },
+      messages: data.messages || [],
+      settings: data.settings || {},
+      downloads: 0,
+      created_at: new Date().toISOString(),
+    };
+    return this.save(ebook);
+  },
+  delete(id) { Store.set(KEYS.EBOOKS, this.getAll().filter(e => e.id !== id)); },
+  capFor(plan) { return getPlanCaps(plan).ebooks || 0; },
 };
 
 // ── Analytics ──────────────────────────────────────────────
@@ -996,11 +1031,11 @@ function getPlanBadge(plan) {
 
 // ── Plan capabilities ─────────────────────────────────────
 const PlanLimits = {
-  free:    { quizzes: 1,   responses: 500,      leads: false, ai: false, miniApps: 2,       customDomain: false, metaPixel: false, integrations: false, whiteLabel: false, subdomains: 0, nicheAssistant: false, botLab: false, landings: 0   },
-  starter: { quizzes: 3,   responses: 5000,     leads: true,  ai: false, miniApps: 5,       customDomain: false, metaPixel: true,  integrations: false, whiteLabel: false, subdomains: 0, nicheAssistant: false, botLab: true,  landings: 0   },
-  pro:     { quizzes: 999, responses: 50000,    leads: true,  ai: true,  miniApps: 999,     customDomain: true,  metaPixel: true,  integrations: true,  whiteLabel: false, subdomains: 0, nicheAssistant: false, botLab: true,  landings: 5   },
-  growth:  { quizzes: 999, responses: 150000,   leads: true,  ai: true,  miniApps: 999,     customDomain: true,  metaPixel: true,  integrations: true,  whiteLabel: false, subdomains: 0, nicheAssistant: true,  botLab: true,  landings: 20  },
-  elite:   { quizzes: 999, responses: Infinity, leads: true,  ai: true,  miniApps: 999,     customDomain: true,  metaPixel: true,  integrations: true,  whiteLabel: true,  subdomains: 5, nicheAssistant: true,  botLab: true,  landings: 999 },
+  free:    { quizzes: 1,   responses: 500,      leads: false, ai: false, miniApps: 2,       customDomain: false, metaPixel: false, integrations: false, whiteLabel: false, subdomains: 0, nicheAssistant: false, botLab: false, landings: 0,   ebooks: 0   },
+  starter: { quizzes: 3,   responses: 5000,     leads: true,  ai: false, miniApps: 5,       customDomain: false, metaPixel: true,  integrations: false, whiteLabel: false, subdomains: 0, nicheAssistant: false, botLab: true,  landings: 0,   ebooks: 0   },
+  pro:     { quizzes: 999, responses: 50000,    leads: true,  ai: true,  miniApps: 999,     customDomain: true,  metaPixel: true,  integrations: true,  whiteLabel: false, subdomains: 0, nicheAssistant: false, botLab: true,  landings: 5,   ebooks: 5   },
+  growth:  { quizzes: 999, responses: 150000,   leads: true,  ai: true,  miniApps: 999,     customDomain: true,  metaPixel: true,  integrations: true,  whiteLabel: false, subdomains: 0, nicheAssistant: true,  botLab: true,  landings: 20,  ebooks: 20  },
+  elite:   { quizzes: 999, responses: Infinity, leads: true,  ai: true,  miniApps: 999,     customDomain: true,  metaPixel: true,  integrations: true,  whiteLabel: true,  subdomains: 5, nicheAssistant: true,  botLab: true,  landings: 999, ebooks: 999 },
 };
 
 function getPlanCaps(plan) {

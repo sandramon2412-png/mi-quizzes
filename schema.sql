@@ -235,4 +235,44 @@ create policy "landings_select_all"   on public.landings for select using (true)
 create policy "landings_insert_own"   on public.landings for insert with check (auth.uid() = user_id);
 create policy "landings_update_own"   on public.landings for update using (auth.uid() = user_id);
 create policy "landings_delete_own"   on public.landings for delete using (auth.uid() = user_id);
+
+-- ── Landing events (CTA clicks, etc.) ──────────────────────
+create table if not exists public.landing_events (
+  id          uuid primary key default uuid_generate_v4(),
+  landing_id  uuid references public.landings(id) on delete cascade not null,
+  user_id     uuid references public.profiles(id) on delete cascade not null,
+  event_type  text not null,       -- 'view' | 'cta_click' | 'scroll_50' | 'scroll_100'
+  visitor_id  text,
+  meta        jsonb default '{}'::jsonb,
+  created_at  timestamptz default now()
+);
+create index if not exists idx_landing_events_landing on public.landing_events (landing_id);
+create index if not exists idx_landing_events_owner   on public.landing_events (user_id);
+alter table public.landing_events enable row level security;
+create policy "landing_events_insert_any"  on public.landing_events for insert with check (true);
+create policy "landing_events_select_own"  on public.landing_events for select using (auth.uid() = user_id);
+
+-- ── Ebooks (Ebook Packager — Claude-generated Markdown → PDF) ──
+create table if not exists public.ebooks (
+  id          uuid primary key default uuid_generate_v4(),
+  user_id     uuid references public.profiles(id) on delete cascade not null,
+  title       text,
+  brief       text,
+  topic       text,
+  audience    text,
+  tone        text,
+  chapters    jsonb   default '[]'::jsonb,  -- [{ title, body_md }]
+  cover       jsonb   default '{}'::jsonb,  -- { gradientFrom, gradientTo, subtitle }
+  messages    jsonb   default '[]'::jsonb,  -- chat history with Claude
+  settings    jsonb   default '{}'::jsonb,
+  downloads   int     default 0,
+  created_at  timestamptz default now(),
+  updated_at  timestamptz default now()
+);
+create index if not exists idx_ebooks_owner on public.ebooks (user_id);
+alter table public.ebooks enable row level security;
+create policy "ebooks_select_own"  on public.ebooks for select using (auth.uid() = user_id);
+create policy "ebooks_insert_own"  on public.ebooks for insert with check (auth.uid() = user_id);
+create policy "ebooks_update_own"  on public.ebooks for update using (auth.uid() = user_id);
+create policy "ebooks_delete_own"  on public.ebooks for delete using (auth.uid() = user_id);
 -- alter table public.quizzes add column if not exists meta_capi_token text default '';
