@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Plantillas de Landings · Luminous Studio</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/icon?family=Material+Symbols+Outlined" rel="stylesheet"/>
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        colors: {
+          "primary": "#2E5BFF",
+          "background": "#0e0e0e", "surface": "#0e0e0e",
+          "surface-container": "#1a1a1a", "surface-container-high": "#20201f",
+          "surface-container-highest": "#262626", "surface-container-low": "#131313",
+          "on-surface": "#ffffff", "on-surface-variant": "#adaaaa",
+          "outline-variant": "#484847",
+        },
+        fontFamily: { 'jakarta': ['Plus Jakarta Sans', 'sans-serif'] },
+      },
+    },
+  };
+</script>
+<style>
+  body { font-family: 'Plus Jakarta Sans', sans-serif; background: #0e0e0e; color: #fff; }
+  .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+  .icon-gradient { background: linear-gradient(135deg, #4d7cff, #a78bfa); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+  .primary-gradient { background: linear-gradient(135deg, #2E5BFF 0%, #7c3aed 100%); }
+</style>
+</head>
+<body class="bg-background text-on-background">
+
+<header class="h-14 border-b border-outline-variant/20 bg-surface-container-low flex items-center px-6 gap-3 sticky top-0 z-30">
+  <a href="./dashboard.html" class="h-9 w-9 rounded-lg bg-surface-container-high hover:bg-surface-container-highest flex items-center justify-center transition-colors" title="Volver">
+    <span class="material-symbols-outlined" style="font-size:18px">arrow_back</span>
+  </a>
+  <div class="w-px h-6 bg-outline-variant/30"></div>
+  <div class="flex items-center gap-2 min-w-0 flex-1">
+    <div class="w-8 h-8 rounded-lg primary-gradient flex items-center justify-center shrink-0">
+      <span class="material-symbols-outlined text-white" style="font-size:16px">web</span>
+    </div>
+    <h1 class="text-sm font-extrabold tracking-tight">Plantillas de Landings</h1>
+  </div>
+  <a href="./landing-builder.html" class="h-9 px-4 rounded-lg primary-gradient text-white text-xs font-bold flex items-center gap-1.5 hover:opacity-90 transition">
+    <span class="material-symbols-outlined" style="font-size:16px">add</span>
+    Desde cero
+  </a>
+</header>
+
+<main class="max-w-7xl mx-auto px-6 py-10">
+  <div class="mb-8">
+    <h2 class="text-2xl font-extrabold tracking-tight mb-2">Elegí un punto de partida</h2>
+    <p class="text-sm text-on-surface-variant max-w-2xl">Plantillas con briefs pre-armados por nicho. Seleccioná una y Claude genera tu landing personalizada en segundos — después podés editarla por chat.</p>
+  </div>
+
+  <!-- Filters -->
+  <div id="filters" class="flex flex-wrap gap-2 mb-8"></div>
+
+  <!-- Search -->
+  <div class="relative mb-6 max-w-md">
+    <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant" style="font-size:18px">search</span>
+    <input id="search" type="text" placeholder="Buscar plantilla…"
+           class="w-full pl-10 pr-4 py-2.5 bg-surface-container border border-outline-variant/40 rounded-lg text-sm focus:border-primary focus:ring-0 outline-none"/>
+  </div>
+
+  <!-- Grid -->
+  <div id="grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5"></div>
+
+  <div id="empty" class="hidden text-center py-20 text-on-surface-variant">
+    <span class="material-symbols-outlined block mb-3" style="font-size:48px;opacity:0.4">search_off</span>
+    <p class="text-sm">No encontramos plantillas con ese filtro</p>
+  </div>
+</main>
+
+<script src="./app.js"></script>
+<script src="./supabase-config.js"></script>
+<script src="./landing-templates.js"></script>
+<script>
+  (async () => {
+    const user = await Auth.requireAuth();
+    if (!user) return;
+
+    try {
+      const profile = await DB.profiles.get(user.id);
+      if (profile?.plan) Settings.save({ plan: profile.plan });
+    } catch {}
+
+    const plan = Settings.get().plan || 'free';
+    const caps = getPlanCaps(plan);
+    if ((caps.landings || 0) < 1) {
+      document.querySelector('main').innerHTML = `
+        <div class="text-center py-20">
+          <div class="w-16 h-16 rounded-2xl primary-gradient flex items-center justify-center mx-auto mb-6">
+            <span class="material-symbols-outlined text-white" style="font-size:36px">web</span>
+          </div>
+          <h2 class="text-2xl font-extrabold tracking-tight mb-2">Landings requiere plan Pro</h2>
+          <p class="text-on-surface-variant max-w-md mx-auto mb-6">Accedé a todas las plantillas y generá landings completas con IA desde el plan Pro.</p>
+          <a href="./precios.html" class="inline-flex h-11 px-6 rounded-lg primary-gradient text-white font-bold text-sm items-center gap-2">Ver planes</a>
+        </div>`;
+      return;
+    }
+
+    const templates = getBuiltinLandingTemplates();
+    const categories = ['Todas', ...new Set(templates.map(t => t.category))];
+    let activeCategory = 'Todas';
+    let searchQuery = '';
+
+    const filtersEl = document.getElementById('filters');
+    const gridEl = document.getElementById('grid');
+    const emptyEl = document.getElementById('empty');
+    const searchEl = document.getElementById('search');
+
+    const renderFilters = () => {
+      filtersEl.innerHTML = categories.map(cat => `
+        <button data-cat="${cat}" class="px-4 py-2 rounded-full text-xs font-semibold transition-colors ${cat === activeCategory ? 'primary-gradient text-white' : 'bg-surface-container-high hover:bg-surface-container-highest text-on-surface-variant'}">
+          ${cat}
+        </button>
+      `).join('');
+      filtersEl.querySelectorAll('button').forEach(btn => {
+        btn.onclick = () => { activeCategory = btn.dataset.cat; renderFilters(); renderGrid(); };
+      });
+    };
+
+    const escapeHtml = (s) => (s || '').toString().replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+
+    const renderGrid = () => {
+      const filtered = templates.filter(t => {
+        if (activeCategory !== 'Todas' && t.category !== activeCategory) return false;
+        if (searchQuery && !(`${t.name} ${t.description} ${t.category}`.toLowerCase().includes(searchQuery))) return false;
+        return true;
+      });
+
+      if (!filtered.length) {
+        gridEl.innerHTML = '';
+        emptyEl.classList.remove('hidden');
+        return;
+      }
+      emptyEl.classList.add('hidden');
+
+      gridEl.innerHTML = filtered.map(t => `
+        <div class="rounded-2xl border border-outline-variant/20 bg-surface-container overflow-hidden hover:border-primary/40 transition-all group flex flex-col">
+          <div class="h-32 primary-gradient flex items-center justify-center relative">
+            <span class="material-symbols-outlined text-white/90" style="font-size:56px;font-variation-settings:'FILL' 1">${t.icon}</span>
+            <div class="absolute top-2 right-2">
+              <span class="text-[9px] px-1.5 py-0.5 rounded-full bg-white/15 backdrop-blur text-white font-bold uppercase tracking-wider">${escapeHtml(t.category)}</span>
+            </div>
+          </div>
+          <div class="p-5 flex-1 flex flex-col">
+            <h3 class="text-sm font-extrabold tracking-tight mb-1.5">${escapeHtml(t.name)}</h3>
+            <p class="text-[11px] text-on-surface-variant leading-relaxed mb-4 flex-1">${escapeHtml(t.description)}</p>
+            <button data-id="${t.id}" class="use-btn h-9 rounded-lg primary-gradient text-white text-xs font-bold flex items-center justify-center gap-1.5 hover:opacity-90 transition">
+              <span class="material-symbols-outlined" style="font-size:15px">bolt</span>
+              Usar plantilla
+            </button>
+          </div>
+        </div>
+      `).join('');
+
+      gridEl.querySelectorAll('.use-btn').forEach(btn => {
+        btn.onclick = () => {
+          const tpl = templates.find(t => t.id === btn.dataset.id);
+          if (!tpl) return;
+          // Pass template via localStorage + query param; builder reads it on load
+          try { sessionStorage.setItem('ls_landing_template', JSON.stringify(tpl)); } catch {}
+          window.location.href = `./landing-builder.html?template=${encodeURIComponent(tpl.id)}`;
+        };
+      });
+    };
+
+    searchEl.addEventListener('input', () => {
+      searchQuery = searchEl.value.trim().toLowerCase();
+      renderGrid();
+    });
+
+    renderFilters();
+    renderGrid();
+  })();
+</script>
+</body>
+</html>

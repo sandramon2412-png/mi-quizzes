@@ -230,8 +230,28 @@
     // ── State ──
     const params = new URLSearchParams(window.location.search);
     const editingId = params.get('id');
+    const templateId = params.get('template');
     let landing = null;      // full row (with id once saved)
     let history = [];        // chat history for Claude (user+assistant messages)
+
+    // Pre-fill form if a template was selected in plantillas-landings.html
+    if (templateId && !editingId) {
+      try {
+        const raw = sessionStorage.getItem('ls_landing_template');
+        const tpl = raw ? JSON.parse(raw) : null;
+        if (tpl && tpl.form) {
+          setTimeout(() => {
+            const set = (id, v) => { const el = document.getElementById(id); if (el && v) el.value = v; };
+            set('fld-product', tpl.form.product);
+            set('fld-audience', tpl.form.audience);
+            set('fld-price', tpl.form.price);
+            set('fld-extras', tpl.form.extras);
+            set('fld-custom', tpl.form.custom);
+            set('fld-refurl', tpl.form.refurl);
+          }, 0);
+        }
+      } catch {}
+    }
 
     // ── DOM refs ──
     const titleEl = document.getElementById('ld-title');
