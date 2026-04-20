@@ -574,7 +574,7 @@
       updatePublishUI();
       await persistLanding();
       if (landing.published) {
-        const url = `${window.location.origin}/landing-view.html?slug=${landing.slug}`;
+        const url = `${window.location.origin}/l/${landing.slug}`;
         toast('¡Publicada! URL copiada al portapapeles');
         try { await navigator.clipboard.writeText(url); } catch {}
       } else {
@@ -583,7 +583,7 @@
     };
 
     openBtn.onclick = () => {
-      if (landing?.slug) window.open(`./landing-view.html?slug=${landing.slug}`, '_blank');
+      if (landing?.slug) window.open(`/l/${landing.slug}`, '_blank');
     };
 
     // ── Title autosave ──
