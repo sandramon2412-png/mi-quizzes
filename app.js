@@ -178,11 +178,9 @@ const Landings = {
     return getPlanCaps(plan).landings || 0;
   },
   _genSlug(title) {
-    const base = (title || 'landing').toString()
+    return (title || 'landing').toString()
       .toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '')
       .replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 40) || 'landing';
-    const suffix = Math.random().toString(36).slice(2, 6);
-    return `${base}-${suffix}`;
   },
 };
 
