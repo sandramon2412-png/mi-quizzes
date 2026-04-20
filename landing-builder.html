@@ -159,7 +159,7 @@
   <section class="flex-1 flex flex-col bg-surface-container-low">
     <div class="h-10 border-b border-outline-variant/20 flex items-center px-4 gap-3 bg-surface-container text-[11px] text-on-surface-variant">
       <span class="material-symbols-outlined" style="font-size:14px">preview</span>
-      <span id="preview-url" class="font-mono truncate">tudominio.com/l/<span id="slug-preview">pendiente</span></span>
+      <span id="preview-url" class="font-mono truncate flex items-center gap-0.5">tudominio.com/l/<input id="slug-preview" type="text" placeholder="pendiente" class="bg-transparent border-none outline-none font-mono text-[11px] p-0 focus:ring-0 hover:bg-surface-container-high rounded px-1 transition-colors" style="width:auto;min-width:80px"/></span>
       <span class="ml-auto hidden md:flex items-center gap-1 text-[10px]">
         <span class="w-2 h-2 rounded-full bg-green-500"></span>
         Preview en vivo
@@ -356,9 +356,15 @@
       chatInputWrap.classList.remove('hidden');
     };
 
+    const sanitizeSlug = (s) => (s || '').toString().toLowerCase()
+      .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+      .replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 60);
+
     const persistLanding = async () => {
       if (!landing) return;
       landing.title = titleEl.value.trim() || landing.title;
+      const typedSlug = sanitizeSlug(slugPreview.value);
+      if (typedSlug) landing.slug = typedSlug;
       landing.messages = history;
       try {
         setStatus('Guardando…');
@@ -405,7 +411,7 @@
         editHtmlBtn.classList.add('hidden');
         editVisualBtn.classList.add('hidden');
       }
-      if (landing?.slug) slugPreview.textContent = landing.slug;
+      if (landing?.slug) slugPreview.value = landing.slug;
     };
 
     // Manual HTML editor
@@ -438,7 +444,7 @@
         landing = row;
         history = Array.isArray(row.messages) ? row.messages : [];
         titleEl.value = row.title || '';
-        slugPreview.textContent = row.slug;
+        slugPreview.value = row.slug || '';
         if (row.html) {
           renderPreview(row.html);
           switchToChatMode();
@@ -591,6 +597,16 @@
     titleEl.addEventListener('input', () => {
       clearTimeout(titleTimer);
       titleTimer = setTimeout(() => { if (landing) persistLanding(); }, 800);
+    });
+
+    // ── Slug: sanitize on blur + autosave ──
+    slugPreview.addEventListener('blur', () => {
+      const clean = sanitizeSlug(slugPreview.value);
+      if (clean) slugPreview.value = clean;
+      if (landing && clean && clean !== landing.slug) persistLanding();
+    });
+    slugPreview.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') { e.preventDefault(); slugPreview.blur(); }
     });
   })();
 </script>

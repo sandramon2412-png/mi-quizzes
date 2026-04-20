@@ -287,9 +287,20 @@ const DB = {
     },
 
     async save(landing, userId) {
+      // Ensure unique slug: if taken by another row, append short suffix
+      let slug = landing.slug;
+      if (slug) {
+        try {
+          const { data: existing } = await db.from('landings')
+            .select('id').eq('slug', slug).maybeSingle();
+          if (existing && existing.id !== landing.id) {
+            slug = `${slug}-${Math.random().toString(36).slice(2, 5)}`;
+          }
+        } catch {}
+      }
       const row = {
         user_id:    userId,
-        slug:       landing.slug,
+        slug,
         title:      landing.title,
         brief:      landing.brief || '',
         html:       landing.html || '',
