@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Ebook Packager · Luminous Studio</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Lora:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/icon?family=Material+Symbols+Outlined" rel="stylesheet"/>
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        colors: {
+          "primary": "#2E5BFF", "primary-dim": "#3867fb",
+          "background": "#0e0e0e", "surface": "#0e0e0e",
+          "surface-container": "#1a1a1a", "surface-container-high": "#20201f",
+          "surface-container-highest": "#262626", "surface-container-low": "#131313",
+          "surface-variant": "#262626", "on-surface": "#ffffff",
+          "on-surface-variant": "#adaaaa", "outline": "#767575",
+          "outline-variant": "#484847", "on-background": "#ffffff",
+          "on-primary": "#ffffff",
+        },
+        fontFamily: { 'jakarta': ['Plus Jakarta Sans', 'sans-serif'], 'lora': ['Lora', 'serif'] },
+      },
+    },
+  };
+</script>
+<style>
+  body { font-family: 'Plus Jakarta Sans', sans-serif; background: #0e0e0e; color: #fff; overflow: hidden; }
+  .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+  .icon-gradient { background: linear-gradient(135deg, #4d7cff, #a78bfa); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+  .primary-gradient { background: linear-gradient(135deg, #2E5BFF 0%, #7c3aed 100%); }
+
+  .msg { animation: in 0.25s ease both; }
+  @keyframes in { from { opacity:0; transform: translateY(6px); } to { opacity:1; transform: translateY(0); } }
+
+  .thinking-dot { width:6px; height:6px; border-radius:50%; background:#7a9aff; display:inline-block; margin:0 2px; animation: pulse 1s infinite; }
+  .thinking-dot:nth-child(2) { animation-delay: 0.15s; }
+  .thinking-dot:nth-child(3) { animation-delay: 0.3s; }
+  @keyframes pulse { 0%,100% { opacity: .3; transform: scale(0.9);} 50% { opacity: 1; transform: scale(1.1);} }
+
+  .toast { animation: toast-in .25s ease both; }
+  @keyframes toast-in { from { opacity:0; transform: translateY(-6px);} to { opacity:1; transform:translateY(0);} }
+
+  /* Ebook preview styles (also used by PDF export) */
+  .ebook-page { background: #fff; color: #1a1a1a; font-family: 'Lora', serif; }
+  .ebook-page h1, .ebook-page h2, .ebook-page h3 { font-family: 'Plus Jakarta Sans', sans-serif; letter-spacing: -0.02em; }
+  .ebook-page h2 { font-size: 22px; font-weight: 800; margin: 28px 0 14px; color: #2E5BFF; }
+  .ebook-page h3 { font-size: 17px; font-weight: 700; margin: 22px 0 10px; color: #333; }
+  .ebook-page p { margin: 0 0 14px; line-height: 1.7; font-size: 14px; }
+  .ebook-page ul, .ebook-page ol { margin: 0 0 14px 20px; line-height: 1.7; font-size: 14px; }
+  .ebook-page li { margin-bottom: 6px; }
+  .ebook-page blockquote { border-left: 3px solid #7c3aed; padding: 8px 0 8px 16px; margin: 16px 0; color: #555; font-style: italic; }
+  .ebook-page strong { color: #2E5BFF; font-weight: 700; }
+  .ebook-page .chapter-title { font-size: 34px; font-weight: 800; color: #1a1a1a; margin: 0 0 8px; letter-spacing: -0.03em; }
+  .ebook-page .chapter-num { font-size: 12px; font-weight: 600; color: #7c3aed; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 8px; }
+  .page-break { page-break-after: always; break-after: page; }
+</style>
+</head>
+<body class="bg-background text-on-background">
+
+<header class="h-14 border-b border-outline-variant/20 bg-surface-container-low flex items-center px-4 gap-3 shrink-0">
+  <a href="./dashboard.html" class="h-9 w-9 rounded-lg bg-surface-container-high hover:bg-surface-container-highest flex items-center justify-center transition-colors" title="Volver al dashboard">
+    <span class="material-symbols-outlined" style="font-size:18px">arrow_back</span>
+  </a>
+  <div class="w-px h-6 bg-outline-variant/30"></div>
+  <div class="flex items-center gap-2 min-w-0 flex-1">
+    <div class="w-8 h-8 rounded-lg primary-gradient flex items-center justify-center shrink-0">
+      <span class="material-symbols-outlined text-white" style="font-size:16px">menu_book</span>
+    </div>
+    <input id="eb-title" type="text" placeholder="Título de tu ebook"
+           class="bg-transparent border-none outline-none text-sm font-bold tracking-tight flex-1 min-w-0 focus:ring-0"/>
+  </div>
+  <span id="eb-status" class="text-[11px] text-on-surface-variant/70 hidden sm:inline"></span>
+  <button id="btn-download" class="hidden h-9 px-4 rounded-lg primary-gradient text-white text-xs font-bold flex items-center gap-1.5 hover:opacity-90 transition">
+    <span class="material-symbols-outlined" style="font-size:16px">download</span>
+    Descargar PDF
+  </button>
+</header>
+
+<main class="flex h-[calc(100vh-56px)]">
+  <!-- Left pane: form + chat -->
+  <aside class="w-[38%] max-w-[480px] min-w-[320px] border-r border-outline-variant/20 flex flex-col bg-surface-container-low">
+    <!-- Starter form -->
+    <div id="starter" class="p-5 overflow-y-auto">
+      <div class="flex items-center gap-2 mb-3">
+        <span class="material-symbols-outlined icon-gradient" style="font-size:20px">auto_awesome</span>
+        <h2 class="text-base font-extrabold tracking-tight">Describí tu ebook</h2>
+      </div>
+      <p class="text-[11px] text-on-surface-variant mb-4">Claude Sonnet escribe 6-10 capítulos completos en ~30 segundos. Después podés iterar por chat o descargarlo como PDF.</p>
+
+      <div class="space-y-3">
+        <div>
+          <label class="text-[11px] font-semibold text-on-surface-variant block mb-1">Tema del ebook</label>
+          <input id="eb-topic" type="text" placeholder="Ej: Cómo salir de deudas en 90 días"
+                 class="w-full bg-surface-container border border-outline-variant/40 rounded-lg px-3 py-2 text-sm focus:border-primary focus:ring-0 outline-none"/>
+        </div>
+        <div>
+          <label class="text-[11px] font-semibold text-on-surface-variant block mb-1">Audiencia</label>
+          <input id="eb-audience" type="text" placeholder="Ej: Profesionales 25-40 con ingresos fijos"
+                 class="w-full bg-surface-container border border-outline-variant/40 rounded-lg px-3 py-2 text-sm focus:border-primary focus:ring-0 outline-none"/>
+        </div>
+        <div>
+          <label class="text-[11px] font-semibold text-on-surface-variant block mb-1">Tono</label>
+          <select id="eb-tone" class="w-full bg-surface-container border border-outline-variant/40 rounded-lg px-3 py-2 text-sm focus:border-primary focus:ring-0 outline-none">
+            <option value="conversacional">Conversacional y cercano</option>
+            <option value="profesional">Profesional y autoritativo</option>
+            <option value="inspirador">Inspirador y motivacional</option>
+            <option value="didactico">Didáctico paso a paso</option>
+            <option value="espiritual">Espiritual y reflexivo</option>
+          </select>
+        </div>
+        <div>
+          <label class="text-[11px] font-semibold text-on-surface-variant block mb-1">Capítulos aproximados</label>
+          <select id="eb-chapters" class="w-full bg-surface-container border border-outline-variant/40 rounded-lg px-3 py-2 text-sm focus:border-primary focus:ring-0 outline-none">
+            <option value="6">6 capítulos (ebook corto)</option>
+            <option value="8" selected>8 capítulos (estándar)</option>
+            <option value="10">10 capítulos (completo)</option>
+          </select>
+        </div>
+        <div>
+          <label class="text-[11px] font-semibold text-on-surface-variant block mb-1">Detalles extra (opcional)</label>
+          <textarea id="eb-extras" rows="3" placeholder="Ej: incluí un capítulo sobre inversiones, usá ejemplos argentinos, evitá tecnicismos…"
+                    class="w-full bg-surface-container border border-outline-variant/40 rounded-lg px-3 py-2 text-sm focus:border-primary focus:ring-0 outline-none resize-none"></textarea>
+        </div>
+      </div>
+
+      <button id="btn-generate" class="mt-5 w-full h-11 primary-gradient rounded-lg text-white font-bold text-sm flex items-center justify-center gap-2 hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed transition">
+        <span class="material-symbols-outlined" style="font-size:18px">auto_stories</span>
+        Generar mi ebook
+      </button>
+      <p class="mt-3 text-[10px] text-on-surface-variant/70 leading-relaxed">
+        Claude escribirá el ebook completo en markdown, listo para descargar como PDF con diseño profesional.
+      </p>
+    </div>
+
+    <!-- Chat messages -->
+    <div id="chat-log" class="hidden flex-1 overflow-y-auto p-4 space-y-3"></div>
+    <div id="chat-input-wrap" class="hidden border-t border-outline-variant/20 p-3 bg-surface-container-low">
+      <div class="flex items-end gap-2">
+        <textarea id="chat-input" rows="1" placeholder="Pedile cambios — 'reescribí el capítulo 3', 'agregá más ejemplos'..."
+                  class="flex-1 bg-surface-container border border-outline-variant/40 rounded-lg px-3 py-2 text-xs resize-none focus:border-primary focus:ring-0 outline-none max-h-[130px]"></textarea>
+        <button id="btn-send" class="h-9 w-9 rounded-lg primary-gradient text-white flex items-center justify-center disabled:opacity-40 hover:opacity-90 transition">
+          <span class="material-symbols-outlined" style="font-size:18px">send</span>
+        </button>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Right pane: preview -->
+  <section class="flex-1 flex flex-col bg-surface-container-low overflow-hidden">
+    <div class="h-10 border-b border-outline-variant/20 flex items-center px-4 gap-3 bg-surface-container text-[11px] text-on-surface-variant">
+      <span class="material-symbols-outlined" style="font-size:14px">preview</span>
+      <span class="font-mono truncate">Preview del ebook</span>
+      <span class="ml-auto hidden md:flex items-center gap-1 text-[10px]">
+        <span class="w-2 h-2 rounded-full bg-green-500"></span>
+        Listo para PDF
+      </span>
+    </div>
+
+    <div id="preview-empty" class="flex-1 flex flex-col items-center justify-center text-center p-8 text-on-surface-variant">
+      <div class="w-16 h-16 rounded-2xl primary-gradient flex items-center justify-center mb-4 opacity-50">
+        <span class="material-symbols-outlined text-white" style="font-size:32px">menu_book</span>
+      </div>
+      <p class="text-sm font-semibold mb-1">Tu ebook aparecerá acá</p>
+      <p class="text-xs text-on-surface-variant/60 max-w-sm">Completá el formulario y dale "Generar". Claude diseñará un ebook profesional con portada y capítulos.</p>
+    </div>
+
+    <div id="ebook-preview" class="hidden flex-1 overflow-y-auto p-6 bg-[#26262a]">
+      <div id="ebook-pages" class="mx-auto max-w-[680px] space-y-6"></div>
+    </div>
+  </section>
+</main>
+
+<div id="toast" class="fixed top-16 left-1/2 -translate-x-1/2 px-4 py-2 rounded-lg bg-surface-container-highest text-sm font-medium shadow-2xl z-50 hidden"></div>
+
+<script src="./app.js"></script>
+<script src="./supabase-config.js"></script>
+<script src="./ai-assistant.js"></script>
+<script>
+  (async () => {
+    const user = await Auth.requireAuth();
+    if (!user) return;
+
+    // Sync plan from Supabase to localStorage
+    try {
+      const profile = await DB.profiles.get(user.id);
+      if (profile?.plan) Settings.save({ plan: profile.plan });
+    } catch {}
+
+    const plan = Settings.get().plan || 'free';
+    const caps = getPlanCaps(plan);
+
+    if ((caps.ebooks || 0) < 1) {
+      document.body.innerHTML = `
+        <div class="min-h-screen flex items-center justify-center p-8">
+          <div class="max-w-lg text-center">
+            <div class="w-16 h-16 rounded-2xl primary-gradient flex items-center justify-center mx-auto mb-6">
+              <span class="material-symbols-outlined text-white" style="font-size:36px">menu_book</span>
+            </div>
+            <h1 class="text-2xl font-extrabold tracking-tight mb-2">Ebook Packager requiere plan Pro</h1>
+            <p class="text-on-surface-variant max-w-md mx-auto mb-6">Generá ebooks completos con IA (Claude Sonnet) y descargalos como PDF profesional. Desde el plan Pro: 5 ebooks/mes.</p>
+            <div class="flex gap-3 justify-center">
+              <a href="./precios.html" class="h-11 px-6 rounded-lg primary-gradient text-white font-bold text-sm flex items-center gap-2">Ver planes</a>
+              <a href="./dashboard.html" class="h-11 px-6 rounded-lg bg-surface-container-highest text-sm font-semibold flex items-center gap-2">Volver</a>
+            </div>
+          </div>
+        </div>`;
+      return;
+    }
+
+    // ── State ──
+    const params = new URLSearchParams(window.location.search);
+    const editingId = params.get('id');
+    let ebook = null;
+    let history = [];
+
+    // ── DOM refs ──
+    const titleEl = document.getElementById('eb-title');
+    const statusEl = document.getElementById('eb-status');
+    const starter = document.getElementById('starter');
+    const chatLog = document.getElementById('chat-log');
+    const chatInputWrap = document.getElementById('chat-input-wrap');
+    const chatInput = document.getElementById('chat-input');
+    const sendBtn = document.getElementById('btn-send');
+    const genBtn = document.getElementById('btn-generate');
+    const previewEmpty = document.getElementById('preview-empty');
+    const ebookPreview = document.getElementById('ebook-preview');
+    const ebookPages = document.getElementById('ebook-pages');
+    const downloadBtn = document.getElementById('btn-download');
+    const toastEl = document.getElementById('toast');
+
+    const toast = (msg, type = 'ok') => {
+      toastEl.textContent = msg;
+      toastEl.className = `fixed top-16 left-1/2 -translate-x-1/2 px-4 py-2 rounded-lg text-sm font-medium shadow-2xl z-50 toast ${type === 'err' ? 'bg-red-500/90 text-white' : 'bg-surface-container-highest'}`;
+      toastEl.classList.remove('hidden');
+      setTimeout(() => toastEl.classList.add('hidden'), 2200);
+    };
+    const setStatus = (s) => { statusEl.textContent = s; };
+    const escapeHtml = (s) => (s || '').toString().replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+
+    // ── Render preview ──
+    const renderEbookPreview = () => {
+      if (!ebook || !ebook.chapters?.length) {
+        previewEmpty.classList.remove('hidden');
+        ebookPreview.classList.add('hidden');
+        downloadBtn.classList.add('hidden');
+        return;
+      }
+      previewEmpty.classList.add('hidden');
+      ebookPreview.classList.remove('hidden');
+      downloadBtn.classList.remove('hidden');
+
+      const cover = ebook.cover || {};
+      const gradFrom = cover.gradientFrom || '#2E5BFF';
+      const gradTo = cover.gradientTo || '#7c3aed';
+      const subtitle = cover.subtitle || '';
+
+      const coverHtml = `
+        <div class="ebook-page rounded-lg shadow-2xl overflow-hidden" style="aspect-ratio:1/1.414">
+          <div class="h-full flex flex-col items-center justify-center text-center p-10 text-white" style="background:linear-gradient(135deg, ${gradFrom} 0%, ${gradTo} 100%)">
+            <div class="w-16 h-16 rounded-2xl bg-white/15 backdrop-blur flex items-center justify-center mb-8">
+              <span class="material-symbols-outlined text-white" style="font-size:32px">menu_book</span>
+            </div>
+            <h1 style="font-family:'Plus Jakarta Sans',sans-serif;font-size:42px;font-weight:800;line-height:1.1;letter-spacing:-0.03em;margin:0 0 16px">${escapeHtml(ebook.title || 'Mi ebook')}</h1>
+            ${subtitle ? `<p style="font-family:'Lora',serif;font-size:18px;opacity:0.9;max-width:90%;line-height:1.5">${escapeHtml(subtitle)}</p>` : ''}
+          </div>
+        </div>`;
+
+      const chaptersHtml = ebook.chapters.map((ch, i) => `
+        <div class="ebook-page rounded-lg shadow-2xl p-10">
+          <div class="chapter-num">Capítulo ${i + 1}</div>
+          <h1 class="chapter-title">${escapeHtml(ch.title || `Capítulo ${i + 1}`)}</h1>
+          <div class="mt-6">${marked.parse(ch.body_md || '')}</div>
+        </div>`).join('');
+
+      ebookPages.innerHTML = coverHtml + chaptersHtml;
+    };
+
+    // ── Chat UI ──
+    const renderMessages = () => {
+      chatLog.innerHTML = history.map(m => {
+        if (m.role === 'user') {
+          return `<div class="msg flex justify-end">
+            <div class="max-w-[85%] px-3 py-2 rounded-lg primary-gradient text-white text-xs leading-relaxed whitespace-pre-wrap">${escapeHtml(m.content)}</div>
+          </div>`;
+        }
+        return `<div class="msg flex gap-2">
+          <div class="w-7 h-7 rounded-lg primary-gradient flex items-center justify-center shrink-0">
+            <span class="material-symbols-outlined text-white" style="font-size:14px">auto_awesome</span>
+          </div>
+          <div class="max-w-[85%] px-3 py-2 rounded-lg bg-surface-container border border-outline-variant/20 text-xs leading-relaxed">${escapeHtml(m.display || 'Ebook actualizado')}</div>
+        </div>`;
+      }).join('');
+      chatLog.scrollTop = chatLog.scrollHeight;
+    };
+    const showThinking = () => {
+      chatLog.insertAdjacentHTML('beforeend', `
+        <div id="thinking" class="msg flex gap-2">
+          <div class="w-7 h-7 rounded-lg primary-gradient flex items-center justify-center shrink-0">
+            <span class="material-symbols-outlined text-white" style="font-size:14px">auto_awesome</span>
+          </div>
+          <div class="px-3 py-3 rounded-lg bg-surface-container border border-outline-variant/20">
+            <span class="thinking-dot"></span><span class="thinking-dot"></span><span class="thinking-dot"></span>
+          </div>
+        </div>`);
+      chatLog.scrollTop = chatLog.scrollHeight;
+    };
+    const removeThinking = () => document.getElementById('thinking')?.remove();
+    const switchToChatMode = () => {
+      starter.classList.add('hidden');
+      chatLog.classList.remove('hidden');
+      chatLog.classList.add('flex-1');
+      chatInputWrap.classList.remove('hidden');
+    };
+
+    // ── Persistence ──
+    const persistEbook = async () => {
+      if (!ebook) return;
+      ebook.title = titleEl.value.trim() || ebook.title;
+      ebook.messages = history;
+      try {
+        setStatus('Guardando…');
+        const saved = await DB.ebooks.save(ebook, user.id);
+        ebook = { ...ebook, ...saved };
+        Ebooks.save(ebook);
+        setStatus('Guardado');
+        setTimeout(() => setStatus(''), 1200);
+      } catch (e) {
+        console.error(e);
+        setStatus('Error al guardar');
+        toast('Error al guardar: ' + e.message, 'err');
+      }
+    };
+
+    // ── Load if editing ──
+    if (editingId) {
+      let row = null;
+      try { row = await DB.ebooks.get(editingId); } catch (e) { console.warn('Supabase load falló:', e); }
+      if (!row) {
+        const local = Ebooks.get(editingId);
+        if (local) row = { ...local, user_id: user.id };
+      }
+      if (row && row.user_id === user.id) {
+        ebook = row;
+        history = Array.isArray(row.messages) ? row.messages : [];
+        titleEl.value = row.title || '';
+        if (row.chapters?.length) {
+          renderEbookPreview();
+          switchToChatMode();
+          renderMessages();
+        }
+      } else {
+        toast('No se pudo cargar el ebook. Generá uno nuevo.', 'err');
+      }
+    }
+
+    // ── Quota check ──
+    const canCreate = async () => {
+      if (editingId) return true;
+      try {
+        const all = await DB.ebooks.getAll(user.id);
+        return all.length < caps.ebooks;
+      } catch { return true; }
+    };
+
+    // ── Generate ──
+    genBtn.onclick = async () => {
+      const topic = document.getElementById('eb-topic').value.trim();
+      const audience = document.getElementById('eb-audience').value.trim();
+      const tone = document.getElementById('eb-tone').value;
+      const chaptersCount = document.getElementById('eb-chapters').value;
+      const extras = document.getElementById('eb-extras').value.trim();
+
+      if (!topic) { toast('Contanos de qué va el ebook', 'err'); return; }
+
+      if (!(await canCreate())) {
+        toast(`Llegaste al límite de ${caps.ebooks} ebooks de tu plan`, 'err');
+        return;
+      }
+
+      const brief = [
+        `Necesito un ebook sobre: ${topic}.`,
+        audience ? `Audiencia: ${audience}.` : '',
+        `Tono: ${tone}.`,
+        `Cantidad de capítulos: aproximadamente ${chaptersCount} (incluyendo intro y conclusión).`,
+        extras ? `Detalles extra: ${extras}` : '',
+      ].filter(Boolean).join(' ');
+
+      if (!titleEl.value.trim()) titleEl.value = topic.slice(0, 60);
+
+      genBtn.disabled = true;
+      genBtn.innerHTML = `<span class="thinking-dot"></span><span class="thinking-dot"></span><span class="thinking-dot"></span>`;
+      setStatus('Escribiendo con Claude Sonnet…');
+
+      try {
+        const data = await AI.generateEbook(brief, []);
+        history = [
+          { role: 'user', content: brief },
+          { role: 'assistant', content: JSON.stringify(data), display: `Listo — ${data.chapters?.length || 0} capítulos escritos. Pedime cambios si querés.` },
+        ];
+        if (!ebook) {
+          ebook = Ebooks.create({
+            title: data.title || titleEl.value.trim() || topic.slice(0, 60),
+            topic, audience, tone,
+            brief,
+            chapters: data.chapters || [],
+            cover: { gradientFrom: '#2E5BFF', gradientTo: '#7c3aed', subtitle: data.subtitle || '' },
+            messages: history,
+          });
+        } else {
+          ebook.chapters = data.chapters || [];
+          ebook.cover = { ...(ebook.cover || {}), subtitle: data.subtitle || ebook.cover?.subtitle || '' };
+          if (data.title && !titleEl.value.trim()) { ebook.title = data.title; titleEl.value = data.title; }
+          ebook.messages = history;
+        }
+        titleEl.value = ebook.title;
+        renderEbookPreview();
+        switchToChatMode();
+        renderMessages();
+        await persistEbook();
+      } catch (e) {
+        console.error(e);
+        toast('Error generando: ' + e.message, 'err');
+        setStatus('Error');
+      } finally {
+        genBtn.disabled = false;
+        genBtn.innerHTML = `<span class="material-symbols-outlined" style="font-size:18px">auto_stories</span>Generar mi ebook`;
+      }
+    };
+
+    // ── Chat iteration ──
+    const sendChat = async () => {
+      const msg = chatInput.value.trim();
+      if (!msg || !ebook) return;
+      chatInput.value = '';
+      chatInput.style.height = 'auto';
+      history.push({ role: 'user', content: msg });
+      renderMessages();
+      showThinking();
+      sendBtn.disabled = true;
+      setStatus('Actualizando…');
+
+      try {
+        const apiHistory = history.map(m => ({ role: m.role, content: m.content }));
+        // Provide current ebook state as context
+        const contextMsg = `Estado actual del ebook:\n${JSON.stringify({ title: ebook.title, chapters: ebook.chapters.map(c => ({ title: c.title, body_md: c.body_md?.slice(0, 400) + '...' })) })}\n\nPedido del usuario: ${msg}`;
+        const fullHistory = apiHistory.slice(0, -1).concat([{ role: 'user', content: contextMsg }]);
+        const data = await AI.generateEbook(msg, fullHistory);
+        removeThinking();
+        history.push({ role: 'assistant', content: JSON.stringify(data), display: 'Listo, apliqué los cambios.' });
+        if (data.chapters?.length) ebook.chapters = data.chapters;
+        if (data.title) { ebook.title = data.title; titleEl.value = data.title; }
+        if (data.subtitle) ebook.cover = { ...(ebook.cover || {}), subtitle: data.subtitle };
+        renderEbookPreview();
+        renderMessages();
+        await persistEbook();
+      } catch (e) {
+        removeThinking();
+        history.push({ role: 'assistant', content: '', display: `Error: ${e.message}` });
+        renderMessages();
+        toast('Error: ' + e.message, 'err');
+      } finally {
+        sendBtn.disabled = false;
+      }
+    };
+
+    sendBtn.onclick = sendChat;
+    chatInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendChat(); }
+    });
+    chatInput.addEventListener('input', () => {
+      chatInput.style.height = 'auto';
+      chatInput.style.height = Math.min(chatInput.scrollHeight, 130) + 'px';
+    });
+
+    // ── PDF download ──
+    downloadBtn.onclick = async () => {
+      if (!ebook || !ebook.chapters?.length) return;
+      downloadBtn.disabled = true;
+      downloadBtn.innerHTML = `<span class="thinking-dot"></span><span class="thinking-dot"></span><span class="thinking-dot"></span>`;
+      setStatus('Generando PDF…');
+
+      // Build a clean off-screen container with page-break wrappers
+      const wrapper = document.createElement('div');
+      wrapper.style.cssText = 'position:absolute;left:-9999px;top:0;width:794px;background:#fff;';
+      const cover = ebook.cover || {};
+      const gradFrom = cover.gradientFrom || '#2E5BFF';
+      const gradTo = cover.gradientTo || '#7c3aed';
+      wrapper.innerHTML = `
+        <div class="ebook-page" style="width:794px;height:1123px;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;padding:64px;color:#fff;background:linear-gradient(135deg, ${gradFrom}, ${gradTo})">
+          <div style="width:72px;height:72px;border-radius:20px;background:rgba(255,255,255,0.15);display:flex;align-items:center;justify-content:center;margin-bottom:40px">
+            <span class="material-symbols-outlined" style="font-size:36px;color:#fff">menu_book</span>
+          </div>
+          <h1 style="font-family:'Plus Jakarta Sans',sans-serif;font-size:52px;font-weight:800;line-height:1.05;letter-spacing:-0.03em;margin:0 0 20px">${escapeHtml(ebook.title || 'Mi ebook')}</h1>
+          ${cover.subtitle ? `<p style="font-family:'Lora',serif;font-size:22px;opacity:0.92;max-width:90%;line-height:1.45">${escapeHtml(cover.subtitle)}</p>` : ''}
+        </div>
+      ` + ebook.chapters.map((ch, i) => `
+        <div class="page-break"></div>
+        <div class="ebook-page" style="width:794px;min-height:1123px;padding:72px 80px">
+          <div class="chapter-num">Capítulo ${i + 1}</div>
+          <h1 class="chapter-title">${escapeHtml(ch.title || `Capítulo ${i + 1}`)}</h1>
+          <div style="margin-top:28px">${marked.parse(ch.body_md || '')}</div>
+        </div>
+      `).join('');
+      document.body.appendChild(wrapper);
+
+      try {
+        await html2pdf().set({
+          margin: 0,
+          filename: `${(ebook.title || 'ebook').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '')}.pdf`,
+          image: { type: 'jpeg', quality: 0.95 },
+          html2canvas: { scale: 2, useCORS: true, logging: false, backgroundColor: '#ffffff' },
+          jsPDF: { unit: 'px', format: [794, 1123], orientation: 'portrait', hotfixes: ['px_scaling'] },
+          pagebreak: { mode: ['css', 'legacy'] },
+        }).from(wrapper).save();
+        try { await DB.ebooks.incrementDownloads(ebook.id); } catch {}
+        toast('PDF descargado');
+      } catch (e) {
+        console.error(e);
+        toast('Error al generar PDF: ' + e.message, 'err');
+      } finally {
+        document.body.removeChild(wrapper);
+        downloadBtn.disabled = false;
+        downloadBtn.innerHTML = `<span class="material-symbols-outlined" style="font-size:16px">download</span>Descargar PDF`;
+        setStatus('');
+      }
+    };
+
+    // ── Title autosave ──
+    let titleTimer = null;
+    titleEl.addEventListener('input', () => {
+      clearTimeout(titleTimer);
+      titleTimer = setTimeout(() => { if (ebook) persistEbook(); }, 800);
+    });
+  })();
+</script>
+</body>
+</html>

@@ -856,6 +856,49 @@ LINKS Y NAVEGACIÓN:
     if (docStart > 0) html = html.slice(docStart);
     return html;
   },
+
+  _ebookSystemPrompt() {
+    return `Eres un escritor profesional y editor experto en crear ebooks en español de alta calidad para infoproductos.
+
+FORMATO DE SALIDA — devolvé ÚNICAMENTE un objeto JSON válido, sin markdown, sin \`\`\`, sin texto antes o después. Schema exacto:
+{
+  "title": "Título del ebook",
+  "subtitle": "Subtítulo (1 frase vendedora)",
+  "chapters": [
+    { "title": "Capítulo 1: ...", "body_md": "Contenido en markdown..." },
+    ...
+  ]
+}
+
+REGLAS DE CONTENIDO:
+- Mínimo 6 capítulos, máximo 10 (ajustá según complejidad del tema).
+- Cada capítulo: 300–600 palabras en markdown. Usá ## para subsecciones, **negrita** para conceptos clave, > para citas inspiradoras, listas con - o 1..
+- El primer capítulo siempre es una "Introducción" que engancha al lector.
+- El último capítulo siempre es "Conclusión y próximos pasos" con un CTA claro.
+- Nada de relleno, nada de "como ya sabrás" — todo valor concreto con ejemplos, pasos, datos o frameworks.
+- Tono conversacional pero autoritativo. Hablás en segunda persona (tú/vos según tono pedido).
+- NO incluyas saludos tipo "Hola, en este capítulo veremos...". Entrá directo al contenido.
+- Si el brief menciona audiencia, nicho o tono, priorizá eso sobre tu estilo por defecto.`;
+  },
+
+  async generateEbook(brief, history = []) {
+    const messages = [...history, { role: 'user', content: brief }];
+    const text = await this._call(messages, 8000, {
+      model: 'claude-sonnet-4-6',
+      system: this._ebookSystemPrompt(),
+    });
+    // Parse JSON (may be wrapped in ```json fences)
+    let json = text.trim();
+    json = json.replace(/^```json\s*/i, '').replace(/^```\s*/i, '').replace(/```\s*$/i, '').trim();
+    const start = json.indexOf('{');
+    const end = json.lastIndexOf('}');
+    if (start >= 0 && end > start) json = json.slice(start, end + 1);
+    try {
+      return JSON.parse(json);
+    } catch (e) {
+      throw new Error('El ebook generado no tiene formato JSON válido. Intentá de nuevo.');
+    }
+  },
 };
 
 // ── Groq API (vía proxy con master key de la plataforma) ───
@@ -976,6 +1019,10 @@ const AI = {
   // Complejo: landing completa en HTML+Tailwind con Sonnet 4.6
   async generateLanding(brief, history = []) {
     return Claude.generateLanding(brief, history);
+  },
+  // Complejo: ebook estructurado (JSON con capítulos en Markdown)
+  async generateEbook(brief, history = []) {
+    return Claude.generateEbook(brief, history);
   },
 };
 
