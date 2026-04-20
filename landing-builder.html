@@ -49,7 +49,7 @@
   @keyframes toast-in { from { opacity:0; transform: translateY(-6px);} to { opacity:1; transform:translateY(0);} }
 </style>
 </head>
-<body class="bg-background text-on-background">
+<body class="bg-background text-on-background" data-lloyd-default-mode="landing">
 
 <!-- Top bar -->
 <header class="h-14 border-b border-outline-variant/20 bg-surface-container-low flex items-center px-4 gap-3 shrink-0">
@@ -66,6 +66,10 @@
            class="bg-transparent border-none outline-none text-sm font-bold tracking-tight flex-1 min-w-0 focus:ring-0"/>
   </div>
   <span id="ld-status" class="text-[11px] text-on-surface-variant/70 hidden sm:inline"></span>
+  <button id="btn-edit-html" class="hidden h-9 px-3 rounded-lg bg-surface-container-high hover:bg-surface-container-highest text-xs font-semibold flex items-center gap-1.5 transition-colors" title="Editar HTML manualmente (sin IA)">
+    <span class="material-symbols-outlined" style="font-size:16px">code</span>
+    <span class="hidden md:inline">Editar HTML</span>
+  </button>
   <button id="btn-open" class="hidden h-9 px-3 rounded-lg bg-surface-container-high hover:bg-surface-container-highest text-xs font-semibold flex items-center gap-1.5 transition-colors" title="Abrir en nueva pestaña">
     <span class="material-symbols-outlined" style="font-size:16px">open_in_new</span>
     <span class="hidden md:inline">Abrir</span>
@@ -109,6 +113,17 @@
           <label class="text-[11px] font-semibold text-on-surface-variant block mb-1">Detalles extra (opcional)</label>
           <textarea id="fld-extras" rows="3" placeholder="Testimonios, bonos, garantía, colores de marca, FAQs…"
                     class="w-full bg-surface-container border border-outline-variant/40 rounded-lg px-3 py-2 text-sm focus:border-primary focus:ring-0 outline-none resize-none"></textarea>
+        </div>
+        <div>
+          <label class="text-[11px] font-semibold text-on-surface-variant block mb-1">Instrucciones personalizadas (opcional)</label>
+          <textarea id="fld-custom" rows="2" placeholder="Ej: minimalista estilo Apple, tonos pastel, enfoque en antes/después, sin testimonios…"
+                    class="w-full bg-surface-container border border-outline-variant/40 rounded-lg px-3 py-2 text-sm focus:border-primary focus:ring-0 outline-none resize-none"></textarea>
+        </div>
+        <div>
+          <label class="text-[11px] font-semibold text-on-surface-variant block mb-1">URL de referencia (opcional)</label>
+          <input id="fld-refurl" type="text" placeholder="Ej: https://apple.com o https://framer.com/templates"
+                 class="w-full bg-surface-container border border-outline-variant/40 rounded-lg px-3 py-2 text-sm focus:border-primary focus:ring-0 outline-none"/>
+          <p class="text-[10px] text-on-surface-variant/60 mt-1">Claude usará el estilo visual del sitio que pongas como inspiración.</p>
         </div>
       </div>
 
@@ -158,11 +173,29 @@
   </section>
 </main>
 
+<!-- HTML Editor Modal -->
+<div id="html-editor" class="hidden fixed inset-0 z-40 bg-background flex flex-col">
+  <div class="h-12 border-b border-outline-variant/20 flex items-center px-4 gap-3 bg-surface-container-low">
+    <span class="material-symbols-outlined icon-gradient" style="font-size:20px">code</span>
+    <h2 class="text-sm font-extrabold tracking-tight">Editor HTML manual</h2>
+    <p class="text-[11px] text-on-surface-variant/70 hidden md:inline">Edita directamente el código. Sin consumo de IA.</p>
+    <div class="ml-auto flex items-center gap-2">
+      <button id="btn-cancel-html" class="h-9 px-3 rounded-lg bg-surface-container-high hover:bg-surface-container-highest text-xs font-semibold">Cancelar</button>
+      <button id="btn-save-html" class="h-9 px-4 rounded-lg primary-gradient text-white text-xs font-bold flex items-center gap-1.5 hover:opacity-90 transition">
+        <span class="material-symbols-outlined" style="font-size:16px">save</span>Guardar cambios
+      </button>
+    </div>
+  </div>
+  <textarea id="html-editor-textarea" spellcheck="false"
+            class="flex-1 w-full bg-[#0a0a0a] text-[#d4d4d4] font-mono text-[13px] leading-[1.5] p-4 border-none outline-none resize-none"></textarea>
+</div>
+
 <!-- Toast -->
 <div id="toast" class="fixed bottom-6 right-6 hidden toast px-4 py-3 rounded-lg bg-surface-container-highest border border-outline-variant/30 text-sm font-semibold shadow-xl flex items-center gap-2 z-50"></div>
 
 <script src="./supabase-config.js"></script>
 <script src="./app.js"></script>
+<script src="./ai-assistant.js"></script>
 <script>
   (async () => {
     // ── Auth gate ──
@@ -287,6 +320,12 @@
       }
     };
 
+    const editHtmlBtn = document.getElementById('btn-edit-html');
+    const htmlEditor = document.getElementById('html-editor');
+    const htmlTextarea = document.getElementById('html-editor-textarea');
+    const cancelHtmlBtn = document.getElementById('btn-cancel-html');
+    const saveHtmlBtn = document.getElementById('btn-save-html');
+
     const updatePublishUI = () => {
       if (landing?.published) {
         publishBtn.innerHTML = `<span class="material-symbols-outlined" style="font-size:16px">check_circle</span>Publicada`;
@@ -299,7 +338,27 @@
         publishBtn.classList.remove('bg-green-500/15', 'text-green-400', 'border', 'border-green-500/30');
         openBtn.classList.add('hidden');
       }
+      // Show the edit-html button once there's a landing with HTML
+      if (landing?.html) editHtmlBtn.classList.remove('hidden');
+      else editHtmlBtn.classList.add('hidden');
       if (landing?.slug) slugPreview.textContent = landing.slug;
+    };
+
+    // Manual HTML editor
+    editHtmlBtn.onclick = () => {
+      if (!landing?.html) { toast('Primero generá una landing', 'err'); return; }
+      htmlTextarea.value = landing.html;
+      htmlEditor.classList.remove('hidden');
+    };
+    cancelHtmlBtn.onclick = () => { htmlEditor.classList.add('hidden'); };
+    saveHtmlBtn.onclick = async () => {
+      const newHtml = htmlTextarea.value;
+      if (!newHtml.trim()) { toast('El HTML no puede estar vacío', 'err'); return; }
+      landing.html = newHtml;
+      renderPreview(newHtml);
+      htmlEditor.classList.add('hidden');
+      await persistLanding();
+      toast('Cambios guardados');
     };
 
     // ── Load existing landing if editing ──
@@ -337,6 +396,8 @@
       const audience = document.getElementById('fld-audience').value.trim();
       const price = document.getElementById('fld-price').value.trim();
       const extras = document.getElementById('fld-extras').value.trim();
+      const custom = document.getElementById('fld-custom').value.trim();
+      const refurl = document.getElementById('fld-refurl').value.trim();
 
       if (!product) { toast('Contanos qué vendés', 'err'); return; }
 
@@ -350,6 +411,8 @@
         audience ? `Audiencia: ${audience}.` : '',
         price ? `Precio/oferta: ${price}.` : '',
         extras ? `Detalles extra: ${extras}` : '',
+        custom ? `INSTRUCCIONES DE DISEÑO DEL CREADOR (priorizá esto sobre tu estilo por defecto): ${custom}` : '',
+        refurl ? `INSPIRACIÓN VISUAL: el creador quiere que tome como referencia el estilo del sitio ${refurl}. Analizá mentalmente cómo se ve ese sitio (paleta, tipografía, espaciado, tono visual) y aplicá esa estética a esta landing.` : '',
       ].filter(Boolean).join(' ');
 
       if (!titleEl.value.trim()) titleEl.value = product.slice(0, 60);
