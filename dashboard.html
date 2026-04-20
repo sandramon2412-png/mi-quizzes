@@ -1081,7 +1081,7 @@ async function renderLandings() {
             <a href="./landing-builder.html?id=${l.id}" class="flex-1 h-8 rounded-lg bg-surface-container-high hover:bg-surface-container-highest text-[11px] font-semibold flex items-center justify-center gap-1 transition-colors">
               <span class="material-symbols-outlined" style="font-size:13px">edit</span>Editar
             </a>
-            ${l.published ? `<a href="./landing-view.html?slug=${l.slug}" target="_blank" class="w-8 h-8 rounded-lg bg-surface-container-high hover:bg-surface-container-highest flex items-center justify-center transition-colors" title="Ver landing">
+            ${l.published ? `<a href="/l/${l.slug}" target="_blank" class="w-8 h-8 rounded-lg bg-surface-container-high hover:bg-surface-container-highest flex items-center justify-center transition-colors" title="Ver landing">
               <span class="material-symbols-outlined" style="font-size:13px">open_in_new</span>
             </a>` : ''}
             <button onclick="deleteLanding('${l.id}')" class="w-8 h-8 rounded-lg bg-surface-container-high hover:bg-red-500/20 hover:text-red-400 flex items-center justify-center transition-colors" title="Eliminar">
