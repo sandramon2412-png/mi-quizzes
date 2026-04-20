@@ -66,9 +66,12 @@
            class="bg-transparent border-none outline-none text-sm font-bold tracking-tight flex-1 min-w-0 focus:ring-0"/>
   </div>
   <span id="ld-status" class="text-[11px] text-on-surface-variant/70 hidden sm:inline"></span>
-  <button id="btn-edit-html" class="hidden h-9 px-3 rounded-lg bg-surface-container-high hover:bg-surface-container-highest text-xs font-semibold flex items-center gap-1.5 transition-colors" title="Editar HTML manualmente (sin IA)">
+  <button id="btn-edit-visual" class="hidden h-9 px-3 rounded-lg bg-surface-container-high hover:bg-surface-container-highest text-xs font-semibold flex items-center gap-1.5 transition-colors" title="Editar textos haciendo click sobre ellos (sin IA)">
+    <span class="material-symbols-outlined" style="font-size:16px">edit</span>
+    <span class="hidden md:inline">Editar</span>
+  </button>
+  <button id="btn-edit-html" class="hidden h-9 w-9 rounded-lg bg-surface-container-high hover:bg-surface-container-highest flex items-center justify-center transition-colors" title="Editar código HTML (avanzado)">
     <span class="material-symbols-outlined" style="font-size:16px">code</span>
-    <span class="hidden md:inline">Editar HTML</span>
   </button>
   <button id="btn-open" class="hidden h-9 px-3 rounded-lg bg-surface-container-high hover:bg-surface-container-highest text-xs font-semibold flex items-center gap-1.5 transition-colors" title="Abrir en nueva pestaña">
     <span class="material-symbols-outlined" style="font-size:16px">open_in_new</span>
@@ -256,15 +259,61 @@
 
     const setStatus = (s) => { statusEl.textContent = s; };
 
+    const PREVIEW_INJECTION = `<base target="_blank"><script>document.addEventListener('click',function(e){var a=e.target.closest('a,button');if(a&&(!a.href||a.getAttribute('href')==='#'||a.tagName==='BUTTON')){e.preventDefault();}},true);</script>`;
+    const PREVIEW_INJECTION_RE = /<base target="_blank">\s*<script>[^<]*<\/script>\s*/;
+
     const renderPreview = (html) => {
       previewEmpty.classList.add('hidden');
       previewFrame.classList.remove('hidden');
-      // Inject a base tag + click interceptor so links in the preview don't
-      // navigate the iframe (previously clicking a CTA could load the real
-      // dashboard or other pages inside the preview)
-      const injection = `<base target="_blank"><script>document.addEventListener('click',function(e){var a=e.target.closest('a,button');if(a&&(!a.href||a.getAttribute('href')==='#'||a.tagName==='BUTTON')){e.preventDefault();}},true);</script>`;
-      const withInjection = (html || '').replace(/<head[^>]*>/i, (m) => m + injection);
+      const withInjection = (html || '').replace(/<head[^>]*>/i, (m) => m + PREVIEW_INJECTION);
       previewFrame.srcdoc = withInjection || html || '';
+    };
+
+    // ── Visual edit mode ──
+    let _isEditing = false;
+    const EDITABLE_SELECTORS = 'h1,h2,h3,h4,h5,h6,p,span,a,li,button,strong,em,td,th,label,small,figcaption,blockquote,summary';
+
+    const enterEditMode = () => {
+      if (!landing?.html) { toast('Primero generá una landing', 'err'); return; }
+      const doc = previewFrame.contentDocument;
+      if (!doc) return;
+      doc.querySelectorAll(EDITABLE_SELECTORS).forEach(el => {
+        if (el.innerText && el.innerText.trim()) {
+          el.contentEditable = 'true';
+          el.style.outline = '1px dashed rgba(124,58,237,.45)';
+          el.style.outlineOffset = '2px';
+          el.style.cursor = 'text';
+          el.addEventListener('focus', () => { el.style.outline = '2px solid #7c3aed'; });
+          el.addEventListener('blur', () => { el.style.outline = '1px dashed rgba(124,58,237,.45)'; });
+        }
+      });
+      _isEditing = true;
+      editVisualBtn.innerHTML = `<span class="material-symbols-outlined" style="font-size:16px">check</span><span class="hidden md:inline">Terminar</span>`;
+      editVisualBtn.classList.remove('bg-surface-container-high', 'hover:bg-surface-container-highest');
+      editVisualBtn.classList.add('bg-green-500/15', 'text-green-400', 'border', 'border-green-500/30');
+      toast('Click en cualquier texto para editarlo');
+    };
+
+    const exitEditMode = async () => {
+      const doc = previewFrame.contentDocument;
+      if (!doc) return;
+      doc.querySelectorAll('[contenteditable]').forEach(el => {
+        el.removeAttribute('contenteditable');
+        el.style.outline = '';
+        el.style.outlineOffset = '';
+        el.style.cursor = '';
+      });
+      const full = '<!DOCTYPE html>\n' + doc.documentElement.outerHTML;
+      const cleaned = full.replace(PREVIEW_INJECTION_RE, '');
+      landing.html = cleaned;
+      _isEditing = false;
+      editVisualBtn.innerHTML = `<span class="material-symbols-outlined" style="font-size:16px">edit</span><span class="hidden md:inline">Editar</span>`;
+      editVisualBtn.classList.add('bg-surface-container-high', 'hover:bg-surface-container-highest');
+      editVisualBtn.classList.remove('bg-green-500/15', 'text-green-400', 'border', 'border-green-500/30');
+      await persistLanding();
+      toast('Cambios guardados');
+      // Re-render to apply the saved version cleanly
+      renderPreview(cleaned);
     };
 
     const renderMessages = () => {
@@ -325,11 +374,16 @@
       }
     };
 
+    const editVisualBtn = document.getElementById('btn-edit-visual');
     const editHtmlBtn = document.getElementById('btn-edit-html');
     const htmlEditor = document.getElementById('html-editor');
     const htmlTextarea = document.getElementById('html-editor-textarea');
     const cancelHtmlBtn = document.getElementById('btn-cancel-html');
     const saveHtmlBtn = document.getElementById('btn-save-html');
+
+    editVisualBtn.onclick = () => {
+      if (_isEditing) exitEditMode(); else enterEditMode();
+    };
 
     const updatePublishUI = () => {
       if (landing?.published) {
@@ -343,9 +397,14 @@
         publishBtn.classList.remove('bg-green-500/15', 'text-green-400', 'border', 'border-green-500/30');
         openBtn.classList.add('hidden');
       }
-      // Show the edit-html button once there's a landing with HTML
-      if (landing?.html) editHtmlBtn.classList.remove('hidden');
-      else editHtmlBtn.classList.add('hidden');
+      // Show edit buttons once there's a landing with HTML
+      if (landing?.html) {
+        editHtmlBtn.classList.remove('hidden');
+        editVisualBtn.classList.remove('hidden');
+      } else {
+        editHtmlBtn.classList.add('hidden');
+        editVisualBtn.classList.add('hidden');
+      }
       if (landing?.slug) slugPreview.textContent = landing.slug;
     };
 
