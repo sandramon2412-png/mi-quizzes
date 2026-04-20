@@ -49,12 +49,42 @@
       const row = await DB.landings.getBySlug(slug);
       if (!row || !row.published || !row.html) { showError(); return; }
 
+      // Inject analytics tracker before rendering
+      const TRACKER = `<script>(function(){
+        var SB_URL = ${JSON.stringify(SUPABASE_URL)};
+        var SB_KEY = ${JSON.stringify(SUPABASE_ANON_KEY)};
+        var LID = ${JSON.stringify(row.id)};
+        var OWNER = ${JSON.stringify(row.user_id)};
+        var vid = localStorage.getItem('ls_visitor_id');
+        if (!vid) { vid = (crypto.randomUUID && crypto.randomUUID()) || (Date.now()+'-'+Math.random().toString(36).slice(2)); localStorage.setItem('ls_visitor_id', vid); }
+        function send(event_type, meta){
+          try {
+            fetch(SB_URL + '/rest/v1/landing_events', {
+              method:'POST',
+              headers:{ 'apikey': SB_KEY, 'Authorization':'Bearer ' + SB_KEY, 'Content-Type':'application/json', 'Prefer':'return=minimal' },
+              body: JSON.stringify({ landing_id: LID, user_id: OWNER, event_type: event_type, visitor_id: vid, meta: meta || {} }),
+              keepalive: true
+            });
+          } catch(e){}
+        }
+        send('view');
+        document.addEventListener('click', function(e){
+          var a = e.target.closest && e.target.closest('a,button');
+          if (!a) return;
+          var href = a.getAttribute && a.getAttribute('href');
+          var label = (a.innerText || '').trim().slice(0, 80);
+          send('cta_click', { href: href || '', label: label, tag: a.tagName });
+        }, true);
+      })();<\/script>`;
+
+      const htmlWithTracker = row.html.replace(/<head[^>]*>/i, (m) => m + TRACKER);
+
       // Render the landing directly into the document
       document.open();
-      document.write(row.html);
+      document.write(htmlWithTracker);
       document.close();
 
-      // Track visit (fire and forget)
+      // Track visit counter on the landing row itself (fire and forget)
       try { DB.landings.incrementVisits(slug); } catch {}
 
       // Track response event for monthly usage (like quizzes/miniapps)
