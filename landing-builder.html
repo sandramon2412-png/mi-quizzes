@@ -427,22 +427,28 @@
 
     // ── Load existing landing if editing ──
     if (editingId) {
-      try {
-        const row = await DB.landings.get(editingId);
-        if (row && row.user_id === user.id) {
-          landing = row;
-          history = Array.isArray(row.messages) ? row.messages : [];
-          titleEl.value = row.title || '';
-          slugPreview.textContent = row.slug;
-          if (row.html) {
-            renderPreview(row.html);
-            switchToChatMode();
-            renderMessages();
-          }
-          updatePublishUI();
-          setStatus(row.published ? 'Publicada' : 'Borrador');
+      let row = null;
+      try { row = await DB.landings.get(editingId); } catch (e) { console.warn('Supabase load falló:', e); }
+      if (!row) {
+        // Fallback: localStorage (en caso de que la landing no se haya sincronizado a Supabase)
+        const local = Landings.get(editingId);
+        if (local) row = { ...local, user_id: user.id };
+      }
+      if (row && row.user_id === user.id) {
+        landing = row;
+        history = Array.isArray(row.messages) ? row.messages : [];
+        titleEl.value = row.title || '';
+        slugPreview.textContent = row.slug;
+        if (row.html) {
+          renderPreview(row.html);
+          switchToChatMode();
+          renderMessages();
         }
-      } catch (e) { console.warn('No se pudo cargar:', e); }
+        updatePublishUI();
+        setStatus(row.published ? 'Publicada' : 'Borrador');
+      } else {
+        toast('No se pudo cargar la landing. Generá una nueva.', 'err');
+      }
     }
 
     // ── Check quota before creating new ──
