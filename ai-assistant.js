@@ -55,6 +55,24 @@
       icon: 'trending_up',
       prompt: `Eres Lloyd, experto en análisis de leads y estrategias de nurturing para infoproductos digitales. Ayudas a interpretar métricas del quiz (tasa de finalización, perfiles más frecuentes, conversión por perfil), segmentar contactos según su resultado, y crear secuencias de seguimiento por WhatsApp o email adaptadas a cada perfil. Cuando analices leads, pide los datos disponibles y entrega recomendaciones concretas y accionables. Responde en español.`
     },
+    {
+      id: 'landing',
+      label: 'Landing Architect',
+      icon: 'web',
+      prompt: `Eres Lloyd, arquitecto de landing pages de alta conversión para infoproductos hispanohablantes. Tu especialidad: estructura, jerarquía visual, psicología de conversión y microcopy.
+
+Conoces las estructuras que convierten: AIDA, PAS, antes/después, mecanismo único. Dominas anatomía de landing: hero magnético, prueba social, stack de valor, garantía, FAQ, CTA final. Entiendes jerarquía tipográfica, balance texto/imagen, ritmo visual y el flujo del ojo.
+
+Cuando el creador te pida ayuda dentro del Landing Builder:
+• Para titulares: entregá 3-5 opciones con diferentes ángulos (curiosidad, beneficio directo, identificación de dolor).
+• Para secciones: describí estructura + copy listo para copiar.
+• Para CTAs: microcopy específico + urgencia sutil.
+• Para testimonios: inventá realistas con nombre latino, rol, resultado medible.
+• Para objeciones: listá las top 5 + cómo contrarrestarlas en la landing.
+• Para estructura: recomendá orden de secciones según el tipo de producto.
+
+Sé concreto, accionable, nunca teórico. El creador va a pegar tu output directo en su landing. Responde en español latinoamericano neutro.`
+    },
   ];
 
   // Modo público (landing): Lloyd solo responde preguntas sobre la plataforma
@@ -506,11 +524,12 @@ TONO: cercano, directo, entusiasta pero sin exagerar. Respuestas cortas (2-4 ora
   }
 
   const PAGE_CHIPS = {
-    'dashboard':    ['Analiza mis leads', 'Mejora mi quiz', 'Crea campaña Andromeda'],
-    'generador-ia': ['Crea un quiz para mi nicho', 'Mejora mis perfiles de resultado', 'Dame un título irresistible'],
-    'leads':        ['Segmenta mis leads', 'Secuencia de WhatsApp por perfil', 'Tasa de conversión baja, qué hago'],
-    'precios':      ['¿Qué plan me conviene?', 'Diferencia entre Pro y Growth', '¿Vale la pena el Elite?'],
-    'default':      ['Crea una oferta irresistible', 'Escríbeme una carta de ventas', 'Campaña con Método Andromeda'],
+    'dashboard':        ['Analiza mis leads', 'Mejora mi quiz', 'Crea campaña Andromeda'],
+    'generador-ia':     ['Crea un quiz para mi nicho', 'Mejora mis perfiles de resultado', 'Dame un título irresistible'],
+    'landing-builder':  ['Dame 5 titulares para mi hero', 'Sugiéreme 3 testimonios realistas', 'Mejora mi sección de garantía'],
+    'leads':            ['Segmenta mis leads', 'Secuencia de WhatsApp por perfil', 'Tasa de conversión baja, qué hago'],
+    'precios':          ['¿Qué plan me conviene?', 'Diferencia entre Pro y Growth', '¿Vale la pena el Elite?'],
+    'default':          ['Crea una oferta irresistible', 'Escríbeme una carta de ventas', 'Campaña con Método Andromeda'],
   };
 
   const PUBLIC_CHIPS = [
@@ -883,7 +902,14 @@ TONO: cercano, directo, entusiasta pero sin exagerar. Respuestas cortas (2-4 ora
     try {
       if (typeof Auth === 'undefined') return false;
       const user = await Auth.user();
-      return !!user;
+      if (!user) return false;
+      // Permite pre-seleccionar un modo via data-lloyd-default-mode="landing"
+      const def = document.body?.dataset?.lloydDefaultMode;
+      if (def) {
+        const match = MODES.find(m => m.id === def);
+        if (match) _currentMode = match;
+      }
+      return true;
     } catch (_) { return false; }
   }
 
