@@ -259,7 +259,12 @@
     const renderPreview = (html) => {
       previewEmpty.classList.add('hidden');
       previewFrame.classList.remove('hidden');
-      previewFrame.srcdoc = html || '';
+      // Inject a base tag + click interceptor so links in the preview don't
+      // navigate the iframe (previously clicking a CTA could load the real
+      // dashboard or other pages inside the preview)
+      const injection = `<base target="_blank"><script>document.addEventListener('click',function(e){var a=e.target.closest('a,button');if(a&&(!a.href||a.getAttribute('href')==='#'||a.tagName==='BUTTON')){e.preventDefault();}},true);</script>`;
+      const withInjection = (html || '').replace(/<head[^>]*>/i, (m) => m + injection);
+      previewFrame.srcdoc = withInjection || html || '';
     };
 
     const renderMessages = () => {

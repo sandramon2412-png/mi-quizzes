@@ -801,7 +801,13 @@ COPYWRITING:
 CALIDAD:
 • NO uses texto placeholder tipo "Lorem ipsum". Genera copy real basado en el brief.
 • NO dejes secciones vacías. Si faltan datos, inventa testimonios realistas (con nombres latinos) y cifras creíbles.
-• Hazlo sentir premium, no genérico. Cada sección debe tener personalidad visual.`;
+• Hazlo sentir premium, no genérico. Cada sección debe tener personalidad visual.
+
+LINKS Y NAVEGACIÓN:
+• Todos los <a> y botones CTA deben tener href="#" SIEMPRE. El creador configura las URLs reales después desde el editor.
+• NUNCA uses href="./dashboard.html", href="/login", href con rutas relativas o absolutas de ningún tipo.
+• Los <form> no deben tener action ni method — solo elementos visuales.
+• Prohibido cualquier tipo de navegación automática o window.location.`;
   },
 
   async generateLanding(brief, history = []) {
