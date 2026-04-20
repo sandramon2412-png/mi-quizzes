@@ -346,6 +346,92 @@ const DB = {
     },
   },
 
+  // ── Ebooks (Ebook Packager) ────────────────────────────────
+  ebooks: {
+    async getAll(userId) {
+      const { data, error } = await db.from('ebooks')
+        .select('*').eq('user_id', userId)
+        .order('updated_at', { ascending: false });
+      if (error) throw error;
+      return data || [];
+    },
+
+    async get(id) {
+      const { data, error } = await db.from('ebooks').select('*').eq('id', id).single();
+      if (error) return null;
+      return data;
+    },
+
+    async save(ebook, userId) {
+      const row = {
+        user_id:    userId,
+        title:      ebook.title || 'Mi ebook',
+        brief:      ebook.brief || '',
+        topic:      ebook.topic || '',
+        audience:   ebook.audience || '',
+        tone:       ebook.tone || '',
+        chapters:   ebook.chapters || [],
+        cover:      ebook.cover || {},
+        messages:   ebook.messages || [],
+        settings:   ebook.settings || {},
+        updated_at: new Date().toISOString(),
+      };
+      if (ebook.id) {
+        const { data: updated } = await db.from('ebooks').update(row).eq('id', ebook.id).select().maybeSingle();
+        if (updated) return updated;
+        row.id = ebook.id;
+      }
+      const { data, error } = await db.from('ebooks').insert(row).select().single();
+      if (error) throw error;
+      return data;
+    },
+
+    async delete(id) {
+      const { error } = await db.from('ebooks').delete().eq('id', id);
+      if (error) throw error;
+    },
+
+    async incrementDownloads(id) {
+      try {
+        const { data } = await db.from('ebooks').select('downloads').eq('id', id).maybeSingle();
+        if (!data) return;
+        await db.from('ebooks').update({ downloads: (data.downloads || 0) + 1 }).eq('id', id);
+      } catch {}
+    },
+  },
+
+  // ── Landing events (CTA clicks, scrolls, etc.) ─────────────
+  landingEvents: {
+    async track(landingId, userId, eventType, meta = {}) {
+      try {
+        let visitorId = localStorage.getItem('ls_visitor_id');
+        if (!visitorId) {
+          visitorId = crypto.randomUUID();
+          localStorage.setItem('ls_visitor_id', visitorId);
+        }
+        await db.from('landing_events').insert({
+          landing_id: landingId,
+          user_id: userId,
+          event_type: eventType,
+          visitor_id: visitorId,
+          meta,
+        });
+      } catch (e) { console.warn('landing event', e); }
+    },
+    async summary(landingId) {
+      const { data } = await db.from('landing_events')
+        .select('event_type, visitor_id').eq('landing_id', landingId);
+      if (!data) return { views: 0, uniqueViews: 0, ctaClicks: 0 };
+      const uniq = new Set();
+      let ctaClicks = 0, views = 0;
+      data.forEach(e => {
+        if (e.event_type === 'view') { views++; if (e.visitor_id) uniq.add(e.visitor_id); }
+        if (e.event_type === 'cta_click') ctaClicks++;
+      });
+      return { views, uniqueViews: uniq.size, ctaClicks };
+    },
+  },
+
   // ── Leads ──────────────────────────────────────────────────
   leads: {
     async getAll(userId) {
