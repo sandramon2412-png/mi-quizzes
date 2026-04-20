@@ -781,7 +781,7 @@ REGLAS ABSOLUTAS:
   async generateLanding(brief, history = []) {
     const messages = [...history, { role: 'user', content: brief }];
     const text = await this._call(messages, 8000, {
-      model: 'claude-sonnet-4-6',
+      model: 'claude-haiku-4-5-20251001',
       system: this._landingSystemPrompt(),
     });
     // Extract pure HTML: strip any markdown fences or preamble
