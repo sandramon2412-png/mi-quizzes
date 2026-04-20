@@ -273,6 +273,22 @@
     </div>
   </section>
 
+  <!-- ══════════════ MIS EBOOKS ══════════════ -->
+  <section class="mb-10" id="section-ebooks">
+    <div class="flex items-center justify-between mb-5">
+      <div class="section-head border-primary">
+        <h2 class="text-lg font-black text-on-surface tracking-tight">Mis Ebooks</h2>
+        <p class="text-xs text-on-surface-variant/55 mt-0.5">Ebooks completos en PDF generados con IA · desde plan Pro</p>
+      </div>
+      <a href="./ebook-builder.html" id="btn-new-ebook" class="flex items-center gap-1.5 px-4 py-2 bg-primary/10 border border-primary/25 text-primary text-xs font-bold rounded-xl hover:bg-primary/15 transition-colors">
+        <span class="material-symbols-outlined text-sm">add</span>Nuevo Ebook
+      </a>
+    </div>
+    <div id="ebooks-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+      <!-- populated by JS -->
+    </div>
+  </section>
+
   <!-- ══════════════ MIS QUIZZES ══════════════ -->
   <section>
     <div class="flex items-center justify-between mb-5">
@@ -856,7 +872,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   _currentUser = await Auth.requireAuth();
   if (!_currentUser) return;
-  await Promise.all([loadUserInfo(), renderMiniApps(), renderQuizzes(), renderLandings()]);
+  await Promise.all([loadUserInfo(), renderMiniApps(), renderQuizzes(), renderLandings(), renderEbooks()]);
   loadLeadsCount();
   loadUsageWidget();
   // Apply mini-app template if coming from plantillas-miniapps.html
@@ -1113,6 +1129,88 @@ async function deleteLanding(id) {
     await DB.landings.delete(id);
     Landings.delete(id);
     renderLandings();
+  } catch (e) {
+    alert('Error al eliminar: ' + e.message);
+  }
+}
+
+// ── Ebooks ───────────────────────────────────────────────
+async function renderEbooks() {
+  const container = document.getElementById('ebooks-grid');
+  const section = document.getElementById('section-ebooks');
+  const newBtn = document.getElementById('btn-new-ebook');
+  if (!container) return;
+
+  const caps = getPlanCaps(Settings.get().plan || 'free');
+  const maxEbooks = caps.ebooks || 0;
+
+  if (maxEbooks < 1) {
+    if (section) section.style.display = 'none';
+    return;
+  }
+
+  container.innerHTML = '<p class="text-xs text-on-surface-variant py-6 col-span-full text-center animate-pulse">Cargando ebooks...</p>';
+
+  let ebooks = [];
+  try {
+    ebooks = await DB.ebooks.getAll(_currentUser.id);
+  } catch (e) {
+    ebooks = Ebooks.getAll();
+  }
+
+  const atLimit = ebooks.length >= maxEbooks;
+  if (newBtn && atLimit) {
+    newBtn.classList.add('opacity-40', 'cursor-not-allowed');
+    newBtn.addEventListener('click', (e) => { e.preventDefault(); alert(`Llegaste al límite de ${maxEbooks} ebooks de tu plan`); }, { once: true });
+  }
+
+  const cards = ebooks.map(e => {
+    const chaptersCount = Array.isArray(e.chapters) ? e.chapters.length : 0;
+    const downloads = Number(e.downloads || 0).toLocaleString('es');
+    return `
+      <div class="rounded-2xl border border-outline-variant/20 bg-surface-container overflow-hidden hover:border-primary/40 transition-all group">
+        <div class="h-28 primary-gradient flex items-center justify-center relative">
+          <span class="material-symbols-outlined text-white/80" style="font-size:44px;font-variation-settings:'FILL' 1">menu_book</span>
+          <div class="absolute top-2 right-2">
+            <span class="text-[9px] px-1.5 py-0.5 rounded-full bg-white/15 backdrop-blur text-white font-bold uppercase tracking-wider">${chaptersCount} cap.</span>
+          </div>
+        </div>
+        <div class="p-4">
+          <h3 class="text-sm font-extrabold tracking-tight mb-1 truncate">${escapeHtml(e.title || 'Sin título')}</h3>
+          <p class="text-[10px] text-on-surface-variant/60 truncate mb-3">${escapeHtml(e.topic || 'Sin tema')}</p>
+          <div class="flex items-center gap-1.5 text-[10px] text-on-surface-variant/70 mb-3">
+            <span class="material-symbols-outlined" style="font-size:12px">download</span>${downloads} descargas
+          </div>
+          <div class="flex gap-1.5">
+            <a href="./ebook-builder.html?id=${e.id}" class="flex-1 h-8 rounded-lg bg-surface-container-high hover:bg-surface-container-highest text-[11px] font-semibold flex items-center justify-center gap-1 transition-colors">
+              <span class="material-symbols-outlined" style="font-size:13px">edit</span>Editar
+            </a>
+            <button onclick="deleteEbook('${e.id}')" class="w-8 h-8 rounded-lg bg-surface-container-high hover:bg-red-500/20 hover:text-red-400 flex items-center justify-center transition-colors" title="Eliminar">
+              <span class="material-symbols-outlined" style="font-size:13px">delete</span>
+            </button>
+          </div>
+        </div>
+      </div>`;
+  }).join('');
+
+  const addCard = atLimit ? '' : `
+    <a href="./ebook-builder.html" class="rounded-2xl flex flex-col items-center justify-center text-center gap-2 cursor-pointer border border-dashed border-outline-variant/20 hover:border-primary/50 hover:bg-primary/[0.04] transition-all min-h-[220px] group">
+      <div class="w-10 h-10 rounded-xl bg-surface-container-high border border-outline-variant/20 flex items-center justify-center group-hover:bg-primary/10 group-hover:border-primary/30 transition-all">
+        <span class="material-symbols-outlined text-on-surface-variant/40 group-hover:text-primary transition-colors">add</span>
+      </div>
+      <p class="text-xs font-semibold text-on-surface-variant/40 group-hover:text-primary/80 transition-colors">Nuevo Ebook</p>
+      <p class="text-[10px] text-on-surface-variant/40">${ebooks.length} de ${maxEbooks === 999 ? '∞' : maxEbooks}</p>
+    </a>`;
+
+  container.innerHTML = cards + addCard;
+}
+
+async function deleteEbook(id) {
+  if (!confirm('¿Eliminar este ebook? Esta acción no se puede deshacer.')) return;
+  try {
+    await DB.ebooks.delete(id);
+    Ebooks.delete(id);
+    renderEbooks();
   } catch (e) {
     alert('Error al eliminar: ' + e.message);
   }
