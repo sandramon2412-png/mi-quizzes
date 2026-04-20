@@ -8,6 +8,7 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Lora:wght@400;500;600;700&display=swap" rel="stylesheet"/>
 <link href="https://fonts.googleapis.com/icon?family=Material+Symbols+Outlined" rel="stylesheet"/>
 <script>
@@ -89,11 +90,32 @@
     <div id="starter" class="p-5 overflow-y-auto">
       <div class="flex items-center gap-2 mb-3">
         <span class="material-symbols-outlined icon-gradient" style="font-size:20px">auto_awesome</span>
-        <h2 class="text-base font-extrabold tracking-tight">Describí tu ebook</h2>
+        <h2 class="text-base font-extrabold tracking-tight">Creá tu ebook</h2>
       </div>
-      <p class="text-[11px] text-on-surface-variant mb-4">Claude Sonnet escribe 6-10 capítulos completos en ~30 segundos. Después podés iterar por chat o descargarlo como PDF.</p>
+      <p class="text-[11px] text-on-surface-variant mb-4">Generá desde cero con IA, o reciclá texto existente, un PDF o una página web. Claude estructura todo en un ebook profesional.</p>
 
-      <div class="space-y-3">
+      <!-- Source mode tabs -->
+      <div class="grid grid-cols-4 gap-1 p-1 bg-surface-container rounded-lg mb-4 text-[10px] font-semibold">
+        <button data-tab="ai" class="eb-tab active h-9 rounded-md transition flex flex-col items-center justify-center gap-0.5 primary-gradient text-white">
+          <span class="material-symbols-outlined" style="font-size:14px">auto_awesome</span>
+          <span>IA</span>
+        </button>
+        <button data-tab="text" class="eb-tab h-9 rounded-md transition flex flex-col items-center justify-center gap-0.5 text-on-surface-variant hover:bg-surface-container-high">
+          <span class="material-symbols-outlined" style="font-size:14px">content_paste</span>
+          <span>Texto</span>
+        </button>
+        <button data-tab="pdf" class="eb-tab h-9 rounded-md transition flex flex-col items-center justify-center gap-0.5 text-on-surface-variant hover:bg-surface-container-high">
+          <span class="material-symbols-outlined" style="font-size:14px">picture_as_pdf</span>
+          <span>PDF</span>
+        </button>
+        <button data-tab="url" class="eb-tab h-9 rounded-md transition flex flex-col items-center justify-center gap-0.5 text-on-surface-variant hover:bg-surface-container-high">
+          <span class="material-symbols-outlined" style="font-size:14px">link</span>
+          <span>URL</span>
+        </button>
+      </div>
+
+      <!-- Panel: AI -->
+      <div id="panel-ai" class="eb-panel space-y-3">
         <div>
           <label class="text-[11px] font-semibold text-on-surface-variant block mb-1">Tema del ebook</label>
           <input id="eb-topic" type="text" placeholder="Ej: Cómo salir de deudas en 90 días"
@@ -104,6 +126,46 @@
           <input id="eb-audience" type="text" placeholder="Ej: Profesionales 25-40 con ingresos fijos"
                  class="w-full bg-surface-container border border-outline-variant/40 rounded-lg px-3 py-2 text-sm focus:border-primary focus:ring-0 outline-none"/>
         </div>
+      </div>
+
+      <!-- Panel: Text -->
+      <div id="panel-text" class="eb-panel hidden space-y-3">
+        <div>
+          <label class="text-[11px] font-semibold text-on-surface-variant block mb-1">Pegá tu texto</label>
+          <textarea id="source-text" rows="10" placeholder="Pegá acá el texto del bot de copywriting, un artículo, tus notas, el outline que ya tenés… Claude lo va a estructurar como ebook profesional."
+                    class="w-full bg-surface-container border border-outline-variant/40 rounded-lg px-3 py-2 text-xs focus:border-primary focus:ring-0 outline-none resize-none"></textarea>
+          <p id="source-text-count" class="text-[10px] text-on-surface-variant/60 mt-1">0 caracteres</p>
+        </div>
+      </div>
+
+      <!-- Panel: PDF -->
+      <div id="panel-pdf" class="eb-panel hidden space-y-3">
+        <div>
+          <label class="text-[11px] font-semibold text-on-surface-variant block mb-1">Subí un PDF</label>
+          <label for="source-pdf" class="block cursor-pointer">
+            <div id="pdf-drop" class="border-2 border-dashed border-outline-variant/40 rounded-lg p-6 text-center hover:border-primary/60 transition">
+              <span class="material-symbols-outlined icon-gradient mb-2 block" style="font-size:32px">upload_file</span>
+              <p id="pdf-filename" class="text-xs font-semibold mb-1">Hacé click para elegir un PDF</p>
+              <p id="pdf-info" class="text-[10px] text-on-surface-variant/60">Máximo 20 MB · extraemos el texto automáticamente</p>
+            </div>
+          </label>
+          <input id="source-pdf" type="file" accept="application/pdf" class="hidden"/>
+        </div>
+      </div>
+
+      <!-- Panel: URL -->
+      <div id="panel-url" class="eb-panel hidden space-y-3">
+        <div>
+          <label class="text-[11px] font-semibold text-on-surface-variant block mb-1">URL de una página</label>
+          <input id="source-url" type="url" placeholder="https://tu-blog.com/articulo"
+                 class="w-full bg-surface-container border border-outline-variant/40 rounded-lg px-3 py-2 text-sm focus:border-primary focus:ring-0 outline-none"/>
+          <p class="text-[10px] text-on-surface-variant/60 mt-1">Extraemos el contenido limpio de la página y Claude lo estructura como ebook.</p>
+          <p id="url-status" class="text-[10px] mt-1 hidden"></p>
+        </div>
+      </div>
+
+      <!-- Common fields (tone, chapters, extras) -->
+      <div class="space-y-3 mt-4 pt-4 border-t border-outline-variant/20">
         <div>
           <label class="text-[11px] font-semibold text-on-surface-variant block mb-1">Tono</label>
           <select id="eb-tone" class="w-full bg-surface-container border border-outline-variant/40 rounded-lg px-3 py-2 text-sm focus:border-primary focus:ring-0 outline-none">
@@ -112,6 +174,7 @@
             <option value="inspirador">Inspirador y motivacional</option>
             <option value="didactico">Didáctico paso a paso</option>
             <option value="espiritual">Espiritual y reflexivo</option>
+            <option value="preservar">Preservar el tono original (solo para texto/PDF/URL)</option>
           </select>
         </div>
         <div>
@@ -124,7 +187,7 @@
         </div>
         <div>
           <label class="text-[11px] font-semibold text-on-surface-variant block mb-1">Detalles extra (opcional)</label>
-          <textarea id="eb-extras" rows="3" placeholder="Ej: incluí un capítulo sobre inversiones, usá ejemplos argentinos, evitá tecnicismos…"
+          <textarea id="eb-extras" rows="2" placeholder="Ej: agregá un capítulo de conclusión, evitá tecnicismos, incluí ejemplos…"
                     class="w-full bg-surface-container border border-outline-variant/40 rounded-lg px-3 py-2 text-sm focus:border-primary focus:ring-0 outline-none resize-none"></textarea>
         </div>
       </div>
@@ -134,7 +197,7 @@
         Generar mi ebook
       </button>
       <p class="mt-3 text-[10px] text-on-surface-variant/70 leading-relaxed">
-        Claude escribirá el ebook completo en markdown, listo para descargar como PDF con diseño profesional.
+        Claude estructura tu contenido en un ebook completo en markdown, listo para descargar como PDF.
       </p>
     </div>
 
@@ -368,30 +431,160 @@
       } catch { return true; }
     };
 
+    // ── Source tabs ──
+    let activeTab = 'ai';
+    let pdfExtractedText = '';
+    let pdfFilename = '';
+
+    const switchTab = (tab) => {
+      activeTab = tab;
+      document.querySelectorAll('.eb-tab').forEach(btn => {
+        const isActive = btn.dataset.tab === tab;
+        btn.classList.toggle('primary-gradient', isActive);
+        btn.classList.toggle('text-white', isActive);
+        btn.classList.toggle('text-on-surface-variant', !isActive);
+        btn.classList.toggle('hover:bg-surface-container-high', !isActive);
+      });
+      document.querySelectorAll('.eb-panel').forEach(p => p.classList.add('hidden'));
+      document.getElementById(`panel-${tab}`)?.classList.remove('hidden');
+    };
+    document.querySelectorAll('.eb-tab').forEach(btn => {
+      btn.onclick = () => switchTab(btn.dataset.tab);
+    });
+
+    // Source text char counter
+    const sourceText = document.getElementById('source-text');
+    const sourceTextCount = document.getElementById('source-text-count');
+    sourceText?.addEventListener('input', () => {
+      sourceTextCount.textContent = `${sourceText.value.length.toLocaleString()} caracteres`;
+    });
+
+    // PDF extraction
+    if (window.pdfjsLib) {
+      pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+    }
+    const pdfInput = document.getElementById('source-pdf');
+    const pdfFilenameEl = document.getElementById('pdf-filename');
+    const pdfInfoEl = document.getElementById('pdf-info');
+    pdfInput?.addEventListener('change', async () => {
+      const file = pdfInput.files?.[0];
+      if (!file) return;
+      if (file.size > 20 * 1024 * 1024) {
+        toast('El PDF es muy grande (máx 20 MB)', 'err');
+        return;
+      }
+      pdfFilename = file.name;
+      pdfFilenameEl.textContent = file.name;
+      pdfInfoEl.textContent = 'Extrayendo texto…';
+      try {
+        const buf = await file.arrayBuffer();
+        const pdf = await pdfjsLib.getDocument({ data: buf }).promise;
+        let text = '';
+        for (let i = 1; i <= pdf.numPages; i++) {
+          const page = await pdf.getPage(i);
+          const content = await page.getTextContent();
+          text += content.items.map(it => it.str).join(' ') + '\n\n';
+        }
+        pdfExtractedText = text.trim();
+        pdfInfoEl.textContent = `✓ ${pdf.numPages} páginas · ${pdfExtractedText.length.toLocaleString()} caracteres`;
+      } catch (e) {
+        console.error(e);
+        pdfInfoEl.textContent = 'Error leyendo el PDF';
+        pdfExtractedText = '';
+        toast('No pude leer el PDF: ' + e.message, 'err');
+      }
+    });
+
+    // URL fetch (via Jina AI Reader — returns clean markdown from any page, no API key)
+    const urlStatus = document.getElementById('url-status');
+    const fetchUrlContent = async (url) => {
+      urlStatus.classList.remove('hidden');
+      urlStatus.textContent = 'Extrayendo contenido…';
+      urlStatus.className = 'text-[10px] mt-1 text-on-surface-variant';
+      try {
+        const res = await fetch(`https://r.jina.ai/${url}`, { headers: { 'Accept': 'text/plain' } });
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const text = await res.text();
+        if (!text || text.length < 100) throw new Error('La página no tiene contenido suficiente');
+        urlStatus.textContent = `✓ ${text.length.toLocaleString()} caracteres extraídos`;
+        urlStatus.classList.add('text-green-400');
+        return text;
+      } catch (e) {
+        urlStatus.textContent = 'Error: ' + e.message;
+        urlStatus.classList.add('text-red-400');
+        throw e;
+      }
+    };
+
     // ── Generate ──
     genBtn.onclick = async () => {
-      const topic = document.getElementById('eb-topic').value.trim();
-      const audience = document.getElementById('eb-audience').value.trim();
       const tone = document.getElementById('eb-tone').value;
       const chaptersCount = document.getElementById('eb-chapters').value;
       const extras = document.getElementById('eb-extras').value.trim();
 
-      if (!topic) { toast('Contanos de qué va el ebook', 'err'); return; }
+      let brief = '';
+      let sourceMaterial = '';
+      let defaultTitle = '';
+
+      if (activeTab === 'ai') {
+        const topic = document.getElementById('eb-topic').value.trim();
+        const audience = document.getElementById('eb-audience').value.trim();
+        if (!topic) { toast('Contanos de qué va el ebook', 'err'); return; }
+        defaultTitle = topic.slice(0, 60);
+        brief = [
+          `Necesito un ebook sobre: ${topic}.`,
+          audience ? `Audiencia: ${audience}.` : '',
+          `Tono: ${tone}.`,
+          `Cantidad de capítulos: aproximadamente ${chaptersCount} (incluyendo intro y conclusión).`,
+          extras ? `Detalles extra: ${extras}` : '',
+        ].filter(Boolean).join(' ');
+      } else if (activeTab === 'text') {
+        sourceMaterial = sourceText.value.trim();
+        if (sourceMaterial.length < 200) { toast('Pegá al menos 200 caracteres de texto', 'err'); return; }
+        defaultTitle = sourceMaterial.slice(0, 60).split('\n')[0];
+      } else if (activeTab === 'pdf') {
+        if (!pdfExtractedText) { toast('Subí un PDF primero', 'err'); return; }
+        sourceMaterial = pdfExtractedText;
+        defaultTitle = pdfFilename.replace(/\.pdf$/i, '').slice(0, 60);
+      } else if (activeTab === 'url') {
+        const url = document.getElementById('source-url').value.trim();
+        if (!url || !/^https?:\/\//.test(url)) { toast('Pegá una URL válida', 'err'); return; }
+        try {
+          genBtn.disabled = true;
+          genBtn.innerHTML = `<span class="thinking-dot"></span><span class="thinking-dot"></span><span class="thinking-dot"></span>`;
+          sourceMaterial = await fetchUrlContent(url);
+        } catch {
+          genBtn.disabled = false;
+          genBtn.innerHTML = `<span class="material-symbols-outlined" style="font-size:18px">auto_stories</span>Generar mi ebook`;
+          return;
+        }
+        defaultTitle = url.replace(/^https?:\/\/(www\.)?/, '').split('/')[0];
+      }
+
+      // Build brief for source-based modes
+      if (sourceMaterial) {
+        // Truncate very long material to fit context (keep first ~60k chars)
+        const MAX = 60000;
+        const truncated = sourceMaterial.length > MAX ? sourceMaterial.slice(0, MAX) + '\n\n[... truncado ...]' : sourceMaterial;
+        const toneInstruction = tone === 'preservar'
+          ? 'Preservá el tono y la voz del material original.'
+          : `Reescribí con tono ${tone}.`;
+        brief = [
+          `Tengo este material de base y necesito que lo estructures como un ebook profesional completo:`,
+          `\n---MATERIAL---\n${truncated}\n---FIN MATERIAL---\n`,
+          `Estructuralo en aproximadamente ${chaptersCount} capítulos (incluyendo intro y conclusión).`,
+          toneInstruction,
+          `Preservá los ejemplos, datos y argumentos concretos del material original. Si falta intro o conclusión, agregalas. Reorganizá, limpiá y pulí — pero NO inventes datos que no estén en el material.`,
+          extras ? `Detalles extra: ${extras}` : '',
+        ].filter(Boolean).join(' ');
+      }
 
       if (!(await canCreate())) {
         toast(`Llegaste al límite de ${caps.ebooks} ebooks de tu plan`, 'err');
         return;
       }
 
-      const brief = [
-        `Necesito un ebook sobre: ${topic}.`,
-        audience ? `Audiencia: ${audience}.` : '',
-        `Tono: ${tone}.`,
-        `Cantidad de capítulos: aproximadamente ${chaptersCount} (incluyendo intro y conclusión).`,
-        extras ? `Detalles extra: ${extras}` : '',
-      ].filter(Boolean).join(' ');
-
-      if (!titleEl.value.trim()) titleEl.value = topic.slice(0, 60);
+      if (!titleEl.value.trim()) titleEl.value = defaultTitle;
 
       genBtn.disabled = true;
       genBtn.innerHTML = `<span class="thinking-dot"></span><span class="thinking-dot"></span><span class="thinking-dot"></span>`;
@@ -405,8 +598,11 @@
         ];
         if (!ebook) {
           ebook = Ebooks.create({
-            title: data.title || titleEl.value.trim() || topic.slice(0, 60),
-            topic, audience, tone,
+            title: data.title || titleEl.value.trim() || defaultTitle,
+            topic: defaultTitle,
+            audience: activeTab === 'ai' ? document.getElementById('eb-audience').value.trim() : '',
+            tone,
+            source: activeTab,
             brief,
             chapters: data.chapters || [],
             cover: { gradientFrom: '#2E5BFF', gradientTo: '#7c3aed', subtitle: data.subtitle || '' },
