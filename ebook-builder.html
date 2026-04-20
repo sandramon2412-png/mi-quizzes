@@ -60,6 +60,54 @@
   .ebook-page .chapter-title { font-size: 34px; font-weight: 800; color: #1a1a1a; margin: 0 0 8px; letter-spacing: -0.03em; }
   .ebook-page .chapter-num { font-size: 12px; font-weight: 600; color: #7c3aed; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 8px; }
   .page-break { page-break-after: always; break-after: page; }
+
+  /* Gamma-style visual blocks */
+  .ebook-page .callout {
+    display: block; margin: 20px 0; padding: 16px 18px; border-radius: 12px;
+    font-family: 'Plus Jakarta Sans', sans-serif; font-size: 13px; line-height: 1.6;
+    border-left: 4px solid; position: relative;
+  }
+  .ebook-page .callout strong {
+    display: block; font-size: 11px; font-weight: 800; text-transform: uppercase;
+    letter-spacing: 0.1em; margin-bottom: 6px; color: inherit;
+  }
+  .ebook-page .callout p { margin: 0; font-size: 13px; color: #2a2a2a; }
+  .ebook-page .callout cite { display: block; margin-top: 8px; font-size: 11px; color: #777; font-style: normal; }
+  .ebook-page .callout-tip    { background: #f0f5ff; border-color: #2E5BFF; }
+  .ebook-page .callout-tip strong    { color: #2E5BFF; }
+  .ebook-page .callout-warn   { background: #fff5f0; border-color: #ea6d3a; }
+  .ebook-page .callout-warn strong   { color: #d95a2a; }
+  .ebook-page .callout-info   { background: #f5f0ff; border-color: #7c3aed; }
+  .ebook-page .callout-info strong   { color: #7c3aed; }
+  .ebook-page .callout-quote  { background: linear-gradient(135deg, #f0f5ff 0%, #f5f0ff 100%); border-color: #7c3aed; font-style: italic; }
+  .ebook-page .callout-quote p { font-size: 15px; color: #333; }
+
+  .ebook-page .stat-card {
+    display: inline-flex; flex-direction: column; align-items: flex-start;
+    padding: 18px 22px; margin: 16px 12px 16px 0; border-radius: 14px;
+    background: linear-gradient(135deg, #2E5BFF 0%, #7c3aed 100%); color: #fff;
+    font-family: 'Plus Jakarta Sans', sans-serif; min-width: 160px;
+  }
+  .ebook-page .stat-card .stat-number {
+    display: block; font-size: 32px; font-weight: 800; line-height: 1; letter-spacing: -0.02em;
+  }
+  .ebook-page .stat-card .stat-label {
+    display: block; font-size: 12px; opacity: 0.9; margin-top: 6px; font-weight: 500;
+  }
+
+  .ebook-page ol.steps { list-style: none; counter-reset: step; margin: 20px 0; padding: 0; }
+  .ebook-page ol.steps li {
+    counter-increment: step; position: relative; padding: 12px 16px 12px 52px;
+    margin-bottom: 10px; border-radius: 10px; background: #f7f8fb;
+    font-family: 'Plus Jakarta Sans', sans-serif; font-size: 13px; line-height: 1.6;
+  }
+  .ebook-page ol.steps li::before {
+    content: counter(step); position: absolute; left: 14px; top: 12px;
+    width: 26px; height: 26px; border-radius: 50%;
+    background: linear-gradient(135deg, #2E5BFF, #7c3aed);
+    color: #fff; font-weight: 800; font-size: 13px;
+    display: flex; align-items: center; justify-content: center;
+  }
 </style>
 </head>
 <body class="bg-background text-on-background">

@@ -867,27 +867,33 @@ LINKS Y NAVEGACIÓN:
   },
 
   _ebookSystemPrompt() {
-    return `Eres un escritor profesional y editor experto en crear ebooks en español de alta calidad para infoproductos.
+    return `Eres un escritor profesional y editor experto en crear ebooks en español estilo Gamma — con bloques visuales, callouts y stats destacados.
 
 FORMATO DE SALIDA — devolvé ÚNICAMENTE un objeto JSON válido, sin markdown, sin \`\`\`, sin texto antes o después. Schema exacto:
 {
   "title": "Título del ebook",
   "subtitle": "Subtítulo (1 frase vendedora)",
   "chapters": [
-    { "title": "Capítulo 1: ...", "body_md": "Contenido en markdown..." },
+    { "title": "Capítulo 1: ...", "body_md": "Contenido con markdown y HTML embebido..." },
     ...
   ]
 }
 
 REGLAS DE CONTENIDO:
-- Mínimo 6 capítulos, máximo 10 (ajustá según complejidad del tema).
-- Cada capítulo: 300–600 palabras en markdown. Usá ## para subsecciones, **negrita** para conceptos clave, > para citas inspiradoras, listas con - o 1..
-- El primer capítulo siempre es una "Introducción" que engancha al lector.
-- El último capítulo siempre es "Conclusión y próximos pasos" con un CTA claro.
-- Nada de relleno, nada de "como ya sabrás" — todo valor concreto con ejemplos, pasos, datos o frameworks.
-- Tono conversacional pero autoritativo. Hablás en segunda persona (tú/vos según tono pedido).
-- NO incluyas saludos tipo "Hola, en este capítulo veremos...". Entrá directo al contenido.
-- Si el brief menciona audiencia, nicho o tono, priorizá eso sobre tu estilo por defecto.`;
+- Mínimo 6 capítulos, máximo 10.
+- Cada capítulo: 400–650 palabras. Intercalá markdown + bloques HTML visuales.
+- Bloques visuales disponibles (incluí al menos 1 por capítulo):
+  <div class="callout callout-tip"><strong>Tip</strong><p>…</p></div>
+  <div class="callout callout-warn"><strong>Cuidado</strong><p>…</p></div>
+  <div class="callout callout-info"><strong>Dato clave</strong><p>…</p></div>
+  <div class="callout callout-quote"><p>…cita…</p><cite>— fuente</cite></div>
+  <div class="stat-card"><span class="stat-number">75%</span><span class="stat-label">descripción</span></div>
+  <ol class="steps"><li>Paso 1…</li><li>Paso 2…</li></ol>
+- Usá ## para subsecciones, **negrita** para conceptos clave.
+- Primer capítulo = "Introducción" con hook fuerte. Último = "Conclusión y próximos pasos" con CTA.
+- Nada de relleno. Valor concreto: ejemplos, pasos, datos.
+- Segunda persona (tú/vos según tono).
+- NO saludes, entrá directo al contenido.`;
   },
 
   _parseJSONLoose(text) {
@@ -920,29 +926,49 @@ REGLAS:
   },
 
   async generateEbookChapter({ bookTitle, bookSubtitle, chapterTitle, chapterIndex, totalChapters, tone, sourceExcerpt, audience }) {
-    const system = `Eres un escritor profesional de ebooks en español. Tu tarea es escribir UN capítulo completo.
-Devolvé ÚNICAMENTE JSON válido, sin markdown, sin \`\`\`. Schema exacto:
-{ "title": "Título del capítulo", "body_md": "Contenido en markdown..." }
+    const system = `Eres un escritor profesional de ebooks en español estilo Gamma — con bloques visuales, callouts y stats destacados.
+Devolvé ÚNICAMENTE el contenido del capítulo en markdown con HTML embebido. NO devuelvas JSON, NO uses \`\`\`, NO incluyas el título (ya lo tengo).
+
+ESTRUCTURA OBLIGATORIA (intercalar con el texto):
+- Párrafo inicial fuerte que enganche (sin saludos).
+- Usá ## para 2–3 subsecciones temáticas.
+- Incluí al menos 1 callout visual usando HTML. Tipos disponibles:
+  <div class="callout callout-tip"><strong>Tip</strong><p>Contenido del tip en 1–2 oraciones.</p></div>
+  <div class="callout callout-warn"><strong>Cuidado</strong><p>Advertencia importante.</p></div>
+  <div class="callout callout-info"><strong>Dato clave</strong><p>Información relevante.</p></div>
+  <div class="callout callout-quote"><p>Cita o reflexión poderosa.</p><cite>— fuente o contexto</cite></div>
+- Incluí al menos 1 bloque de stat/dato destacado:
+  <div class="stat-card"><span class="stat-number">75%</span><span class="stat-label">descripción corta</span></div>
+- Si enseñás pasos, usá <ol class="steps"> con <li> para cada paso.
+- **Negrita** para conceptos clave, listas con -, citas con >.
+
 REGLAS:
-- 350–600 palabras en markdown.
-- Usá ## para subsecciones, **negrita** para conceptos clave, > para citas, listas con - o 1..
-- Entrá directo al contenido. NO saludes, NO digas "en este capítulo...".
-- Valor concreto: ejemplos, pasos, datos, frameworks.
+- 400–650 palabras en total.
+- Valor concreto: ejemplos, pasos, datos. NADA de relleno.
 - Segunda persona (tú/vos según tono).
-- NO inventes datos que no estén en el material de base (si lo hay).`;
+- Si hay material de base, preservá sus ejemplos y datos — no inventes.`;
     const userMsg = [
       `Ebook: "${bookTitle}"${bookSubtitle ? ` — ${bookSubtitle}` : ''}.`,
       audience ? `Audiencia: ${audience}.` : '',
       `Tono: ${tone}.`,
       `Capítulo ${chapterIndex + 1} de ${totalChapters}: "${chapterTitle}".`,
       sourceExcerpt ? `\nMaterial de base relevante para este capítulo:\n---\n${sourceExcerpt}\n---\nUsá este material como fuente principal. Preservá ejemplos y datos.` : '',
-      `\nEscribí el capítulo completo ahora.`,
+      `\nEscribí el capítulo completo ahora (solo el cuerpo del capítulo, sin título, sin JSON).`,
     ].filter(Boolean).join(' ');
-    const text = await this._call([{ role: 'user', content: userMsg }], 2200, {
+    const text = await this._call([{ role: 'user', content: userMsg }], 3000, {
       model: 'claude-sonnet-4-6', system,
     });
-    try { return this._parseJSONLoose(text); }
-    catch { return { title: chapterTitle, body_md: text }; }
+    // Strip any accidental JSON wrapping or code fences
+    let body = text.trim();
+    body = body.replace(/^```(?:markdown|md)?\s*/i, '').replace(/```\s*$/i, '').trim();
+    // If Claude accidentally returned JSON, try to extract body_md
+    if (body.startsWith('{') && body.includes('body_md')) {
+      try {
+        const parsed = this._parseJSONLoose(body);
+        if (parsed.body_md) body = parsed.body_md;
+      } catch {}
+    }
+    return { title: chapterTitle, body_md: body };
   },
 
   async generateEbook(brief, history = [], onProgress) {
