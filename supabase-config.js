@@ -298,10 +298,11 @@ const DB = {
         settings:   landing.settings || {},
         updated_at: new Date().toISOString(),
       };
+      // If we have a local id, try update first; if no row exists yet, insert with that id
       if (landing.id) {
-        const { data, error } = await db.from('landings').update(row).eq('id', landing.id).select().single();
-        if (error) throw error;
-        return data;
+        const { data: updated } = await db.from('landings').update(row).eq('id', landing.id).select().maybeSingle();
+        if (updated) return updated;
+        row.id = landing.id;
       }
       const { data, error } = await db.from('landings').insert(row).select().single();
       if (error) throw error;
