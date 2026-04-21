@@ -980,7 +980,11 @@ REGLAS:
         system: this._ebookSystemPrompt(),
       });
       try { return this._parseJSONLoose(text); }
-      catch { throw new Error('El ebook generado no tiene formato JSON válido. Intentá de nuevo.'); }
+      catch {
+        // The model answered in prose (e.g. user asked about layout, not a content change).
+        // Return a marker the caller can surface as a plain chat message instead of erroring.
+        return { __conversational: true, reply: text.slice(0, 600) };
+      }
     }
 
     // Fresh generation: outline then chapter-by-chapter (avoids CPU/timeout limits)
