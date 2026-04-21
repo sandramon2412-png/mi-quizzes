@@ -874,6 +874,72 @@ ${pagesHtml}
   const ebookTitle = ${JSON.stringify(ebook.title || 'ebook')};
   const dlBtn = document.getElementById('dl-btn');
 
+  // ── DOM pagination: split long chapters into A4-sized pieces BEFORE capture ──
+  // This avoids html2canvas's image-slice from cutting mid-element.
+  const MM_PX = 3.7795;          // CSS: 1mm ≈ 3.7795px at 96dpi
+  const A4_H_PX = 297 * MM_PX;   // ~1122.6 px
+  const A4_PAD_Y = 18 * MM_PX * 2; // ~136 px (top + bottom chapter padding)
+  const MAX_BODY_PX = A4_H_PX - A4_PAD_Y - 4; // small safety margin
+
+  function marginBottom(el) {
+    const v = parseFloat(getComputedStyle(el).marginBottom || '0');
+    return isNaN(v) ? 0 : v;
+  }
+
+  function paginateChapter(chapter) {
+    const body = chapter.querySelector('.chapter-body');
+    if (!body) return;
+    // Already fits in one A4? No need to split.
+    if (chapter.offsetHeight <= A4_H_PX + 4) return;
+
+    // Header (num + title) sits inside .page.chapter above .chapter-body, so
+    // its height eats into available body space only on THIS page (first page
+    // of the chapter). Continuation pages have no header, so headerH = 0 for
+    // those — but we only ever call this on pages that already have/lack it.
+    const num = chapter.querySelector('.chapter-num');
+    const title = chapter.querySelector('.chapter-title');
+    const numH   = num   ? num.offsetHeight   + marginBottom(num)   : 0;
+    const titleH = title ? title.offsetHeight + marginBottom(title) : 0;
+    const headerH = numH + titleH;
+
+    const children = Array.from(body.children);
+    let running = headerH;
+    let splitIdx = -1;
+    for (let i = 0; i < children.length; i++) {
+      const c = children[i];
+      const h = c.offsetHeight + marginBottom(c);
+      if (running + h > MAX_BODY_PX && i > 0) { splitIdx = i; break; }
+      running += h;
+    }
+    if (splitIdx === -1) return; // single child overflows — can't split cleanly
+
+    // Keep headings glued to their content (move H2/H3/H4 down with the split)
+    while (splitIdx > 1 && ['H2','H3','H4'].includes(children[splitIdx-1].tagName)) {
+      splitIdx--;
+    }
+
+    const overflow = children.slice(splitIdx);
+    const newPage = document.createElement('section');
+    newPage.className = 'page chapter';
+    const newBody = document.createElement('div');
+    newBody.className = 'chapter-body';
+    overflow.forEach(c => newBody.appendChild(c));
+    newPage.appendChild(newBody);
+    chapter.parentNode.insertBefore(newPage, chapter.nextSibling);
+
+    // Recurse — the overflow page may still be too tall
+    paginateChapter(newPage);
+  }
+
+  async function paginateAllChapters() {
+    try { if (document.fonts && document.fonts.ready) await document.fonts.ready; } catch(e) {}
+    await new Promise(r => setTimeout(r, 80));
+    Array.from(document.querySelectorAll('.page.chapter')).forEach(paginateChapter);
+  }
+
+  // Run pagination as soon as layout is stable so the preview mirrors the PDF.
+  paginateAllChapters();
+
   async function saveAsPDF() {
     if (!window.html2canvas || !window.jspdf) {
       alert('Librerías aún cargando, intentá de nuevo en un segundo.');
@@ -883,8 +949,8 @@ ${pagesHtml}
     dlBtn.disabled = true;
     const originalLabel = dlBtn.textContent;
     try {
-      try { if (document.fonts && document.fonts.ready) await document.fonts.ready; } catch(e) {}
-      await new Promise(r => setTimeout(r, 150));
+      // Ensure pagination is done before we capture
+      await paginateAllChapters();
 
       const pages = Array.from(document.querySelectorAll('.page'));
       const pdf = new jsPDF({ unit: 'mm', format: 'a4', orientation: 'portrait' });
@@ -910,6 +976,7 @@ ${pagesHtml}
           pdf.addImage(imgData, 'JPEG', 0, 0, pdfW, imgHmm);
           firstPage = false;
         } else {
+          // Fallback: element still too tall (single child overflow). Slice.
           let yOffset = 0;
           while (yOffset < imgHmm - 0.5) {
             if (!firstPage) pdf.addPage();
