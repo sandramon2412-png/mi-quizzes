@@ -67,6 +67,15 @@
   .ebook-page li { margin-bottom: 6px; }
   .ebook-page blockquote { border-left: 3px solid #7c3aed; padding: 8px 0 8px 16px; margin: 16px 0; color: #555; font-style: italic; }
   .ebook-page strong { color: #2E5BFF; font-weight: 700; }
+  .ebook-page table { width: 100%; border-collapse: collapse; margin: 18px 0; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 13px; background: #fff; border-radius: 8px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.08); }
+  .ebook-page thead { background: linear-gradient(135deg, #2E5BFF, #7c3aed); color: #fff; }
+  .ebook-page th { padding: 10px 14px; text-align: left; font-weight: 700; font-size: 12px; letter-spacing: 0.02em; }
+  .ebook-page td { padding: 10px 14px; border-top: 1px solid #eef0f4; color: #2a2a2a; }
+  .ebook-page tbody tr:nth-child(even) td { background: #f7f8fb; }
+  .ebook-page hr { border: 0; border-top: 1px solid #e5e7eb; margin: 24px 0; }
+  .ebook-page code { background: #f0f2f7; color: #7c3aed; padding: 1px 6px; border-radius: 4px; font-family: 'SF Mono', Menlo, monospace; font-size: 12px; }
+  .ebook-page pre { background: #f0f2f7; border-radius: 8px; padding: 14px 16px; margin: 16px 0; overflow-x: auto; }
+  .ebook-page pre code { background: transparent; color: #1a1a1a; padding: 0; font-size: 12px; }
   .ebook-page .chapter-title { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 34px; font-weight: 800; color: #1a1a1a; margin: 0 0 28px; line-height: 1.1; letter-spacing: -0.03em; }
   .ebook-page .chapter-num { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 11px; font-weight: 700; color: #7c3aed; text-transform: uppercase; letter-spacing: 0.14em; margin-bottom: 8px; }
   .page-break { page-break-after: always; break-after: page; }
@@ -207,9 +216,20 @@
       <div id="panel-text" class="eb-panel hidden space-y-3">
         <div>
           <label class="text-[11px] font-semibold text-on-surface-variant block mb-1">Pegá tu texto</label>
-          <textarea id="source-text" rows="10" placeholder="Pegá acá el texto del bot de copywriting, un artículo, tus notas, el outline que ya tenés… Claude lo va a estructurar como ebook profesional."
+          <textarea id="source-text" rows="10" placeholder="Pegá tu presupuesto, propuesta, artículo, notas… Si usás títulos con ## se convierten en páginas automáticamente. Podés usar **negrita**, tablas markdown, listas, etc."
                     class="w-full bg-surface-container border border-outline-variant/40 rounded-lg px-3 py-2 text-xs focus:border-primary focus:ring-0 outline-none resize-none"></textarea>
           <p id="source-text-count" class="text-[10px] text-on-surface-variant/60 mt-1">0 caracteres</p>
+        </div>
+        <div class="bg-surface-container border border-outline-variant/40 rounded-lg p-3 space-y-2">
+          <label class="text-[11px] font-semibold text-on-surface-variant block mb-1">¿Qué hago con tu texto?</label>
+          <label class="flex items-start gap-2 cursor-pointer text-xs">
+            <input type="radio" name="text-mode" value="preserve" class="mt-0.5" checked/>
+            <span><strong class="text-white">Respetarlo al pie de la letra</strong><span class="text-on-surface-variant block text-[11px] mt-0.5">Solo le doy formato visual (colores, tipografía, tablas, callouts). No reescribo una palabra.</span></span>
+          </label>
+          <label class="flex items-start gap-2 cursor-pointer text-xs">
+            <input type="radio" name="text-mode" value="rewrite" class="mt-0.5"/>
+            <span><strong class="text-white">Reestructurarlo como ebook</strong><span class="text-on-surface-variant block text-[11px] mt-0.5">Uso tu texto como base y lo reescribo en capítulos profesionales con el tono elegido abajo.</span></span>
+          </label>
         </div>
       </div>
 
@@ -225,6 +245,17 @@
             </div>
           </label>
           <input id="source-pdf" type="file" accept="application/pdf" class="hidden"/>
+        </div>
+        <div class="bg-surface-container border border-outline-variant/40 rounded-lg p-3 space-y-2">
+          <label class="text-[11px] font-semibold text-on-surface-variant block mb-1">¿Qué hago con el PDF?</label>
+          <label class="flex items-start gap-2 cursor-pointer text-xs">
+            <input type="radio" name="pdf-mode" value="preserve" class="mt-0.5" checked/>
+            <span><strong class="text-white">Mantenerlo igual</strong><span class="text-on-surface-variant block text-[11px] mt-0.5">Respeto el contenido tal cual, solo le doy un estilo visual nuevo.</span></span>
+          </label>
+          <label class="flex items-start gap-2 cursor-pointer text-xs">
+            <input type="radio" name="pdf-mode" value="rewrite" class="mt-0.5"/>
+            <span><strong class="text-white">Reestructurarlo</strong><span class="text-on-surface-variant block text-[11px] mt-0.5">Reescribo el contenido como ebook profesional con el tono elegido.</span></span>
+          </label>
         </div>
       </div>
 
@@ -955,6 +986,60 @@
       }
     };
 
+    // Split the user's text into chapters WITHOUT calling the AI.
+    // Strategy:
+    //  1. If the text has "## …" H2 markdown headings → each heading starts a new chapter.
+    //  2. Else if it has "# …" H1 headings → use those (except the very first one is treated as the ebook title).
+    //  3. Else split on blank-line groups and batch ~6 paragraphs per page.
+    // Returns { title, chapters: [{title, body_md}] }. No rewriting of the user's words.
+    const buildChaptersFromText = (text) => {
+      const src = (text || '').trim();
+      if (!src) return { title: '', chapters: [] };
+
+      let title = '';
+      let body = src;
+      // Extract an H1 at the very top as the ebook title
+      const h1Match = body.match(/^#\s+(.+?)\s*\n+/);
+      if (h1Match) {
+        title = h1Match[1].trim();
+        body = body.slice(h1Match[0].length);
+      }
+
+      const chapters = [];
+      // Try H2 split
+      const h2Parts = body.split(/^##\s+/m).map(s => s.trim()).filter(Boolean);
+      if (body.match(/^##\s+/m) && h2Parts.length >= 2) {
+        // If the text starts with content before the first H2, add it as "Introducción"
+        if (!/^##\s+/.test(body.trimStart())) {
+          const preface = body.split(/^##\s+/m)[0].trim();
+          if (preface) chapters.push({ title: 'Introducción', body_md: preface });
+        }
+        h2Parts.forEach((part, idx) => {
+          // The first entry of h2Parts may be the preface we already handled — skip it.
+          if (idx === 0 && !/^##\s+/.test(body.trimStart())) return;
+          const nl = part.indexOf('\n');
+          const cTitle = (nl > -1 ? part.slice(0, nl) : part).trim() || `Sección ${chapters.length + 1}`;
+          const cBody = nl > -1 ? part.slice(nl + 1).trim() : '';
+          chapters.push({ title: cTitle, body_md: cBody });
+        });
+      } else {
+        // No H2 → batch paragraphs into pages (~6 paragraphs per page, capped to a reasonable length)
+        const paras = body.split(/\n\s*\n+/).map(p => p.trim()).filter(Boolean);
+        if (paras.length <= 8) {
+          chapters.push({ title: title || 'Contenido', body_md: paras.join('\n\n') });
+        } else {
+          const perPage = 6;
+          for (let i = 0; i < paras.length; i += perPage) {
+            const slice = paras.slice(i, i + perPage).join('\n\n');
+            chapters.push({ title: `Página ${Math.floor(i / perPage) + 1}`, body_md: slice });
+          }
+        }
+      }
+
+      if (!chapters.length) chapters.push({ title: title || 'Contenido', body_md: body });
+      return { title: title || (chapters[0]?.title || 'Mi documento'), chapters };
+    };
+
     // ── Generate ──
     genBtn.onclick = async () => {
       const tone = document.getElementById('eb-tone').value;
@@ -964,6 +1049,7 @@
       let brief = '';
       let sourceMaterial = '';
       let defaultTitle = '';
+      let preserveMode = false;
 
       if (activeTab === 'ai') {
         const topic = document.getElementById('eb-topic').value.trim();
@@ -980,11 +1066,13 @@
       } else if (activeTab === 'text') {
         sourceMaterial = sourceText.value.trim();
         if (sourceMaterial.length < 200) { toast('Pegá al menos 200 caracteres de texto', 'err'); return; }
-        defaultTitle = sourceMaterial.slice(0, 60).split('\n')[0];
+        defaultTitle = sourceMaterial.slice(0, 60).split('\n')[0].replace(/^#+\s*/, '');
+        preserveMode = document.querySelector('input[name="text-mode"]:checked')?.value === 'preserve';
       } else if (activeTab === 'pdf') {
         if (!pdfExtractedText) { toast('Subí un PDF primero', 'err'); return; }
         sourceMaterial = pdfExtractedText;
         defaultTitle = pdfFilename.replace(/\.pdf$/i, '').slice(0, 60);
+        preserveMode = document.querySelector('input[name="pdf-mode"]:checked')?.value === 'preserve';
       } else if (activeTab === 'url') {
         const url = document.getElementById('source-url').value.trim();
         if (!url || !/^https?:\/\//.test(url)) { toast('Pegá una URL válida', 'err'); return; }
@@ -1000,8 +1088,9 @@
         defaultTitle = url.replace(/^https?:\/\/(www\.)?/, '').split('/')[0];
       }
 
-      // Build brief for source-based modes
-      if (sourceMaterial) {
+      // Build brief for source-based modes that REWRITE the content.
+      // Preserve modes (text/pdf with preserveMode=true) skip the AI and use the raw material verbatim.
+      if (sourceMaterial && !preserveMode) {
         // Truncate very long material — long inputs cause claude-proxy 504 timeouts
         const MAX = 25000;
         const truncated = sourceMaterial.length > MAX ? sourceMaterial.slice(0, MAX) + '\n\n[... truncado ...]' : sourceMaterial;
@@ -1027,17 +1116,28 @@
 
       genBtn.disabled = true;
       genBtn.innerHTML = `<span class="thinking-dot"></span><span class="thinking-dot"></span><span class="thinking-dot"></span>`;
-      setStatus('Escribiendo con Claude Sonnet…');
+      setStatus(preserveMode ? 'Estructurando tu texto…' : 'Escribiendo con Claude Sonnet…');
 
       try {
-        const onProgress = (p) => {
-          if (p.stage === 'outline') setStatus('Armando outline…');
-          else if (p.stage === 'chapter') setStatus(`Escribiendo capítulo ${p.current}/${p.total}…`);
-        };
-        const data = await AI.generateEbook(brief, [], onProgress);
+        let data;
+        if (preserveMode) {
+          // Local, deterministic split — no AI call, nothing gets rewritten.
+          data = buildChaptersFromText(sourceMaterial);
+          brief = `[modo preservación] ${activeTab === 'pdf' ? pdfFilename : 'texto pegado'} — ${sourceMaterial.length} caracteres`;
+        } else {
+          const onProgress = (p) => {
+            if (p.stage === 'outline') setStatus('Armando outline…');
+            else if (p.stage === 'chapter') setStatus(`Escribiendo capítulo ${p.current}/${p.total}…`);
+          };
+          data = await AI.generateEbook(brief, [], onProgress);
+        }
+        const chaptersCountMsg = data.chapters?.length || 0;
+        const displayMsg = preserveMode
+          ? `Listo — respeté tu texto y lo dividí en ${chaptersCountMsg} página${chaptersCountMsg === 1 ? '' : 's'}. Pedime cambios de formato o edítalo directo en la preview.`
+          : `Listo — ${chaptersCountMsg} capítulos escritos. Pedime cambios si querés.`;
         history = [
           { role: 'user', content: brief },
-          { role: 'assistant', content: JSON.stringify(data), display: `Listo — ${data.chapters?.length || 0} capítulos escritos. Pedime cambios si querés.` },
+          { role: 'assistant', content: JSON.stringify(data), display: displayMsg },
         ];
         if (!ebook) {
           ebook = Ebooks.create({
@@ -1310,6 +1410,14 @@
   .chapter-body strong { color: #2E5BFF; font-weight: 700; }
   .chapter-body hr { border: 0; border-top: 1px solid #e5e7eb; margin: 28px 0; page-break-after: auto; break-after: auto; page-break-before: auto; break-before: auto; }
   .chapter-body blockquote { border-left: 3px solid #7c3aed; padding: 8px 0 8px 16px; margin: 16px 0; color: #555; font-style: italic; page-break-inside: avoid; break-inside: avoid; }
+  .chapter-body table { width: 100%; border-collapse: collapse; margin: 18px 0; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 13px; background: #fff; border-radius: 8px; overflow: hidden; page-break-inside: avoid; break-inside: avoid; }
+  .chapter-body thead { background: linear-gradient(135deg, #2E5BFF, #7c3aed); color: #fff; }
+  .chapter-body th { padding: 10px 14px; text-align: left; font-weight: 700; font-size: 12px; letter-spacing: 0.02em; }
+  .chapter-body td { padding: 10px 14px; border-top: 1px solid #eef0f4; color: #2a2a2a; }
+  .chapter-body tbody tr:nth-child(even) td { background: #f7f8fb; }
+  .chapter-body code { background: #f0f2f7; color: #7c3aed; padding: 1px 6px; border-radius: 4px; font-family: 'SF Mono', Menlo, monospace; font-size: 12px; }
+  .chapter-body pre { background: #f0f2f7; border-radius: 8px; padding: 14px 16px; margin: 16px 0; overflow-x: auto; page-break-inside: avoid; break-inside: avoid; }
+  .chapter-body pre code { background: transparent; color: #1a1a1a; padding: 0; font-size: 12px; }
   /* Prevent giant gaps: allow the chapter body to break freely between blocks */
   .chapter-body { page-break-inside: auto; break-inside: auto; }
 
