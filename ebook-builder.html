@@ -861,6 +861,21 @@
   .chapter-body ol.steps { list-style: none; counter-reset: step; margin: 20px 0; padding: 0; page-break-inside: auto; break-inside: auto; }
   .chapter-body ol.steps li { counter-increment: step; position: relative; padding: 12px 16px 12px 52px; margin: 0 0 10px; border-radius: 10px; background: #f7f8fb; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 13px; line-height: 1.6; page-break-inside: avoid; break-inside: avoid; }
   .chapter-body ol.steps li::before { content: counter(step); position: absolute; left: 14px; top: 12px; width: 26px; height: 26px; border-radius: 50%; background: linear-gradient(135deg, #2E5BFF, #7c3aed); color: #fff; font-weight: 800; font-size: 13px; display: flex; align-items: center; justify-content: center; }
+
+  /* ── Inline editing UI ── */
+  .chapter-body [contenteditable="true"]:focus { outline: 2px solid #2E5BFF55; outline-offset: 4px; border-radius: 4px; }
+  .chapter-body > *:hover { outline: 1px dashed #94a3b8; outline-offset: 6px; }
+  .page.cover .cover-inner[contenteditable="true"]:focus { outline: 2px solid #ffffff88; outline-offset: 4px; }
+  .hover-bar { position: absolute; display: none; gap: 4px; background: #1a1a1a; color: #fff; padding: 4px; border-radius: 8px; box-shadow: 0 6px 20px rgba(0,0,0,0.25); font-family: 'Plus Jakarta Sans', sans-serif; font-size: 11px; z-index: 20; }
+  .hover-bar button { cursor: pointer; background: transparent; color: #fff; border: none; padding: 5px 8px; border-radius: 5px; font-weight: 600; font-size: 11px; white-space: nowrap; }
+  .hover-bar button:hover { background: rgba(255,255,255,0.15); }
+  .hover-bar button.danger:hover { background: #d95a2a; }
+  .edit-indicator { position: fixed; bottom: 16px; left: 16px; background: #1a1a1a; color: #fff; padding: 8px 14px; border-radius: 20px; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 12px; z-index: 15; box-shadow: 0 4px 14px rgba(0,0,0,0.2); }
+  .edit-indicator .dot { display: inline-block; width: 7px; height: 7px; border-radius: 50%; background: #22c55e; margin-right: 7px; vertical-align: middle; }
+  @media print {
+    .hover-bar, .edit-indicator { display: none !important; }
+    .chapter-body > *:hover { outline: none !important; }
+  }
 </style>
 </head>
 <body>
@@ -868,8 +883,15 @@
   <button class="primary" id="dl-btn">Descargar PDF</button>
   <button class="secondary" onclick="window.close()">Cerrar</button>
 </div>
+<div class="edit-indicator"><span class="dot"></span>Modo edición — click en cualquier texto para modificar. Pasá el mouse sobre un bloque para mover, cortar página o borrar.</div>
 ${hint}
 ${pagesHtml}
+<div class="hover-bar" id="hover-bar">
+  <button data-action="up" title="Subir bloque">&#8593; Subir</button>
+  <button data-action="down" title="Bajar bloque">&#8595; Bajar</button>
+  <button data-action="break" title="Iniciar nueva página desde aquí">Cortar página</button>
+  <button data-action="delete" class="danger" title="Borrar bloque">Borrar</button>
+</div>
 <script>
   const ebookTitle = ${JSON.stringify(ebook.title || 'ebook')};
   const dlBtn = document.getElementById('dl-btn');
@@ -937,8 +959,88 @@ ${pagesHtml}
     Array.from(document.querySelectorAll('.page.chapter')).forEach(paginateChapter);
   }
 
-  // Run pagination as soon as layout is stable so the preview mirrors the PDF.
-  paginateAllChapters();
+  // ── Inline editing ──
+  function enableEditing() {
+    document.querySelectorAll('.chapter-body').forEach(b => { b.contentEditable = 'true'; b.spellcheck = false; });
+    const coverInner = document.querySelector('.page.cover .cover-inner');
+    if (coverInner) { coverInner.contentEditable = 'true'; coverInner.spellcheck = false; }
+  }
+
+  const hoverBar = document.getElementById('hover-bar');
+  let _hoverEl = null;
+  let _hideTimer = null;
+
+  function showHoverBar(el) {
+    _hoverEl = el;
+    clearTimeout(_hideTimer);
+    const r = el.getBoundingClientRect();
+    hoverBar.style.display = 'flex';
+    // Position top-right of the element, just inside
+    const x = window.scrollX + Math.max(8, r.right - hoverBar.offsetWidth - 4);
+    const y = window.scrollY + r.top - hoverBar.offsetHeight - 4;
+    hoverBar.style.left = x + 'px';
+    hoverBar.style.top = (y < window.scrollY + 4 ? window.scrollY + r.top + 4 : y) + 'px';
+  }
+  function scheduleHide() {
+    clearTimeout(_hideTimer);
+    _hideTimer = setTimeout(() => { hoverBar.style.display = 'none'; _hoverEl = null; }, 180);
+  }
+
+  function registerHover(el) {
+    el.addEventListener('mouseenter', () => showHoverBar(el));
+    el.addEventListener('mouseleave', scheduleHide);
+  }
+  hoverBar.addEventListener('mouseenter', () => clearTimeout(_hideTimer));
+  hoverBar.addEventListener('mouseleave', scheduleHide);
+
+  function wireBlocks() {
+    document.querySelectorAll('.chapter-body > *').forEach(registerHover);
+  }
+
+  function splitHere(el) {
+    const body = el.parentNode;
+    const chapter = body.closest('.page.chapter');
+    if (!chapter) return;
+    const siblings = [];
+    let cur = el;
+    while (cur) { siblings.push(cur); cur = cur.nextElementSibling; }
+    if (!siblings.length) return;
+    const newPage = document.createElement('section');
+    newPage.className = 'page chapter';
+    const newBody = document.createElement('div');
+    newBody.className = 'chapter-body';
+    newBody.contentEditable = 'true';
+    newBody.spellcheck = false;
+    siblings.forEach(s => newBody.appendChild(s));
+    newPage.appendChild(newBody);
+    chapter.parentNode.insertBefore(newPage, chapter.nextSibling);
+    newBody.querySelectorAll(':scope > *').forEach(registerHover);
+  }
+
+  hoverBar.addEventListener('click', (e) => {
+    const btn = e.target.closest('button');
+    if (!btn || !_hoverEl) return;
+    const action = btn.dataset.action;
+    const el = _hoverEl;
+    if (action === 'up' && el.previousElementSibling) {
+      el.parentNode.insertBefore(el, el.previousElementSibling);
+    } else if (action === 'down' && el.nextElementSibling) {
+      el.parentNode.insertBefore(el.nextElementSibling, el);
+    } else if (action === 'break') {
+      splitHere(el);
+    } else if (action === 'delete') {
+      if (confirm('¿Borrar este bloque?')) el.remove();
+    }
+    hoverBar.style.display = 'none';
+    _hoverEl = null;
+  });
+
+  // Run pagination + editing setup as soon as layout is stable.
+  (async () => {
+    await paginateAllChapters();
+    enableEditing();
+    wireBlocks();
+  })();
 
   async function saveAsPDF() {
     if (!window.html2canvas || !window.jspdf) {
@@ -948,9 +1050,11 @@ ${pagesHtml}
     const { jsPDF } = window.jspdf;
     dlBtn.disabled = true;
     const originalLabel = dlBtn.textContent;
+    // Hide edit UI so it doesn't appear in the capture
+    hoverBar.style.display = 'none';
+    document.querySelector('.edit-indicator')?.style.setProperty('display', 'none', 'important');
     try {
-      // Ensure pagination is done before we capture
-      await paginateAllChapters();
+      // Do NOT re-paginate here — respect any manual edits the user made.
 
       const pages = Array.from(document.querySelectorAll('.page'));
       const pdf = new jsPDF({ unit: 'mm', format: 'a4', orientation: 'portrait' });
@@ -995,6 +1099,8 @@ ${pagesHtml}
     } finally {
       dlBtn.disabled = false;
       dlBtn.textContent = originalLabel;
+      const ind = document.querySelector('.edit-indicator');
+      if (ind) ind.style.display = '';
     }
   }
 
