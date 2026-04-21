@@ -896,6 +896,39 @@ REGLAS DE CONTENIDO:
 - NO saludes, entrá directo al contenido.`;
   },
 
+  _ebookChatSystemPrompt() {
+    return `Sos un editor de ebooks. El usuario te pide cambios puntuales sobre un ebook existente. Respondés con un JSON chico que describe SOLO lo que cambia — NUNCA devuelvas el ebook completo.
+
+FORMATO DE SALIDA — ÚNICAMENTE un JSON válido, sin markdown, sin \`\`\`, sin prosa antes o después.
+
+Elegí UNA de estas opciones según el pedido:
+
+(A) Cambios al contenido — partial updates. Incluí solo las claves que aplican:
+{
+  "title": "Nuevo título del libro",                        // opcional: solo si cambia
+  "subtitle": "Nuevo subtítulo",                            // opcional: solo si cambia
+  "updates": {                                              // opcional: capítulos a modificar
+    "<índice>": { "title": "…", "body_md": "…" }            // incluí solo los campos que cambian
+  },
+  "delete": [<índices a borrar>],                           // opcional, ej: [3]
+  "insert_after": [                                         // opcional: capítulos nuevos
+    { "index": 1, "title": "…", "body_md": "…" }            // se inserta DESPUÉS de ese índice
+  ],
+  "message": "Una oración amigable explicando lo que cambiaste"
+}
+
+(B) Conversación — si el pedido no implica modificar contenido (pregunta general, aclaración, pedido ambiguo o sobre layout/visual):
+{ "conversation": "mensaje al usuario en prosa clara" }
+
+REGLAS CRÍTICAS:
+- Los índices son 0-based sobre el array actual de capítulos.
+- "pag 4" / "página 4" usualmente se refiere al capítulo 4 (índice 3). Si dudás, usá "conversation" para preguntar.
+- NUNCA devuelvas el array completo de chapters. Solo lo que cambia.
+- Si el usuario pide algo de layout (espacios en blanco, orden visual, cortes de página), respondé con "conversation" diciendo que eso se edita en la preview (hay botones Subir/Bajar/Cortar página/Borrar al pasar el mouse).
+- body_md puede tener markdown + HTML (callouts, stat-cards, ol.steps).
+- Sé breve. JSON chico = menos truncación.`;
+  },
+
   _parseJSONLoose(text) {
     let json = (text || '').trim();
     json = json.replace(/^```json\s*/i, '').replace(/^```\s*/i, '').replace(/```\s*$/i, '').trim();
@@ -972,18 +1005,21 @@ REGLAS:
   },
 
   async generateEbook(brief, history = [], onProgress) {
-    // If this is a chat iteration (has history), use old single-shot path with smaller token budget
+    // Chat iteration: partial-updates protocol (small JSON, no full-ebook regen).
     if (history.length > 0) {
       const messages = [...history, { role: 'user', content: brief }];
-      const text = await this._call(messages, 6000, {
+      const text = await this._call(messages, 3000, {
         model: 'claude-sonnet-4-6',
-        system: this._ebookSystemPrompt(),
+        system: this._ebookChatSystemPrompt(),
       });
-      try { return this._parseJSONLoose(text); }
-      catch {
-        // The model answered in prose (e.g. user asked about layout, not a content change).
-        // Return a marker the caller can surface as a plain chat message instead of erroring.
-        return { __conversational: true, reply: text.slice(0, 600) };
+      try {
+        const data = this._parseJSONLoose(text);
+        if (data && typeof data.conversation === 'string') {
+          return { __conversational: true, reply: data.conversation };
+        }
+        return { __partial: true, ...data };
+      } catch {
+        return { __conversational: true, reply: (text || '').slice(0, 600) };
       }
     }
 

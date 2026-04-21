@@ -1015,6 +1015,56 @@
       }
     };
 
+    // ── Partial update applier ──
+    // Applies a partial-updates JSON from the chat AI onto the ebook in place.
+    // Returns the count of changes applied so sendChat can surface a sensible message.
+    const applyPartialUpdate = (book, data) => {
+      if (!book || !data) return 0;
+      let n = 0;
+
+      if (typeof data.title === 'string' && data.title.trim()) {
+        book.title = data.title.trim();
+        n++;
+      }
+      if (typeof data.subtitle === 'string') {
+        book.cover = { ...(book.cover || {}), subtitle: data.subtitle };
+        n++;
+      }
+
+      if (data.updates && typeof data.updates === 'object') {
+        for (const [k, patch] of Object.entries(data.updates)) {
+          const i = Number(k);
+          if (!Number.isInteger(i) || i < 0 || i >= book.chapters.length) continue;
+          if (!patch || typeof patch !== 'object') continue;
+          if (typeof patch.title === 'string') { book.chapters[i].title = patch.title; n++; }
+          if (typeof patch.body_md === 'string') { book.chapters[i].body_md = patch.body_md; n++; }
+        }
+      }
+
+      if (Array.isArray(data.delete) && data.delete.length) {
+        // Delete in descending order so indices stay valid.
+        const sorted = [...new Set(data.delete.map(Number).filter(Number.isInteger))].sort((a, b) => b - a);
+        for (const i of sorted) {
+          if (i >= 0 && i < book.chapters.length) { book.chapters.splice(i, 1); n++; }
+        }
+      }
+
+      if (Array.isArray(data.insert_after) && data.insert_after.length) {
+        // Insert from the end so earlier indices are not shifted.
+        const ins = data.insert_after
+          .filter(x => x && typeof x.title === 'string')
+          .map(x => ({ index: Math.max(-1, Number(x.index) ?? -1), title: x.title, body_md: x.body_md || '' }))
+          .sort((a, b) => b.index - a.index);
+        for (const x of ins) {
+          const at = Math.min(Math.max(x.index + 1, 0), book.chapters.length);
+          book.chapters.splice(at, 0, { title: x.title, body_md: x.body_md });
+          n++;
+        }
+      }
+
+      return n;
+    };
+
     // ── Chat iteration ──
     const sendChat = async () => {
       const msg = chatInput.value.trim();
@@ -1029,27 +1079,49 @@
 
       try {
         const apiHistory = history.map(m => ({ role: m.role, content: m.content }));
-        // Provide current ebook state as context
-        const contextMsg = `Estado actual del ebook:\n${JSON.stringify({ title: ebook.title, chapters: ebook.chapters.map(c => ({ title: c.title, body_md: c.body_md?.slice(0, 400) + '...' })) })}\n\nPedido del usuario: ${msg}`;
+        // Provide current ebook state as context — send titles + body previews so the AI can reason about indices.
+        const stateForAI = {
+          title: ebook.title,
+          subtitle: ebook.cover?.subtitle || '',
+          chapters: ebook.chapters.map((c, i) => ({
+            index: i,
+            title: c.title,
+            body_preview: (c.body_md || '').slice(0, 200),
+          })),
+        };
+        const contextMsg = `Estado actual del ebook (índices 0-based):\n${JSON.stringify(stateForAI)}\n\nPedido del usuario: ${msg}`;
         const fullHistory = apiHistory.slice(0, -1).concat([{ role: 'user', content: contextMsg }]);
         const data = await AI.generateEbook(msg, fullHistory);
         removeThinking();
+
         if (data.__conversational) {
           const replyText = (data.reply || '').trim();
-          // If the AI tried to return JSON but it got truncated / malformed,
-          // reply starts with "{" or "[". Don't dump raw JSON into the chat —
-          // point the user at the inline editor instead.
           const looksLikeJSON = replyText.startsWith('{') || replyText.startsWith('[');
           const displayMsg = looksLikeJSON
-            ? 'El pedido que hiciste requiere una respuesta demasiado larga y se truncó. Para borrar una página específica, pasá el mouse sobre un bloque en la preview y usá el botón "Borrar" de la barra flotante. Para cambios de texto concretos, pedíme algo más específico (ej: "cambiá el título del capítulo 2 a X").'
+            ? 'No pude entender el pedido. Probá con algo más específico, por ejemplo: "borrá el capítulo 4", "cambiá el título del capítulo 2 a X", "agregá un capítulo sobre Y después del 3".'
             : (replyText || 'Solo puedo modificar el contenido del ebook (textos, capítulos, títulos). Para cambios de formato o layout usá la preview.');
           history.push({ role: 'assistant', content: '', display: displayMsg });
-        } else {
+        } else if (data.__partial) {
+          const changes = applyPartialUpdate(ebook, data);
+          if (changes === 0) {
+            history.push({ role: 'assistant', content: '', display: 'No encontré cambios para aplicar. Probá con algo más específico.' });
+          } else {
+            const display = (data.message && typeof data.message === 'string')
+              ? data.message
+              : `Listo, apliqué ${changes} cambio${changes === 1 ? '' : 's'}.`;
+            history.push({ role: 'assistant', content: JSON.stringify(data), display });
+            if (ebook.title) titleEl.value = ebook.title;
+            renderEbookPreview();
+          }
+        } else if (data.chapters?.length) {
+          // Backward compat: full replacement (old protocol).
           history.push({ role: 'assistant', content: JSON.stringify(data), display: 'Listo, apliqué los cambios.' });
-          if (data.chapters?.length) ebook.chapters = data.chapters;
+          ebook.chapters = data.chapters;
           if (data.title) { ebook.title = data.title; titleEl.value = data.title; }
           if (data.subtitle) ebook.cover = { ...(ebook.cover || {}), subtitle: data.subtitle };
           renderEbookPreview();
+        } else {
+          history.push({ role: 'assistant', content: '', display: 'No recibí cambios aplicables. Probá reformulando el pedido.' });
         }
         renderMessages();
         await persistEbook();
