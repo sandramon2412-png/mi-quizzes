@@ -75,6 +75,14 @@
   .ebook-page [data-edit="cover-subtitle"].editable-block:hover { outline-color: rgba(255,255,255,0.6); }
   .ebook-page [data-edit="cover-title"].editable-block:focus,
   .ebook-page [data-edit="cover-subtitle"].editable-block:focus { outline-color: rgba(255,255,255,0.9) !important; background: rgba(255,255,255,0.08); }
+  /* Hover outline for structural blocks inside chapter-body-scroll */
+  [data-edit^="chapter-body"] > *:hover { outline: 1px dashed #94a3b8; outline-offset: 6px; border-radius: 4px; }
+  /* Main builder hover toolbar */
+  #mpm-hover-bar { position: absolute; display: none; gap: 4px; background: #1a1a1a; color: #fff; padding: 4px; border-radius: 8px; box-shadow: 0 6px 20px rgba(0,0,0,0.35); font-family: 'Plus Jakarta Sans', sans-serif; font-size: 11px; z-index: 50; }
+  #mpm-hover-bar button { cursor: pointer; background: transparent; color: #fff; border: none; padding: 5px 8px; border-radius: 5px; font-weight: 600; font-size: 11px; white-space: nowrap; }
+  #mpm-hover-bar button:hover:not(:disabled) { background: rgba(255,255,255,0.15); }
+  #mpm-hover-bar button.danger:hover:not(:disabled) { background: #d95a2a; }
+  #mpm-hover-bar button:disabled { opacity: 0.4; cursor: not-allowed; }
 
   /* Gamma-style visual blocks */
   .ebook-page .callout {
@@ -299,9 +307,16 @@
     <div id="ebook-preview" class="hidden flex-1 overflow-y-auto p-6 bg-[#26262a]">
       <div class="mx-auto max-w-[680px] mb-4 flex items-center gap-2 text-xs text-on-surface-variant">
         <span class="material-symbols-outlined" style="font-size:16px">edit</span>
-        <span>Click en cualquier texto para editar. Los cambios se guardan automáticamente.</span>
+        <span>Click en texto para editar. Hover sobre un bloque para mover, cortar o borrar. <strong>Ctrl+Z</strong> deshace. Guardado automático.</span>
       </div>
       <div id="ebook-pages" class="mx-auto max-w-[680px] space-y-6"></div>
+    </div>
+    <div id="mpm-hover-bar">
+      <button data-action="up" title="Subir bloque">&#8593; Subir</button>
+      <button data-action="down" title="Bajar bloque">&#8595; Bajar</button>
+      <button data-action="break" title="Cortar página aquí">Cortar página</button>
+      <button data-action="delete" class="danger" title="Borrar bloque">Borrar</button>
+      <button data-action="undo" title="Deshacer (Ctrl+Z)" id="mpm-undo-btn" disabled>&#8630; Deshacer</button>
     </div>
   </section>
 </main>
@@ -429,6 +444,7 @@
         el.spellcheck = false;
         el.classList.add('editable-block');
       });
+      wireBlockHovers();
 
       ebookPages.querySelectorAll('[data-edit="cover-title"]').forEach(el => {
         el.addEventListener('input', () => {
@@ -463,6 +479,140 @@
       const parts = ebookPages.querySelectorAll('[data-edit^="chapter-body"][data-idx="' + idx + '"]');
       return Array.from(parts).map(p => p.innerHTML).join('\n');
     }
+
+    // ── Block hover toolbar (main builder) ──
+    const mpmHoverBar = document.getElementById('mpm-hover-bar');
+    const mpmUndoBtn = document.getElementById('mpm-undo-btn');
+    let _mpmHoverEl = null;
+    let _mpmHideTimer = null;
+    const _mpmUndoStack = [];
+
+    function mpmSnapshot() {
+      _mpmUndoStack.push(ebookPages.innerHTML);
+      if (_mpmUndoStack.length > 30) _mpmUndoStack.shift();
+      if (mpmUndoBtn) mpmUndoBtn.disabled = false;
+    }
+    function mpmRestoreSnapshot() {
+      if (!_mpmUndoStack.length) return;
+      ebookPages.innerHTML = _mpmUndoStack.pop();
+      wireInlineEditing();
+      if (mpmUndoBtn) mpmUndoBtn.disabled = !_mpmUndoStack.length;
+      // Persist restored content
+      if (ebook && ebook.chapters) {
+        ebook.chapters.forEach((_, i) => { ebook.chapters[i].body_md = collectChapterBody(i); });
+        scheduleSave();
+      }
+    }
+
+    function mpmShowHover(el) {
+      _mpmHoverEl = el;
+      clearTimeout(_mpmHideTimer);
+      const r = el.getBoundingClientRect();
+      mpmHoverBar.style.display = 'flex';
+      const barW = mpmHoverBar.offsetWidth || 300;
+      const barH = mpmHoverBar.offsetHeight || 32;
+      let x = window.scrollX + r.right - barW - 4;
+      if (x < window.scrollX + 8) x = window.scrollX + r.left + 4;
+      let y = window.scrollY + r.top - barH - 4;
+      if (y < window.scrollY + 4) y = window.scrollY + r.top + 4;
+      mpmHoverBar.style.left = x + 'px';
+      mpmHoverBar.style.top = y + 'px';
+    }
+    function mpmScheduleHide() {
+      clearTimeout(_mpmHideTimer);
+      _mpmHideTimer = setTimeout(() => { mpmHoverBar.style.display = 'none'; _mpmHoverEl = null; }, 220);
+    }
+    mpmHoverBar.addEventListener('mouseenter', () => clearTimeout(_mpmHideTimer));
+    mpmHoverBar.addEventListener('mouseleave', mpmScheduleHide);
+
+    function wireBlockHovers() {
+      ebookPages.querySelectorAll('[data-edit^="chapter-body"] > *').forEach(block => {
+        block.addEventListener('mouseenter', () => mpmShowHover(block));
+        block.addEventListener('mouseleave', mpmScheduleHide);
+      });
+    }
+
+    function mpmMoveUp(el) {
+      if (el.previousElementSibling) { el.parentNode.insertBefore(el, el.previousElementSibling); return true; }
+      const body = el.parentNode;
+      const page = body.closest('.ebook-page.chapter-page');
+      let prevPage = page?.previousElementSibling;
+      while (prevPage && !prevPage.classList.contains('chapter-page')) prevPage = prevPage.previousElementSibling;
+      const prevBody = prevPage?.querySelector('[data-edit^="chapter-body"]');
+      if (prevBody) { prevBody.appendChild(el); return true; }
+      return false;
+    }
+    function mpmMoveDown(el) {
+      if (el.nextElementSibling) { el.parentNode.insertBefore(el.nextElementSibling, el); return true; }
+      const body = el.parentNode;
+      const page = body.closest('.ebook-page.chapter-page');
+      let nextPage = page?.nextElementSibling;
+      while (nextPage && !nextPage.classList.contains('chapter-page')) nextPage = nextPage.nextElementSibling;
+      const nextBody = nextPage?.querySelector('[data-edit^="chapter-body"]');
+      if (nextBody) { nextBody.insertBefore(el, nextBody.firstChild); return true; }
+      return false;
+    }
+    function mpmBreakHere(el) {
+      const body = el.parentNode;
+      const page = body.closest('.ebook-page.chapter-page');
+      const idx = page?.dataset.chapterIdx;
+      if (!page || idx == null) return false;
+      const pageNum = Number(page.dataset.pageNum || '1') + 1;
+      const contPage = document.createElement('div');
+      contPage.className = 'ebook-page chapter-page rounded-lg shadow-2xl';
+      contPage.dataset.chapterIdx = idx;
+      contPage.dataset.continuation = 'true';
+      contPage.dataset.pageNum = String(pageNum);
+      contPage.innerHTML =
+        '<div class="chapter-body-scroll" data-edit="chapter-body-cont" data-idx="' + idx + '"></div>' +
+        '<div class="ebook-page-label">Capítulo ' + (parseInt(idx, 10) + 1) + ' · página ' + pageNum + '</div>';
+      const contBody = contPage.querySelector('[data-edit^="chapter-body"]');
+      let cur = el;
+      while (cur) { const next = cur.nextElementSibling; contBody.appendChild(cur); cur = next; }
+      page.parentNode.insertBefore(contPage, page.nextSibling);
+      return true;
+    }
+
+    mpmHoverBar.addEventListener('click', (e) => {
+      const btn = e.target.closest('button');
+      if (!btn) return;
+      const action = btn.dataset.action;
+      if (action === 'undo') { mpmRestoreSnapshot(); return; }
+      if (!_mpmHoverEl) return;
+      const el = _mpmHoverEl;
+
+      let changed = false;
+      mpmSnapshot();
+      if (action === 'up')        changed = mpmMoveUp(el);
+      else if (action === 'down') changed = mpmMoveDown(el);
+      else if (action === 'break') changed = mpmBreakHere(el);
+      else if (action === 'delete') {
+        if (confirm('¿Borrar este bloque?')) { el.remove(); changed = true; }
+      }
+      if (!changed) _mpmUndoStack.pop();
+      if (mpmUndoBtn) mpmUndoBtn.disabled = !_mpmUndoStack.length;
+      mpmHoverBar.style.display = 'none';
+      _mpmHoverEl = null;
+      if (changed) {
+        wireInlineEditing();
+        if (ebook && ebook.chapters) {
+          ebook.chapters.forEach((_, i) => { ebook.chapters[i].body_md = collectChapterBody(i); });
+          scheduleSave();
+        }
+      }
+    });
+
+    // Ctrl+Z / Cmd+Z for undo (only when not actively typing in an input/textarea)
+    window.addEventListener('keydown', (e) => {
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'z' && !e.shiftKey) {
+        // Let contentEditable handle its own undo unless focus is outside
+        const tag = (document.activeElement?.tagName || '').toLowerCase();
+        if (tag !== 'input' && tag !== 'textarea' && !document.activeElement?.isContentEditable) {
+          e.preventDefault();
+          mpmRestoreSnapshot();
+        }
+      }
+    });
 
     // Re-pagination (debounced) after edits
     let _pagTimer = null;
