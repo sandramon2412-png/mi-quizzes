@@ -48,7 +48,13 @@
   @keyframes toast-in { from { opacity:0; transform: translateY(-6px);} to { opacity:1; transform:translateY(0);} }
 
   /* Ebook preview styles (also used by PDF export) */
-  .ebook-page { background: #fff; color: #1a1a1a; font-family: 'Lora', serif; }
+  /* Cada .ebook-page tiene proporción A4 (210:297) y ancho fijo, para que la
+     preview sea WYSIWYG con el PDF final. */
+  .ebook-page { background: #fff; color: #1a1a1a; font-family: 'Lora', serif; width: 100%; aspect-ratio: 210/297; overflow: hidden; position: relative; display: flex; flex-direction: column; }
+  .ebook-page.cover { padding: 40px; align-items: center; justify-content: center; text-align: center; color: #fff; }
+  .ebook-page.chapter-page { padding: 50px 48px; }
+  .ebook-page .chapter-body-scroll { flex: 1; overflow: hidden; }
+  .ebook-page-label { position: absolute; top: 8px; right: 12px; font-size: 10px; font-family: 'Plus Jakarta Sans', sans-serif; color: #9ca3af; font-weight: 500; letter-spacing: 0.05em; text-transform: uppercase; }
   .ebook-page h1, .ebook-page h2, .ebook-page h3 { font-family: 'Plus Jakarta Sans', sans-serif; letter-spacing: -0.02em; }
   .ebook-page h2 { font-size: 22px; font-weight: 800; margin: 28px 0 14px; color: #2E5BFF; }
   .ebook-page h3 { font-size: 17px; font-weight: 700; margin: 22px 0 10px; color: #333; }
@@ -385,25 +391,27 @@
       const subtitle = cover.subtitle || '';
 
       const coverHtml = `
-        <div class="ebook-page rounded-lg shadow-2xl overflow-hidden" style="aspect-ratio:1/1.414">
-          <div class="h-full flex flex-col items-center justify-center text-center p-10 text-white" style="background:linear-gradient(135deg, ${gradFrom} 0%, ${gradTo} 100%)">
-            <div class="w-16 h-16 rounded-2xl bg-white/15 backdrop-blur flex items-center justify-center mb-8">
-              <span class="material-symbols-outlined text-white" style="font-size:32px">menu_book</span>
-            </div>
-            <h1 data-edit="cover-title" style="font-family:'Plus Jakarta Sans',sans-serif;font-size:42px;font-weight:800;line-height:1.1;letter-spacing:-0.03em;margin:0 0 16px">${escapeHtml(ebook.title || 'Mi ebook')}</h1>
-            <p data-edit="cover-subtitle" style="font-family:'Lora',serif;font-size:18px;opacity:0.9;max-width:90%;line-height:1.5;min-height:1em">${escapeHtml(subtitle)}</p>
+        <div class="ebook-page cover rounded-lg shadow-2xl" style="background:linear-gradient(135deg, ${gradFrom} 0%, ${gradTo} 100%)">
+          <div class="w-16 h-16 rounded-2xl bg-white/15 backdrop-blur flex items-center justify-center mb-8">
+            <span class="material-symbols-outlined text-white" style="font-size:32px">menu_book</span>
           </div>
+          <h1 data-edit="cover-title" style="font-family:'Plus Jakarta Sans',sans-serif;font-size:42px;font-weight:800;line-height:1.1;letter-spacing:-0.03em;margin:0 0 16px;color:#fff">${escapeHtml(ebook.title || 'Mi ebook')}</h1>
+          <p data-edit="cover-subtitle" style="font-family:'Lora',serif;font-size:18px;opacity:0.9;max-width:90%;line-height:1.5;min-height:1em;color:#fff">${escapeHtml(subtitle)}</p>
+          <div class="ebook-page-label" style="color:rgba(255,255,255,0.6)">Portada · A4</div>
         </div>`;
 
       const chaptersHtml = ebook.chapters.map((ch, i) => `
-        <div class="ebook-page rounded-lg shadow-2xl p-10">
+        <div class="ebook-page chapter-page rounded-lg shadow-2xl" data-chapter-idx="${i}">
           <div class="chapter-num">Capítulo ${i + 1}</div>
           <h1 class="chapter-title" data-edit="chapter-title" data-idx="${i}">${escapeHtml(ch.title || `Capítulo ${i + 1}`)}</h1>
-          <div class="mt-6" data-edit="chapter-body" data-idx="${i}">${marked.parse(ch.body_md || '')}</div>
+          <div class="chapter-body-scroll mt-6" data-edit="chapter-body" data-idx="${i}">${marked.parse(ch.body_md || '')}</div>
+          <div class="ebook-page-label">Página 1 · A4</div>
         </div>`).join('');
 
       ebookPages.innerHTML = coverHtml + chaptersHtml;
       wireInlineEditing();
+      // Paginate long chapters into multiple A4 pages (visual parity with the PDF)
+      requestAnimationFrame(() => requestAnimationFrame(paginateMainPreview));
     };
 
     // ── Inline editing on the main preview ──
@@ -445,9 +453,90 @@
       ebookPages.querySelectorAll('[data-edit="chapter-body"]').forEach(el => {
         el.addEventListener('input', () => {
           const idx = parseInt(el.dataset.idx, 10);
-          if (ebook.chapters[idx]) { ebook.chapters[idx].body_md = el.innerHTML; scheduleSave(); }
+          if (ebook.chapters[idx]) { ebook.chapters[idx].body_md = collectChapterBody(idx); scheduleSave(); schedulePaginate(); }
         });
       });
+    }
+
+    // Merge body content from all split pages of a single chapter
+    function collectChapterBody(idx) {
+      const parts = ebookPages.querySelectorAll('[data-edit^="chapter-body"][data-idx="' + idx + '"]');
+      return Array.from(parts).map(p => p.innerHTML).join('\n');
+    }
+
+    // Re-pagination (debounced) after edits
+    let _pagTimer = null;
+    function schedulePaginate() {
+      clearTimeout(_pagTimer);
+      _pagTimer = setTimeout(paginateMainPreview, 1500);
+    }
+
+    // Split long chapters into multiple A4-sized preview pages
+    function paginateMainPreview() {
+      if (!ebook) return;
+      // Remove any existing continuation pages and merge content back to the first page of each chapter
+      const continuations = Array.from(ebookPages.querySelectorAll('.ebook-page.chapter-page[data-continuation="true"]'));
+      continuations.forEach(cont => {
+        const idx = cont.dataset.chapterIdx;
+        const first = ebookPages.querySelector('.ebook-page.chapter-page[data-chapter-idx="' + idx + '"]:not([data-continuation])');
+        if (first) {
+          const firstBody = first.querySelector('[data-edit="chapter-body"]');
+          const contBody = cont.querySelector('[data-edit^="chapter-body"]');
+          if (firstBody && contBody) {
+            while (contBody.firstChild) firstBody.appendChild(contBody.firstChild);
+          }
+        }
+        cont.remove();
+      });
+      // Now split overflow from each first-page chapter
+      const firstPages = Array.from(ebookPages.querySelectorAll('.ebook-page.chapter-page[data-chapter-idx]:not([data-continuation])'));
+      firstPages.forEach(splitOverflow);
+    }
+
+    function splitOverflow(page) {
+      const body = page.querySelector('[data-edit="chapter-body"]');
+      if (!body) return;
+      if (body.scrollHeight <= body.clientHeight + 2) return; // fits
+
+      const overflow = [];
+      // Remove trailing children until the remaining content fits
+      while (body.scrollHeight > body.clientHeight + 2 && body.children.length > 1) {
+        const last = body.lastElementChild;
+        overflow.unshift(last);
+        last.remove();
+      }
+      // Keep h2/h3/h4 glued to the content that followed them
+      while (body.lastElementChild && ['H2','H3','H4'].includes(body.lastElementChild.tagName)) {
+        overflow.unshift(body.lastElementChild);
+        body.lastElementChild.remove();
+      }
+      if (!overflow.length) return;
+
+      const idx = page.dataset.chapterIdx;
+      const pageNum = Number(page.dataset.pageNum || '1') + 1;
+      const contPage = document.createElement('div');
+      contPage.className = 'ebook-page chapter-page rounded-lg shadow-2xl';
+      contPage.dataset.chapterIdx = idx;
+      contPage.dataset.continuation = 'true';
+      contPage.dataset.pageNum = String(pageNum);
+      contPage.innerHTML =
+        '<div class="chapter-body-scroll" data-edit="chapter-body-cont" data-idx="' + idx + '"></div>' +
+        '<div class="ebook-page-label">Capítulo ' + (parseInt(idx, 10) + 1) + ' · página ' + pageNum + '</div>';
+      const contBody = contPage.querySelector('[data-edit="chapter-body-cont"]');
+      overflow.forEach(c => contBody.appendChild(c));
+      page.parentNode.insertBefore(contPage, page.nextSibling);
+
+      // Make continuation editable + wired
+      contBody.contentEditable = 'true';
+      contBody.spellcheck = false;
+      contBody.classList.add('editable-block');
+      contBody.addEventListener('input', () => {
+        const i = parseInt(idx, 10);
+        if (ebook.chapters[i]) { ebook.chapters[i].body_md = collectChapterBody(i); scheduleSave(); schedulePaginate(); }
+      });
+
+      // Recurse in case the continuation also overflows
+      splitOverflow(contPage);
     }
 
     // ── Chat UI ──
@@ -758,11 +847,16 @@
         const fullHistory = apiHistory.slice(0, -1).concat([{ role: 'user', content: contextMsg }]);
         const data = await AI.generateEbook(msg, fullHistory);
         removeThinking();
-        history.push({ role: 'assistant', content: JSON.stringify(data), display: 'Listo, apliqué los cambios.' });
-        if (data.chapters?.length) ebook.chapters = data.chapters;
-        if (data.title) { ebook.title = data.title; titleEl.value = data.title; }
-        if (data.subtitle) ebook.cover = { ...(ebook.cover || {}), subtitle: data.subtitle };
-        renderEbookPreview();
+        if (data.__conversational) {
+          // The model answered in prose (no content change). Show its reply as a chat message.
+          history.push({ role: 'assistant', content: '', display: data.reply || 'Solo puedo modificar el contenido del ebook (textos, capítulos, títulos). Para cambiar el formato de página, tamaño o layout usá los controles de la preview.' });
+        } else {
+          history.push({ role: 'assistant', content: JSON.stringify(data), display: 'Listo, apliqué los cambios.' });
+          if (data.chapters?.length) ebook.chapters = data.chapters;
+          if (data.title) { ebook.title = data.title; titleEl.value = data.title; }
+          if (data.subtitle) ebook.cover = { ...(ebook.cover || {}), subtitle: data.subtitle };
+          renderEbookPreview();
+        }
         renderMessages();
         await persistEbook();
       } catch (e) {
