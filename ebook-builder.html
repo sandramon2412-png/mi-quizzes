@@ -493,8 +493,39 @@
       firstPages.forEach(splitOverflow);
     }
 
+    // Split a single element (paragraph/blockquote/li) at a word boundary so
+    // its first half fits in `body`. Returns a clone containing the overflowing
+    // words (as a new element of the same tag), or null if it can't be split.
+    // NOTE: only preserves plain text — inline HTML (strong, em, links) inside
+    // the split element is collapsed to text. That's an acceptable trade-off
+    // for pagination correctness.
+    function splitOverflowingElement(body, el) {
+      if (!el) return null;
+      if (!['P','BLOCKQUOTE','LI','DIV'].includes(el.tagName)) return null;
+      const fullText = el.textContent || '';
+      const words = fullText.split(/\s+/).filter(Boolean);
+      if (words.length < 10) return null;
+
+      const originalHTML = el.innerHTML;
+      let lo = 1, hi = words.length - 1, best = 0;
+      while (lo <= hi) {
+        const mid = (lo + hi) >> 1;
+        el.textContent = words.slice(0, mid).join(' ');
+        if (body.scrollHeight <= body.clientHeight + 2) { best = mid; lo = mid + 1; }
+        else { hi = mid - 1; }
+      }
+      if (best < 3 || best >= words.length - 1) {
+        el.innerHTML = originalHTML;
+        return null;
+      }
+      el.textContent = words.slice(0, best).join(' ');
+      const clone = document.createElement(el.tagName);
+      clone.textContent = words.slice(best).join(' ');
+      return clone;
+    }
+
     function splitOverflow(page) {
-      const body = page.querySelector('[data-edit="chapter-body"]');
+      const body = page.querySelector('[data-edit="chapter-body"]') || page.querySelector('[data-edit="chapter-body-cont"]');
       if (!body) return;
       if (body.scrollHeight <= body.clientHeight + 2) return; // fits
 
@@ -509,6 +540,12 @@
       while (body.lastElementChild && ['H2','H3','H4'].includes(body.lastElementChild.tagName)) {
         overflow.unshift(body.lastElementChild);
         body.lastElementChild.remove();
+      }
+      // If still overflowing AND only 1 child left, that child is a single
+      // element bigger than the page. Split it at a word boundary.
+      if (body.scrollHeight > body.clientHeight + 2 && body.children.length > 0) {
+        const tailClone = splitOverflowingElement(body, body.lastElementChild);
+        if (tailClone) overflow.unshift(tailClone);
       }
       if (!overflow.length) return;
 
