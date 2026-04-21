@@ -61,6 +61,15 @@
   .ebook-page .chapter-num { font-size: 12px; font-weight: 600; color: #7c3aed; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 8px; }
   .page-break { page-break-after: always; break-after: page; }
 
+  /* Inline editing cues */
+  .editable-block { transition: outline 0.15s, background 0.15s; border-radius: 4px; outline: 1px dashed transparent; outline-offset: 4px; }
+  .editable-block:hover { outline-color: #94a3b8; }
+  .editable-block:focus { outline: 2px solid #2E5BFF !important; outline-offset: 4px; background: #f0f5ff40; }
+  .ebook-page [data-edit="cover-title"].editable-block:hover,
+  .ebook-page [data-edit="cover-subtitle"].editable-block:hover { outline-color: rgba(255,255,255,0.6); }
+  .ebook-page [data-edit="cover-title"].editable-block:focus,
+  .ebook-page [data-edit="cover-subtitle"].editable-block:focus { outline-color: rgba(255,255,255,0.9) !important; background: rgba(255,255,255,0.08); }
+
   /* Gamma-style visual blocks */
   .ebook-page .callout {
     display: block; margin: 20px 0; padding: 16px 18px; border-radius: 12px;
@@ -282,6 +291,10 @@
     </div>
 
     <div id="ebook-preview" class="hidden flex-1 overflow-y-auto p-6 bg-[#26262a]">
+      <div class="mx-auto max-w-[680px] mb-4 flex items-center gap-2 text-xs text-on-surface-variant">
+        <span class="material-symbols-outlined" style="font-size:16px">edit</span>
+        <span>Click en cualquier texto para editar. Los cambios se guardan automáticamente.</span>
+      </div>
       <div id="ebook-pages" class="mx-auto max-w-[680px] space-y-6"></div>
     </div>
   </section>
@@ -377,20 +390,65 @@
             <div class="w-16 h-16 rounded-2xl bg-white/15 backdrop-blur flex items-center justify-center mb-8">
               <span class="material-symbols-outlined text-white" style="font-size:32px">menu_book</span>
             </div>
-            <h1 style="font-family:'Plus Jakarta Sans',sans-serif;font-size:42px;font-weight:800;line-height:1.1;letter-spacing:-0.03em;margin:0 0 16px">${escapeHtml(ebook.title || 'Mi ebook')}</h1>
-            ${subtitle ? `<p style="font-family:'Lora',serif;font-size:18px;opacity:0.9;max-width:90%;line-height:1.5">${escapeHtml(subtitle)}</p>` : ''}
+            <h1 data-edit="cover-title" style="font-family:'Plus Jakarta Sans',sans-serif;font-size:42px;font-weight:800;line-height:1.1;letter-spacing:-0.03em;margin:0 0 16px">${escapeHtml(ebook.title || 'Mi ebook')}</h1>
+            <p data-edit="cover-subtitle" style="font-family:'Lora',serif;font-size:18px;opacity:0.9;max-width:90%;line-height:1.5;min-height:1em">${escapeHtml(subtitle)}</p>
           </div>
         </div>`;
 
       const chaptersHtml = ebook.chapters.map((ch, i) => `
         <div class="ebook-page rounded-lg shadow-2xl p-10">
           <div class="chapter-num">Capítulo ${i + 1}</div>
-          <h1 class="chapter-title">${escapeHtml(ch.title || `Capítulo ${i + 1}`)}</h1>
-          <div class="mt-6">${marked.parse(ch.body_md || '')}</div>
+          <h1 class="chapter-title" data-edit="chapter-title" data-idx="${i}">${escapeHtml(ch.title || `Capítulo ${i + 1}`)}</h1>
+          <div class="mt-6" data-edit="chapter-body" data-idx="${i}">${marked.parse(ch.body_md || '')}</div>
         </div>`).join('');
 
       ebookPages.innerHTML = coverHtml + chaptersHtml;
+      wireInlineEditing();
     };
+
+    // ── Inline editing on the main preview ──
+    let _saveTimer = null;
+    function scheduleSave() {
+      clearTimeout(_saveTimer);
+      _saveTimer = setTimeout(() => { if (ebook) persistEbook(); }, 800);
+    }
+
+    function wireInlineEditing() {
+      if (!ebook) return;
+      const editables = ebookPages.querySelectorAll('[data-edit]');
+      editables.forEach(el => {
+        el.contentEditable = 'true';
+        el.spellcheck = false;
+        el.classList.add('editable-block');
+      });
+
+      ebookPages.querySelectorAll('[data-edit="cover-title"]').forEach(el => {
+        el.addEventListener('input', () => {
+          const txt = el.textContent.trim();
+          ebook.title = txt;
+          titleEl.value = txt;
+          scheduleSave();
+        });
+      });
+      ebookPages.querySelectorAll('[data-edit="cover-subtitle"]').forEach(el => {
+        el.addEventListener('input', () => {
+          ebook.cover = { ...(ebook.cover || {}), subtitle: el.textContent.trim() };
+          scheduleSave();
+        });
+      });
+      ebookPages.querySelectorAll('[data-edit="chapter-title"]').forEach(el => {
+        el.addEventListener('input', () => {
+          const idx = parseInt(el.dataset.idx, 10);
+          if (ebook.chapters[idx]) { ebook.chapters[idx].title = el.textContent.trim(); scheduleSave(); }
+        });
+      });
+      ebookPages.querySelectorAll('[data-edit="chapter-body"]').forEach(el => {
+        el.addEventListener('input', () => {
+          const idx = parseInt(el.dataset.idx, 10);
+          if (ebook.chapters[idx]) { ebook.chapters[idx].body_md = el.innerHTML; scheduleSave(); }
+        });
+      });
+    }
 
     // ── Chat UI ──
     const renderMessages = () => {
