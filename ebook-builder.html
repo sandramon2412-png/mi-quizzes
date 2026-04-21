@@ -737,8 +737,10 @@
 
       const pagesHtml = `
         <section class="page cover">
-          <h1>${escapeHtml(ebook.title || 'Mi ebook')}</h1>
-          ${cover.subtitle ? `<p class="subtitle">${escapeHtml(cover.subtitle)}</p>` : ''}
+          <div class="cover-inner">
+            <h1>${escapeHtml(ebook.title || 'Mi ebook')}</h1>
+            ${cover.subtitle ? `<p class="subtitle">${escapeHtml(cover.subtitle)}</p>` : ''}
+          </div>
         </section>
       ` + ebook.chapters.map((ch, i) => `
         <section class="page chapter">
@@ -758,7 +760,8 @@
 <style>
   /* Page setup — named pages for cover (full bleed) vs chapter (with margin) */
   @page { size: A4; margin: 0; }
-  @page chapter { size: A4; margin: 20mm 22mm; }
+  @page cover-page { size: A4; margin: 0; }
+  @page chapter-page { size: A4; margin: 18mm 20mm; }
 
   /* Force background colors to print (default Chrome strips them) */
   @media print {
@@ -767,45 +770,56 @@
       print-color-adjust: exact !important;
       color-adjust: exact !important;
     }
-    .toolbar { display: none !important; }
+    .toolbar, .hint { display: none !important; }
     body { background: #fff !important; }
-    .page { margin: 0 !important; box-shadow: none !important; }
+    .page { margin: 0 !important; box-shadow: none !important; border-radius: 0 !important; }
   }
 
-  * { box-sizing: border-box; }
+  *, *::before, *::after { box-sizing: border-box; }
   html, body { margin: 0; padding: 0; background: #e8e8ea; font-family: 'Lora', serif; color: #1a1a1a; }
   .toolbar { position: fixed; top: 12px; right: 12px; z-index: 10; display: flex; gap: 8px; background: #fff; padding: 8px 10px; border-radius: 10px; box-shadow: 0 6px 20px rgba(0,0,0,0.12); font-family: 'Plus Jakarta Sans', sans-serif; font-size: 12px; }
   .toolbar button { cursor: pointer; padding: 6px 14px; border-radius: 6px; border: none; font-weight: 700; font-size: 12px; }
   .toolbar .primary { background: linear-gradient(135deg, #2E5BFF, #7c3aed); color: #fff; }
   .toolbar .secondary { background: #f0f0f3; color: #333; }
   .hint { max-width: 210mm; margin: 40px auto 0; padding: 14px 18px; background: #fffbe6; border-left: 4px solid #f59e0b; border-radius: 8px; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 13px; color: #5a4a1a; line-height: 1.5; }
-  @media print { .hint { display: none !important; } }
 
-  /* Cover: full-bleed page with gradient */
+  /* Cover: full-bleed page with gradient. Use inner wrapper for padding so the
+     outer .page.cover can be exactly 210x297mm without box-sizing surprises. */
   .page.cover {
-    page: auto; /* use root @page (margin 0) */
+    page: cover-page;
     page-break-after: always; break-after: page;
-    width: 210mm; height: 297mm;
+    width: 210mm;
+    height: 297mm;
+    padding: 0;
+    margin: 20px auto;
     background: linear-gradient(135deg, ${gradFrom}, ${gradTo});
     color: #fff;
+    overflow: hidden;
+  }
+  .page.cover .cover-inner {
+    width: 100%; height: 100%;
     display: flex; flex-direction: column; justify-content: center; align-items: center;
-    text-align: center; padding: 30mm;
-    margin: 20px auto;
+    text-align: center; padding: 30mm 25mm;
   }
   .page.cover h1 { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 52px; font-weight: 800; line-height: 1.05; letter-spacing: -0.03em; margin: 0 0 20px; color: #fff; }
   .page.cover .subtitle { font-family: 'Lora', serif; font-size: 22px; opacity: 0.92; line-height: 1.45; margin: 0; max-width: 88%; color: #fff; }
 
-  /* Chapter: flows naturally; margins come from @page chapter */
+  /* Chapter: flows naturally; padding from @page chapter-page margin */
   .page.chapter {
-    page: chapter;
+    page: chapter-page;
     page-break-before: always; break-before: page;
     width: 210mm;
-    padding: 22mm 24mm;
+    padding: 18mm 20mm;
     background: #fff;
     margin: 20px auto;
     min-height: 297mm;
   }
   .page.chapter:last-child { page-break-after: auto; break-after: auto; }
+  /* In print, @page chapter-page handles margins, so element padding is reset to 0 */
+  @media print {
+    .page.chapter { padding: 0 !important; min-height: auto !important; width: auto !important; }
+    .page.cover { width: 100% !important; height: 100% !important; min-height: 100vh !important; margin: 0 !important; padding: 0 !important; }
+  }
 
   .chapter-num { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.14em; color: #7c3aed; margin-bottom: 8px; }
   .chapter-title { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 34px; font-weight: 800; line-height: 1.1; letter-spacing: -0.03em; margin: 0 0 28px; color: #1a1a1a; page-break-after: avoid; break-after: avoid; }
