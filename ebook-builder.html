@@ -48,23 +48,27 @@
   @keyframes toast-in { from { opacity:0; transform: translateY(-6px);} to { opacity:1; transform:translateY(0);} }
 
   /* Ebook preview styles (also used by PDF export) */
-  /* Cada .ebook-page tiene proporción A4 (210:297) y ancho fijo, para que la
-     preview sea WYSIWYG con el PDF final. */
-  .ebook-page { background: #fff; color: #1a1a1a; font-family: 'Lora', serif; width: 100%; aspect-ratio: 210/297; overflow: hidden; position: relative; display: flex; flex-direction: column; }
-  .ebook-page.cover { padding: 40px; align-items: center; justify-content: center; text-align: center; color: #fff; }
-  .ebook-page.chapter-page { padding: 50px 48px; }
+  /* Cada .ebook-page se renderiza a dimensiones A4 INTRÍNSECAS (210×297mm).
+     El wrapper .ebook-page-wrap mantiene el aspect-ratio A4 en el flujo del
+     documento y un transform: scale() ajusta la página al ancho del wrapper.
+     Resultado: el line-wrap del texto es idéntico al PDF. */
+  .ebook-page-wrap { width: 100%; aspect-ratio: 210/297; position: relative; overflow: hidden; border-radius: 8px; box-shadow: 0 16px 36px rgba(0,0,0,0.22); }
+  .ebook-page { position: absolute; top: 0; left: 0; background: #fff; color: #1a1a1a; font-family: 'Lora', serif; width: 210mm; height: 297mm; overflow: hidden; display: flex; flex-direction: column; transform-origin: top left; }
+  .ebook-page.cover { padding: 0; align-items: stretch; justify-content: flex-start; color: #fff; }
+  .ebook-page.cover .cover-inner { width: 100%; height: 100%; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; padding: 30mm 25mm; }
+  .ebook-page.chapter-page { padding: 18mm 20mm; }
   .ebook-page .chapter-body-scroll { flex: 1; overflow: hidden; }
   .ebook-page-label { position: absolute; top: 8px; right: 12px; font-size: 10px; font-family: 'Plus Jakarta Sans', sans-serif; color: #9ca3af; font-weight: 500; letter-spacing: 0.05em; text-transform: uppercase; }
   .ebook-page h1, .ebook-page h2, .ebook-page h3 { font-family: 'Plus Jakarta Sans', sans-serif; letter-spacing: -0.02em; }
   .ebook-page h2 { font-size: 22px; font-weight: 800; margin: 28px 0 14px; color: #2E5BFF; }
   .ebook-page h3 { font-size: 17px; font-weight: 700; margin: 22px 0 10px; color: #333; }
-  .ebook-page p { margin: 0 0 14px; line-height: 1.7; font-size: 14px; }
-  .ebook-page ul, .ebook-page ol { margin: 0 0 14px 20px; line-height: 1.7; font-size: 14px; }
+  .ebook-page p { margin: 0 0 14px; line-height: 1.75; font-size: 14px; }
+  .ebook-page ul, .ebook-page ol { margin: 0 0 14px 20px; line-height: 1.75; font-size: 14px; }
   .ebook-page li { margin-bottom: 6px; }
   .ebook-page blockquote { border-left: 3px solid #7c3aed; padding: 8px 0 8px 16px; margin: 16px 0; color: #555; font-style: italic; }
   .ebook-page strong { color: #2E5BFF; font-weight: 700; }
-  .ebook-page .chapter-title { font-size: 34px; font-weight: 800; color: #1a1a1a; margin: 0 0 8px; letter-spacing: -0.03em; }
-  .ebook-page .chapter-num { font-size: 12px; font-weight: 600; color: #7c3aed; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 8px; }
+  .ebook-page .chapter-title { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 34px; font-weight: 800; color: #1a1a1a; margin: 0 0 28px; line-height: 1.1; letter-spacing: -0.03em; }
+  .ebook-page .chapter-num { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 11px; font-weight: 700; color: #7c3aed; text-transform: uppercase; letter-spacing: 0.14em; margin-bottom: 8px; }
   .page-break { page-break-after: always; break-after: page; }
 
   /* Inline editing cues */
@@ -406,28 +410,55 @@
       const subtitle = cover.subtitle || '';
 
       const coverHtml = `
-        <div class="ebook-page cover rounded-lg shadow-2xl" style="background:linear-gradient(135deg, ${gradFrom} 0%, ${gradTo} 100%)">
-          <div class="w-16 h-16 rounded-2xl bg-white/15 backdrop-blur flex items-center justify-center mb-8">
-            <span class="material-symbols-outlined text-white" style="font-size:32px">menu_book</span>
+        <div class="ebook-page-wrap">
+          <div class="ebook-page cover" style="background:linear-gradient(135deg, ${gradFrom} 0%, ${gradTo} 100%)">
+            <div class="cover-inner">
+              <div class="w-16 h-16 rounded-2xl bg-white/15 backdrop-blur flex items-center justify-center mb-8">
+                <span class="material-symbols-outlined text-white" style="font-size:32px">menu_book</span>
+              </div>
+              <h1 data-edit="cover-title" style="font-family:'Plus Jakarta Sans',sans-serif;font-size:52px;font-weight:800;line-height:1.05;letter-spacing:-0.03em;margin:0 0 20px;color:#fff">${escapeHtml(ebook.title || 'Mi ebook')}</h1>
+              <p data-edit="cover-subtitle" style="font-family:'Lora',serif;font-size:22px;opacity:0.92;max-width:88%;line-height:1.45;min-height:1em;color:#fff">${escapeHtml(subtitle)}</p>
+            </div>
+            <div class="ebook-page-label" style="color:rgba(255,255,255,0.6)">Portada · A4</div>
           </div>
-          <h1 data-edit="cover-title" style="font-family:'Plus Jakarta Sans',sans-serif;font-size:42px;font-weight:800;line-height:1.1;letter-spacing:-0.03em;margin:0 0 16px;color:#fff">${escapeHtml(ebook.title || 'Mi ebook')}</h1>
-          <p data-edit="cover-subtitle" style="font-family:'Lora',serif;font-size:18px;opacity:0.9;max-width:90%;line-height:1.5;min-height:1em;color:#fff">${escapeHtml(subtitle)}</p>
-          <div class="ebook-page-label" style="color:rgba(255,255,255,0.6)">Portada · A4</div>
         </div>`;
 
       const chaptersHtml = ebook.chapters.map((ch, i) => `
-        <div class="ebook-page chapter-page rounded-lg shadow-2xl" data-chapter-idx="${i}">
-          <div class="chapter-num">Capítulo ${i + 1}</div>
-          <h1 class="chapter-title" data-edit="chapter-title" data-idx="${i}">${escapeHtml(ch.title || `Capítulo ${i + 1}`)}</h1>
-          <div class="chapter-body-scroll mt-6" data-edit="chapter-body" data-idx="${i}">${marked.parse(ch.body_md || '')}</div>
-          <div class="ebook-page-label">Página 1 · A4</div>
+        <div class="ebook-page-wrap">
+          <div class="ebook-page chapter-page" data-chapter-idx="${i}">
+            <div class="chapter-num">Capítulo ${i + 1}</div>
+            <h1 class="chapter-title" data-edit="chapter-title" data-idx="${i}">${escapeHtml(ch.title || `Capítulo ${i + 1}`)}</h1>
+            <div class="chapter-body-scroll" data-edit="chapter-body" data-idx="${i}">${marked.parse(ch.body_md || '')}</div>
+            <div class="ebook-page-label">Página 1 · A4</div>
+          </div>
         </div>`).join('');
 
       ebookPages.innerHTML = coverHtml + chaptersHtml;
       wireInlineEditing();
+      // Scale intrinsic A4 pages to fit the wrapper width (WYSIWYG with the PDF).
+      requestAnimationFrame(applyPageScales);
       // Paginate long chapters into multiple A4 pages (visual parity with the PDF)
-      requestAnimationFrame(() => requestAnimationFrame(paginateMainPreview));
+      requestAnimationFrame(() => requestAnimationFrame(() => { paginateMainPreview(); applyPageScales(); }));
     };
+
+    // Each .ebook-page is rendered at 210mm (intrinsic A4) and scaled to its
+    // wrapper's width via transform. This keeps line-wrap identical to the PDF.
+    const A4_WIDTH_CSS_PX = 210 * (96 / 25.4); // ≈ 793.7px
+    function applyPageScales() {
+      ebookPages.querySelectorAll('.ebook-page-wrap').forEach(wrap => {
+        const page = wrap.querySelector('.ebook-page');
+        if (!page) return;
+        const w = wrap.clientWidth;
+        if (!w) return;
+        const scale = w / A4_WIDTH_CSS_PX;
+        page.style.transform = `scale(${scale})`;
+      });
+    }
+    let _scaleTimer = null;
+    window.addEventListener('resize', () => {
+      clearTimeout(_scaleTimer);
+      _scaleTimer = setTimeout(applyPageScales, 80);
+    });
 
     // ── Inline editing on the main preview ──
     let _saveTimer = null;
@@ -496,6 +527,7 @@
       if (!_mpmUndoStack.length) return;
       ebookPages.innerHTML = _mpmUndoStack.pop();
       wireInlineEditing();
+      applyPageScales();
       if (mpmUndoBtn) mpmUndoBtn.disabled = !_mpmUndoStack.length;
       // Persist restored content
       if (ebook && ebook.chapters) {
@@ -532,22 +564,38 @@
       });
     }
 
+    function mpmPrevChapterPage(page) {
+      const wrap = page?.closest('.ebook-page-wrap') || page;
+      let prev = wrap.previousElementSibling;
+      while (prev) {
+        const p = prev.querySelector?.('.ebook-page.chapter-page') || (prev.classList?.contains('chapter-page') ? prev : null);
+        if (p) return p;
+        prev = prev.previousElementSibling;
+      }
+      return null;
+    }
+    function mpmNextChapterPage(page) {
+      const wrap = page?.closest('.ebook-page-wrap') || page;
+      let next = wrap.nextElementSibling;
+      while (next) {
+        const p = next.querySelector?.('.ebook-page.chapter-page') || (next.classList?.contains('chapter-page') ? next : null);
+        if (p) return p;
+        next = next.nextElementSibling;
+      }
+      return null;
+    }
     function mpmMoveUp(el) {
       if (el.previousElementSibling) { el.parentNode.insertBefore(el, el.previousElementSibling); return true; }
-      const body = el.parentNode;
-      const page = body.closest('.ebook-page.chapter-page');
-      let prevPage = page?.previousElementSibling;
-      while (prevPage && !prevPage.classList.contains('chapter-page')) prevPage = prevPage.previousElementSibling;
+      const page = el.parentNode.closest('.ebook-page.chapter-page');
+      const prevPage = mpmPrevChapterPage(page);
       const prevBody = prevPage?.querySelector('[data-edit^="chapter-body"]');
       if (prevBody) { prevBody.appendChild(el); return true; }
       return false;
     }
     function mpmMoveDown(el) {
       if (el.nextElementSibling) { el.parentNode.insertBefore(el.nextElementSibling, el); return true; }
-      const body = el.parentNode;
-      const page = body.closest('.ebook-page.chapter-page');
-      let nextPage = page?.nextElementSibling;
-      while (nextPage && !nextPage.classList.contains('chapter-page')) nextPage = nextPage.nextElementSibling;
+      const page = el.parentNode.closest('.ebook-page.chapter-page');
+      const nextPage = mpmNextChapterPage(page);
       const nextBody = nextPage?.querySelector('[data-edit^="chapter-body"]');
       if (nextBody) { nextBody.insertBefore(el, nextBody.firstChild); return true; }
       return false;
@@ -559,7 +607,7 @@
       if (!page || idx == null) return false;
       const pageNum = Number(page.dataset.pageNum || '1') + 1;
       const contPage = document.createElement('div');
-      contPage.className = 'ebook-page chapter-page rounded-lg shadow-2xl';
+      contPage.className = 'ebook-page chapter-page';
       contPage.dataset.chapterIdx = idx;
       contPage.dataset.continuation = 'true';
       contPage.dataset.pageNum = String(pageNum);
@@ -569,7 +617,11 @@
       const contBody = contPage.querySelector('[data-edit^="chapter-body"]');
       let cur = el;
       while (cur) { const next = cur.nextElementSibling; contBody.appendChild(cur); cur = next; }
-      page.parentNode.insertBefore(contPage, page.nextSibling);
+      const contWrap = document.createElement('div');
+      contWrap.className = 'ebook-page-wrap';
+      contWrap.appendChild(contPage);
+      const currentWrap = page.closest('.ebook-page-wrap') || page.parentNode;
+      currentWrap.parentNode.insertBefore(contWrap, currentWrap.nextSibling);
       return true;
     }
 
@@ -595,6 +647,7 @@
       _mpmHoverEl = null;
       if (changed) {
         wireInlineEditing();
+        applyPageScales();
         if (ebook && ebook.chapters) {
           ebook.chapters.forEach((_, i) => { ebook.chapters[i].body_md = collectChapterBody(i); });
           scheduleSave();
@@ -618,7 +671,7 @@
     let _pagTimer = null;
     function schedulePaginate() {
       clearTimeout(_pagTimer);
-      _pagTimer = setTimeout(paginateMainPreview, 1500);
+      _pagTimer = setTimeout(() => { paginateMainPreview(); applyPageScales(); }, 1500);
     }
 
     // Split long chapters into multiple A4-sized preview pages
@@ -636,7 +689,7 @@
             while (contBody.firstChild) firstBody.appendChild(contBody.firstChild);
           }
         }
-        cont.remove();
+        (cont.closest('.ebook-page-wrap') || cont).remove();
       });
       // Now split overflow from each first-page chapter
       const firstPages = Array.from(ebookPages.querySelectorAll('.ebook-page.chapter-page[data-chapter-idx]:not([data-continuation])'));
@@ -702,7 +755,7 @@
       const idx = page.dataset.chapterIdx;
       const pageNum = Number(page.dataset.pageNum || '1') + 1;
       const contPage = document.createElement('div');
-      contPage.className = 'ebook-page chapter-page rounded-lg shadow-2xl';
+      contPage.className = 'ebook-page chapter-page';
       contPage.dataset.chapterIdx = idx;
       contPage.dataset.continuation = 'true';
       contPage.dataset.pageNum = String(pageNum);
@@ -711,7 +764,11 @@
         '<div class="ebook-page-label">Capítulo ' + (parseInt(idx, 10) + 1) + ' · página ' + pageNum + '</div>';
       const contBody = contPage.querySelector('[data-edit="chapter-body-cont"]');
       overflow.forEach(c => contBody.appendChild(c));
-      page.parentNode.insertBefore(contPage, page.nextSibling);
+      const contWrap = document.createElement('div');
+      contWrap.className = 'ebook-page-wrap';
+      contWrap.appendChild(contPage);
+      const currentWrap = page.closest('.ebook-page-wrap') || page.parentNode;
+      currentWrap.parentNode.insertBefore(contWrap, currentWrap.nextSibling);
 
       // Make continuation editable + wired
       contBody.contentEditable = 'true';
