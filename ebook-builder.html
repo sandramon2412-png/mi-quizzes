@@ -750,13 +750,15 @@
         </section>
       `).join('');
 
-      const hint = `<div class="hint">En el diálogo de impresión elegí destino <strong>"Guardar como PDF"</strong> y activá <strong>"Gráficos de fondo"</strong> (en Más ajustes) para que se impriman los colores.</div>`;
+      const hint = `<div class="hint">Hacé clic en <strong>"Descargar PDF"</strong> para guardar tu ebook. El PDF generado va a verse exactamente como esta vista previa.</div>`;
 
       const html = `<!DOCTYPE html>
 <html lang="es"><head>
 <meta charset="utf-8"/>
 <title>${escapeHtml(ebook.title || 'Ebook')}</title>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Lora:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"><\/script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"><\/script>
 <style>
   /* Page setup — named pages for cover (full bleed) vs chapter (with margin) */
   @page { size: A4; margin: 0; }
@@ -863,17 +865,73 @@
 </head>
 <body>
 <div class="toolbar">
-  <button class="primary" onclick="window.print()">Guardar como PDF</button>
+  <button class="primary" id="dl-btn">Descargar PDF</button>
   <button class="secondary" onclick="window.close()">Cerrar</button>
 </div>
 ${hint}
 ${pagesHtml}
 <script>
-  // Auto-open print dialog once fonts are ready
-  (async () => {
-    try { if (document.fonts && document.fonts.ready) await document.fonts.ready; } catch(e) {}
-    setTimeout(() => window.print(), 400);
-  })();
+  const ebookTitle = ${JSON.stringify(ebook.title || 'ebook')};
+  const dlBtn = document.getElementById('dl-btn');
+
+  async function saveAsPDF() {
+    if (!window.html2canvas || !window.jspdf) {
+      alert('Librerías aún cargando, intentá de nuevo en un segundo.');
+      return;
+    }
+    const { jsPDF } = window.jspdf;
+    dlBtn.disabled = true;
+    const originalLabel = dlBtn.textContent;
+    try {
+      try { if (document.fonts && document.fonts.ready) await document.fonts.ready; } catch(e) {}
+      await new Promise(r => setTimeout(r, 150));
+
+      const pages = Array.from(document.querySelectorAll('.page'));
+      const pdf = new jsPDF({ unit: 'mm', format: 'a4', orientation: 'portrait' });
+      const pdfW = 210, pdfH = 297;
+      let firstPage = true;
+
+      for (let i = 0; i < pages.length; i++) {
+        dlBtn.textContent = 'Generando… ' + (i+1) + '/' + pages.length;
+        const el = pages[i];
+        const canvas = await html2canvas(el, {
+          scale: 2,
+          useCORS: true,
+          backgroundColor: el.classList.contains('cover') ? null : '#ffffff',
+          logging: false,
+          windowWidth: el.scrollWidth,
+          windowHeight: el.scrollHeight,
+        });
+        const imgData = canvas.toDataURL('image/jpeg', 0.92);
+        const imgHmm = (canvas.height * pdfW) / canvas.width;
+
+        if (imgHmm <= pdfH + 0.5) {
+          if (!firstPage) pdf.addPage();
+          pdf.addImage(imgData, 'JPEG', 0, 0, pdfW, imgHmm);
+          firstPage = false;
+        } else {
+          let yOffset = 0;
+          while (yOffset < imgHmm - 0.5) {
+            if (!firstPage) pdf.addPage();
+            pdf.addImage(imgData, 'JPEG', 0, -yOffset, pdfW, imgHmm);
+            firstPage = false;
+            yOffset += pdfH;
+          }
+        }
+      }
+
+      const safeName = (ebookTitle || 'ebook').replace(/[^\\w\\s\\-áéíóúÁÉÍÓÚñÑ]/g, '').trim().slice(0, 80) || 'ebook';
+      pdf.save(safeName + '.pdf');
+    } catch (e) {
+      console.error(e);
+      alert('Error al generar el PDF: ' + (e.message || e));
+    } finally {
+      dlBtn.disabled = false;
+      dlBtn.textContent = originalLabel;
+    }
+  }
+
+  dlBtn.addEventListener('click', saveAsPDF);
 <\/script>
 </body></html>`;
 
