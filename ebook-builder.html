@@ -1261,7 +1261,10 @@
         } else if (data.__partial) {
           const changes = applyPartialUpdate(ebook, data);
           if (changes === 0) {
-            history.push({ role: 'assistant', content: '', display: 'No encontré cambios para aplicar. Probá con algo más específico.' });
+            const msg = (typeof data.message === 'string' && data.message.trim())
+              ? data.message.trim()
+              : 'No encontré cambios para aplicar. Probá con algo más específico (ej: "cambiá el título del capítulo 2 a X").';
+            history.push({ role: 'assistant', content: '', display: msg });
           } else {
             const display = (data.message && typeof data.message === 'string')
               ? data.message

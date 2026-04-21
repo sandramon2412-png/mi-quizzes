@@ -925,7 +925,9 @@ REGLAS CRÍTICAS:
 - "pag 4" / "página 4" usualmente se refiere al capítulo 4 (índice 3). Si dudás, usá "conversation" para preguntar.
 - NUNCA devuelvas el array completo de chapters. Solo lo que cambia.
 - Si el usuario pide algo de layout (espacios en blanco, orden visual, cortes de página), respondé con "conversation" diciendo que eso se edita en la preview (hay botones Subir/Bajar/Cortar página/Borrar al pasar el mouse).
-- body_md puede tener markdown + HTML (callouts, stat-cards, ol.steps).
+- body_md puede tener markdown + HTML (callouts, stat-cards, ol.steps, tablas | col | col |).
+- JSON VÁLIDO OBLIGATORIO: dentro de los strings, los saltos de línea van como \\n, las comillas como \\", las tabulaciones como \\t. Nunca pongas saltos de línea crudos dentro de un string.
+- Si el pedido no entra en este schema (ej: "mejorá el texto", "hacelo más corto", "agregá una tabla" sin índice claro), respondé con "conversation" pidiendo la aclaración mínima necesaria.
 - Sé breve. JSON chico = menos truncación.`;
   },
 
@@ -935,7 +937,39 @@ REGLAS CRÍTICAS:
     const start = json.indexOf('{');
     const end = json.lastIndexOf('}');
     if (start >= 0 && end > start) json = json.slice(start, end + 1);
-    return JSON.parse(json);
+    try { return JSON.parse(json); } catch {}
+    // Try a couple of common fixups before giving up.
+    let fixed = json
+      .replace(/[‘’]/g, "'")       // smart single quotes → straight
+      .replace(/[“”]/g, '"')       // smart double quotes → straight
+      .replace(/,(\s*[}\]])/g, '$1');        // trailing commas
+    try { return JSON.parse(fixed); } catch {}
+    // Last resort: escape raw newlines/tabs that appear inside string values.
+    // Walk the JSON, tracking whether we're inside a string, and escape any
+    // unescaped control chars. This rescues responses where the model wrote
+    // multi-line markdown bodies without \n escapes.
+    let out = '', inStr = false, esc = false;
+    for (const ch of fixed) {
+      if (esc) { out += ch; esc = false; continue; }
+      if (ch === '\\') { out += ch; esc = true; continue; }
+      if (ch === '"') { inStr = !inStr; out += ch; continue; }
+      if (inStr && ch === '\n') { out += '\\n'; continue; }
+      if (inStr && ch === '\r') { out += '\\r'; continue; }
+      if (inStr && ch === '\t') { out += '\\t'; continue; }
+      out += ch;
+    }
+    return JSON.parse(out);
+  },
+
+  _extractFromBadJSON(text) {
+    // Rescue a conversational reply from a truncated/malformed JSON response.
+    const pick = (k) => {
+      const re = new RegExp('"' + k + '"\\s*:\\s*"((?:[^"\\\\]|\\\\.)*)"');
+      const m = (text || '').match(re);
+      if (!m) return null;
+      try { return JSON.parse('"' + m[1] + '"'); } catch { return m[1]; }
+    };
+    return pick('conversation') || pick('message') || null;
   },
 
   async generateEbookOutline(brief) {
@@ -1019,6 +1053,10 @@ REGLAS:
         }
         return { __partial: true, ...data };
       } catch {
+        // Log the raw response so it's inspectable from the browser console.
+        try { console.warn('[ebook-chat] unparseable AI response:', text); } catch {}
+        const rescued = this._extractFromBadJSON(text);
+        if (rescued) return { __conversational: true, reply: rescued };
         return { __conversational: true, reply: (text || '').slice(0, 600) };
       }
     }
