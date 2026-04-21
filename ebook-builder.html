@@ -1035,8 +1035,15 @@
         const data = await AI.generateEbook(msg, fullHistory);
         removeThinking();
         if (data.__conversational) {
-          // The model answered in prose (no content change). Show its reply as a chat message.
-          history.push({ role: 'assistant', content: '', display: data.reply || 'Solo puedo modificar el contenido del ebook (textos, capítulos, títulos). Para cambiar el formato de página, tamaño o layout usá los controles de la preview.' });
+          const replyText = (data.reply || '').trim();
+          // If the AI tried to return JSON but it got truncated / malformed,
+          // reply starts with "{" or "[". Don't dump raw JSON into the chat —
+          // point the user at the inline editor instead.
+          const looksLikeJSON = replyText.startsWith('{') || replyText.startsWith('[');
+          const displayMsg = looksLikeJSON
+            ? 'El pedido que hiciste requiere una respuesta demasiado larga y se truncó. Para borrar una página específica, pasá el mouse sobre un bloque en la preview y usá el botón "Borrar" de la barra flotante. Para cambios de texto concretos, pedíme algo más específico (ej: "cambiá el título del capítulo 2 a X").'
+            : (replyText || 'Solo puedo modificar el contenido del ebook (textos, capítulos, títulos). Para cambios de formato o layout usá la preview.');
+          history.push({ role: 'assistant', content: '', display: displayMsg });
         } else {
           history.push({ role: 'assistant', content: JSON.stringify(data), display: 'Listo, apliqué los cambios.' });
           if (data.chapters?.length) ebook.chapters = data.chapters;
