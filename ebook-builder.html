@@ -1072,7 +1072,7 @@
   <button class="primary" id="dl-btn">Descargar PDF</button>
   <button class="secondary" onclick="window.close()">Cerrar</button>
 </div>
-<div class="edit-indicator"><span class="dot"></span>Modo edición — click en cualquier texto para modificar. Pasá el mouse sobre un bloque para mover, cortar página o borrar.</div>
+<div class="edit-indicator"><span class="dot"></span>Modo edición — click en texto para editar. Hover sobre un bloque para mover/cortar/borrar. <strong>Ctrl+Z</strong> deshace.</div>
 ${hint}
 ${pagesHtml}
 <div class="hover-bar" id="hover-bar">
@@ -1080,6 +1080,7 @@ ${pagesHtml}
   <button data-action="down" title="Bajar bloque">&#8595; Bajar</button>
   <button data-action="break" title="Iniciar nueva página desde aquí">Cortar página</button>
   <button data-action="delete" class="danger" title="Borrar bloque">Borrar</button>
+  <button data-action="undo" title="Deshacer última acción (Ctrl+Z)" id="undo-btn" disabled>&#8630; Deshacer</button>
 </div>
 <script>
   const ebookTitle = ${JSON.stringify(ebook.title || 'ebook')};
@@ -1206,20 +1207,85 @@ ${pagesHtml}
     newBody.querySelectorAll(':scope > *').forEach(registerHover);
   }
 
+  // ── Undo history: snapshot main content wrapper before each action ──
+  const undoStack = [];
+  const undoBtn = document.getElementById('undo-bar') || document.querySelector('#hover-bar [data-action="undo"]');
+  function snapshot() {
+    const pages = Array.from(document.querySelectorAll('.page')).map(p => p.outerHTML);
+    undoStack.push(pages.join(''));
+    if (undoStack.length > 30) undoStack.shift();
+    if (undoBtn) undoBtn.disabled = false;
+  }
+  function restoreSnapshot() {
+    if (!undoStack.length) return;
+    const html = undoStack.pop();
+    // Replace all .page elements with the snapshot's pages
+    const existing = Array.from(document.querySelectorAll('.page'));
+    if (existing.length) {
+      const anchor = existing[0];
+      const parent = anchor.parentNode;
+      existing.forEach(p => p.remove());
+      const tmp = document.createElement('div');
+      tmp.innerHTML = html;
+      Array.from(tmp.children).forEach(c => parent.insertBefore(c, null));
+    }
+    enableEditing();
+    // Re-wire all current blocks
+    document.querySelectorAll('.chapter-body > *').forEach(registerHover);
+    if (undoBtn) undoBtn.disabled = !undoStack.length;
+  }
+  window.addEventListener('keydown', (e) => {
+    if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'z') {
+      e.preventDefault();
+      restoreSnapshot();
+    }
+  });
+
+  // ── Move block to neighboring page if needed ──
+  function moveBlockUp(el) {
+    if (el.previousElementSibling) {
+      el.parentNode.insertBefore(el, el.previousElementSibling);
+      return true;
+    }
+    // No prev sibling — move to end of previous chapter-body
+    const currentChapter = el.closest('.page.chapter');
+    let prevChapter = currentChapter?.previousElementSibling;
+    while (prevChapter && !prevChapter.classList.contains('chapter')) prevChapter = prevChapter.previousElementSibling;
+    const prevBody = prevChapter?.querySelector('.chapter-body');
+    if (prevBody) { prevBody.appendChild(el); return true; }
+    return false;
+  }
+  function moveBlockDown(el) {
+    if (el.nextElementSibling) {
+      el.parentNode.insertBefore(el.nextElementSibling, el);
+      return true;
+    }
+    const currentChapter = el.closest('.page.chapter');
+    let nextChapter = currentChapter?.nextElementSibling;
+    while (nextChapter && !nextChapter.classList.contains('chapter')) nextChapter = nextChapter.nextElementSibling;
+    const nextBody = nextChapter?.querySelector('.chapter-body');
+    if (nextBody) { nextBody.insertBefore(el, nextBody.firstChild); return true; }
+    return false;
+  }
+
   hoverBar.addEventListener('click', (e) => {
     const btn = e.target.closest('button');
-    if (!btn || !_hoverEl) return;
+    if (!btn) return;
     const action = btn.dataset.action;
+
+    if (action === 'undo') { restoreSnapshot(); return; }
+    if (!_hoverEl) return;
+
     const el = _hoverEl;
-    if (action === 'up' && el.previousElementSibling) {
-      el.parentNode.insertBefore(el, el.previousElementSibling);
-    } else if (action === 'down' && el.nextElementSibling) {
-      el.parentNode.insertBefore(el.nextElementSibling, el);
-    } else if (action === 'break') {
-      splitHere(el);
-    } else if (action === 'delete') {
-      if (confirm('¿Borrar este bloque?')) el.remove();
+    let changed = false;
+    if (action === 'up')        { snapshot(); changed = moveBlockUp(el); }
+    else if (action === 'down') { snapshot(); changed = moveBlockDown(el); }
+    else if (action === 'break') { snapshot(); splitHere(el); changed = true; }
+    else if (action === 'delete') {
+      if (confirm('¿Borrar este bloque?')) { snapshot(); el.remove(); changed = true; }
     }
+    if (!changed && undoStack.length) undoStack.pop(); // drop useless snapshot
+    if (undoBtn) undoBtn.disabled = !undoStack.length;
     hoverBar.style.display = 'none';
     _hoverEl = null;
   });
