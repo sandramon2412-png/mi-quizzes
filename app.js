@@ -896,8 +896,68 @@ REGLAS DE CONTENIDO:
 - NO saludes, entrá directo al contenido.`;
   },
 
-  _ebookChatSystemPrompt() {
-    return `Sos un editor de ebooks. El usuario te pide cambios puntuales sobre un ebook existente. Respondés con un JSON chico que describe SOLO lo que cambia — NUNCA devuelvas el ebook completo.
+  // Visual blocks available in every document (same CSS in preview + PDF).
+  _docBlocksReference() {
+    return `BLOQUES VISUALES disponibles (HTML embebido en el body_md):
+- <div class="callout callout-tip"><strong>Tip</strong><p>…</p></div>  (tip)
+- <div class="callout callout-warn"><strong>Cuidado</strong><p>…</p></div>  (advertencia)
+- <div class="callout callout-info"><strong>Dato clave</strong><p>…</p></div>  (dato importante)
+- <div class="callout callout-quote"><p>…cita…</p><cite>— fuente</cite></div>
+- <div class="stat-card"><span class="stat-number">75%</span><span class="stat-label">descripción</span></div>
+- <ol class="steps"><li>Paso 1…</li><li>Paso 2…</li></ol>
+- <div class="feature-grid"><div class="feature-item"><div class="feature-icon">check_circle</div><h4 class="feature-title">Título</h4><p class="feature-desc">Descripción breve</p></div>…2 o 4 items…</div>  (grid 2 col; agregá class="cols-3" para 3 col; el feature-icon usa nombres de Material Symbols)
+- <div class="numbered-card"><div class="n">1</div><div class="body"><h4>Paso/Item</h4><p>Descripción</p></div></div>  (repetir por cada item; útil para "Lo que lograremos" o pasos grandes)
+- <span class="pill">ETIQUETA</span>  /  <span class="pill accent">DESTACADA</span>  /  <span class="pill ghost">SECUNDARIA</span>
+- <div class="tab-chips"><span class="chip active">Opción 1</span><span class="chip">Opción 2</span></div>
+- <div class="pricing-card"><div class="plan">Plan</div><div class="price">$900 <small>USD</small></div><ul><li>Feature</li><li>Feature</li></ul></div>  (ideal para propuestas; hasta 3 seguidos en una línea)
+- Tablas markdown con | col | col | funcionan y toman estilo premium automáticamente.`;
+  },
+
+  _docTypePrompt(docType) {
+    switch ((docType || 'ebook').toLowerCase()) {
+      case 'presentacion':
+        return `TIPO DE DOCUMENTO: PRESENTACIÓN / SLIDES.
+- Cada sección = una slide. Títulos cortos (3–7 palabras), impactantes.
+- 60–160 palabras por slide como MÁXIMO. Prioridad al bloque visual por sobre el texto.
+- Usá CON ABUNDANCIA: stat-card, feature-grid (cols-3), pill, tab-chips, numbered-card.
+- Una idea por slide. Nada de párrafos largos — preferí bullets cortos o un bloque visual.
+- 8–12 slides totales.`;
+
+      case 'propuesta':
+        return `TIPO DE DOCUMENTO: PROPUESTA / PRESUPUESTO COMERCIAL.
+- Secciones sugeridas (adaptá según el brief): Portada con nombre del cliente y pill "PARA: {CLIENTE}", Entendimiento del Proyecto / Objetivos, Servicios Incluidos (feature-grid de 4–6 servicios con icono), Metodología / Fases (numbered-card), Cronograma, Inversión (pricing-card por paquete + tabla de desglose), Términos y Garantías, Próximos Pasos con CTA claro.
+- Tono: profesional cálido, segunda persona formal ("usted" o "ustedes" en la portada, "vos/tú" en el cuerpo si el brief lo indica).
+- Usá CON ABUNDANCIA: pill, feature-grid, pricing-card, numbered-card, tabla markdown, callout-info con términos importantes.
+- Cada servicio en feature-grid tiene un nombre de icono Material Symbols en .feature-icon (ej: 'language', 'campaign', 'shopping_cart', 'edit', 'support_agent', 'auto_awesome', 'verified', 'videocam', 'description').
+- 6–9 secciones totales.`;
+
+      case 'checklist':
+        return `TIPO DE DOCUMENTO: CHECKLIST / GUÍA PASO A PASO.
+- Primera sección: intro + "Qué vas a lograr" (feature-grid o numbered-card).
+- Cada paso = una sección con título corto, objetivo del paso en 1 oración, y un <ol class="steps"> con sub-acciones concretas. Usá callout-tip para atajos y callout-warn para errores comunes.
+- Última sección: "Checklist final" con <ol class="steps"> recopilando los hitos.
+- 5–10 secciones totales.`;
+
+      case 'documento':
+        return `TIPO DE DOCUMENTO: DOCUMENTO LIBRE.
+- Respetá la estructura del brief/material. No impongas intro+desarrollo+conclusión.
+- Usá los bloques visuales que mejoren la lectura, pero no los forces.
+- Longitud y tono: lo que pida el brief.`;
+
+      case 'ebook':
+      default:
+        return `TIPO DE DOCUMENTO: EBOOK.
+- 6–10 capítulos narrativos, 400–650 palabras cada uno.
+- Primera sección = introducción con hook; última = conclusión con CTA/próximos pasos.
+- Cada capítulo con al menos 1 callout y 1 stat-card o ol.steps. Usá feature-grid o numbered-card cuando encaje.
+- Tono narrativo en segunda persona. Valor concreto: ejemplos, pasos, datos.`;
+    }
+  },
+
+  _ebookChatSystemPrompt(docType = 'ebook') {
+    return `Sos un editor de documentos (tipo actual: ${docType}). El usuario te pide cambios puntuales sobre un documento existente. Respondés con un JSON chico que describe SOLO lo que cambia — NUNCA devuelvas el documento completo.
+
+${this._docBlocksReference()}
 
 FORMATO DE SALIDA — ÚNICAMENTE un JSON válido, sin markdown, sin \`\`\`, sin prosa antes o después.
 
@@ -972,7 +1032,7 @@ REGLAS CRÍTICAS:
     return pick('conversation') || pick('message') || null;
   },
 
-  async generateEbookOutline(brief) {
+  async generateEbookOutline(brief, docType = 'ebook') {
     const system = `Eres un editor profesional de documentos en español. Tu tarea es generar SOLO el outline.
 Devolvé ÚNICAMENTE JSON válido, sin markdown, sin \`\`\`. Schema exacto:
 {
@@ -982,9 +1042,10 @@ Devolvé ÚNICAMENTE JSON válido, sin markdown, sin \`\`\`. Schema exacto:
 }
 REGLAS:
 - Los títulos son LIMPIOS: sin prefijos tipo "Capítulo 1:", "Sección N —", "Slide 3:". Solo el nombre real de la sección.
-- La primera sección suele ser una introducción/contexto con gancho. La última suele ser conclusión/CTA/próximos pasos.
 - Títulos específicos y accionables, no genéricos.
-- Si el brief indica material de base, los títulos deben reflejar ese contenido.`;
+- Si el brief indica material de base, los títulos deben reflejar ese contenido.
+
+${this._docTypePrompt(docType)}`;
     const text = await this._call([{ role: 'user', content: brief }], 1200, {
       model: 'claude-sonnet-4-6', system,
     });
@@ -992,28 +1053,20 @@ REGLAS:
     catch { throw new Error('No pude generar el outline. Intentá de nuevo.'); }
   },
 
-  async generateEbookChapter({ bookTitle, bookSubtitle, chapterTitle, chapterIndex, totalChapters, tone, sourceExcerpt, audience }) {
-    const system = `Eres un escritor profesional de ebooks en español estilo Gamma — con bloques visuales, callouts y stats destacados.
-Devolvé ÚNICAMENTE el contenido del capítulo en markdown con HTML embebido. NO devuelvas JSON, NO uses \`\`\`, NO incluyas el título (ya lo tengo).
+  async generateEbookChapter({ bookTitle, bookSubtitle, chapterTitle, chapterIndex, totalChapters, tone, sourceExcerpt, audience, docType = 'ebook' }) {
+    const system = `Eres un escritor profesional de documentos en español estilo Gamma — con bloques visuales, callouts y datos destacados.
+Devolvé ÚNICAMENTE el contenido de la sección en markdown con HTML embebido. NO devuelvas JSON, NO uses \`\`\`, NO incluyas el título (ya lo tengo).
 
-ESTRUCTURA OBLIGATORIA (intercalar con el texto):
-- Párrafo inicial fuerte que enganche (sin saludos).
-- Usá ## para 2–3 subsecciones temáticas (SIN prefijar con "Capítulo N").
-- Incluí al menos 1 callout visual usando HTML. Tipos disponibles:
-  <div class="callout callout-tip"><strong>Tip</strong><p>Contenido del tip en 1–2 oraciones.</p></div>
-  <div class="callout callout-warn"><strong>Cuidado</strong><p>Advertencia importante.</p></div>
-  <div class="callout callout-info"><strong>Dato clave</strong><p>Información relevante.</p></div>
-  <div class="callout callout-quote"><p>Cita o reflexión poderosa.</p><cite>— fuente o contexto</cite></div>
-- Incluí al menos 1 bloque de stat/dato destacado:
-  <div class="stat-card"><span class="stat-number">75%</span><span class="stat-label">descripción corta</span></div>
-- Si enseñás pasos, usá <ol class="steps"> con <li> para cada paso.
+${this._docTypePrompt(docType)}
+
+${this._docBlocksReference()}
+
+REGLAS GENERALES:
+- Usá ## para subsecciones (SIN prefijar con "Capítulo N" / "Sección N").
 - **Negrita** para conceptos clave, listas con -, citas con >.
-
-REGLAS:
-- 400–650 palabras en total.
-- Valor concreto: ejemplos, pasos, datos. NADA de relleno.
-- Segunda persona (tú/vos según tono).
-- Si hay material de base, preservá sus ejemplos y datos — no inventes.`;
+- NO saludes, entrá directo al contenido.
+- Si hay material de base, preservá sus ejemplos y datos — no inventes.
+- Cuando uses feature-grid, el .feature-icon debe contener un nombre válido de Material Symbols Outlined (ej: 'check_circle', 'rocket_launch', 'insights', 'support_agent', 'verified', 'campaign', 'shopping_cart', 'description', 'edit', 'videocam', 'language', 'auto_awesome').`;
     const userMsg = [
       `Documento: "${bookTitle}"${bookSubtitle ? ` — ${bookSubtitle}` : ''}.`,
       audience ? `Audiencia: ${audience}.` : '',
@@ -1038,13 +1091,13 @@ REGLAS:
     return { title: chapterTitle, body_md: body };
   },
 
-  async generateEbook(brief, history = [], onProgress) {
+  async generateEbook(brief, history = [], onProgress, docType = 'ebook') {
     // Chat iteration: partial-updates protocol (small JSON, no full-ebook regen).
     if (history.length > 0) {
       const messages = [...history, { role: 'user', content: brief }];
       const text = await this._call(messages, 3000, {
         model: 'claude-sonnet-4-6',
-        system: this._ebookChatSystemPrompt(),
+        system: this._ebookChatSystemPrompt(docType),
       });
       try {
         const data = this._parseJSONLoose(text);
@@ -1062,8 +1115,12 @@ REGLAS:
     }
 
     // Fresh generation: outline then chapter-by-chapter (avoids CPU/timeout limits)
+    // Extract docType from brief (the caller injects "Tipo de documento: <x>." at the top)
+    const dtMatch = brief.match(/Tipo de documento:\s*([a-z]+)/i);
+    const docType = dtMatch?.[1]?.toLowerCase() || 'ebook';
+
     onProgress?.({ stage: 'outline' });
-    const outline = await this.generateEbookOutline(brief);
+    const outline = await this.generateEbookOutline(brief, docType);
     const chapterTitles = outline.chapterTitles || [];
     if (!chapterTitles.length) throw new Error('El outline no tiene capítulos.');
 
@@ -1077,7 +1134,6 @@ REGLAS:
 
     const chapters = [];
     const total = chapterTitles.length;
-    // Slice source into equal chunks per chapter (if material is provided)
     const chunkSize = source ? Math.floor(source.length / total) : 0;
 
     for (let i = 0; i < total; i++) {
@@ -1089,7 +1145,7 @@ REGLAS:
         chapterTitle: chapterTitles[i],
         chapterIndex: i,
         totalChapters: total,
-        tone, audience, sourceExcerpt,
+        tone, audience, sourceExcerpt, docType,
       });
       chapters.push(ch);
     }
@@ -1218,8 +1274,8 @@ const AI = {
     return Claude.generateLanding(brief, history);
   },
   // Complejo: ebook estructurado (JSON con capítulos en Markdown)
-  async generateEbook(brief, history = [], onProgress) {
-    return Claude.generateEbook(brief, history, onProgress);
+  async generateEbook(brief, history = [], onProgress, docType = 'ebook') {
+    return Claude.generateEbook(brief, history, onProgress, docType);
   },
 };
 

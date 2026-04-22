@@ -1206,16 +1206,22 @@
       let defaultTitle = '';
       let preserveMode = false;
 
+      const docTypeLabel = ({
+        ebook: 'ebook', presentacion: 'presentación', propuesta: 'propuesta comercial',
+        checklist: 'checklist / guía paso a paso', documento: 'documento libre'
+      })[docType] || 'documento';
+
       if (activeTab === 'ai') {
         const topic = document.getElementById('eb-topic').value.trim();
         const audience = document.getElementById('eb-audience').value.trim();
-        if (!topic) { toast('Contanos de qué va el ebook', 'err'); return; }
+        if (!topic) { toast('Contanos de qué va el documento', 'err'); return; }
         defaultTitle = topic.slice(0, 60);
         brief = [
-          `Necesito un ebook sobre: ${topic}.`,
+          `Tipo de documento: ${docType}.`,
+          `Necesito un/a ${docTypeLabel} sobre: ${topic}.`,
           audience ? `Audiencia: ${audience}.` : '',
           `Tono: ${tone}.`,
-          `Cantidad de capítulos: aproximadamente ${chaptersCount} (incluyendo intro y conclusión).`,
+          `Cantidad de secciones: aproximadamente ${chaptersCount}.`,
           extras ? `Detalles extra: ${extras}` : '',
         ].filter(Boolean).join(' ');
       } else if (activeTab === 'text') {
@@ -1253,11 +1259,12 @@
           ? 'Preservá el tono y la voz del material original.'
           : `Reescribí con tono ${tone}.`;
         brief = [
-          `Tengo este material de base y necesito que lo estructures como un ebook profesional completo:`,
+          `Tipo de documento: ${docType}.`,
+          `Tengo este material de base y necesito que lo estructures como un/a ${docTypeLabel} profesional completo/a:`,
           `\n---MATERIAL---\n${truncated}\n---FIN MATERIAL---\n`,
-          `Estructuralo en aproximadamente ${chaptersCount} capítulos (incluyendo intro y conclusión).`,
+          `Estructuralo en aproximadamente ${chaptersCount} secciones.`,
           toneInstruction,
-          `Preservá los ejemplos, datos y argumentos concretos del material original. Si falta intro o conclusión, agregalas. Reorganizá, limpiá y pulí — pero NO inventes datos que no estén en el material.`,
+          `Preservá los ejemplos, datos y argumentos concretos del material original. Reorganizá, limpiá y pulí — pero NO inventes datos que no estén en el material.`,
           extras ? `Detalles extra: ${extras}` : '',
         ].filter(Boolean).join(' ');
       }
@@ -1284,7 +1291,7 @@
             if (p.stage === 'outline') setStatus('Armando outline…');
             else if (p.stage === 'chapter') setStatus(`Escribiendo capítulo ${p.current}/${p.total}…`);
           };
-          data = await AI.generateEbook(brief, [], onProgress);
+          data = await AI.generateEbook(brief, [], onProgress, docType);
         }
         const chaptersCountMsg = data.chapters?.length || 0;
         const displayMsg = preserveMode
@@ -1407,7 +1414,7 @@
         };
         const contextMsg = `Estado actual del ebook (índices 0-based):\n${JSON.stringify(stateForAI)}\n\nPedido del usuario: ${msg}`;
         const fullHistory = apiHistory.slice(0, -1).concat([{ role: 'user', content: contextMsg }]);
-        const data = await AI.generateEbook(msg, fullHistory);
+        const data = await AI.generateEbook(msg, fullHistory, null, ebook.docType || 'ebook');
         removeThinking();
 
         if (data.__conversational) {
