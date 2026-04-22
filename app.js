@@ -874,7 +874,7 @@ FORMATO DE SALIDA — devolvé ÚNICAMENTE un objeto JSON válido, sin markdown,
   "title": "Título del ebook",
   "subtitle": "Subtítulo (1 frase vendedora)",
   "chapters": [
-    { "title": "Capítulo 1: ...", "body_md": "Contenido con markdown y HTML embebido..." },
+    { "title": "Título de la sección (limpio, sin prefijos como 'Capítulo N:')", "body_md": "Contenido con markdown y HTML embebido..." },
     ...
   ]
 }
@@ -973,17 +973,17 @@ REGLAS CRÍTICAS:
   },
 
   async generateEbookOutline(brief) {
-    const system = `Eres un editor profesional de ebooks en español. Tu tarea es generar SOLO el outline.
+    const system = `Eres un editor profesional de documentos en español. Tu tarea es generar SOLO el outline.
 Devolvé ÚNICAMENTE JSON válido, sin markdown, sin \`\`\`. Schema exacto:
 {
-  "title": "Título del ebook",
+  "title": "Título del documento",
   "subtitle": "Subtítulo (1 frase vendedora)",
-  "chapterTitles": ["Capítulo 1: Introducción — ...", "Capítulo 2: ...", ..., "Capítulo N: Conclusión y próximos pasos"]
+  "chapterTitles": ["Título de la primera sección", "Título de la segunda sección", ..., "Título de la última sección"]
 }
 REGLAS:
-- El primer capítulo es siempre "Introducción" con un hook fuerte.
-- El último es "Conclusión y próximos pasos" con CTA.
-- Títulos de capítulo específicos, accionables, no genéricos.
+- Los títulos son LIMPIOS: sin prefijos tipo "Capítulo 1:", "Sección N —", "Slide 3:". Solo el nombre real de la sección.
+- La primera sección suele ser una introducción/contexto con gancho. La última suele ser conclusión/CTA/próximos pasos.
+- Títulos específicos y accionables, no genéricos.
 - Si el brief indica material de base, los títulos deben reflejar ese contenido.`;
     const text = await this._call([{ role: 'user', content: brief }], 1200, {
       model: 'claude-sonnet-4-6', system,
@@ -998,7 +998,7 @@ Devolvé ÚNICAMENTE el contenido del capítulo en markdown con HTML embebido. N
 
 ESTRUCTURA OBLIGATORIA (intercalar con el texto):
 - Párrafo inicial fuerte que enganche (sin saludos).
-- Usá ## para 2–3 subsecciones temáticas.
+- Usá ## para 2–3 subsecciones temáticas (SIN prefijar con "Capítulo N").
 - Incluí al menos 1 callout visual usando HTML. Tipos disponibles:
   <div class="callout callout-tip"><strong>Tip</strong><p>Contenido del tip en 1–2 oraciones.</p></div>
   <div class="callout callout-warn"><strong>Cuidado</strong><p>Advertencia importante.</p></div>
@@ -1015,12 +1015,12 @@ REGLAS:
 - Segunda persona (tú/vos según tono).
 - Si hay material de base, preservá sus ejemplos y datos — no inventes.`;
     const userMsg = [
-      `Ebook: "${bookTitle}"${bookSubtitle ? ` — ${bookSubtitle}` : ''}.`,
+      `Documento: "${bookTitle}"${bookSubtitle ? ` — ${bookSubtitle}` : ''}.`,
       audience ? `Audiencia: ${audience}.` : '',
       `Tono: ${tone}.`,
-      `Capítulo ${chapterIndex + 1} de ${totalChapters}: "${chapterTitle}".`,
-      sourceExcerpt ? `\nMaterial de base relevante para este capítulo:\n---\n${sourceExcerpt}\n---\nUsá este material como fuente principal. Preservá ejemplos y datos.` : '',
-      `\nEscribí el capítulo completo ahora (solo el cuerpo del capítulo, sin título, sin JSON).`,
+      `Sección ${chapterIndex + 1} de ${totalChapters}: "${chapterTitle}".`,
+      sourceExcerpt ? `\nMaterial de base relevante para esta sección:\n---\n${sourceExcerpt}\n---\nUsá este material como fuente principal. Preservá ejemplos y datos.` : '',
+      `\nEscribí el contenido completo de la sección ahora (solo el cuerpo, sin título, sin JSON, sin el prefijo "Capítulo N").`,
     ].filter(Boolean).join(' ');
     const text = await this._call([{ role: 'user', content: userMsg }], 3000, {
       model: 'claude-sonnet-4-6', system,
