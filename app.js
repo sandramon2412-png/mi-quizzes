@@ -962,7 +962,9 @@ AUTOCHECK (hacelo ANTES de entregar cada sección):
 - Tono: profesional cálido, formal ("vos/usted" según el brief).
 - 6–9 secciones (portada, entendimiento, servicios, metodología, cronograma, inversión, términos, próximos pasos — adaptá al proyecto real).
 - La portada SIEMPRE lleva un <span class="pill accent"> con el cliente o destinatario.
-- OBLIGATORIO: cada sección con 2+ bloques visuales de los definidos en las reglas de patrón de arriba. Secciones de solo texto: PROHIBIDAS.`;
+- CADA SECCIÓN DEBE LLENAR SU PÁGINA A4: mínimo 180 palabras de contenido útil + 2 bloques visuales sustanciales (no microbloques). Una sección con 3 oraciones y listo está PROHIBIDA.
+- Si el cliente pidió "breve": llená con bloques visuales (feature-grid de servicios, cronograma en tabla, pricing-cards) en vez de texto largo. Nunca dejes la página vacía.
+- IGNORÁ marcadores del source tipo "PÁGINA N – TITLE", "text", "Slide N:" — son artefactos, no contenido.`;
 
       case 'checklist':
         return `TIPO DE DOCUMENTO: CHECKLIST / GUÍA PASO A PASO.
@@ -1106,14 +1108,26 @@ REGLAS GENERALES:
 - **Negrita** para conceptos clave, listas con -, citas con >.
 - NO saludes, entrá directo al contenido.
 - Si hay material de base, preservá sus ejemplos y datos — no inventes.
+- IGNORÁ totalmente marcadores del material fuente tipo "PÁGINA 1 – PORTADA", "PÁGINA 2 – OBJETIVOS", "Slide N:", "Página N:", y palabras sueltas "text" / "placeholder" / "[Fecha actual]" — ES SUCIEDAD del source, no la copies. Si el source dice "PÁGINA 3 – CLIENTE text\\nSpark Group...", entregá SOLO "Spark Group..." reestructurado con bloques visuales.
+- EXTENSIÓN MÍNIMA: cada sección debe llenar la página A4 con contenido útil. Si tenés poco material, desarrollá con ejemplos, pasos, detalles, datos. NUNCA entregues una sección con menos de 180 palabras visibles más 2 bloques visuales que ocupen espacio (feature-grid, numbered-card, stat-card, tabla, pricing-card).
 - Material Symbols válidos para .feature-icon: 'check_circle', 'rocket_launch', 'insights', 'support_agent', 'verified', 'campaign', 'shopping_cart', 'description', 'edit', 'videocam', 'language', 'auto_awesome', 'paid', 'schedule', 'workspace_premium', 'savings', 'analytics', 'design_services', 'groups', 'handshake', 'target', 'trending_up', 'article', 'palette'.`;
+    // Pre-clean source excerpt: strip literal page markers and stray "text" placeholders
+    // so they don't bleed into the generated output.
+    const cleanSource = (sourceExcerpt || '')
+      .replace(/P[ÁA]GINA\s+\d+\s*[–\-—]\s*[^\n]*?\btext\b/gi, '')
+      .replace(/P[ÁA]GINA\s+\d+\s*[–\-—]\s*[A-ZÁÉÍÓÚÑ ]{2,}$/gim, '')
+      .replace(/\bSlide\s+\d+\s*[:\-–—][^\n]*/gi, '')
+      .replace(/^\s*text\s*$/gim, '')
+      .replace(/\[Fecha\s+actual\]/gi, '')
+      .replace(/\n{3,}/g, '\n\n')
+      .trim();
     const userMsg = [
       `Documento: "${bookTitle}"${bookSubtitle ? ` — ${bookSubtitle}` : ''}.`,
       audience ? `Audiencia: ${audience}.` : '',
       `Tono: ${tone}.`,
       `Sección ${chapterIndex + 1} de ${totalChapters}: "${chapterTitle}".`,
-      sourceExcerpt ? `\nMaterial de base relevante para esta sección:\n---\n${sourceExcerpt}\n---\nUsá este material como fuente principal. Preservá ejemplos y datos.` : '',
-      `\nEscribí el contenido completo de la sección ahora (solo el cuerpo, sin título, sin JSON, sin el prefijo "Capítulo N").`,
+      cleanSource ? `\nMaterial de base relevante para esta sección:\n---\n${cleanSource}\n---\nUsá este material como fuente principal. Preservá ejemplos y datos — pero ignorá los marcadores "PÁGINA N – TITLE", "text", "[Fecha actual]" y demás artefactos del formato original.` : '',
+      `\nEscribí el contenido completo de la sección ahora (solo el cuerpo, sin título, sin JSON, sin el prefijo "Capítulo N"). DEBE llenar la página: mínimo 180 palabras + 2 bloques visuales.`,
     ].filter(Boolean).join(' ');
     const text = await this._call([{ role: 'user', content: userMsg }], 3000, {
       model: 'claude-sonnet-4-6', system,
@@ -1128,6 +1142,14 @@ REGLAS GENERALES:
         if (parsed.body_md) body = parsed.body_md;
       } catch {}
     }
+    // Final cleanup: strip artifacts that may have slipped through from source material
+    body = body
+      .replace(/P[ÁA]GINA\s+\d+\s*[–\-—]\s*[^\n]*?\btext\b/gi, '')
+      .replace(/P[ÁA]GINA\s+\d+\s*[–\-—]\s*[A-ZÁÉÍÓÚÑ ]{3,}$/gim, '')
+      .replace(/^\s*text\s*$/gim, '')
+      .replace(/\[Fecha\s+actual\]/gi, '')
+      .replace(/\n{3,}/g, '\n\n')
+      .trim();
     return { title: chapterTitle, body_md: body };
   },
 
