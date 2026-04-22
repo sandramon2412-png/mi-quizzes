@@ -916,44 +916,36 @@ REGLAS DE CONTENIDO:
   // Pattern → block mapping. Generic rules that apply to ANY topic/project.
   // This is what turns plain markdown into a Gamma-style visual layout.
   _docPatternRules() {
-    return `REGLAS DE DISEÑO POR PATRÓN DE CONTENIDO (aplican SIEMPRE, sin importar el tema):
+    return `DISEÑO VISUAL OBLIGATORIO — estas reglas NO son opcionales:
 
-Cuando detectes estos patrones en lo que vas a escribir, usá el bloque visual correspondiente en vez de texto plano. Esto es LO QUE DIFERENCIA un doc premium de un Word de los 2000:
+PROHIBICIONES ABSOLUTAS (usar cualquiera de estas opciones arruina el documento):
+✗ NO escribas listas markdown "- item" o "- **item**" para 3+ items descriptivos → usá feature-grid o numbered-card
+✗ NO escribas listas numeradas "1. item" para pasos/etapas → usá numbered-card o <ol class="steps">
+✗ NO uses blockquotes markdown "> texto" → usá siempre <div class="callout callout-tip/warn/info/quote">
+✗ NO dejes números, precios o porcentajes importantes dentro de párrafos → usá stat-card o pricing-card
+✗ NO entregues secciones con solo párrafos de texto → SIEMPRE al menos 1 bloque visual
 
-(1) 3 o más items homogéneos con "nombre + descripción breve"
-    → feature-grid (2 o 3 columnas) con un Material Symbol por item.
-    Aplica a: lista de servicios, beneficios, features, módulos de un curso, canales, etapas, principios, pilares, diferenciadores.
+CONVERSIONES OBLIGATORIAS (las más frecuentes):
+• Lista de servicios / features / beneficios / módulos / pilares (3+) → feature-grid con <div class="feature-item"> + icono Material Symbol
+• Pasos / etapas / hitos / fases (2–6) → numbered-card (<div class="numbered-card">) uno por paso
+• Pasos rápidos o checklist (3+) → <ol class="steps"><li>…</li></ol>
+• Tip / nota / advertencia / cita → <div class="callout callout-tip|warn|info|quote">
+• Número, precio, porcentaje, métrica aislada → <div class="stat-card">
+• Opciones / planes comparados (2–4) → pricing-card lado a lado
+• Etiqueta de categoría / cliente / fecha → <span class="pill accent">ETIQUETA</span>
 
-(2) Secuencia ordenada de pasos, fases, hitos o items numerados (2–6)
-    → numbered-card (uno por paso), o <ol class="steps"> para checklists rápidas.
-    Aplica a: metodología, cronograma, pasos de onboarding, etapas de un proyecto, hitos de pago, fases de una transformación, jornada del usuario.
+FORMATO DE CADA BLOQUE:
+• feature-grid: <div class="feature-grid"><div class="feature-item"><div class="feature-icon">ICON</div><h4 class="feature-title">Título</h4><p class="feature-desc">Descripción breve</p></div>…</div>
+• numbered-card: <div class="numbered-card"><div class="n">1</div><div class="body"><h4>Título</h4><p>Descripción</p></div></div>
+• ol.steps: <ol class="steps"><li>Paso claro y accionable</li>…</ol>
+• callout: <div class="callout callout-tip"><strong>Tip</strong><p>texto</p></div>
+• stat-card: <div class="stat-card"><span class="stat-number">75%</span><span class="stat-label">descripción</span></div>
 
-(3) Información comparativa con 2+ columnas (concepto / qué es / costo / plazo / responsable / etc.)
-    → tabla markdown con encabezado obligatorio.
-    Aplica a: cronograma, desglose de costos, comparación de planes, matriz de responsabilidades, calendario de entregables, especificaciones técnicas.
-
-(4) Dato numérico, precio, porcentaje, métrica o hito destacable
-    → stat-card (si es un dato aislado) o pricing-card (si es un precio con lo que incluye).
-    NUNCA dejes números importantes en medio de un párrafo.
-    Aplica a: "ahorra 30%", "$900 USD", "8 publicaciones/mes", "60 segundos", "20 clientes".
-
-(5) Advertencia, tip, nota importante, aclaración, cita o testimonio
-    → callout-tip / callout-warn / callout-info / callout-quote.
-    Aplica a: "no incluye…", "requisitos previos", "dato clave", "lo que hay que saber", testimonios de clientes.
-
-(6) Etiqueta, categoría, estado, cliente destinatario, fecha, paquete
-    → pill (<span class="pill">…</span>). Usalo en la primera línea de una sección o portada.
-    Aplica a: "PARA: {CLIENTE}", "PAQUETE INICIAL", "MENSUAL", "V1.2", "2026".
-
-(7) 2-4 alternativas/opciones/verticales que se eligen entre sí
-    → tab-chips (una activa, otras no), o pricing-card lado a lado.
-    Aplica a: "Plan Básico / Pro / Elite", "Opción A / B / C", verticales de un servicio.
-
-AUTOCHECK antes de entregar la sección:
-- ¿Podés identificar al menos UNO de los patrones (1)–(7) en tu contenido? Si sí, usaste el bloque correcto?
-- ¿La sección tiene 2+ bloques visuales no-texto? Si no, reformateá.
-- ¿Hay una lista "**Item** – descripción" repetida 3+ veces como párrafos? → convertila en feature-grid o numbered-card.
-- ¿La sección termina en una pared de texto plano? → agregá un callout o stat-card al final.`;
+AUTOCHECK (hacelo ANTES de entregar cada sección):
+① ¿Tengo 3+ items descriptivos? → feature-grid ¿Lo usé?
+② ¿Tengo 2+ pasos/etapas? → numbered-card ¿Lo usé?
+③ ¿Tengo alguna advertencia/tip/nota? → callout ¿Lo usé?
+④ ¿La sección tiene al menos 2 bloques HTML visuales? Si no → reformateá ahora.`;
   },
 
   _docTypePrompt(docType) {
