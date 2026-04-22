@@ -633,9 +633,20 @@
     };
     const smartMd = (md) => {
       if (!md) return '';
+      // Retroactive cleanup: strip source artifacts from already-saved bodies
+      // (old documents generated before the prompt-level cleanup was added).
+      let cleaned = md
+        .replace(/P[ÁA]GINA\s+\d+\s*[–\-—]\s*[^\n]*?\btext\b/gi, '')
+        .replace(/P[ÁA]GINA\s+\d+\s*[–\-—]\s*[A-ZÁÉÍÓÚÑ][A-ZÁÉÍÓÚÑ ]{2,}$/gim, '')
+        .replace(/\bSlide\s+\d+\s*[:\-–—][^\n]*/gi, '')
+        .replace(/^\s*text\s*$/gim, '')
+        .replace(/\s+text\s*$/gim, '')
+        .replace(/\[Fecha\s+actual\]/gi, '')
+        .replace(/\n{3,}/g, '\n\n')
+        .trim();
       // Pre-pass: merge consecutive bullet-with-bold blocks separated by blank lines
       // so "- **X**\n\n- **Y**\n\n- **Z**" is treated as a single list block
-      let pre = md.replace(/((?:^|\n)[-*•] \*\*[^\n]+\n?)(\n+)([-*•] \*\*)/gm, '$1\n$3');
+      let pre = cleaned.replace(/((?:^|\n)[-*•] \*\*[^\n]+\n?)(\n+)([-*•] \*\*)/gm, '$1\n$3');
       // Split into blocks by blank lines, upgrade each, then parse
       const upgraded = pre.split(/\n\n+/).map(_upgradeBlock).join('\n\n');
       return marked.parse(upgraded);
