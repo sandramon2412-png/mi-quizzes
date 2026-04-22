@@ -543,6 +543,69 @@
     const setStatus = (s) => { statusEl.textContent = s; };
     const escapeHtml = (s) => (s || '').toString().replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 
+    // ── smartMd: upgrade markdown patterns to visual blocks before marked.parse() ──
+    // Ensures visual blocks appear even when the AI generates clean markdown instead of HTML.
+    const _SMART_ICONS = ['check_circle','rocket_launch','insights','verified','campaign','auto_awesome','paid','schedule','analytics','design_services','groups','handshake','trending_up','workspace_premium','savings','article','palette','videocam','language','target'];
+    const _upgradeBlock = (block) => {
+      const lines = block.split('\n').filter(l => l.trim());
+      if (!lines.length) return block;
+      // Already HTML → pass through as-is
+      if (/^<[a-zA-Z]/.test(lines[0].trim())) return block;
+
+      // Pattern 1: "- **Name** [—:] description" repeated 3+ times → feature-grid
+      const featRe = /^[-*•]\s+\*\*(.+?)\*\*\s*(?:[—–\-:]\s*)(.+)$/;
+      const featLines = lines.filter(l => featRe.test(l.trim()));
+      if (featLines.length >= 3 && featLines.length === lines.length) {
+        const cls = featLines.length >= 5 ? 'feature-grid cols-3' : 'feature-grid';
+        const items = featLines.map((l, i) => {
+          const m = l.trim().match(featRe);
+          return `<div class="feature-item"><div class="feature-icon">${_SMART_ICONS[i % _SMART_ICONS.length]}</div><h4 class="feature-title">${m[1]}</h4><p class="feature-desc">${m[2]}</p></div>`;
+        });
+        return `<div class="${cls}">\n${items.join('\n')}\n</div>`;
+      }
+
+      // Pattern 2: "N. **Title** [—:] desc" (2–8 items) → numbered-cards
+      const numRe = /^(\d+)[.)]\s+\*\*(.+?)\*\*(?:\s*[—–\-:]\s*(.+))?$/;
+      const numLines = lines.filter(l => numRe.test(l.trim()));
+      if (numLines.length >= 2 && numLines.length === lines.length && numLines.length <= 8) {
+        const cards = numLines.map(l => {
+          const m = l.trim().match(numRe);
+          return `<div class="numbered-card"><div class="n">${m[1]}</div><div class="body"><h4>${m[2]}</h4>${m[3] ? `<p>${m[3]}</p>` : ''}</div></div>`;
+        });
+        return cards.join('\n');
+      }
+
+      // Pattern 3: Simple numbered list (3+ items, no bold) → ol.steps
+      const stepRe = /^(\d+)[.)]\s+(.+)$/;
+      const stepLines = lines.filter(l => stepRe.test(l.trim()));
+      if (stepLines.length >= 3 && stepLines.length === lines.length) {
+        const liItems = stepLines.map(l => { const m = l.trim().match(stepRe); return `<li>${m[2]}</li>`; });
+        return `<ol class="steps">\n${liItems.join('\n')}\n</ol>`;
+      }
+
+      // Pattern 4: Blockquote (every line starts with >) → callout div
+      if (lines.every(l => /^>\s?/.test(l))) {
+        const text = lines.map(l => l.replace(/^>\s?/, '')).join(' ').trim();
+        const tl = text.toLowerCase();
+        let type = 'info', label = 'Dato clave';
+        if (/^(tip|💡)/.test(tl)) { type = 'tip'; label = 'Tip'; }
+        else if (/^(cuidado|⚠|advertencia|atenci)/.test(tl)) { type = 'warn'; label = 'Cuidado'; }
+        else if (/^(nota|importante)/.test(tl)) { type = 'info'; label = 'Nota'; }
+        else if (/^["""«]/.test(text)) { type = 'quote'; label = ''; }
+        const body = text.replace(/^(tip|cuidado|nota|importante|advertencia|dato clave|💡|⚠️)[:\s]*/i, '').trim();
+        if (type === 'quote') return `<div class="callout callout-quote"><p>${body}</p></div>`;
+        return `<div class="callout callout-${type}"><strong>${label}</strong><p>${body}</p></div>`;
+      }
+
+      return block;
+    };
+    const smartMd = (md) => {
+      if (!md) return '';
+      // Split into blocks by blank lines, upgrade each, then parse
+      const upgraded = md.split(/\n\n+/).map(_upgradeBlock).join('\n\n');
+      return marked.parse(upgraded);
+    };
+
     // Strip legacy "Capítulo N:" prefixes from chapter titles. The builder used
     // to force that format for every document; for proposals, presentations,
     // checklists, etc. it just adds noise. We run this every time we render so
@@ -592,7 +655,7 @@
         <div class="ebook-page-wrap" data-theme="${escapeHtml(theme)}">
           <div class="ebook-page chapter-page" data-chapter-idx="${i}">
             <h1 class="chapter-title" data-edit="chapter-title" data-idx="${i}">${escapeHtml(ch.title || `Página ${i + 1}`)}</h1>
-            <div class="chapter-body-scroll" data-edit="chapter-body" data-idx="${i}">${marked.parse(ch.body_md || '')}</div>
+            <div class="chapter-body-scroll" data-edit="chapter-body" data-idx="${i}">${smartMd(ch.body_md || '')}</div>
             <div class="ebook-page-label">Página ${i + 2} · A4</div>
           </div>
         </div>`).join('');
@@ -1490,7 +1553,7 @@
       ` + ebook.chapters.map((ch, i) => `
         <section class="page chapter">
           <h1 class="chapter-title">${escapeHtml(ch.title || `Página ${i + 1}`)}</h1>
-          <div class="chapter-body">${marked.parse(ch.body_md || '')}</div>
+          <div class="chapter-body">${smartMd(ch.body_md || '')}</div>
         </section>
       `).join('');
 
