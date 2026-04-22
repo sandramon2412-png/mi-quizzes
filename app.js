@@ -919,24 +919,47 @@ REGLAS DE CONTENIDO:
         return `TIPO DE DOCUMENTO: PRESENTACIÓN / SLIDES.
 - Cada sección = una slide. Títulos cortos (3–7 palabras), impactantes.
 - 60–160 palabras por slide como MÁXIMO. Prioridad al bloque visual por sobre el texto.
-- Usá CON ABUNDANCIA: stat-card, feature-grid (cols-3), pill, tab-chips, numbered-card.
-- Una idea por slide. Nada de párrafos largos — preferí bullets cortos o un bloque visual.
+- OBLIGATORIO: cada slide tiene MÍNIMO 1 bloque visual no-texto (stat-card, feature-grid, numbered-card, pill, tab-chips, pricing-card, tabla o callout). Las slides que solo tienen párrafos están PROHIBIDAS.
+- Una idea por slide. Bullets cortos (máx 12 palabras por bullet), o un bloque visual.
 - 8–12 slides totales.`;
 
       case 'propuesta':
-        return `TIPO DE DOCUMENTO: PROPUESTA / PRESUPUESTO COMERCIAL.
-- Secciones sugeridas (adaptá según el brief): Portada con nombre del cliente y pill "PARA: {CLIENTE}", Entendimiento del Proyecto / Objetivos, Servicios Incluidos (feature-grid de 4–6 servicios con icono), Metodología / Fases (numbered-card), Cronograma, Inversión (pricing-card por paquete + tabla de desglose), Términos y Garantías, Próximos Pasos con CTA claro.
-- Tono: profesional cálido, segunda persona formal ("usted" o "ustedes" en la portada, "vos/tú" en el cuerpo si el brief lo indica).
-- Usá CON ABUNDANCIA: pill, feature-grid, pricing-card, numbered-card, tabla markdown, callout-info con términos importantes.
-- Cada servicio en feature-grid tiene un nombre de icono Material Symbols en .feature-icon (ej: 'language', 'campaign', 'shopping_cart', 'edit', 'support_agent', 'auto_awesome', 'verified', 'videocam', 'description').
-- 6–9 secciones totales.`;
+        return `TIPO DE DOCUMENTO: PROPUESTA / PRESUPUESTO COMERCIAL ESTILO GAMMA.
+- Tono: profesional cálido, segunda persona formal ("vos/usted" según el brief).
+- 6–9 secciones. Estructura sugerida (adaptá): Portada · Entendimiento del Proyecto · Servicios Incluidos · Metodología · Cronograma · Inversión · Términos · Próximos Pasos.
+
+OBLIGATORIO: cada sección DEBE incluir al menos 2 bloques visuales (no solo párrafos). Las secciones de solo texto plano están PROHIBIDAS. Reglas por tipo de sección:
+
+* "Servicios Incluidos" / "Lo que hago" → feature-grid de 4–6 items con .feature-icon (Material Symbols: 'language', 'campaign', 'shopping_cart', 'edit', 'support_agent', 'auto_awesome', 'verified', 'videocam', 'description', 'rocket_launch', 'insights').
+  Ejemplo:
+  <div class="feature-grid"><div class="feature-item"><div class="feature-icon">language</div><h4 class="feature-title">Landing Page</h4><p class="feature-desc">Hasta 5 secciones con foco en conversión.</p></div>…</div>
+
+* "Metodología" / "Cómo trabajamos" / "Lo que lograremos" → numbered-card por cada fase/paso (3–5 cards).
+  Ejemplo:
+  <div class="numbered-card"><div class="n">1</div><div class="body"><h4>Diagnóstico</h4><p>Reunión inicial y auditoría de canales actuales.</p></div></div>
+
+* "Inversión" / "Costos" / "Forma de pago" → pricing-card por paquete (1–3 lado a lado), o tabla markdown con conceptos/costo/función, o numbered-card por cada hito de pago. NUNCA una lista plana de bullets.
+  Ejemplo (forma de pago):
+  <div class="numbered-card"><div class="n">01</div><div class="body"><h4>Pago inicial: $900 USD</h4><p>Antes de comenzar el proyecto.</p></div></div>
+  <div class="numbered-card"><div class="n">02</div><div class="body"><h4>Mensualidad: $500 USD</h4><p>Pagadera al inicio de cada mes.</p></div></div>
+
+* "Cronograma" / "Tabla de servicios" → tabla markdown obligatoria con encabezados claros (Servicio | Detalle | Plazo).
+
+* "Portada" / título del documento → al menos un pill con el cliente: <span class="pill accent">PARA: NOMBRE DEL CLIENTE</span>. Si hay 2-3 verticales, usá tab-chips.
+
+* "Términos" / "Garantías" / "Lo que NO incluye" → callout-info o callout-warn (no párrafos sueltos).
+
+* "Próximos pasos" / CTA → numbered-card o ol.steps con 3–4 acciones concretas.
+
+NO uses solo párrafos en negrita simulando una lista. SI ves que vas a escribir "**Item 1** – descripción" más de una vez seguido, usá numbered-card o feature-grid.`;
 
       case 'checklist':
         return `TIPO DE DOCUMENTO: CHECKLIST / GUÍA PASO A PASO.
-- Primera sección: intro + "Qué vas a lograr" (feature-grid o numbered-card).
-- Cada paso = una sección con título corto, objetivo del paso en 1 oración, y un <ol class="steps"> con sub-acciones concretas. Usá callout-tip para atajos y callout-warn para errores comunes.
-- Última sección: "Checklist final" con <ol class="steps"> recopilando los hitos.
-- 5–10 secciones totales.`;
+- 5–10 secciones totales.
+- OBLIGATORIO por sección: 1 párrafo corto de objetivo (máx 2 oraciones) + 1 ol.steps con sub-acciones, O 1 numbered-card. Sin párrafos largos.
+- Primera sección: intro + "Qué vas a lograr" (feature-grid de 3–4 items).
+- Última sección: "Checklist final" con ol.steps recopilando los hitos.
+- Usá callout-tip para atajos y callout-warn para errores comunes (mínimo 1 por cada 2 secciones).`;
 
       case 'documento':
         return `TIPO DE DOCUMENTO: DOCUMENTO LIBRE.
@@ -949,7 +972,7 @@ REGLAS DE CONTENIDO:
         return `TIPO DE DOCUMENTO: EBOOK.
 - 6–10 capítulos narrativos, 400–650 palabras cada uno.
 - Primera sección = introducción con hook; última = conclusión con CTA/próximos pasos.
-- Cada capítulo con al menos 1 callout y 1 stat-card o ol.steps. Usá feature-grid o numbered-card cuando encaje.
+- OBLIGATORIO por capítulo: al menos 2 bloques visuales (mezclá callout, stat-card, feature-grid, numbered-card, ol.steps, tabla). Capítulo de solo texto = PROHIBIDO.
 - Tono narrativo en segunda persona. Valor concreto: ejemplos, pasos, datos.`;
     }
   },
@@ -1054,19 +1077,26 @@ ${this._docTypePrompt(docType)}`;
   },
 
   async generateEbookChapter({ bookTitle, bookSubtitle, chapterTitle, chapterIndex, totalChapters, tone, sourceExcerpt, audience, docType = 'ebook' }) {
-    const system = `Eres un escritor profesional de documentos en español estilo Gamma — con bloques visuales, callouts y datos destacados.
+    const system = `Eres un escritor profesional de documentos en español estilo Gamma — con bloques visuales, callouts, cards numeradas, feature-grids y tablas. Tu trabajo NO es escribir prosa plana; es DISEÑAR la sección con bloques visuales que comuniquen mejor.
+
 Devolvé ÚNICAMENTE el contenido de la sección en markdown con HTML embebido. NO devuelvas JSON, NO uses \`\`\`, NO incluyas el título (ya lo tengo).
 
 ${this._docTypePrompt(docType)}
 
 ${this._docBlocksReference()}
 
-REGLAS GENERALES:
-- Usá ## para subsecciones (SIN prefijar con "Capítulo N" / "Sección N").
+REGLAS GENERALES (no negociables):
+- Usá ## para subsecciones (SIN prefijar con "Capítulo N" / "Sección N" / dos puntos finales).
 - **Negrita** para conceptos clave, listas con -, citas con >.
 - NO saludes, entrá directo al contenido.
 - Si hay material de base, preservá sus ejemplos y datos — no inventes.
-- Cuando uses feature-grid, el .feature-icon debe contener un nombre válido de Material Symbols Outlined (ej: 'check_circle', 'rocket_launch', 'insights', 'support_agent', 'verified', 'campaign', 'shopping_cart', 'description', 'edit', 'videocam', 'language', 'auto_awesome').`;
+- Material Symbols válidos para .feature-icon: 'check_circle', 'rocket_launch', 'insights', 'support_agent', 'verified', 'campaign', 'shopping_cart', 'description', 'edit', 'videocam', 'language', 'auto_awesome', 'paid', 'schedule', 'workspace_premium', 'savings', 'analytics', 'design_services'.
+
+ANTES DE TERMINAR, AUTOCHECK obligatorio:
+1. ¿Tiene la sección al menos 2 bloques visuales no-texto (callout, stat-card, feature-grid, numbered-card, ol.steps, pricing-card, tabla)? Si no, agregalos.
+2. ¿Hay alguna lista de "**Item** – descripción" repetida 3+ veces? Si sí, convertila en numbered-card o feature-grid.
+3. ¿Hay datos numéricos/precios/porcentajes? Si sí, ponelos en stat-card o pricing-card, no en línea.
+4. ¿La sección termina en una pared de texto plano? Si sí, reformatealo en bloques.`;
     const userMsg = [
       `Documento: "${bookTitle}"${bookSubtitle ? ` — ${bookSubtitle}` : ''}.`,
       audience ? `Audiencia: ${audience}.` : '',
