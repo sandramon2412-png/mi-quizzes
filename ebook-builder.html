@@ -484,8 +484,8 @@
 
 <div id="toast" class="fixed top-16 left-1/2 -translate-x-1/2 px-4 py-2 rounded-lg bg-surface-container-highest text-sm font-medium shadow-2xl z-50 hidden"></div>
 
-<script src="./app.js"></script>
-<script src="./supabase-config.js"></script>
+<script src="./app.js?v=20260422c"></script>
+<script src="./supabase-config.js?v=20260422c"></script>
 <script src="./ai-assistant.js"></script>
 <script>
   (async () => {
@@ -678,10 +678,18 @@
       downloadBtn.classList.remove('hidden');
 
       const cover = ebook.cover || {};
-      const gradFrom = cover.gradientFrom || '#2E5BFF';
-      const gradTo = cover.gradientTo || '#7c3aed';
       const subtitle = cover.subtitle || '';
       const theme = (ebook.theme || cover.theme || 'light').toString();
+      // Theme-aware cover gradient. Falls back to blue/purple for "light" theme.
+      const THEME_GRADS = {
+        'light':      ['#2E5BFF', '#7c3aed'],
+        'dark-neon':  ['#4d7cff', '#c084fc'],
+        'pastel':     ['#e0749c', '#f4a261'],
+        'corporate':  ['#0f4c81', '#0891b2'],
+      };
+      const defaultGrad = THEME_GRADS[theme] || THEME_GRADS.light;
+      const gradFrom = cover.gradientFrom || defaultGrad[0];
+      const gradTo   = cover.gradientTo   || defaultGrad[1];
 
       const coverHtml = `
         <div class="ebook-page-wrap" data-theme="${escapeHtml(theme)}">
@@ -1585,9 +1593,16 @@
       setStatus('Abriendo vista de impresión…');
 
       const cover = ebook.cover || {};
-      const gradFrom = cover.gradientFrom || '#2E5BFF';
-      const gradTo = cover.gradientTo || '#7c3aed';
       const theme = (ebook.theme || cover.theme || 'light').toString();
+      const THEME_GRADS_PDF = {
+        'light':      ['#2E5BFF', '#7c3aed'],
+        'dark-neon':  ['#4d7cff', '#c084fc'],
+        'pastel':     ['#e0749c', '#f4a261'],
+        'corporate':  ['#0f4c81', '#0891b2'],
+      };
+      const defaultGradPdf = THEME_GRADS_PDF[theme] || THEME_GRADS_PDF.light;
+      const gradFrom = cover.gradientFrom || defaultGradPdf[0];
+      const gradTo = cover.gradientTo || defaultGradPdf[1];
 
       const pagesHtml = `
         <section class="page cover">
