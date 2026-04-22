@@ -913,58 +913,76 @@ REGLAS DE CONTENIDO:
 - Tablas markdown con | col | col | funcionan y toman estilo premium automáticamente.`;
   },
 
+  // Pattern → block mapping. Generic rules that apply to ANY topic/project.
+  // This is what turns plain markdown into a Gamma-style visual layout.
+  _docPatternRules() {
+    return `REGLAS DE DISEÑO POR PATRÓN DE CONTENIDO (aplican SIEMPRE, sin importar el tema):
+
+Cuando detectes estos patrones en lo que vas a escribir, usá el bloque visual correspondiente en vez de texto plano. Esto es LO QUE DIFERENCIA un doc premium de un Word de los 2000:
+
+(1) 3 o más items homogéneos con "nombre + descripción breve"
+    → feature-grid (2 o 3 columnas) con un Material Symbol por item.
+    Aplica a: lista de servicios, beneficios, features, módulos de un curso, canales, etapas, principios, pilares, diferenciadores.
+
+(2) Secuencia ordenada de pasos, fases, hitos o items numerados (2–6)
+    → numbered-card (uno por paso), o <ol class="steps"> para checklists rápidas.
+    Aplica a: metodología, cronograma, pasos de onboarding, etapas de un proyecto, hitos de pago, fases de una transformación, jornada del usuario.
+
+(3) Información comparativa con 2+ columnas (concepto / qué es / costo / plazo / responsable / etc.)
+    → tabla markdown con encabezado obligatorio.
+    Aplica a: cronograma, desglose de costos, comparación de planes, matriz de responsabilidades, calendario de entregables, especificaciones técnicas.
+
+(4) Dato numérico, precio, porcentaje, métrica o hito destacable
+    → stat-card (si es un dato aislado) o pricing-card (si es un precio con lo que incluye).
+    NUNCA dejes números importantes en medio de un párrafo.
+    Aplica a: "ahorra 30%", "$900 USD", "8 publicaciones/mes", "60 segundos", "20 clientes".
+
+(5) Advertencia, tip, nota importante, aclaración, cita o testimonio
+    → callout-tip / callout-warn / callout-info / callout-quote.
+    Aplica a: "no incluye…", "requisitos previos", "dato clave", "lo que hay que saber", testimonios de clientes.
+
+(6) Etiqueta, categoría, estado, cliente destinatario, fecha, paquete
+    → pill (<span class="pill">…</span>). Usalo en la primera línea de una sección o portada.
+    Aplica a: "PARA: {CLIENTE}", "PAQUETE INICIAL", "MENSUAL", "V1.2", "2026".
+
+(7) 2-4 alternativas/opciones/verticales que se eligen entre sí
+    → tab-chips (una activa, otras no), o pricing-card lado a lado.
+    Aplica a: "Plan Básico / Pro / Elite", "Opción A / B / C", verticales de un servicio.
+
+AUTOCHECK antes de entregar la sección:
+- ¿Podés identificar al menos UNO de los patrones (1)–(7) en tu contenido? Si sí, usaste el bloque correcto?
+- ¿La sección tiene 2+ bloques visuales no-texto? Si no, reformateá.
+- ¿Hay una lista "**Item** – descripción" repetida 3+ veces como párrafos? → convertila en feature-grid o numbered-card.
+- ¿La sección termina en una pared de texto plano? → agregá un callout o stat-card al final.`;
+  },
+
   _docTypePrompt(docType) {
     switch ((docType || 'ebook').toLowerCase()) {
       case 'presentacion':
         return `TIPO DE DOCUMENTO: PRESENTACIÓN / SLIDES.
-- Cada sección = una slide. Títulos cortos (3–7 palabras), impactantes.
-- 60–160 palabras por slide como MÁXIMO. Prioridad al bloque visual por sobre el texto.
-- OBLIGATORIO: cada slide tiene MÍNIMO 1 bloque visual no-texto (stat-card, feature-grid, numbered-card, pill, tab-chips, pricing-card, tabla o callout). Las slides que solo tienen párrafos están PROHIBIDAS.
-- Una idea por slide. Bullets cortos (máx 12 palabras por bullet), o un bloque visual.
+- Cada sección = una slide. Títulos cortos (3–7 palabras).
+- 60–160 palabras por slide. Prioridad al bloque visual por sobre el texto.
+- OBLIGATORIO: cada slide tiene MÍNIMO 1 bloque visual. Slides de solo párrafos: PROHIBIDAS.
 - 8–12 slides totales.`;
 
       case 'propuesta':
-        return `TIPO DE DOCUMENTO: PROPUESTA / PRESUPUESTO COMERCIAL ESTILO GAMMA.
-- Tono: profesional cálido, segunda persona formal ("vos/usted" según el brief).
-- 6–9 secciones. Estructura sugerida (adaptá): Portada · Entendimiento del Proyecto · Servicios Incluidos · Metodología · Cronograma · Inversión · Términos · Próximos Pasos.
-
-OBLIGATORIO: cada sección DEBE incluir al menos 2 bloques visuales (no solo párrafos). Las secciones de solo texto plano están PROHIBIDAS. Reglas por tipo de sección:
-
-* "Servicios Incluidos" / "Lo que hago" → feature-grid de 4–6 items con .feature-icon (Material Symbols: 'language', 'campaign', 'shopping_cart', 'edit', 'support_agent', 'auto_awesome', 'verified', 'videocam', 'description', 'rocket_launch', 'insights').
-  Ejemplo:
-  <div class="feature-grid"><div class="feature-item"><div class="feature-icon">language</div><h4 class="feature-title">Landing Page</h4><p class="feature-desc">Hasta 5 secciones con foco en conversión.</p></div>…</div>
-
-* "Metodología" / "Cómo trabajamos" / "Lo que lograremos" → numbered-card por cada fase/paso (3–5 cards).
-  Ejemplo:
-  <div class="numbered-card"><div class="n">1</div><div class="body"><h4>Diagnóstico</h4><p>Reunión inicial y auditoría de canales actuales.</p></div></div>
-
-* "Inversión" / "Costos" / "Forma de pago" → pricing-card por paquete (1–3 lado a lado), o tabla markdown con conceptos/costo/función, o numbered-card por cada hito de pago. NUNCA una lista plana de bullets.
-  Ejemplo (forma de pago):
-  <div class="numbered-card"><div class="n">01</div><div class="body"><h4>Pago inicial: $900 USD</h4><p>Antes de comenzar el proyecto.</p></div></div>
-  <div class="numbered-card"><div class="n">02</div><div class="body"><h4>Mensualidad: $500 USD</h4><p>Pagadera al inicio de cada mes.</p></div></div>
-
-* "Cronograma" / "Tabla de servicios" → tabla markdown obligatoria con encabezados claros (Servicio | Detalle | Plazo).
-
-* "Portada" / título del documento → al menos un pill con el cliente: <span class="pill accent">PARA: NOMBRE DEL CLIENTE</span>. Si hay 2-3 verticales, usá tab-chips.
-
-* "Términos" / "Garantías" / "Lo que NO incluye" → callout-info o callout-warn (no párrafos sueltos).
-
-* "Próximos pasos" / CTA → numbered-card o ol.steps con 3–4 acciones concretas.
-
-NO uses solo párrafos en negrita simulando una lista. SI ves que vas a escribir "**Item 1** – descripción" más de una vez seguido, usá numbered-card o feature-grid.`;
+        return `TIPO DE DOCUMENTO: PROPUESTA / PRESUPUESTO COMERCIAL.
+- Tono: profesional cálido, formal ("vos/usted" según el brief).
+- 6–9 secciones (portada, entendimiento, servicios, metodología, cronograma, inversión, términos, próximos pasos — adaptá al proyecto real).
+- La portada SIEMPRE lleva un <span class="pill accent"> con el cliente o destinatario.
+- OBLIGATORIO: cada sección con 2+ bloques visuales de los definidos en las reglas de patrón de arriba. Secciones de solo texto: PROHIBIDAS.`;
 
       case 'checklist':
         return `TIPO DE DOCUMENTO: CHECKLIST / GUÍA PASO A PASO.
-- 5–10 secciones totales.
-- OBLIGATORIO por sección: 1 párrafo corto de objetivo (máx 2 oraciones) + 1 ol.steps con sub-acciones, O 1 numbered-card. Sin párrafos largos.
-- Primera sección: intro + "Qué vas a lograr" (feature-grid de 3–4 items).
-- Última sección: "Checklist final" con ol.steps recopilando los hitos.
-- Usá callout-tip para atajos y callout-warn para errores comunes (mínimo 1 por cada 2 secciones).`;
+- 5–10 secciones. Cada paso = una sección.
+- OBLIGATORIO por sección: 1 párrafo corto de objetivo + 1 ol.steps o 1 numbered-card. Sin párrafos largos.
+- Intro con feature-grid de 3–4 "qué vas a lograr". Cierre con ol.steps recopilando los hitos.
+- Callout-tip / callout-warn mínimo 1 cada 2 secciones.`;
 
       case 'documento':
         return `TIPO DE DOCUMENTO: DOCUMENTO LIBRE.
-- Respetá la estructura del brief/material. No impongas intro+desarrollo+conclusión.
-- Usá los bloques visuales que mejoren la lectura, pero no los forces.
+- Respetá la estructura del brief/material. No fuerces intro+desarrollo+conclusión.
+- Usá los bloques visuales que mejoren la lectura (sin ignorar los patrones).
 - Longitud y tono: lo que pida el brief.`;
 
       case 'ebook':
@@ -972,13 +990,17 @@ NO uses solo párrafos en negrita simulando una lista. SI ves que vas a escribir
         return `TIPO DE DOCUMENTO: EBOOK.
 - 6–10 capítulos narrativos, 400–650 palabras cada uno.
 - Primera sección = introducción con hook; última = conclusión con CTA/próximos pasos.
-- OBLIGATORIO por capítulo: al menos 2 bloques visuales (mezclá callout, stat-card, feature-grid, numbered-card, ol.steps, tabla). Capítulo de solo texto = PROHIBIDO.
+- OBLIGATORIO por capítulo: 2+ bloques visuales (mezclá callout, stat-card, feature-grid, numbered-card, ol.steps, tabla).
 - Tono narrativo en segunda persona. Valor concreto: ejemplos, pasos, datos.`;
     }
   },
 
   _ebookChatSystemPrompt(docType = 'ebook') {
-    return `Sos un editor de documentos (tipo actual: ${docType}). El usuario te pide cambios puntuales sobre un documento existente. Respondés con un JSON chico que describe SOLO lo que cambia — NUNCA devuelvas el documento completo.
+    return `Sos un editor+diseñador de documentos (tipo actual: ${docType}). El usuario te pide cambios puntuales sobre un documento existente. Respondés con un JSON chico que describe SOLO lo que cambia — NUNCA devuelvas el documento completo.
+
+Cuando escribís body_md nuevo (en updates o insert_after), aplicás las mismas reglas de patrón visual que en una generación fresca:
+
+${this._docPatternRules()}
 
 ${this._docBlocksReference()}
 
@@ -1077,26 +1099,22 @@ ${this._docTypePrompt(docType)}`;
   },
 
   async generateEbookChapter({ bookTitle, bookSubtitle, chapterTitle, chapterIndex, totalChapters, tone, sourceExcerpt, audience, docType = 'ebook' }) {
-    const system = `Eres un escritor profesional de documentos en español estilo Gamma — con bloques visuales, callouts, cards numeradas, feature-grids y tablas. Tu trabajo NO es escribir prosa plana; es DISEÑAR la sección con bloques visuales que comuniquen mejor.
+    const system = `Eres un escritor+diseñador profesional de documentos en español estilo Gamma. Tu trabajo NO es escribir prosa plana; es DISEÑAR la sección con bloques visuales que comuniquen mejor el mensaje.
 
 Devolvé ÚNICAMENTE el contenido de la sección en markdown con HTML embebido. NO devuelvas JSON, NO uses \`\`\`, NO incluyas el título (ya lo tengo).
 
 ${this._docTypePrompt(docType)}
 
+${this._docPatternRules()}
+
 ${this._docBlocksReference()}
 
-REGLAS GENERALES (no negociables):
+REGLAS GENERALES:
 - Usá ## para subsecciones (SIN prefijar con "Capítulo N" / "Sección N" / dos puntos finales).
 - **Negrita** para conceptos clave, listas con -, citas con >.
 - NO saludes, entrá directo al contenido.
 - Si hay material de base, preservá sus ejemplos y datos — no inventes.
-- Material Symbols válidos para .feature-icon: 'check_circle', 'rocket_launch', 'insights', 'support_agent', 'verified', 'campaign', 'shopping_cart', 'description', 'edit', 'videocam', 'language', 'auto_awesome', 'paid', 'schedule', 'workspace_premium', 'savings', 'analytics', 'design_services'.
-
-ANTES DE TERMINAR, AUTOCHECK obligatorio:
-1. ¿Tiene la sección al menos 2 bloques visuales no-texto (callout, stat-card, feature-grid, numbered-card, ol.steps, pricing-card, tabla)? Si no, agregalos.
-2. ¿Hay alguna lista de "**Item** – descripción" repetida 3+ veces? Si sí, convertila en numbered-card o feature-grid.
-3. ¿Hay datos numéricos/precios/porcentajes? Si sí, ponelos en stat-card o pricing-card, no en línea.
-4. ¿La sección termina en una pared de texto plano? Si sí, reformatealo en bloques.`;
+- Material Symbols válidos para .feature-icon: 'check_circle', 'rocket_launch', 'insights', 'support_agent', 'verified', 'campaign', 'shopping_cart', 'description', 'edit', 'videocam', 'language', 'auto_awesome', 'paid', 'schedule', 'workspace_premium', 'savings', 'analytics', 'design_services', 'groups', 'handshake', 'target', 'trending_up', 'article', 'palette'.`;
     const userMsg = [
       `Documento: "${bookTitle}"${bookSubtitle ? ` — ${bookSubtitle}` : ''}.`,
       audience ? `Audiencia: ${audience}.` : '',
