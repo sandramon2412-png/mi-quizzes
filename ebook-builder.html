@@ -423,8 +423,21 @@
     const setStatus = (s) => { statusEl.textContent = s; };
     const escapeHtml = (s) => (s || '').toString().replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 
+    // Strip legacy "Capítulo N:" prefixes from chapter titles. The builder used
+    // to force that format for every document; for proposals, presentations,
+    // checklists, etc. it just adds noise. We run this every time we render so
+    // pre-existing ebooks get cleaned up too.
+    const cleanLegacyTitles = (book) => {
+      if (!book?.chapters) return;
+      const re = /^cap[íi]tulo\s+\d+\s*[:\-—–]?\s*/i;
+      book.chapters.forEach(ch => {
+        if (typeof ch.title === 'string') ch.title = ch.title.replace(re, '').trim() || ch.title;
+      });
+    };
+
     // ── Render preview ──
     const renderEbookPreview = () => {
+      cleanLegacyTitles(ebook);
       if (!ebook || !ebook.chapters?.length) {
         previewEmpty.classList.remove('hidden');
         ebookPreview.classList.add('hidden');
@@ -457,10 +470,9 @@
       const chaptersHtml = ebook.chapters.map((ch, i) => `
         <div class="ebook-page-wrap">
           <div class="ebook-page chapter-page" data-chapter-idx="${i}">
-            <div class="chapter-num">Capítulo ${i + 1}</div>
-            <h1 class="chapter-title" data-edit="chapter-title" data-idx="${i}">${escapeHtml(ch.title || `Capítulo ${i + 1}`)}</h1>
+            <h1 class="chapter-title" data-edit="chapter-title" data-idx="${i}">${escapeHtml(ch.title || `Página ${i + 1}`)}</h1>
             <div class="chapter-body-scroll" data-edit="chapter-body" data-idx="${i}">${marked.parse(ch.body_md || '')}</div>
-            <div class="ebook-page-label">Página 1 · A4</div>
+            <div class="ebook-page-label">Página ${i + 2} · A4</div>
           </div>
         </div>`).join('');
 
@@ -1322,8 +1334,7 @@
         </section>
       ` + ebook.chapters.map((ch, i) => `
         <section class="page chapter">
-          <div class="chapter-num">Capítulo ${i + 1}</div>
-          <h1 class="chapter-title">${escapeHtml(ch.title || `Capítulo ${i + 1}`)}</h1>
+          <h1 class="chapter-title">${escapeHtml(ch.title || `Página ${i + 1}`)}</h1>
           <div class="chapter-body">${marked.parse(ch.body_md || '')}</div>
         </section>
       `).join('');
