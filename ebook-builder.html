@@ -118,9 +118,15 @@
   .ebook-page h2 { font-size: 22px; font-weight: 800; margin: 28px 0 14px; background: linear-gradient(135deg, var(--doc-primary), var(--doc-accent)); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; color: var(--doc-primary); }
   .ebook-page h3 { font-size: 17px; font-weight: 700; margin: 22px 0 10px; color: var(--doc-fg); }
   .ebook-page p { margin: 0 0 14px; line-height: 1.75; font-size: 14px; color: var(--doc-fg); }
-  .ebook-page ul, .ebook-page ol { margin: 0 0 14px 20px; line-height: 1.75; font-size: 14px; color: var(--doc-fg); }
-  .ebook-page li { margin-bottom: 6px; }
-  .ebook-page blockquote { border-left: 3px solid var(--doc-accent); padding: 8px 0 8px 16px; margin: 16px 0; color: var(--doc-muted); font-style: italic; }
+  /* Premium list styling — looks good even without smartMd conversion */
+  .ebook-page ul { list-style: none; padding: 0; margin: 0 0 16px; }
+  .ebook-page ul li { position: relative; padding: 8px 12px 8px 30px; margin: 4px 0; background: var(--doc-surface); border-radius: 8px; font-size: 14px; line-height: 1.65; color: var(--doc-fg); }
+  .ebook-page ul li::before { content: ''; position: absolute; left: 11px; top: 15px; width: 7px; height: 7px; border-radius: 50%; background: linear-gradient(135deg, var(--doc-primary), var(--doc-accent)); }
+  .ebook-page ol:not(.steps) { list-style: none; counter-reset: li-ctr; padding: 0; margin: 0 0 16px; }
+  .ebook-page ol:not(.steps) li { counter-increment: li-ctr; position: relative; padding: 10px 14px 10px 48px; margin: 6px 0; background: var(--doc-surface-2); border-radius: 10px; font-size: 14px; line-height: 1.65; color: var(--doc-fg); min-height: 44px; }
+  .ebook-page ol:not(.steps) li::before { content: counter(li-ctr); position: absolute; left: 10px; top: 50%; transform: translateY(-50%); width: 26px; height: 26px; border-radius: 7px; background: linear-gradient(135deg, var(--doc-primary), var(--doc-accent)); color: #fff; font-weight: 800; font-size: 12px; text-align: center; line-height: 26px; font-family: 'Plus Jakarta Sans', sans-serif; }
+  .ebook-page ul li strong { font-size: 13.5px; }
+  .ebook-page blockquote { background: var(--doc-surface); border-left: 4px solid var(--doc-accent); border-radius: 0 10px 10px 0; padding: 12px 16px; margin: 16px 0; color: var(--doc-fg); font-style: italic; font-size: 14px; line-height: 1.6; }
   .ebook-page strong { color: var(--doc-primary); font-weight: 700; }
   .ebook-page a { color: var(--doc-accent); }
   .ebook-page table { width: 100%; border-collapse: collapse; margin: 18px 0; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 13px; background: var(--doc-bg); border-radius: 8px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.08); }
@@ -552,30 +558,56 @@
       // Already HTML → pass through as-is
       if (/^<[a-zA-Z]/.test(lines[0].trim())) return block;
 
-      // Pattern 1: "- **Name** [—:] description" repeated 3+ times → feature-grid
-      const featRe = /^[-*•]\s+\*\*(.+?)\*\*\s*(?:[—–\-:]\s*)(.+)$/;
-      const featLines = lines.filter(l => featRe.test(l.trim()));
-      if (featLines.length >= 3 && featLines.length === lines.length) {
-        const cls = featLines.length >= 5 ? 'feature-grid cols-3' : 'feature-grid';
-        const items = featLines.map((l, i) => {
-          const m = l.trim().match(featRe);
-          return `<div class="feature-item"><div class="feature-icon">${_SMART_ICONS[i % _SMART_ICONS.length]}</div><h4 class="feature-title">${m[1]}</h4><p class="feature-desc">${m[2]}</p></div>`;
-        });
-        return `<div class="${cls}">\n${items.join('\n')}\n</div>`;
+      // Pattern 1: Bullet list with bold title — captures multiple formats:
+      //   "- **Name** — desc"  "- **Name**: desc"  "- **Name**" (no desc)
+      //   Also handles multi-line: "- **Name**\n   desc on next line"
+      const bulletBoldRe = /^[-*•]\s+\*\*(.+?)\*\*(?:\s*[—–\-:]\s*(.+))?$/;
+      const isBulletLine = l => /^[-*•]\s/.test(l.trim());
+      const isBoldBullet = l => bulletBoldRe.test(l.trim());
+      const boldBulletCount = lines.filter(isBoldBullet).length;
+      if (boldBulletCount >= 3) {
+        // Collect items — handle continuation lines after a bullet
+        const items = [];
+        for (let i = 0; i < lines.length; i++) {
+          const m = lines[i].trim().match(bulletBoldRe);
+          if (m) {
+            let desc = m[2] || '';
+            // Check if the very next line is a continuation (not a new bullet/heading)
+            if (!desc && i + 1 < lines.length && !isBulletLine(lines[i + 1]) && !/^#+\s/.test(lines[i + 1].trim())) {
+              desc = lines[i + 1].trim(); i++;
+            }
+            items.push({ title: m[1], desc });
+          }
+        }
+        if (items.length >= 3) {
+          const cls = items.length >= 5 ? 'feature-grid cols-3' : 'feature-grid';
+          const html = items.map(({ title, desc }, i) =>
+            `<div class="feature-item"><div class="feature-icon">${_SMART_ICONS[i % _SMART_ICONS.length]}</div><h4 class="feature-title">${title}</h4>${desc ? `<p class="feature-desc">${desc}</p>` : ''}</div>`
+          );
+          return `<div class="${cls}">\n${html.join('\n')}\n</div>`;
+        }
       }
 
-      // Pattern 2: "N. **Title** [—:] desc" (2–8 items) → numbered-cards
+      // Pattern 2: Numbered list with bold title "N. **Title**" or "N. **Title** — desc" → numbered-cards
       const numRe = /^(\d+)[.)]\s+\*\*(.+?)\*\*(?:\s*[—–\-:]\s*(.+))?$/;
-      const numLines = lines.filter(l => numRe.test(l.trim()));
-      if (numLines.length >= 2 && numLines.length === lines.length && numLines.length <= 8) {
-        const cards = numLines.map(l => {
-          const m = l.trim().match(numRe);
-          return `<div class="numbered-card"><div class="n">${m[1]}</div><div class="body"><h4>${m[2]}</h4>${m[3] ? `<p>${m[3]}</p>` : ''}</div></div>`;
-        });
-        return cards.join('\n');
+      const numBoldLines = lines.filter(l => numRe.test(l.trim()));
+      if (numBoldLines.length >= 2 && numBoldLines.length <= 8) {
+        const cards = []; let i = 0;
+        while (i < lines.length) {
+          const m = lines[i].trim().match(numRe);
+          if (m) {
+            let desc = m[3] || '';
+            if (!desc && i + 1 < lines.length && !/^\d+[.)]/.test(lines[i + 1].trim())) {
+              desc = lines[i + 1].trim(); i++;
+            }
+            cards.push(`<div class="numbered-card"><div class="n">${m[1]}</div><div class="body"><h4>${m[2]}</h4>${desc ? `<p>${desc}</p>` : ''}</div></div>`);
+          }
+          i++;
+        }
+        if (cards.length >= 2) return cards.join('\n');
       }
 
-      // Pattern 3: Simple numbered list (3+ items, no bold) → ol.steps
+      // Pattern 3: Simple numbered list (3+ items, no bold required) → ol.steps
       const stepRe = /^(\d+)[.)]\s+(.+)$/;
       const stepLines = lines.filter(l => stepRe.test(l.trim()));
       if (stepLines.length >= 3 && stepLines.length === lines.length) {
@@ -601,8 +633,11 @@
     };
     const smartMd = (md) => {
       if (!md) return '';
+      // Pre-pass: merge consecutive bullet-with-bold blocks separated by blank lines
+      // so "- **X**\n\n- **Y**\n\n- **Z**" is treated as a single list block
+      let pre = md.replace(/((?:^|\n)[-*•] \*\*[^\n]+\n?)(\n+)([-*•] \*\*)/gm, '$1\n$3');
       // Split into blocks by blank lines, upgrade each, then parse
-      const upgraded = md.split(/\n\n+/).map(_upgradeBlock).join('\n\n');
+      const upgraded = pre.split(/\n\n+/).map(_upgradeBlock).join('\n\n');
       return marked.parse(upgraded);
     };
 
@@ -1665,12 +1700,16 @@
   .chapter-body h2 { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 22px; font-weight: 800; margin: 28px 0 14px; letter-spacing: -0.02em; page-break-after: avoid; break-after: avoid; background: linear-gradient(135deg, var(--doc-primary), var(--doc-accent)); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; color: var(--doc-primary); }
   .chapter-body h3 { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 17px; font-weight: 700; color: var(--doc-fg); margin: 22px 0 10px; page-break-after: avoid; break-after: avoid; }
   .chapter-body p { font-size: 14px; line-height: 1.75; margin: 0 0 14px; orphans: 2; widows: 2; color: var(--doc-fg); }
-  .chapter-body ul, .chapter-body ol { font-size: 14px; line-height: 1.75; margin: 0 0 14px 20px; page-break-inside: auto; break-inside: auto; color: var(--doc-fg); }
-  .chapter-body li { margin-bottom: 6px; page-break-inside: avoid; break-inside: avoid; }
+  .chapter-body ul { list-style: none; padding: 0; margin: 0 0 16px; }
+  .chapter-body ul li { position: relative; padding: 8px 12px 8px 30px; margin: 4px 0; background: var(--doc-surface); border-radius: 8px; font-size: 14px; line-height: 1.65; color: var(--doc-fg); page-break-inside: avoid; break-inside: avoid; }
+  .chapter-body ul li::before { content: ''; position: absolute; left: 11px; top: 15px; width: 7px; height: 7px; border-radius: 50%; background: linear-gradient(135deg, var(--doc-primary), var(--doc-accent)); }
+  .chapter-body ol:not(.steps) { list-style: none; counter-reset: li-ctr; padding: 0; margin: 0 0 16px; }
+  .chapter-body ol:not(.steps) li { counter-increment: li-ctr; position: relative; padding: 10px 14px 10px 48px; margin: 6px 0; background: var(--doc-surface-2); border-radius: 10px; font-size: 14px; line-height: 1.65; color: var(--doc-fg); min-height: 44px; page-break-inside: avoid; break-inside: avoid; }
+  .chapter-body ol:not(.steps) li::before { content: counter(li-ctr); position: absolute; left: 10px; top: 50%; transform: translateY(-50%); width: 26px; height: 26px; border-radius: 7px; background: linear-gradient(135deg, var(--doc-primary), var(--doc-accent)); color: #fff; font-weight: 800; font-size: 12px; text-align: center; line-height: 26px; font-family: 'Plus Jakarta Sans', sans-serif; }
   .chapter-body strong { color: var(--doc-primary); font-weight: 700; }
   .chapter-body a { color: var(--doc-accent); }
   .chapter-body hr { border: 0; border-top: 1px solid var(--doc-border); margin: 28px 0; }
-  .chapter-body blockquote { border-left: 3px solid var(--doc-accent); padding: 8px 0 8px 16px; margin: 16px 0; color: var(--doc-muted); font-style: italic; page-break-inside: avoid; break-inside: avoid; }
+  .chapter-body blockquote { background: var(--doc-surface); border-left: 4px solid var(--doc-accent); border-radius: 0 10px 10px 0; padding: 12px 16px; margin: 16px 0; color: var(--doc-fg); font-style: italic; font-size: 14px; line-height: 1.6; page-break-inside: avoid; break-inside: avoid; }
   .chapter-body table { width: 100%; border-collapse: collapse; margin: 18px 0; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 13px; background: var(--doc-bg); border-radius: 8px; overflow: hidden; page-break-inside: avoid; break-inside: avoid; }
   .chapter-body thead { background: linear-gradient(135deg, var(--doc-primary), var(--doc-accent)); color: #fff; }
   .chapter-body th { padding: 10px 14px; text-align: left; font-weight: 700; font-size: 12px; letter-spacing: 0.02em; color: #fff; }
