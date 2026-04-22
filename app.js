@@ -1115,9 +1115,12 @@ REGLAS GENERALES:
     }
 
     // Fresh generation: outline then chapter-by-chapter (avoids CPU/timeout limits)
-    // Extract docType from brief (the caller injects "Tipo de documento: <x>." at the top)
-    const dtMatch = brief.match(/Tipo de documento:\s*([a-z]+)/i);
-    const docType = dtMatch?.[1]?.toLowerCase() || 'ebook';
+    // Prefer the docType param, but fall back to parsing it out of the brief
+    // (some callers inject "Tipo de documento: <x>." at the top).
+    if (!docType || docType === 'ebook') {
+      const dtMatch = brief.match(/Tipo de documento:\s*([a-z]+)/i);
+      if (dtMatch?.[1]) docType = dtMatch[1].toLowerCase();
+    }
 
     onProgress?.({ stage: 'outline' });
     const outline = await this.generateEbookOutline(brief, docType);
