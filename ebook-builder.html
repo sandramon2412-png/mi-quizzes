@@ -269,7 +269,7 @@
            class="bg-transparent border-none outline-none text-sm font-bold tracking-tight flex-1 min-w-0 focus:ring-0"/>
   </div>
   <span id="eb-status" class="text-[11px] text-on-surface-variant/70 hidden sm:inline"></span>
-  <span id="eb-version" class="text-[10px] font-mono px-2 py-0.5 rounded bg-surface-container-highest text-on-surface-variant/60" title="Versión del builder">v20260423g</span>
+  <span id="eb-version" class="text-[10px] font-mono px-2 py-0.5 rounded bg-surface-container-highest text-on-surface-variant/60" title="Versión del builder">v20260423h</span>
   <button id="btn-download" class="hidden h-9 px-4 rounded-lg primary-gradient text-white text-xs font-bold flex items-center gap-1.5 hover:opacity-90 transition">
     <span class="material-symbols-outlined" style="font-size:16px">download</span>
     Descargar PDF
@@ -487,9 +487,9 @@
 
 <div id="toast" class="fixed top-16 left-1/2 -translate-x-1/2 px-4 py-2 rounded-lg bg-surface-container-highest text-sm font-medium shadow-2xl z-50 hidden"></div>
 
-<script src="./app.js?v=20260423g"></script>
-<script src="./supabase-config.js?v=20260423g"></script>
-<script>console.log('[ebook-builder] v20260423g loaded');</script>
+<script src="./app.js?v=20260423h"></script>
+<script src="./supabase-config.js?v=20260423h"></script>
+<script>console.log('[ebook-builder] v20260423h loaded');</script>
 <script src="./ai-assistant.js"></script>
 <script>
   (async () => {
@@ -804,6 +804,8 @@
     };
     document.getElementById('eb-theme')?.addEventListener('change', (e) => {
       const newTheme = e.target.value;
+      // Mark this as a user-initiated selection so async loadDocument won't clobber it
+      e.target.dataset.userPicked = '1';
       console.log('[theme] change →', newTheme, 'ebook?', !!ebook);
       const v = THEME_VARS[newTheme] || THEME_VARS.light;
       // Top strip — unmissable visual indicator
@@ -1240,7 +1242,14 @@
         const savedDocType = row.docType || (row.cover?.docType) || 'ebook';
         const savedTheme = row.theme || (row.cover?.theme) || 'light';
         const dtSel = document.getElementById('eb-doctype'); if (dtSel) dtSel.value = savedDocType;
-        const thSel = document.getElementById('eb-theme');   if (thSel) thSel.value = savedTheme;
+        const thSel = document.getElementById('eb-theme');
+        // If user already interacted with the theme selector while loadDocument was
+        // still awaiting (race condition), preserve their selection. Otherwise, apply saved.
+        if (thSel) {
+          const userPicked = thSel.dataset.userPicked === '1';
+          if (!userPicked) thSel.value = savedTheme;
+          ebook.theme = thSel.value;
+        }
         if (row.chapters?.length) {
           renderEbookPreview();
           switchToChatMode();
