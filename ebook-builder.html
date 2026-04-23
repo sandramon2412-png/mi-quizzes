@@ -267,7 +267,7 @@
            class="bg-transparent border-none outline-none text-sm font-bold tracking-tight flex-1 min-w-0 focus:ring-0"/>
   </div>
   <span id="eb-status" class="text-[11px] text-on-surface-variant/70 hidden sm:inline"></span>
-  <span id="eb-version" class="text-[10px] font-mono px-2 py-0.5 rounded bg-surface-container-highest text-on-surface-variant/60" title="Versión del builder">v20260423b</span>
+  <span id="eb-version" class="text-[10px] font-mono px-2 py-0.5 rounded bg-surface-container-highest text-on-surface-variant/60" title="Versión del builder">v20260423c</span>
   <button id="btn-download" class="hidden h-9 px-4 rounded-lg primary-gradient text-white text-xs font-bold flex items-center gap-1.5 hover:opacity-90 transition">
     <span class="material-symbols-outlined" style="font-size:16px">download</span>
     Descargar PDF
@@ -485,9 +485,9 @@
 
 <div id="toast" class="fixed top-16 left-1/2 -translate-x-1/2 px-4 py-2 rounded-lg bg-surface-container-highest text-sm font-medium shadow-2xl z-50 hidden"></div>
 
-<script src="./app.js?v=20260423b"></script>
-<script src="./supabase-config.js?v=20260423b"></script>
-<script>console.log('[ebook-builder] v20260423b loaded');</script>
+<script src="./app.js?v=20260423c"></script>
+<script src="./supabase-config.js?v=20260423c"></script>
+<script>console.log('[ebook-builder] v20260423c loaded');</script>
 <script src="./ai-assistant.js"></script>
 <script>
   (async () => {
@@ -683,9 +683,7 @@
       const subtitle = cover.subtitle || '';
       const theme = (ebook.theme || cover.theme || 'light').toString();
       console.log('[render] theme =', theme, 'ebook.theme =', ebook.theme);
-      // Very visible: tint the preview viewport background based on theme so it's
-      // obvious when the theme is applied (even subtle theme changes register here).
-      const VIEWPORT_BG = { 'light': '#26262a', 'dark-neon': '#0a0a14', 'pastel': '#5a4a3a', 'corporate': '#1e293b' };
+      // Very visible: tint the preview viewport background based on theme.
       ebookPreview.style.background = VIEWPORT_BG[theme] || VIEWPORT_BG.light;
       // Theme-aware cover gradient. Falls back to blue/purple for "light" theme.
       const THEME_GRADS = {
@@ -730,10 +728,18 @@
     };
 
     // Hot-swap the theme on an already-generated doc without re-calling the AI.
+    const VIEWPORT_BG = { 'light': '#26262a', 'dark-neon': '#0a0a14', 'pastel': '#5a4a3a', 'corporate': '#1e293b' };
     document.getElementById('eb-theme')?.addEventListener('change', (e) => {
-      console.log('[theme] change →', e.target.value, 'ebook?', !!ebook);
+      const newTheme = e.target.value;
+      console.log('[theme] change →', newTheme, 'ebook?', !!ebook);
+      // Always tint the viewport so the user sees feedback even without a doc
+      ebookPreview.style.background = VIEWPORT_BG[newTheme] || VIEWPORT_BG.light;
+      toast(`Tema: ${newTheme}`);
       if (!ebook) return;
-      ebook.theme = e.target.value;
+      ebook.theme = newTheme;
+      // Also refresh the data-theme on any currently-rendered wraps, in case
+      // re-render misses them (paginated continuations, etc.)
+      ebookPages.querySelectorAll('.ebook-page-wrap').forEach(w => { w.dataset.theme = newTheme; });
       renderEbookPreview();
       scheduleSave();
     });
