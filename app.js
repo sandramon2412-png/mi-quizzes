@@ -965,9 +965,14 @@ AUTOCHECK (hacelo ANTES de entregar cada sección):
 - Tono: profesional cálido, formal ("vos/usted" según el brief).
 - 6–9 secciones (portada, entendimiento, servicios, metodología, cronograma, inversión, términos, próximos pasos — adaptá al proyecto real).
 - La portada SIEMPRE lleva un <span class="pill accent"> con el cliente o destinatario.
-- CADA SECCIÓN DEBE LLENAR SU PÁGINA A4: mínimo 180 palabras de contenido útil + 2 bloques visuales sustanciales (no microbloques). Una sección con 3 oraciones y listo está PROHIBIDA.
-- Si el cliente pidió "breve": llená con bloques visuales (feature-grid de servicios, cronograma en tabla, pricing-cards) en vez de texto largo. Nunca dejes la página vacía.
-- IGNORÁ marcadores del source tipo "PÁGINA N – TITLE", "text", "Slide N:" — son artefactos, no contenido.`;
+- CADA SECCIÓN DEBE LLENAR SU PÁGINA A4: mínimo 220 palabras de contenido útil + 2 bloques visuales sustanciales. Una sección con 3 oraciones y listo está PROHIBIDA.
+- OBLIGATORIO: al menos UNA sección con tabla markdown (el cronograma, el desglose de inversión, o la comparativa de planes). Sin tabla, la propuesta se ve incompleta.
+- OBLIGATORIO: la sección "Servicios" o equivalente usa feature-grid con 3–6 items (no lista markdown).
+- OBLIGATORIO: la sección "Inversión" o "Precios" usa pricing-card lado a lado (2–3 opciones) o stat-card para valores clave.
+- OBLIGATORIO: la sección "Metodología" o "Proceso" usa numbered-card (una por fase/etapa).
+- Introducción/Resumen ejecutivo: expandí con 2 párrafos + feature-grid de "qué incluye este documento" (3 items). NUNCA solo el título del material fuente.
+- Si el material de base es escaso, INVENTÁ contenido coherente con el brief (no inventes datos específicos como precios, pero sí descripciones de servicios y metodología).
+- IGNORÁ marcadores del source tipo "PÁGINA N – TITLE", "text", "Slide N:", "PROPUESTA COMPLETA PARA X" (si es solo header) — son artefactos, no contenido.`;
 
       case 'checklist':
         return `TIPO DE DOCUMENTO: CHECKLIST / GUÍA PASO A PASO.
