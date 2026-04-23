@@ -267,6 +267,7 @@
            class="bg-transparent border-none outline-none text-sm font-bold tracking-tight flex-1 min-w-0 focus:ring-0"/>
   </div>
   <span id="eb-status" class="text-[11px] text-on-surface-variant/70 hidden sm:inline"></span>
+  <span id="eb-version" class="text-[10px] font-mono px-2 py-0.5 rounded bg-surface-container-highest text-on-surface-variant/60" title="Versión del builder">v20260423b</span>
   <button id="btn-download" class="hidden h-9 px-4 rounded-lg primary-gradient text-white text-xs font-bold flex items-center gap-1.5 hover:opacity-90 transition">
     <span class="material-symbols-outlined" style="font-size:16px">download</span>
     Descargar PDF
@@ -465,7 +466,7 @@
       <p class="text-xs text-on-surface-variant/60 max-w-sm">Completá el formulario y dale "Generar". Claude diseñará un ebook profesional con portada y capítulos.</p>
     </div>
 
-    <div id="ebook-preview" class="hidden flex-1 overflow-y-auto p-6 bg-[#26262a]">
+    <div id="ebook-preview" class="hidden flex-1 overflow-y-auto p-6" style="background:#26262a;transition:background 0.25s">
       <div class="mx-auto max-w-[680px] mb-4 flex items-center gap-2 text-xs text-on-surface-variant">
         <span class="material-symbols-outlined" style="font-size:16px">edit</span>
         <span>Click en texto para editar. Hover sobre un bloque para mover, cortar o borrar. <strong>Ctrl+Z</strong> deshace. Guardado automático.</span>
@@ -484,9 +485,9 @@
 
 <div id="toast" class="fixed top-16 left-1/2 -translate-x-1/2 px-4 py-2 rounded-lg bg-surface-container-highest text-sm font-medium shadow-2xl z-50 hidden"></div>
 
-<script src="./app.js?v=20260423a"></script>
-<script src="./supabase-config.js?v=20260423a"></script>
-<script>console.log('[ebook-builder] v20260423a loaded');</script>
+<script src="./app.js?v=20260423b"></script>
+<script src="./supabase-config.js?v=20260423b"></script>
+<script>console.log('[ebook-builder] v20260423b loaded');</script>
 <script src="./ai-assistant.js"></script>
 <script>
   (async () => {
@@ -682,6 +683,10 @@
       const subtitle = cover.subtitle || '';
       const theme = (ebook.theme || cover.theme || 'light').toString();
       console.log('[render] theme =', theme, 'ebook.theme =', ebook.theme);
+      // Very visible: tint the preview viewport background based on theme so it's
+      // obvious when the theme is applied (even subtle theme changes register here).
+      const VIEWPORT_BG = { 'light': '#26262a', 'dark-neon': '#0a0a14', 'pastel': '#5a4a3a', 'corporate': '#1e293b' };
+      ebookPreview.style.background = VIEWPORT_BG[theme] || VIEWPORT_BG.light;
       // Theme-aware cover gradient. Falls back to blue/purple for "light" theme.
       const THEME_GRADS = {
         'light':      ['#2E5BFF', '#7c3aed'],
