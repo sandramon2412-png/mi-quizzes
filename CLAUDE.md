@@ -434,6 +434,9 @@ Todos estos quedaron en el código y funcionan, pero la raíz del problema era `
   - CSS con `:not(.cover)` para no pisar gradiente de portada
 
 ### Commits clave de esta sesión (último al primero)
+- `c2b3fa7` Add per-chapter "Expand with AI" button for retroactive improvement
+- `1a5a2c6` Reinforce propuesta prompt: mandatory table + full intro + no copy-paste titles
+- `5522fa7` Cover gradient always follows current theme (ignore legacy saved values)
 - `5ee2acd` **Fix root cause: Ebooks.create was dropping theme/docType/source fields** ← EL FIX REAL
 - `aac4257` Fix theme race condition between user interaction and async loadDocument
 - `4f2cef1` Fix cover white-out + make themes visually distinct + cover tables
@@ -450,21 +453,45 @@ Todos estos quedaron en el código y funcionan, pero la raíz del problema era `
 - `ec45e7d` Improve list styling + expand smartMd pattern detection
 - `820f481` Fix visual blocks: smartMd post-processor + stronger prompt prohibitions
 
+### Nueva funcionalidad: botón "Expandir con IA" por capítulo (commit c2b3fa7)
+- En cada `.ebook-page.chapter-page` hay un botón gradiente en esquina inferior derecha
+- Visible en hover (opacity: 0 por default, 0.9 on hover)
+- Click → llama `AI.generateEbookChapter({...})` con el body existente como `sourceExcerpt`
+- Reemplaza `ebook.chapters[idx].body_md` con la versión expandida
+- Usa el docType del ebook (propuesta → tabla obligatoria, feature-grid, pricing-card, etc.)
+- El handler está en `wireInlineEditing()`, línea ~878
+- CSS en `.ebook-page .eb-regen-btn`, línea ~117
+
+### Propuesta — reglas obligatorias (commit 1a5a2c6)
+El prompt de `_docTypePrompt('propuesta')` ahora exige:
+- Mínimo 220 palabras por sección (subido de 180)
+- Al menos UNA sección con tabla markdown (cronograma, inversión, o comparativa)
+- Servicios → feature-grid (no lista markdown)
+- Inversión/Precios → pricing-card o stat-card
+- Metodología/Proceso → numbered-card
+- Introducción → 2 párrafos + feature-grid "qué incluye este documento", NO solo el título del source
+- Si source es escaso, AI puede inventar descripciones (no números específicos)
+- Filtro de artefactos expandido: también strippea "PROPUESTA COMPLETA PARA X" si es solo header
+
 ### Estado final
 - ✅ Bloques visuales funcionando (feature-grid, numbered-card, tablas, callouts)
 - ✅ Temas realmente aplicándose (rosa, violeta, navy, azul default) — después de commit 5ee2acd
+- ✅ Cover gradient sigue al tema sin excepción — después de commit 5522fa7
 - ✅ Artefactos del source removidos (PÁGINA N – TITLE text, etc.)
-- ✅ Cover gradient sigue al tema
 - ✅ Race condition del dropdown resuelta
-- 🟡 Páginas vacías: prompt exige 180 palabras mínimo + 2 bloques, pero depende del AI cumplir. Una opción si sigue pasando: implementar auto-merge de secciones cortas.
-- 🟡 Documentos VIEJOS (guardados antes de commit 5ee2acd) tienen `theme: undefined` en localStorage/Supabase. Hay que regenerarlos o que el user cambie el tema manualmente (se guarda bien ahora).
+- ✅ Botón "Expandir con IA" por capítulo para fix retroactivo de páginas vacías
+- 🟡 Páginas vacías en documentos viejos: el botón resuelve puntualmente. No hay auto-merge.
+- 🟡 Documentos VIEJOS (guardados antes de commit 5ee2acd) tienen `theme: undefined`. El render ahora respeta el dropdown del usuario, pero el ebook en DB sigue sin theme hasta que el user interactúe y se guarde.
+
+### Versión actual: `v20260423l`
+Visible en badge del header (junto al status). Cache-busters en script tags del mismo valor.
 
 ### Cómo el siguiente chat puede validar rápido
 1. Hard-refresh sobre el builder (Ctrl+Shift+R)
-2. Confirmar `v20260423i` en el header
-3. Generar un ebook NUEVO con tema "Pastel suave"
-4. Las tablas, títulos, bullets, numbered cards deberían ser rosa/naranja
-5. Consola debería mostrar `[render] theme = pastel ebook.theme = pastel`
+2. Confirmar `v20260423l` en el header
+3. Abrir un documento generado y hacer hover sobre cualquier chapter page
+4. Debería aparecer el botón "✨ Expandir con IA" en la esquina inferior derecha
+5. Click → el AI regenera esa sección puntual con las reglas del docType actual
 
 Si aún no funciona tras confirmar la versión, el siguiente paso es inspeccionar con DevTools:
 - F12 → Elements → click en `<div class="ebook-page-wrap">` → ver panel Styles → buscar `--doc-primary: #e0749c` inline
@@ -475,3 +502,4 @@ Si aún no funciona tras confirmar la versión, el siguiente paso es inspecciona
 - **Pedir console logs y version labels temprano**. Los logs de `[theme] change → X ebook? false` revelaron la race condition, pero el bug real (`ebook.theme = undefined` después de generar) hubiera salido antes si hubiera mirado el `[render]` log desde el principio.
 - **Cache busting con `?v=X` en script tags + version label visible** es fundamental cuando el usuario reporta "sigue igual". Sin eso no hay forma de distinguir "mi fix no funciona" de "el browser sigue con versión vieja".
 - **Race conditions entre user interaction y async loads**: cuando un handler lee un estado que se populará después de un `await`, considerar `dataset` flags o diferir la interacción.
+- **A4 fijo + contenido variable = empty space inevitable**. Reinforcement del prompt ayuda pero no garantiza. Mejor solución: herramienta in-place (botón "Expandir con IA") que deja al usuario decidir cuándo llenar.
