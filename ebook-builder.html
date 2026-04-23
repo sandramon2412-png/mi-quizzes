@@ -112,15 +112,6 @@
   .ebook-page.cover { padding: 0; align-items: stretch; justify-content: flex-start; color: #fff; }
   .ebook-page.cover .cover-inner { width: 100%; height: 100%; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; padding: 30mm 25mm; }
   .ebook-page.chapter-page { padding: 18mm 20mm; }
-  /* Short chapters: center content vertically + add a decorative gradient bar so
-     the empty space below looks intentional (slide-style) instead of unfinished. */
-  .ebook-page.chapter-page.short-page { display: flex; flex-direction: column; justify-content: center; }
-  .ebook-page.chapter-page.short-page .chapter-body-scroll { flex: 0 0 auto; }
-  .ebook-page.chapter-page.short-page::after {
-    content: ''; position: absolute; bottom: 28mm; left: 20mm; right: 50%;
-    height: 4px; border-radius: 4px;
-    background: linear-gradient(90deg, var(--doc-primary), var(--doc-accent));
-  }
   .ebook-page .chapter-body-scroll { flex: 1; overflow: hidden; }
   .ebook-page-label { position: absolute; top: 8px; right: 12px; font-size: 10px; font-family: 'Plus Jakarta Sans', sans-serif; color: var(--doc-muted); opacity: 0.6; font-weight: 500; letter-spacing: 0.05em; text-transform: uppercase; }
   .ebook-page h1, .ebook-page h2, .ebook-page h3 { font-family: 'Plus Jakarta Sans', sans-serif; letter-spacing: -0.02em; }
@@ -405,7 +396,7 @@
             <option value="pastel">Pastel suave (crema + rosa/naranja)</option>
             <option value="corporate">Corporativo (blanco + navy/teal)</option>
           </select>
-          <p class="text-[10px] text-on-surface-variant/60 mt-1">Define los colores de títulos, callouts, tablas y bloques visuales. La portada mantiene su gradiente propio.</p>
+          <p class="text-[10px] text-on-surface-variant/60 mt-1">Define los colores de títulos, callouts, tablas, bloques visuales y portada.</p>
         </div>
         <div>
           <label class="text-[11px] font-semibold text-on-surface-variant block mb-1">Tono</label>
@@ -493,8 +484,9 @@
 
 <div id="toast" class="fixed top-16 left-1/2 -translate-x-1/2 px-4 py-2 rounded-lg bg-surface-container-highest text-sm font-medium shadow-2xl z-50 hidden"></div>
 
-<script src="./app.js?v=20260422d"></script>
-<script src="./supabase-config.js?v=20260422d"></script>
+<script src="./app.js?v=20260423a"></script>
+<script src="./supabase-config.js?v=20260423a"></script>
+<script>console.log('[ebook-builder] v20260423a loaded');</script>
 <script src="./ai-assistant.js"></script>
 <script>
   (async () => {
@@ -689,6 +681,7 @@
       const cover = ebook.cover || {};
       const subtitle = cover.subtitle || '';
       const theme = (ebook.theme || cover.theme || 'light').toString();
+      console.log('[render] theme =', theme, 'ebook.theme =', ebook.theme);
       // Theme-aware cover gradient. Falls back to blue/purple for "light" theme.
       const THEME_GRADS = {
         'light':      ['#2E5BFF', '#7c3aed'],
@@ -714,21 +707,14 @@
           </div>
         </div>`;
 
-      // A chapter is "short" when its plain-text content is under ~380 chars.
-      // Short chapters get centered vertically + a decorative gradient bar so
-      // short sections (cover intro, "Para: Cliente", etc.) look intentional.
-      const isShortChapter = (md) => (md || '').replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim().length < 380;
-      const chaptersHtml = ebook.chapters.map((ch, i) => {
-        const shortCls = isShortChapter(ch.body_md) ? ' short-page' : '';
-        return `
+      const chaptersHtml = ebook.chapters.map((ch, i) => `
         <div class="ebook-page-wrap" data-theme="${escapeHtml(theme)}">
-          <div class="ebook-page chapter-page${shortCls}" data-chapter-idx="${i}">
+          <div class="ebook-page chapter-page" data-chapter-idx="${i}">
             <h1 class="chapter-title" data-edit="chapter-title" data-idx="${i}">${escapeHtml(ch.title || `Página ${i + 1}`)}</h1>
             <div class="chapter-body-scroll" data-edit="chapter-body" data-idx="${i}">${smartMd(ch.body_md || '')}</div>
             <div class="ebook-page-label">Página ${i + 2} · A4</div>
           </div>
-        </div>`;
-      }).join('');
+        </div>`).join('');
 
       ebookPages.innerHTML = coverHtml + chaptersHtml;
       wireInlineEditing();
@@ -740,6 +726,7 @@
 
     // Hot-swap the theme on an already-generated doc without re-calling the AI.
     document.getElementById('eb-theme')?.addEventListener('change', (e) => {
+      console.log('[theme] change →', e.target.value, 'ebook?', !!ebook);
       if (!ebook) return;
       ebook.theme = e.target.value;
       renderEbookPreview();
@@ -1627,14 +1614,12 @@
             ${cover.subtitle ? `<p class="subtitle">${escapeHtml(cover.subtitle)}</p>` : ''}
           </div>
         </section>
-      ` + ebook.chapters.map((ch, i) => {
-        const isShort = (ch.body_md || '').replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim().length < 380;
-        return `
-        <section class="page chapter${isShort ? ' short-page' : ''}">
+      ` + ebook.chapters.map((ch, i) => `
+        <section class="page chapter">
           <h1 class="chapter-title">${escapeHtml(ch.title || `Página ${i + 1}`)}</h1>
           <div class="chapter-body">${smartMd(ch.body_md || '')}</div>
         </section>
-      `;}).join('');
+      `).join('');
 
       const hint = `<div class="hint">Hacé clic en <strong>"Descargar PDF"</strong> para guardar tu ebook. El PDF generado va a verse exactamente como esta vista previa.</div>`;
 
@@ -1734,12 +1719,6 @@
     min-height: 297mm;
   }
   .page.chapter:last-child { page-break-after: auto; break-after: auto; }
-  .page.chapter.short-page { display: flex; flex-direction: column; justify-content: center; position: relative; }
-  .page.chapter.short-page::after {
-    content: ''; position: absolute; bottom: 28mm; left: 20mm; width: 50%;
-    height: 4px; border-radius: 4px;
-    background: linear-gradient(90deg, var(--doc-primary), var(--doc-accent));
-  }
   @media print {
     .page.chapter { padding: 0 !important; min-height: auto !important; width: auto !important; }
     .page.cover { width: 100% !important; height: 100% !important; min-height: 100vh !important; margin: 0 !important; padding: 0 !important; }
