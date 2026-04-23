@@ -114,6 +114,10 @@
   .ebook-page.chapter-page { padding: 18mm 20mm; }
   .ebook-page .chapter-body-scroll { flex: 1; overflow: hidden; }
   .ebook-page-label { position: absolute; top: 8px; right: 12px; font-size: 10px; font-family: 'Plus Jakarta Sans', sans-serif; color: var(--doc-muted); opacity: 0.6; font-weight: 500; letter-spacing: 0.05em; text-transform: uppercase; }
+  .ebook-page .eb-regen-btn { position: absolute; bottom: 12mm; right: 14mm; display: inline-flex; align-items: center; gap: 6px; padding: 7px 12px; border-radius: 8px; background: linear-gradient(135deg, var(--doc-primary), var(--doc-accent)); color: #fff; border: none; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 11px; font-weight: 700; cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,0.15); opacity: 0; transition: opacity 0.15s; z-index: 5; }
+  .ebook-page:hover .eb-regen-btn { opacity: 0.9; }
+  .ebook-page .eb-regen-btn:hover { opacity: 1 !important; transform: translateY(-1px); }
+  .ebook-page .eb-regen-btn:disabled { opacity: 0.5 !important; cursor: wait; }
   .ebook-page h1, .ebook-page h2, .ebook-page h3 { font-family: 'Plus Jakarta Sans', sans-serif; letter-spacing: -0.02em; }
   .ebook-page h2 { font-size: 22px; font-weight: 800; margin: 28px 0 14px; background: linear-gradient(135deg, var(--doc-primary), var(--doc-accent)); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; color: var(--doc-primary); }
   .ebook-page h3 { font-size: 17px; font-weight: 700; margin: 22px 0 10px; color: var(--doc-fg); }
@@ -269,7 +273,7 @@
            class="bg-transparent border-none outline-none text-sm font-bold tracking-tight flex-1 min-w-0 focus:ring-0"/>
   </div>
   <span id="eb-status" class="text-[11px] text-on-surface-variant/70 hidden sm:inline"></span>
-  <span id="eb-version" class="text-[10px] font-mono px-2 py-0.5 rounded bg-surface-container-highest text-on-surface-variant/60" title="Versión del builder">v20260423k</span>
+  <span id="eb-version" class="text-[10px] font-mono px-2 py-0.5 rounded bg-surface-container-highest text-on-surface-variant/60" title="Versión del builder">v20260423l</span>
   <button id="btn-download" class="hidden h-9 px-4 rounded-lg primary-gradient text-white text-xs font-bold flex items-center gap-1.5 hover:opacity-90 transition">
     <span class="material-symbols-outlined" style="font-size:16px">download</span>
     Descargar PDF
@@ -487,9 +491,9 @@
 
 <div id="toast" class="fixed top-16 left-1/2 -translate-x-1/2 px-4 py-2 rounded-lg bg-surface-container-highest text-sm font-medium shadow-2xl z-50 hidden"></div>
 
-<script src="./app.js?v=20260423k"></script>
-<script src="./supabase-config.js?v=20260423k"></script>
-<script>console.log('[ebook-builder] v20260423k loaded');</script>
+<script src="./app.js?v=20260423l"></script>
+<script src="./supabase-config.js?v=20260423l"></script>
+<script>console.log('[ebook-builder] v20260423l loaded');</script>
 <script src="./ai-assistant.js"></script>
 <script>
   (async () => {
@@ -720,6 +724,10 @@
           <div class="ebook-page chapter-page" data-chapter-idx="${i}">
             <h1 class="chapter-title" data-edit="chapter-title" data-idx="${i}">${escapeHtml(ch.title || `Página ${i + 1}`)}</h1>
             <div class="chapter-body-scroll" data-edit="chapter-body" data-idx="${i}">${smartMd(ch.body_md || '')}</div>
+            <button class="eb-regen-btn" data-regen-idx="${i}" title="Regenerar esta sección con IA (expandir contenido + bloques visuales)">
+              <span class="material-symbols-outlined" style="font-size:14px;vertical-align:middle">auto_awesome</span>
+              <span>Expandir con IA</span>
+            </button>
             <div class="ebook-page-label">Página ${i + 2} · A4</div>
           </div>
         </div>`).join('');
@@ -864,6 +872,48 @@
         el.classList.add('editable-block');
       });
       wireBlockHovers();
+      // Wire the per-chapter "Expand with AI" buttons
+      ebookPages.querySelectorAll('.eb-regen-btn').forEach(btn => {
+        btn.contentEditable = 'false'; // prevent inline editing on the button itself
+        btn.addEventListener('click', async (e) => {
+          e.preventDefault(); e.stopPropagation();
+          if (!ebook || btn.disabled) return;
+          const idx = parseInt(btn.dataset.regenIdx, 10);
+          const ch = ebook.chapters[idx];
+          if (!ch) return;
+          btn.disabled = true;
+          const originalHtml = btn.innerHTML;
+          btn.innerHTML = '<span class="thinking-dot"></span><span class="thinking-dot"></span><span class="thinking-dot"></span>';
+          setStatus(`Expandiendo "${ch.title}" con IA…`);
+          try {
+            const { tone, audience, docType, title, cover, chapters } = ebook;
+            const existingBody = (ch.body_md || '').replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
+            const sourceExcerpt = existingBody ? `Contenido actual (expandí y mejorá sobre esto, NO empieces de cero si hay sustancia real):\n${existingBody}` : '';
+            const result = await AI.generateEbookChapter({
+              bookTitle: title || 'Documento',
+              bookSubtitle: cover?.subtitle || '',
+              chapterTitle: ch.title || `Sección ${idx + 1}`,
+              chapterIndex: idx,
+              totalChapters: chapters.length,
+              tone: tone || 'profesional',
+              sourceExcerpt,
+              audience: audience || '',
+              docType: docType || 'ebook',
+            });
+            ebook.chapters[idx].body_md = result.body_md;
+            scheduleSave();
+            renderEbookPreview();
+            toast(`Sección expandida`);
+            setStatus('');
+          } catch (err) {
+            console.error('[expand] failed:', err);
+            toast('No se pudo expandir: ' + (err?.message || 'error'), 'err');
+            btn.disabled = false;
+            btn.innerHTML = originalHtml;
+            setStatus('');
+          }
+        });
+      });
 
       ebookPages.querySelectorAll('[data-edit="cover-title"]').forEach(el => {
         el.addEventListener('input', () => {
