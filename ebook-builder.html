@@ -269,7 +269,7 @@
            class="bg-transparent border-none outline-none text-sm font-bold tracking-tight flex-1 min-w-0 focus:ring-0"/>
   </div>
   <span id="eb-status" class="text-[11px] text-on-surface-variant/70 hidden sm:inline"></span>
-  <span id="eb-version" class="text-[10px] font-mono px-2 py-0.5 rounded bg-surface-container-highest text-on-surface-variant/60" title="Versión del builder">v20260423f</span>
+  <span id="eb-version" class="text-[10px] font-mono px-2 py-0.5 rounded bg-surface-container-highest text-on-surface-variant/60" title="Versión del builder">v20260423g</span>
   <button id="btn-download" class="hidden h-9 px-4 rounded-lg primary-gradient text-white text-xs font-bold flex items-center gap-1.5 hover:opacity-90 transition">
     <span class="material-symbols-outlined" style="font-size:16px">download</span>
     Descargar PDF
@@ -487,9 +487,9 @@
 
 <div id="toast" class="fixed top-16 left-1/2 -translate-x-1/2 px-4 py-2 rounded-lg bg-surface-container-highest text-sm font-medium shadow-2xl z-50 hidden"></div>
 
-<script src="./app.js?v=20260423f"></script>
-<script src="./supabase-config.js?v=20260423f"></script>
-<script>console.log('[ebook-builder] v20260423f loaded');</script>
+<script src="./app.js?v=20260423g"></script>
+<script src="./supabase-config.js?v=20260423g"></script>
+<script>console.log('[ebook-builder] v20260423g loaded');</script>
 <script src="./ai-assistant.js"></script>
 <script>
   (async () => {
@@ -690,9 +690,9 @@
       // Theme-aware cover gradient. Falls back to blue/purple for "light" theme.
       const THEME_GRADS = {
         'light':      ['#2E5BFF', '#7c3aed'],
-        'dark-neon':  ['#4d7cff', '#c084fc'],
+        'dark-neon':  ['#c084fc', '#22d3ee'],
         'pastel':     ['#e0749c', '#f4a261'],
-        'corporate':  ['#0f4c81', '#0891b2'],
+        'corporate':  ['#0a2540', '#059669'],
       };
       const defaultGrad = THEME_GRADS[theme] || THEME_GRADS.light;
       const gradFrom = cover.gradientFrom || defaultGrad[0];
@@ -744,10 +744,10 @@
       },
       'dark-neon': {
         '--doc-bg':'#0a0a0f','--doc-fg':'#eaeaf0','--doc-muted':'#a3a3b5',
-        '--doc-primary':'#4d7cff','--doc-accent':'#c084fc',
-        '--doc-title-grad-from':'#a78bfa','--doc-title-grad-to':'#4d7cff',
-        '--doc-surface':'#151525','--doc-surface-2':'#10101c',
-        '--doc-border':'#23233a','--doc-code-bg':'#1a1a2a',
+        '--doc-primary':'#c084fc','--doc-accent':'#22d3ee',
+        '--doc-title-grad-from':'#c084fc','--doc-title-grad-to':'#22d3ee',
+        '--doc-surface':'#1a1a2e','--doc-surface-2':'#10101c',
+        '--doc-border':'#2a2a44','--doc-code-bg':'#1a1a2a',
       },
       'pastel': {
         '--doc-bg':'#fdf6f0','--doc-fg':'#2a2233','--doc-muted':'#6b5a6f',
@@ -758,10 +758,10 @@
       },
       'corporate': {
         '--doc-bg':'#ffffff','--doc-fg':'#0f172a','--doc-muted':'#475569',
-        '--doc-primary':'#0f4c81','--doc-accent':'#0891b2',
-        '--doc-title-grad-from':'#0f4c81','--doc-title-grad-to':'#0891b2',
-        '--doc-surface':'#f0f9ff','--doc-surface-2':'#f1f5f9',
-        '--doc-border':'#cbd5e1','--doc-code-bg':'#e2e8f0',
+        '--doc-primary':'#0a2540','--doc-accent':'#059669',
+        '--doc-title-grad-from':'#0a2540','--doc-title-grad-to':'#059669',
+        '--doc-surface':'#ecfdf5','--doc-surface-2':'#f0fdf4',
+        '--doc-border':'#d1fae5','--doc-code-bg':'#e2e8f0',
       },
     };
     const applyThemeInline = (theme) => {
@@ -777,26 +777,29 @@
       const v = vars;
       styleEl.textContent = `
         #ebook-preview { background: ${VIEWPORT_BG[theme] || VIEWPORT_BG.light} !important; }
-        .ebook-page { background: ${v['--doc-bg']} !important; color: ${v['--doc-fg']} !important; }
-        .ebook-page .chapter-title { background: linear-gradient(135deg, ${v['--doc-title-grad-from']}, ${v['--doc-title-grad-to']}) !important; -webkit-background-clip: text !important; background-clip: text !important; -webkit-text-fill-color: transparent !important; color: ${v['--doc-fg']} !important; }
-        .ebook-page h2 { background: linear-gradient(135deg, ${v['--doc-primary']}, ${v['--doc-accent']}) !important; -webkit-background-clip: text !important; background-clip: text !important; -webkit-text-fill-color: transparent !important; }
-        .ebook-page h3 { color: ${v['--doc-fg']} !important; }
-        .ebook-page p, .ebook-page li { color: ${v['--doc-fg']} !important; }
-        .ebook-page strong { color: ${v['--doc-primary']} !important; }
-        .ebook-page ul li { background: ${v['--doc-surface']} !important; }
-        .ebook-page ul li::before { background: linear-gradient(135deg, ${v['--doc-primary']}, ${v['--doc-accent']}) !important; }
-        .ebook-page ol:not(.steps) li { background: ${v['--doc-surface-2']} !important; color: ${v['--doc-fg']} !important; }
-        .ebook-page ol:not(.steps) li::before { background: linear-gradient(135deg, ${v['--doc-primary']}, ${v['--doc-accent']}) !important; }
-        .ebook-page table thead { background: linear-gradient(135deg, ${v['--doc-primary']}, ${v['--doc-accent']}) !important; }
-        .ebook-page td { color: ${v['--doc-fg']} !important; border-top-color: ${v['--doc-border']} !important; }
-        .ebook-page tbody tr:nth-child(even) td { background: ${v['--doc-surface-2']} !important; }
-        .ebook-page .feature-icon { background: linear-gradient(135deg, ${v['--doc-primary']}, ${v['--doc-accent']}) !important; }
-        .ebook-page .feature-title { color: ${v['--doc-fg']} !important; }
-        .ebook-page .feature-desc { color: ${v['--doc-muted']} !important; }
-        .ebook-page .numbered-card { background: ${v['--doc-surface-2']} !important; }
-        .ebook-page .numbered-card .n { background: linear-gradient(135deg, ${v['--doc-primary']}, ${v['--doc-accent']}) !important; }
-        .ebook-page .callout-tip { background: ${v['--doc-surface']} !important; border-color: ${v['--doc-primary']} !important; }
-        .ebook-page blockquote { background: ${v['--doc-surface']} !important; border-left-color: ${v['--doc-accent']} !important; color: ${v['--doc-fg']} !important; }
+        .ebook-page:not(.cover) { background: ${v['--doc-bg']} !important; color: ${v['--doc-fg']} !important; }
+        .ebook-page:not(.cover) .chapter-title { background: linear-gradient(135deg, ${v['--doc-title-grad-from']}, ${v['--doc-title-grad-to']}) !important; -webkit-background-clip: text !important; background-clip: text !important; -webkit-text-fill-color: transparent !important; color: ${v['--doc-fg']} !important; }
+        .ebook-page:not(.cover) h2 { background: linear-gradient(135deg, ${v['--doc-primary']}, ${v['--doc-accent']}) !important; -webkit-background-clip: text !important; background-clip: text !important; -webkit-text-fill-color: transparent !important; }
+        .ebook-page:not(.cover) h3 { color: ${v['--doc-fg']} !important; }
+        .ebook-page:not(.cover) p, .ebook-page:not(.cover) li { color: ${v['--doc-fg']} !important; }
+        .ebook-page:not(.cover) strong { color: ${v['--doc-primary']} !important; }
+        .ebook-page:not(.cover) ul li { background: ${v['--doc-surface']} !important; }
+        .ebook-page:not(.cover) ul li::before { background: linear-gradient(135deg, ${v['--doc-primary']}, ${v['--doc-accent']}) !important; }
+        .ebook-page:not(.cover) ol:not(.steps) li { background: ${v['--doc-surface-2']} !important; color: ${v['--doc-fg']} !important; }
+        .ebook-page:not(.cover) ol:not(.steps) li::before { background: linear-gradient(135deg, ${v['--doc-primary']}, ${v['--doc-accent']}) !important; }
+        .ebook-page:not(.cover) table thead,
+        .ebook-page:not(.cover) thead,
+        .ebook-page:not(.cover) table thead tr,
+        .ebook-page:not(.cover) table thead th { background: linear-gradient(135deg, ${v['--doc-primary']}, ${v['--doc-accent']}) !important; color: #fff !important; }
+        .ebook-page:not(.cover) td { color: ${v['--doc-fg']} !important; border-top-color: ${v['--doc-border']} !important; }
+        .ebook-page:not(.cover) tbody tr:nth-child(even) td { background: ${v['--doc-surface-2']} !important; }
+        .ebook-page:not(.cover) .feature-icon { background: linear-gradient(135deg, ${v['--doc-primary']}, ${v['--doc-accent']}) !important; }
+        .ebook-page:not(.cover) .feature-title { color: ${v['--doc-fg']} !important; }
+        .ebook-page:not(.cover) .feature-desc { color: ${v['--doc-muted']} !important; }
+        .ebook-page:not(.cover) .numbered-card { background: ${v['--doc-surface-2']} !important; }
+        .ebook-page:not(.cover) .numbered-card .n { background: linear-gradient(135deg, ${v['--doc-primary']}, ${v['--doc-accent']}) !important; }
+        .ebook-page:not(.cover) .callout-tip { background: ${v['--doc-surface']} !important; border-color: ${v['--doc-primary']} !important; }
+        .ebook-page:not(.cover) blockquote { background: ${v['--doc-surface']} !important; border-left-color: ${v['--doc-accent']} !important; color: ${v['--doc-fg']} !important; }
       `;
     };
     document.getElementById('eb-theme')?.addEventListener('change', (e) => {
@@ -1682,9 +1685,9 @@
       const theme = (ebook.theme || cover.theme || 'light').toString();
       const THEME_GRADS_PDF = {
         'light':      ['#2E5BFF', '#7c3aed'],
-        'dark-neon':  ['#4d7cff', '#c084fc'],
+        'dark-neon':  ['#c084fc', '#22d3ee'],
         'pastel':     ['#e0749c', '#f4a261'],
-        'corporate':  ['#0f4c81', '#0891b2'],
+        'corporate':  ['#0a2540', '#059669'],
       };
       const defaultGradPdf = THEME_GRADS_PDF[theme] || THEME_GRADS_PDF.light;
       const gradFrom = cover.gradientFrom || defaultGradPdf[0];
