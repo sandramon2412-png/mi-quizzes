@@ -267,7 +267,7 @@
            class="bg-transparent border-none outline-none text-sm font-bold tracking-tight flex-1 min-w-0 focus:ring-0"/>
   </div>
   <span id="eb-status" class="text-[11px] text-on-surface-variant/70 hidden sm:inline"></span>
-  <span id="eb-version" class="text-[10px] font-mono px-2 py-0.5 rounded bg-surface-container-highest text-on-surface-variant/60" title="Versión del builder">v20260423d</span>
+  <span id="eb-version" class="text-[10px] font-mono px-2 py-0.5 rounded bg-surface-container-highest text-on-surface-variant/60" title="Versión del builder">v20260423e</span>
   <button id="btn-download" class="hidden h-9 px-4 rounded-lg primary-gradient text-white text-xs font-bold flex items-center gap-1.5 hover:opacity-90 transition">
     <span class="material-symbols-outlined" style="font-size:16px">download</span>
     Descargar PDF
@@ -485,9 +485,9 @@
 
 <div id="toast" class="fixed top-16 left-1/2 -translate-x-1/2 px-4 py-2 rounded-lg bg-surface-container-highest text-sm font-medium shadow-2xl z-50 hidden"></div>
 
-<script src="./app.js?v=20260423d"></script>
-<script src="./supabase-config.js?v=20260423d"></script>
-<script>console.log('[ebook-builder] v20260423d loaded');</script>
+<script src="./app.js?v=20260423e"></script>
+<script src="./supabase-config.js?v=20260423e"></script>
+<script>console.log('[ebook-builder] v20260423e loaded');</script>
 <script src="./ai-assistant.js"></script>
 <script>
   (async () => {
@@ -768,6 +768,34 @@
         wrap.setAttribute('data-theme', theme);
         for (const [k, v] of Object.entries(vars)) wrap.style.setProperty(k, v);
       });
+      // Brute-force: inject a <style> with !important concrete-color rules so
+      // the theme applies regardless of CSS var inheritance or specificity.
+      let styleEl = document.getElementById('eb-theme-inject');
+      if (!styleEl) { styleEl = document.createElement('style'); styleEl.id = 'eb-theme-inject'; document.head.appendChild(styleEl); }
+      const v = vars;
+      styleEl.textContent = `
+        #ebook-preview { background: ${VIEWPORT_BG[theme] || VIEWPORT_BG.light} !important; }
+        .ebook-page { background: ${v['--doc-bg']} !important; color: ${v['--doc-fg']} !important; }
+        .ebook-page .chapter-title { background: linear-gradient(135deg, ${v['--doc-title-grad-from']}, ${v['--doc-title-grad-to']}) !important; -webkit-background-clip: text !important; background-clip: text !important; -webkit-text-fill-color: transparent !important; color: ${v['--doc-fg']} !important; }
+        .ebook-page h2 { background: linear-gradient(135deg, ${v['--doc-primary']}, ${v['--doc-accent']}) !important; -webkit-background-clip: text !important; background-clip: text !important; -webkit-text-fill-color: transparent !important; }
+        .ebook-page h3 { color: ${v['--doc-fg']} !important; }
+        .ebook-page p, .ebook-page li { color: ${v['--doc-fg']} !important; }
+        .ebook-page strong { color: ${v['--doc-primary']} !important; }
+        .ebook-page ul li { background: ${v['--doc-surface']} !important; }
+        .ebook-page ul li::before { background: linear-gradient(135deg, ${v['--doc-primary']}, ${v['--doc-accent']}) !important; }
+        .ebook-page ol:not(.steps) li { background: ${v['--doc-surface-2']} !important; color: ${v['--doc-fg']} !important; }
+        .ebook-page ol:not(.steps) li::before { background: linear-gradient(135deg, ${v['--doc-primary']}, ${v['--doc-accent']}) !important; }
+        .ebook-page table thead { background: linear-gradient(135deg, ${v['--doc-primary']}, ${v['--doc-accent']}) !important; }
+        .ebook-page td { color: ${v['--doc-fg']} !important; border-top-color: ${v['--doc-border']} !important; }
+        .ebook-page tbody tr:nth-child(even) td { background: ${v['--doc-surface-2']} !important; }
+        .ebook-page .feature-icon { background: linear-gradient(135deg, ${v['--doc-primary']}, ${v['--doc-accent']}) !important; }
+        .ebook-page .feature-title { color: ${v['--doc-fg']} !important; }
+        .ebook-page .feature-desc { color: ${v['--doc-muted']} !important; }
+        .ebook-page .numbered-card { background: ${v['--doc-surface-2']} !important; }
+        .ebook-page .numbered-card .n { background: linear-gradient(135deg, ${v['--doc-primary']}, ${v['--doc-accent']}) !important; }
+        .ebook-page .callout-tip { background: ${v['--doc-surface']} !important; border-color: ${v['--doc-primary']} !important; }
+        .ebook-page blockquote { background: ${v['--doc-surface']} !important; border-left-color: ${v['--doc-accent']} !important; color: ${v['--doc-fg']} !important; }
+      `;
     };
     document.getElementById('eb-theme')?.addEventListener('change', (e) => {
       const newTheme = e.target.value;
