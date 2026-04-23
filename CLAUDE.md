@@ -336,3 +336,142 @@ git push -u origin claude/fix-free-tier-ai-calls-CM1dL
 - **NO** intentar agregar 5+ templates en un solo Edit — fallar por timeout del stream
 - **SÍ** hacer los Edits de 1-2 templates por turn y commit seguido
 - **SÍ** leer las últimas 15 líneas del archivo antes de cada Edit para conocer el estado exacto
+
+---
+
+## SESIÓN EBOOK-BUILDER (23 abr 2026) — branch `claude/fix-free-tier-ai-calls-yFJpv`
+
+### Contexto
+Trabajando sobre el `ebook-builder.html` para que genere documentos estilo Gamma (ebooks, propuestas, presentaciones, checklists). La sesión se enfocó en 3 problemas reportados por la usuaria:
+1. Salidas plano/genérico — sin bloques visuales
+2. Páginas mayormente vacías
+3. Tema de color no respetaba la selección del dropdown
+
+### Cambios que SÍ funcionan (deployed, merged a main vía auto-merge action)
+
+#### Bloques visuales premium
+- **`smartMd()` en `ebook-builder.html`** (~línea 562): post-procesador que convierte patrones de markdown a HTML con clases visuales ANTES de `marked.parse()`:
+  - `- **Name** — desc` (3+ items) → `feature-grid`
+  - `- **Name**` (multi-línea con desc abajo) → `feature-grid`
+  - `N. **Title** — desc` (2–8 items) → `numbered-card`
+  - `1. paso simple` (3+) → `<ol class="steps">`
+  - `> texto` → `<div class="callout callout-tip/warn/info/quote">`
+  - Pre-paso: merge de bullets separados por línea en blanco
+- **`_docPatternRules()` en `app.js`** (~línea 918): prompt con PROHIBICIONES explícitas (no markdown lists, no blockquotes, no números sueltos en prosa) + AUTOCHECK obligatorio.
+- **CSS premium para listas**: `.ebook-page ul li` con fondo de card + bullet gradiente, `.ebook-page ol:not(.steps) li` con número en badge cuadrado gradiente. Funciona aunque el AI genere markdown plano.
+
+#### Limpieza de artefactos del source
+- `generateEbookChapter` en `app.js` ahora limpia el `sourceExcerpt` antes de mandarlo al AI y también limpia el output:
+  - `PÁGINA N – TITLE text` (de PDFs convertidos)
+  - `Slide N:` prefijos
+  - `text` suelto al final de línea
+  - `[Fecha actual]` placeholders
+- Retroactivo: `smartMd()` también aplica la misma limpieza al renderizar, así documentos viejos quedan limpios sin regenerar.
+
+#### Prompt reforzado para contenido
+- `_docTypePrompt('propuesta')` exige mínimo 180 palabras + 2 bloques visuales sustanciales por sección.
+- `generateEbookChapter` user message: `DEBE llenar la página: mínimo 180 palabras + 2 bloques visuales`.
+
+#### Tipos de documento
+- Form tiene selector "Tipo de documento" (ebook/presentacion/propuesta/checklist/documento).
+- Selector "Paleta / Tema visual" con 4 opciones (light/dark-neon/pastel/corporate).
+
+### EL BUG GRANDE QUE FINALMENTE RESOLVÍ (al final de la sesión, commit `5ee2acd`)
+
+**`Ebooks.create()` en `app.js` líneas 201-217 estaba descartando silenciosamente los campos `theme`, `docType` y `source`.** Tenía una lista blanca hardcodeada de campos que copiaba al crear:
+```js
+// ANTES — BUGGY:
+create(data) {
+  const ebook = {
+    id, title, brief, topic, audience, tone,
+    chapters, cover, messages, settings, downloads, created_at
+    // falta theme, docType, source → se descartan
+  };
+}
+```
+
+**Consecuencia**: sin importar qué tema elegía la usuaria, `ebook.theme` siempre quedaba `undefined`. En `renderEbookPreview`, `ebook.theme || 'light'` caía al default. Las tablas siempre azules, títulos siempre azules.
+
+**Fix**: agregar `source`, `docType`, `theme` al objeto en `Ebooks.create`.
+
+### Cambios que NO eran necesarios / se podrían limpiar
+
+Antes de encontrar el bug real, probé en orden (todos deployed pero no resolvían el tema):
+1. CSS vars con attribute selector `[data-theme="X"]` (clásico, debería funcionar)
+2. Aplicar CSS vars inline con `element.style.setProperty()`
+3. Inyectar `<style>` con `!important` y colores hex concretos
+4. Barra de 6px arriba que cambia con el tema (debug visual)
+5. Tint del viewport background
+6. Fix de race condition entre user picking theme y loadDocument async
+7. `dataset.userPicked` para preservar la selección del usuario
+
+Todos estos quedaron en el código y funcionan, pero la raíz del problema era `Ebooks.create`. Se podrían simplificar pero no es prioridad.
+
+### Temas visuales (colores finales)
+- **light**: #2E5BFF → #7c3aed (azul/púrpura) — default
+- **dark-neon**: #c084fc → #22d3ee (violeta brillante → cyan)
+- **pastel**: #e0749c → #f4a261 (rosa → naranja)
+- **corporate**: #0a2540 → #059669 (navy oscuro → esmeralda)
+
+### Archivos principales tocados
+- `app.js`:
+  - `Ebooks.create` ~línea 201 (BUG FIX crítico)
+  - `generateEbookChapter` ~línea 1101 (cleanup de source + prompt reforzado)
+  - `_docPatternRules` ~línea 918 (reglas con prohibiciones)
+  - `_docTypePrompt` ~línea 959 (extensión mínima por tipo)
+  - `_parseJSONLoose` ~línea 1030 (3-retry parse para chat responses)
+  - `_extractFromBadJSON` ~línea 1069 (rescate de chat replies malformados)
+  - `PlanLimits` — Pro ebooks 5→999, Growth 20→999, Free 0→1, Starter 0→3
+- `ebook-builder.html`:
+  - `smartMd()` + `_upgradeBlock()` ~línea 546 (markdown → visual blocks)
+  - `applyThemeInline()` ~línea 767 (inyecta CSS !important por tema)
+  - `THEME_VARS` + `THEME_GRADS` + `VIEWPORT_BG` (definiciones de colores)
+  - Cover page usa gradiente theme-aware (ya no hardcoded)
+  - Cache-buster en script tags `?v=20260423i`
+  - Version label visible en header `v20260423i`
+  - Console logs de diagnóstico (`[theme] change`, `[render]`)
+  - Race-condition fix con `dataset.userPicked`
+  - CSS con `:not(.cover)` para no pisar gradiente de portada
+
+### Commits clave de esta sesión (último al primero)
+- `5ee2acd` **Fix root cause: Ebooks.create was dropping theme/docType/source fields** ← EL FIX REAL
+- `aac4257` Fix theme race condition between user interaction and async loadDocument
+- `4f2cef1` Fix cover white-out + make themes visually distinct + cover tables
+- `008497e` Add unmissable theme strip + error-log applyThemeInline
+- `7cb5706` Inject !important style tag with concrete colors per theme
+- `ba85421` Apply theme via inline CSS vars instead of relying on attribute selectors
+- `eb99454` Theme handler: always give feedback, even without a loaded ebook
+- `a466bb3` Add visible version indicator + theme-reactive viewport bg
+- `a42972d` Revert short-page centering + bump cache-buster + add theme debug logs
+- `fa63668` Make short chapters look intentional (centered + gradient accent) ← REVERTIDO
+- `5cb5b11` Theme-aware cover gradient + cache-bust scripts
+- `c112723` Strip source artifacts at render time too (retroactive cleanup)
+- `cdcadfd` Strip source artifacts and enforce minimum content per section
+- `ec45e7d` Improve list styling + expand smartMd pattern detection
+- `820f481` Fix visual blocks: smartMd post-processor + stronger prompt prohibitions
+
+### Estado final
+- ✅ Bloques visuales funcionando (feature-grid, numbered-card, tablas, callouts)
+- ✅ Temas realmente aplicándose (rosa, violeta, navy, azul default) — después de commit 5ee2acd
+- ✅ Artefactos del source removidos (PÁGINA N – TITLE text, etc.)
+- ✅ Cover gradient sigue al tema
+- ✅ Race condition del dropdown resuelta
+- 🟡 Páginas vacías: prompt exige 180 palabras mínimo + 2 bloques, pero depende del AI cumplir. Una opción si sigue pasando: implementar auto-merge de secciones cortas.
+- 🟡 Documentos VIEJOS (guardados antes de commit 5ee2acd) tienen `theme: undefined` en localStorage/Supabase. Hay que regenerarlos o que el user cambie el tema manualmente (se guarda bien ahora).
+
+### Cómo el siguiente chat puede validar rápido
+1. Hard-refresh sobre el builder (Ctrl+Shift+R)
+2. Confirmar `v20260423i` en el header
+3. Generar un ebook NUEVO con tema "Pastel suave"
+4. Las tablas, títulos, bullets, numbered cards deberían ser rosa/naranja
+5. Consola debería mostrar `[render] theme = pastel ebook.theme = pastel`
+
+Si aún no funciona tras confirmar la versión, el siguiente paso es inspeccionar con DevTools:
+- F12 → Elements → click en `<div class="ebook-page-wrap">` → ver panel Styles → buscar `--doc-primary: #e0749c` inline
+- F12 → Elements → click en `<style id="eb-theme-inject">` → ver que tiene reglas con colores hex pastel
+
+### Lecciones clave de esta sesión
+- **Cuando algo "no cambia" a pesar de muchos fixes CSS/JS, mirar la capa de persistencia**. Invertí 10+ commits en CSS/JS cuando el bug era 3 líneas en `Ebooks.create`.
+- **Pedir console logs y version labels temprano**. Los logs de `[theme] change → X ebook? false` revelaron la race condition, pero el bug real (`ebook.theme = undefined` después de generar) hubiera salido antes si hubiera mirado el `[render]` log desde el principio.
+- **Cache busting con `?v=X` en script tags + version label visible** es fundamental cuando el usuario reporta "sigue igual". Sin eso no hay forma de distinguir "mi fix no funciona" de "el browser sigue con versión vieja".
+- **Race conditions entre user interaction y async loads**: cuando un handler lee un estado que se populará después de un `await`, considerar `dataset` flags o diferir la interacción.
