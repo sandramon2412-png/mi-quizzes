@@ -254,6 +254,8 @@
 </head>
 <body class="bg-background text-on-background">
 
+<div id="eb-theme-strip" style="height:6px;width:100%;background:linear-gradient(90deg,#2E5BFF,#7c3aed);transition:background 0.3s"></div>
+
 <header class="h-14 border-b border-outline-variant/20 bg-surface-container-low flex items-center px-4 gap-3 shrink-0">
   <a href="./dashboard.html" class="h-9 w-9 rounded-lg bg-surface-container-high hover:bg-surface-container-highest flex items-center justify-center transition-colors" title="Volver al dashboard">
     <span class="material-symbols-outlined" style="font-size:18px">arrow_back</span>
@@ -267,7 +269,7 @@
            class="bg-transparent border-none outline-none text-sm font-bold tracking-tight flex-1 min-w-0 focus:ring-0"/>
   </div>
   <span id="eb-status" class="text-[11px] text-on-surface-variant/70 hidden sm:inline"></span>
-  <span id="eb-version" class="text-[10px] font-mono px-2 py-0.5 rounded bg-surface-container-highest text-on-surface-variant/60" title="Versión del builder">v20260423e</span>
+  <span id="eb-version" class="text-[10px] font-mono px-2 py-0.5 rounded bg-surface-container-highest text-on-surface-variant/60" title="Versión del builder">v20260423f</span>
   <button id="btn-download" class="hidden h-9 px-4 rounded-lg primary-gradient text-white text-xs font-bold flex items-center gap-1.5 hover:opacity-90 transition">
     <span class="material-symbols-outlined" style="font-size:16px">download</span>
     Descargar PDF
@@ -485,9 +487,9 @@
 
 <div id="toast" class="fixed top-16 left-1/2 -translate-x-1/2 px-4 py-2 rounded-lg bg-surface-container-highest text-sm font-medium shadow-2xl z-50 hidden"></div>
 
-<script src="./app.js?v=20260423e"></script>
-<script src="./supabase-config.js?v=20260423e"></script>
-<script>console.log('[ebook-builder] v20260423e loaded');</script>
+<script src="./app.js?v=20260423f"></script>
+<script src="./supabase-config.js?v=20260423f"></script>
+<script>console.log('[ebook-builder] v20260423f loaded');</script>
 <script src="./ai-assistant.js"></script>
 <script>
   (async () => {
@@ -800,9 +802,15 @@
     document.getElementById('eb-theme')?.addEventListener('change', (e) => {
       const newTheme = e.target.value;
       console.log('[theme] change →', newTheme, 'ebook?', !!ebook);
+      const v = THEME_VARS[newTheme] || THEME_VARS.light;
+      // Top strip — unmissable visual indicator
+      const strip = document.getElementById('eb-theme-strip');
+      if (strip) strip.style.background = `linear-gradient(90deg, ${v['--doc-primary']}, ${v['--doc-accent']})`;
+      // Viewport background (force both properties)
       ebookPreview.style.background = VIEWPORT_BG[newTheme] || VIEWPORT_BG.light;
+      ebookPreview.style.backgroundColor = VIEWPORT_BG[newTheme] || VIEWPORT_BG.light;
       toast(`Tema: ${newTheme}`);
-      applyThemeInline(newTheme);
+      try { applyThemeInline(newTheme); } catch (err) { console.error('[theme] applyThemeInline failed:', err); }
       if (!ebook) return;
       ebook.theme = newTheme;
       scheduleSave();
