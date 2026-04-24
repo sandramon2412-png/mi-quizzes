@@ -1315,28 +1315,101 @@
       </div>
     </div>
 
-    <!-- EBOOK BUILDER (col-span-4) -->
-    <div class="md:col-span-4 rounded-2xl border border-outline-variant/15 p-6 relative overflow-hidden" style="background:rgba(255,255,255,0.02);">
-      <div class="absolute -top-8 right-8 w-32 h-32 rounded-full opacity-10" style="background:radial-gradient(circle,#a78bfa 0%,transparent 70%);"></div>
+    <!-- EBOOK BUILDER (col-span-8) -->
+    <div class="md:col-span-8 rounded-2xl border border-outline-variant/15 p-6 relative overflow-hidden" style="background:rgba(255,255,255,0.02);">
+      <div class="absolute -top-8 right-8 w-48 h-48 rounded-full opacity-10" style="background:radial-gradient(circle,#a78bfa 0%,transparent 70%);"></div>
+      <div class="relative z-10 grid md:grid-cols-[1fr_auto] gap-6 items-start">
+        <div>
+          <div class="flex items-center gap-2 mb-4">
+            <div class="w-8 h-8 rounded-lg flex items-center justify-center" style="background:rgba(167,139,250,0.15);border:1px solid rgba(167,139,250,0.2);">
+              <span class="material-symbols-outlined icon-gradient" style="font-size:16px;font-variation-settings:'FILL' 1">auto_stories</span>
+            </div>
+            <span class="text-xs font-bold uppercase tracking-widest" style="color:#a78bfa;">Ebook Builder</span>
+          </div>
+          <h3 class="text-xl font-extrabold text-white mb-2 leading-tight">Documentos profesionales<br>en segundos</h3>
+          <p class="text-xs leading-relaxed mb-4 max-w-sm" style="color:rgba(255,255,255,0.4);">Ebooks, propuestas, presentaciones y checklists con IA. Subí un documento y la IA lo transforma en una pieza visual editable.</p>
+          <div class="flex flex-wrap gap-1.5">
+            <div class="flex items-center gap-1 text-xs px-2.5 py-1 rounded-full" style="background:rgba(167,139,250,0.12);border:1px solid rgba(167,139,250,0.2);color:rgba(255,255,255,0.65);">
+              <span class="material-symbols-outlined" style="font-size:11px;">menu_book</span> Ebook
+            </div>
+            <div class="flex items-center gap-1 text-xs px-2.5 py-1 rounded-full" style="background:rgba(167,139,250,0.12);border:1px solid rgba(167,139,250,0.2);color:rgba(255,255,255,0.65);">
+              <span class="material-symbols-outlined" style="font-size:11px;">business_center</span> Propuesta
+            </div>
+            <div class="flex items-center gap-1 text-xs px-2.5 py-1 rounded-full" style="background:rgba(167,139,250,0.12);border:1px solid rgba(167,139,250,0.2);color:rgba(255,255,255,0.65);">
+              <span class="material-symbols-outlined" style="font-size:11px;">slideshow</span> Presentación
+            </div>
+            <div class="flex items-center gap-1 text-xs px-2.5 py-1 rounded-full" style="background:rgba(167,139,250,0.12);border:1px solid rgba(167,139,250,0.2);color:rgba(255,255,255,0.65);">
+              <span class="material-symbols-outlined" style="font-size:11px;">checklist</span> Checklist
+            </div>
+          </div>
+        </div>
+        <!-- Mini ebook preview -->
+        <div class="hidden md:block w-48 shrink-0">
+          <div class="rounded-lg p-3 relative" style="background:linear-gradient(135deg,rgba(167,139,250,0.08),rgba(46,91,255,0.04));border:1px solid rgba(167,139,250,0.2);aspect-ratio:3/4;">
+            <div class="h-1 w-8 rounded-full mb-3" style="background:linear-gradient(90deg,#a78bfa,#c084fc);"></div>
+            <div class="h-2 w-full rounded-full mb-1.5" style="background:rgba(255,255,255,0.12);"></div>
+            <div class="h-2 w-5/6 rounded-full mb-3" style="background:rgba(255,255,255,0.12);"></div>
+            <div class="space-y-1 mb-3">
+              <div class="h-1 w-full rounded-full" style="background:rgba(255,255,255,0.06);"></div>
+              <div class="h-1 w-full rounded-full" style="background:rgba(255,255,255,0.06);"></div>
+              <div class="h-1 w-3/4 rounded-full" style="background:rgba(255,255,255,0.06);"></div>
+            </div>
+            <div class="rounded-md p-2" style="background:linear-gradient(135deg,rgba(167,139,250,0.15),rgba(124,58,237,0.08));border:1px solid rgba(167,139,250,0.15);">
+              <div class="flex items-center gap-1 mb-1">
+                <span class="material-symbols-outlined" style="font-size:10px;color:#a78bfa;">auto_awesome</span>
+                <div class="h-1 w-12 rounded-full" style="background:rgba(167,139,250,0.5);"></div>
+              </div>
+              <div class="h-1 w-full rounded-full" style="background:rgba(255,255,255,0.08);"></div>
+            </div>
+            <div class="absolute bottom-3 left-3 right-3 flex items-center justify-between">
+              <span class="text-[8px] font-semibold" style="color:rgba(255,255,255,0.4);">Pág 8 de 42</span>
+              <span class="text-[8px] font-mono" style="color:#a78bfa;">PDF ·  EPUB</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ALL-IN-ONE FLOW (col-span-4) - closes the muela -->
+    <div class="md:col-span-4 rounded-2xl border relative overflow-hidden p-6 flex flex-col" style="background:linear-gradient(150deg,rgba(46,91,255,0.08) 0%,rgba(124,58,237,0.05) 100%);border-color:rgba(167,139,250,0.2);">
+      <div class="absolute -top-16 -right-16 w-48 h-48 rounded-full opacity-15" style="background:radial-gradient(circle,#a78bfa 0%,transparent 70%);"></div>
+      <div class="absolute top-0 left-0 right-0 h-px" style="background:linear-gradient(90deg,transparent,#a78bfa,transparent);"></div>
       <div class="relative z-10 flex items-center gap-2 mb-4">
-        <div class="w-8 h-8 rounded-lg flex items-center justify-center" style="background:rgba(167,139,250,0.15);border:1px solid rgba(167,139,250,0.2);">
-          <span class="material-symbols-outlined icon-gradient" style="font-size:16px;font-variation-settings:'FILL' 1">auto_stories</span>
+        <div class="w-8 h-8 rounded-lg flex items-center justify-center" style="background:linear-gradient(135deg,#2E5BFF,#7c3aed);">
+          <span class="material-symbols-outlined text-white" style="font-size:16px;font-variation-settings:'FILL' 1">hub</span>
         </div>
-        <span class="text-xs font-bold uppercase tracking-widest" style="color:#a78bfa;">Ebook Builder</span>
+        <span class="text-xs font-bold uppercase tracking-widest" style="background:linear-gradient(135deg,#4d7cff,#a78bfa);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">Todo conectado</span>
       </div>
-      <h3 class="relative z-10 text-lg font-extrabold text-white mb-2 leading-tight">Documentos profesionales<br>en segundos</h3>
-      <p class="relative z-10 text-xs leading-relaxed mb-4" style="color:rgba(255,255,255,0.4);">Ebooks, propuestas, presentaciones y checklists con IA. Sube un documento y la IA lo transforma.</p>
-      <div class="relative z-10 flex flex-wrap gap-1.5">
-        <div class="flex items-center gap-1 text-xs px-2.5 py-1 rounded-full" style="background:rgba(167,139,250,0.12);border:1px solid rgba(167,139,250,0.2);color:rgba(255,255,255,0.65);">
-          <span class="material-symbols-outlined" style="font-size:11px;">menu_book</span> Ebook
+      <h3 class="relative z-10 text-lg font-extrabold text-white mb-4 leading-tight">Un lead. <span class="font-serif-italic" style="color:#a78bfa;font-weight:400;">Cinco productos.</span></h3>
+      <!-- Flow visualization -->
+      <div class="relative z-10 space-y-1.5 flex-1">
+        <div class="flex items-center gap-2 px-2.5 py-1.5 rounded-lg" style="background:rgba(46,91,255,0.12);border:1px solid rgba(46,91,255,0.2);">
+          <span class="material-symbols-outlined icon-gradient" style="font-size:13px;font-variation-settings:'FILL' 1">quiz</span>
+          <span class="text-[10px] font-semibold text-white flex-1">Quiz captura lead</span>
+          <span class="material-symbols-outlined" style="font-size:12px;color:rgba(255,255,255,0.35);">arrow_downward</span>
         </div>
-        <div class="flex items-center gap-1 text-xs px-2.5 py-1 rounded-full" style="background:rgba(167,139,250,0.12);border:1px solid rgba(167,139,250,0.2);color:rgba(255,255,255,0.65);">
-          <span class="material-symbols-outlined" style="font-size:11px;">business_center</span> Propuesta
+        <div class="flex items-center gap-2 px-2.5 py-1.5 rounded-lg" style="background:rgba(167,139,250,0.08);border:1px solid rgba(167,139,250,0.15);">
+          <span class="material-symbols-outlined icon-gradient" style="font-size:13px;font-variation-settings:'FILL' 1">web</span>
+          <span class="text-[10px] font-semibold text-white flex-1">Landing lo convierte</span>
+          <span class="material-symbols-outlined" style="font-size:12px;color:rgba(255,255,255,0.35);">arrow_downward</span>
         </div>
-        <div class="flex items-center gap-1 text-xs px-2.5 py-1 rounded-full" style="background:rgba(167,139,250,0.12);border:1px solid rgba(167,139,250,0.2);color:rgba(255,255,255,0.65);">
-          <span class="material-symbols-outlined" style="font-size:11px;">slideshow</span> Presentación
+        <div class="flex items-center gap-2 px-2.5 py-1.5 rounded-lg" style="background:rgba(46,91,255,0.08);border:1px solid rgba(46,91,255,0.15);">
+          <span class="material-symbols-outlined icon-gradient" style="font-size:13px;font-variation-settings:'FILL' 1">deployed_code</span>
+          <span class="text-[10px] font-semibold text-white flex-1">Mini-app lo retiene</span>
+          <span class="material-symbols-outlined" style="font-size:12px;color:rgba(255,255,255,0.35);">arrow_downward</span>
+        </div>
+        <div class="flex items-center gap-2 px-2.5 py-1.5 rounded-lg" style="background:rgba(167,139,250,0.08);border:1px solid rgba(167,139,250,0.15);">
+          <span class="material-symbols-outlined icon-gradient" style="font-size:13px;font-variation-settings:'FILL' 1">smart_toy</span>
+          <span class="text-[10px] font-semibold text-white flex-1">Bot IA lo acompaña</span>
+          <span class="material-symbols-outlined" style="font-size:12px;color:rgba(255,255,255,0.35);">arrow_downward</span>
+        </div>
+        <div class="flex items-center gap-2 px-2.5 py-1.5 rounded-lg" style="background:linear-gradient(90deg,rgba(46,91,255,0.18),rgba(124,58,237,0.12));border:1px solid rgba(167,139,250,0.3);">
+          <span class="material-symbols-outlined icon-gradient" style="font-size:13px;font-variation-settings:'FILL' 1">auto_stories</span>
+          <span class="text-[10px] font-semibold text-white flex-1">Ebook lo fideliza</span>
+          <span class="material-symbols-outlined" style="font-size:12px;color:#4d7cff;font-variation-settings:'FILL' 1">check_circle</span>
         </div>
       </div>
+      <p class="relative z-10 text-[11px] mt-4 font-light" style="color:rgba(255,255,255,0.5);">Sin Zapier. Sin re-logins. Un solo dashboard.</p>
     </div>
 
   </div>
