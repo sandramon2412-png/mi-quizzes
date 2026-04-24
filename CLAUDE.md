@@ -478,3 +478,27 @@ Si el click tira error:
 - **A4 fijo + contenido variable = empty space inevitable**. Reinforcement del prompt ayuda pero no garantiza. Mejor solución: herramienta in-place (botón "Expandir con IA") que deja al usuario decidir cuándo llenar.
 - **Clip sutil de `overflow: hidden`**: cuando un botón absolute-positioned "solo aparece a veces", revisar si su ancestor tiene overflow:hidden y si su bounding box cae fuera del área visible. Moverlo a un wrapper sin overflow lo soluciona.
 - **Facades de AI deben exponer TODOS los métodos que el frontend usa**. Si un método nuevo vive solo en el objeto interno (Claude, Groq), hay que re-exportarlo en el facade público AI. Sin esto: `X is not a function` en runtime.
+
+---
+
+## TAREA EN CURSO cuando se cortó la sesión (24 abr 2026)
+
+Trabajando en la **landing page** (probablemente `index.html`). Se estaba ubicando un elemento visual (parece ser un cubo 3D o similar) en la sección correcta del layout.
+
+### Secciones de la landing page
+- Hero (donde estaba puesto al momento del corte)
+- Pain block ("Los problemas que resolvemos")
+- Bento de productos ("Una plataforma. 5 productos")
+- Cómo funciona (timeline)
+- Integraciones
+- Testimonial / stats
+- CTA final
+
+### Estado del corte
+El chat anterior se rompió por un bug de Claude Code (empty text blocks con cache_control → 400 de la API). La usuaria iba a mandar una captura para ubicar la sección correcta donde debía ir el elemento visual, pero no pudo porque el chat ya estaba caído.
+
+### Para retomar
+1. Pedir al usuario la captura que quería mandar (muestra dónde va el cubo/elemento)
+2. Identificar si el elemento debe moverse a otra sección o eliminarse del hero
+3. Ajustar `index.html` acordemente
+4. Verificar visualmente con el usuario antes de confirmar
