@@ -178,37 +178,6 @@
 </head>
 <body class="bg-background text-on-background selection:bg-primary/30 selection:text-primary" data-lloyd-public="true">
 
-<!-- ===== LOGO REVEAL INTRO ===== -->
-<div id="logo-reveal" style="position:fixed;inset:0;z-index:9999;background:#080810;display:flex;align-items:center;justify-content:center;transition:opacity 0.9s ease;">
-  <video id="logo-video" autoplay muted playsinline style="width:100%;height:100%;object-fit:cover;display:block;">
-    <source src="https://euauqqamrkqwoytveljp.supabase.co/storage/v1/object/public/public-assets/Logo_Reveal_A_purple_and_dark_blue_nebula_swirls_with_7dBpmcoS.mp4" type="video/mp4">
-  </video>
-  <button id="skip-btn" style="position:absolute;bottom:36px;right:36px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.12);color:rgba(255,255,255,0.45);padding:8px 22px;border-radius:999px;font-size:11px;font-family:'Plus Jakarta Sans',sans-serif;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;cursor:pointer;backdrop-filter:blur(12px);transition:all 0.2s;" onmouseover="this.style.color='rgba(255,255,255,0.8)';this.style.background='rgba(255,255,255,0.14)';" onmouseout="this.style.color='rgba(255,255,255,0.45)';this.style.background='rgba(255,255,255,0.08)';">
-    Saltar →
-  </button>
-</div>
-<script>
-  (function() {
-    var overlay = document.getElementById('logo-reveal');
-    var video   = document.getElementById('logo-video');
-    var skipBtn = document.getElementById('skip-btn');
-
-    function hideReveal() {
-      overlay.style.opacity = '0';
-      overlay.style.pointerEvents = 'none';
-      setTimeout(function() { overlay.style.display = 'none'; }, 900);
-      sessionStorage.setItem('ls_intro_seen', '1');
-    }
-
-    if (sessionStorage.getItem('ls_intro_seen')) {
-      overlay.style.display = 'none';
-    } else {
-      video.addEventListener('ended', hideReveal);
-      video.addEventListener('error', hideReveal);
-      skipBtn.addEventListener('click', hideReveal);
-    }
-  })();
-</script>
 <header class="w-full top-0 sticky z-50 transition-colors duration-300" style="background:rgba(8,8,16,0.85);backdrop-filter:blur(20px);border-bottom:1px solid rgba(255,255,255,0.05);box-shadow:0 20px 40px rgba(0,0,0,0.3);">
 <nav class="flex justify-between items-center px-6 py-4 w-full">
 <div class="flex items-center gap-3">
@@ -228,14 +197,18 @@
 <main class="relative" style="background:#080810;">
 <section class="pt-24 pb-32 px-6 max-w-7xl mx-auto relative overflow-visible">
 
-  <!-- Animated mesh gradient background -->
-  <div class="hero-bg-mesh">
-    <div class="mesh-blob mesh-blob-1"></div>
-    <div class="mesh-blob mesh-blob-2"></div>
-    <div class="mesh-blob mesh-blob-3"></div>
+  <!-- Animated nebula video background -->
+  <div class="absolute inset-0 overflow-hidden pointer-events-none" style="z-index:0;">
+    <video autoplay muted loop playsinline preload="auto" class="absolute top-1/2 left-1/2 min-w-full min-h-full w-auto h-auto" style="transform:translate(-50%,-50%);object-fit:cover;opacity:0.55;">
+      <source src="https://euauqqamrkqwoytveljp.supabase.co/storage/v1/object/public/public-assets/Logo_Reveal_A_purple_and_dark_blue_nebula_swirls_with_7dBpmcoS.mp4" type="video/mp4">
+    </video>
+    <!-- Dark readability gradient overlay -->
+    <div class="absolute inset-0" style="background:radial-gradient(ellipse at center,rgba(8,8,16,0.35) 0%,rgba(8,8,16,0.7) 60%,rgba(8,8,16,0.95) 100%);"></div>
+    <!-- Vignette bottom fade into page background -->
+    <div class="absolute inset-x-0 bottom-0 h-40" style="background:linear-gradient(to top,#080810,transparent);"></div>
   </div>
-  <!-- Grid lines -->
-  <div class="grid-lines"></div>
+  <!-- Grid lines on top of video (subtle) -->
+  <div class="grid-lines" style="z-index:1;opacity:0.4;"></div>
 
   <!-- Decorative floating rings -->
   <div class="deco-ring float-4" style="width:120px;height:120px;top:8%;left:4%;opacity:0.15;"></div>
@@ -314,6 +287,36 @@
 <a class="px-10 py-4 rounded-lg font-bold text-primary border border-outline-variant/30 hover:bg-surface-container-low transition-all duration-400 inline-block text-center" href="./login.html">Iniciar sesión</a>
 </div>
 <p class="text-xs font-medium" style="color:rgba(255,255,255,0.25);">Sin tarjeta de crédito · 14 días gratis · Cancela cuando quieras</p>
+
+<!-- Social proof strip (CRO principle: social proof above the fold) -->
+<div class="flex flex-wrap items-center justify-center gap-x-6 gap-y-3 pt-6">
+  <div class="flex items-center gap-2">
+    <div class="flex gap-0.5">
+      <span class="material-symbols-outlined" style="font-size:15px;font-variation-settings:'FILL' 1;background:linear-gradient(135deg,#4d7cff,#a78bfa);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">star</span>
+      <span class="material-symbols-outlined" style="font-size:15px;font-variation-settings:'FILL' 1;background:linear-gradient(135deg,#4d7cff,#a78bfa);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">star</span>
+      <span class="material-symbols-outlined" style="font-size:15px;font-variation-settings:'FILL' 1;background:linear-gradient(135deg,#4d7cff,#a78bfa);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">star</span>
+      <span class="material-symbols-outlined" style="font-size:15px;font-variation-settings:'FILL' 1;background:linear-gradient(135deg,#4d7cff,#a78bfa);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">star</span>
+      <span class="material-symbols-outlined" style="font-size:15px;font-variation-settings:'FILL' 1;background:linear-gradient(135deg,#4d7cff,#a78bfa);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">star</span>
+    </div>
+    <span class="text-xs font-bold" style="color:rgba(255,255,255,0.8);">4.9/5</span>
+    <span class="text-xs" style="color:rgba(255,255,255,0.35);">de 340+ reseñas</span>
+  </div>
+  <div class="hidden sm:block w-px h-4" style="background:rgba(255,255,255,0.1);"></div>
+  <div class="flex items-center gap-2">
+    <div class="flex -space-x-2">
+      <img src="https://i.pravatar.cc/24?img=8" class="w-6 h-6 rounded-full border-2 object-cover" style="border-color:#080810;" alt="">
+      <img src="https://i.pravatar.cc/24?img=36" class="w-6 h-6 rounded-full border-2 object-cover" style="border-color:#080810;" alt="">
+      <img src="https://i.pravatar.cc/24?img=57" class="w-6 h-6 rounded-full border-2 object-cover" style="border-color:#080810;" alt="">
+      <img src="https://i.pravatar.cc/24?img=47" class="w-6 h-6 rounded-full border-2 object-cover" style="border-color:#080810;" alt="">
+    </div>
+    <span class="text-xs" style="color:rgba(255,255,255,0.55);"><span class="font-bold text-white">+1,200</span> creadores activos</span>
+  </div>
+  <div class="hidden sm:block w-px h-4" style="background:rgba(255,255,255,0.1);"></div>
+  <div class="flex items-center gap-2">
+    <span class="material-symbols-outlined" style="font-size:15px;font-variation-settings:'FILL' 1;color:#4d7cff;">verified</span>
+    <span class="text-xs" style="color:rgba(255,255,255,0.55);"><span class="font-bold text-white">48,000+</span> quizzes publicados</span>
+  </div>
+</div>
 </div>
 <!-- ── HERO VISUAL: VIDEO ── -->
 <div class="mt-14 relative px-2 md:px-0">
@@ -411,6 +414,50 @@
 
 </div>
 </section>
+
+<!-- ===== BLOQUE DEL DOLOR ===== -->
+<section class="py-24 px-6" style="background:linear-gradient(180deg,#080810 0%,#0c0c18 50%,#080810 100%);">
+  <div class="max-w-5xl mx-auto space-y-12">
+    <div class="text-center space-y-3 max-w-2xl mx-auto">
+      <span class="text-xs font-bold uppercase tracking-widest" style="color:#ff9aaa;">Si te suena familiar...</span>
+      <h2 class="text-3xl md:text-4xl font-extrabold tracking-tight text-white">El creador hispano está cansado de lo mismo de siempre</h2>
+      <p class="text-base leading-relaxed pt-2" style="color:rgba(255,255,255,0.45);">Mientras los gringos tienen herramientas con IA entrenadas en su idioma, tú sigues pegando prompts en traductores y pagando suscripciones a 4 apps distintas.</p>
+    </div>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+      <div class="rounded-2xl p-6 border relative overflow-hidden" style="background:rgba(255,255,255,0.02);border-color:rgba(255,255,255,0.06);">
+        <div class="absolute top-0 left-0 right-0 h-0.5" style="background:linear-gradient(90deg,transparent,#7c3aed,transparent);opacity:0.4;"></div>
+        <div class="w-11 h-11 rounded-xl flex items-center justify-center mb-4" style="background:rgba(124,58,237,0.12);border:1px solid rgba(124,58,237,0.2);">
+          <span class="material-symbols-outlined" style="font-size:22px;font-variation-settings:'FILL' 1;background:linear-gradient(135deg,#7c3aed,#a78bfa);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">sentiment_very_dissatisfied</span>
+        </div>
+        <h3 class="text-base font-bold text-white mb-2 leading-tight">Publicas PDFs que nadie lee</h3>
+        <p class="text-sm leading-relaxed" style="color:rgba(255,255,255,0.5);">Trabajas horas en un ebook, lo mandas por email y se pierde en la bandeja de entrada. Tu audiencia lo baja y no vuelve nunca.</p>
+      </div>
+      <div class="rounded-2xl p-6 border relative overflow-hidden" style="background:rgba(255,255,255,0.02);border-color:rgba(255,255,255,0.06);">
+        <div class="absolute top-0 left-0 right-0 h-0.5" style="background:linear-gradient(90deg,transparent,#2E5BFF,transparent);opacity:0.4;"></div>
+        <div class="w-11 h-11 rounded-xl flex items-center justify-center mb-4" style="background:rgba(46,91,255,0.12);border:1px solid rgba(46,91,255,0.2);">
+          <span class="material-symbols-outlined" style="font-size:22px;font-variation-settings:'FILL' 1;background:linear-gradient(135deg,#2E5BFF,#4d7cff);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">payments</span>
+        </div>
+        <h3 class="text-base font-bold text-white mb-2 leading-tight">Pagas 4 herramientas distintas</h3>
+        <p class="text-sm leading-relaxed" style="color:rgba(255,255,255,0.5);">Una para quizzes, otra para emails, otra para el chatbot, otra para ebooks. Drenas tu caja cada mes y ninguna habla con la otra.</p>
+      </div>
+      <div class="rounded-2xl p-6 border relative overflow-hidden" style="background:rgba(255,255,255,0.02);border-color:rgba(255,255,255,0.06);">
+        <div class="absolute top-0 left-0 right-0 h-0.5" style="background:linear-gradient(90deg,transparent,#a78bfa,transparent);opacity:0.4;"></div>
+        <div class="w-11 h-11 rounded-xl flex items-center justify-center mb-4" style="background:rgba(167,139,250,0.12);border:1px solid rgba(167,139,250,0.2);">
+          <span class="material-symbols-outlined" style="font-size:22px;font-variation-settings:'FILL' 1;background:linear-gradient(135deg,#a78bfa,#c084fc);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">translate</span>
+        </div>
+        <h3 class="text-base font-bold text-white mb-2 leading-tight">La IA que usas está en inglés</h3>
+        <p class="text-sm leading-relaxed" style="color:rgba(255,255,255,0.5);">Y no entiende tu nicho, ni tu tono, ni modismos de tu país. Gastas horas traduciendo y corrigiendo lo que debería salir bien de entrada.</p>
+      </div>
+    </div>
+    <div class="text-center pt-4">
+      <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full" style="background:rgba(46,91,255,0.08);border:1px solid rgba(46,91,255,0.2);">
+        <span class="material-symbols-outlined icon-gradient" style="font-size:16px;">auto_awesome</span>
+        <span class="text-sm font-semibold" style="color:rgba(255,255,255,0.75);">Hay una forma mejor. Se llama Luminous Studio.</span>
+      </div>
+    </div>
+  </div>
+</section>
+
 <!-- ===== MARQUEE TRUST BAR ===== -->
 <div class="overflow-hidden py-5" style="border-top:1px solid rgba(255,255,255,0.05);border-bottom:1px solid rgba(255,255,255,0.05);background:rgba(255,255,255,0.02);">
   <div class="flex" style="mask-image:linear-gradient(90deg,transparent,black 10%,black 90%,transparent);">
