@@ -325,22 +325,28 @@ Si el click tira error:
 
 ## TAREA EN CURSO cuando se cortó la sesión (24 abr 2026)
 
-Trabajando en la **landing page** (probablemente `index.html`). Se estaba ubicando un elemento visual (parece ser un cubo 3D o similar) en la sección correcta del layout.
+Trabajando en la **landing page** `index.html`. El Claude anterior estaba reubicando un **video** que la usuaria había subido. El Claude anterior lo puso en el Hero y la usuaria lo quiere en otra sección.
 
-### Secciones de la landing page
-- Hero (donde estaba puesto al momento del corte)
-- Pain block ("Los problemas que resolvemos")
-- Bento de productos ("Una plataforma. 5 productos")
-- Cómo funciona (timeline)
-- Integraciones
-- Testimonial / stats
-- CTA final
+### Lo que la usuaria quiere hacer
+**Reemplazar el bento decorativo** de la sección "De un simple lector a un usuario activo" (título actual en código; el Claude anterior probablemente proponía cambiarlo a **"Del contenido que se olvida a la experiencia que vende"**) por un **video** que la usuaria subió.
 
-### Estado del corte
-El chat anterior se rompió por un bug de Claude Code (empty text blocks con cache_control → 400 de la API). La usuaria iba a mandar una captura para ubicar la sección correcta donde debía ir el elemento visual, pero no pudo porque el chat ya estaba caído.
+### Ubicación exacta en `index.html`
+- Sección completa: líneas ~487-573
+- Título actual (línea 491): `"De un simple lector a un usuario activo"`
+- Párrafo + 3 bullets: líneas 492-508
+- **Bento de 4 cards a reemplazar**: líneas 510-572
+  - Columna izquierda: card "DISEÑO — Personaliza cada detalle" + card "RENDIMIENTO — 45% Aumento en Conversión"
+  - Columna derecha: card "NUEVO — La nueva era de infoproductos" + card "IA INTEGRADA — Tecnología que trabaja por ti"
 
-### Para retomar
-1. Pedir al usuario la captura que quería mandar (muestra dónde va el cubo/elemento)
-2. Identificar si el elemento debe moverse a otra sección o eliminarse del hero
-3. Ajustar `index.html` acordemente
-4. Verificar visualmente con el usuario antes de confirmar
+### Qué se perdió del chat anterior (porque nunca se commiteó)
+El último commit a `index.html` es `20f95ae` (antes de esta sesión). Todo lo que el Claude anterior hizo no llegó al repo:
+- El cambio de título a "Del contenido que se olvida a la experiencia que vende"
+- El cambio de párrafo (mencionaba "PDFs genéricos" en vez del texto actual de eBooks)
+- La inserción del video (probablemente en el Hero según mencionó la usuaria)
+
+### Para retomar en el nuevo chat
+1. La usuaria tiene que volver a subir el video (o dar URL donde vive)
+2. Preguntarle si también quiere el cambio de título y texto del Claude anterior
+3. Reemplazar el bento (líneas 510-572) por un bloque de video responsive
+4. Sugerencia de estructura: `<div class="flex-1 w-full"><video controls class="w-full aspect-video rounded-xl" src="..."></video></div>`
+5. Commit + push a `claude/fix-free-tier-ai-calls-yFJpv`
