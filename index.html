@@ -762,39 +762,152 @@
       <h2 class="text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-[-0.03em] leading-[1.05] text-white">El creador hispano está <span class="font-serif-italic" style="background:linear-gradient(135deg,#4d7cff,#a78bfa);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;font-weight:400;">cansado</span> de lo mismo<br class="hidden md:block"> de siempre.</h2>
       <p class="text-lg md:text-xl leading-[1.55] pt-2 font-light" style="color:rgba(255,255,255,0.55);">Mientras los gringos tienen herramientas con IA entrenadas en su idioma, tú sigues pegando prompts en traductores y pagando suscripciones a <span class="font-semibold" style="color:rgba(255,255,255,0.85);">4 apps distintas</span>.</p>
     </div>
+    <!-- Pain cards with visual evidence of each problem -->
     <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
-      <div class="rounded-2xl p-6 border relative overflow-hidden" style="background:rgba(255,255,255,0.02);border-color:rgba(255,255,255,0.06);">
-        <div class="absolute top-0 left-0 right-0 h-0.5" style="background:linear-gradient(90deg,transparent,#7c3aed,transparent);opacity:0.4;"></div>
-        <div class="w-11 h-11 rounded-xl flex items-center justify-center mb-4" style="background:rgba(124,58,237,0.12);border:1px solid rgba(124,58,237,0.2);">
-          <span class="material-symbols-outlined" style="font-size:22px;font-variation-settings:'FILL' 1;background:linear-gradient(135deg,#7c3aed,#a78bfa);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">sentiment_very_dissatisfied</span>
+
+      <!-- Card 1: PDFs -->
+      <div class="rounded-2xl p-6 border relative overflow-hidden" style="background:linear-gradient(180deg,rgba(255,255,255,0.025) 0%,rgba(255,255,255,0.01) 100%);border-color:rgba(255,255,255,0.07);">
+        <div class="absolute top-0 left-0 right-0 h-px" style="background:linear-gradient(90deg,transparent,rgba(124,58,237,0.5),transparent);"></div>
+        <div class="flex items-center justify-between mb-4">
+          <span class="text-[10px] font-bold uppercase tracking-[0.2em]" style="color:rgba(255,255,255,0.35);">Problema 01</span>
+          <span class="text-[10px] font-bold px-2 py-0.5 rounded-full" style="background:rgba(124,58,237,0.12);color:#c084fc;border:1px solid rgba(124,58,237,0.25);">0% retención</span>
         </div>
-        <h3 class="text-base font-bold text-white mb-2 leading-tight">Publicas PDFs que nadie lee</h3>
-        <p class="text-sm leading-relaxed" style="color:rgba(255,255,255,0.5);">Trabajas horas en un ebook, lo mandas por email y se pierde en la bandeja de entrada. Tu audiencia lo baja y no vuelve nunca.</p>
+        <h3 class="text-lg font-extrabold text-white mb-4 leading-tight tracking-tight">Publicas PDFs que <span class="font-serif-italic" style="color:#c084fc;font-weight:400;">nadie</span> lee.</h3>
+        <!-- Visual mock: email inbox with ignored PDF -->
+        <div class="rounded-lg p-3 mb-4" style="background:rgba(0,0,0,0.3);border:1px solid rgba(255,255,255,0.05);">
+          <div class="flex items-center gap-2 mb-2 pb-2" style="border-bottom:1px solid rgba(255,255,255,0.05);">
+            <span class="material-symbols-outlined" style="font-size:13px;color:rgba(255,255,255,0.4);">inbox</span>
+            <span class="text-[10px] font-semibold" style="color:rgba(255,255,255,0.45);">Bandeja de entrada</span>
+          </div>
+          <div class="flex items-center gap-2 py-1.5 opacity-40">
+            <span class="material-symbols-outlined" style="font-size:13px;color:#c084fc;">attach_file</span>
+            <span class="text-[10px] flex-1 truncate" style="color:rgba(255,255,255,0.6);">ebook-guia-definitiva.pdf</span>
+            <span class="text-[9px]" style="color:rgba(255,255,255,0.3);">hace 3 meses</span>
+          </div>
+          <div class="flex items-center gap-2 py-1.5 opacity-40">
+            <span class="material-symbols-outlined" style="font-size:13px;color:#c084fc;">attach_file</span>
+            <span class="text-[10px] flex-1 truncate" style="color:rgba(255,255,255,0.6);">mi-freebie-v2.pdf</span>
+            <span class="text-[9px]" style="color:rgba(255,255,255,0.3);">sin abrir</span>
+          </div>
+        </div>
+        <p class="text-xs leading-relaxed" style="color:rgba(255,255,255,0.5);">Trabajas horas. Lo mandan por email. Se pierde. Tu audiencia no vuelve nunca.</p>
       </div>
-      <div class="rounded-2xl p-6 border relative overflow-hidden" style="background:rgba(255,255,255,0.02);border-color:rgba(255,255,255,0.06);">
-        <div class="absolute top-0 left-0 right-0 h-0.5" style="background:linear-gradient(90deg,transparent,#2E5BFF,transparent);opacity:0.4;"></div>
-        <div class="w-11 h-11 rounded-xl flex items-center justify-center mb-4" style="background:rgba(46,91,255,0.12);border:1px solid rgba(46,91,255,0.2);">
-          <span class="material-symbols-outlined" style="font-size:22px;font-variation-settings:'FILL' 1;background:linear-gradient(135deg,#2E5BFF,#4d7cff);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">payments</span>
+
+      <!-- Card 2: 4 tools - FEATURED -->
+      <div class="rounded-2xl p-6 border relative overflow-hidden" style="background:linear-gradient(180deg,rgba(46,91,255,0.04) 0%,rgba(255,255,255,0.01) 100%);border-color:rgba(46,91,255,0.15);">
+        <div class="absolute top-0 left-0 right-0 h-px" style="background:linear-gradient(90deg,transparent,rgba(46,91,255,0.6),transparent);"></div>
+        <div class="flex items-center justify-between mb-4">
+          <span class="text-[10px] font-bold uppercase tracking-[0.2em]" style="color:rgba(255,255,255,0.35);">Problema 02</span>
+          <span class="text-[10px] font-bold px-2 py-0.5 rounded-full" style="background:rgba(46,91,255,0.12);color:#4d7cff;border:1px solid rgba(46,91,255,0.25);">$240/mes</span>
         </div>
-        <h3 class="text-base font-bold text-white mb-2 leading-tight">Pagas 4 herramientas distintas</h3>
-        <p class="text-sm leading-relaxed" style="color:rgba(255,255,255,0.5);">Una para quizzes, otra para emails, otra para el chatbot, otra para ebooks. Drenas tu caja cada mes y ninguna habla con la otra.</p>
+        <h3 class="text-lg font-extrabold text-white mb-4 leading-tight tracking-tight">Pagas <span class="font-serif-italic" style="color:#4d7cff;font-weight:400;">cuatro</span> suscripciones.</h3>
+        <!-- Visual mock: stacked tool costs -->
+        <div class="space-y-1.5 mb-4">
+          <div class="flex items-center gap-2 px-3 py-2 rounded-lg" style="background:rgba(0,0,0,0.25);border:1px solid rgba(255,255,255,0.05);">
+            <div class="w-5 h-5 rounded-md flex items-center justify-center" style="background:rgba(255,100,100,0.15);">
+              <span class="material-symbols-outlined" style="font-size:12px;color:rgba(255,150,150,0.7);">quiz</span>
+            </div>
+            <span class="text-[10px] flex-1" style="color:rgba(255,255,255,0.7);">Typeform</span>
+            <span class="text-[10px] font-mono font-bold" style="color:rgba(255,150,150,0.8);">−$59</span>
+          </div>
+          <div class="flex items-center gap-2 px-3 py-2 rounded-lg" style="background:rgba(0,0,0,0.25);border:1px solid rgba(255,255,255,0.05);">
+            <div class="w-5 h-5 rounded-md flex items-center justify-center" style="background:rgba(255,100,100,0.15);">
+              <span class="material-symbols-outlined" style="font-size:12px;color:rgba(255,150,150,0.7);">mail</span>
+            </div>
+            <span class="text-[10px] flex-1" style="color:rgba(255,255,255,0.7);">Mailchimp</span>
+            <span class="text-[10px] font-mono font-bold" style="color:rgba(255,150,150,0.8);">−$69</span>
+          </div>
+          <div class="flex items-center gap-2 px-3 py-2 rounded-lg" style="background:rgba(0,0,0,0.25);border:1px solid rgba(255,255,255,0.05);">
+            <div class="w-5 h-5 rounded-md flex items-center justify-center" style="background:rgba(255,100,100,0.15);">
+              <span class="material-symbols-outlined" style="font-size:12px;color:rgba(255,150,150,0.7);">smart_toy</span>
+            </div>
+            <span class="text-[10px] flex-1" style="color:rgba(255,255,255,0.7);">ChatBot Pro</span>
+            <span class="text-[10px] font-mono font-bold" style="color:rgba(255,150,150,0.8);">−$49</span>
+          </div>
+          <div class="flex items-center gap-2 px-3 py-2 rounded-lg" style="background:rgba(0,0,0,0.25);border:1px solid rgba(255,255,255,0.05);">
+            <div class="w-5 h-5 rounded-md flex items-center justify-center" style="background:rgba(255,100,100,0.15);">
+              <span class="material-symbols-outlined" style="font-size:12px;color:rgba(255,150,150,0.7);">auto_stories</span>
+            </div>
+            <span class="text-[10px] flex-1" style="color:rgba(255,255,255,0.7);">PDF Builder</span>
+            <span class="text-[10px] font-mono font-bold" style="color:rgba(255,150,150,0.8);">−$63</span>
+          </div>
+        </div>
+        <p class="text-xs leading-relaxed" style="color:rgba(255,255,255,0.5);">Cuatro facturas. Cuatro dashboards. Ninguna habla con la otra.</p>
       </div>
-      <div class="rounded-2xl p-6 border relative overflow-hidden" style="background:rgba(255,255,255,0.02);border-color:rgba(255,255,255,0.06);">
-        <div class="absolute top-0 left-0 right-0 h-0.5" style="background:linear-gradient(90deg,transparent,#a78bfa,transparent);opacity:0.4;"></div>
-        <div class="w-11 h-11 rounded-xl flex items-center justify-center mb-4" style="background:rgba(167,139,250,0.12);border:1px solid rgba(167,139,250,0.2);">
-          <span class="material-symbols-outlined" style="font-size:22px;font-variation-settings:'FILL' 1;background:linear-gradient(135deg,#a78bfa,#c084fc);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">translate</span>
+
+      <!-- Card 3: IA en inglés -->
+      <div class="rounded-2xl p-6 border relative overflow-hidden" style="background:linear-gradient(180deg,rgba(255,255,255,0.025) 0%,rgba(255,255,255,0.01) 100%);border-color:rgba(255,255,255,0.07);">
+        <div class="absolute top-0 left-0 right-0 h-px" style="background:linear-gradient(90deg,transparent,rgba(167,139,250,0.5),transparent);"></div>
+        <div class="flex items-center justify-between mb-4">
+          <span class="text-[10px] font-bold uppercase tracking-[0.2em]" style="color:rgba(255,255,255,0.35);">Problema 03</span>
+          <span class="text-[10px] font-bold px-2 py-0.5 rounded-full" style="background:rgba(167,139,250,0.12);color:#a78bfa;border:1px solid rgba(167,139,250,0.25);">+3h/día</span>
         </div>
-        <h3 class="text-base font-bold text-white mb-2 leading-tight">La IA que usas está en inglés</h3>
-        <p class="text-sm leading-relaxed" style="color:rgba(255,255,255,0.5);">Y no entiende tu nicho, ni tu tono, ni modismos de tu país. Gastas horas traduciendo y corrigiendo lo que debería salir bien de entrada.</p>
+        <h3 class="text-lg font-extrabold text-white mb-4 leading-tight tracking-tight">La IA habla <span class="font-serif-italic" style="color:#a78bfa;font-weight:400;">gringo</span>, no tú.</h3>
+        <!-- Visual mock: translate flow with awkward output -->
+        <div class="rounded-lg p-3 mb-4" style="background:rgba(0,0,0,0.3);border:1px solid rgba(255,255,255,0.05);">
+          <div class="flex items-center gap-2 mb-2 pb-2" style="border-bottom:1px solid rgba(255,255,255,0.05);">
+            <span class="material-symbols-outlined" style="font-size:13px;color:rgba(255,255,255,0.4);">translate</span>
+            <span class="text-[10px] font-semibold" style="color:rgba(255,255,255,0.45);">ChatGPT → ES</span>
+          </div>
+          <div class="space-y-2">
+            <div>
+              <p class="text-[9px] uppercase tracking-widest mb-1" style="color:rgba(255,255,255,0.3);">Input</p>
+              <p class="text-[10px] font-mono" style="color:rgba(255,255,255,0.55);">"Write email about my offer"</p>
+            </div>
+            <div class="pt-1.5" style="border-top:1px dashed rgba(255,255,255,0.05);">
+              <p class="text-[9px] uppercase tracking-widest mb-1" style="color:rgba(255,150,150,0.5);">Output</p>
+              <p class="text-[10px] font-mono" style="color:rgba(255,150,150,0.7);">"Hola querido cliente, te saludo con estima..."<span class="inline-block ml-1" style="color:#ff9aaa;">✕</span></p>
+            </div>
+          </div>
+        </div>
+        <p class="text-xs leading-relaxed" style="color:rgba(255,255,255,0.5);">No entiende tu nicho, tu tono, ni modismos. Reescribís todo.</p>
+      </div>
+
+    </div>
+
+    <!-- Transition: the shift to solution -->
+    <div class="relative py-8">
+      <div class="flex items-center justify-center gap-4 max-w-2xl mx-auto">
+        <div class="flex-1 h-px" style="background:linear-gradient(90deg,transparent,rgba(255,255,255,0.1));"></div>
+        <span class="text-[11px] font-bold uppercase tracking-[0.3em] font-serif-italic" style="background:linear-gradient(135deg,#4d7cff,#a78bfa);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;font-weight:400;font-size:1.1rem;letter-spacing:0.1em;">hasta ahora.</span>
+        <div class="flex-1 h-px" style="background:linear-gradient(90deg,rgba(255,255,255,0.1),transparent);"></div>
       </div>
     </div>
-    <div class="text-center pt-6 space-y-4">
-      <p class="text-lg md:text-xl font-bold max-w-xl mx-auto" style="background:linear-gradient(135deg,#4d7cff,#a78bfa);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">Hay una forma mejor. Y ya la usan +1,200 creadores hispanos.</p>
-      <a href="./registro.html" class="primary-gradient inline-flex items-center gap-2 px-9 py-4 rounded-xl font-bold text-white text-sm hover:scale-[1.02] active:scale-95 transition-all" style="box-shadow:0 0 36px rgba(46,91,255,0.35);">
-        <span class="material-symbols-outlined" style="font-size:18px;font-variation-settings:'FILL' 1">bolt</span>
-        Probar Luminous Studio gratis
-      </a>
-      <p class="text-xs font-medium" style="color:rgba(255,255,255,0.3);">14 días gratis · Sin tarjeta de crédito · Cancela cuando quieras</p>
+
+    <!-- Solution bridge + CTA -->
+    <div class="relative rounded-3xl p-8 md:p-10 overflow-hidden" style="background:linear-gradient(135deg,rgba(46,91,255,0.08) 0%,rgba(124,58,237,0.05) 100%);border:1px solid rgba(167,139,250,0.18);">
+      <!-- Ambient glow -->
+      <div class="absolute inset-0 pointer-events-none" style="background:radial-gradient(ellipse 60% 80% at 50% 0%,rgba(46,91,255,0.15) 0%,transparent 70%);"></div>
+
+      <div class="relative grid md:grid-cols-[1fr_auto] gap-8 items-center">
+        <div>
+          <p class="text-[10px] font-bold uppercase tracking-[0.25em] mb-3" style="color:#a78bfa;">La solución</p>
+          <h3 class="text-2xl md:text-3xl lg:text-4xl font-extrabold tracking-[-0.02em] leading-[1.1] text-white">
+            Una plataforma. Un pago. <br class="hidden md:block"><span class="font-serif-italic" style="background:linear-gradient(135deg,#4d7cff,#a78bfa);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;font-weight:400;">IA que piensa en español.</span>
+          </h3>
+          <div class="flex flex-wrap items-center gap-x-5 gap-y-2 mt-5 text-xs">
+            <div class="flex items-center gap-1.5">
+              <span class="material-symbols-outlined" style="font-size:14px;color:#4d7cff;font-variation-settings:'FILL' 1">check_circle</span>
+              <span style="color:rgba(255,255,255,0.7);">Todo en un solo login</span>
+            </div>
+            <div class="flex items-center gap-1.5">
+              <span class="material-symbols-outlined" style="font-size:14px;color:#4d7cff;font-variation-settings:'FILL' 1">check_circle</span>
+              <span style="color:rgba(255,255,255,0.7);">Entrenada en tu nicho</span>
+            </div>
+            <div class="flex items-center gap-1.5">
+              <span class="material-symbols-outlined" style="font-size:14px;color:#4d7cff;font-variation-settings:'FILL' 1">check_circle</span>
+              <span style="color:rgba(255,255,255,0.7);">Desde $9/mes</span>
+            </div>
+          </div>
+        </div>
+        <div class="flex flex-col items-start md:items-end gap-3">
+          <a href="./registro.html" class="primary-gradient inline-flex items-center gap-2 px-8 py-4 rounded-xl font-bold text-white text-sm hover:scale-[1.02] active:scale-95 transition-all shrink-0" style="box-shadow:0 0 36px rgba(46,91,255,0.4);">
+            <span class="material-symbols-outlined" style="font-size:18px;font-variation-settings:'FILL' 1">bolt</span>
+            Probar gratis 14 días
+          </a>
+          <p class="text-[11px] font-medium" style="color:rgba(255,255,255,0.4);">Sin tarjeta · Cancela cuando quieras</p>
+        </div>
+      </div>
     </div>
   </div>
 </section>
