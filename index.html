@@ -197,18 +197,18 @@
 <main class="relative" style="background:#080810;">
 <section class="pt-24 pb-32 px-6 max-w-7xl mx-auto relative overflow-visible">
 
-  <!-- Animated nebula video background -->
-  <div class="absolute inset-0 overflow-hidden pointer-events-none" style="z-index:0;">
-    <video autoplay muted loop playsinline preload="auto" class="absolute top-1/2 left-1/2 min-w-full min-h-full w-auto h-auto" style="transform:translate(-50%,-50%);object-fit:cover;opacity:0.55;">
+  <!-- Animated nebula video background (constrained to top of hero so logo aligns with headline) -->
+  <div class="absolute left-0 right-0 top-0 overflow-hidden pointer-events-none" style="z-index:0;height:720px;max-height:85vh;">
+    <video autoplay muted loop playsinline preload="auto" class="absolute top-0 left-0 w-full h-full" style="object-fit:cover;object-position:center 35%;opacity:0.6;">
       <source src="https://euauqqamrkqwoytveljp.supabase.co/storage/v1/object/public/public-assets/Logo_Reveal_A_purple_and_dark_blue_nebula_swirls_with_7dBpmcoS.mp4" type="video/mp4">
     </video>
     <!-- Dark readability gradient overlay -->
-    <div class="absolute inset-0" style="background:radial-gradient(ellipse at center,rgba(8,8,16,0.35) 0%,rgba(8,8,16,0.7) 60%,rgba(8,8,16,0.95) 100%);"></div>
-    <!-- Vignette bottom fade into page background -->
-    <div class="absolute inset-x-0 bottom-0 h-40" style="background:linear-gradient(to top,#080810,transparent);"></div>
+    <div class="absolute inset-0" style="background:radial-gradient(ellipse at 50% 30%,rgba(8,8,16,0.3) 0%,rgba(8,8,16,0.6) 55%,rgba(8,8,16,0.9) 100%);"></div>
+    <!-- Strong bottom fade to blend into page background -->
+    <div class="absolute inset-x-0 bottom-0 h-64" style="background:linear-gradient(to top,#080810 0%,rgba(8,8,16,0.95) 30%,transparent 100%);"></div>
   </div>
-  <!-- Grid lines on top of video (subtle) -->
-  <div class="grid-lines" style="z-index:1;opacity:0.4;"></div>
+  <!-- Grid lines (subtle) -->
+  <div class="grid-lines" style="z-index:1;opacity:0.35;"></div>
 
   <!-- Decorative floating rings -->
   <div class="deco-ring float-4" style="width:120px;height:120px;top:8%;left:4%;opacity:0.15;"></div>
