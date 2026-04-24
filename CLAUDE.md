@@ -434,6 +434,8 @@ Todos estos quedaron en el código y funcionan, pero la raíz del problema era `
   - CSS con `:not(.cover)` para no pisar gradiente de portada
 
 ### Commits clave de esta sesión (último al primero)
+- `f05ee89` Expose generateEbookChapter on AI facade (fix "is not a function")
+- `41a132d` Move Expand-with-AI button outside .ebook-page to avoid clip on short pages
 - `c2b3fa7` Add per-chapter "Expand with AI" button for retroactive improvement
 - `1a5a2c6` Reinforce propuesta prompt: mandatory table + full intro + no copy-paste titles
 - `5522fa7` Cover gradient always follows current theme (ignore legacy saved values)
@@ -453,14 +455,16 @@ Todos estos quedaron en el código y funcionan, pero la raíz del problema era `
 - `ec45e7d` Improve list styling + expand smartMd pattern detection
 - `820f481` Fix visual blocks: smartMd post-processor + stronger prompt prohibitions
 
-### Nueva funcionalidad: botón "Expandir con IA" por capítulo (commit c2b3fa7)
-- En cada `.ebook-page.chapter-page` hay un botón gradiente en esquina inferior derecha
-- Visible en hover (opacity: 0 por default, 0.9 on hover)
-- Click → llama `AI.generateEbookChapter({...})` con el body existente como `sourceExcerpt`
-- Reemplaza `ebook.chapters[idx].body_md` con la versión expandida
-- Usa el docType del ebook (propuesta → tabla obligatoria, feature-grid, pricing-card, etc.)
-- El handler está en `wireInlineEditing()`, línea ~878
-- CSS en `.ebook-page .eb-regen-btn`, línea ~117
+### Funcionalidad "Expandir con IA" — detalles técnicos
+**Qué hace**: En cada página de capítulo del documento aparece un botón gradiente al hacer hover. Click → llama a `AI.generateEbookChapter(...)` para esa sección puntual, la regenera con las reglas del docType actual, y reemplaza `ebook.chapters[i].body_md`. Las otras secciones quedan intactas.
+
+**Ubicación en el DOM**: El botón es hermano de `.ebook-page` dentro de `.ebook-page-wrap` (NO dentro de `.ebook-page`). Fue necesario moverlo afuera porque `.chapter-body-scroll` tiene `overflow: hidden` y clippeaba el botón en páginas cortas.
+
+**Cómo se instala**: `addRegenButtons()` en ebook-builder.html itera todos los `.ebook-page-wrap` que contengan un `.chapter-page` (skip cover) y agrega el botón si no existe. Se llama dos veces: después del render inicial y después de `paginateMainPreview()` (para que las páginas de continuación también lo tengan).
+
+**Pass-through en AI facade**: `app.js` tiene `AI.generateEbookChapter = (params) => Claude.generateEbookChapter(params)` expuesto a partir del commit `f05ee89`. Sin esto el botón tira "is not a function".
+
+**Request al AI**: manda el body actual del capítulo como `sourceExcerpt` con la instrucción "expandí y mejorá sobre esto". Preserva contenido real si hay algo sustancial, no empieza de cero si ya tiene algo bueno.
 
 ### Propuesta — reglas obligatorias (commit 1a5a2c6)
 El prompt de `_docTypePrompt('propuesta')` ahora exige:
@@ -479,23 +483,28 @@ El prompt de `_docTypePrompt('propuesta')` ahora exige:
 - ✅ Cover gradient sigue al tema sin excepción — después de commit 5522fa7
 - ✅ Artefactos del source removidos (PÁGINA N – TITLE text, etc.)
 - ✅ Race condition del dropdown resuelta
-- ✅ Botón "Expandir con IA" por capítulo para fix retroactivo de páginas vacías
-- 🟡 Páginas vacías en documentos viejos: el botón resuelve puntualmente. No hay auto-merge.
+- ✅ Botón "Expandir con IA" en TODAS las páginas (originales + continuaciones) y funcionando de punta a punta desde commit f05ee89
+- 🟡 Páginas vacías en documentos viejos: el botón resuelve puntualmente. No hay auto-merge de secciones cortas.
 - 🟡 Documentos VIEJOS (guardados antes de commit 5ee2acd) tienen `theme: undefined`. El render ahora respeta el dropdown del usuario, pero el ebook en DB sigue sin theme hasta que el user interactúe y se guarde.
 
-### Versión actual: `v20260423l`
+### Versión actual: `v20260423n`
 Visible en badge del header (junto al status). Cache-busters en script tags del mismo valor.
 
 ### Cómo el siguiente chat puede validar rápido
 1. Hard-refresh sobre el builder (Ctrl+Shift+R)
-2. Confirmar `v20260423l` en el header
-3. Abrir un documento generado y hacer hover sobre cualquier chapter page
+2. Confirmar `v20260423n` en el header
+3. Abrir un documento generado y hacer hover sobre cualquier chapter page (incluidas las vacías)
 4. Debería aparecer el botón "✨ Expandir con IA" en la esquina inferior derecha
 5. Click → el AI regenera esa sección puntual con las reglas del docType actual
+6. Cambiar tema vía el dropdown → se aplica a TODOS los elementos (títulos, tablas, bullets, cover gradient, fondo del viewport)
 
-Si aún no funciona tras confirmar la versión, el siguiente paso es inspeccionar con DevTools:
-- F12 → Elements → click en `<div class="ebook-page-wrap">` → ver panel Styles → buscar `--doc-primary: #e0749c` inline
-- F12 → Elements → click en `<style id="eb-theme-inject">` → ver que tiene reglas con colores hex pastel
+Si algún botón no aparece:
+- F12 → Console → escribir `document.querySelectorAll('.eb-regen-btn').length` — debería devolver `ebook.chapters.length + páginas de continuación`
+- Si devuelve 0, `addRegenButtons()` no corrió o falló
+
+Si el click tira error:
+- F12 → Console → ver el error exacto
+- Si dice "is not a function" sobre AI.X → ese método no está en el facade `AI` de app.js (agregarlo como pass-through a `Claude.X`)
 
 ### Lecciones clave de esta sesión
 - **Cuando algo "no cambia" a pesar de muchos fixes CSS/JS, mirar la capa de persistencia**. Invertí 10+ commits en CSS/JS cuando el bug era 3 líneas en `Ebooks.create`.
@@ -503,3 +512,5 @@ Si aún no funciona tras confirmar la versión, el siguiente paso es inspecciona
 - **Cache busting con `?v=X` en script tags + version label visible** es fundamental cuando el usuario reporta "sigue igual". Sin eso no hay forma de distinguir "mi fix no funciona" de "el browser sigue con versión vieja".
 - **Race conditions entre user interaction y async loads**: cuando un handler lee un estado que se populará después de un `await`, considerar `dataset` flags o diferir la interacción.
 - **A4 fijo + contenido variable = empty space inevitable**. Reinforcement del prompt ayuda pero no garantiza. Mejor solución: herramienta in-place (botón "Expandir con IA") que deja al usuario decidir cuándo llenar.
+- **Clip sutil de `overflow: hidden`**: cuando un botón absolute-positioned "solo aparece a veces", revisar si su ancestor tiene overflow:hidden y si su bounding box cae fuera del área visible. Moverlo a un wrapper sin overflow lo soluciona.
+- **Facades de AI deben exponer TODOS los métodos que el frontend usa**. Si un método nuevo vive solo en el objeto interno (Claude, Groq), hay que re-exportarlo en el facade público AI. Sin esto: `X is not a function` en runtime.
