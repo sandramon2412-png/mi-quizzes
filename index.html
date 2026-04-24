@@ -552,6 +552,21 @@
     </div>
   </div>
 
+  <!-- Floating card: Quiz stats (left bottom) -->
+  <div class="absolute -left-2 md:left-6 bottom-20 md:bottom-24 float-3 hidden md:block">
+    <div class="card-glow rounded-xl p-3 w-48" style="background:rgba(10,10,20,0.95);border:1px solid rgba(124,58,237,0.2);backdrop-filter:blur(12px);">
+      <p class="text-[9px] font-bold uppercase tracking-widest mb-1.5" style="color:rgba(255,255,255,0.35);">Quiz activo</p>
+      <p class="text-[10px] font-semibold text-white mb-2 leading-tight">¿Cuál es tu tipo de emprendedor?</p>
+      <div class="flex items-center gap-2 mb-1">
+        <div class="flex-1 h-1.5 rounded-full overflow-hidden" style="background:rgba(255,255,255,0.07);">
+          <div class="h-full rounded-full" style="width:78%;background:linear-gradient(90deg,#2E5BFF,#7c3aed);"></div>
+        </div>
+        <span class="text-[10px] font-black shrink-0" style="background:linear-gradient(135deg,#4d7cff,#a78bfa);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">78%</span>
+      </div>
+      <p class="text-[9px]" style="color:rgba(255,255,255,0.4);">127 completados hoy</p>
+    </div>
+  </div>
+
   <!-- Floating card: Products -->
   <div class="absolute -right-2 md:right-6 top-8 md:top-12 float-2 hidden sm:block">
     <div class="card-glow rounded-xl p-3.5 w-48" style="background:rgba(10,10,20,0.95);border:1px solid rgba(124,58,237,0.25);backdrop-filter:blur(12px);">
@@ -603,10 +618,10 @@
 </section>
 
 <!-- ===== BLOQUE DEL DOLOR ===== -->
-<section class="py-24 px-6" style="background:linear-gradient(180deg,#080810 0%,#0c0c18 50%,#080810 100%);">
+<section class="pt-32 pb-10 px-6" style="background:linear-gradient(180deg,#080810 0%,#0c0c18 50%,#080810 100%);">
   <div class="max-w-5xl mx-auto space-y-12">
     <div class="text-center space-y-3 max-w-2xl mx-auto">
-      <span class="text-xs font-bold uppercase tracking-widest" style="color:#ff9aaa;">Si te suena familiar...</span>
+      <span class="text-xs font-bold uppercase tracking-widest" style="background:linear-gradient(135deg,#4d7cff,#a78bfa);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">Si te suena familiar...</span>
       <h2 class="text-3xl md:text-4xl font-extrabold tracking-tight text-white">El creador hispano está cansado de lo mismo de siempre</h2>
       <p class="text-base leading-relaxed pt-2" style="color:rgba(255,255,255,0.45);">Mientras los gringos tienen herramientas con IA entrenadas en su idioma, tú sigues pegando prompts en traductores y pagando suscripciones a 4 apps distintas.</p>
     </div>
@@ -648,7 +663,7 @@
 </section>
 
 <!-- ===== MARQUEE TRUST BAR ===== -->
-<div class="overflow-hidden py-5" style="border-top:1px solid rgba(255,255,255,0.05);border-bottom:1px solid rgba(255,255,255,0.05);background:rgba(255,255,255,0.02);">
+<div class="overflow-hidden py-5" style="border-top:1px solid rgba(46,91,255,0.18);border-bottom:1px solid rgba(124,58,237,0.18);background:linear-gradient(90deg,rgba(46,91,255,0.06) 0%,rgba(124,58,237,0.06) 100%);">
   <div class="flex" style="mask-image:linear-gradient(90deg,transparent,black 10%,black 90%,transparent);">
     <div class="marquee-track">
       <span class="marquee-item"><span class="material-symbols-outlined" style="font-size:18px;vertical-align:middle;font-variation-settings:'FILL' 1;background:linear-gradient(135deg,#4d7cff,#a78bfa);-webkit-background-clip:text;-webkit-text-fill-color:transparent">quiz</span> Quizzes de Alta Conversión</span><span class="marquee-sep"></span>
