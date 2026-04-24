@@ -1350,6 +1350,11 @@ const AI = {
   async generateEbook(brief, history = [], onProgress, docType = 'ebook') {
     return Claude.generateEbook(brief, history, onProgress, docType);
   },
+  // Complejo: regenera UNA sola sección de un documento (usado por el botón
+  // "Expandir con IA" del builder para rellenar páginas cortas sin regenerar todo)
+  async generateEbookChapter(params) {
+    return Claude.generateEbookChapter(params);
+  },
 };
 
 // ── URL helpers ────────────────────────────────────────────
