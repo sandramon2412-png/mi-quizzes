@@ -280,44 +280,8 @@ Crear 58 plantillas prearmadas con contenido real para que Free/Starter puedan c
 - ✅ Gate IA en generador-ia.html corregido (requiere Pro, no Starter)
 - ✅ Integraciones Zapier wired
 - ✅ **Dashboard manual path para Free/Starter** — LISTO (commit `4974aaf` en `dashboard.html`: `updateMiniAppModalForPlan()` + banner `#ma-no-ai-banner` + gate `if (hasAI)` en `handleCreateMiniApp`)
-- 🟡 **Plantillas mini-apps (53/58)** — EN PROGRESO, pusheadas a `claude/fix-free-tier-ai-calls-CM1dL`. Faltan las últimas 5:
-  - 54. `tpl-cachorro` Tu Primer Cachorro [roadmap, checklist, faq, glosario]
-  - 55. `tpl-adiestramiento` Adiestramiento Canino [reto, flashcards, roadmap, faq]
-  - 56. `tpl-habitos-atomicos` Hábitos Atómicos 66 Días [reto, tracker, flashcards, diario]
-  - 57. `tpl-proposito` Propósito de Vida [diario, roadmap, afirmaciones, flashcards]
-  - 58. `tpl-inteligencia-emocional` Inteligencia Emocional [flashcards, diario, glosario, reto]
-- ❌ **Página `plantillas-miniapps.html`** — PENDIENTE (copiar estructura de `plantillas.html`)
-
-### Para continuar en nuevo chat
-**Branch activa**: `claude/fix-free-tier-ai-calls-CM1dL` (ya pusheada, 5 commits adelante de su estado inicial)
-
-**Paso 1 — Agregar templates 54-58 a `miniapp-templates.js`**:
-- El archivo termina con `]\n},\n\n  ];\n}` en las últimas líneas (~1641-1645)
-- Usar Edit tool: `old_string` = `  ];\n}` al final, `new_string` = 5 templates nuevos + `  ];\n}`
-- Estructura de cada template: mismo patrón que `tpl-zerowaste` (último agregado, líneas 1622-1642)
-- Campos por tipo:
-  - `roadmap` → `roadmapSteps: ['paso 1', 'paso 2', ...]` (5-8 pasos)
-  - `checklist` → `initialItems: ['tarea 1', ...]` (6-10 items)
-  - `faq` → `faqItems: [{q:'?', a:'...'}]` (6-10)
-  - `glosario` → `glossaryTerms: [{term:'', def:''}]` (8-12)
-  - `reto` → `retoContent: [{title:'Día 1: ...', instructions:'...', reflectionPrompt:'?'}]` (5-7 días)
-  - `flashcards` → `cards: [{front:'', back:''}]` (8-15)
-  - `tracker` → `trackerHabit: '...'`
-  - `diario` → `journalPrompts: ['¿...?', ...]` (5-8)
-  - `afirmaciones` → `affirmations: ['Yo soy...', ...]` (8-12)
-
-**Paso 2 — Crear `plantillas-miniapps.html`**:
-- Copiar estructura de `plantillas.html` (galería de quizzes existente)
-- Adaptar: cargar desde `getBuiltinMiniAppTemplates()` en vez de plantillas de quiz
-- Botón "Usar esta plantilla" que pase el template al dashboard via localStorage + redirect
-- Filtros por categoría (Bienestar, Fitness, Nutrición, Fe, Finanzas, Negocios, Educación, Relaciones, Belleza, Hogar, Mascotas, Desarrollo Personal)
-
-**Paso 3 — Commit + push**:
-```bash
-git add miniapp-templates.js plantillas-miniapps.html
-git commit -m "Complete 58 mini-app templates + gallery page"
-git push -u origin claude/fix-free-tier-ai-calls-CM1dL
-```
+- ✅ **Plantillas mini-apps (60 templates)** — LISTO. El archivo `miniapp-templates.js` tiene las 58 planificadas + 2 extras. Las últimas 5 (tpl-cachorro, tpl-adiestramiento, tpl-habitos-atomicos, tpl-proposito, tpl-inteligencia-emocional) ya están commiteadas.
+- ✅ **Página `plantillas-miniapps.html`** — LISTO. 19KB, galería con filtros por categoría + botón "Usar esta plantilla" que clona al dashboard.
 
 ### Commits ya pusheados en esta rama
 - `4974aaf` Fix free tier mini-app creation: skip AI calls for Free/Starter plans
