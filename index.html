@@ -197,15 +197,15 @@
 <main class="relative" style="background:#080810;">
 <section class="pt-24 pb-32 px-6 max-w-7xl mx-auto relative overflow-visible">
 
-  <!-- Animated nebula video background (constrained to top of hero so logo aligns with headline) -->
-  <div class="absolute left-0 right-0 top-0 overflow-hidden pointer-events-none" style="z-index:0;height:720px;max-height:85vh;">
-    <video autoplay muted loop playsinline preload="auto" class="absolute top-0 left-0 w-full h-full" style="object-fit:cover;object-position:center 35%;opacity:0.6;">
+  <!-- Animated nebula video background — constrained to upper hero so Luminous Studio logo reveal has clean space above headline -->
+  <div class="absolute left-0 right-0 top-0 overflow-hidden pointer-events-none" style="z-index:0;height:440px;max-height:65vh;">
+    <video autoplay muted loop playsinline preload="auto" class="absolute top-0 left-0 w-full h-full" style="object-fit:cover;object-position:center 40%;opacity:0.7;">
       <source src="https://euauqqamrkqwoytveljp.supabase.co/storage/v1/object/public/public-assets/Logo_Reveal_A_purple_and_dark_blue_nebula_swirls_with_7dBpmcoS.mp4" type="video/mp4">
     </video>
-    <!-- Dark readability gradient overlay -->
-    <div class="absolute inset-0" style="background:radial-gradient(ellipse at 50% 30%,rgba(8,8,16,0.3) 0%,rgba(8,8,16,0.6) 55%,rgba(8,8,16,0.9) 100%);"></div>
-    <!-- Strong bottom fade to blend into page background -->
-    <div class="absolute inset-x-0 bottom-0 h-64" style="background:linear-gradient(to top,#080810 0%,rgba(8,8,16,0.95) 30%,transparent 100%);"></div>
+    <!-- Subtle darkening for headline readability (bright in middle where logo reveals, darker on edges) -->
+    <div class="absolute inset-0" style="background:radial-gradient(ellipse at 50% 45%,rgba(8,8,16,0.15) 0%,rgba(8,8,16,0.4) 60%,rgba(8,8,16,0.8) 100%);"></div>
+    <!-- Strong bottom fade so video disappears BEFORE reaching the CTA buttons -->
+    <div class="absolute inset-x-0 bottom-0 h-44" style="background:linear-gradient(to top,#080810 0%,rgba(8,8,16,0.95) 35%,rgba(8,8,16,0.5) 75%,transparent 100%);"></div>
   </div>
   <!-- Grid lines (subtle) -->
   <div class="grid-lines" style="z-index:1;opacity:0.35;"></div>
