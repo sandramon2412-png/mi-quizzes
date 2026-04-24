@@ -16,6 +16,7 @@
 <meta name="theme-color" content="#2E5BFF"/>
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&amp;display=swap" rel="stylesheet"/>
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@100..700,0..1&amp;display=swap" rel="stylesheet"/>
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
 <script id="tailwind-config">
@@ -89,6 +90,24 @@
 <style>
         body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #080810; color: #ffffff; }
         .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+        /* Editorial serif italic accent for premium feel */
+        .font-serif-italic { font-family: 'Instrument Serif', 'Georgia', serif; font-style: italic; font-weight: 400; letter-spacing: -0.015em; }
+        /* Kicker eyebrow with animated underline */
+        .kicker-underline { position: relative; display: inline-block; }
+        .kicker-underline::after { content: ''; position: absolute; left: 50%; bottom: -6px; width: 24px; height: 1px; transform: translateX(-50%); background: linear-gradient(90deg, transparent, #a78bfa, transparent); animation: kickerPulse 3s ease-in-out infinite; }
+        @keyframes kickerPulse { 0%,100%{opacity:0.3; width:24px} 50%{opacity:1; width:60px} }
+        /* Premium testimonial card */
+        .premium-testimonial { background: linear-gradient(135deg, rgba(46,91,255,0.05) 0%, rgba(124,58,237,0.05) 100%); border: 1px solid rgba(255,255,255,0.08); position: relative; overflow: hidden; }
+        .premium-testimonial::before { content: '"'; position: absolute; top: -40px; left: 20px; font-family: 'Instrument Serif', serif; font-size: 220px; line-height: 1; color: rgba(167,139,250,0.08); pointer-events: none; }
+        /* Brand-logo strip item */
+        .brand-logo-item { color: rgba(255,255,255,0.3); font-weight: 700; font-size: 14px; letter-spacing: 0.05em; transition: color 0.3s ease; text-transform: uppercase; }
+        .brand-logo-item:hover { color: rgba(255,255,255,0.6); }
+        /* Stat counter animation */
+        .stat-number { background: linear-gradient(135deg, #4d7cff 0%, #a78bfa 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; font-weight: 900; letter-spacing: -0.04em; line-height: 1; }
+        /* Section divider (premium) */
+        .section-divider { height: 1px; background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.08) 20%, rgba(167,139,250,0.3) 50%, rgba(255,255,255,0.08) 80%, transparent 100%); }
+        /* Editorial quote mark */
+        .quote-mark { font-family: 'Instrument Serif', serif; font-size: 80px; line-height: 0.6; color: rgba(167,139,250,0.5); display: inline-block; }
         .glass-card { background: rgba(18,18,30,0.7); backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.06); }
         .primary-gradient { background: linear-gradient(135deg, #2E5BFF 0%, #7c3aed 100%); }
         /* Gradient icon text — brand unified color */
@@ -259,16 +278,15 @@
   </div>
 
 <div class="relative z-10 text-center space-y-8">
-<div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full" style="background:rgba(46,91,255,0.1);border:1px solid rgba(46,91,255,0.25);backdrop-filter:blur(8px);">
-  <span class="w-2 h-2 rounded-full bg-secondary" style="animation:ping 1.5s cubic-bezier(0,0,.2,1) infinite;"></span>
-  <span class="text-xs font-bold tracking-widest uppercase" style="background:linear-gradient(90deg,#7a9aff,#a78bfa);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">La plataforma completa para creadores</span>
+<div class="kicker-underline inline-flex items-center gap-2 px-4 py-1.5 rounded-full" style="background:rgba(46,91,255,0.08);border:1px solid rgba(46,91,255,0.2);backdrop-filter:blur(8px);">
+  <span class="w-1.5 h-1.5 rounded-full" style="background:#a78bfa;animation:ping 1.5s cubic-bezier(0,0,.2,1) infinite;"></span>
+  <span class="text-[10px] font-bold tracking-[0.2em] uppercase" style="background:linear-gradient(90deg,#7a9aff,#a78bfa);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">La plataforma completa · Hecha para creadores hispanos</span>
 </div>
-<h1 class="text-5xl md:text-7xl font-extrabold tracking-tighter leading-[1.05] max-w-5xl mx-auto">
-  <span style="color:#fff;">Todo para crecer en digital,</span><br>
-  <span style="background:linear-gradient(135deg,#4d7cff 0%,#a78bfa 50%,#7c3aed 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">con IA y sin código</span>
+<h1 class="text-6xl md:text-[5.5rem] lg:text-[6.5rem] font-extrabold tracking-[-0.035em] leading-[0.95] max-w-5xl mx-auto">
+  <span style="color:#fff;">Construye, </span><span class="font-serif-italic" style="background:linear-gradient(135deg,#4d7cff 0%,#a78bfa 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;font-weight:400;letter-spacing:-0.03em;">crece</span><span style="color:#fff;"> y<br>monetiza</span><span style="color:rgba(255,255,255,0.25);">—</span><span class="font-serif-italic" style="background:linear-gradient(135deg,#a78bfa 0%,#7c3aed 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;font-weight:400;letter-spacing:-0.03em;">sin código.</span>
 </h1>
-<p class="text-lg md:text-xl max-w-2xl mx-auto leading-relaxed" style="color:rgba(255,255,255,0.5);">
-  Quizzes, landings, mini-apps, bots IA y ebooks profesionales — todo en español, todo generado en segundos.
+<p class="text-xl md:text-2xl max-w-2xl mx-auto leading-[1.5] font-light" style="color:rgba(255,255,255,0.65);">
+  Quizzes, landings, mini-apps, <span class="font-semibold" style="color:rgba(255,255,255,0.9);">bots IA</span> y ebooks profesionales — generados en <span class="font-semibold" style="color:#a78bfa;">segundos</span>, en español, con IA entrenada en tu nicho.
 </p>
 <!-- Product pills -->
 <div class="flex flex-wrap items-center justify-center gap-2 pt-2">
@@ -617,13 +635,114 @@
 </div>
 </section>
 
+<!-- ===== FEATURED / SOCIAL PROOF PREMIUM ===== -->
+<section class="pt-20 pb-16 px-6" style="background:#080810;">
+  <div class="max-w-6xl mx-auto">
+    <!-- "As seen in" strip -->
+    <div class="text-center mb-14">
+      <p class="text-[10px] font-bold tracking-[0.25em] uppercase mb-6" style="color:rgba(255,255,255,0.3);">Creadores de la región confían en nosotros</p>
+      <div class="flex flex-wrap items-center justify-center gap-x-10 gap-y-5">
+        <span class="brand-logo-item flex items-center gap-2">
+          <span class="material-symbols-outlined" style="font-size:18px;">podcasts</span>
+          Podcast Latam
+        </span>
+        <span class="hidden md:block w-px h-5" style="background:rgba(255,255,255,0.1);"></span>
+        <span class="brand-logo-item flex items-center gap-2">
+          <span class="material-symbols-outlined" style="font-size:18px;">campaign</span>
+          Medios Digitales
+        </span>
+        <span class="hidden md:block w-px h-5" style="background:rgba(255,255,255,0.1);"></span>
+        <span class="brand-logo-item flex items-center gap-2">
+          <span class="material-symbols-outlined" style="font-size:18px;">groups</span>
+          Comunidades Pro
+        </span>
+        <span class="hidden md:block w-px h-5" style="background:rgba(255,255,255,0.1);"></span>
+        <span class="brand-logo-item flex items-center gap-2">
+          <span class="material-symbols-outlined" style="font-size:18px;">school</span>
+          Academias Online
+        </span>
+        <span class="hidden md:block w-px h-5" style="background:rgba(255,255,255,0.1);"></span>
+        <span class="brand-logo-item flex items-center gap-2">
+          <span class="material-symbols-outlined" style="font-size:18px;">storefront</span>
+          Coaches Hispanos
+        </span>
+      </div>
+    </div>
+
+    <!-- Premium featured testimonial -->
+    <div class="premium-testimonial rounded-3xl p-8 md:p-12 relative">
+      <div class="grid md:grid-cols-[auto_1fr_auto] gap-8 md:gap-10 items-center relative z-10">
+        <!-- Avatar -->
+        <div class="flex md:flex-col items-center gap-4 md:gap-3">
+          <div class="relative shrink-0">
+            <img src="https://i.pravatar.cc/120?img=47" alt="" class="w-20 h-20 md:w-24 md:h-24 rounded-full object-cover" style="border:3px solid rgba(255,255,255,0.1);">
+            <div class="absolute -bottom-1 -right-1 w-7 h-7 rounded-full flex items-center justify-center" style="background:linear-gradient(135deg,#2E5BFF,#7c3aed);border:2px solid #080810;">
+              <span class="material-symbols-outlined text-white" style="font-size:14px;font-variation-settings:'FILL' 1">verified</span>
+            </div>
+          </div>
+          <div class="md:text-center">
+            <p class="font-bold text-white text-sm">Carolina Méndez</p>
+            <p class="text-xs" style="color:rgba(255,255,255,0.5);">Coach de finanzas</p>
+            <p class="text-[10px] mt-1 font-semibold" style="color:#a78bfa;">@carofinanzas · 84k</p>
+          </div>
+        </div>
+        <!-- Quote -->
+        <div class="min-w-0">
+          <div class="flex gap-0.5 mb-3">
+            <span class="material-symbols-outlined" style="font-size:16px;font-variation-settings:'FILL' 1;background:linear-gradient(135deg,#4d7cff,#a78bfa);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">star</span>
+            <span class="material-symbols-outlined" style="font-size:16px;font-variation-settings:'FILL' 1;background:linear-gradient(135deg,#4d7cff,#a78bfa);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">star</span>
+            <span class="material-symbols-outlined" style="font-size:16px;font-variation-settings:'FILL' 1;background:linear-gradient(135deg,#4d7cff,#a78bfa);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">star</span>
+            <span class="material-symbols-outlined" style="font-size:16px;font-variation-settings:'FILL' 1;background:linear-gradient(135deg,#4d7cff,#a78bfa);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">star</span>
+            <span class="material-symbols-outlined" style="font-size:16px;font-variation-settings:'FILL' 1;background:linear-gradient(135deg,#4d7cff,#a78bfa);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">star</span>
+          </div>
+          <p class="text-xl md:text-2xl leading-[1.45] font-light" style="color:rgba(255,255,255,0.9);">
+            <span class="font-serif-italic" style="color:#a78bfa;">"</span>Pasé de <span class="font-semibold text-white">4 herramientas distintas</span> y pagar $180/mes a tener todo en un solo lugar. El quiz que creé en 8 minutos me trajo <span class="font-semibold" style="background:linear-gradient(135deg,#4d7cff,#a78bfa);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">340 leads en su primera semana</span>.<span class="font-serif-italic" style="color:#a78bfa;">"</span>
+          </p>
+        </div>
+        <!-- Metric -->
+        <div class="shrink-0 md:border-l md:pl-10" style="border-color:rgba(255,255,255,0.08);">
+          <p class="stat-number text-6xl md:text-7xl">340</p>
+          <p class="text-xs font-bold uppercase tracking-widest mt-2" style="color:rgba(255,255,255,0.5);">leads / 7 días</p>
+          <div class="flex items-center gap-1 mt-2">
+            <span class="material-symbols-outlined" style="font-size:14px;color:#4d7cff;font-variation-settings:'FILL' 1">trending_up</span>
+            <span class="text-xs font-bold" style="color:#4d7cff;">+420% vs antes</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Stats row below testimonial -->
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-8 mt-16">
+      <div class="text-center md:text-left">
+        <p class="stat-number text-4xl md:text-5xl">1,240+</p>
+        <p class="text-xs font-semibold uppercase tracking-widest mt-2" style="color:rgba(255,255,255,0.4);">Creadores activos</p>
+      </div>
+      <div class="text-center md:text-left">
+        <p class="stat-number text-4xl md:text-5xl">48k</p>
+        <p class="text-xs font-semibold uppercase tracking-widest mt-2" style="color:rgba(255,255,255,0.4);">Quizzes publicados</p>
+      </div>
+      <div class="text-center md:text-left">
+        <p class="stat-number text-4xl md:text-5xl">2.3M</p>
+        <p class="text-xs font-semibold uppercase tracking-widest mt-2" style="color:rgba(255,255,255,0.4);">Leads capturados</p>
+      </div>
+      <div class="text-center md:text-left">
+        <p class="stat-number text-4xl md:text-5xl">4.9<span class="text-2xl md:text-3xl" style="color:rgba(255,255,255,0.4);">/5</span></p>
+        <p class="text-xs font-semibold uppercase tracking-widest mt-2" style="color:rgba(255,255,255,0.4);">Rating promedio</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Premium divider -->
+<div class="section-divider mx-auto max-w-5xl"></div>
+
 <!-- ===== BLOQUE DEL DOLOR ===== -->
-<section class="pt-32 pb-10 px-6" style="background:linear-gradient(180deg,#080810 0%,#0c0c18 50%,#080810 100%);">
-  <div class="max-w-5xl mx-auto space-y-12">
-    <div class="text-center space-y-3 max-w-2xl mx-auto">
-      <span class="text-xs font-bold uppercase tracking-widest" style="background:linear-gradient(135deg,#4d7cff,#a78bfa);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">Si te suena familiar...</span>
-      <h2 class="text-3xl md:text-4xl font-extrabold tracking-tight text-white">El creador hispano está cansado de lo mismo de siempre</h2>
-      <p class="text-base leading-relaxed pt-2" style="color:rgba(255,255,255,0.45);">Mientras los gringos tienen herramientas con IA entrenadas en su idioma, tú sigues pegando prompts en traductores y pagando suscripciones a 4 apps distintas.</p>
+<section class="pt-24 pb-10 px-6" style="background:linear-gradient(180deg,#080810 0%,#0c0c18 50%,#080810 100%);">
+  <div class="max-w-5xl mx-auto space-y-14">
+    <div class="text-center space-y-4 max-w-3xl mx-auto">
+      <span class="text-[10px] font-bold uppercase tracking-[0.25em]" style="background:linear-gradient(135deg,#4d7cff,#a78bfa);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">Si te suena familiar...</span>
+      <h2 class="text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-[-0.03em] leading-[1.05] text-white">El creador hispano está <span class="font-serif-italic" style="background:linear-gradient(135deg,#4d7cff,#a78bfa);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;font-weight:400;">cansado</span> de lo mismo<br class="hidden md:block"> de siempre.</h2>
+      <p class="text-lg md:text-xl leading-[1.55] pt-2 font-light" style="color:rgba(255,255,255,0.55);">Mientras los gringos tienen herramientas con IA entrenadas en su idioma, tú sigues pegando prompts en traductores y pagando suscripciones a <span class="font-semibold" style="color:rgba(255,255,255,0.85);">4 apps distintas</span>.</p>
     </div>
     <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
       <div class="rounded-2xl p-6 border relative overflow-hidden" style="background:rgba(255,255,255,0.02);border-color:rgba(255,255,255,0.06);">
@@ -687,59 +806,180 @@
   </div>
 </div>
 
-<!-- ===== CÓMO FUNCIONA ===== -->
-<section class="py-24 px-6">
-  <div class="max-w-4xl mx-auto space-y-14">
-    <div class="text-center space-y-3">
-      <span class="text-xs font-bold uppercase tracking-widest" style="background:linear-gradient(90deg,#7a9aff,#a78bfa);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">Tan fácil como parece</span>
-      <h2 class="text-3xl md:text-4xl font-extrabold tracking-tight">De cero a tu primer quiz<br class="hidden md:block"> en menos de 8 minutos</h2>
+<!-- ===== CÓMO FUNCIONA — EDITORIAL TIMELINE ===== -->
+<section class="py-32 px-6 relative overflow-hidden">
+  <!-- Ambient background accent -->
+  <div class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none" style="width:800px;height:800px;background:radial-gradient(circle,rgba(124,58,237,0.08) 0%,transparent 70%);filter:blur(60px);"></div>
+
+  <div class="max-w-6xl mx-auto relative">
+    <!-- Editorial header: big and asymmetric -->
+    <div class="grid md:grid-cols-[auto_1fr] gap-8 md:gap-16 items-end mb-20">
+      <div>
+        <span class="text-[10px] font-bold uppercase tracking-[0.25em] block mb-4" style="background:linear-gradient(90deg,#7a9aff,#a78bfa);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">El proceso · 3 pasos</span>
+        <h2 class="text-5xl md:text-6xl lg:text-7xl font-extrabold tracking-[-0.035em] leading-[0.95] text-white">De cero<br>a tu primer lead</h2>
+      </div>
+      <div class="md:pb-4 md:border-l md:pl-10" style="border-color:rgba(255,255,255,0.08);">
+        <p class="text-lg md:text-xl leading-[1.5] font-light" style="color:rgba(255,255,255,0.55);">
+          <span class="font-serif-italic" style="color:#a78bfa;font-size:1.3em;">8 minutos.</span> Eso es lo que tarda un creador promedio desde que se registra hasta que recibe su primer lead en Luminous Studio.
+        </p>
+      </div>
     </div>
-    <div class="relative">
-      <div class="hidden md:block absolute top-10 left-[16.67%] right-[16.67%] h-px" style="background:linear-gradient(90deg,transparent,rgba(46,91,255,0.35) 20%,rgba(167,139,250,0.35) 80%,transparent);"></div>
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-10 md:gap-6">
-        <div class="flex flex-col items-center text-center gap-4">
-          <div class="relative">
-            <div class="w-20 h-20 rounded-2xl flex items-center justify-center" style="background:linear-gradient(135deg,rgba(46,91,255,0.15),rgba(124,58,237,0.1));border:1px solid rgba(46,91,255,0.25);">
-              <span class="material-symbols-outlined text-3xl icon-gradient" style="font-variation-settings:'FILL' 1">edit_note</span>
-            </div>
-            <div class="absolute -top-2 -right-2 w-6 h-6 rounded-full flex items-center justify-center text-xs font-black text-white" style="background:linear-gradient(135deg,#2E5BFF,#7c3aed);">1</div>
+
+    <!-- Timeline with alternating rows -->
+    <div class="space-y-20 md:space-y-24">
+
+      <!-- Step 1 -->
+      <div class="grid md:grid-cols-12 gap-6 md:gap-10 items-center">
+        <div class="md:col-span-5 md:order-1">
+          <div class="flex items-baseline gap-4 mb-4">
+            <span class="font-serif-italic text-[90px] md:text-[120px] leading-none" style="background:linear-gradient(135deg,#4d7cff,#a78bfa);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;font-weight:400;">01</span>
+            <span class="text-[11px] font-bold uppercase tracking-[0.25em]" style="color:rgba(255,255,255,0.35);">Minuto 0–2</span>
           </div>
-          <div>
-            <h3 class="font-bold text-white mb-1.5">Describe tu nicho</h3>
-            <p class="text-sm leading-relaxed" style="color:rgba(255,255,255,0.45);">Cuéntale a la IA quién es tu audiencia y qué quieres lograr con tu quiz.</p>
-          </div>
+          <h3 class="text-3xl md:text-4xl font-extrabold tracking-tight text-white mb-4 leading-tight">Describe tu nicho en una frase</h3>
+          <p class="text-base leading-relaxed font-light" style="color:rgba(255,255,255,0.6);">Escribe a quién le hablas y qué quieres lograr. La IA entiende español, modismos y contexto cultural — no necesitas prompts perfectos.</p>
         </div>
-        <div class="flex flex-col items-center text-center gap-4">
-          <div class="relative">
-            <div class="w-20 h-20 rounded-2xl flex items-center justify-center" style="background:linear-gradient(135deg,rgba(46,91,255,0.15),rgba(124,58,237,0.1));border:1px solid rgba(46,91,255,0.25);">
-              <span class="material-symbols-outlined text-3xl icon-gradient" style="font-variation-settings:'FILL' 1">auto_awesome</span>
+        <div class="md:col-span-7 md:order-2">
+          <div class="rounded-2xl p-6 md:p-7 relative overflow-hidden" style="background:linear-gradient(135deg,rgba(46,91,255,0.06),rgba(124,58,237,0.04));border:1px solid rgba(255,255,255,0.08);">
+            <div class="flex items-center gap-2 mb-4">
+              <div class="flex gap-1.5">
+                <div class="w-2.5 h-2.5 rounded-full" style="background:rgba(255,255,255,0.15);"></div>
+                <div class="w-2.5 h-2.5 rounded-full" style="background:rgba(255,255,255,0.15);"></div>
+                <div class="w-2.5 h-2.5 rounded-full" style="background:rgba(255,255,255,0.15);"></div>
+              </div>
+              <span class="text-[10px] font-semibold ml-2" style="color:rgba(255,255,255,0.35);">Generador IA · Paso 1 de 3</span>
             </div>
-            <div class="absolute -top-2 -right-2 w-6 h-6 rounded-full flex items-center justify-center text-xs font-black text-white" style="background:linear-gradient(135deg,#2E5BFF,#7c3aed);">2</div>
-          </div>
-          <div>
-            <h3 class="font-bold text-white mb-1.5">La IA genera tu quiz</h3>
-            <p class="text-sm leading-relaxed" style="color:rgba(255,255,255,0.45);">En 8 segundos tienes preguntas, resultados, copy de leads y diseño listo para publicar.</p>
-          </div>
-        </div>
-        <div class="flex flex-col items-center text-center gap-4">
-          <div class="relative">
-            <div class="w-20 h-20 rounded-2xl flex items-center justify-center" style="background:linear-gradient(135deg,rgba(46,91,255,0.15),rgba(124,58,237,0.1));border:1px solid rgba(46,91,255,0.25);">
-              <span class="material-symbols-outlined text-3xl icon-gradient" style="font-variation-settings:'FILL' 1">rocket_launch</span>
+            <label class="text-[10px] font-bold uppercase tracking-widest block mb-2" style="color:rgba(255,255,255,0.4);">Tu nicho</label>
+            <div class="p-3 rounded-lg font-mono text-sm" style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);color:rgba(255,255,255,0.85);">Coaching de finanzas personales para mujeres latinas de 28–45 que quieren salir de deudas<span class="inline-block w-2 h-4 ml-0.5 align-middle" style="background:#a78bfa;animation:ping 1s infinite;"></span></div>
+            <div class="flex items-center gap-2 mt-4">
+              <span class="material-symbols-outlined" style="font-size:14px;color:#4d7cff;font-variation-settings:'FILL' 1">check_circle</span>
+              <span class="text-xs" style="color:rgba(255,255,255,0.55);">Nicho identificado: finanzas personales · LatAm</span>
             </div>
-            <div class="absolute -top-2 -right-2 w-6 h-6 rounded-full flex items-center justify-center text-xs font-black text-white" style="background:linear-gradient(135deg,#2E5BFF,#7c3aed);">3</div>
-          </div>
-          <div>
-            <h3 class="font-bold text-white mb-1.5">Publica y recibe leads</h3>
-            <p class="text-sm leading-relaxed" style="color:rgba(255,255,255,0.45);">Comparte el link. Los leads llegan segmentados directamente a tu panel, listos para vender.</p>
           </div>
         </div>
       </div>
+
+      <!-- Step 2 (reversed) -->
+      <div class="grid md:grid-cols-12 gap-6 md:gap-10 items-center">
+        <div class="md:col-span-5 md:col-start-8 md:order-2">
+          <div class="flex items-baseline gap-4 mb-4">
+            <span class="font-serif-italic text-[90px] md:text-[120px] leading-none" style="background:linear-gradient(135deg,#a78bfa,#7c3aed);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;font-weight:400;">02</span>
+            <span class="text-[11px] font-bold uppercase tracking-[0.25em]" style="color:rgba(255,255,255,0.35);">Minuto 2–4</span>
+          </div>
+          <h3 class="text-3xl md:text-4xl font-extrabold tracking-tight text-white mb-4 leading-tight">La IA genera todo en <span class="font-serif-italic" style="color:#a78bfa;font-weight:400;">8 segundos</span></h3>
+          <p class="text-base leading-relaxed font-light" style="color:rgba(255,255,255,0.6);">Preguntas, resultados, copy de email, diseño y captura de leads — todo listo y editable. No empiezas desde cero nunca más.</p>
+        </div>
+        <div class="md:col-span-7 md:col-start-1 md:row-start-1 md:order-1">
+          <div class="rounded-2xl p-6 md:p-7 relative overflow-hidden" style="background:linear-gradient(135deg,rgba(124,58,237,0.08),rgba(46,91,255,0.04));border:1px solid rgba(167,139,250,0.15);">
+            <div class="flex items-center justify-between mb-4">
+              <div class="flex items-center gap-2">
+                <span class="material-symbols-outlined icon-gradient" style="font-size:16px;font-variation-settings:'FILL' 1">auto_awesome</span>
+                <span class="text-xs font-bold text-white">Generando quiz...</span>
+              </div>
+              <span class="text-[10px] font-mono" style="color:#a78bfa;">8.2s</span>
+            </div>
+            <div class="space-y-2">
+              <div class="flex items-center gap-3 p-2.5 rounded-lg" style="background:rgba(255,255,255,0.03);">
+                <span class="material-symbols-outlined" style="font-size:14px;color:#4d7cff;font-variation-settings:'FILL' 1">check_circle</span>
+                <span class="text-xs text-white flex-1">8 preguntas personalizadas al nicho</span>
+                <span class="text-[10px] font-mono" style="color:rgba(255,255,255,0.4);">+2.1s</span>
+              </div>
+              <div class="flex items-center gap-3 p-2.5 rounded-lg" style="background:rgba(255,255,255,0.03);">
+                <span class="material-symbols-outlined" style="font-size:14px;color:#4d7cff;font-variation-settings:'FILL' 1">check_circle</span>
+                <span class="text-xs text-white flex-1">3 perfiles de resultado únicos</span>
+                <span class="text-[10px] font-mono" style="color:rgba(255,255,255,0.4);">+1.8s</span>
+              </div>
+              <div class="flex items-center gap-3 p-2.5 rounded-lg" style="background:rgba(255,255,255,0.03);">
+                <span class="material-symbols-outlined" style="font-size:14px;color:#4d7cff;font-variation-settings:'FILL' 1">check_circle</span>
+                <span class="text-xs text-white flex-1">Copy de captura + secuencia email</span>
+                <span class="text-[10px] font-mono" style="color:rgba(255,255,255,0.4);">+2.4s</span>
+              </div>
+              <div class="flex items-center gap-3 p-2.5 rounded-lg" style="background:linear-gradient(90deg,rgba(46,91,255,0.15),rgba(124,58,237,0.08));border:1px solid rgba(46,91,255,0.25);">
+                <span class="material-symbols-outlined" style="font-size:14px;background:linear-gradient(135deg,#4d7cff,#a78bfa);-webkit-background-clip:text;-webkit-text-fill-color:transparent;font-variation-settings:'FILL' 1">auto_awesome</span>
+                <span class="text-xs font-bold text-white flex-1">Diseño aplicado automáticamente</span>
+                <span class="text-[10px] font-mono" style="color:#a78bfa;">+1.9s</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 3 -->
+      <div class="grid md:grid-cols-12 gap-6 md:gap-10 items-center">
+        <div class="md:col-span-5 md:order-1">
+          <div class="flex items-baseline gap-4 mb-4">
+            <span class="font-serif-italic text-[90px] md:text-[120px] leading-none" style="background:linear-gradient(135deg,#7c3aed,#a78bfa);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;font-weight:400;">03</span>
+            <span class="text-[11px] font-bold uppercase tracking-[0.25em]" style="color:rgba(255,255,255,0.35);">Minuto 5–8</span>
+          </div>
+          <h3 class="text-3xl md:text-4xl font-extrabold tracking-tight text-white mb-4 leading-tight">Publica, comparte, <span class="font-serif-italic" style="color:#a78bfa;font-weight:400;">convierte.</span></h3>
+          <p class="text-base leading-relaxed font-light" style="color:rgba(255,255,255,0.6);">Tu link estaba listo desde el minuto 1. Compártelo en WhatsApp, Instagram o tu bio — los leads llegan segmentados a tu panel, listos para vender.</p>
+        </div>
+        <div class="md:col-span-7 md:order-2">
+          <div class="rounded-2xl p-6 md:p-7 relative overflow-hidden" style="background:linear-gradient(135deg,rgba(46,91,255,0.05),rgba(124,58,237,0.08));border:1px solid rgba(255,255,255,0.08);">
+            <div class="flex items-center justify-between mb-5">
+              <span class="text-xs font-bold text-white flex items-center gap-2">
+                <span class="material-symbols-outlined" style="font-size:14px;color:#4d7cff;font-variation-settings:'FILL' 1">rocket_launch</span>
+                Quiz publicado — últimas 24h
+              </span>
+              <span class="text-[10px] px-2 py-0.5 rounded-full font-bold flex items-center gap-1" style="background:rgba(46,91,255,0.15);color:#4d7cff;">
+                <span class="w-1.5 h-1.5 rounded-full inline-block" style="background:#4d7cff;animation:ping 1.5s infinite;"></span>
+                LIVE
+              </span>
+            </div>
+            <!-- Mini lead list -->
+            <div class="space-y-2 mb-4">
+              <div class="flex items-center gap-3 p-2.5 rounded-lg" style="background:rgba(255,255,255,0.03);">
+                <div class="w-8 h-8 rounded-full shrink-0 flex items-center justify-center text-xs font-bold" style="background:rgba(46,91,255,0.2);color:#4d7cff;">A</div>
+                <div class="flex-1 min-w-0">
+                  <p class="text-xs font-bold text-white">Ana Restrepo</p>
+                  <p class="text-[10px]" style="color:rgba(255,255,255,0.4);">Perfil: ahorro agresivo</p>
+                </div>
+                <span class="text-[10px] font-mono" style="color:rgba(255,255,255,0.4);">hace 2m</span>
+              </div>
+              <div class="flex items-center gap-3 p-2.5 rounded-lg" style="background:rgba(255,255,255,0.03);">
+                <div class="w-8 h-8 rounded-full shrink-0 flex items-center justify-center text-xs font-bold" style="background:rgba(124,58,237,0.2);color:#a78bfa;">M</div>
+                <div class="flex-1 min-w-0">
+                  <p class="text-xs font-bold text-white">María Gutiérrez</p>
+                  <p class="text-[10px]" style="color:rgba(255,255,255,0.4);">Perfil: inversión</p>
+                </div>
+                <span class="text-[10px] font-mono" style="color:rgba(255,255,255,0.4);">hace 8m</span>
+              </div>
+              <div class="flex items-center gap-3 p-2.5 rounded-lg" style="background:rgba(255,255,255,0.03);">
+                <div class="w-8 h-8 rounded-full shrink-0 flex items-center justify-center text-xs font-bold" style="background:rgba(46,91,255,0.2);color:#4d7cff;">J</div>
+                <div class="flex-1 min-w-0">
+                  <p class="text-xs font-bold text-white">Jessica Morales</p>
+                  <p class="text-[10px]" style="color:rgba(255,255,255,0.4);">Perfil: salir de deudas</p>
+                </div>
+                <span class="text-[10px] font-mono" style="color:rgba(255,255,255,0.4);">hace 14m</span>
+              </div>
+            </div>
+            <!-- Metrics row -->
+            <div class="grid grid-cols-3 gap-3 pt-4 border-t" style="border-color:rgba(255,255,255,0.06);">
+              <div>
+                <p class="text-xl font-black text-white">127</p>
+                <p class="text-[9px] font-bold uppercase tracking-widest" style="color:rgba(255,255,255,0.4);">Leads hoy</p>
+              </div>
+              <div>
+                <p class="text-xl font-black stat-number">43%</p>
+                <p class="text-[9px] font-bold uppercase tracking-widest" style="color:rgba(255,255,255,0.4);">Conversión</p>
+              </div>
+              <div>
+                <p class="text-xl font-black text-white">+62<span class="text-xs" style="color:rgba(255,255,255,0.3);">%</span></p>
+                <p class="text-[9px] font-bold uppercase tracking-widest" style="color:rgba(255,255,255,0.4);">Vs ayer</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
     </div>
-    <div class="text-center">
-      <a href="./registro.html" class="inline-flex items-center gap-2 px-6 py-3 rounded-xl text-sm font-bold text-white primary-gradient hover:opacity-90 transition-opacity shadow-lg" style="box-shadow:0 0 24px rgba(46,91,255,0.3);">
+
+    <!-- CTA bottom -->
+    <div class="text-center mt-20 space-y-4">
+      <a href="./registro.html" class="inline-flex items-center gap-2 px-9 py-4 rounded-xl text-sm font-bold text-white primary-gradient hover:scale-[1.02] active:scale-95 transition-all" style="box-shadow:0 0 36px rgba(46,91,255,0.35);">
         <span class="material-symbols-outlined text-base" style="font-variation-settings:'FILL' 1">bolt</span>
-        Probar gratis ahora
+        Empezar mi primer quiz gratis
       </a>
+      <p class="text-xs font-medium" style="color:rgba(255,255,255,0.3);">Sin tarjeta de crédito · Tu primer quiz listo en 8 minutos</p>
     </div>
   </div>
 </section>
