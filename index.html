@@ -196,6 +196,30 @@
 
         /* ── Sticky floating CTA: hide on mobile to avoid bottom nav collision ── */
         @media (max-width: 767px) { #sticky-cta { display: none !important; } }
+
+        /* ── 3D Video Cube ── */
+        .cube-scene { perspective: 900px; width: 280px; height: 280px; margin: 0 auto; }
+        .cube-3d {
+          width: 280px; height: 280px; position: relative;
+          transform-style: preserve-3d;
+          animation: rotateCube 22s linear infinite;
+        }
+        .cube-face { position: absolute; width: 280px; height: 280px; }
+        .cube-face.cf-front  { transform: rotateY(  0deg) translateZ(140px); }
+        .cube-face.cf-back   { transform: rotateY(180deg) translateZ(140px); }
+        .cube-face.cf-right  { transform: rotateY( 90deg) translateZ(140px); }
+        .cube-face.cf-left   { transform: rotateY(-90deg) translateZ(140px); }
+        .cube-face.cf-top    { transform: rotateX( 90deg) translateZ(140px); }
+        .cube-face.cf-bottom { transform: rotateX(-90deg) translateZ(140px); }
+        @keyframes rotateCube {
+          0%   { transform: rotateX(-18deg) rotateY(  0deg); }
+          100% { transform: rotateX(-18deg) rotateY(360deg); }
+        }
+        .cube-face.cf-side-grid {
+          background-image: linear-gradient(rgba(46,91,255,0.06) 1px, transparent 1px),
+                            linear-gradient(90deg, rgba(46,91,255,0.06) 1px, transparent 1px);
+          background-size: 24px 24px;
+        }
     </style>
 </head>
 <body class="bg-background text-on-background selection:bg-primary/30 selection:text-primary" data-lloyd-public="true">
@@ -339,8 +363,36 @@
   </div>
 </div>
 </div>
-<!-- ── HERO VISUAL: VIDEO ── -->
-<div class="mt-14 relative px-2 md:px-0">
+<!-- ── 3D VIDEO CUBE (logo reveal nebula) ── -->
+<div class="mt-14 mb-2 relative flex justify-center items-center" style="z-index:2;">
+  <div class="cube-scene" style="position:relative;z-index:2;">
+    <div class="cube-3d">
+      <!-- Front face: nebula logo reveal video -->
+      <div class="cube-face cf-front" style="border-radius:14px;overflow:hidden;border:1px solid rgba(167,139,250,0.4);box-shadow:0 0 48px rgba(46,91,255,0.35),0 0 100px rgba(124,58,237,0.2);">
+        <video autoplay muted loop playsinline style="width:100%;height:100%;object-fit:cover;object-position:center 50%;display:block;">
+          <source src="https://euauqqamrkqwoytveljp.supabase.co/storage/v1/object/public/public-assets/Logo_Reveal_A_purple_and_dark_blue_nebula_swirls_with_7dBpmcoS.mp4" type="video/mp4">
+        </video>
+      </div>
+      <!-- Back face -->
+      <div class="cube-face cf-back" style="border-radius:14px;background:linear-gradient(135deg,#060612,#090918);border:1px solid rgba(46,91,255,0.12);"></div>
+      <!-- Right face -->
+      <div class="cube-face cf-right cf-side-grid" style="background:linear-gradient(135deg,rgba(46,91,255,0.14),rgba(8,8,16,0.92));border:1px solid rgba(46,91,255,0.22);"></div>
+      <!-- Left face -->
+      <div class="cube-face cf-left" style="background:linear-gradient(135deg,rgba(124,58,237,0.12),rgba(8,8,16,0.92));border:1px solid rgba(124,58,237,0.18);"></div>
+      <!-- Top face -->
+      <div class="cube-face cf-top cf-side-grid" style="background:linear-gradient(160deg,rgba(77,124,255,0.22),rgba(124,58,237,0.14));border:1px solid rgba(167,139,250,0.28);"></div>
+      <!-- Bottom face -->
+      <div class="cube-face cf-bottom" style="background:rgba(8,8,16,0.96);"></div>
+    </div>
+  </div>
+  <!-- Radial glow behind cube -->
+  <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:440px;height:440px;background:radial-gradient(circle,rgba(46,91,255,0.22) 0%,rgba(124,58,237,0.14) 40%,transparent 70%);filter:blur(50px);pointer-events:none;z-index:1;"></div>
+  <!-- Orbit ring -->
+  <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:360px;height:360px;border-radius:50%;border:1px solid rgba(167,139,250,0.1);pointer-events:none;z-index:0;"></div>
+</div>
+
+<!-- ── HERO VISUAL: DASHBOARD MOCKUP ── -->
+<div class="mt-8 relative px-2 md:px-0">
 
   <!-- Browser chrome wrapper -->
   <div class="relative max-w-5xl mx-auto rounded-2xl overflow-hidden hero-glow" style="background:#0d0d0d;border:1px solid rgba(255,255,255,0.08);">
