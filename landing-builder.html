@@ -114,19 +114,100 @@
         </div>
         <div>
           <label class="text-[11px] font-semibold text-on-surface-variant block mb-1">Detalles extra (opcional)</label>
-          <textarea id="fld-extras" rows="3" placeholder="Testimonios, bonos, garantía, colores de marca, FAQs…"
-                    class="w-full bg-surface-container border border-outline-variant/40 rounded-lg px-3 py-2 text-sm focus:border-primary focus:ring-0 outline-none resize-none"></textarea>
-        </div>
-        <div>
-          <label class="text-[11px] font-semibold text-on-surface-variant block mb-1">Instrucciones personalizadas (opcional)</label>
-          <textarea id="fld-custom" rows="2" placeholder="Ej: minimalista estilo Apple, tonos pastel, enfoque en antes/después, sin testimonios…"
+          <textarea id="fld-extras" rows="2" placeholder="Ej: testimonios específicos, colores de marca, módulos del curso, garantía personalizada…"
                     class="w-full bg-surface-container border border-outline-variant/40 rounded-lg px-3 py-2 text-sm focus:border-primary focus:ring-0 outline-none resize-none"></textarea>
         </div>
         <div>
           <label class="text-[11px] font-semibold text-on-surface-variant block mb-1">URL de referencia (opcional)</label>
           <input id="fld-refurl" type="text" placeholder="Ej: https://apple.com o https://framer.com/templates"
                  class="w-full bg-surface-container border border-outline-variant/40 rounded-lg px-3 py-2 text-sm focus:border-primary focus:ring-0 outline-none"/>
-          <p class="text-[10px] text-on-surface-variant/60 mt-1">Claude usará el estilo visual del sitio que pongas como inspiración.</p>
+          <p class="text-[10px] text-on-surface-variant/60 mt-1">Claude usará el estilo visual del sitio como inspiración.</p>
+        </div>
+
+        <!-- Divider -->
+        <div class="flex items-center gap-2 pt-1">
+          <div class="flex-1 h-px bg-outline-variant/20"></div>
+          <span class="text-[10px] font-bold text-on-surface-variant/50 uppercase tracking-widest">Contenido</span>
+          <div class="flex-1 h-px bg-outline-variant/20"></div>
+        </div>
+
+        <!-- Bonuses -->
+        <div>
+          <label class="text-[11px] font-semibold text-on-surface-variant block mb-1">
+            Bonos incluidos
+            <span class="ml-1 text-[10px] font-normal text-primary/80">(la IA los incluye siempre — especificá los tuyos)</span>
+          </label>
+          <textarea id="fld-bonuses" rows="3" placeholder="Bono 1: Plantilla de Email ($97)&#10;Bono 2: Checklist de inicio rápido ($47)&#10;Bono 3: Sesión grupal en vivo ($197)"
+                    class="w-full bg-surface-container border border-outline-variant/40 rounded-lg px-3 py-2 text-sm focus:border-primary focus:ring-0 outline-none resize-none"></textarea>
+          <p class="text-[10px] text-on-surface-variant/60 mt-1">Uno por línea. Si no ponés nada, Claude inventa bonos coherentes con tu producto.</p>
+        </div>
+
+        <!-- Images -->
+        <div>
+          <label class="text-[11px] font-semibold text-on-surface-variant block mb-1">Imágenes del producto</label>
+          <div class="flex gap-2">
+            <select id="fld-img-type" class="flex-1 bg-surface-container border border-outline-variant/40 rounded-lg px-3 py-2 text-sm focus:border-primary focus:ring-0 outline-none">
+              <option value="placeholder">Generar placeholders (placehold.co)</option>
+              <option value="upload">Dejar espacios para subir mis fotos</option>
+              <option value="none">Sin imágenes de producto</option>
+            </select>
+            <input id="fld-img-count" type="number" min="1" max="8" value="3" title="Cantidad de imágenes"
+                   class="w-14 bg-surface-container border border-outline-variant/40 rounded-lg px-2 py-2 text-sm focus:border-primary focus:ring-0 outline-none text-center"/>
+          </div>
+          <p class="text-[10px] text-on-surface-variant/60 mt-1">El número indica cuántas imágenes distribuir a lo largo de la landing.</p>
+        </div>
+
+        <!-- Video -->
+        <div>
+          <label class="text-[11px] font-semibold text-on-surface-variant block mb-1">Video (opcional)</label>
+          <input id="fld-video" type="text" placeholder="URL de YouTube, Vimeo o video .mp4 directo"
+                 class="w-full bg-surface-container border border-outline-variant/40 rounded-lg px-3 py-2 text-sm focus:border-primary focus:ring-0 outline-none"/>
+          <p class="text-[10px] text-on-surface-variant/60 mt-1">Se agrega sección de video embebido responsive justo después del hero.</p>
+        </div>
+
+        <!-- Divider -->
+        <div class="flex items-center gap-2 pt-1">
+          <div class="flex-1 h-px bg-outline-variant/20"></div>
+          <span class="text-[10px] font-bold text-on-surface-variant/50 uppercase tracking-widest">Diseño avanzado</span>
+          <div class="flex-1 h-px bg-outline-variant/20"></div>
+        </div>
+
+        <!-- Background -->
+        <div>
+          <label class="text-[11px] font-semibold text-on-surface-variant block mb-1">Fondo del hero</label>
+          <div class="flex gap-2">
+            <select id="fld-bg-type" onchange="toggleBgValue()" class="flex-1 bg-surface-container border border-outline-variant/40 rounded-lg px-3 py-2 text-sm focus:border-primary focus:ring-0 outline-none">
+              <option value="dark">Oscuro con gradiente (default)</option>
+              <option value="color">Color sólido</option>
+              <option value="image">Imagen de fondo</option>
+              <option value="video">Video de fondo (loop)</option>
+            </select>
+          </div>
+          <input id="fld-bg-value" type="text" placeholder="Color hex o URL…" style="display:none"
+                 class="mt-2 w-full bg-surface-container border border-outline-variant/40 rounded-lg px-3 py-2 text-sm focus:border-primary focus:ring-0 outline-none"/>
+        </div>
+
+        <!-- Interactive toggle -->
+        <div class="flex items-center justify-between py-2.5 px-3 border border-outline-variant/20 rounded-lg bg-surface-container">
+          <div>
+            <p class="text-[11px] font-semibold text-on-surface-variant">Landing interactiva</p>
+            <p class="text-[10px] text-on-surface-variant/55">Animaciones, FAQ con expand suave, tabs, contadores animados</p>
+          </div>
+          <label class="relative inline-flex items-center cursor-pointer shrink-0 ml-3">
+            <input id="fld-interactive" type="checkbox" class="sr-only peer"/>
+            <div class="w-9 h-5 bg-outline-variant rounded-full peer peer-checked:bg-primary transition-colors after:content-[''] after:absolute after:top-0.5 after:left-0.5 after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-transform peer-checked:after:translate-x-4"></div>
+          </label>
+        </div>
+
+        <!-- Custom prompt (exact instructions) -->
+        <div>
+          <label class="text-[11px] font-semibold text-on-surface-variant block mb-1">
+            Instrucción exacta a la IA
+            <span class="ml-1 text-[10px] font-normal text-on-surface-variant/60">(Claude la sigue al pie de la letra)</span>
+          </label>
+          <textarea id="fld-custom" rows="3" placeholder="Ej: el hero debe tener un countdown de 48 horas, sección antes/después con dos columnas, paleta de color violeta oscuro, sin sección de métricas…"
+                    class="w-full bg-surface-container border border-outline-variant/40 rounded-lg px-3 py-2 text-sm focus:border-primary focus:ring-0 outline-none resize-none"></textarea>
+          <p class="text-[10px] text-on-surface-variant/60 mt-1">Descripción libre de lo que querés que aparezca o no aparezca. Máxima prioridad sobre el estilo por defecto.</p>
         </div>
       </div>
 
@@ -136,7 +217,7 @@
       </button>
 
       <p class="mt-3 text-[10px] text-on-surface-variant/70 leading-relaxed">
-        Claude generará una landing completa con hero, beneficios, testimonios, FAQ, garantía y CTA. Después podés pedir cambios por chat.
+        Claude genera hero, beneficios, bonos, testimonios, FAQ, garantía y CTA — optimizada para conversión. Después iterás por chat.
       </p>
     </div>
 
@@ -230,6 +311,19 @@
 <script src="./app.js"></script>
 <script src="./ai-assistant.js"></script>
 <script>
+function toggleBgValue() {
+  const type = document.getElementById('fld-bg-type').value;
+  const input = document.getElementById('fld-bg-value');
+  const placeholders = { color: '#1a1a2e o #0f172a (color hex)', image: 'URL de imagen de fondo (JPG/PNG/WebP)', video: 'URL de video .mp4 de fondo' };
+  if (type === 'dark') {
+    input.style.display = 'none';
+  } else {
+    input.style.display = 'block';
+    input.placeholder = placeholders[type] || 'URL o color hex…';
+  }
+}
+</script>
+<script>
   (async () => {
     // ── Auth gate ──
     const user = await Auth.user();
@@ -278,6 +372,12 @@
             set('fld-extras', tpl.form.extras);
             set('fld-custom', tpl.form.custom);
             set('fld-refurl', tpl.form.refurl);
+            set('fld-bonuses', tpl.form.bonuses);
+            set('fld-video', tpl.form.video);
+            if (tpl.form.imgType) { const el = document.getElementById('fld-img-type'); if (el) el.value = tpl.form.imgType; }
+            if (tpl.form.imgCount) { const el = document.getElementById('fld-img-count'); if (el) el.value = tpl.form.imgCount; }
+            if (tpl.form.bgType) { const el = document.getElementById('fld-bg-type'); if (el) { el.value = tpl.form.bgType; toggleBgValue(); } }
+            set('fld-bg-value', tpl.form.bgValue);
           }, 0);
         }
       } catch {}
@@ -581,12 +681,19 @@
 
     // ── Generate (first time, from form) ──
     genBtn.onclick = async () => {
-      const product = document.getElementById('fld-product').value.trim();
+      const product  = document.getElementById('fld-product').value.trim();
       const audience = document.getElementById('fld-audience').value.trim();
-      const price = document.getElementById('fld-price').value.trim();
-      const extras = document.getElementById('fld-extras').value.trim();
-      const custom = document.getElementById('fld-custom').value.trim();
-      const refurl = document.getElementById('fld-refurl').value.trim();
+      const price    = document.getElementById('fld-price').value.trim();
+      const extras   = document.getElementById('fld-extras').value.trim();
+      const custom   = document.getElementById('fld-custom').value.trim();
+      const refurl   = document.getElementById('fld-refurl').value.trim();
+      const bonuses  = document.getElementById('fld-bonuses').value.trim();
+      const imgType  = document.getElementById('fld-img-type').value;
+      const imgCount = document.getElementById('fld-img-count').value || '3';
+      const video    = document.getElementById('fld-video').value.trim();
+      const bgType   = document.getElementById('fld-bg-type').value;
+      const bgValue  = document.getElementById('fld-bg-value').value.trim();
+      const interactive = document.getElementById('fld-interactive').checked;
 
       if (!product) { toast('Contanos qué vendés', 'err'); return; }
 
@@ -595,14 +702,31 @@
         return;
       }
 
+      // Build image instruction
+      const imgInstr = imgType === 'none'
+        ? 'IMÁGENES tipo="none": no incluyas imágenes de producto.'
+        : `IMÁGENES tipo="${imgType}", cantidad=${imgCount}: distribuí ${imgCount} imágenes a lo largo de la landing (hero, módulos, testimonios).`;
+
+      // Build background instruction
+      const bgInstr = bgType !== 'dark' && bgValue
+        ? `FONDO tipo="${bgType}", valor="${bgValue}".`
+        : '';
+
       const brief = [
         `Necesito una landing page para: ${product}.`,
         audience ? `Audiencia: ${audience}.` : '',
-        price ? `Precio/oferta: ${price}.` : '',
-        extras ? `Detalles extra: ${extras}` : '',
-        custom ? `INSTRUCCIONES DE DISEÑO DEL CREADOR (priorizá esto sobre tu estilo por defecto): ${custom}` : '',
-        refurl ? `INSPIRACIÓN VISUAL: el creador quiere que tome como referencia el estilo del sitio ${refurl}. Analizá mentalmente cómo se ve ese sitio (paleta, tipografía, espaciado, tono visual) y aplicá esa estética a esta landing.` : '',
-      ].filter(Boolean).join(' ');
+        price    ? `Precio/oferta: ${price}.` : '',
+        extras   ? `Detalles adicionales: ${extras}` : '',
+        bonuses
+          ? `BONOS DEL PRODUCTO (sección OBLIGATORIA, usá exactamente estos bonos): ${bonuses}`
+          : 'BONOS: inventá 2-3 bonos creativos y coherentes con el producto, con nombre, descripción breve y valor en dólares.',
+        imgInstr,
+        video ? `VIDEO: embebí este video en sección dedicada después del hero: ${video}` : '',
+        bgInstr,
+        interactive ? 'INTERACTIVIDAD: agrega animaciones CSS y JavaScript inline: contadores animados con IntersectionObserver, FAQ con smooth expand (max-height transition), tabs en módulos/beneficios, parallax leve en hero.' : '',
+        custom ? `INSTRUCCIÓN EXACTA DEL CREADOR (máxima prioridad, seguí esto al pie de la letra): ${custom}` : '',
+        refurl ? `INSPIRACIÓN VISUAL: tomá como referencia el estilo del sitio ${refurl} — paleta, tipografía, espaciado, tono visual.` : '',
+      ].filter(Boolean).join('\n');
 
       if (!titleEl.value.trim()) titleEl.value = product.slice(0, 60);
 
