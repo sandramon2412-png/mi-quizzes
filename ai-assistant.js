@@ -167,11 +167,11 @@ TONO: cercano, directo, entusiasta pero sin exagerar. Respuestas cortas (2-4 ora
 #lsa-win {
   position: fixed; z-index: 9999;
   width: 460px;
-  background: rgba(8,8,20,0.52);
-  backdrop-filter: blur(28px); -webkit-backdrop-filter: blur(28px);
-  border: 1px solid rgba(255,255,255,0.12);
-  border-radius: 20px;
-  box-shadow: 0 24px 80px rgba(0,0,0,0.6), 0 0 0 1px rgba(46,91,255,0.2), inset 0 1px 0 rgba(255,255,255,0.1);
+  background: rgba(14,16,40,0.22);
+  backdrop-filter: blur(48px) saturate(180%); -webkit-backdrop-filter: blur(48px) saturate(180%);
+  border: 1px solid rgba(120,140,255,0.22);
+  border-radius: 22px;
+  box-shadow: 0 8px 48px rgba(46,91,255,0.18), 0 0 0 1px rgba(46,91,255,0.12), inset 0 1px 0 rgba(255,255,255,0.14);
   display: flex; flex-direction: column;
   overflow: hidden;
   font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
@@ -179,7 +179,7 @@ TONO: cercano, directo, entusiasta pero sin exagerar. Respuestas cortas (2-4 ora
   transition: box-shadow 0.2s;
   user-select: none;
 }
-#lsa-win.dragging { box-shadow: 0 40px 100px rgba(0,0,0,0.75); }
+#lsa-win.dragging { box-shadow: 0 20px 80px rgba(46,91,255,0.25); }
 
 /* ── Gradient top strip ── */
 #lsa-win::before {
@@ -193,8 +193,8 @@ TONO: cercano, directo, entusiasta pero sin exagerar. Respuestas cortas (2-4 ora
 #lsa-header {
   display: flex; align-items: center; gap: 10px;
   padding: 13px 14px 11px;
-  background: rgba(255,255,255,0.04);
-  border-bottom: 1px solid rgba(255,255,255,0.08);
+  background: rgba(255,255,255,0.05);
+  border-bottom: 1px solid rgba(120,140,255,0.15);
   cursor: grab;
 }
 #lsa-header:active { cursor: grabbing; }
@@ -223,8 +223,8 @@ TONO: cercano, directo, entusiasta pero sin exagerar. Respuestas cortas (2-4 ora
 #lsa-mode-tabs {
   display: flex; flex-wrap: wrap; align-items: center; gap: 5px;
   padding: 10px 12px;
-  background: rgba(0,0,0,0.18);
-  border-bottom: 1px solid rgba(255,255,255,0.06);
+  background: rgba(0,0,0,0.08);
+  border-bottom: 1px solid rgba(120,140,255,0.12);
   flex-shrink: 0;
 }
 #lsa-mode-tabs::-webkit-scrollbar { display: none; }
@@ -252,9 +252,9 @@ TONO: cercano, directo, entusiasta pero sin exagerar. Respuestas cortas (2-4 ora
 
 /* ── Sessions panel ── */
 #lsa-sessions-panel {
-  border-bottom: 1px solid rgba(255,255,255,0.06);
+  border-bottom: 1px solid rgba(120,140,255,0.12);
   max-height: 180px; overflow-y: auto;
-  background: rgba(0,0,0,0.22);
+  background: rgba(0,0,0,0.1);
   scrollbar-width: thin; scrollbar-color: #333 transparent;
 }
 .lsa-session-item {
@@ -302,8 +302,8 @@ TONO: cercano, directo, entusiasta pero sin exagerar. Respuestas cortas (2-4 ora
   font-size: 13px; line-height: 1.6; color: #d0d0e0;
 }
 .lsa-msg.ai .lsa-bubble {
-  background: rgba(255,255,255,0.04);
-  border: 1px solid rgba(255,255,255,0.08);
+  background: rgba(255,255,255,0.07);
+  border: 1px solid rgba(255,255,255,0.12);
   border-top-left-radius: 4px;
 }
 .lsa-msg.user .lsa-bubble {
@@ -349,9 +349,9 @@ TONO: cercano, directo, entusiasta pero sin exagerar. Respuestas cortas (2-4 ora
 
 /* ── Input bar ── */
 #lsa-inputbar {
-  padding: 10px 12px 12px; border-top: 1px solid rgba(255,255,255,0.08);
+  padding: 10px 12px 12px; border-top: 1px solid rgba(120,140,255,0.15);
   display: flex; gap: 7px; align-items: flex-end;
-  background: rgba(0,0,0,0.2);
+  background: rgba(0,0,0,0.1);
 }
 #lsa-input {
   flex: 1; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.13);
