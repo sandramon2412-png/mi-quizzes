@@ -451,7 +451,7 @@ TONO: cercano, directo, entusiasta pero sin exagerar. Respuestas cortas (2-4 ora
     const win = document.getElementById('lsa-win');
     const btn = document.getElementById('lsa-float-btn');
     const bx = window.innerWidth - 96;
-    const by = window.innerHeight - 96;
+    const by = window.innerHeight - 160;
     btn.style.left = bx + 'px';
     btn.style.top  = by + 'px';
     _pos.x = window.innerWidth - 540;
