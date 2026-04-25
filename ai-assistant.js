@@ -167,10 +167,11 @@ TONO: cercano, directo, entusiasta pero sin exagerar. Respuestas cortas (2-4 ora
 #lsa-win {
   position: fixed; z-index: 9999;
   width: 460px;
-  background: #0a0a14;
-  border: 1px solid rgba(255,255,255,0.08);
-  border-radius: 18px;
-  box-shadow: 0 32px 100px rgba(0,0,0,0.85), 0 0 0 1px rgba(46,91,255,0.15), inset 0 1px 0 rgba(255,255,255,0.06);
+  background: rgba(8,8,20,0.52);
+  backdrop-filter: blur(28px); -webkit-backdrop-filter: blur(28px);
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 20px;
+  box-shadow: 0 24px 80px rgba(0,0,0,0.6), 0 0 0 1px rgba(46,91,255,0.2), inset 0 1px 0 rgba(255,255,255,0.1);
   display: flex; flex-direction: column;
   overflow: hidden;
   font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
@@ -178,7 +179,7 @@ TONO: cercano, directo, entusiasta pero sin exagerar. Respuestas cortas (2-4 ora
   transition: box-shadow 0.2s;
   user-select: none;
 }
-#lsa-win.dragging { box-shadow: 0 48px 120px rgba(0,0,0,0.95); }
+#lsa-win.dragging { box-shadow: 0 40px 100px rgba(0,0,0,0.75); }
 
 /* ── Gradient top strip ── */
 #lsa-win::before {
@@ -192,8 +193,8 @@ TONO: cercano, directo, entusiasta pero sin exagerar. Respuestas cortas (2-4 ora
 #lsa-header {
   display: flex; align-items: center; gap: 10px;
   padding: 13px 14px 11px;
-  background: rgba(255,255,255,0.02);
-  border-bottom: 1px solid rgba(255,255,255,0.06);
+  background: rgba(255,255,255,0.04);
+  border-bottom: 1px solid rgba(255,255,255,0.08);
   cursor: grab;
 }
 #lsa-header:active { cursor: grabbing; }
@@ -222,8 +223,8 @@ TONO: cercano, directo, entusiasta pero sin exagerar. Respuestas cortas (2-4 ora
 #lsa-mode-tabs {
   display: flex; flex-wrap: wrap; align-items: center; gap: 5px;
   padding: 10px 12px;
-  background: rgba(0,0,0,0.3);
-  border-bottom: 1px solid rgba(255,255,255,0.05);
+  background: rgba(0,0,0,0.18);
+  border-bottom: 1px solid rgba(255,255,255,0.06);
   flex-shrink: 0;
 }
 #lsa-mode-tabs::-webkit-scrollbar { display: none; }
@@ -253,7 +254,7 @@ TONO: cercano, directo, entusiasta pero sin exagerar. Respuestas cortas (2-4 ora
 #lsa-sessions-panel {
   border-bottom: 1px solid rgba(255,255,255,0.06);
   max-height: 180px; overflow-y: auto;
-  background: rgba(0,0,0,0.4);
+  background: rgba(0,0,0,0.22);
   scrollbar-width: thin; scrollbar-color: #333 transparent;
 }
 .lsa-session-item {
@@ -348,18 +349,18 @@ TONO: cercano, directo, entusiasta pero sin exagerar. Respuestas cortas (2-4 ora
 
 /* ── Input bar ── */
 #lsa-inputbar {
-  padding: 10px 12px 12px; border-top: 1px solid rgba(255,255,255,0.06);
+  padding: 10px 12px 12px; border-top: 1px solid rgba(255,255,255,0.08);
   display: flex; gap: 7px; align-items: flex-end;
-  background: rgba(0,0,0,0.35);
+  background: rgba(0,0,0,0.2);
 }
 #lsa-input {
-  flex: 1; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1);
+  flex: 1; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.13);
   border-radius: 12px; padding: 9px 13px; color: #fff; font-size: 13px;
   font-family: inherit; resize: none; outline: none;
   max-height: 120px; min-height: 38px; line-height: 1.45;
   transition: border-color 0.18s, background 0.18s;
 }
-#lsa-input:focus { border-color: rgba(46,91,255,0.5); background: rgba(46,91,255,0.06); }
+#lsa-input:focus { border-color: rgba(46,91,255,0.6); background: rgba(46,91,255,0.08); }
 #lsa-input::placeholder { color: rgba(255,255,255,0.25); }
 .lsa-input-btn {
   width: 38px; height: 38px; border-radius: 10px; flex-shrink: 0; border: none;
