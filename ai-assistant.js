@@ -141,11 +141,11 @@ TONO: cercano, directo, entusiasta pero sin exagerar. Respuestas cortas (2-4 ora
 /* ── Float trigger ── */
 #lsa-float-btn {
   position: fixed; z-index: 9998;
-  width: 56px; height: 56px; border-radius: 50%;
+  width: 72px; height: 72px; border-radius: 50%;
   background: linear-gradient(135deg, #2E5BFF 0%, #7c3aed 100%);
   border: none; cursor: pointer; color: #fff;
   display: flex; align-items: center; justify-content: center;
-  font-size: 22px;
+  font-size: 28px;
   box-shadow: 0 8px 32px rgba(46,91,255,0.5), 0 0 0 0 rgba(46,91,255,0.4);
   transition: transform 0.2s, box-shadow 0.2s;
   animation: lsa-ring 2.5s ease-in-out infinite;
@@ -449,8 +449,8 @@ TONO: cercano, directo, entusiasta pero sin exagerar. Respuestas cortas (2-4 ora
   function _initPosition() {
     const win = document.getElementById('lsa-win');
     const btn = document.getElementById('lsa-float-btn');
-    const bx = window.innerWidth - 68;
-    const by = window.innerHeight - 80;
+    const bx = window.innerWidth - 96;
+    const by = window.innerHeight - 96;
     btn.style.left = bx + 'px';
     btn.style.top  = by + 'px';
     _pos.x = window.innerWidth - 420;
