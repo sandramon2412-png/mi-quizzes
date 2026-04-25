@@ -92,6 +92,9 @@
   .section-head { border-left: 3px solid; padding-left: 12px; }
   .section-head.border-secondary { border-image: linear-gradient(180deg,#69f6b8,#2E5BFF) 1; }
   .section-head.border-primary { border-image: linear-gradient(180deg,#2E5BFF,#7c3aed) 1; }
+  .dash-tab { background: rgba(255,255,255,0.04); color: rgba(255,255,255,0.45); border: 1px solid rgba(255,255,255,0.08); }
+  .dash-tab:hover { background: rgba(255,255,255,0.08); color: rgba(255,255,255,0.75); }
+  .dash-tab.active-tab { background: linear-gradient(135deg,#2E5BFF,#7c3aed); color: #fff; border-color: transparent; box-shadow: 0 4px 14px rgba(46,91,255,0.35); }
   /* Type chips multi-select */
   .type-chip {
     display: inline-flex; align-items: center; gap: 5px;
@@ -242,8 +245,27 @@
 
   </div>
 
+  <!-- ══════════════ PRODUCT TABS ══════════════ -->
+  <div class="flex items-center gap-2 mb-8 flex-wrap" id="dashboard-tabs">
+    <button onclick="switchDashTab('all')"    data-tab="all"       class="dash-tab active-tab flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-bold transition-all">
+      <span class="material-symbols-outlined text-sm" style="font-variation-settings:'FILL' 1">grid_view</span>Todo
+    </button>
+    <button onclick="switchDashTab('quizzes')" data-tab="quizzes"  class="dash-tab flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-bold transition-all">
+      <span class="material-symbols-outlined text-sm" style="font-variation-settings:'FILL' 1">quiz</span>Quizzes
+    </button>
+    <button onclick="switchDashTab('miniapps')" data-tab="miniapps" class="dash-tab flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-bold transition-all">
+      <span class="material-symbols-outlined text-sm" style="font-variation-settings:'FILL' 1">deployed_code</span>Mini-Apps
+    </button>
+    <button onclick="switchDashTab('landings')" data-tab="landings" class="dash-tab flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-bold transition-all">
+      <span class="material-symbols-outlined text-sm" style="font-variation-settings:'FILL' 1">web</span>Landings
+    </button>
+    <button onclick="switchDashTab('ebooks')" data-tab="ebooks"   class="dash-tab flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-bold transition-all">
+      <span class="material-symbols-outlined text-sm" style="font-variation-settings:'FILL' 1">auto_stories</span>Ebooks
+    </button>
+  </div>
+
   <!-- ══════════════ MIS MINI-APPS ══════════════ -->
-  <section class="mb-10">
+  <section class="mb-10" id="section-miniapps">
     <div class="flex items-center justify-between mb-5">
       <div class="section-head border-secondary">
         <h2 class="text-lg font-black text-on-surface tracking-tight">Mis Mini-Apps</h2>
@@ -296,7 +318,7 @@
   </section>
 
   <!-- ══════════════ MIS QUIZZES ══════════════ -->
-  <section>
+  <section id="section-quizzes">
     <div class="flex items-center justify-between mb-5">
       <div class="section-head border-primary">
         <h2 class="text-lg font-black text-on-surface tracking-tight">Mis Quizzes</h2>
@@ -1641,6 +1663,30 @@ async function toggleQuizStatus(id, currentStatus) {
     showToast('Error al cambiar estado: ' + err.message, 'error');
   }
 }
+
+// ── Dashboard tabs ───────────────────────────────────────
+function switchDashTab(tab) {
+  const sections = {
+    quizzes:  document.getElementById('section-quizzes'),
+    miniapps: document.getElementById('section-miniapps'),
+    landings: document.getElementById('section-landings'),
+    ebooks:   document.getElementById('section-ebooks'),
+  };
+  const showAll = tab === 'all';
+  Object.entries(sections).forEach(([key, el]) => {
+    if (!el) return;
+    el.style.display = (showAll || key === tab) ? '' : 'none';
+  });
+  document.querySelectorAll('.dash-tab').forEach(btn => {
+    btn.classList.toggle('active-tab', btn.dataset.tab === tab);
+  });
+  localStorage.setItem('ls_dash_tab', tab);
+}
+// Restore last active tab on load
+document.addEventListener('DOMContentLoaded', () => {
+  const saved = localStorage.getItem('ls_dash_tab') || 'all';
+  switchDashTab(saved);
+});
 
 // ── Modal ────────────────────────────────────────────────
 function openCreateModal() {
