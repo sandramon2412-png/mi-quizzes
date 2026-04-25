@@ -119,7 +119,7 @@
   <nav class="hidden md:flex items-center gap-5 text-sm">
     <a class="text-primary font-semibold" href="./dashboard.html">Dashboard</a>
     <a class="text-on-surface-variant hover:text-primary transition-colors" href="./generador-ia.html">Crear Quiz</a>
-    <a class="text-on-surface-variant hover:text-primary transition-colors" href="./plantillas-miniapps.html">Mini-Apps</a>
+    <a class="text-on-surface-variant hover:text-primary transition-colors" href="./dashboard.html?create_miniapp=1">Mini-Apps</a>
     <a class="text-on-surface-variant hover:text-primary transition-colors" href="./plantillas.html">Plantillas</a>
     <a class="text-on-surface-variant hover:text-primary transition-colors" href="./leads.html">Leads</a>
     <a class="text-on-surface-variant hover:text-primary transition-colors" href="./bots.html">Bot Lab</a>
@@ -884,6 +884,10 @@ document.addEventListener('DOMContentLoaded', async () => {
   // Apply mini-app template if coming from plantillas-miniapps.html
   if (new URLSearchParams(window.location.search).get('miniapp_template')) {
     applyPendingMiniAppTemplate();
+  }
+  // Auto-open mini-app creation modal if ?create_miniapp=1
+  if (new URLSearchParams(window.location.search).get('create_miniapp')) {
+    setTimeout(() => openCreateModal(), 700);
   }
   // Show onboarding on first visit
   const onboardingKey = `onboarding_done_${_currentUser.id}`;
