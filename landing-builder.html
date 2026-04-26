@@ -185,11 +185,12 @@
           </div>
           <input id="fld-bg-value" type="text" placeholder="Color hex o URL…" style="display:none"
                  class="mt-2 w-full bg-surface-container border border-outline-variant/40 rounded-lg px-3 py-2 text-sm focus:border-primary focus:ring-0 outline-none"/>
-          <!-- Video templates grid -->
+          <!-- Video templates gallery -->
           <div id="video-templates-grid" style="display:none" class="mt-2">
-            <p class="text-[10px] font-semibold text-on-surface-variant/70 mb-2">Plantillas de video por nicho — clic para usar:</p>
-            <div class="grid grid-cols-2 gap-1.5" id="video-tpl-grid"></div>
-            <p class="text-[10px] text-on-surface-variant/50 mt-1.5">O pegá tu propia URL arriba. Videos de Mixkit (gratis, sin atribución).</p>
+            <p class="text-[10px] font-semibold text-on-surface-variant/70 mb-2">Galería de fondos — hover para preview, clic para usar:</p>
+            <div class="flex flex-wrap gap-1 mb-2" id="vtg-cat-tabs"></div>
+            <div class="grid grid-cols-2 gap-1.5 max-h-[300px] overflow-y-auto pr-1" id="video-tpl-grid"></div>
+            <p class="text-[10px] text-on-surface-variant/50 mt-1.5">O pegá tu URL arriba. Videos de Mixkit (gratis, sin atribución).</p>
           </div>
         </div>
 
@@ -321,18 +322,78 @@
 <script src="./app.js"></script>
 <script src="./ai-assistant.js"></script>
 <script>
-const VIDEO_TEMPLATES = [
-  { nicho: 'Negocios', icon: 'business_center', url: 'https://assets.mixkit.co/videos/4871/4871-720.mp4' },
-  { nicho: 'Coaching', icon: 'emoji_people', url: 'https://assets.mixkit.co/videos/5285/5285-720.mp4' },
-  { nicho: 'Fitness', icon: 'fitness_center', url: 'https://assets.mixkit.co/videos/4608/4608-720.mp4' },
-  { nicho: 'Meditación', icon: 'self_improvement', url: 'https://assets.mixkit.co/videos/49583/49583-720.mp4' },
-  { nicho: 'Finanzas', icon: 'trending_up', url: 'https://assets.mixkit.co/videos/4503/4503-720.mp4' },
-  { nicho: 'Tecnología', icon: 'code', url: 'https://assets.mixkit.co/videos/4957/4957-720.mp4' },
-  { nicho: 'Gastronomía', icon: 'restaurant', url: 'https://assets.mixkit.co/videos/4074/4074-720.mp4' },
-  { nicho: 'Belleza', icon: 'spa', url: 'https://assets.mixkit.co/videos/6168/6168-720.mp4' },
-  { nicho: 'Naturaleza', icon: 'landscape', url: 'https://assets.mixkit.co/videos/50264/50264-720.mp4' },
-  { nicho: 'Ciudad', icon: 'location_city', url: 'https://assets.mixkit.co/videos/4068/4068-720.mp4' },
+const VIDEO_CATEGORIES = [
+  { key: 'all',      label: 'Todos' },
+  { key: 'people',   label: 'Personas' },
+  { key: 'tech',     label: 'Tech' },
+  { key: 'abstract', label: 'Abstract' },
+  { key: 'city',     label: 'Ciudad' },
+  { key: 'nature',   label: 'Naturaleza' },
 ];
+const VIDEO_TEMPLATES = [
+  { id: '4871',  category: 'people',   label: 'Negocios' },
+  { id: '5285',  category: 'people',   label: 'Equipo trabajando' },
+  { id: '4608',  category: 'people',   label: 'Profesional oficina' },
+  { id: '49583', category: 'people',   label: 'Lifestyle moderno' },
+  { id: '4503',  category: 'people',   label: 'Trabajo creativo' },
+  { id: '4957',  category: 'people',   label: 'Estudio profesional' },
+  { id: '308',   category: 'people',   label: 'Hombre laptop ciudad' },
+  { id: '4809',  category: 'people',   label: 'Reunión coworkers' },
+  { id: '42648', category: 'people',   label: 'Presentación gráficos' },
+  { id: '914',   category: 'people',   label: 'Oficina abierta' },
+  { id: '4907',  category: 'people',   label: 'Manos teclado' },
+  { id: '42664', category: 'people',   label: 'Mujer profesional' },
+  { id: '30012', category: 'people',   label: 'Apretón de manos' },
+  { id: '4547',  category: 'people',   label: 'Reunión exitosa' },
+  { id: '918',   category: 'people',   label: 'Startup activa' },
+  { id: '4948',  category: 'people',   label: 'Lectura tranquila' },
+  { id: '4800',  category: 'people',   label: 'Mujer meditando' },
+  { id: '4074',  category: 'tech',     label: 'Tecnología digital' },
+  { id: '6168',  category: 'tech',     label: 'Pantalla código' },
+  { id: '50264', category: 'tech',     label: 'Interfaz futurista' },
+  { id: '4068',  category: 'tech',     label: 'Red conectada' },
+  { id: '46635', category: 'tech',     label: 'Programación' },
+  { id: '99786', category: 'tech',     label: 'Dispositivos futuros' },
+  { id: '9757',  category: 'tech',     label: 'Código en pantalla' },
+  { id: '47051', category: 'tech',     label: 'Placa circuito' },
+  { id: '12748', category: 'tech',     label: 'Mapa digital mundial' },
+  { id: '51214', category: 'tech',     label: 'Gafas VR' },
+  { id: '50748', category: 'tech',     label: 'Pantallas matrix' },
+  { id: '23282', category: 'tech',     label: 'Centro de datos' },
+  { id: '31771', category: 'tech',     label: 'Red de puntos' },
+  { id: '47323', category: 'tech',     label: 'Huella digital' },
+  { id: '45378', category: 'tech',     label: 'Código HTML' },
+  { id: '31562', category: 'abstract', label: 'Túnel fractal' },
+  { id: '47282', category: 'abstract', label: 'Fuga de luz' },
+  { id: '44818', category: 'abstract', label: 'Tinta fluida' },
+  { id: '3524',  category: 'abstract', label: 'Glitch digital' },
+  { id: '4974',  category: 'abstract', label: 'Formas mono' },
+  { id: '45298', category: 'abstract', label: 'Humo abstracto' },
+  { id: '31497', category: 'abstract', label: 'Túnel cubos 3D' },
+  { id: '49845', category: 'city',     label: 'Edificios nocturnos' },
+  { id: '4231',  category: 'city',     label: 'Tokio luces neón' },
+  { id: '49878', category: 'city',     label: 'Rascacielos aérea' },
+  { id: '4332',  category: 'city',     label: 'Times Square lluvia' },
+  { id: '4067',  category: 'city',     label: 'Túnel tráfico' },
+  { id: '34562', category: 'city',     label: 'Avenidas nocturnas' },
+  { id: '41161', category: 'city',     label: 'Avenida principal' },
+  { id: '4308',  category: 'city',     label: 'Tokio atardecer' },
+  { id: '42343', category: 'city',     label: 'Tráfico aéreo noche' },
+  { id: '4451',  category: 'city',     label: 'Calle Tokio' },
+  { id: '41576', category: 'nature',   label: 'Carretera montaña' },
+  { id: '4075',  category: 'nature',   label: 'Pradera flores' },
+  { id: '2213',  category: 'nature',   label: 'Cascada bosque' },
+  { id: '51502', category: 'nature',   label: 'Costa rocosa' },
+  { id: '51445', category: 'nature',   label: 'Atardecer playa' },
+  { id: '4881',  category: 'nature',   label: 'Campo girasoles' },
+  { id: '5016',  category: 'nature',   label: 'Olas espuma' },
+  { id: '1610',  category: 'nature',   label: 'Estrellas espacio' },
+  { id: '26108', category: 'nature',   label: 'Cielo y nubes' },
+  { id: '4645',  category: 'nature',   label: 'Palmera soleada' },
+  { id: '4633',  category: 'nature',   label: 'Carretera 1ra persona' },
+];
+let _vtgActiveCat = 'all';
+let _vtgSelectedId = null;
 
 function toggleBgValue() {
   const type = document.getElementById('fld-bg-type').value;
@@ -354,20 +415,52 @@ function toggleBgValue() {
   }
 }
 
+function _vtgUrl(id) {
+  return `https://assets.mixkit.co/videos/${id}/${id}-720.mp4`;
+}
 function renderVideoTemplates() {
-  const container = document.getElementById('video-tpl-grid');
-  if (container.children.length) return; // already rendered
-  VIDEO_TEMPLATES.forEach(tpl => {
-    const btn = document.createElement('button');
-    btn.type = 'button';
-    btn.className = 'flex items-center gap-2 px-2.5 py-2 rounded-lg bg-surface-container border border-outline-variant/20 hover:border-primary/40 hover:bg-primary/5 transition text-left';
-    btn.innerHTML = `<span class="material-symbols-outlined text-primary/70" style="font-size:15px">${tpl.icon}</span><span class="text-[11px] font-semibold text-on-surface-variant">${tpl.nicho}</span>`;
-    btn.onclick = () => {
-      document.getElementById('fld-bg-value').value = tpl.url;
-      container.querySelectorAll('button').forEach(b => b.classList.remove('border-primary', 'bg-primary/10'));
-      btn.classList.add('border-primary', 'bg-primary/10');
+  const tabsHost = document.getElementById('vtg-cat-tabs');
+  const grid = document.getElementById('video-tpl-grid');
+  if (!tabsHost.children.length) {
+    VIDEO_CATEGORIES.forEach(cat => {
+      const t = document.createElement('button');
+      t.type = 'button';
+      t.dataset.cat = cat.key;
+      t.className = 'px-2 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wider transition';
+      t.textContent = cat.label;
+      t.onclick = () => { _vtgActiveCat = cat.key; renderVideoTemplates(); };
+      tabsHost.appendChild(t);
+    });
+  }
+  tabsHost.querySelectorAll('button').forEach(b => {
+    const active = b.dataset.cat === _vtgActiveCat;
+    b.className = 'px-2 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wider transition ' +
+      (active ? 'bg-primary text-white' : 'bg-surface-container text-on-surface-variant/70 hover:bg-surface-container-high');
+  });
+  grid.innerHTML = '';
+  const items = _vtgActiveCat === 'all' ? VIDEO_TEMPLATES : VIDEO_TEMPLATES.filter(t => t.category === _vtgActiveCat);
+  items.forEach(tpl => {
+    const url = _vtgUrl(tpl.id);
+    const card = document.createElement('button');
+    card.type = 'button';
+    const isSel = _vtgSelectedId === tpl.id;
+    card.className = 'relative aspect-video rounded-lg overflow-hidden border bg-black transition group ' +
+      (isSel ? 'border-primary ring-2 ring-primary/40' : 'border-outline-variant/20 hover:border-primary/50');
+    card.innerHTML = `
+      <video preload="metadata" muted playsinline loop class="w-full h-full object-cover pointer-events-none" src="${url}#t=0.1"></video>
+      <div class="absolute inset-0 bg-gradient-to-t from-black/85 via-black/0 to-black/0 pointer-events-none"></div>
+      <div class="absolute bottom-1 left-1 right-1 text-[9px] font-bold text-white truncate text-left pointer-events-none">${tpl.label}</div>
+      ${isSel ? '<div class="absolute top-1 right-1 w-4 h-4 rounded-full bg-primary flex items-center justify-center pointer-events-none"><span class="material-symbols-outlined text-white" style="font-size:11px">check</span></div>' : ''}
+    `;
+    const vid = card.querySelector('video');
+    card.addEventListener('mouseenter', () => { vid.play().catch(() => {}); });
+    card.addEventListener('mouseleave', () => { vid.pause(); vid.currentTime = 0.1; });
+    card.onclick = () => {
+      document.getElementById('fld-bg-value').value = url;
+      _vtgSelectedId = tpl.id;
+      renderVideoTemplates();
     };
-    container.appendChild(btn);
+    grid.appendChild(card);
   });
 }
 </script>
