@@ -185,6 +185,12 @@
           </div>
           <input id="fld-bg-value" type="text" placeholder="Color hex o URL…" style="display:none"
                  class="mt-2 w-full bg-surface-container border border-outline-variant/40 rounded-lg px-3 py-2 text-sm focus:border-primary focus:ring-0 outline-none"/>
+          <!-- Video templates grid -->
+          <div id="video-templates-grid" style="display:none" class="mt-2">
+            <p class="text-[10px] font-semibold text-on-surface-variant/70 mb-2">Plantillas de video por nicho — clic para usar:</p>
+            <div class="grid grid-cols-2 gap-1.5" id="video-tpl-grid"></div>
+            <p class="text-[10px] text-on-surface-variant/50 mt-1.5">O pegá tu propia URL arriba. Videos de Mixkit (gratis, sin atribución).</p>
+          </div>
         </div>
 
         <!-- Interactive toggle -->
@@ -291,8 +297,12 @@
   <button id="tb-italic" class="px-1.5 py-0.5 hover:bg-surface-container-high rounded italic" title="Cursiva">I</button>
   <div id="tb-image-section" class="hidden flex items-center gap-1 border-l border-outline-variant/30 pl-1.5 ml-1">
     <button id="tb-image-url" class="px-2 py-0.5 hover:bg-surface-container-high rounded text-[10px] font-semibold" title="Cambiar imagen por URL">
-      <span class="material-symbols-outlined" style="font-size:13px;vertical-align:middle">image</span> URL
+      <span class="material-symbols-outlined" style="font-size:13px;vertical-align:middle">link</span> URL
     </button>
+    <label id="tb-image-upload-label" class="px-2 py-0.5 hover:bg-surface-container-high rounded text-[10px] font-semibold cursor-pointer" title="Subir imagen desde tu dispositivo">
+      <span class="material-symbols-outlined" style="font-size:13px;vertical-align:middle">upload</span> Subir
+      <input id="tb-image-upload" type="file" accept="image/*" class="hidden"/>
+    </label>
   </div>
   <div class="border-l border-outline-variant/30 pl-1.5 ml-1 flex items-center gap-0.5">
     <button id="tb-move-up" class="px-1.5 py-0.5 hover:bg-surface-container-high rounded" title="Mover sección arriba">
@@ -311,16 +321,54 @@
 <script src="./app.js"></script>
 <script src="./ai-assistant.js"></script>
 <script>
+const VIDEO_TEMPLATES = [
+  { nicho: 'Negocios', icon: 'business_center', url: 'https://assets.mixkit.co/videos/4871/4871-720.mp4' },
+  { nicho: 'Coaching', icon: 'emoji_people', url: 'https://assets.mixkit.co/videos/5285/5285-720.mp4' },
+  { nicho: 'Fitness', icon: 'fitness_center', url: 'https://assets.mixkit.co/videos/4608/4608-720.mp4' },
+  { nicho: 'Meditación', icon: 'self_improvement', url: 'https://assets.mixkit.co/videos/49583/49583-720.mp4' },
+  { nicho: 'Finanzas', icon: 'trending_up', url: 'https://assets.mixkit.co/videos/4503/4503-720.mp4' },
+  { nicho: 'Tecnología', icon: 'code', url: 'https://assets.mixkit.co/videos/4957/4957-720.mp4' },
+  { nicho: 'Gastronomía', icon: 'restaurant', url: 'https://assets.mixkit.co/videos/4074/4074-720.mp4' },
+  { nicho: 'Belleza', icon: 'spa', url: 'https://assets.mixkit.co/videos/6168/6168-720.mp4' },
+  { nicho: 'Naturaleza', icon: 'landscape', url: 'https://assets.mixkit.co/videos/50264/50264-720.mp4' },
+  { nicho: 'Ciudad', icon: 'location_city', url: 'https://assets.mixkit.co/videos/4068/4068-720.mp4' },
+];
+
 function toggleBgValue() {
   const type = document.getElementById('fld-bg-type').value;
   const input = document.getElementById('fld-bg-value');
-  const placeholders = { color: '#1a1a2e o #0f172a (color hex)', image: 'URL de imagen de fondo (JPG/PNG/WebP)', video: 'URL de video .mp4 de fondo' };
+  const grid = document.getElementById('video-templates-grid');
+  const placeholders = { color: '#1a1a2e (color hex)', image: 'URL de imagen de fondo (JPG/PNG/WebP)', video: 'URL de video .mp4 de fondo' };
   if (type === 'dark') {
     input.style.display = 'none';
+    grid.style.display = 'none';
   } else {
     input.style.display = 'block';
     input.placeholder = placeholders[type] || 'URL o color hex…';
+    if (type === 'video') {
+      grid.style.display = 'block';
+      renderVideoTemplates();
+    } else {
+      grid.style.display = 'none';
+    }
   }
+}
+
+function renderVideoTemplates() {
+  const container = document.getElementById('video-tpl-grid');
+  if (container.children.length) return; // already rendered
+  VIDEO_TEMPLATES.forEach(tpl => {
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'flex items-center gap-2 px-2.5 py-2 rounded-lg bg-surface-container border border-outline-variant/20 hover:border-primary/40 hover:bg-primary/5 transition text-left';
+    btn.innerHTML = `<span class="material-symbols-outlined text-primary/70" style="font-size:15px">${tpl.icon}</span><span class="text-[11px] font-semibold text-on-surface-variant">${tpl.nicho}</span>`;
+    btn.onclick = () => {
+      document.getElementById('fld-bg-value').value = tpl.url;
+      container.querySelectorAll('button').forEach(b => b.classList.remove('border-primary', 'bg-primary/10'));
+      btn.classList.add('border-primary', 'bg-primary/10');
+    };
+    container.appendChild(btn);
+  });
 }
 </script>
 <script>
@@ -866,6 +914,17 @@ function toggleBgValue() {
       const url = prompt('URL de la nueva imagen:', _selectedEl.src);
       if (url) _selectedEl.src = url;
     };
+    document.getElementById('tb-image-upload').addEventListener('change', (e) => {
+      const file = e.target.files?.[0];
+      if (!file || !_selectedEl || _selectedEl.tagName !== 'IMG') return;
+      const reader = new FileReader();
+      reader.onload = (ev) => {
+        _selectedEl.src = ev.target.result;
+        toast('Imagen cargada — hacé clic en "Terminar" para guardar');
+      };
+      reader.readAsDataURL(file);
+      e.target.value = '';
+    });
     document.getElementById('tb-move-up').onclick = () => {
       const section = _selectedEl?.closest('section,header,footer,article,aside');
       if (section?.previousElementSibling) {

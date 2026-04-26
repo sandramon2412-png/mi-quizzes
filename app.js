@@ -886,7 +886,22 @@ LINKS Y NAVEGACIÓN:
 • Todos los <a> y botones CTA deben tener href="#" SIEMPRE.
 • NUNCA uses href con rutas del proyecto (./dashboard.html, /login, etc.).
 • Los <form> no deben tener action ni method — solo elementos visuales.
-• Prohibido window.location o navegación automática.`;
+• Prohibido window.location o navegación automática.
+
+AUTOCHECK OBLIGATORIO ANTES DE DEVOLVER EL HTML:
+Revisá que la landing contiene TODAS estas secciones (si alguna falta, agregala antes de responder):
+☑ Hero con titular grande y CTA
+☑ Sección "¿Para quién es / No es para quién"
+☑ Sección de problema/dolor del avatar
+☑ Beneficios en grid
+☑ Qué incluye / módulos
+☑ Testimonios (mínimo 3)
+☑ BONOS — si no está, AGREGALA AHORA. Es la sección más importante para la conversión.
+☑ Stack de valor con precios tachados
+☑ Garantía
+☑ FAQ (mínimo 6)
+☑ CTA final con urgencia
+Si encontrás que BONOS no está en el HTML generado, insertá la sección completa ANTES de devolver.`;
   },
 
   async generateLanding(brief, history = []) {
