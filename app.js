@@ -833,10 +833,13 @@ MANEJO DE IMÁGENES (leer del brief):
 • Siempre distribuí las imágenes a lo largo de la landing (hero, módulos, testimonios), no todas juntas.
 
 MANEJO DE VIDEO (leer del brief):
-• Si el brief incluye "VIDEO:", añadí una sección dedicada con el video embebido RESPONSIVE justo después del hero o donde tenga más sentido.
+• Si el brief incluye "VIDEO:" seguido de una URL real, añadí una sección dedicada con el video embebido RESPONSIVE justo después del hero o donde tenga más sentido.
 • YouTube (contiene youtube.com o youtu.be): extrae el ID y usa <iframe class="w-full aspect-video rounded-2xl shadow-2xl" src="https://www.youtube.com/embed/ID" frameborder="0" allowfullscreen loading="lazy"></iframe>
 • Video directo (.mp4, .webm): usa <video class="w-full rounded-2xl shadow-2xl" controls preload="metadata"><source src="URL" type="video/mp4"></video>
 • Envolvé en <div class="max-w-4xl mx-auto"> con un título de sección y subtítulo.
+• PROHIBIDO ABSOLUTAMENTE inventar URLs de video. NUNCA uses URLs como dQw4w9WgXcQ, Rick Astley, ni ningún otro ID que no esté literalmente en el brief.
+• Si el brief NO incluye "VIDEO:" pero alguna otra parte (custom, extras, plantilla) menciona "video preview" o similar: NO embebas un video. En su lugar, agregá un placeholder visual: <div data-upload-slot="true" class="w-full aspect-video rounded-2xl border-2 border-dashed border-zinc-700 hover:border-blue-500/50 transition flex flex-col items-center justify-center gap-3 bg-zinc-900/40 cursor-pointer"><span class="material-symbols-outlined text-zinc-500" style="font-size:48px">play_circle</span><p class="text-sm text-zinc-400 font-medium">Tu video va acá</p><p class="text-xs text-zinc-500">Pegá la URL desde el editor</p></div>
+• En resumen: VIDEO REAL solo si el brief tiene URL explícita. NUNCA inventes URLs.
 
 MANEJO DE FONDO DEL HERO (leer del brief):
 • Si el brief dice FONDO tipo="color": aplica ese color como background del hero con style="background-color: X".
