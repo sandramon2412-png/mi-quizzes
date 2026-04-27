@@ -418,6 +418,7 @@ function toggleBgValue() {
 function _vtgUrl(id) {
   return `https://assets.mixkit.co/videos/${id}/${id}-720.mp4`;
 }
+const _CAT_COLORS = { people: '#1e293b', tech: '#0f172a', abstract: '#1a0533', city: '#0c1a2e', nature: '#0a1f0f' };
 function renderVideoTemplates() {
   const tabsHost = document.getElementById('vtg-cat-tabs');
   const grid = document.getElementById('video-tpl-grid');
@@ -437,24 +438,54 @@ function renderVideoTemplates() {
     b.className = 'px-2 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wider transition ' +
       (active ? 'bg-primary text-white' : 'bg-surface-container text-on-surface-variant/70 hover:bg-surface-container-high');
   });
+  // Pause and remove old videos to free memory
+  grid.querySelectorAll('video').forEach(v => { v.pause(); v.src = ''; v.load(); });
   grid.innerHTML = '';
   const items = _vtgActiveCat === 'all' ? VIDEO_TEMPLATES : VIDEO_TEMPLATES.filter(t => t.category === _vtgActiveCat);
+  const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
   items.forEach(tpl => {
     const url = _vtgUrl(tpl.id);
+    const bgColor = _CAT_COLORS[tpl.category] || '#111';
     const card = document.createElement('button');
     card.type = 'button';
     const isSel = _vtgSelectedId === tpl.id;
-    card.className = 'relative aspect-video rounded-lg overflow-hidden border bg-black transition group ' +
+    card.style.background = bgColor;
+    card.className = 'relative rounded-lg overflow-hidden border transition group cursor-pointer ' +
       (isSel ? 'border-primary ring-2 ring-primary/40' : 'border-outline-variant/20 hover:border-primary/50');
-    card.innerHTML = `
-      <video preload="metadata" muted playsinline loop class="w-full h-full object-cover pointer-events-none" src="${url}#t=0.1"></video>
-      <div class="absolute inset-0 bg-gradient-to-t from-black/85 via-black/0 to-black/0 pointer-events-none"></div>
-      <div class="absolute bottom-1 left-1 right-1 text-[9px] font-bold text-white truncate text-left pointer-events-none">${tpl.label}</div>
-      ${isSel ? '<div class="absolute top-1 right-1 w-4 h-4 rounded-full bg-primary flex items-center justify-center pointer-events-none"><span class="material-symbols-outlined text-white" style="font-size:11px">check</span></div>' : ''}
-    `;
-    const vid = card.querySelector('video');
-    card.addEventListener('mouseenter', () => { vid.play().catch(() => {}); });
-    card.addEventListener('mouseleave', () => { vid.pause(); vid.currentTime = 0.1; });
+    card.style.aspectRatio = '16/9';
+    // Video element — autoplay so thumbnail is visible immediately
+    const vid = document.createElement('video');
+    vid.muted = true;
+    vid.loop = true;
+    vid.playsInline = true;
+    vid.setAttribute('playsinline', '');
+    vid.className = 'w-full h-full object-cover pointer-events-none absolute inset-0';
+    // Overlay + label
+    const overlay = document.createElement('div');
+    overlay.className = 'absolute inset-0 bg-gradient-to-t from-black/80 via-black/10 to-transparent pointer-events-none';
+    const label = document.createElement('div');
+    label.className = 'absolute bottom-1 left-1.5 right-1.5 text-[9px] font-bold text-white truncate text-left pointer-events-none';
+    label.textContent = tpl.label;
+    card.appendChild(vid);
+    card.appendChild(overlay);
+    card.appendChild(label);
+    if (isSel) {
+      const check = document.createElement('div');
+      check.className = 'absolute top-1 right-1 w-4 h-4 rounded-full bg-primary flex items-center justify-center pointer-events-none';
+      check.innerHTML = '<span class="material-symbols-outlined text-white" style="font-size:11px">check</span>';
+      card.appendChild(check);
+    }
+    // Load video only when card scrolls into view (IntersectionObserver)
+    const obs = new IntersectionObserver((entries) => {
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          if (!vid.src) vid.src = url;
+          vid.play().catch(() => {});
+          obs.disconnect();
+        }
+      });
+    }, { rootMargin: '100px' });
+    obs.observe(card);
     card.onclick = () => {
       document.getElementById('fld-bg-value').value = url;
       _vtgSelectedId = tpl.id;
