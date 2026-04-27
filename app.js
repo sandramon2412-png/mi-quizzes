@@ -810,6 +810,7 @@ REGLAS TÉCNICAS:
 7. Prohibido incluir scripts externos, fetches a otros dominios ni tracking pixels. Sí podés usar <script> inline para interacciones (acordeones, animaciones, tabs) si el brief lo pide.
 8. Si el usuario pide cambios, devuelve la landing COMPLETA con los cambios aplicados — no diffs ni parches.
 9. INSTRUCCIONES DEL CREADOR: si el brief incluye "INSTRUCCIONES DE DISEÑO DEL CREADOR" o "INSTRUCCIÓN EXACTA", esas instrucciones tienen MÁXIMA PRIORIDAD sobre cualquier regla estética por defecto.
+10. ABSOLUTAMENTE PROHIBIDO dentro del HTML: template literals JavaScript (${...}), .map(), .filter(), .forEach(), arrow functions (=>), expresiones JSX, JSON objects, arrays literales, o cualquier sintaxis de código fuera de un <script>. Todo el contenido de la página debe ser texto HTML estático — escribí cada <li>, <div>, <p> manualmente con su texto final. Si una sección tiene 5 items, escribís 5 elementos HTML, no un array con .map(). NUNCA pongas [{...}].map() dentro del HTML.
 
 ESTÉTICA OBLIGATORIA (salvo que el creador indique otra cosa):
 • Dark mode: fondo base #0a0a0a o #0e0e0e; superficies #18181b, #27272a. Textos #fff / #a1a1aa.
