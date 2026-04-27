@@ -953,7 +953,7 @@ function applyPendingMiniAppTemplate() {
 // ── User info ────────────────────────────────────────────
 async function loadUserInfo() {
   try {
-    const profile = await DB.profiles.get(_currentUser.id);
+    const profile = await _dbWithTimeout(DB.profiles.get(_currentUser.id));
     const name = profile?.name || _currentUser.email.split('@')[0];
     const plan = profile?.plan || 'free';
     document.getElementById('user-name').textContent = name;
@@ -1003,7 +1003,7 @@ async function loadUsageWidget() {
 // ── Leads count + sparkline ───────────────────────────────
 async function loadLeadsCount() {
   try {
-    const leads = await DB.leads.getAll(_currentUser.id);
+    const leads = await _dbWithTimeout(DB.leads.getAll(_currentUser.id));
     document.getElementById('stat-leads').textContent = leads.length;
     renderLeadsSparkline(leads);
   } catch {}
@@ -1035,7 +1035,7 @@ async function updateStats(quizzes, apps) {
   document.getElementById('stat-quizzes').textContent = quizzes.length;
   document.getElementById('stat-apps').textContent = apps.length;
   try {
-    const statsMap = await DB.analytics.summaryAll(_currentUser.id);
+    const statsMap = await _dbWithTimeout(DB.analytics.summaryAll(_currentUser.id));
     let views = 0;
     quizzes.forEach(q => { views += (statsMap[q.id]?.views || 0); });
     document.getElementById('stat-views').textContent = views;
