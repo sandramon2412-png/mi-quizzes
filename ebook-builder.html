@@ -1683,7 +1683,9 @@
       setStatus('Actualizando…');
 
       try {
-        const apiHistory = history.map(m => ({ role: m.role, content: m.content }));
+        const apiHistory = history
+          .filter(m => typeof m.content === 'string' && m.content.trim())
+          .map(m => ({ role: m.role, content: m.content }));
         // Provide current ebook state as context — send titles + body previews so the AI can reason about indices.
         const stateForAI = {
           title: ebook.title,
