@@ -900,7 +900,9 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   _currentUser = await Auth.requireAuth();
   if (!_currentUser) return;
-  await Promise.all([loadUserInfo(), renderMiniApps(), renderQuizzes(), renderLandings(), renderEbooks()]);
+  // Load profile first so plan is synced to Settings before renders gate by it.
+  await loadUserInfo();
+  await Promise.all([renderMiniApps(), renderQuizzes(), renderLandings(), renderEbooks()]);
   loadLeadsCount();
   loadUsageWidget();
   // Apply mini-app template if coming from plantillas-miniapps.html
@@ -956,6 +958,9 @@ async function loadUserInfo() {
     const profile = await _dbWithTimeout(DB.profiles.get(_currentUser.id));
     const name = profile?.name || _currentUser.email.split('@')[0];
     const plan = profile?.plan || 'free';
+    // Sync plan from Supabase to localStorage so renders that gate by plan
+    // (renderLandings, getPlanCaps, etc.) see the up-to-date value.
+    Settings.save({ plan });
     document.getElementById('user-name').textContent = name;
     document.getElementById('user-avatar').textContent = name.charAt(0).toUpperCase();
     // Show upgrade banner for free users
