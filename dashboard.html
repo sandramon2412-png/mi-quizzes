@@ -1124,8 +1124,13 @@ async function renderLandings() {
   const atLimit = landings.length >= maxLandings;
   if (newBtn) {
     if (atLimit) {
-      newBtn.classList.add('opacity-40', 'cursor-not-allowed');
-      newBtn.addEventListener('click', (e) => { e.preventDefault(); alert(`Llegaste al límite de ${maxLandings} landings de tu plan`); }, { once: true });
+      newBtn.classList.add('opacity-40', 'cursor-not-allowed', 'pointer-events-none');
+      newBtn.setAttribute('aria-disabled', 'true');
+      newBtn.onclick = (e) => { e.preventDefault(); alert(`Llegaste al límite de ${maxLandings} landings de tu plan`); };
+    } else {
+      newBtn.classList.remove('opacity-40', 'cursor-not-allowed', 'pointer-events-none');
+      newBtn.removeAttribute('aria-disabled');
+      newBtn.onclick = null;
     }
   }
 
@@ -1227,9 +1232,16 @@ async function renderEbooks() {
   }
 
   const atLimit = ebooks.length >= maxEbooks;
-  if (newBtn && atLimit) {
-    newBtn.classList.add('opacity-40', 'cursor-not-allowed');
-    newBtn.addEventListener('click', (e) => { e.preventDefault(); alert(`Llegaste al límite de ${maxEbooks} ebooks de tu plan`); }, { once: true });
+  if (newBtn) {
+    if (atLimit) {
+      newBtn.classList.add('opacity-40', 'cursor-not-allowed', 'pointer-events-none');
+      newBtn.setAttribute('aria-disabled', 'true');
+      newBtn.onclick = (e) => { e.preventDefault(); alert(`Llegaste al límite de ${maxEbooks} ebooks de tu plan`); };
+    } else {
+      newBtn.classList.remove('opacity-40', 'cursor-not-allowed', 'pointer-events-none');
+      newBtn.removeAttribute('aria-disabled');
+      newBtn.onclick = null;
+    }
   }
 
   const cards = ebooks.map(e => {
