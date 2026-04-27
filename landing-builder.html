@@ -172,6 +172,16 @@
           <div class="flex-1 h-px bg-outline-variant/20"></div>
         </div>
 
+        <!-- Page color palette -->
+        <div>
+          <label class="text-[11px] font-semibold text-on-surface-variant block mb-1.5">Paleta de color de la página</label>
+          <div class="grid grid-cols-4 gap-1.5" id="palette-grid">
+            <!-- filled by JS -->
+          </div>
+          <input id="fld-custom-color" type="text" placeholder="O escribí un color: rojo vino, verde esmeralda, dorado..."
+                 class="mt-2 w-full bg-surface-container border border-outline-variant/40 rounded-lg px-3 py-2 text-sm focus:border-primary focus:ring-0 outline-none"/>
+        </div>
+
         <!-- Background -->
         <div>
           <label class="text-[11px] font-semibold text-on-surface-variant block mb-1">Fondo del hero</label>
@@ -394,6 +404,39 @@ const VIDEO_TEMPLATES = [
 ];
 let _vtgActiveCat = 'all';
 let _vtgSelectedId = null;
+
+const PALETTES = [
+  { id: 'default',   label: 'Azul/Púrpura', from: '#2E5BFF', to: '#7c3aed' },
+  { id: 'green',     label: 'Verde',         from: '#059669', to: '#10b981' },
+  { id: 'rose',      label: 'Rosa/Fucsia',   from: '#e11d48', to: '#ec4899' },
+  { id: 'orange',    label: 'Naranja',        from: '#ea580c', to: '#f59e0b' },
+  { id: 'cyan',      label: 'Cyan/Azul',     from: '#0891b2', to: '#2563eb' },
+  { id: 'violet',    label: 'Violeta',        from: '#7c3aed', to: '#a855f7' },
+  { id: 'red',       label: 'Rojo/Premium',  from: '#dc2626', to: '#9f1239' },
+  { id: 'gold',      label: 'Dorado/Negro',  from: '#b45309', to: '#d97706' },
+];
+let _selectedPalette = 'default';
+
+function renderPalettes() {
+  const grid = document.getElementById('palette-grid');
+  if (!grid) return;
+  grid.innerHTML = '';
+  PALETTES.forEach(p => {
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    const isSel = _selectedPalette === p.id;
+    btn.style.cssText = `background:linear-gradient(135deg,${p.from},${p.to});`;
+    btn.className = 'h-8 rounded-lg transition relative border-2 ' +
+      (isSel ? 'border-white scale-105 shadow-lg' : 'border-transparent hover:border-white/60');
+    btn.title = p.label;
+    if (isSel) {
+      btn.innerHTML = '<span class="material-symbols-outlined text-white absolute inset-0 flex items-center justify-center" style="font-size:14px;display:flex">check</span>';
+    }
+    btn.onclick = () => { _selectedPalette = p.id; renderPalettes(); };
+    grid.appendChild(btn);
+  });
+}
+document.addEventListener('DOMContentLoaded', renderPalettes);
 
 function toggleBgValue() {
   const type = document.getElementById('fld-bg-type').value;
@@ -861,6 +904,7 @@ function renderVideoTemplates() {
       const bgType   = document.getElementById('fld-bg-type').value;
       const bgValue  = document.getElementById('fld-bg-value').value.trim();
       const interactive = document.getElementById('fld-interactive').checked;
+      const customColor = document.getElementById('fld-custom-color').value.trim();
 
       if (!product) { toast('Contanos qué vendés', 'err'); return; }
 
@@ -879,6 +923,14 @@ function renderVideoTemplates() {
         ? `FONDO tipo="${bgType}", valor="${bgValue}".`
         : '';
 
+      // Build palette instruction
+      const selPal = PALETTES.find(p => p.id === _selectedPalette);
+      const paletteInstr = customColor
+        ? `PALETA DE COLOR DE TODA LA PÁGINA: usá "${customColor}" como color primario en TODO — gradientes del hero, botones CTA, iconos, textos de acento, bullets, sección de bonos, footer. Generá variantes claras y oscuras del mismo color para los diferentes elementos.`
+        : _selectedPalette !== 'default'
+          ? `PALETA DE COLOR DE TODA LA PÁGINA: usá el gradiente ${selPal.from} → ${selPal.to} como color primario en TODO — gradientes de texto en titulares, botones CTA, iconos, acentos, highlights, fondo de cards de bonos, badges. NUNCA uses azul/púrpura por defecto si la paleta es diferente.`
+          : '';
+
       const brief = [
         `Necesito una landing page para: ${product}.`,
         audience ? `Audiencia: ${audience}.` : '',
@@ -887,6 +939,7 @@ function renderVideoTemplates() {
         bonuses
           ? `BONOS DEL PRODUCTO (sección OBLIGATORIA, usá exactamente estos bonos): ${bonuses}`
           : 'BONOS: inventá 2-3 bonos creativos y coherentes con el producto, con nombre, descripción breve y valor en dólares.',
+        paletteInstr,
         imgInstr,
         video ? `VIDEO: embebí este video en sección dedicada después del hero: ${video}` : '',
         bgInstr,
