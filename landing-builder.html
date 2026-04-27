@@ -1028,8 +1028,10 @@ function renderVideoTemplates() {
       setStatus('Actualizando…');
 
       try {
-        // Only send role+content to Claude (strip display)
-        const apiHistory = history.map(m => ({ role: m.role, content: m.content }));
+        // Only send role+content to Claude (strip display, drop empty content blocks)
+        const apiHistory = history
+          .filter(m => typeof m.content === 'string' && m.content.trim())
+          .map(m => ({ role: m.role, content: m.content }));
         const html = await AI.generateLanding(msg, apiHistory.slice(0, -1));
         removeThinking();
         history.push({ role: 'assistant', content: html, display: 'Listo, apliqué los cambios.' });
