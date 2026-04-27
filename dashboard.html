@@ -1079,7 +1079,7 @@ async function renderMiniApps() {
 
   // Also update quizzes stat (already loaded)
   try {
-    const quizzes = await DB.quizzes.getAll(_currentUser.id);
+    const quizzes = await _dbWithTimeout(DB.quizzes.getAll(_currentUser.id));
     await updateStats(quizzes, apps);
   } catch {}
 }
@@ -1112,7 +1112,7 @@ async function renderLandings() {
   // Fetch metrics in parallel (view + CTA click counts per landing)
   const summaries = {};
   await Promise.all(landings.map(async (l) => {
-    try { summaries[l.id] = await DB.landingEvents.summary(l.id); }
+    try { summaries[l.id] = await _dbWithTimeout(DB.landingEvents.summary(l.id)); }
     catch { summaries[l.id] = { views: 0, uniqueViews: 0, ctaClicks: 0 }; }
   }));
 
@@ -1312,7 +1312,7 @@ async function renderQuizzes() {
   }
 
   let statsMap = {};
-  try { statsMap = await DB.analytics.summaryAll(_currentUser.id); } catch {}
+  try { statsMap = await _dbWithTimeout(DB.analytics.summaryAll(_currentUser.id)); } catch {}
 
   container.innerHTML = quizzes.map(q => {
     const s = statsMap[q.id] || { views: 0, completions: 0 };
