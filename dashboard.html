@@ -1043,12 +1043,21 @@ async function updateStats(quizzes, apps) {
 }
 
 // ── Mini-Apps ────────────────────────────────────────────
+// Wraps a DB promise with a 6s timeout so a hanging Supabase call
+// falls through to the catch block instead of freezing forever.
+function _dbWithTimeout(promise, ms = 6000) {
+  return Promise.race([
+    promise,
+    new Promise((_, reject) => setTimeout(() => reject(new Error('db_timeout')), ms))
+  ]);
+}
+
 async function renderMiniApps() {
   const container = document.getElementById('mini-apps-grid');
   container.innerHTML = '<p class="text-xs text-on-surface-variant col-span-3 py-6 text-center animate-pulse">Cargando...</p>';
   let apps = [];
   try {
-    apps = await DB.miniApps.getAll(_currentUser.id);
+    apps = await _dbWithTimeout(DB.miniApps.getAll(_currentUser.id));
     // Merge localStorage mini-apps not yet synced to Supabase
     const local = MiniApps.getAll().filter(la => !apps.find(a => a.id === la.id));
     apps = [...apps, ...local];
@@ -1095,7 +1104,7 @@ async function renderLandings() {
 
   let landings = [];
   try {
-    landings = await DB.landings.getAll(_currentUser.id);
+    landings = await _dbWithTimeout(DB.landings.getAll(_currentUser.id));
   } catch (e) {
     landings = Landings.getAll();
   }
@@ -1207,7 +1216,7 @@ async function renderEbooks() {
 
   let ebooks = [];
   try {
-    ebooks = await DB.ebooks.getAll(_currentUser.id);
+    ebooks = await _dbWithTimeout(DB.ebooks.getAll(_currentUser.id));
   } catch (e) {
     ebooks = Ebooks.getAll();
   }
@@ -1280,7 +1289,7 @@ async function renderQuizzes() {
   container.innerHTML = '<p class="text-xs text-on-surface-variant py-6 text-center animate-pulse">Cargando quizzes...</p>';
   let quizzes = [];
   try {
-    quizzes = await DB.quizzes.getAll(_currentUser.id);
+    quizzes = await _dbWithTimeout(DB.quizzes.getAll(_currentUser.id));
     // Merge with any locally saved quizzes not yet synced
     const local = Quizzes.getAll().filter(lq => !quizzes.find(q => q.id === lq.id)).map(lq => ({ ...lq, _isLocal: true }));
     quizzes = [...quizzes, ...local];
