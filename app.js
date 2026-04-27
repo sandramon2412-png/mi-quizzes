@@ -880,10 +880,52 @@ COPYWRITING DE ALTA CONVERSIÓN:
 • Urgencia real: cupos limitados, precio de lanzamiento, fecha de cierre.
 • Llamadas a la acción en primera persona: "Quiero empezar hoy", "Sí, lo quiero".
 
+TIPOGRAFÍA AVANZADA (UI/UX Pro Max):
+• Titulares h1: Plus Jakarta Sans 800, tamaño mínimo 56px mobile / 80px desktop, tracking-tighter, line-height 1.05.
+• Body: Plus Jakarta Sans 400-500, 17-18px, line-height 1.65, color #a1a1aa para párrafos secundarios.
+• Subtítulos de sección (h2): 36-48px, font-bold o font-extrabold, tracking-tight. NUNCA texto en mayúsculas para párrafos (solo badges/labels cortos).
+• Pares tipográficos por nicho — usá siempre Plus Jakarta Sans pero variá pesos:
+  - Finanzas/negocios: titulares font-black con número en gradiente, body compact y confiable.
+  - Bienestar/espiritualidad: titulares font-light o font-extralight en h1, body con más line-height (1.8).
+  - Fitness/salud: titulares font-black uppercase con letter-spacing normal, body sans conciso.
+  - Tecnología/SaaS: titulares font-extrabold tracking-tighter, labels en font-mono para métricas.
+• NUNCA mezcles más de 2 tamaños de fuente en el mismo bloque de card.
+
+ESTILOS VISUALES PREMIUM (elegí según el nicho del brief):
+• Glassmorphism hero: bg-white/5 backdrop-blur-xl border border-white/10 rounded-3xl — ideal para tecnología, coaching premium, salud.
+• Bento grid para "Qué incluye": grid 2-3 cols con cards de tamaños variables (algunas col-span-2), cada una con icono Material grande (text-5xl) en gradiente. Moderno, alto impacto visual.
+• Numbered timeline para módulos: barra vertical izquierda con línea gradiente + círculos numerados, texto a la derecha con h3 + p.
+• Feature grid para beneficios: 2-3 cols, cada card con border-l-2 border-blue-500 o border-violet-500, icono arriba, título, descripción corta (máx 2 líneas).
+• Testimonios con avatar real (Pollinations.ai): foto de perfil cuadrada 60x60 redondeada + comilla decorativa grande en gradiente como elemento de fondo.
+• Stats/métricas: números muy grandes (text-6xl font-black) con gradiente, label pequeño debajo, disposición en fila de 3-4 con separadores sutiles.
+• DARK MODE siempre: nunca pongas secciones completamente blancas — en todo caso bg-zinc-950 o bg-zinc-900 para alternar el ritmo visual.
+
+REGLAS UX DE CONVERSIÓN (UI/UX Pro Max — 99 guidelines):
+• Botones CTA: height mínima 52px (h-13), border-radius rounded-xl, SIEMPRE texto en primera persona ("Quiero acceso ahora").
+• Todos los botones interactivos: transition-all duration-200 ease-in-out + hover:scale-[1.02] + active:scale-[0.98].
+• Touch targets mínimos: todo elemento clickeable ≥ 44x44px. Nunca botones pequeños en mobile.
+• Espaciado entre CTAs: si hay 2 en el mismo row, gap mínimo de 12px para evitar clics accidentales.
+• Acordeones FAQ: max-height transition (max-h-0 → max-h-96), no display:none/block — smooth UX.
+• Anchoring de precio: siempre 3 elementos → precio original tachado (text-zinc-500 line-through text-xl) + precio actual (text-5xl font-black text-white) + equivalencia ("= menos que un café por día").
+• Garantía: posicionala JUSTO antes del CTA final — es el último empuje para quitar el miedo.
+• Urgencia visual: badge rojo o ámbar con borde, texto MAYÚSCULAS, nunca invisible. Posicioná en hero Y en CTA final.
+• Progressive disclosure: hero → problema → solución → prueba → oferta. Este orden es el flujo de confianza, nunca lo rompas.
+• Formularios de captura de lead: solo 1-2 campos visibles (nombre + email). Input rounded-xl, py-3 px-4, bg-zinc-800 border border-zinc-700 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20.
+
+ANTI-PATTERNS PROHIBIDOS (UI/UX Pro Max):
+• NUNCA pongas todas las imágenes en el hero y el resto de la landing sin imágenes — distribuílas.
+• NUNCA hagas secciones de más de 3 párrafos sin un elemento visual que corte el bloque de texto.
+• NUNCA uses colores saturados brillantes para fondos de sección completos (quema los ojos en dark mode).
+• NUNCA generes menos de 3 testimonios — la prueba social múltiple aumenta conversión un 30%+.
+• NUNCA pongas el precio sin anchoring — precio solo sin referencia no convierte.
+• NUNCA uses la misma estructura de card para todas las secciones — variá glassmorphism, border-gradient, solid, outline.
+• NUNCA hagas un hero sin una stat de prueba social (ej: "Más de 2.400 alumnos") — valida la oferta desde arriba.
+• NUNCA uses más de 3 colores de acento distintos en una misma landing — genera ruido visual.
+
 CALIDAD:
 • NO uses texto placeholder tipo "Lorem ipsum". Genera copy real y específico basado en el brief.
 • NO dejes secciones vacías. Si faltan datos, inventa testimonios realistas (nombres latinos), cifras creíbles y bonos coherentes.
-• Cada sección debe tener PERSONALIDAD VISUAL propia: variá entre cards, listas, grids, timelines.
+• Cada sección debe tener PERSONALIDAD VISUAL propia: variá entre glassmorphism, bento grid, timeline, feature-grid, cards con gradiente.
 • Mínimo 12 secciones. Una landing corta NO convierte.
 
 LINKS Y NAVEGACIÓN:
