@@ -334,6 +334,7 @@
 <script>
 const VIDEO_CATEGORIES = [
   { key: 'all',      label: 'Todos' },
+  { key: 'mine',     label: 'Mis Videos' },
   { key: 'people',   label: 'Personas' },
   { key: 'tech',     label: 'Tech' },
   { key: 'abstract', label: 'Abstract' },
@@ -341,6 +342,7 @@ const VIDEO_CATEGORIES = [
   { key: 'nature',   label: 'Naturaleza' },
 ];
 const VIDEO_TEMPLATES = [
+  { id: 'mine-1', category: 'mine', label: 'Mi video', url: 'https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260307_083826_e938b29f-a43a-41ec-a153-3d4730578ab8.mp4' },
   { id: '4871',  category: 'people',   label: 'Negocios' },
   { id: '5285',  category: 'people',   label: 'Equipo trabajando' },
   { id: '4608',  category: 'people',   label: 'Profesional oficina' },
@@ -458,8 +460,8 @@ function toggleBgValue() {
   }
 }
 
-function _vtgUrl(id) {
-  return `https://assets.mixkit.co/videos/${id}/${id}-720.mp4`;
+function _vtgUrl(tpl) {
+  return tpl.url || `https://assets.mixkit.co/videos/${tpl.id}/${tpl.id}-720.mp4`;
 }
 const _CAT_COLORS = { people: '#1e293b', tech: '#0f172a', abstract: '#1a0533', city: '#0c1a2e', nature: '#0a1f0f' };
 function renderVideoTemplates() {
@@ -488,7 +490,7 @@ function renderVideoTemplates() {
     ? VIDEO_TEMPLATES.slice(0, 20)   // cap "all" at 20 to avoid loading too many at once
     : VIDEO_TEMPLATES.filter(t => t.category === _vtgActiveCat);
   items.forEach(tpl => {
-    const url = _vtgUrl(tpl.id);
+    const url = _vtgUrl(tpl);
     const bgColor = _CAT_COLORS[tpl.category] || '#111';
     const isSel = _vtgSelectedId === tpl.id;
     const card = document.createElement('button');
