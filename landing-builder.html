@@ -438,60 +438,55 @@ function renderVideoTemplates() {
     b.className = 'px-2 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wider transition ' +
       (active ? 'bg-primary text-white' : 'bg-surface-container text-on-surface-variant/70 hover:bg-surface-container-high');
   });
-  // Pause and remove old videos to free memory
-  grid.querySelectorAll('video').forEach(v => { v.pause(); v.src = ''; v.load(); });
+  // Pause and release old videos before clearing
+  grid.querySelectorAll('video').forEach(v => { try { v.pause(); v.src = ''; v.load(); } catch(e){} });
   grid.innerHTML = '';
-  const items = _vtgActiveCat === 'all' ? VIDEO_TEMPLATES : VIDEO_TEMPLATES.filter(t => t.category === _vtgActiveCat);
-  const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+  const items = _vtgActiveCat === 'all'
+    ? VIDEO_TEMPLATES.slice(0, 20)   // cap "all" at 20 to avoid loading too many at once
+    : VIDEO_TEMPLATES.filter(t => t.category === _vtgActiveCat);
   items.forEach(tpl => {
     const url = _vtgUrl(tpl.id);
     const bgColor = _CAT_COLORS[tpl.category] || '#111';
+    const isSel = _vtgSelectedId === tpl.id;
     const card = document.createElement('button');
     card.type = 'button';
-    const isSel = _vtgSelectedId === tpl.id;
-    card.style.background = bgColor;
-    card.className = 'relative rounded-lg overflow-hidden border transition group cursor-pointer ' +
+    card.style.cssText = `background:${bgColor};aspect-ratio:16/9;position:relative;`;
+    card.className = 'rounded-lg overflow-hidden border transition cursor-pointer ' +
       (isSel ? 'border-primary ring-2 ring-primary/40' : 'border-outline-variant/20 hover:border-primary/50');
-    card.style.aspectRatio = '16/9';
-    // Video element — autoplay so thumbnail is visible immediately
+    // Video — src set immediately, autoplay
     const vid = document.createElement('video');
+    vid.src = url;
     vid.muted = true;
     vid.loop = true;
     vid.playsInline = true;
+    vid.autoplay = true;
     vid.setAttribute('playsinline', '');
-    vid.className = 'w-full h-full object-cover pointer-events-none absolute inset-0';
-    // Overlay + label
-    const overlay = document.createElement('div');
-    overlay.className = 'absolute inset-0 bg-gradient-to-t from-black/80 via-black/10 to-transparent pointer-events-none';
-    const label = document.createElement('div');
-    label.className = 'absolute bottom-1 left-1.5 right-1.5 text-[9px] font-bold text-white truncate text-left pointer-events-none';
-    label.textContent = tpl.label;
+    vid.setAttribute('autoplay', '');
+    vid.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;object-fit:cover;pointer-events:none;';
+    // Gradient overlay
+    const ov = document.createElement('div');
+    ov.style.cssText = 'position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,.8) 0%,transparent 60%);pointer-events:none;';
+    // Label
+    const lbl = document.createElement('div');
+    lbl.style.cssText = 'position:absolute;bottom:4px;left:6px;right:6px;font-size:9px;font-weight:700;color:#fff;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;pointer-events:none;';
+    lbl.textContent = tpl.label;
     card.appendChild(vid);
-    card.appendChild(overlay);
-    card.appendChild(label);
+    card.appendChild(ov);
+    card.appendChild(lbl);
     if (isSel) {
-      const check = document.createElement('div');
-      check.className = 'absolute top-1 right-1 w-4 h-4 rounded-full bg-primary flex items-center justify-center pointer-events-none';
-      check.innerHTML = '<span class="material-symbols-outlined text-white" style="font-size:11px">check</span>';
-      card.appendChild(check);
+      const chk = document.createElement('div');
+      chk.style.cssText = 'position:absolute;top:4px;right:4px;width:16px;height:16px;border-radius:50%;background:#2E5BFF;display:flex;align-items:center;justify-content:center;pointer-events:none;';
+      chk.innerHTML = '<span class="material-symbols-outlined" style="font-size:10px;color:#fff">check</span>';
+      card.appendChild(chk);
     }
-    // Load video only when card scrolls into view (IntersectionObserver)
-    const obs = new IntersectionObserver((entries) => {
-      entries.forEach(e => {
-        if (e.isIntersecting) {
-          if (!vid.src) vid.src = url;
-          vid.play().catch(() => {});
-          obs.disconnect();
-        }
-      });
-    }, { rootMargin: '100px' });
-    obs.observe(card);
     card.onclick = () => {
       document.getElementById('fld-bg-value').value = url;
       _vtgSelectedId = tpl.id;
       renderVideoTemplates();
     };
     grid.appendChild(card);
+    // Trigger play explicitly after append (needed on some browsers after autoplay policy)
+    vid.play().catch(() => {});
   });
 }
 </script>
