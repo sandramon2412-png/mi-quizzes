@@ -44,6 +44,9 @@ Plataforma SaaS para creadores de infoproductos hispanohablantes. Permite crear 
 | `plantillas.html` | Biblioteca de plantillas de quiz |
 | `plantillas-miniapps.html` | Biblioteca de plantillas de mini-apps (60 plantillas prearmadas para Free/Starter) |
 | `ebook-builder.html` | Builder de documentos estilo Gamma (ebooks, propuestas, presentaciones, checklists) |
+| `landing-builder.html` | Builder de landings con AI chat (paletas, bonos, imágenes Pollinations, gallery de 60 videos en 5 categorías + "Mis Videos") |
+| `landing-view.html` | Vista pública de landing publicada |
+| `plantillas-landings.html` | Biblioteca de plantillas de landings |
 | `precios.html` | Página de precios/planes |
 
 ### JavaScript
@@ -323,30 +326,49 @@ Si el click tira error:
 
 ---
 
-## TAREA EN CURSO cuando se cortó la sesión (24 abr 2026)
+## SESIONES POSTERIORES — resumen al 27 abr 2026
 
-Trabajando en la **landing page** `index.html`. El Claude anterior estaba reubicando un **video** que la usuaria había subido. El Claude anterior lo puso en el Hero y la usuaria lo quiere en otra sección.
+Después de la sesión del 24 abr (video en index.html, nunca se completó/commiteó) hubo ~51 commits con cambios grandes. Resumen agrupado por tema:
 
-### Lo que la usuaria quiere hacer
-**Reemplazar el bento decorativo** de la sección "De un simple lector a un usuario activo" (título actual en código; el Claude anterior probablemente proponía cambiarlo a **"Del contenido que se olvida a la experiencia que vende"**) por un **video** que la usuaria subió.
+### 1. Landing-builder nuevo (`landing-builder.html`) — feature mayor
+Builder de landings al estilo del ebook-builder: chat con AI que genera/modifica HTML completo. Endpoint: `AI.generateLanding(msg, history)`.
 
-### Ubicación exacta en `index.html`
-- Sección completa: líneas ~487-573
-- Título actual (línea 491): `"De un simple lector a un usuario activo"`
-- Párrafo + 3 bullets: líneas 492-508
-- **Bento de 4 cards a reemplazar**: líneas 510-572
-  - Columna izquierda: card "DISEÑO — Personaliza cada detalle" + card "RENDIMIENTO — 45% Aumento en Conversión"
-  - Columna derecha: card "NUEVO — La nueva era de infoproductos" + card "IA INTEGRADA — Tecnología que trabaja por ti"
+Capacidades:
+- **Chat iterativo** con history (rol+content). Strip de `display` antes de mandar al API.
+- **Bonos** opcionales: form permite definir bonos extra; el AI los inserta en una sección dedicada.
+- **Image upload + Pollinations.ai**: imágenes generadas via Pollinations.ai (no placeholders) y soporte para upload manual.
+- **Video templates por nicho**: gallery de 60 videos background en 5 categorías (Naturaleza, Urbano, Abstracto, Tecnología, **Mis Videos**) con hover preview.
+- **"Mis Videos"** = categoría con 25 videos personales subidos por la usuaria (Cloudinary, Mux, CloudFront). Ver array `videoCategories.mine` en landing-builder.html (~línea 337).
+- **Color palette selector global**: 8 presets + custom hex input que se aplica a toda la landing.
+- **System prompt con UI/UX Pro Max rules** embebidas (commit `cb2e9c4`): reglas de diseño y CRO.
+- **Bloqueo anti-template-literals**: el AI tenía tendencia a meter `${variable}` y `.map()` JS en el HTML — agregado al prompt como prohibición explícita.
+- **Anti-Rick-Astley**: bloqueado para que no alucine URLs de YouTube placeholder.
 
-### Qué se perdió del chat anterior (porque nunca se commiteó)
-El último commit a `index.html` es `20f95ae` (antes de esta sesión). Todo lo que el Claude anterior hizo no llegó al repo:
-- El cambio de título a "Del contenido que se olvida a la experiencia que vende"
-- El cambio de párrafo (mencionaba "PDFs genéricos" en vez del texto actual de eBooks)
-- La inserción del video (probablemente en el Hero según mencionó la usuaria)
+Archivos relacionados: `landing-view.html` (vista pública publicada), `plantillas-landings.html` (galería de plantillas).
 
-### Para retomar en el nuevo chat
-1. La usuaria tiene que volver a subir el video (o dar URL donde vive)
-2. Preguntarle si también quiere el cambio de título y texto del Claude anterior
-3. Reemplazar el bento (líneas 510-572) por un bloque de video responsive
-4. Sugerencia de estructura: `<div class="flex-1 w-full"><video controls class="w-full aspect-video rounded-xl" src="..."></video></div>`
-5. Commit + push a `claude/fix-free-tier-ai-calls-yFJpv`
+### 2. Dashboard product tabs (commit `62ba82a`)
+`dashboard.html` tiene pestañas Todo / Quizzes / Mini-Apps / Landings / Ebooks con estado persistente en localStorage. Cada tab filtra el grid de items.
+
+### 3. Lloyd assistant rediseño (commits `dccace8`, `f2f529f`, `bc3a40d`)
+Lloyd (asistente flotante en dashboard) ahora es **glassmorphic** completo: 22% opacity, `blur(48px) saturate`, gradiente azul→púrpura, 520px ancho, glow más fuerte. CTA stackeado vertical sobre Lloyd para no taparlo.
+
+### 4. Plantillas tab switcher
+- Pill switcher entre "Plantillas de Quizzes" y "Plantillas de Mini-Apps" en `plantillas.html` y `plantillas-miniapps.html` (commits `b4109bb`, `4f3966d`, `f795d7b`).
+- Dashboard nav: "Mini-Apps" abre el modal de creación, "Plantillas" mantiene quiz templates con link al de mini-apps (commits `a4ef221`, `423980d`, `150a2d1`).
+
+### 5. Plan gratuito (no más "14 días")
+- `index.html` y `precios.html`: reemplazado todo el copy de "14 días gratis" por "Plan gratuito para siempre" (commits `baf1acb`, `2b159ee`).
+- Quiz guide accordion movido al top de la sección de quizzes para visibilidad inicial (commit `7c7a838`).
+
+### 6. Social proof landing (commit `0069775`)
+- Categorías ahora wrap a 4 items (no overflow).
+- Avatares stock reemplazados por iniciales (consistente con white-label).
+- Métricas ajustadas: "2.3M leads" → "84k leads" (números honestos).
+
+### 7. Bug fixes recientes
+- **Dashboard "Cargando..." infinito** (commit `bb58e30`): cuando Supabase cuelga, el dashboard tenía un await sin timeout. Ahora hay timeout + fallback a localStorage.
+- **Chat history empty content blocks** (commit `0afd90e`, branch `claude/fix-empty-content-error-XGLyU`): `ebook-builder.html` y `landing-builder.html` guardaban entries con `content: ''` (display-only para errores/conversational/partial-sin-cambios) en `history`. En el siguiente envío, esas entries vacías viajaban al Claude API y lo rompían con `"messages: text content blocks must be non-empty"` (400). Fix: filtrar `m.content.trim()` antes de mapear a `apiHistory`. Funciona retroactivamente para chats con historial sucio.
+
+### Tareas que quedaron sin terminar
+- **Video en index.html** (sección "De un simple lector a un usuario activo", líneas ~487-573 del index.html): la idea del 24 abr de reemplazar el bento de 4 cards por un video sigue sin commitearse. NO se hizo en estas sesiones — el foco se movió al landing-builder y video gallery. Si la usuaria lo retoma, el contexto sigue siendo válido (ver versión previa del CLAUDE.md o git log de index.html).
+- Documentos viejos (pre-`5ee2acd`) en ebook-builder con `theme: undefined` en DB siguen sin migrar (pero render respeta el dropdown del usuario).
