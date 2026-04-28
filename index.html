@@ -247,13 +247,13 @@
 
 <!-- Animated nebula video background — sits behind the hero only, full viewport width, fades out before the next section -->
 <div class="absolute left-0 right-0 top-0 overflow-hidden pointer-events-none" style="z-index:0;height:100vh;min-height:680px;max-height:900px;width:100%;">
-  <video autoplay muted loop playsinline preload="auto" class="absolute top-0 left-0 w-full h-full" style="object-fit:cover;object-position:center center;opacity:0.85;">
+  <video autoplay muted loop playsinline preload="auto" class="absolute top-0 left-0 w-full h-full" style="object-fit:cover;object-position:center 70%;opacity:0.9;">
     <source src="https://euauqqamrkqwoytveljp.supabase.co/storage/v1/object/public/public-assets/Logo_Reveal_A_purple_and_dark_blue_nebula_swirls_with_7dBpmcoS.mp4" type="video/mp4">
   </video>
   <!-- Subtle vignette so the title stays readable -->
-  <div class="absolute inset-0" style="background:radial-gradient(ellipse at 50% 45%,rgba(8,8,16,0) 0%,rgba(8,8,16,0.2) 55%,rgba(8,8,16,0.55) 100%);"></div>
-  <!-- Strong fade in the bottom 35% so the video ends cleanly above the next section -->
-  <div class="absolute inset-x-0 bottom-0" style="top:55%;background:linear-gradient(to top,#080810 0%,#080810 25%,rgba(8,8,16,0.85) 55%,rgba(8,8,16,0.4) 80%,transparent 100%);"></div>
+  <div class="absolute inset-0" style="background:radial-gradient(ellipse at 50% 45%,rgba(8,8,16,0) 0%,rgba(8,8,16,0.18) 60%,rgba(8,8,16,0.5) 100%);"></div>
+  <!-- Soft fade only in the last 18% so the Luminous Studio text in the video stays visible -->
+  <div class="absolute inset-x-0 bottom-0" style="top:82%;background:linear-gradient(to top,#080810 0%,rgba(8,8,16,0.7) 50%,transparent 100%);"></div>
 </div>
 
 <section class="pt-24 pb-32 px-6 max-w-7xl mx-auto relative overflow-visible">
