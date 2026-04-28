@@ -427,11 +427,11 @@ El chat anterior le dijo a Sandra que había instalado varios skills pero **no h
 | `brand-identity-lab` | Naming, paleta, tono de voz, tokens CSS | ✅ Instalado |
 | `viral-growth-lab` | Loops de growth, referidos, PLG, K-factor | ✅ Instalado |
 | `ship-it` | Deploy a producción, DNS, SSL, analytics, legales | ✅ Instalado |
-| `pitch-deck-master` | Pendiente de pegar | ⏳ Pendiente |
-| `seo-content-machine` | Pendiente de pegar | ⏳ Pendiente |
-| `automation-forge` | Pendiente de pegar | ⏳ Pendiente |
+| `pitch-deck-master` | Pitch decks YC/Sequoia, inversores, rondas | ✅ Instalado |
+| `seo-content-machine` | SEO, clusters topicales, briefs, schema markup | ✅ Instalado |
+| `automation-forge` | n8n/Make/Zapier, agentes IA, webhooks, ROI | ✅ Instalado |
 
-**Verificación**: `ls ~/.claude/skills/` — 9 directorios instalados + `session-start-hook`.
+**Verificación**: `ls ~/.claude/skills/` — 12 directorios instalados + `session-start-hook`. Todos activos.
 
 ### 3. landing-page-pro integrado en landing-builder (commit `c9bcd43`)
 
