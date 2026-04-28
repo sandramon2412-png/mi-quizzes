@@ -19,12 +19,12 @@
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
 <style>
   :root {
-    --bg: #08090a; --bg2: #18181b; --bg3: #27272a;
-    --border: rgba(255,255,255,0.1);
-    --text: #f0f0f0; --muted: #a1a1aa;
+    --bg: #09090b; --bg2: #18181b; --bg3: #27272a;
+    --border: rgba(255,255,255,0.08);
+    --text: #fafafa; --muted: #a1a1aa;
     --accent: #2E5BFF; --accent2: #7c3aed;
     --success: #22c55e; --warn: #f97316;
-    --card: #1c1c20; --card2: #232328;
+    --card: #18181b; --card2: #27272a;
     --btn: linear-gradient(135deg,#2E5BFF,#7c3aed);
     --radius: 16px;
   }
@@ -56,8 +56,8 @@
   }
 
   /* Cards */
-  .card { background:var(--card); border:1px solid var(--border); border-radius:var(--radius); box-shadow:0 1px 0 rgba(255,255,255,0.04) inset, 0 4px 16px rgba(0,0,0,0.32); }
-  .card2 { background:var(--card2); border:1px solid var(--border); border-radius:calc(var(--radius) - 4px); box-shadow:0 1px 0 rgba(255,255,255,0.04) inset; }
+  .card { background:var(--card); border:1px solid var(--border); border-radius:var(--radius); box-shadow:inset 0 1px 0 rgba(255,255,255,0.1), 0 8px 24px -8px rgba(0,0,0,0.6); }
+  .card2 { background:var(--card2); border:1px solid var(--border); border-radius:calc(var(--radius) - 4px); box-shadow:inset 0 1px 0 rgba(255,255,255,0.08); }
   .card-dark { background:linear-gradient(135deg,var(--accent),var(--accent2,var(--accent))); color:#fff; border-radius:var(--radius); padding:20px; margin-bottom:14px; box-shadow:0 6px 24px rgba(0,0,0,0.18); }
   .quote-box { background:var(--bg3); border-left:3px solid var(--accent); border-radius:10px; padding:14px 16px; font-style:italic; color:var(--muted); font-size:13px; line-height:1.7; }
 
@@ -71,7 +71,7 @@
   .btn-done { background:var(--card); color:var(--success); border:1.5px solid var(--success); border-radius:50px; padding:14px 24px; font-family:inherit; font-weight:800; font-size:14px; cursor:pointer; width:100%; display:inline-flex; align-items:center; justify-content:center; gap:6px; }
 
   /* Quiz options */
-  .quiz-opt { width:100%; padding:14px 18px; border:1.5px solid var(--border); border-radius:14px; background:var(--card); font-family:inherit; font-size:14px; font-weight:700; cursor:pointer; transition:all .18s; text-align:left; margin-bottom:10px; color:var(--text); display:flex; align-items:center; gap:10px; box-shadow:0 1px 0 rgba(255,255,255,0.04) inset, 0 4px 12px rgba(0,0,0,0.25); }
+  .quiz-opt { width:100%; padding:14px 18px; border:1.5px solid var(--border); border-radius:14px; background:var(--card); font-family:inherit; font-size:14px; font-weight:700; cursor:pointer; transition:all .18s; text-align:left; margin-bottom:10px; color:var(--text); display:flex; align-items:center; gap:10px; box-shadow:inset 0 1px 0 rgba(255,255,255,0.08); }
   .quiz-opt:hover:not(:disabled) { border-color:var(--accent); background:var(--bg3); transform:translateX(2px); }
   .quiz-opt.correct { border-color:#16a34a; background:#f0fdf4; color:#166534; }
   .quiz-opt.wrong   { border-color:#dc2626; background:#fef2f2; color:#991b1b; animation:shake .3s ease; }
@@ -91,7 +91,7 @@
   .access-icon-wrap { width:88px; height:88px; border-radius:28px; background:var(--btn); display:flex; align-items:center; justify-content:center; font-size:44px; margin:0 auto 20px; box-shadow:0 12px 40px rgba(0,0,0,0.25); }
   .access-title { font-family:'Lora',serif; font-size:28px; font-weight:700; margin-bottom:6px; line-height:1.2; }
   .access-subtitle { color:var(--muted); font-size:14px; margin-bottom:32px; line-height:1.5; }
-  .access-box { background:var(--card); border:1px solid var(--border); border-radius:20px; padding:24px; box-shadow:0 1px 0 rgba(255,255,255,0.04) inset, 0 8px 32px rgba(0,0,0,0.4); }
+  .access-box { background:var(--card); border:1px solid var(--border); border-radius:20px; padding:24px; box-shadow:inset 0 1px 0 rgba(255,255,255,0.1), 0 12px 40px -10px rgba(0,0,0,0.6); }
   .access-box-title { font-weight:700; font-size:15px; margin-bottom:6px; }
   .access-box-desc { color:var(--muted); font-size:12px; margin-bottom:16px; line-height:1.5; }
 
@@ -108,7 +108,7 @@
   .tab-btn.active { background:var(--btn); color:#fff; border-color:transparent; box-shadow:0 2px 12px rgba(0,0,0,0.18); opacity:1; }
 
   /* Reto day card */
-  .day-card { background:var(--card); border:1px solid var(--border); border-radius:var(--radius); overflow:hidden; margin-bottom:12px; box-shadow:0 1px 0 rgba(255,255,255,0.04) inset, 0 4px 16px rgba(0,0,0,0.3); }
+  .day-card { background:var(--card); border:1px solid var(--border); border-radius:var(--radius); overflow:hidden; margin-bottom:12px; box-shadow:inset 0 1px 0 rgba(255,255,255,0.1), 0 8px 24px -8px rgba(0,0,0,0.6); }
   .day-card-header { display:flex; align-items:center; gap:12px; padding:16px; cursor:pointer; }
   .day-num { width:36px; height:36px; border-radius:50%; border:2px solid var(--accent); color:var(--accent); display:flex; align-items:center; justify-content:center; font-weight:800; font-size:13px; flex-shrink:0; }
   .day-num.done { background:var(--accent); color:#fff; border-color:var(--accent); }
@@ -117,7 +117,7 @@
 
   /* Stat pills */
   .stat-row { display:flex; gap:10px; margin-bottom:16px; }
-  .stat-pill { flex:1; background:var(--card); border:1px solid var(--border); border-radius:16px; padding:14px 8px; text-align:center; box-shadow:0 1px 0 rgba(255,255,255,0.04) inset, 0 4px 16px rgba(0,0,0,0.3); }
+  .stat-pill { flex:1; background:var(--card); border:1px solid var(--border); border-radius:16px; padding:14px 8px; text-align:center; box-shadow:inset 0 1px 0 rgba(255,255,255,0.1), 0 8px 20px -8px rgba(0,0,0,0.5); }
   .stat-val { font-size:24px; font-weight:900; color:var(--accent); line-height:1.1; }
   .stat-lbl { font-size:10px; color:var(--muted); text-transform:uppercase; letter-spacing:.07em; margin-top:3px; font-weight:700; }
 
@@ -211,14 +211,9 @@
     position: relative; z-index: 1;
   }
 
-  /* Gradient stat values */
-  .stat-val {
-    font-size: 26px; font-weight: 900; line-height: 1.1;
-    background: linear-gradient(135deg, #4d7cff, #a78bfa);
-    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-  }
-  .stat-pill { transition: transform .15s, box-shadow .15s; }
-  .stat-pill:hover { transform: translateY(-2px); box-shadow: 0 4px 20px rgba(46,91,255,0.14); }
+  /* Stat values — solid color, no gradient (per design taste skill) */
+  .stat-val { font-size: 28px; font-weight: 800; line-height: 1.1; color: var(--text); font-variant-numeric: tabular-nums; letter-spacing: -0.02em; }
+  .stat-lbl { font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; margin-top: 4px; font-weight: 600; }
 
   /* Glass header */
   #app-header { backdrop-filter: blur(16px) saturate(1.4); background: rgba(14,14,14,0.88) !important; }
@@ -265,9 +260,9 @@
 <body>
 
 <!-- ── ACCESS SCREEN ── -->
-<div id="screen-access" style="min-height:100dvh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 24px;position:relative;overflow:hidden;background:radial-gradient(ellipse 120% 60% at 50% -5%, rgba(46,91,255,0.18) 0%, #08090a 55%), radial-gradient(ellipse 100% 50% at 80% 110%, rgba(124,58,237,0.14) 0%, transparent 60%), #08090a">
-  <div class="access-glow" style="width:400px;height:400px;top:-120px;left:-100px;background:radial-gradient(circle,rgba(46,91,255,0.2) 0%,transparent 65%);animation-delay:0s"></div>
-  <div class="access-glow" style="width:320px;height:320px;bottom:-80px;right:-80px;background:radial-gradient(circle,rgba(124,58,237,0.18) 0%,transparent 65%);animation-delay:3.5s;animation-direction:alternate-reverse"></div>
+<div id="screen-access" style="min-height:100dvh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 24px;position:relative;overflow:hidden;background:#09090b">
+  <div class="access-glow" style="width:520px;height:520px;top:-180px;left:-180px;background:radial-gradient(circle,rgba(46,91,255,0.45) 0%,rgba(46,91,255,0.12) 30%,transparent 60%);animation-delay:0s"></div>
+  <div class="access-glow" style="width:440px;height:440px;bottom:-140px;right:-140px;background:radial-gradient(circle,rgba(124,58,237,0.4) 0%,rgba(124,58,237,0.1) 30%,transparent 60%);animation-delay:3.5s;animation-direction:alternate-reverse"></div>
   <div style="width:100%;max-width:360px;text-align:center;animation:fadeUp .4s ease;position:relative;z-index:1">
     <div id="access-icon-wrap" style="width:108px;height:108px;border-radius:34px;background:var(--btn);display:flex;align-items:center;justify-content:center;font-size:54px;margin:0 auto 24px;box-shadow:0 16px 56px rgba(46,91,255,0.38),0 0 0 12px rgba(46,91,255,0.08)">
       <span id="access-icon"><span class="material-symbols-outlined" style="font-size:48px;color:#fff">bolt</span></span>
@@ -292,7 +287,10 @@
 </div>
 
 <!-- ── APP SCREEN ── -->
-<div id="screen-app" style="display:none;min-height:100dvh;flex-direction:column;background:radial-gradient(ellipse 120% 40% at 50% -5%, rgba(46,91,255,0.12) 0%, #08090a 50%), #08090a">
+<div id="screen-app" style="display:none;min-height:100dvh;flex-direction:column;background:#09090b;position:relative;overflow-x:hidden">
+  <!-- Ambient glow orbs (decorative, behind content) -->
+  <div style="position:fixed;width:480px;height:480px;top:-180px;left:-180px;background:radial-gradient(circle,rgba(46,91,255,0.32) 0%,rgba(46,91,255,0.08) 35%,transparent 65%);pointer-events:none;z-index:0;animation:floatGlow 7s ease-in-out infinite alternate"></div>
+  <div style="position:fixed;width:380px;height:380px;bottom:-140px;right:-140px;background:radial-gradient(circle,rgba(124,58,237,0.28) 0%,rgba(124,58,237,0.06) 35%,transparent 65%);pointer-events:none;z-index:0;animation:floatGlow 7s ease-in-out 3.5s infinite alternate-reverse"></div>
   <!-- Top bar -->
   <header id="app-header">
     <div id="app-header-icon"><span class="material-symbols-outlined" style="font-size:20px;color:#fff">bolt</span></div>
@@ -310,7 +308,7 @@
     <div style="display:flex;flex-wrap:wrap;gap:6px"></div>
   </div>
 
-  <div id="app-content" style="flex:1;overflow-y:auto;width:100%"><!-- filled by renderApp() --></div>
+  <div id="app-content" style="flex:1;overflow-y:auto;width:100%;position:relative;z-index:1"><!-- filled by renderApp() --></div>
 
   <!-- Footer (se oculta/reemplaza con white-label) -->
   <footer id="app-footer" style="display:none;padding:14px 16px;text-align:center;font-size:11px;color:var(--muted);border-top:1px solid var(--border);background:var(--bg);">
