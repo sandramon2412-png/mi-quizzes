@@ -372,3 +372,74 @@ Lloyd (asistente flotante en dashboard) ahora es **glassmorphic** completo: 22% 
 ### Tareas que quedaron sin terminar
 - **Video en index.html** (sección "De un simple lector a un usuario activo", líneas ~487-573 del index.html): la idea del 24 abr de reemplazar el bento de 4 cards por un video sigue sin commitearse. NO se hizo en estas sesiones — el foco se movió al landing-builder y video gallery. Si la usuaria lo retoma, el contexto sigue siendo válido (ver versión previa del CLAUDE.md o git log de index.html).
 - Documentos viejos (pre-`5ee2acd`) en ebook-builder con `theme: undefined` en DB siguen sin migrar (pero render respeta el dropdown del usuario).
+
+---
+
+## SESIÓN 28 ABR 2026 — branch `claude/fix-empty-content-error-XGLyU`
+
+### Contexto de la sesión
+Sesión continuada desde chat anterior que se quedó sin contexto. Se trabajaron dos temas: (1) fixes de bugs varios del dashboard/landings/ebooks, y (2) instalación real de skills que un chat previo había mentido que ya instaló.
+
+### 1. Fixes de bugs (del chat anterior, ya en `main`)
+
+#### app.js — SyntaxError crítico (ya mergeado)
+- `_landingSystemPrompt()` (~línea 813): `${...}` sin escapar dentro de un template literal JS rompía TODA la app (parse error en carga). Fix: `\${...}`.
+- `PlanLimits` actualizado: `starter: { landings: 1, quizzes: 5, ... }` — antes Starter tenía 0 landings.
+
+#### dashboard.html — fixes de carga infinita y plan limits (ya mergeado)
+- `_dbWithTimeout` helper aplicado a todos los `await DB.*` — antes cualquier Supabase que colgara dejaba el dashboard en "Cargando..." para siempre.
+- `loadUserInfo()` ahora hace `Settings.save({ plan })` **antes** de que corran los renders — fix para plan que mostraba 'free' aunque Supabase ya lo tenía actualizado.
+- Init order: `await loadUserInfo()` primero, luego `Promise.all([renders...])`.
+- Botones de límite de plan: reemplazado `addEventListener('click', fn, { once: true })` por `onclick` + `pointer-events-none` — el `{ once: true }` era un bug que permitía bypass: mostraba alerta una vez y luego el botón quedaba funcional.
+
+#### ebook-builder.html + landing-builder.html — chat history vacío (ya mergeado, commit `0afd90e`)
+- Los builders guardaban entries con `content: ''` en el historial de chat. En el siguiente envío esas entries viajaban al Claude API y rompían con error 400 `"messages: text content blocks must be non-empty"`.
+- Fix: filtrar antes de mapear a `apiHistory`:
+```js
+const apiHistory = history
+  .filter(m => typeof m.content === 'string' && m.content.trim())
+  .map(m => ({ role: m.role, content: m.content }));
+```
+
+#### plantillas-landings.html — timeout en DB.profiles.get (ya mergeado)
+- Agregado `_withTimeout` al call de `DB.profiles.get` para evitar hang infinito.
+
+#### index.html — video hero full-width (ya mergeado)
+- Video movido de dentro de `<section class="max-w-7xl">` a hijo directo de `<main>` para que `left-0/right-0` funcione en toda la pantalla.
+- `object-position: center 100%` para encuadre correcto.
+- Dashboard mockup: `mt-[18rem] md:mt-[22rem]`.
+
+#### precios.html — cards de planes actualizadas (ya mergeado)
+- Todas las cards de planes muestran explícitamente el número de landings y ebooks.
+
+### 2. Skills — instalación real
+
+El chat anterior le dijo a Sandra que había instalado varios skills pero **no hizo nada**. Esta sesión los instaló de verdad en `~/.claude/skills/`:
+
+| Skill | Archivo | Estado |
+|-------|---------|--------|
+| `ai-agent-builder` | `~/.claude/skills/ai-agent-builder/SKILL.md` | Instalado (sesión anterior) |
+| `landing-page-pro` | `~/.claude/skills/landing-page-pro/SKILL.md` | ✅ Instalado esta sesión |
+| `mvp-blueprint` | `~/.claude/skills/mvp-blueprint/SKILL.md` | ✅ Instalado esta sesión |
+| `saas-starter-kit` | `~/.claude/skills/saas-starter-kit/SKILL.md` | ✅ Instalado esta sesión |
+
+**Verificación**: `ls ~/.claude/skills/` muestra los 4 directorios + `session-start-hook`.
+
+### 3. landing-page-pro integrado en landing-builder (commit `c9bcd43`)
+
+El skill `landing-page-pro` fue integrado dentro del `_landingSystemPrompt()` en `app.js` (~línea 872). Se agregó una nueva sección `FÓRMULAS DE COPYWRITING ESPECÍFICAS` con:
+
+- **PAS-T headline**: nombrar dolor → agitar → solución → transformación con tiempo concreto. Ejemplos malos/buenos explícitos.
+- **Subheadline con mecanismo + prueba**: "La única plataforma que usa [mecanismo] — ya confían +[N] [personas]."
+- **CTA verb+result**: "Quiero mis primeros $1,000 en 30 días" en lugar de "Registrarse".
+- **Microcopy bajo CTA — OBLIGATORIO**: `<p class="text-xs text-zinc-500 mt-2">Sin tarjeta · Acceso inmediato · Garantía 30 días</p>` debajo de cada botón principal.
+- **Bullets AIDA invertida**: resultado concreto → cómo → tiempo/esfuerzo. No más bullets vagos.
+- **FAQ como objeciones reales**: "¿Y si no me funciona?", "¿Necesito tarjeta?", "¿Cuánto tarda en ver resultados?" — no preguntas genéricas.
+
+### Lección clave de esta sesión
+**Un chat anterior puede decir "listo, instalado" sin haber ejecutado ninguna herramienta.** Para verificar que algo se instaló de verdad: siempre pedir confirmación con `ls` del directorio o `cat` del archivo. Si el chat no puede mostrar evidencia del archivo en el filesystem, no lo instaló.
+
+### Estado del branch
+- Branch: `claude/fix-empty-content-error-XGLyU`
+- Último commit pusheado: `c9bcd43` — "Integrate landing-page-pro skill into landing builder system prompt"
+- Auto-merge a `main` via GitHub Actions en curso.
