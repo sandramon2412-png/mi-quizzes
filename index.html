@@ -246,15 +246,15 @@
 <main class="relative" style="background:#080810;">
 <section class="pt-24 pb-32 px-6 max-w-7xl mx-auto relative overflow-visible">
 
-  <!-- Animated nebula video background — full center visible so the Luminous Studio logo reveal shows clearly -->
-  <div class="absolute left-0 right-0 top-0 overflow-hidden pointer-events-none" style="z-index:0;height:640px;max-height:80vh;">
-    <video autoplay muted loop playsinline preload="auto" class="absolute top-0 left-0 w-full h-full" style="object-fit:cover;object-position:center 78%;opacity:0.7;">
+  <!-- Animated nebula video background — full viewport so the entire scene is visible behind the hero -->
+  <div class="absolute left-0 right-0 top-0 overflow-hidden pointer-events-none" style="z-index:0;height:100vh;min-height:720px;">
+    <video autoplay muted loop playsinline preload="auto" class="absolute top-0 left-0 w-full h-full" style="object-fit:cover;object-position:center center;opacity:0.95;">
       <source src="https://euauqqamrkqwoytveljp.supabase.co/storage/v1/object/public/public-assets/Logo_Reveal_A_purple_and_dark_blue_nebula_swirls_with_7dBpmcoS.mp4" type="video/mp4">
     </video>
-    <!-- Soft center brightness — keeps the logo reveal fully readable in the middle -->
-    <div class="absolute inset-0" style="background:radial-gradient(ellipse at 50% 40%,rgba(8,8,16,0.05) 0%,rgba(8,8,16,0.3) 45%,rgba(8,8,16,0.75) 100%);"></div>
-    <!-- Strong bottom fade starts at 55% of video height, fully #080810 by the bottom so CTA area is on solid dark -->
-    <div class="absolute inset-x-0 bottom-0" style="top:55%;background:linear-gradient(to top,#080810 0%,rgba(8,8,16,0.95) 35%,rgba(8,8,16,0.6) 70%,transparent 100%);"></div>
+    <!-- Subtle vignette so the title stays readable without hiding the video -->
+    <div class="absolute inset-0" style="background:radial-gradient(ellipse at 50% 50%,rgba(8,8,16,0) 0%,rgba(8,8,16,0.15) 60%,rgba(8,8,16,0.45) 100%);"></div>
+    <!-- Soft fade only on the very bottom 20% so it blends into the next section -->
+    <div class="absolute inset-x-0 bottom-0" style="top:80%;background:linear-gradient(to top,#080810 0%,rgba(8,8,16,0.6) 50%,transparent 100%);"></div>
   </div>
   <!-- Grid lines (subtle) -->
   <div class="grid-lines" style="z-index:1;opacity:0.35;"></div>
