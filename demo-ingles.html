@@ -154,8 +154,8 @@ try {
   console.error('Error saving demo app:', e);
 }
 
-// Redirect to player
-window.location.href = `./mini-app-player.html?id=${APP_ID}`;
+// Redirect to player (with cache buster)
+window.location.href = `./mini-app-player.html?id=${APP_ID}&v=${Date.now()}`;
 </script>
 </body>
 </html>
