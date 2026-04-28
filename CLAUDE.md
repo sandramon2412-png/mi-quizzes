@@ -589,3 +589,122 @@ Ningún otro skill (ni `funnel-copy-architect`, ni `frontend-patterns`, ni `desi
 git log --oneline | grep -i skill        # commits que tocaron skills
 grep -n "PAS\|AIDA\|microcopy" app.js     # marcadores de landing-page-pro embebido
 ```
+
+---
+
+## SESIÓN 28 ABR 2026 (parte 5) — Mini-app player visual upgrade + demo de inglés
+
+### Contexto
+Sandra reportó que las mini-apps "se ven muy básicas, nada premium". Se trabajó en upgrade visual del player + creación de un demo completo de inglés para testear el resultado.
+
+### 1. Demo de inglés completo (`demo-ingles.html`)
+Archivo nuevo en raíz que seedea localStorage con una mini-app multi-tipo (`reto`+`flashcards`+`tracker`+`glosario`+`afirmaciones`) y redirige al player con cache-buster.
+
+**Contenido** (sin emojis — usa Material Symbols por fallback del player):
+- **Reto 7 días**: Greetings, Numbers & Colors, Family, Essential Verbs, Food, Time, Basic Conversations
+- **20 flashcards**: vocabulario esencial (Hello, Thanks, Please, etc.)
+- **Tracker 30 días**: "Practice English for at least 15 minutes today"
+- **18 términos de glosario**: Hello/Goodbye, I want, Where is, etc.
+- **10 afirmaciones en inglés** + instrucción
+- `voiceLang: 'en-US'` para que el TTS hable inglés
+
+URL: `/demo-ingles.html` (auto-redirige al player)
+
+### 2. Section header rediseñado (`sectionHdr()` en `mini-app-player.html`)
+Antes: cada sección abría con un `.card-dark` plano (gradiente azul→púrpura cuadrado, sin profundidad).
+Ahora: hero centrado con icono dentro de círculo glassmorphic, título serif grande, subtítulo en `--muted`.
+
+```js
+function sectionHdr(emoji, title, sub) {
+  const isHtml = typeof emoji === 'string' && emoji.includes('<');
+  const iconContent = isHtml
+    ? emoji.replace(/font-size:\d+px/, 'font-size:26px')
+    : `<span style="font-size:26px;line-height:1">${emoji}</span>`;
+  return `<div class="section-hero">
+    <div class="section-hero-icon">${iconContent}</div>
+    <h1 class="serif section-hero-title">${esc(title)}</h1>
+    ${sub ? `<p class="section-hero-sub">${esc(sub)}</p>` : ''}
+  </div>`;
+}
+```
+
+CSS asociado (`.section-hero`, `.section-hero-icon`, `.section-hero-title`, `.section-hero-sub`) tiene inner highlights y sombras suaves siguiendo design-taste-frontend.
+
+### 3. TTS multi-idioma (fix bug crítico)
+**Bug**: `u.lang = 'es-ES'` hardcoded → la app de inglés se leía con voz española traduciendo mal.
+**Fix**:
+```js
+function _bestVoice(lang) {
+  const all = window.speechSynthesis?.getVoices() || [];
+  const prefix = (lang || 'es').split('-')[0];
+  const matches = all.filter(v => v.lang.startsWith(prefix));
+  return matches[0];
+}
+// En _speakNext:
+const ttsLang = currentApp?.voiceLang || currentApp?.lang || 'es-ES';
+u.lang = ttsLang;
+const best = _bestVoice(ttsLang);
+```
+Ahora respeta `voiceLang` del app data — funciona para `en-US`, `es-ES`, `pt-BR`, etc.
+
+### 4. Cards visuales (cumple skill design-taste-frontend)
+- **Inner highlight subido a 10%**: `box-shadow:inset 0 1px 0 rgba(255,255,255,0.1), 0 8px 24px -8px rgba(0,0,0,0.6)`
+- **stat-val sin gradient text** (skill prohíbe): solid color + `font-variant-numeric:tabular-nums`
+- Variables CSS: `--bg:#09090b, --card:#18181b, --border:rgba(255,255,255,0.08)`
+
+### 5. EL BUG GIGANTE — Ambient glow invisible (5+ intentos fallidos)
+
+**Síntoma**: Sandra dijo "nada" 2 veces después de varios fixes. El glow ambient de fondo (orbs azul + púrpura) no se veía.
+
+**Intentos que NO funcionaron**:
+1. Body gradient muy suave (8-11% opacity) — invisible contra contenido
+2. Subir opacity a 18-20% — seguía invisible
+3. Orbs `position:fixed` con animación `floatGlow` — invisible
+4. Aumentar a 32-45% center opacity — invisible
+
+**Root cause real (commit `16757f9`)**:
+`position:fixed` dentro de `overflow-x:hidden` crea un **stacking context que clipea fixed children al contenedor, no al viewport**. Los orbs estaban siendo clippeados al rect del screen-app, y como tenían `top:-180px;left:-180px` quedaban fuera del rect → invisibles totales.
+
+**Fix definitivo**:
+- Eliminados los orb divs con `position:fixed` (rotos por stacking context)
+- Gradiente bakeado directamente en `background-image` del screen + `background-attachment:fixed`
+- Cambiado `overflow-x:hidden` → `overflow-x:clip` (no crea stacking context)
+
+```html
+<!-- screen-access -->
+<div id="screen-access" style="...;background:#09090b;background-image:radial-gradient(circle at 18% 38%,rgba(46,91,255,0.38) 0%,transparent 48%),radial-gradient(circle at 82% 72%,rgba(124,58,237,0.34) 0%,transparent 45%);background-attachment:fixed">
+
+<!-- screen-app -->
+<div id="screen-app" style="...;background:#09090b;background-image:radial-gradient(circle at 15% 25%,rgba(46,91,255,0.32) 0%,transparent 45%),radial-gradient(circle at 85% 75%,rgba(124,58,237,0.28) 0%,transparent 42%);background-attachment:fixed;overflow-x:clip">
+```
+
+**Por qué funciona**:
+- `background-attachment:fixed` ata el gradiente al viewport, no al elemento → no se mueve al scroll
+- Como `app-content` hace scroll interno (no el viewport), el fixed attachment es perfecto: el gradiente queda estático mientras el contenido scrollea
+- `overflow-x:clip` previene scroll horizontal pero NO crea stacking context
+
+**Commits relevantes** (branch `claude/fix-empty-content-error-XGLyU` → main):
+- `f19e2fa` — orbs con position:fixed (intermedio, no funcionaba)
+- `16757f9` — **fix definitivo**: gradient en background property + overflow-x:clip
+
+### 6. Lecciones de esta sesión
+- **`position:fixed` dentro de `overflow:hidden`/`overflow-x:hidden` está roto** — el ancestor crea stacking context que clipea fixed children. Usar `overflow-x:clip` para evitarlo, o bakear el efecto en `background-image` con `background-attachment:fixed`.
+- **`background-attachment:fixed` en elementos NO scrollables** (cuando el scroll interno es de un hijo) **es perfecto para glows ambientales** — el gradiente queda anclado al viewport.
+- **Cuando un fix CSS visual no se ve después de N intentos**, dejar de tocar valores y revisar el stacking context / overflow chain del ancestor — casi siempre el problema está ahí.
+- **Demos seedeados** (`demo-ingles.html`) son una herramienta excelente para testear cambios de UI sin tener que crear una app desde la UI cada vez.
+
+### Estado final del player visual
+- Glow ambient visible en ambas pantallas
+- Cards con inner highlight 10% visibles contra el fondo
+- Section heroes (no más card-dark plano)
+- TTS respeta `voiceLang` por app
+- Demo de inglés funcional como playground
+
+### Branch
+Último commit pusheado: `16757f9` en `claude/fix-empty-content-error-XGLyU` — auto-merge a `main` activo.
+
+### Archivos nuevos/modificados esta sesión
+| Archivo | Cambio |
+|---------|--------|
+| `demo-ingles.html` | NUEVO — seeder de mini-app de inglés para testing |
+| `mini-app-player.html` | sectionHdr + section-hero CSS + TTS multi-idioma + glow fix |
