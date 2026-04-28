@@ -19,12 +19,12 @@
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
 <style>
   :root {
-    --bg: #0e0e0e; --bg2: #1a1a1a; --bg3: #242424;
-    --border: rgba(255,255,255,0.07);
+    --bg: #0e0e0e; --bg2: #1a1a1a; --bg3: #262626;
+    --border: rgba(255,255,255,0.11);
     --text: #f0f0f0; --muted: #9a9a9a;
     --accent: #2E5BFF; --accent2: #7c3aed;
     --success: #22c55e; --warn: #f97316;
-    --card: #1a1a1a; --card2: #222;
+    --card: #1d1d1d; --card2: #232323;
     --btn: linear-gradient(135deg,#2E5BFF,#7c3aed);
     --radius: 16px;
   }
@@ -1457,16 +1457,16 @@ if (window.speechSynthesis) {
   window.speechSynthesis.onvoiceschanged = () => {};
 }
 
-function _bestSpanishVoice() {
+function _bestVoice(lang) {
   const all = window.speechSynthesis?.getVoices() || [];
-  const es = all.filter(v => v.lang.startsWith('es'));
-  if (!es.length) return null;
-  return es.find(v => /natural|neural|enhanced|premium/i.test(v.name))
-      || es.find(v => /google/i.test(v.name))
-      || es.find(v => !v.localService)
-      || es.find(v => /mónica|monica|lucía|lucia|jorge/i.test(v.name))
-      || es.find(v => v.lang === 'es-ES')
-      || es[0];
+  const prefix = (lang || 'es').split('-')[0];
+  const matches = all.filter(v => v.lang.startsWith(prefix));
+  if (!matches.length) return null;
+  return matches.find(v => /natural|neural|enhanced|premium/i.test(v.name))
+      || matches.find(v => /google/i.test(v.name))
+      || matches.find(v => !v.localService)
+      || matches.find(v => v.lang === lang)
+      || matches[0];
 }
 
 function _cleanForTTS(text) {
@@ -1499,8 +1499,9 @@ function _speakNext(onDone) {
   if (_voiceStopped || _voicePaused) return;
   if (_voiceIdx >= _voiceQueue.length) { if (onDone) onDone(); return; }
   const u = new SpeechSynthesisUtterance(_voiceQueue[_voiceIdx++]);
-  u.lang = 'es-ES'; u.rate = 0.82; u.pitch = 1.0; u.volume = 1;
-  const best = _bestSpanishVoice(); if (best) u.voice = best;
+  const ttsLang = currentApp?.voiceLang || currentApp?.lang || 'es-ES';
+  u.lang = ttsLang; u.rate = 0.82; u.pitch = 1.0; u.volume = 1;
+  const best = _bestVoice(ttsLang); if (best) u.voice = best;
   u.onend = () => { if (!_voiceStopped && !_voicePaused) setTimeout(() => _speakNext(onDone), 350); };
   u.onerror = (e) => { if (e.error !== 'interrupted') setTimeout(() => _speakNext(onDone), 150); };
   window.speechSynthesis.speak(u);

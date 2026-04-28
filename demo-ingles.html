@@ -25,58 +25,51 @@ const APP_DATA = {
   accessCodes: [],
   name: 'English para Principiantes',
   description: 'Vocabulario, retos diarios y hábito de práctica — todo en un lugar',
-  icon: '🇬🇧',
   type: 'reto',
   types: ['reto', 'flashcards', 'tracker', 'glosario', 'afirmaciones'],
+  voiceLang: 'en-US',
 
   // ── RETO: 7-day English Challenge ──────────────────────────
   retoDays: 7,
   retoContent: [
     {
       title: 'Greetings & Introductions',
-      icon: '👋',
       quote: '"Hello! My name is... Nice to meet you!" — Your first step to speaking English.',
       instructions: 'Hoy aprendes a saludar y presentarte. Repite estas frases en voz alta 5 veces:\n\n• Hello! / Hi! — Hola\n• Good morning! — Buenos días\n• Good afternoon! — Buenas tardes\n• Good night! — Buenas noches\n• My name is ___. — Me llamo ___.\n• Nice to meet you! — Mucho gusto.\n• How are you? — ¿Cómo estás?\n• I\'m fine, thank you! — Estoy bien, gracias.\n\nTip: Practica frente al espejo para ganar confianza.',
       reflectionPrompt: 'Write 3 sentences introducing yourself in English. Example: "My name is... I am from... Nice to meet you!"'
     },
     {
       title: 'Numbers & Colors',
-      icon: '🔢',
       quote: '"One small step for a learner, one giant leap for fluency."',
       instructions: 'Hoy aprendes números del 1–20 y colores esenciales.\n\nNúmeros:\none, two, three, four, five, six, seven, eight, nine, ten,\neleven, twelve, thirteen, fourteen, fifteen, sixteen, seventeen, eighteen, nineteen, twenty.\n\nColores:\nred (rojo) • blue (azul) • green (verde) • yellow (amarillo)\nwhite (blanco) • black (negro) • orange (naranja) • purple (morado)\n\nPractica: mira objetos a tu alrededor y dí su color en inglés.',
       reflectionPrompt: 'Count from 1 to 10 in English, then describe the color of 5 objects near you. Example: "My phone is black."'
     },
     {
       title: 'Family & People',
-      icon: '👨‍👩‍👧',
       quote: '"Family is the same in every language."',
       instructions: 'Vocabulario de familia y personas:\n\n• Mother / Mom — Mamá\n• Father / Dad — Papá\n• Sister — Hermana\n• Brother — Hermano\n• Daughter — Hija\n• Son — Hijo\n• Grandmother / Grandma — Abuela\n• Grandfather / Grandpa — Abuelo\n• Friend — Amigo/a\n• Teacher — Maestro/a\n• Husband — Esposo\n• Wife — Esposa\n\nFrase clave: "I have a sister and two brothers." (Tengo una hermana y dos hermanos.)',
       reflectionPrompt: 'Describe your family in English in 3–5 sentences. Example: "I have a mother, a father, and one brother. My mother is very kind."'
     },
     {
       title: 'Essential Verbs',
-      icon: '⚡',
       quote: '"Verbs are the engine of every sentence."',
       instructions: 'Los 10 verbos más usados en inglés:\n\n• To be — ser / estar → I am, You are, He/She is\n• To have — tener → I have\n• To go — ir → I go\n• To eat — comer → I eat\n• To drink — beber → I drink\n• To work — trabajar → I work\n• To study — estudiar → I study\n• To sleep — dormir → I sleep\n• To like — gustar → I like\n• To want — querer → I want\n\nPractica: "I am a student. I study English. I like coffee."',
       reflectionPrompt: 'Write 5 sentences using 5 different verbs from today. Example: "I am happy. I want to learn English. I like music."'
     },
     {
       title: 'Food & Drinks',
-      icon: '🍎',
       quote: '"Let\'s talk about food — everyone\'s favorite topic!"',
       instructions: 'Vocabulario de comida y bebida:\n\n• Water — agua • Coffee — café • Tea — té • Juice — jugo • Milk — leche\n• Bread — pan • Rice — arroz • Chicken — pollo • Salad — ensalada\n• Apple — manzana • Banana — plátano • Orange — naranja • Egg — huevo\n\nFrases útiles:\n• I like... — Me gusta...\n• I don\'t like... — No me gusta...\n• I want... — Quiero...\n• Can I have...? — ¿Me puede dar...?\n\nEjemplo: "I like coffee and eggs. I don\'t like tea."',
       reflectionPrompt: 'What did you eat today? Describe your meals in English. Example: "For breakfast I ate bread and drank coffee."'
     },
     {
       title: 'Time & Days of the Week',
-      icon: '🕐',
       quote: '"Time flies when you\'re learning English!"',
       instructions: 'Días de la semana:\nMonday, Tuesday, Wednesday, Thursday, Friday, Saturday, Sunday\n(Lunes, Martes, Miércoles, Jueves, Viernes, Sábado, Domingo)\n\nPreguntar la hora:\n• What time is it? — ¿Qué hora es?\n• It\'s 3 o\'clock. — Son las 3.\n• It\'s half past 2. — Son las 2 y media.\n• In the morning / afternoon / evening — Por la mañana / tarde / noche\n\nFrase útil: "Today is Monday. It\'s 9 o\'clock in the morning."',
       reflectionPrompt: 'What day is today? What time is it right now? What are your plans for this week? Write it all in English.'
     },
     {
       title: 'Basic Conversations',
-      icon: '💬',
       quote: '"You\'ve made it through 7 days — now let\'s put it all together!"',
       instructions: '¡Día final! Conversaciones completas para principiantes:\n\n• Where are you from? → I\'m from Mexico. / I\'m from Colombia.\n• What do you do? → I\'m a teacher. / I\'m a student.\n• Do you speak English? → Yes, a little! I\'m learning.\n• How old are you? → I\'m 28 years old.\n• What\'s your favorite food? → I love pizza and coffee.\n• Do you have a family? → Yes! I have a husband and two kids.\n\n¡Practica estas preguntas con alguien o grábate respondiéndolas en inglés!',
       reflectionPrompt: 'Write a short dialogue (6–8 lines) in English — imagine you\'re meeting someone new. Use vocabulary from all 7 days!'
