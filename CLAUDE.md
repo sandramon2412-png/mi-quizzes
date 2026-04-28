@@ -432,8 +432,9 @@ El chat anterior le dijo a Sandra que había instalado varios skills pero **no h
 | `automation-forge` | n8n/Make/Zapier, agentes IA, webhooks, ROI | ✅ Instalado |
 
 | `minimalist-ui` | UI editorial minimalista, bento grid, monocromo cálido | ✅ Instalado |
+| `design-taste-frontend` | UI/UX engineer senior, anti-slop, motion-engine, bento 2.0 | ✅ Instalado |
 
-**Verificación**: `ls ~/.claude/skills/` — 13 directorios instalados + `session-start-hook`. Todos activos.
+**Verificación**: `ls ~/.claude/skills/` — 14 directorios instalados + `session-start-hook`. Todos activos.
 
 ### 3. landing-page-pro integrado en landing-builder (commit `c9bcd43`)
 
