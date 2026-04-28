@@ -454,3 +454,49 @@ El skill `landing-page-pro` fue integrado dentro del `_landingSystemPrompt()` en
 - Branch: `claude/fix-empty-content-error-XGLyU`
 - Último commit pusheado: `c9bcd43` — "Integrate landing-page-pro skill into landing builder system prompt"
 - Auto-merge a `main` via GitHub Actions en curso.
+
+---
+
+## SESIÓN 28 ABR 2026 (parte 2) — branch `claude/fix-empty-content-error-XGLyU`
+
+### Contexto
+Continuación directa de la sesión anterior (context compacted). Dos temas: (1) explicación detallada de los skills `design-taste-frontend` y `minimalist-ui`, y (2) auditoría de `index.html` + fixes concretos.
+
+### 1. Explicación de skills de diseño
+
+#### `minimalist-ui`
+Skill de estilo editorial: paleta monocromática cálida (`#F7F6F3`/`#FBFBFA`), tipografía serif para titulares, sin gradientes, sin sombras pesadas. Bento grid con `border: 1px solid #EAEAEA`. **No compatible directamente con la identidad de Luminous** (dark mode + gradiente azul→púrpura), pero útil como referencia para landings editoriales o docs.
+
+#### `design-taste-frontend` (repositorio: `github.com/Leonxlnx/taste-skill`)
+Skill con 3 diales numéricos que controlan el estilo generado:
+- **DESIGN_VARIANCE: 8** → Layouts asimétricos, masonry, grid fraccionado, hero nunca centrado
+- **MOTION_INTENSITY: 6** → Animaciones CSS fluidas con `cubic-bezier`. En 8-10 activa Framer Motion con física de resortes
+- **VISUAL_DENSITY: 4** → Espaciado normal de app. En 8-10 = cockpit con monospace y sin cards
+
+Contiene "AI Tells" (7 patrones prohibidos): Inter, purple/neon gradients, 3 cards iguales en fila, box-shadow glow exterior, `#000000`, datos falsos perfectos (99%, John Doe), clichés de copy.
+
+El **Bento 2.0 / Motion Engine** (Sección 9) define 5 arquetipos de cards con animación perpetua: Lista inteligente con auto-sort por `layoutId`, Command Input con typewriter, Live Status con spring overshoot, Data Stream carousel horizontal infinito, Focus Mode con highlight animado.
+
+**Compatibilidad con Luminous**: El skill prohíbe "The Lila Ban" (azul-púrpura saturado = identidad de Luminous), por lo que NO se aplica directamente. Sin embargo, sus principios sobre asimetría, datos honestos y anti-clichés son útiles como criterios de calidad.
+
+### 2. Auditoría de `index.html` — 3 criterios
+
+| Criterio | Resultado | Acción |
+|---|---|---|
+| Copy (sin clichés AI) | ✅ 95% limpio | Marquee "IA Generativa Integrada" levemente vago |
+| Estructura cards | ✅ OK (3-col en "Problemas" está justificado por contenido diferenciado) | No tocar |
+| Datos honestos | ⚠️ Dos issues | Corregidos |
+
+**Issues corregidos (commit `8b0506d`)**:
+1. **Avatares de pravatar.cc** (fotos de personas reales de internet, riesgo legal) → reemplazados por iniciales con gradiente de marca (V, C, M, R)
+2. **"+420% vs antes"** (porcentaje sin base, no creíble) → cambiado a *"127 leads/mes que antes no tenía"* (concreto y verificable)
+
+**Lo que está bien en la landing y NO tocar**:
+- H1: *"Todo para crecer en digital, con IA y sin código"* — sin clichés
+- Sección dolor: *"La IA habla gringo, no tú"*, *"Publicas PDFs que nadie lee"* — lenguaje real para la audiencia
+- Timeline: *"8 minutos... primer lead"* — específico y creíble
+- Identidad visual: gradiente azul→púrpura es la marca, no un defecto
+
+### Estado final
+- Último commit: `8b0506d` — "Fix landing: replace pravatar avatars with initials, replace vague +420% stat with concrete lead number"
+- Branch `claude/fix-empty-content-error-XGLyU` pusheado, auto-merge a `main` activo
