@@ -416,14 +416,22 @@ const apiHistory = history
 
 El chat anterior le dijo a Sandra que había instalado varios skills pero **no hizo nada**. Esta sesión los instaló de verdad en `~/.claude/skills/`:
 
-| Skill | Archivo | Estado |
-|-------|---------|--------|
-| `ai-agent-builder` | `~/.claude/skills/ai-agent-builder/SKILL.md` | Instalado (sesión anterior) |
-| `landing-page-pro` | `~/.claude/skills/landing-page-pro/SKILL.md` | ✅ Instalado esta sesión |
-| `mvp-blueprint` | `~/.claude/skills/mvp-blueprint/SKILL.md` | ✅ Instalado esta sesión |
-| `saas-starter-kit` | `~/.claude/skills/saas-starter-kit/SKILL.md` | ✅ Instalado esta sesión |
+| Skill | Descripción corta | Estado |
+|-------|-------------------|--------|
+| `ai-agent-builder` | Construye agentes IA con tool use, RAG, memoria | ✅ Instalado |
+| `landing-page-pro` | Landings de alta conversión, CRO, Tailwind | ✅ Instalado + integrado en app.js |
+| `mvp-blueprint` | MVP en 7 días, Moscow, scaffolding | ✅ Instalado |
+| `saas-starter-kit` | SaaS Next.js + Supabase + Stripe | ✅ Instalado |
+| `funnel-copy-architect` | Funnels, emails, VSL, AIDA/PAS/StoryBrand | ✅ Instalado |
+| `customer-voice` | Buyer persona, Mom Test, JTBD, reviews mining | ✅ Instalado |
+| `brand-identity-lab` | Naming, paleta, tono de voz, tokens CSS | ✅ Instalado |
+| `viral-growth-lab` | Loops de growth, referidos, PLG, K-factor | ✅ Instalado |
+| `ship-it` | Deploy a producción, DNS, SSL, analytics, legales | ✅ Instalado |
+| `pitch-deck-master` | Pendiente de pegar | ⏳ Pendiente |
+| `seo-content-machine` | Pendiente de pegar | ⏳ Pendiente |
+| `automation-forge` | Pendiente de pegar | ⏳ Pendiente |
 
-**Verificación**: `ls ~/.claude/skills/` muestra los 4 directorios + `session-start-hook`.
+**Verificación**: `ls ~/.claude/skills/` — 9 directorios instalados + `session-start-hook`.
 
 ### 3. landing-page-pro integrado en landing-builder (commit `c9bcd43`)
 
