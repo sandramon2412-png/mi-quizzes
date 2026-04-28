@@ -431,7 +431,9 @@ El chat anterior le dijo a Sandra que había instalado varios skills pero **no h
 | `seo-content-machine` | SEO, clusters topicales, briefs, schema markup | ✅ Instalado |
 | `automation-forge` | n8n/Make/Zapier, agentes IA, webhooks, ROI | ✅ Instalado |
 
-**Verificación**: `ls ~/.claude/skills/` — 12 directorios instalados + `session-start-hook`. Todos activos.
+| `minimalist-ui` | UI editorial minimalista, bento grid, monocromo cálido | ✅ Instalado |
+
+**Verificación**: `ls ~/.claude/skills/` — 13 directorios instalados + `session-start-hook`. Todos activos.
 
 ### 3. landing-page-pro integrado en landing-builder (commit `c9bcd43`)
 
