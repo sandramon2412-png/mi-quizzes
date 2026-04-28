@@ -80,13 +80,13 @@ El player soporta **19 tipos de sección** que se combinan en una sola app:
 - Volumen bell: 0.7 (principal) + 0.25 (armónico)
 
 ## Planes de Suscripción
-| Plan | Precio | Quizzes | Mini-Apps | Respuestas/mes | IA | Leads | Bot Lab |
-|------|--------|---------|-----------|----------------|----|-------|---------|
-| Free | $0 | 1 | 2 | 500 | No | No | No |
-| Starter | $5/mes | 3 | 5 | 5,000 | **No** | Sí | No |
-| Pro | $9/mes | Ilimitados | Ilimitadas | 50,000 | Sí | Sí | Sí |
-| Growth | $19/mes | Ilimitados | Ilimitadas | 150,000 | Sí | Sí | Sí |
-| Elite | $49/mes | Ilimitados | Ilimitadas | Ilimitadas | Sí | Sí | Sí |
+| Plan | Precio | Quizzes | Mini-Apps | Landings | Ebooks | Respuestas/mes | IA | Leads | Bot Lab |
+|------|--------|---------|-----------|----------|--------|----------------|----|-------|---------|
+| Free | $0 | 1 | 2 | 0 | 1 | 500 | No | No | No |
+| Starter | $5/mes | 5 | 5 | 1 | 3 | 5,000 | **No** | Sí | Sí |
+| Pro | $9/mes | 10 | 10 | 5 | 5 | 50,000 | Sí | Sí | Sí |
+| Growth | $19/mes | 30 | 30 | 20 | 20 | 150,000 | Sí | Sí | Sí |
+| Elite | $49/mes | Ilimitados | Ilimitadas | Ilimitadas | Ilimitados | Ilimitadas | Sí | Sí | Sí |
 
 **Decisiones clave**:
 - Starter NO incluye IA — la IA es el diferenciador para upgrade a Pro ($9)
