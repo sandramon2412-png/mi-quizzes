@@ -97,7 +97,7 @@
   /* App screen */
   #screen-app { min-height:100dvh; flex-direction:column; background:var(--bg); }
   #app-header { padding:14px 20px; border-bottom:1px solid var(--border); display:flex; align-items:center; gap:12px; position:sticky; top:0; z-index:50; background:var(--bg); width:100%; }
-  #app-header-icon { font-size:22px; width:38px; height:38px; display:flex; align-items:center; justify-content:center; border-radius:12px; background:var(--btn); flex-shrink:0; }
+  #app-header-icon { font-size:22px; width:38px; height:38px; display:flex; align-items:center; justify-content:center; border-radius:12px; background:var(--btn); flex-shrink:0; box-shadow:0 2px 12px rgba(46,91,255,0.35); }
   #app-header-name { font-weight:800; font-size:14px; }
   #app-header-greeting { font-size:11px; color:var(--accent); font-weight:600; margin-left:auto; }
 
@@ -174,14 +174,101 @@
 
   ::-webkit-scrollbar { width:3px; }
   ::-webkit-scrollbar-thumb { background:var(--border); border-radius:4px; }
+
+  /* ── PREMIUM VISUAL UPGRADE ─────────────────────────────── */
+
+  /* Section hero — replaces flat card-dark in all 19 section types */
+  .section-hero {
+    position: relative; overflow: hidden;
+    background: linear-gradient(135deg, var(--accent) 0%, var(--accent2, var(--accent)) 100%);
+    border-radius: var(--radius); padding: 26px 22px 22px; margin-bottom: 16px;
+    box-shadow: 0 8px 40px rgba(46,91,255,0.28), 0 2px 8px rgba(0,0,0,0.22);
+    animation: fadeUp .35s ease;
+  }
+  .section-hero::before {
+    content: ''; position: absolute; inset: 0; pointer-events: none;
+    background: radial-gradient(ellipse at 88% 15%, rgba(255,255,255,0.16) 0%, transparent 52%),
+                radial-gradient(ellipse at 12% 85%, rgba(0,0,0,0.1) 0%, transparent 45%);
+  }
+  .section-hero::after {
+    content: ''; position: absolute; top: -28px; right: -28px; pointer-events: none;
+    width: 110px; height: 110px; border-radius: 50%;
+    background: rgba(255,255,255,0.07);
+  }
+  .section-hero-icon {
+    width: 50px; height: 50px; border-radius: 15px; position: relative; z-index: 1;
+    background: rgba(255,255,255,0.18); border: 1.5px solid rgba(255,255,255,0.3);
+    display: flex; align-items: center; justify-content: center; margin-bottom: 14px;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.14), inset 0 1px 0 rgba(255,255,255,0.2);
+  }
+  .section-hero-title {
+    font-size: 22px; font-weight: 700; color: #fff; line-height: 1.2;
+    margin-bottom: 5px; position: relative; z-index: 1;
+  }
+  .section-hero-sub {
+    font-size: 12px; color: rgba(255,255,255,0.72); font-weight: 500;
+    position: relative; z-index: 1;
+  }
+
+  /* Gradient stat values */
+  .stat-val {
+    font-size: 26px; font-weight: 900; line-height: 1.1;
+    background: linear-gradient(135deg, #4d7cff, #a78bfa);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  }
+  .stat-pill { transition: transform .15s, box-shadow .15s; }
+  .stat-pill:hover { transform: translateY(-2px); box-shadow: 0 4px 20px rgba(46,91,255,0.14); }
+
+  /* Glass header */
+  #app-header { backdrop-filter: blur(16px) saturate(1.4); background: rgba(14,14,14,0.88) !important; }
+  [data-theme="light"] #app-header { background: rgba(253,248,244,0.88) !important; }
+
+  /* Active tab glow */
+  .tab-btn.active { box-shadow: 0 2px 18px rgba(46,91,255,0.38) !important; }
+
+  /* Shimmer progress bar */
+  @keyframes shimmer { 0%{background-position:-200% 0} 100%{background-position:200% 0} }
+  .prog-bar {
+    background: linear-gradient(90deg, var(--accent) 0%, var(--accent2,var(--accent)) 50%, var(--accent) 100%) !important;
+    background-size: 200% 100% !important;
+    animation: shimmer 2.5s linear infinite !important;
+  }
+
+  /* Day card hover + completion */
+  .day-card { transition: box-shadow .2s, transform .15s; }
+  .day-card:hover { box-shadow: 0 4px 20px rgba(0,0,0,0.14); transform: translateY(-1px); }
+  .day-card.completed { border-color: rgba(46,91,255,0.28) !important; }
+  .day-num.done {
+    background: linear-gradient(135deg, #2E5BFF, #7c3aed) !important;
+    border-color: transparent !important; box-shadow: 0 2px 10px rgba(46,91,255,0.35);
+  }
+
+  /* Button primary glow upgrade */
+  .btn-primary:hover { box-shadow: 0 8px 32px rgba(46,91,255,0.38), 0 2px 8px rgba(0,0,0,0.18) !important; }
+
+  /* Tracker dot hover */
+  .tracker-dot { transition: transform .12s, box-shadow .12s !important; }
+  .tracker-dot:hover { transform: scale(1.18) !important; z-index: 1; box-shadow: 0 2px 10px rgba(46,91,255,0.28) !important; }
+
+  /* Flashcard back glow */
+  .flip-face.back { box-shadow: 0 0 0 2px var(--accent), 0 4px 20px rgba(46,91,255,0.2) !important; }
+
+  /* Ambient access screen glows */
+  .access-glow {
+    position: absolute; border-radius: 50%; pointer-events: none; will-change: transform;
+    animation: floatGlow 7s ease-in-out infinite alternate;
+  }
+  @keyframes floatGlow { 0%{transform:translateY(0) scale(1)} 100%{transform:translateY(-18px) scale(1.04)} }
 </style>
 </head>
 <body>
 
 <!-- ── ACCESS SCREEN ── -->
-<div id="screen-access" style="min-height:100dvh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 24px;background:var(--bg)">
-  <div style="width:100%;max-width:360px;text-align:center;animation:fadeUp .4s ease">
-    <div id="access-icon-wrap" style="width:104px;height:104px;border-radius:32px;background:var(--btn);display:flex;align-items:center;justify-content:center;font-size:54px;margin:0 auto 24px;box-shadow:0 16px 48px rgba(0,0,0,0.18)">
+<div id="screen-access" style="min-height:100dvh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 24px;background:var(--bg);position:relative;overflow:hidden">
+  <div class="access-glow" style="width:340px;height:340px;top:-100px;left:-80px;background:radial-gradient(circle,rgba(46,91,255,0.11) 0%,transparent 70%);animation-delay:0s"></div>
+  <div class="access-glow" style="width:280px;height:280px;bottom:-60px;right:-60px;background:radial-gradient(circle,rgba(124,58,237,0.09) 0%,transparent 70%);animation-delay:3.5s;animation-direction:alternate-reverse"></div>
+  <div style="width:100%;max-width:360px;text-align:center;animation:fadeUp .4s ease;position:relative;z-index:1">
+    <div id="access-icon-wrap" style="width:108px;height:108px;border-radius:34px;background:var(--btn);display:flex;align-items:center;justify-content:center;font-size:54px;margin:0 auto 24px;box-shadow:0 16px 56px rgba(46,91,255,0.38),0 0 0 12px rgba(46,91,255,0.08)">
       <span id="access-icon"><span class="material-symbols-outlined" style="font-size:48px;color:#fff">bolt</span></span>
     </div>
     <h1 id="access-title" style="font-family:'Lora',serif;font-size:30px;font-weight:700;margin-bottom:8px;line-height:1.2;color:var(--text)">Mini-App</h1>
@@ -461,10 +548,14 @@ function showTab(idx) {
 
 // ── Section header card ───────────────────────────────────
 function sectionHdr(emoji, title, sub) {
-  return `<div class="card-dark fade-up" style="padding:20px;margin-bottom:14px">
-    <div style="font-size:38px;margin-bottom:8px">${emoji}</div>
-    <h1 class="serif" style="font-size:21px;font-weight:700;margin-bottom:${sub?'4px':'0'};color:#fff">${esc(title)}</h1>
-    ${sub?`<p style="font-size:12px;opacity:.75;color:#fff">${esc(sub)}</p>`:''}
+  const isHtml = typeof emoji === 'string' && emoji.includes('<');
+  const iconContent = isHtml
+    ? emoji.replace(/font-size:\d+px/, 'font-size:26px').replace(/color:#fff/, 'color:#fff')
+    : `<span style="font-size:26px;line-height:1">${emoji}</span>`;
+  return `<div class="section-hero">
+    <div class="section-hero-icon">${iconContent}</div>
+    <h1 class="serif section-hero-title">${esc(title)}</h1>
+    ${sub ? `<p class="section-hero-sub">${esc(sub)}</p>` : ''}
   </div>`;
 }
 
@@ -538,7 +629,7 @@ function renderReto(el) {
       const isDone = !!done[i+1];
       const storageNote = `reto_note_${app.id}_${i+1}`;
       const savedNote = localStorage.getItem(storageNote)||'';
-      return `<div class="day-card" id="day-card-${i+1}">
+      return `<div class="day-card ${isDone?'completed':''}" id="day-card-${i+1}">
         <div class="day-card-header" onclick="toggleDayCard(${i+1})">
           <div class="day-num ${isDone?'done':''}">${isDone?msIcon('check',16):i+1}</div>
           <div style="flex:1">
@@ -652,7 +743,7 @@ function renderTracker(el) {
           const d=new Date();d.setDate(d.getDate()-(days-1-i));
           const key=d.toISOString().split('T')[0];
           const isToday=key===today, done=checked.has(key);
-          return `<button onclick="toggleTrackerDay('${key}')" title="${key}" style="aspect-ratio:1;border-radius:9px;border:${isToday?'2px solid var(--accent)':'1px solid var(--border)'};font-size:10px;font-weight:800;cursor:pointer;transition:all .15s;background:${done?'var(--accent)':'var(--card)'};color:${done?'#fff':isToday?'var(--accent)':'var(--muted)'};${done?'box-shadow:0 2px 6px rgba(0,0,0,0.15)':''}">${i+1}</button>`;
+          return `<button onclick="toggleTrackerDay('${key}')" class="tracker-dot" title="${key}" style="aspect-ratio:1;border-radius:9px;border:${isToday?'2px solid var(--accent)':'1px solid var(--border)'};font-size:10px;font-weight:800;cursor:pointer;background:${done?'var(--accent)':'var(--card)'};color:${done?'#fff':isToday?'var(--accent)':'var(--muted)'};${done?'box-shadow:0 2px 8px rgba(46,91,255,0.3)':''}">${i+1}</button>`;
         }).join('')}
       </div>
       <button onclick="toggleTrackerDay('${today}')" class="${todayDone?'btn-done':'btn-primary'}">
