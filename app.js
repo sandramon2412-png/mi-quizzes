@@ -880,6 +880,38 @@ COPYWRITING DE ALTA CONVERSIÓN:
 • Urgencia real: cupos limitados, precio de lanzamiento, fecha de cierre.
 • Llamadas a la acción en primera persona: "Quiero empezar hoy", "Sí, lo quiero".
 
+FÓRMULAS DE COPYWRITING ESPECÍFICAS (aplicar siempre):
+
+HEADLINE — fórmula PAS-T (Problema → Agitación → Solución → Transformación):
+• MAL: "La mejor herramienta de gestión" / "Aprende finanzas personales" / "El método definitivo"
+• BIEN: "Deja de perder 4 horas al día en reuniones. Automatiza las decisiones de tu equipo en 15 minutos." / "Pasá de vivir de sueldo en sueldo a tener tu primer colchón de $5,000 en 90 días, sin renunciar a lo que disfrutás."
+• El h1 debe nombrar el DOLOR concreto del avatar, agitarlo, y prometer la transformación con tiempo específico.
+
+SUBHEADLINE — fórmula MECANISMO + PRUEBA SOCIAL:
+• MAL: "Te enseñamos todo lo que necesitás saber." / "Un curso completo para todos los niveles."
+• BIEN: "El único método que combina [mecanismo único] con [resultado probado]. Ya lo aplicaron +[número] [tipo de persona] con resultados reales."
+• Siempre explicá POR QUÉ funciona (el mecanismo), no solo QUÉ hace.
+
+CTA — fórmula VERBO + RESULTADO (nunca función):
+• MAL: "Enviar", "Registrarse", "Comprar", "Acceder"
+• BIEN: "Quiero mis primeros $1,000 en 30 días", "Empezar mi transformación ahora", "Sí, quiero el método completo", "Reservar mi lugar hoy"
+• El CTA debe describir lo que el usuario OBTIENE, no lo que hace.
+
+MICROCOPY BAJO EL CTA — OBLIGATORIO en cada botón CTA principal:
+• Agregar siempre una línea pequeña debajo del botón: "Sin tarjeta de crédito" / "Garantía de 30 días" / "Acceso inmediato" / "Podés cancelar cuando quieras" / "Solo X lugares disponibles"
+• Formato: <p class="text-xs text-zinc-500 mt-2 text-center">Sin tarjeta · Acceso inmediato · Garantía 30 días</p>
+• Este microcopy elimina el miedo de compra. NUNCA omitirlo.
+
+BULLETS DE BENEFICIOS — fórmula AIDA invertida (resultado → cómo → tiempo/esfuerzo):
+• MAL: "Aprenderás a invertir" / "Técnicas de productividad" / "Mindset emprendedor"
+• BIEN: "Generá tus primeros $500 de ingreso extra → con el sistema de [mecanismo] → en tu primer fin de semana de implementación"
+• Cada bullet = resultado concreto + método que lo produce + cuánto tarda. Verbos de acción al inicio.
+
+FAQ — escribir como OBJECIONES REALES, no preguntas genéricas:
+• MAL: "¿Qué es este curso?" / "¿Cuándo empieza?" / "¿Cómo funciona?"
+• BIEN: "¿Y si lo compro y no me funciona a mí?" / "¿Necesito experiencia previa?" / "¿Cuánto tiempo tengo que dedicarle?" / "¿Es diferente a lo que ya probé?" / "¿Puedo pagar en cuotas?" / "¿Tenés tarjeta?" / "¿Cuánto tarda en ver resultados reales?"
+• Las FAQs deben responder las 3-5 objeciones más comunes del nicho. Cada respuesta: 2-3 oraciones directas, sin rodeos.
+
 TIPOGRAFÍA AVANZADA (UI/UX Pro Max):
 • Titulares h1: Plus Jakarta Sans 800, tamaño mínimo 56px mobile / 80px desktop, tracking-tighter, line-height 1.05.
 • Body: Plus Jakarta Sans 400-500, 17-18px, line-height 1.65, color #a1a1aa para párrafos secundarios.
