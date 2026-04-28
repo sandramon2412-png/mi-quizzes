@@ -554,3 +554,38 @@ wc -l ~/.claude/skills/<name>/SKILL.md   # confirma que tiene contenido
 head -3 ~/.claude/skills/<name>/SKILL.md  # muestra el frontmatter
 ```
 Si un chat anterior dice "lo instalé" y no puede mostrar el resultado de estos comandos, mintió.
+
+---
+
+## SESIÓN 28 ABR 2026 (parte 4) — Aclaración sobre integraciones en el proyecto
+
+### Pregunta de Sandra
+"¿Qué skills se integraron DENTRO del proyecto (en `app.js`) y cuáles solo viven globalmente en `~/.claude/skills/`?"
+
+### Respuesta verificada (con git log + grep en app.js)
+
+**Solo UN skill fue embebido dentro del proyecto**: `landing-page-pro`, en `app.js → _landingSystemPrompt()` (commit `c9bcd43`).
+
+Lo que ese skill aportó al system prompt del landing-builder (5 frameworks, por eso se siente como "más de uno"):
+1. **PAS-T headline** — Problema → Agitación → Solución → Transformación
+2. **AIDA invertida** para bullets — resultado → cómo → tiempo/esfuerzo
+3. **CTA verbo+resultado** — nunca "Registrarse", siempre "Quiero mis primeros $1,000"
+4. **Microcopy obligatorio bajo CTA** — "Sin tarjeta · Acceso inmediato · Garantía 30 días"
+5. **FAQ como objeciones reales** — no preguntas genéricas
+
+Ubicación exacta en código: `app.js` líneas ~885-913 (sección "FÓRMULAS DE COPYWRITING ESPECÍFICAS").
+
+### Resumen de dónde vive cada skill
+
+| Ubicación | Qué vive ahí | Viaja con el repo |
+|-----------|--------------|-------------------|
+| `~/.claude/skills/` (global) | 19 skills disponibles para Claude Code | NO |
+| `app.js → _landingSystemPrompt()` | Frameworks de `landing-page-pro` baked-in | SÍ (parte del código) |
+
+Ningún otro skill (ni `funnel-copy-architect`, ni `frontend-patterns`, ni `design-taste-frontend`) fue embebido en el código. Solo viven globalmente.
+
+### Cómo verificar
+```bash
+git log --oneline | grep -i skill        # commits que tocaron skills
+grep -n "PAS\|AIDA\|microcopy" app.js     # marcadores de landing-page-pro embebido
+```
