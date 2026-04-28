@@ -500,3 +500,57 @@ El **Bento 2.0 / Motion Engine** (Sección 9) define 5 arquetipos de cards con a
 ### Estado final
 - Último commit: `8b0506d` — "Fix landing: replace pravatar avatars with initials, replace vague +420% stat with concrete lead number"
 - Branch `claude/fix-empty-content-error-XGLyU` pusheado, auto-merge a `main` activo
+
+---
+
+## SESIÓN 28 ABR 2026 (parte 3) — Skills nuevos + auditoría honesta
+
+### Skills instalados esta sesión
+
+Repos revisados:
+- `https://github.com/affaan-m/everything-claude-code` — 183 skills, ganó hackathon Anthropic. Instalados 4 selectivos relevantes para el stack.
+- `https://github.com/nidhinjs/prompt-master` — skill único para generar prompts óptimos para 30+ herramientas IA.
+
+| Skill | Directorio | Líneas | Fuente |
+|-------|-----------|--------|--------|
+| `prompt-master` | `~/.claude/skills/prompt-master/` | 422 | nidhinjs/prompt-master |
+| `frontend-patterns` | `~/.claude/skills/frontend-patterns/` | 642 | affaan-m/everything-claude-code |
+| `postgres-patterns` | `~/.claude/skills/postgres-patterns/` | 147 | affaan-m/everything-claude-code |
+| `content-engine` | `~/.claude/skills/content-engine/` | 131 | affaan-m/everything-claude-code |
+| `ai-agent-builder` *(reparado)* | `~/.claude/skills/ai-agent-builder/` | 63 | affaan-m (agentic-engineering) |
+
+**Nota sobre `ai-agent-builder`**: El directorio existía pero estaba vacío — un chat anterior lo había creado vacío. Reparado con el skill `agentic-engineering` del mismo repo (eval-first execution, decomposition, cost-aware model routing). El nombre del directorio se mantiene para no romper referencias.
+
+### Estado real de todos los skills (verificado con ls + wc)
+
+```
+✅ ai-agent-builder      (63 líneas)  → agentic-engineering
+✅ automation-forge      (229 líneas) → automation-forge
+✅ brand-identity-lab    (192 líneas) → brand-identity-lab
+✅ content-engine        (131 líneas) → content-engine  ← NUEVO
+✅ customer-voice        (222 líneas) → customer-voice
+✅ design-taste-frontend (226 líneas) → design-taste-frontend
+✅ frontend-patterns     (642 líneas) → frontend-patterns  ← NUEVO
+✅ funnel-copy-architect (182 líneas) → funnel-copy-architect
+✅ landing-page-pro      (120 líneas) → landing-page-pro
+✅ minimalist-ui         (85 líneas)  → minimalist-ui
+✅ mvp-blueprint         (140 líneas) → mvp-blueprint
+✅ pitch-deck-master     (198 líneas) → pitch-deck-master
+✅ postgres-patterns     (147 líneas) → postgres-patterns  ← NUEVO
+✅ prompt-master         (422 líneas) → prompt-master  ← NUEVO
+✅ saas-starter-kit      (250 líneas) → saas-starter-kit
+✅ seo-content-machine   (211 líneas) → seo-content-machine
+✅ session-start-hook    (153 líneas) → startup-hook-skill
+✅ ship-it               (247 líneas) → ship-it
+✅ viral-growth-lab      (241 líneas) → viral-growth-lab
+```
+
+Total: **19 skills activos**, todos con SKILL.md real y verificado.
+
+### Cómo verificar que un skill está realmente instalado
+```bash
+ls ~/.claude/skills/           # lista directorios
+wc -l ~/.claude/skills/<name>/SKILL.md   # confirma que tiene contenido
+head -3 ~/.claude/skills/<name>/SKILL.md  # muestra el frontmatter
+```
+Si un chat anterior dice "lo instalé" y no puede mostrar el resultado de estos comandos, mintió.
