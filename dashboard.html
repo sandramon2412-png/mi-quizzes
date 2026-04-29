@@ -111,6 +111,85 @@
   }
   .type-chip .material-symbols-outlined { font-size: 15px; }
   .type-chip.selected .material-symbols-outlined { color: #818cf8; }
+  .type-chip { box-shadow: inset 0 1px 0 rgba(255,255,255,0.04); }
+  .type-chip:hover { transform: translateY(-1px); box-shadow: inset 0 1px 0 rgba(255,255,255,0.06), 0 2px 10px rgba(46,91,255,0.10); }
+  .type-chip.selected { box-shadow: inset 0 1px 0 rgba(255,255,255,0.08), 0 2px 14px rgba(46,91,255,0.20); }
+
+  /* ── PREMIUM MODAL — mini-app creator ────────────────── */
+  .modal-premium {
+    background: linear-gradient(180deg, #161617 0%, #0e0e10 100%) !important;
+    border: 1px solid rgba(255,255,255,0.08) !important;
+    box-shadow:
+      inset 0 1px 0 rgba(255,255,255,0.06),
+      0 32px 96px -20px rgba(0,0,0,0.75),
+      0 0 0 1px rgba(46,91,255,0.04) !important;
+    position: relative;
+    overflow-x: clip;
+  }
+  .modal-premium::before {
+    content: ''; position: absolute; top: 0; left: 0; right: 0; height: 320px;
+    pointer-events: none; z-index: 0;
+    background:
+      radial-gradient(ellipse 80% 60% at 18% 0%, rgba(46,91,255,0.12) 0%, transparent 58%),
+      radial-gradient(ellipse 70% 50% at 90% 0%, rgba(124,58,237,0.10) 0%, transparent 58%);
+  }
+  .modal-premium > * { position: relative; z-index: 1; }
+  .modal-hero-icon {
+    width: 42px; height: 42px; border-radius: 13px; flex-shrink: 0;
+    background: linear-gradient(135deg, rgba(46,91,255,0.22), rgba(124,58,237,0.16));
+    border: 1px solid rgba(46,91,255,0.32);
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.14), 0 4px 16px rgba(46,91,255,0.20);
+  }
+  /* Group label with gradient accent bar */
+  .type-group-label {
+    display: flex; align-items: center; gap: 7px;
+    font-size: 10px; font-weight: 700; color: rgba(255,255,255,0.65);
+    text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 7px;
+  }
+  .type-group-label::before {
+    content: ''; width: 3px; height: 11px; border-radius: 2px;
+    background: linear-gradient(180deg, #4d7cff, #a78bfa);
+  }
+  /* Premium callout card (banner + AI toggle) */
+  .callout-card {
+    background: linear-gradient(135deg, rgba(46,91,255,0.07) 0%, rgba(124,58,237,0.05) 100%) !important;
+    border: 1px solid rgba(46,91,255,0.22) !important;
+    border-radius: 14px;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.05);
+    position: relative;
+    overflow: hidden;
+  }
+  .callout-card::after {
+    content: ''; position: absolute; top: -30px; right: -30px;
+    width: 100px; height: 100px; border-radius: 50%; pointer-events: none;
+    background: radial-gradient(circle, rgba(124,58,237,0.10) 0%, transparent 65%);
+  }
+  .callout-icon {
+    width: 32px; height: 32px; border-radius: 10px; flex-shrink: 0;
+    background: linear-gradient(135deg, rgba(46,91,255,0.22), rgba(124,58,237,0.16));
+    border: 1px solid rgba(46,91,255,0.28);
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.12);
+  }
+  /* Submit button — premium gradient */
+  .btn-submit-premium {
+    background: linear-gradient(135deg, #2E5BFF 0%, #7c3aed 100%) !important;
+    border: 1px solid rgba(255,255,255,0.08);
+    box-shadow:
+      inset 0 1px 0 rgba(255,255,255,0.18),
+      0 6px 24px rgba(46,91,255,0.36),
+      0 1px 4px rgba(0,0,0,0.20) !important;
+    transition: all 0.18s;
+  }
+  .btn-submit-premium:hover {
+    transform: translateY(-1px);
+    box-shadow:
+      inset 0 1px 0 rgba(255,255,255,0.22),
+      0 8px 32px rgba(46,91,255,0.45),
+      0 2px 6px rgba(0,0,0,0.22) !important;
+  }
+  .btn-submit-premium:active { transform: translateY(0); }
 
 </style>
 </head>
@@ -693,18 +772,28 @@ function toggleFbGuide() {
 
 <!-- ══════════════ MODAL: NUEVA MINI-APP ══════════════ -->
 <div id="modal-overlay" class="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 hidden" onclick="handleOverlayClick(event)">
-  <div id="modal-box" class="bg-[#131313] border border-white/10 rounded-2xl w-full max-w-lg mx-4 p-6 shadow-2xl max-h-[calc(100vh-3rem)] overflow-y-auto">
-    <div class="flex items-center justify-between mb-5">
-      <h3 class="text-lg font-extrabold">Nueva Mini-App</h3>
-      <button onclick="closeModal()" class="w-8 h-8 rounded-lg bg-surface-container flex items-center justify-center text-on-surface-variant hover:text-on-surface transition-colors">
+  <div id="modal-box" class="modal-premium rounded-2xl w-full max-w-lg mx-4 p-6 max-h-[calc(100vh-3rem)] overflow-y-auto">
+    <div class="flex items-start justify-between mb-6">
+      <div class="flex items-center gap-3">
+        <div class="modal-hero-icon">
+          <span class="material-symbols-outlined" style="font-size:22px;color:#a5b4fc;font-variation-settings:'FILL' 1">deployed_code</span>
+        </div>
+        <div>
+          <h3 class="text-lg font-extrabold leading-tight">Nueva Mini-App</h3>
+          <p class="text-[11px] text-on-surface-variant mt-0.5">Combina tipos para crear una experiencia única</p>
+        </div>
+      </div>
+      <button onclick="closeModal()" class="w-8 h-8 rounded-lg bg-white/5 hover:bg-white/10 border border-white/5 flex items-center justify-center text-on-surface-variant hover:text-on-surface transition-colors flex-shrink-0">
         <span class="material-symbols-outlined text-sm">close</span>
       </button>
     </div>
 
     <form id="mini-app-form" onsubmit="handleCreateMiniApp(event)" class="space-y-4">
       <!-- Banner para planes sin IA (Free/Starter) -->
-      <div id="ma-no-ai-banner" class="hidden p-3 bg-primary/5 border border-primary/20 rounded-xl flex items-start gap-3">
-        <span class="material-symbols-outlined text-primary text-xl">collections_bookmark</span>
+      <div id="ma-no-ai-banner" class="hidden callout-card p-3.5 flex items-start gap-3">
+        <div class="callout-icon">
+          <span class="material-symbols-outlined" style="font-size:18px;color:#a5b4fc;font-variation-settings:'FILL' 1">collections_bookmark</span>
+        </div>
         <div class="flex-1">
           <p class="text-xs font-bold text-on-surface">Crea sin IA con plantillas prearmadas</p>
           <p class="text-[11px] text-on-surface-variant mt-0.5">Tu plan incluye acceso a la biblioteca de plantillas con contenido listo para usar. Tú también puedes escribir tu propio contenido abajo.</p>
@@ -772,7 +861,7 @@ function toggleFbGuide() {
         </label>
         <div id="ma-types-grid" class="space-y-2">
           <div>
-            <p class="text-[10px] font-bold text-on-surface-variant uppercase tracking-wider mb-1">Hábitos y seguimiento</p>
+            <p class="type-group-label">Hábitos y seguimiento</p>
             <div class="flex flex-wrap gap-1.5">
               <label class="type-chip"><input type="checkbox" name="ma-type" value="devocional" class="sr-only"/><span class="material-symbols-outlined">favorite</span>Devocional</label>
               <label class="type-chip"><input type="checkbox" name="ma-type" value="checklist" class="sr-only"/><span class="material-symbols-outlined">done_all</span>Checklist</label>
@@ -782,7 +871,7 @@ function toggleFbGuide() {
             </div>
           </div>
           <div>
-            <p class="text-[10px] font-bold text-on-surface-variant uppercase tracking-wider mb-1">Herramientas</p>
+            <p class="type-group-label">Herramientas</p>
             <div class="flex flex-wrap gap-1.5">
               <label class="type-chip"><input type="checkbox" name="ma-type" value="calculadora" class="sr-only"/><span class="material-symbols-outlined">calculate</span>Calculadora</label>
               <label class="type-chip"><input type="checkbox" name="ma-type" value="comparador" class="sr-only"/><span class="material-symbols-outlined">compare_arrows</span>Comparador</label>
@@ -792,7 +881,7 @@ function toggleFbGuide() {
             </div>
           </div>
           <div>
-            <p class="text-[10px] font-bold text-on-surface-variant uppercase tracking-wider mb-1">Contenido</p>
+            <p class="type-group-label">Contenido</p>
             <div class="flex flex-wrap gap-1.5">
               <label class="type-chip"><input type="checkbox" name="ma-type" value="glosario" class="sr-only"/><span class="material-symbols-outlined">menu_book</span>Glosario</label>
               <label class="type-chip"><input type="checkbox" name="ma-type" value="faq" class="sr-only"/><span class="material-symbols-outlined">chat</span>FAQ</label>
@@ -801,7 +890,7 @@ function toggleFbGuide() {
             </div>
           </div>
           <div>
-            <p class="text-[10px] font-bold text-on-surface-variant uppercase tracking-wider mb-1">Generación con IA</p>
+            <p class="type-group-label">Generación con IA</p>
             <div class="flex flex-wrap gap-1.5">
               <label class="type-chip"><input type="checkbox" name="ma-type" value="chatbot" class="sr-only"/><span class="material-symbols-outlined">smart_toy</span>Asistente IA</label>
               <label class="type-chip"><input type="checkbox" name="ma-type" value="generador" class="sr-only"/><span class="material-symbols-outlined">auto_awesome</span>Generador</label>
@@ -845,10 +934,12 @@ function toggleFbGuide() {
       </div>
 
       <!-- AI toggle -->
-      <div class="flex items-center gap-3 p-3 bg-primary/5 border border-primary/20 rounded-xl">
-        <span class="material-symbols-outlined text-primary text-xl">auto_awesome</span>
+      <div class="callout-card flex items-center gap-3 p-3.5">
+        <div class="callout-icon">
+          <span class="material-symbols-outlined" style="font-size:18px;color:#a5b4fc;font-variation-settings:'FILL' 1">auto_awesome</span>
+        </div>
         <div class="flex-1">
-          <p class="text-xs font-bold text-primary">Generar ideas con IA</p>
+          <p class="text-xs font-bold text-on-surface">Generar ideas con IA</p>
           <p class="text-[11px] text-on-surface-variant">Claude sugerirá funciones específicas para tu nicho</p>
         </div>
         <label class="relative inline-flex items-center cursor-pointer">
@@ -868,7 +959,7 @@ function toggleFbGuide() {
           <span class="material-symbols-outlined text-sm text-primary">auto_awesome</span>Ideas con IA
         </button>
         <button type="submit" id="ma-submit-btn"
-          class="flex-1 py-2.5 bg-primary text-white text-sm font-extrabold rounded-xl hover:opacity-90 transition-opacity shadow-lg shadow-primary/20">
+          class="btn-submit-premium flex-1 py-2.5 text-white text-sm font-extrabold rounded-xl flex items-center justify-center gap-1.5">
           <span class="material-symbols-outlined text-sm" style="font-variation-settings:'FILL' 1">auto_awesome</span> Crear con IA
         </button>
       </div>
