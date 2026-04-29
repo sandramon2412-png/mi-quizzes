@@ -290,16 +290,27 @@ async function sendMessage(text){
 async function callAI(userMsg){
   // Bot Lab SIEMPRE usa Claude proxy (plataforma paga el uso del creador)
   const systemPrompt=BOT_PROMPTS[currentBot.id]||'Eres un asistente útil. Responde en español.';
-  const history=messages.slice(-10).map(m=>({role:m.role==='user'?'user':'assistant',content:m.content}));
+  // Filter empty content to avoid Anthropic "non-empty" 400 error
+  const history=messages.slice(-10)
+    .map(m=>({role:m.role==='user'?'user':'assistant',content:m.content}))
+    .filter(m=>m.content&&m.content.trim());
   const token=await Auth.getToken();
   const r=await fetch(SUPABASE_URL+'/functions/v1/claude-proxy',{
     method:'POST',
     headers:{'Authorization':'Bearer '+token,'Content-Type':'application/json'},
-    body:JSON.stringify({messages:[{role:'system',content:systemPrompt},...history],max_tokens:2048})
+    body:JSON.stringify({
+      model:'claude-haiku-4-5-20251001',
+      system:systemPrompt,
+      messages:history,
+      max_tokens:2048
+    })
   });
-  if(!r.ok)throw new Error('AI request failed: '+r.status);
+  if(!r.ok){
+    const err=await r.json().catch(()=>({}));
+    throw new Error(err.error?.message||'Error '+r.status);
+  }
   const d=await r.json();
-  return d.content||d.choices?.[0]?.message?.content||'Sin respuesta';
+  return d.content?.[0]?.text||'Sin respuesta';
 }
 
 function newChat(){
