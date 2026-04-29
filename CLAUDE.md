@@ -708,3 +708,85 @@ Ahora respeta `voiceLang` del app data — funciona para `en-US`, `es-ES`, `pt-B
 |---------|--------|
 | `demo-ingles.html` | NUEVO — seeder de mini-app de inglés para testing |
 | `mini-app-player.html` | sectionHdr + section-hero CSS + TTS multi-idioma + glow fix |
+
+---
+
+## SESIÓN 29 ABR 2026 — branch `claude/debug-api-errors-RZBaP`
+
+### Contexto
+Sandra llegó con errores en 2 chats anteriores. Había dos problemas distintos:
+1. Error `"messages: text content blocks must be non-empty"` → ocurre en Claude Code mismo (no en la app) cuando el historial de conversación acumula mensajes vacíos. Solución: usar `/clear` o iniciar sesión nueva.
+2. Bug real en `bot-chat.html` que hacía fallar TODAS las llamadas al Bot Lab con HTTP 400.
+
+### Bug corregido: Bot Lab completamente roto (commit `3b48e8b`)
+
+**Archivo**: `bot-chat.html` → función `callAI()`
+
+**3 errores encontrados**:
+1. **Faltaba `model`** — campo requerido por Anthropic API. Sin él → error 400 inmediato.
+2. **System prompt en formato incorrecto** — `{role:'system', content:...}` en el array `messages`. La API de Anthropic no acepta role 'system' en messages; debe ir en el campo `system` separado.
+3. **Parseo de respuesta incorrecto** — `d.content` devuelve el array completo, no el texto. Correcto: `d.content?.[0]?.text`.
+
+**Fix aplicado**:
+```js
+// ANTES (roto):
+body: JSON.stringify({messages:[{role:'system',content:systemPrompt},...history], max_tokens:2048})
+
+// DESPUÉS (correcto):
+body: JSON.stringify({
+  model: 'claude-haiku-4-5-20251001',
+  system: systemPrompt,
+  messages: history.filter(m => m.content?.trim()),  // filter empty
+  max_tokens: 2048
+})
+// + return d.content?.[0]?.text || 'Sin respuesta'
+```
+
+### Skills reinstalados (19 total)
+
+Cada sesión de Claude Code en la web corre en entorno aislado — los skills se pierden entre sesiones. Esta sesión los reinstala todos.
+
+**Cómo se reinstalan al inicio de cada sesión nueva** (si no están):
+```bash
+# Descargar los que vienen de repos públicos
+curl -s https://raw.githubusercontent.com/affaan-m/everything-claude-code/main/skills/frontend-patterns/SKILL.md -o ~/.claude/skills/frontend-patterns/SKILL.md
+curl -s https://raw.githubusercontent.com/affaan-m/everything-claude-code/main/skills/content-engine/SKILL.md -o ~/.claude/skills/content-engine/SKILL.md
+curl -s https://raw.githubusercontent.com/affaan-m/everything-claude-code/main/skills/postgres-patterns/SKILL.md -o ~/.claude/skills/postgres-patterns/SKILL.md
+curl -s https://raw.githubusercontent.com/affaan-m/everything-claude-code/main/skills/agentic-engineering/SKILL.md -o ~/.claude/skills/agentic-engineering/SKILL.md
+curl -s https://raw.githubusercontent.com/nidhinjs/prompt-master/main/SKILL.md -o ~/.claude/skills/prompt-master/SKILL.md
+curl -s https://raw.githubusercontent.com/Leonxlnx/taste-skill/main/skills/taste-skill/SKILL.md -o ~/.claude/skills/design-taste-frontend/SKILL.md
+# Los demás se crean con cat > ... << 'EOF' (ver código de la sesión)
+```
+
+| Skill | Fuente | Líneas |
+|-------|--------|--------|
+| `agentic-engineering` | affaan-m/everything-claude-code | 63 |
+| `automation-forge` | creado en sesión | 109 |
+| `brand-identity-lab` | creado en sesión | 81 |
+| `content-engine` | affaan-m/everything-claude-code | 131 |
+| `customer-voice` | creado en sesión | 61 |
+| `design-taste-frontend` | Leonxlnx/taste-skill | 226 |
+| `frontend-patterns` | affaan-m/everything-claude-code | 642 |
+| `funnel-copy-architect` | creado en sesión | 77 |
+| `landing-page-pro` | creado en sesión | 60 |
+| `minimalist-ui` | creado en sesión | 90 |
+| `mvp-blueprint` | creado en sesión | 59 |
+| `pitch-deck-master` | creado en sesión | 74 |
+| `postgres-patterns` | affaan-m/everything-claude-code | 147 |
+| `prompt-master` | nidhinjs/prompt-master | 422 |
+| `saas-starter-kit` | creado en sesión | 73 |
+| `seo-content-machine` | creado en sesión | 88 |
+| `session-start-hook` | built-in | 153 |
+| `ship-it` | creado en sesión | 98 |
+| `viral-growth-lab` | creado en sesión | 72 |
+
+### Estado al 29 abr 2026
+- ✅ Bot Lab reparado (`bot-chat.html`) — commit `3b48e8b` en main
+- ✅ 19 skills activos y verificados en `~/.claude/skills/`
+- ✅ CLAUDE.md actualizado con esta sesión
+- Branch: `claude/debug-api-errors-RZBaP` → auto-merge a `main` activo
+
+### Nota importante para sesiones futuras
+Los skills en `~/.claude/skills/` NO persisten entre sesiones de Claude Code en la web. Cada sesión nueva empieza solo con `session-start-hook`. Para reinstalar:
+1. Ejecutar los curl del bloque de arriba para los 6 que vienen de repos
+2. Los 12 restantes recrearlos con `cat > ... << 'EOF'` (o pedirle al chat que los reinstale)
