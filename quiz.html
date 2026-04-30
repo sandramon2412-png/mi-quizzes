@@ -306,7 +306,8 @@
     // ── Populate intro ────────────────────────────────────
     const firstEmoji = QUIZ.profiles?.[0]?.emoji || '🌸';
     document.getElementById('intro-icon').textContent = firstEmoji;
-    document.getElementById('header-brand').textContent = QUIZ.product || QUIZ.niche || '';
+    const headerBrand = document.getElementById('quiz-brand-label');
+    if (headerBrand && !headerBrand.textContent) headerBrand.textContent = QUIZ.product || QUIZ.niche || '';
     document.getElementById('intro-brand').textContent = QUIZ.product || QUIZ.niche || '';
     document.getElementById('intro-title').innerHTML = QUIZ.title || 'Descubre tu perfil ideal';
     document.getElementById('intro-subtitle').textContent = QUIZ.subtitle || `Responde ${QUIZ.questions?.length || 5} preguntas y descubre el origen de lo que te está frenando — personalizado para ti.`;
