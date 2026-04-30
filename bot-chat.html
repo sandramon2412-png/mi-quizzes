@@ -195,7 +195,7 @@ const BOT_STARTERS={
   'launch-plan':['Crea un plan de lanzamiento de 2 semanas para mi curso','¿Qué contenido publicar cada día durante el lanzamiento?','Dame el cronograma para un lanzamiento de $10K'],
 };
 
-const SUPABASE_URL='https://euauqqamrkqwoytveljp.supabase.co';
+const CHAT_SUPABASE_URL = window.SUPABASE_URL || 'https://euauqqamrkqwoytveljp.supabase.co';
 let currentBot=null, messages=[], isTyping=false, userId=null, groqKey=null, userPlan='free';
 
 function getParam(name){return new URLSearchParams(location.search).get(name)}
@@ -289,7 +289,7 @@ async function callAI(userMsg){
     }catch(e){console.warn('Groq failed, trying proxy',e)}
   }
   const token=await Auth.getToken();
-  const r=await fetch(SUPABASE_URL+'/functions/v1/claude-proxy',{
+  const r=await fetch(CHAT_SUPABASE_URL+'/functions/v1/claude-proxy',{
     method:'POST',
     headers:{'Authorization':'Bearer '+token,'Content-Type':'application/json'},
     body:JSON.stringify({messages:[{role:'system',content:systemPrompt},...history],max_tokens:2048})
