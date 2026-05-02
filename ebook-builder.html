@@ -2419,7 +2419,10 @@
         await persistEbook();
         try { await DB.ebooks.incrementDownloads(ebook.id); } catch {}
         const id = ebook.id || editingId;
-        window.location.href = `./ebook-print.html${id ? `?id=${encodeURIComponent(id)}` : ''}`;
+        const printUrl = `./ebook-print.html${id ? `?id=${encodeURIComponent(id)}` : ''}`;
+        const opened = window.open(printUrl, '_blank', 'noopener,noreferrer');
+        if (!opened) window.location.href = printUrl;
+        else setStatus('');
       } catch (err) {
         console.warn('[pdf] print view unavailable', err);
         toast('No pude abrir la vista PDF: ' + (err?.message || 'error'), 'err');
