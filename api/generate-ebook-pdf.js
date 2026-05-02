@@ -296,11 +296,20 @@ function parseBlocks(input = '') {
 }
 
 async function drawCover(doc, ebook, theme) {
-  doc.rect(0, 0, doc.page.width, doc.page.height).fill(theme.primary);
-  doc.rect(0, doc.page.height * 0.72, doc.page.width, doc.page.height * 0.28).fill(theme.accent);
-  doc.rect(doc.page.width * 0.62, 0, doc.page.width * 0.02, doc.page.height * 0.72).fillOpacity(0.16).fill('#ffffff').fillOpacity(1);
+  const { width, height } = doc.page;
+  const bg = doc.linearGradient(0, 0, width, height);
+  bg.stop(0, theme.primary).stop(0.74, theme.primary).stop(1, theme.accent);
+  doc.rect(0, 0, width, height).fill(bg);
+  doc.circle(width * 0.86, height * 0.15, 190).fillOpacity(0.10).fill('#ffffff').fillOpacity(1);
+  doc.circle(width * 0.82, height * 0.88, 260).fillOpacity(0.16).fill(theme.accent).fillOpacity(1);
+  doc.polygon(
+    [width * 0.58, 0],
+    [width * 0.72, 0],
+    [width * 0.52, height],
+    [width * 0.38, height],
+  ).fillOpacity(0.08).fill('#ffffff').fillOpacity(1);
   doc.fillColor('#ffffff').font('Helvetica-Bold').fontSize(36)
-    .text(ebook.title || 'Mi ebook', 58, 132, { width: 290, lineGap: 3 });
+    .text(ebook.title || 'Mi ebook', 58, 116, { width: 300, lineGap: 3 });
   const subtitle = ebook.cover?.subtitle || '';
   if (subtitle) {
     doc.font('Times-Roman').fontSize(15).fillColor('#ffffff')
