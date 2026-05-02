@@ -145,6 +145,7 @@
   </div>
   <div class="actions">
     <a id="back-link" class="btn ghost" href="./ebook-builder.html"><span class="material-symbols-outlined" style="font-size:16px">arrow_back</span>Volver al editor</a>
+    <button id="server-pdf-btn" class="btn primary" type="button"><span class="material-symbols-outlined" style="font-size:16px">download</span>Descargar PDF final</button>
     <button id="print-btn" class="btn primary" type="button"><span class="material-symbols-outlined" style="font-size:16px">print</span>Guardar como PDF</button>
   </div>
 </header>
@@ -158,6 +159,7 @@
   const id = params.get('id');
   const root = document.getElementById('root');
   const back = document.getElementById('back-link');
+  let currentBook = null;
   if (id) back.href = './ebook-builder.html?id=' + encodeURIComponent(id);
 
   const escapeHtml = (s) => (s || '').toString().replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -245,6 +247,7 @@
   }
 
   function render(book) {
+    currentBook = book;
     document.title = (book.title || 'Ebook') + ' · PDF';
     document.getElementById('toolbar-title').textContent = book.title || 'Vista PDF';
     document.body.className = 'theme-' + (book.theme || 'light');
@@ -284,6 +287,36 @@
   }
 
   document.getElementById('print-btn').addEventListener('click', () => window.print());
+  document.getElementById('server-pdf-btn')?.addEventListener('click', async () => {
+    if (!currentBook) return;
+    const btn = document.getElementById('server-pdf-btn');
+    const original = btn.innerHTML;
+    btn.disabled = true;
+    btn.innerHTML = '<span class="material-symbols-outlined" style="font-size:16px">hourglass_empty</span>Generando...';
+    try {
+      const response = await fetch('/api/render-ebook-pdf', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ebook: currentBook }),
+      });
+      if (!response.ok) throw new Error('La descarga final solo funciona en la web publicada con Vercel.');
+      const blob = await response.blob();
+      if (!blob || blob.size < 1024) throw new Error('El PDF llego vacio.');
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `${(currentBook.title || 'ebook').replace(/[\\/:*?"<>|]+/g, '').trim() || 'ebook'}.pdf`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      setTimeout(() => URL.revokeObjectURL(url), 2000);
+    } catch (error) {
+      alert(error.message || 'No pude generar el PDF final.');
+    } finally {
+      btn.disabled = false;
+      btn.innerHTML = original;
+    }
+  });
 })();
 </script>
 </body>
