@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Vista PDF · Luminous Studio</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Lora:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/icon?family=Material+Symbols+Outlined" rel="stylesheet"/>
+<style>
+  :root {
+    --doc-bg:#ffffff; --doc-fg:#1a1a1a; --doc-muted:#555;
+    --doc-primary:#2E5BFF; --doc-accent:#7c3aed;
+    --doc-surface:#f0f5ff; --doc-surface-2:#f7f8fb; --doc-border:#e5e7eb;
+  }
+  body.theme-dark-neon {
+    --doc-bg:#0a0a0f; --doc-fg:#eaeaf0; --doc-muted:#a3a3b5;
+    --doc-primary:#c084fc; --doc-accent:#22d3ee; --doc-surface:#1a1a2e; --doc-surface-2:#10101c; --doc-border:#2a2a44;
+  }
+  body.theme-pastel {
+    --doc-bg:#fdf6f0; --doc-fg:#2a2233; --doc-muted:#6b5a6f;
+    --doc-primary:#e0749c; --doc-accent:#f4a261; --doc-surface:#fbeadf; --doc-surface-2:#f7e1d4; --doc-border:#eed6c4;
+  }
+  body.theme-corporate {
+    --doc-bg:#ffffff; --doc-fg:#0f172a; --doc-muted:#475569;
+    --doc-primary:#0a2540; --doc-accent:#059669; --doc-surface:#ecfdf5; --doc-surface-2:#f0fdf4; --doc-border:#d1fae5;
+  }
+  * { box-sizing: border-box; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  html, body { margin:0; background:#111; color:var(--doc-fg); font-family:'Lora', serif; }
+  .toolbar {
+    position: sticky; top: 0; z-index: 20; display:flex; align-items:center; justify-content:space-between; gap:12px;
+    padding:12px 18px; background:#0e0e0e; border-bottom:1px solid #2a2a2a; color:#fff; font-family:'Plus Jakarta Sans', sans-serif;
+  }
+  .toolbar .actions { display:flex; gap:10px; flex-wrap:wrap; }
+  .btn {
+    height:38px; border:0; border-radius:10px; padding:0 14px; display:inline-flex; align-items:center; gap:7px;
+    font-size:12px; font-weight:800; text-decoration:none; cursor:pointer;
+  }
+  .btn.primary { background:linear-gradient(135deg,#2E5BFF,#7c3aed); color:#fff; }
+  .btn.ghost { background:#242424; color:#ddd; }
+  .hint { font-size:11px; color:#aaa; line-height:1.4; max-width:560px; }
+  .page-shell { background:#d7d7d7; padding:22px 0 44px; }
+  .cover {
+    width:210mm; height:297mm; margin:0 auto 18px; overflow:hidden; color:#fff;
+    background:linear-gradient(135deg,var(--doc-primary),var(--doc-accent));
+    display:grid; grid-template-columns:1.05fr .95fr; gap:12mm; align-items:center; padding:24mm 22mm;
+    page-break-after:always; break-after:page;
+  }
+  .cover h1 {
+    font-family:'Plus Jakarta Sans',sans-serif; font-size:52px; line-height:1.04; letter-spacing:0; margin:0 0 18px; font-weight:800;
+  }
+  .cover .subtitle { font-size:21px; line-height:1.45; opacity:.92; margin:0; }
+  .cover-media {
+    min-height:145mm; border-radius:26px; overflow:hidden; background:rgba(255,255,255,.12);
+    border:1px solid rgba(255,255,255,.22); box-shadow:0 24px 70px rgba(0,0,0,.28);
+  }
+  .cover-media img { width:100%; height:145mm; object-fit:cover; display:block; }
+  .cover-visual { height:145mm; display:flex; align-items:flex-end; padding:24px; position:relative; overflow:hidden; }
+  .cover-visual::before { content:''; position:absolute; inset:0; background:linear-gradient(135deg,rgba(255,255,255,.28) 0 20%,transparent 20% 35%,rgba(255,255,255,.14) 35% 52%,transparent 52% 100%); }
+  .cover-visual span { position:relative; z-index:1; font-family:'Plus Jakarta Sans',sans-serif; font-size:11px; font-weight:800; letter-spacing:.12em; text-transform:uppercase; }
+  .document {
+    width:178mm; min-height:260mm; margin:0 auto; background:var(--doc-bg); color:var(--doc-fg); padding:0;
+  }
+  .chapter { margin:0 0 15mm; }
+  .chapter h2 {
+    font-family:'Plus Jakarta Sans',sans-serif; color:var(--doc-primary); font-size:23px; line-height:1.15;
+    margin:0 0 13px; letter-spacing:0; break-after:avoid; page-break-after:avoid;
+  }
+  .chapter h3 { font-family:'Plus Jakarta Sans',sans-serif; font-size:15.5px; margin:18px 0 8px; break-after:avoid; page-break-after:avoid; }
+  .chapter p { font-size:12.8px; line-height:1.58; margin:0 0 8px; orphans:3; widows:3; }
+  .chapter strong { color:var(--doc-primary); font-weight:700; }
+  .chapter a { color:var(--doc-accent); }
+  .chapter ul, .chapter ol { padding:0; margin:0 0 12px; }
+  .chapter li { break-inside:avoid; page-break-inside:avoid; }
+  .chapter ul li {
+    list-style:none; position:relative; padding:7px 10px 7px 27px; margin:4px 0; border-radius:8px;
+    background:var(--doc-surface); font-size:12.7px; line-height:1.48;
+  }
+  .chapter ul li::before { content:''; position:absolute; left:10px; top:14px; width:6px; height:6px; border-radius:50%; background:var(--doc-primary); }
+  .chapter ol:not(.steps) { counter-reset:item; }
+  .chapter ol:not(.steps) li {
+    list-style:none; counter-increment:item; position:relative; padding:8px 10px 8px 39px; margin:5px 0;
+    border-radius:9px; background:var(--doc-surface-2); font-size:12.7px; line-height:1.48;
+  }
+  .chapter ol:not(.steps) li::before {
+    content:counter(item); position:absolute; left:9px; top:8px; width:21px; height:21px; border-radius:6px;
+    background:var(--doc-primary); color:#fff; font-family:'Plus Jakarta Sans',sans-serif; font-size:10px; font-weight:800;
+    display:flex; align-items:center; justify-content:center;
+  }
+  blockquote, .callout {
+    background:var(--doc-surface); border-left:4px solid var(--doc-accent); border-radius:0 10px 10px 0;
+    padding:10px 13px; margin:12px 0; break-inside:avoid; page-break-inside:avoid;
+  }
+  table { width:100%; border-collapse:collapse; margin:12px 0; font-family:'Plus Jakarta Sans',sans-serif; font-size:11.5px; break-inside:avoid; page-break-inside:avoid; }
+  th { background:var(--doc-primary); color:#fff; text-align:left; padding:8px 10px; }
+  td { padding:8px 10px; border-top:1px solid var(--doc-border); }
+  tbody tr:nth-child(even) td { background:var(--doc-surface-2); }
+  .feature-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:12px; margin:12px 0; break-inside:avoid; page-break-inside:avoid; }
+  .feature-icon { width:30px; height:30px; border-radius:50%; background:var(--doc-primary); color:#fff; display:flex; align-items:center; justify-content:center; font-family:'Material Symbols Outlined'; font-size:16px; }
+  .feature-title { font-family:'Plus Jakarta Sans',sans-serif; font-size:13px; font-weight:800; margin:5px 0 2px; }
+  .feature-desc { font-size:11.5px; line-height:1.45; color:var(--doc-muted); margin:0; }
+  .numbered-card { display:flex; margin:9px 0; border-radius:10px; overflow:hidden; background:var(--doc-surface-2); break-inside:avoid; page-break-inside:avoid; }
+  .numbered-card .n { flex:0 0 46px; background:var(--doc-primary); color:#fff; font-family:'Plus Jakarta Sans',sans-serif; font-size:20px; font-weight:800; display:flex; align-items:center; justify-content:center; }
+  .numbered-card .body { padding:10px 12px; }
+  .image-card { margin:10px 0 12px; border-radius:12px; overflow:hidden; background:var(--doc-surface-2); border:1px solid var(--doc-border); break-inside:avoid; page-break-inside:avoid; }
+  .image-card img { display:block; width:100%; aspect-ratio:21/7; object-fit:cover; }
+  .image-visual { position:relative; width:100%; aspect-ratio:21/7; background:linear-gradient(135deg,var(--doc-primary),var(--doc-accent)); display:flex; align-items:flex-end; padding:16px; color:#fff; overflow:hidden; }
+  .image-visual::before { content:''; position:absolute; inset:0; background:linear-gradient(120deg,rgba(255,255,255,.20) 0 18%,transparent 18% 31%,rgba(255,255,255,.13) 31% 44%,transparent 44% 100%); }
+  .image-visual span { position:relative; z-index:1; font-family:'Plus Jakarta Sans',sans-serif; font-size:10px; font-weight:800; letter-spacing:.12em; text-transform:uppercase; }
+  figcaption { padding:7px 10px 9px; font-family:'Plus Jakarta Sans',sans-serif; font-size:9.5px; line-height:1.35; color:var(--doc-muted); text-transform:uppercase; letter-spacing:.08em; }
+  .empty { min-height:70vh; display:grid; place-items:center; color:#fff; font-family:'Plus Jakarta Sans',sans-serif; }
+  .json-export { position: fixed; left: -9999px; top: 0; width: 1px; height: 1px; overflow: hidden; white-space: pre-wrap; }
+  @page { size:A4; margin:14mm 16mm; }
+  @page:first { margin:0; }
+  @media print {
+    html, body { background:#fff !important; }
+    .toolbar { display:none !important; }
+    .page-shell { background:#fff !important; padding:0 !important; }
+    .cover { width:210mm; height:297mm; margin:0; box-shadow:none; }
+    .document { width:auto; min-height:0; margin:0; padding:0; background:var(--doc-bg); }
+  }
+</style>
+</head>
+<body>
+<header class="toolbar">
+  <div>
+    <strong id="toolbar-title">Vista PDF</strong>
+    <div class="hint">En impresión elige destino <strong>Guardar como PDF</strong>. Si el navegador muestra “Gráficos de fondo”, actívalo para conservar colores.</div>
+  </div>
+  <div class="actions">
+    <a id="back-link" class="btn ghost" href="./ebook-builder.html"><span class="material-symbols-outlined" style="font-size:16px">arrow_back</span>Volver al editor</a>
+    <button id="print-btn" class="btn primary" type="button"><span class="material-symbols-outlined" style="font-size:16px">print</span>Imprimir / Guardar PDF</button>
+  </div>
+</header>
+<main id="root" class="page-shell"><div class="empty">Cargando ebook...</div></main>
+<pre id="ebook-json" class="json-export"></pre>
+<script src="./app.js?v=gamma-plus-2"></script>
+<script src="./supabase-config.js?v=20260423n"></script>
+<script>
+(async () => {
+  const params = new URLSearchParams(location.search);
+  const id = params.get('id');
+  const root = document.getElementById('root');
+  const back = document.getElementById('back-link');
+  if (id) back.href = './ebook-builder.html?id=' + encodeURIComponent(id);
+
+  const escapeHtml = (s) => (s || '').toString().replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  const stripLegacyTitle = (title) => (title || '').replace(/^cap[ií]tulo\s+\d+\s*[:\\-–—]?\\s*/i, '').trim();
+  if (window.marked?.setOptions) marked.setOptions({ gfm:true, breaks:false });
+
+  async function loadEbook() {
+    let row = null;
+    try { row = id ? await DB.ebooks.get(id) : null; } catch {}
+    if (!row && id) row = Ebooks.get(id);
+    return row;
+  }
+
+  function renderMarkdown(md) {
+    return marked.parse(md || '');
+  }
+
+  function normalizeEbook(row) {
+    return {
+      id: row.id,
+      title: row.title || 'Mi ebook',
+      theme: row.theme || row.cover?.theme || 'light',
+      cover: row.cover || {},
+      chapters: Array.isArray(row.chapters) ? row.chapters : [],
+    };
+  }
+
+  function render(book) {
+    document.title = (book.title || 'Ebook') + ' · PDF';
+    document.getElementById('toolbar-title').textContent = book.title || 'Vista PDF';
+    document.body.className = 'theme-' + (book.theme || 'light');
+    document.getElementById('ebook-json').textContent = JSON.stringify(book);
+    const cover = book.cover || {};
+    const coverImage = cover.imageUrl || '';
+    const subtitle = cover.subtitle || '';
+    const coverHtml = `
+      <section class="cover">
+        <div>
+          <h1>${escapeHtml(book.title || 'Mi ebook')}</h1>
+          ${subtitle ? `<p class="subtitle">${escapeHtml(subtitle)}</p>` : ''}
+        </div>
+        <div class="cover-media">
+          ${coverImage ? `<img src="${escapeHtml(coverImage)}" alt="${escapeHtml(book.title || 'Portada')}" crossorigin="anonymous" referrerpolicy="no-referrer">` : `<div class="cover-visual"><span>${escapeHtml(book.title || 'Visual editorial')}</span></div>`}
+        </div>
+      </section>`;
+    const chaptersHtml = book.chapters.map((chapter, index) => `
+      <section class="chapter">
+        <h2>${escapeHtml(stripLegacyTitle(chapter.title) || `Seccion ${index + 1}`)}</h2>
+        ${renderMarkdown(chapter.body_md || '')}
+      </section>
+    `).join('');
+    root.innerHTML = coverHtml + `<article class="document">${chaptersHtml}</article>`;
+  }
+
+  try {
+    const row = await loadEbook();
+    if (!row) {
+      root.innerHTML = '<div class="empty">No encontré este ebook. Vuelve al editor y prueba otra vez.</div>';
+      return;
+    }
+    render(normalizeEbook(row));
+  } catch (err) {
+    console.error(err);
+    root.innerHTML = '<div class="empty">No pude cargar el ebook.</div>';
+  }
+
+  document.getElementById('print-btn').addEventListener('click', () => window.print());
+})();
+</script>
+</body>
+</html>
