@@ -1950,7 +1950,9 @@
         titleEl.value = row.title || '';
         // Pre-fill the form selectors from the saved ebook so the user can tweak them.
         const savedDocType = row.docType || row.settings?.docType || (row.cover?.docType) || 'ebook';
-        const savedTheme = row.cover?.theme || row.settings?.theme || row.theme || inferEbookTheme(row);
+        const storedTheme = row.cover?.theme || row.settings?.theme || row.theme || '';
+        const inferredTheme = inferEbookTheme(row);
+        const savedTheme = (!storedTheme || storedTheme === 'light') && inferredTheme !== 'light' ? inferredTheme : (storedTheme || inferredTheme);
         const dtSel = document.getElementById('eb-doctype'); if (dtSel) dtSel.value = savedDocType;
         const thSel = document.getElementById('eb-theme');
         // If user already interacted with the theme selector while loadDocument was
