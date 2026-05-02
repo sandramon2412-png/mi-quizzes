@@ -311,7 +311,7 @@
   </button>
   <button id="btn-download" class="hidden h-9 px-4 rounded-lg primary-gradient text-white text-xs font-bold flex items-center gap-1.5 hover:opacity-90 transition">
     <span class="material-symbols-outlined" style="font-size:16px">download</span>
-    Descargar PDF
+    Vista previa PDF
   </button>
 </header>
 
@@ -2420,9 +2420,7 @@
         try { await DB.ebooks.incrementDownloads(ebook.id); } catch {}
         const id = ebook.id || editingId;
         const printUrl = `./ebook-print.html${id ? `?id=${encodeURIComponent(id)}` : ''}`;
-        const opened = window.open(printUrl, '_blank', 'noopener,noreferrer');
-        if (!opened) window.location.href = printUrl;
-        else setStatus('');
+        window.location.href = printUrl;
       } catch (err) {
         console.warn('[pdf] print view unavailable', err);
         toast('No pude abrir la vista PDF: ' + (err?.message || 'error'), 'err');
