@@ -26,6 +26,14 @@
     --doc-bg:#ffffff; --doc-fg:#0f172a; --doc-muted:#475569;
     --doc-primary:#0a2540; --doc-accent:#059669; --doc-surface:#ecfdf5; --doc-surface-2:#f0fdf4; --doc-border:#d1fae5;
   }
+  body.theme-finance {
+    --doc-bg:#f4f7f5; --doc-fg:#13231b; --doc-muted:#64766d;
+    --doc-primary:#1F7A5A; --doc-accent:#C8A24A; --doc-surface:#e8f1ec; --doc-surface-2:#fff8e5; --doc-border:#d5e4da;
+  }
+  body.theme-spiritual {
+    --doc-bg:#FBF4ED; --doc-fg:#372620; --doc-muted:#8B7065;
+    --doc-primary:#B96F5F; --doc-accent:#D8A06F; --doc-surface:#FFF0E7; --doc-surface-2:#FFF9F4; --doc-border:#EBD6C8;
+  }
   * { box-sizing: border-box; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
   html, body { margin:0; background:#111; color:var(--doc-fg); font-family:'Lora', serif; }
   .toolbar {
@@ -160,11 +168,21 @@
     return marked.parse(md || '');
   }
 
+  function inferTheme(row) {
+    const text = [
+      row?.title, row?.topic, row?.brief, row?.cover?.subtitle,
+      ...(row?.chapters || []).slice(0, 3).flatMap(ch => [ch?.title, ch?.body_md]),
+    ].filter(Boolean).join(' ').toLowerCase();
+    if (/finanz|dinero|ahorro|deuda|presupuesto|invers|wealth|money/.test(text)) return 'finance';
+    if (/espirit|bibl|fe\b|dios|oraci|devocional|cristi|comuni[oó]n/.test(text)) return 'spiritual';
+    return 'light';
+  }
+
   function normalizeEbook(row) {
     return {
       id: row.id,
       title: row.title || 'Mi ebook',
-      theme: row.theme || row.cover?.theme || 'light',
+      theme: row.cover?.theme || row.settings?.theme || row.theme || inferTheme(row),
       cover: row.cover || {},
       chapters: Array.isArray(row.chapters) ? row.chapters : [],
     };
