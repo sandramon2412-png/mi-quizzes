@@ -105,28 +105,35 @@
   td { padding:8px 10px; border-top:1px solid var(--doc-border); }
   tbody tr:nth-child(even) td { background:var(--doc-surface-2); }
   .feature-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:12px; margin:12px 0; break-inside:avoid; page-break-inside:avoid; }
-  .feature-icon { width:30px; height:30px; border-radius:50%; background:var(--doc-primary); color:#fff; display:flex; align-items:center; justify-content:center; font-family:'Material Symbols Outlined'; font-size:16px; }
+  .feature-grid.cols-3 { grid-template-columns:repeat(3,1fr); }
+  .feature-item { break-inside:avoid; page-break-inside:avoid; border:1px solid var(--doc-border); border-radius:12px; background:var(--doc-surface-2); padding:12px; }
+  .feature-icon { width:30px; height:30px; border-radius:50%; background:var(--doc-primary); color:#fff; display:flex; align-items:center; justify-content:center; font-family:'Plus Jakarta Sans',sans-serif; font-size:0; }
+  .feature-icon::before { content:'✓'; font-size:15px; font-weight:800; line-height:1; }
   .feature-title { font-family:'Plus Jakarta Sans',sans-serif; font-size:13px; font-weight:800; margin:5px 0 2px; }
   .feature-desc { font-size:11.5px; line-height:1.45; color:var(--doc-muted); margin:0; }
+  .steps { list-style:none; counter-reset:step; padding:0; margin:10px 0; }
+  .steps li { counter-increment:step; position:relative; padding-left:38px; background:var(--doc-surface-2); }
+  .steps li::before { content:counter(step); position:absolute; left:9px; top:8px; width:21px; height:21px; border-radius:999px; background:var(--doc-primary); color:#fff; font-family:'Plus Jakarta Sans',sans-serif; font-size:10px; font-weight:800; display:flex; align-items:center; justify-content:center; }
   .numbered-card { display:flex; margin:9px 0; border-radius:10px; overflow:hidden; background:var(--doc-surface-2); break-inside:avoid; page-break-inside:avoid; }
   .numbered-card .n { flex:0 0 46px; background:var(--doc-primary); color:#fff; font-family:'Plus Jakarta Sans',sans-serif; font-size:20px; font-weight:800; display:flex; align-items:center; justify-content:center; }
   .numbered-card .body { padding:10px 12px; }
   .image-card { margin:10px 0 12px; border-radius:12px; overflow:hidden; background:var(--doc-surface-2); border:1px solid var(--doc-border); break-inside:avoid; page-break-inside:avoid; }
   .image-card img { display:block; width:100%; aspect-ratio:21/7; object-fit:cover; }
+  .chapter button, .chapter .image-edit-btn, .chapter .eb-regen-btn { display:none !important; }
   .image-visual { position:relative; width:100%; aspect-ratio:21/7; background:linear-gradient(135deg,var(--doc-primary),var(--doc-accent)); display:flex; align-items:flex-end; padding:16px; color:#fff; overflow:hidden; }
   .image-visual::before { content:''; position:absolute; inset:0; background:linear-gradient(120deg,rgba(255,255,255,.20) 0 18%,transparent 18% 31%,rgba(255,255,255,.13) 31% 44%,transparent 44% 100%); }
   .image-visual span { position:relative; z-index:1; font-family:'Plus Jakarta Sans',sans-serif; font-size:10px; font-weight:800; letter-spacing:.12em; text-transform:uppercase; }
   figcaption { padding:7px 10px 9px; font-family:'Plus Jakarta Sans',sans-serif; font-size:9.5px; line-height:1.35; color:var(--doc-muted); text-transform:uppercase; letter-spacing:.08em; }
   .empty { min-height:70vh; display:grid; place-items:center; color:#fff; font-family:'Plus Jakarta Sans',sans-serif; }
   .json-export { position: fixed; left: -9999px; top: 0; width: 1px; height: 1px; overflow: hidden; white-space: pre-wrap; }
-  @page { size:A4; margin:14mm 16mm; }
-  @page:first { margin:0; }
+  @page { size:A4; margin:0; }
   @media print {
     html, body { background:var(--doc-bg) !important; }
     .toolbar { display:none !important; }
     .page-shell { background:#fff !important; padding:0 !important; }
     .cover { width:210mm; height:297mm; margin:0; box-shadow:none; }
-    .document { width:auto; min-height:0; margin:0; padding:0; background:var(--doc-bg); }
+    .document { width:210mm; min-height:0; margin:0; padding:18mm 20mm; background:var(--doc-bg); }
+    .chapter { margin-bottom:10mm; }
   }
 </style>
 </head>
@@ -156,6 +163,46 @@
   const escapeHtml = (s) => (s || '').toString().replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   const stripLegacyTitle = (title) => (title || '').replace(/^cap[ií]tulo\s+\d+\s*[:\\-–—]?\\s*/i, '').trim();
   if (window.marked?.setOptions) marked.setOptions({ gfm:true, breaks:false });
+  const smartIcons = ['check','insights','paid','savings','schedule','analytics','target','article'];
+  function normalizeInlineHeadings(md = '') {
+    return String(md)
+      .replace(/(^|\n)([A-ZÁÉÍÓÚÑ][A-Za-zÁÉÍÓÚÑáéíóúñ0-9, ]{10,72}?)(\s+(Para|Una vez|Al |Esto |Recuerda|Calcula|Identifica|Registra|Establece)\b)/g, '$1### $2\n\n$4')
+      .replace(/\n{3,}/g, '\n\n')
+      .trim();
+  }
+  function upgradeBlock(block) {
+    const lines = block.split('\n').filter(line => line.trim());
+    if (!lines.length || /^<[a-z]/i.test(lines[0].trim())) return block;
+    const boldBullet = /^[-*\u2022]\s+\*\*(.+?)\*\*(?:\s*[-:–—]\s*(.+))?$/;
+    const boldItems = [];
+    for (const line of lines) {
+      const match = line.trim().match(boldBullet);
+      if (match) boldItems.push({ title: match[1], desc: match[2] || '' });
+    }
+    if (boldItems.length >= 3) {
+      const cls = boldItems.length >= 5 ? 'feature-grid cols-3' : 'feature-grid';
+      return `<div class="${cls}">${boldItems.map((item, i) => `<div class="feature-item"><div class="feature-icon">${smartIcons[i % smartIcons.length]}</div><h4 class="feature-title">${item.title}</h4>${item.desc ? `<p class="feature-desc">${item.desc}</p>` : ''}</div>`).join('')}</div>`;
+    }
+    const simpleBullets = lines.filter(line => /^[-*\u2022]\s+/.test(line.trim())).map(line => line.trim().replace(/^[-*\u2022]\s+/, '').trim()).filter(Boolean);
+    if (simpleBullets.length >= 3 && simpleBullets.length <= 6 && simpleBullets.length === lines.length) {
+      const cls = simpleBullets.length >= 5 ? 'feature-grid cols-3' : 'feature-grid';
+      return `<div class="${cls}">${simpleBullets.map((text, i) => {
+        const parts = text.split(/\s+[-:–—]\s+/);
+        const title = parts[0] || text;
+        const desc = parts.slice(1).join(' - ') || text;
+        return `<div class="feature-item"><div class="feature-icon">${smartIcons[i % smartIcons.length]}</div><h4 class="feature-title">${escapeHtml(title)}</h4><p class="feature-desc">${escapeHtml(desc)}</p></div>`;
+      }).join('')}</div>`;
+    }
+    const numbered = lines.filter(line => /^\d+[.)]\s+/.test(line.trim()));
+    if (numbered.length >= 3 && numbered.length === lines.length) {
+      return `<ol class="steps">${numbered.map(line => `<li>${escapeHtml(line.trim().replace(/^\d+[.)]\s+/, ''))}</li>`).join('')}</ol>`;
+    }
+    if (lines.every(line => /^>\s?/.test(line.trim()))) {
+      const text = lines.map(line => line.replace(/^>\s?/, '')).join(' ').trim();
+      return `<div class="callout callout-info"><strong>Nota</strong><p>${escapeHtml(text)}</p></div>`;
+    }
+    return block;
+  }
 
   async function loadEbook() {
     let row = null;
@@ -165,7 +212,14 @@
   }
 
   function renderMarkdown(md) {
-    return marked.parse(md || '');
+    const cleaned = normalizeInlineHeadings(md || '')
+      .replace(/P[ÁA]GINA\s+\d+\s*[-–—]\s*[^\n]*?\btext\b/gi, '')
+      .replace(/^\s*text\s*$/gim, '')
+      .replace(/\[Fecha\s+actual\]/gi, '')
+      .replace(/\n{3,}/g, '\n\n')
+      .trim();
+    const upgraded = cleaned.split(/\n\n+/).map(upgradeBlock).join('\n\n');
+    return marked.parse(upgraded || '');
   }
 
   function inferTheme(row) {
