@@ -66,7 +66,10 @@ function inferThemeId(ebook) {
 
 function resolveTheme(ebook) {
   const explicitId = ebook.cover?.theme || ebook.settings?.theme || ebook.theme;
-  const themeId = explicitId && THEMES[explicitId] ? explicitId : inferThemeId(ebook);
+  const inferredId = inferThemeId(ebook);
+  const themeId = explicitId && THEMES[explicitId] && !(explicitId === 'light' && inferredId !== 'light')
+    ? explicitId
+    : inferredId;
   const base = THEMES[themeId] || THEMES.light;
   const from = ebook.cover?.gradientFrom;
   const to = ebook.cover?.gradientTo;
