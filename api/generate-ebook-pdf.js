@@ -88,8 +88,29 @@ function collectPdf(doc) {
   });
 }
 
+function drawPageShell(doc, theme, pageNumber) {
+  const { width, height } = doc.page;
+  doc.rect(0, 0, width, height).fill(theme.bg);
+  doc.rect(0, 0, width, 58).fill(theme.surface);
+  doc.rect(0, 0, 13, height).fill(theme.primary);
+  doc.rect(13, 0, 3, height).fill(theme.accent);
+  doc.circle(width - 54, 29, 12).fill(theme.accent);
+  doc.fillColor('#ffffff').font('Helvetica-Bold').fontSize(8)
+    .text(String(pageNumber).padStart(2, '0'), width - 61, 25, { width: 14, align: 'center' });
+  doc.fillColor(theme.muted).font('Helvetica-Bold').fontSize(7)
+    .text('LUMINOUS STUDIO', doc.page.margins.left, height - 29, {
+      width: width - doc.page.margins.left - doc.page.margins.right,
+      align: 'right',
+    });
+  doc.y = 78;
+}
+
+function contentBottom(doc) {
+  return doc.page.height - doc.page.margins.bottom - 34;
+}
+
 function addPageIfNeeded(doc, needed = 40) {
-  const bottom = doc.page.height - doc.page.margins.bottom;
+  const bottom = contentBottom(doc);
   if (doc.y + needed > bottom) doc.addPage();
 }
 
@@ -104,26 +125,31 @@ function drawText(doc, text, options = {}) {
     .fillColor(options.color || '#111111');
   const height = doc.heightOfString(text, { width, lineGap });
   addPageIfNeeded(doc, height + paragraphGap);
-  doc.text(text, doc.page.margins.left + indent, doc.y, { width, lineGap });
+  doc.text(text, doc.page.margins.left + indent, doc.y, { width, lineGap, paragraphGap: 2 });
   doc.moveDown(paragraphGap / 12);
 }
 
 function drawHeading(doc, text, theme, level = 2) {
-  addPageIfNeeded(doc, 34);
+  addPageIfNeeded(doc, level === 2 ? 58 : 34);
+  if (level === 2) {
+    const y = doc.y;
+    doc.roundedRect(doc.page.margins.left, y, 50, 4, 2).fill(theme.accent);
+    doc.y = y + 12;
+  }
   doc.font('Helvetica-Bold')
-    .fontSize(level === 2 ? 17 : 13)
+    .fontSize(level === 2 ? 19 : 13)
     .fillColor(level === 2 ? theme.primary : theme.fg)
-    .text(text, { lineGap: 2 });
-  doc.moveDown(level === 2 ? 0.55 : 0.35);
+    .text(text, { lineGap: 2, width: doc.page.width - doc.page.margins.left - doc.page.margins.right });
+  doc.moveDown(level === 2 ? 0.75 : 0.35);
 }
 
 function drawBullet(doc, text, theme) {
   const x = doc.page.margins.left;
-  const y = doc.y;
   const width = doc.page.width - doc.page.margins.left - doc.page.margins.right - 20;
   doc.font('Times-Roman').fontSize(10);
   const height = Math.max(20, doc.heightOfString(text, { width, lineGap: 2 }) + 10);
   addPageIfNeeded(doc, height + 4);
+  const y = doc.y;
   doc.roundedRect(x, doc.y, width + 20, height, 6).fill(theme.surface);
   doc.circle(x + 10, doc.y + 12, 3).fill(theme.primary);
   doc.fillColor(theme.fg).font('Times-Roman').fontSize(10)
@@ -213,7 +239,7 @@ function drawTable(doc, rows, theme) {
   const rowHeight = 26;
   addPageIfNeeded(doc, rowHeight * Math.min(rows.length, 6) + 10);
   rows.forEach((row, rowIndex) => {
-    if (doc.y + rowHeight > doc.page.height - doc.page.margins.bottom) doc.addPage();
+    if (doc.y + rowHeight > contentBottom(doc)) doc.addPage();
     const y = doc.y;
     row.forEach((cell, colIndex) => {
       doc.rect(x + colWidth * colIndex, y, colWidth, rowHeight)
@@ -271,17 +297,18 @@ function parseBlocks(input = '') {
 
 async function drawCover(doc, ebook, theme) {
   doc.rect(0, 0, doc.page.width, doc.page.height).fill(theme.primary);
-  doc.rect(0, doc.page.height * 0.70, doc.page.width, doc.page.height * 0.30).fill(theme.accent);
+  doc.rect(0, doc.page.height * 0.72, doc.page.width, doc.page.height * 0.28).fill(theme.accent);
+  doc.rect(doc.page.width * 0.62, 0, doc.page.width * 0.02, doc.page.height * 0.72).fillOpacity(0.16).fill('#ffffff').fillOpacity(1);
   doc.fillColor('#ffffff').font('Helvetica-Bold').fontSize(36)
-    .text(ebook.title || 'Mi ebook', 58, 145, { width: 260, lineGap: 2 });
+    .text(ebook.title || 'Mi ebook', 58, 132, { width: 290, lineGap: 3 });
   const subtitle = ebook.cover?.subtitle || '';
   if (subtitle) {
     doc.font('Times-Roman').fontSize(15).fillColor('#ffffff')
-      .text(subtitle, 58, doc.y + 18, { width: 275, lineGap: 4 });
+      .text(subtitle, 58, doc.y + 20, { width: 300, lineGap: 4 });
   }
-  const x = 360;
-  const y = 122;
-  const w = 168;
+  const x = 378;
+  const y = 98;
+  const w = 158;
   const h = 330;
   const coverImage = await fetchImageBuffer(ebook.cover?.imageUrl);
   doc.roundedRect(x, y, w, h, 18).fillOpacity(0.15).fill('#ffffff').fillOpacity(1);
@@ -331,6 +358,11 @@ module.exports = async function handler(req, res) {
     });
     const done = collectPdf(doc);
     await drawCover(doc, ebook, theme);
+    let contentPage = 0;
+    doc.on('pageAdded', () => {
+      contentPage += 1;
+      drawPageShell(doc, theme, contentPage);
+    });
     for (const [index, chapter] of ebook.chapters.entries()) {
       await renderChapter(doc, chapter, index, theme);
     }
