@@ -437,6 +437,8 @@
             <option value="dark-neon">Oscuro neón (negro + violeta/cyan)</option>
             <option value="pastel">Pastel suave (crema + rosa/naranja)</option>
             <option value="corporate">Corporativo (blanco + navy/teal)</option>
+            <option value="finance">Finanzas premium (verde profundo + dorado)</option>
+            <option value="spiritual">Espiritual cálido (marfil + terracota)</option>
           </select>
           <p class="text-[10px] text-on-surface-variant/60 mt-1">Define los colores de títulos, callouts, tablas, bloques visuales y portada.</p>
         </div>
@@ -885,6 +887,42 @@
       });
     };
 
+    const THEME_GRADS = {
+      'light':      ['#2E5BFF', '#7c3aed'],
+      'dark-neon':  ['#c084fc', '#22d3ee'],
+      'pastel':     ['#e0749c', '#f4a261'],
+      'corporate':  ['#0a2540', '#059669'],
+      'finance':    ['#1F7A5A', '#C8A24A'],
+      'spiritual':  ['#B96F5F', '#D8A06F'],
+    };
+    const inferEbookTheme = (book) => {
+      const text = [
+        book?.title, book?.topic, book?.brief, book?.cover?.subtitle,
+        ...(book?.chapters || []).slice(0, 3).flatMap(ch => [ch?.title, ch?.body_md]),
+      ].filter(Boolean).join(' ').toLowerCase();
+      if (/finanz|dinero|ahorro|deuda|presupuesto|invers|wealth|money/.test(text)) return 'finance';
+      if (/espirit|bibl|fe\b|dios|oraci|devocional|cristi|comuni[oó]n/.test(text)) return 'spiritual';
+      return 'light';
+    };
+    const syncEbookTheme = (book, theme) => {
+      if (!book) return null;
+      const resolved = (theme || document.getElementById('eb-theme')?.value || book.cover?.theme || book.settings?.theme || book.theme || inferEbookTheme(book)).toString();
+      const grad = THEME_GRADS[resolved] || THEME_GRADS.light;
+      book.theme = resolved;
+      book.cover = {
+        ...(book.cover || {}),
+        theme: resolved,
+        gradientFrom: grad[0],
+        gradientTo: grad[1],
+      };
+      book.settings = {
+        ...(book.settings || {}),
+        theme: resolved,
+        docType: book.docType || document.getElementById('eb-doctype')?.value || book.settings?.docType || 'ebook',
+      };
+      return resolved;
+    };
+
     // ── Render preview ──
     const renderEbookPreview = () => {
       cleanLegacyTitles(ebook);
@@ -907,17 +945,11 @@
       const subtitle = cover.subtitle || '';
       const selectorTheme = document.getElementById('eb-theme')?.value;
       const theme = (selectorTheme || ebook.theme || cover.theme || 'light').toString();
-      if (selectorTheme && ebook.theme !== selectorTheme) ebook.theme = selectorTheme;
+      syncEbookTheme(ebook, theme);
       console.log('[render] theme =', theme, 'ebook.theme =', ebook.theme);
       // Very visible: tint the preview viewport background based on theme.
       ebookPreview.style.background = VIEWPORT_BG[theme] || VIEWPORT_BG.light;
       // Theme-aware cover gradient. Falls back to blue/purple for "light" theme.
-      const THEME_GRADS = {
-        'light':      ['#2E5BFF', '#7c3aed'],
-        'dark-neon':  ['#c084fc', '#22d3ee'],
-        'pastel':     ['#e0749c', '#f4a261'],
-        'corporate':  ['#0a2540', '#059669'],
-      };
       // Cover gradient always follows the current theme. We ignore any saved
       // cover.gradientFrom/gradientTo (legacy docs saved hardcoded blue/purple
       // which would override the theme) so switching themes always updates the cover.
@@ -1044,7 +1076,7 @@
     }
 
     // Hot-swap the theme on an already-generated doc without re-calling the AI.
-    const VIEWPORT_BG = { 'light': '#26262a', 'dark-neon': '#0a0a14', 'pastel': '#5a4a3a', 'corporate': '#1e293b' };
+    const VIEWPORT_BG = { 'light': '#26262a', 'dark-neon': '#0a0a14', 'pastel': '#5a4a3a', 'corporate': '#1e293b', 'finance': '#10221a', 'spiritual': '#6a5145' };
     // Inline CSS var definitions per theme — bypasses any CSS selector issue
     // by applying vars directly on each .ebook-page-wrap via element.style.
     const THEME_VARS = {
@@ -1075,6 +1107,20 @@
         '--doc-title-grad-from':'#0a2540','--doc-title-grad-to':'#059669',
         '--doc-surface':'#ecfdf5','--doc-surface-2':'#f0fdf4',
         '--doc-border':'#d1fae5','--doc-code-bg':'#e2e8f0',
+      },
+      'finance': {
+        '--doc-bg':'#f4f7f5','--doc-fg':'#13231b','--doc-muted':'#64766d',
+        '--doc-primary':'#1F7A5A','--doc-accent':'#C8A24A',
+        '--doc-title-grad-from':'#1F7A5A','--doc-title-grad-to':'#C8A24A',
+        '--doc-surface':'#e8f1ec','--doc-surface-2':'#fff8e5',
+        '--doc-border':'#d5e4da','--doc-code-bg':'#e5eee9',
+      },
+      'spiritual': {
+        '--doc-bg':'#FBF4ED','--doc-fg':'#372620','--doc-muted':'#8B7065',
+        '--doc-primary':'#B96F5F','--doc-accent':'#D8A06F',
+        '--doc-title-grad-from':'#B96F5F','--doc-title-grad-to':'#D8A06F',
+        '--doc-surface':'#FFF0E7','--doc-surface-2':'#FFF9F4',
+        '--doc-border':'#EBD6C8','--doc-code-bg':'#F6E5DA',
       },
     };
     const applyThemeInline = (theme) => {
@@ -1145,13 +1191,14 @@
       toast(`Tema: ${newTheme}`);
       try { applyThemeInline(newTheme); } catch (err) { console.error('[theme] applyThemeInline failed:', err); }
       if (!ebook) return;
-      ebook.theme = newTheme;
+      syncEbookTheme(ebook, newTheme);
       renderEbookPreview();
       scheduleSave();
     });
     document.getElementById('eb-doctype')?.addEventListener('change', (e) => {
       if (!ebook) return;
       ebook.docType = e.target.value;
+      syncEbookTheme(ebook);
       scheduleSave();
     });
     coverImageBtn?.addEventListener('click', async () => {
@@ -1214,7 +1261,7 @@
     });
 
     function buildPrintableHtml() {
-      const theme = document.getElementById('eb-theme')?.value || ebook?.theme || ebook?.cover?.theme || 'light';
+      const theme = syncEbookTheme(ebook) || document.getElementById('eb-theme')?.value || ebook?.theme || ebook?.cover?.theme || 'light';
       const styleText = Array.from(document.querySelectorAll('style')).map(s => s.textContent || '').join('\n');
       const vars = THEME_VARS[theme] || THEME_VARS.light;
       const varsCss = Object.entries(vars).map(([k, v]) => `${k}:${v};`).join('');
@@ -1874,6 +1921,7 @@
       if (!ebook) return;
       ebook.title = titleEl.value.trim() || ebook.title;
       ebook.messages = history;
+      syncEbookTheme(ebook);
       try {
         setStatus('Guardando…');
         const saved = await DB.ebooks.save(ebook, user.id);
@@ -1901,8 +1949,10 @@
         history = Array.isArray(row.messages) ? row.messages : [];
         titleEl.value = row.title || '';
         // Pre-fill the form selectors from the saved ebook so the user can tweak them.
-        const savedDocType = row.docType || (row.cover?.docType) || 'ebook';
-        const savedTheme = row.theme || (row.cover?.theme) || 'light';
+        const savedDocType = row.docType || row.settings?.docType || (row.cover?.docType) || 'ebook';
+        const storedTheme = row.cover?.theme || row.settings?.theme || row.theme || '';
+        const inferredTheme = inferEbookTheme(row);
+        const savedTheme = (!storedTheme || storedTheme === 'light') && inferredTheme !== 'light' ? inferredTheme : (storedTheme || inferredTheme);
         const dtSel = document.getElementById('eb-doctype'); if (dtSel) dtSel.value = savedDocType;
         const thSel = document.getElementById('eb-theme');
         // If user already interacted with the theme selector while loadDocument was
@@ -1910,7 +1960,7 @@
         if (thSel) {
           const userPicked = thSel.dataset.userPicked === '1';
           if (!userPicked) thSel.value = savedTheme;
-          ebook.theme = thSel.value;
+          syncEbookTheme(ebook, thSel.value);
         }
         if (row.chapters?.length) {
           renderEbookPreview();
@@ -2181,6 +2231,7 @@
           { role: 'user', content: brief },
           { role: 'assistant', content: JSON.stringify(data), display: displayMsg },
         ];
+        const themeGrad = THEME_GRADS[theme] || THEME_GRADS.light;
         if (!ebook) {
           ebook = Ebooks.create({
             title: data.title || titleEl.value.trim() || defaultTitle,
@@ -2192,14 +2243,16 @@
             theme,
             brief,
             chapters: data.chapters || [],
-            cover: { gradientFrom: '#2E5BFF', gradientTo: '#7c3aed', subtitle: data.subtitle || '' },
+            cover: { theme, gradientFrom: themeGrad[0], gradientTo: themeGrad[1], subtitle: data.subtitle || '' },
+            settings: { theme, docType },
             messages: history,
           });
         } else {
           ebook.chapters = data.chapters || [];
-          ebook.cover = { ...(ebook.cover || {}), subtitle: data.subtitle || ebook.cover?.subtitle || '' };
+          ebook.cover = { ...(ebook.cover || {}), theme, gradientFrom: themeGrad[0], gradientTo: themeGrad[1], subtitle: data.subtitle || ebook.cover?.subtitle || '' };
           ebook.docType = docType;
           ebook.theme = theme;
+          ebook.settings = { ...(ebook.settings || {}), theme, docType };
           if (data.title && !titleEl.value.trim()) { ebook.title = data.title; titleEl.value = data.title; }
           ebook.messages = history;
         }
@@ -2356,6 +2409,7 @@
     downloadBtn.onclick = async () => {
       if (!ebook || !ebook.chapters?.length) return;
       ensureEbookVisuals(ebook);
+      syncEbookTheme(ebook);
       setStatus('Abriendo vista PDF...');
       downloadBtn.disabled = true;
       const originalDownloadText = downloadBtn.innerHTML;

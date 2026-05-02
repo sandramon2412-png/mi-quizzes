@@ -21,6 +21,16 @@ const THEMES = {
     primary: '#c084fc', accent: '#22d3ee',
     surface: '#1a1a2e', surface2: '#10101c', border: '#2a2a44',
   },
+  finance: {
+    bg: '#f4f7f5', fg: '#13231b', muted: '#64766d',
+    primary: '#1F7A5A', accent: '#C8A24A',
+    surface: '#e8f1ec', surface2: '#fff8e5', border: '#d5e4da',
+  },
+  spiritual: {
+    bg: '#FBF4ED', fg: '#372620', muted: '#8B7065',
+    primary: '#B96F5F', accent: '#D8A06F',
+    surface: '#FFF0E7', surface2: '#FFF9F4', border: '#EBD6C8',
+  },
 };
 
 const safeText = (value = '') => String(value)
@@ -43,6 +53,31 @@ const filenameFor = (title = 'ebook') => {
   const clean = String(title).replace(/[\\/:*?"<>|]+/g, '').trim() || 'ebook';
   return `${clean}.pdf`;
 };
+
+function inferThemeId(ebook) {
+  const text = [
+    ebook?.title, ebook?.topic, ebook?.brief, ebook?.cover?.subtitle,
+    ...(ebook?.chapters || []).slice(0, 3).flatMap(ch => [ch?.title, ch?.body_md]),
+  ].filter(Boolean).join(' ').toLowerCase();
+  if (/finanz|dinero|ahorro|deuda|presupuesto|invers|wealth|money/.test(text)) return 'finance';
+  if (/espirit|bibl|fe\b|dios|oraci|devocional|cristi|comuni[oó]n/.test(text)) return 'spiritual';
+  return 'light';
+}
+
+function resolveTheme(ebook) {
+  const explicitId = ebook.cover?.theme || ebook.settings?.theme || ebook.theme;
+  const inferredId = inferThemeId(ebook);
+  const themeId = explicitId && THEMES[explicitId] && !(explicitId === 'light' && inferredId !== 'light')
+    ? explicitId
+    : inferredId;
+  const base = THEMES[themeId] || THEMES.light;
+  const from = ebook.cover?.gradientFrom;
+  const to = ebook.cover?.gradientTo;
+  if (/^#[0-9a-f]{6}$/i.test(from || '') && /^#[0-9a-f]{6}$/i.test(to || '')) {
+    return { ...base, primary: from, accent: to };
+  }
+  return base;
+}
 
 function collectPdf(doc) {
   const chunks = [];
@@ -287,7 +322,7 @@ module.exports = async function handler(req, res) {
   }
 
   try {
-    const theme = THEMES[ebook.theme || ebook.cover?.theme] || THEMES.light;
+    const theme = resolveTheme(ebook);
     const doc = new PDFDocument({
       size: 'A4',
       margins: { top: 42, right: 46, bottom: 46, left: 46 },
