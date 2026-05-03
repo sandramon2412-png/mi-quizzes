@@ -3610,14 +3610,11 @@ ${pagesHtml}
     wireBlocks();
   })();
 
-  async function saveAsPDF() {
+  async function buildPDFBlob(onProgress) {
     if (!window.html2canvas || !window.jspdf) {
-      alert('Librerías aún cargando, intentá de nuevo en un segundo.');
-      return;
+      throw new Error('Librerias aun cargando, intenta de nuevo en un segundo.');
     }
     const { jsPDF } = window.jspdf;
-    dlBtn.disabled = true;
-    const originalLabel = dlBtn.textContent;
     // Hide edit UI so it doesn't appear in the capture
     hoverBar.style.display = 'none';
     document.querySelector('.edit-indicator')?.style.setProperty('display', 'none', 'important');
@@ -3630,7 +3627,7 @@ ${pagesHtml}
       let firstPage = true;
 
       for (let i = 0; i < pages.length; i++) {
-        dlBtn.textContent = 'Generando… ' + (i+1) + '/' + pages.length;
+        if (typeof onProgress === 'function') onProgress('Generando... ' + (i+1) + '/' + pages.length);
         const el = pages[i];
         const canvas = await html2canvas(el, {
           scale: 2,
@@ -3662,6 +3659,20 @@ ${pagesHtml}
       const safeName = (ebookTitle || 'ebook').replace(/[^\\w\\s\\-áéíóúÁÉÍÓÚñÑ]/g, '').trim().slice(0, 80) || 'ebook';
       const filename = safeName + '.pdf';
       const blob = pdf.output('blob');
+      return { blob, filename };
+    } finally {
+      const ind = document.querySelector('.edit-indicator');
+      if (ind) ind.style.display = '';
+    }
+  }
+
+  window.buildPDFBlob = buildPDFBlob;
+
+  async function saveAsPDF() {
+    dlBtn.disabled = true;
+    const originalLabel = dlBtn.textContent;
+    try {
+      const { blob, filename } = await buildPDFBlob((label) => { dlBtn.textContent = label; });
       if (window.parent && window.parent !== window && typeof window.parent.downloadEbookPdfBlob === 'function') {
         await window.parent.downloadEbookPdfBlob(blob, filename);
       } else {
@@ -3681,8 +3692,6 @@ ${pagesHtml}
     } finally {
       dlBtn.disabled = false;
       dlBtn.textContent = originalLabel;
-      const ind = document.querySelector('.edit-indicator');
-      if (ind) ind.style.display = '';
     }
   }
 
@@ -3698,10 +3707,10 @@ ${pagesHtml}
         <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;background:#fff;color:#0f172a;border-radius:14px 14px 0 0;padding:12px 16px;font-family:Plus Jakarta Sans,system-ui,sans-serif;">
           <div>
             <strong style="font-size:14px;display:block">Vista de descarga del ebook</strong>
-            <span style="font-size:12px;color:#64748b">Haz clic en Descargar PDF. Se exporta esta misma vista, con sus colores, imagenes y margenes.</span>
+            <span style="font-size:12px;color:#64748b">Haz clic en Preparar PDF. Cuando termine, usa Guardar PDF listo.</span>
           </div>
           <div style="display:flex;gap:8px;align-items:center">
-            <button type="button" id="ebook-download-now" style="border:0;border-radius:9px;background:linear-gradient(135deg,#2E5BFF,#7c3aed);color:#fff;padding:9px 13px;font-weight:800;cursor:pointer">Descargar PDF</button>
+            <button type="button" id="ebook-download-now" style="border:0;border-radius:9px;background:linear-gradient(135deg,#2E5BFF,#7c3aed);color:#fff;padding:9px 13px;font-weight:800;cursor:pointer">Preparar PDF</button>
             <button type="button" id="ebook-download-close" style="border:0;border-radius:9px;background:#f1f5f9;color:#0f172a;padding:9px 12px;font-weight:800;cursor:pointer">Cerrar</button>
           </div>
         </div>
@@ -3709,19 +3718,29 @@ ${pagesHtml}
       `;
       document.body.appendChild(overlay);
       const frame = overlay.querySelector('iframe');
+      let readyPdfUrl = '';
+      const showReadyDownload = (blob, filename) => {
+        if (readyPdfUrl) URL.revokeObjectURL(readyPdfUrl);
+        readyPdfUrl = URL.createObjectURL(blob);
+        let link = overlay.querySelector('#ebook-download-ready');
+        if (!link) {
+          link = document.createElement('a');
+          link.id = 'ebook-download-ready';
+          link.style.cssText = 'display:inline-flex;align-items:center;border-radius:9px;background:#0f172a;color:#fff;padding:9px 13px;font-weight:800;text-decoration:none;font-family:Plus Jakarta Sans,system-ui,sans-serif;';
+          link.textContent = 'Guardar PDF listo';
+          overlay.querySelector('#ebook-download-now').insertAdjacentElement('afterend', link);
+        }
+        link.href = readyPdfUrl;
+        link.download = filename || `${(ebook.title || 'ebook').replace(/[\\/:*?"<>|]+/g, '').trim() || 'ebook'}.pdf`;
+      };
       window.downloadEbookPdfBlob = async (blob, filename) => {
         if (!blob || blob.size < 1024) throw new Error('El PDF se genero vacio.');
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = filename || `${(ebook.title || 'ebook').replace(/[\\/:*?"<>|]+/g, '').trim() || 'ebook'}.pdf`;
-        a.style.display = 'none';
-        document.body.appendChild(a);
-        a.click();
-        a.remove();
-        setTimeout(() => URL.revokeObjectURL(url), 2500);
+        showReadyDownload(blob, filename);
       };
-      overlay.querySelector('#ebook-download-close').onclick = () => overlay.remove();
+      overlay.querySelector('#ebook-download-close').onclick = () => {
+        if (readyPdfUrl) URL.revokeObjectURL(readyPdfUrl);
+        overlay.remove();
+      };
       overlay.querySelector('#ebook-download-now').onclick = async () => {
         const btn = overlay.querySelector('#ebook-download-now');
         const original = btn.textContent;
@@ -3729,11 +3748,14 @@ ${pagesHtml}
         btn.disabled = true;
         try {
           const win = frame?.contentWindow;
-          if (!win || typeof win.saveAsPDF !== 'function') throw new Error('La vista de descarga aun no esta lista.');
-          await win.saveAsPDF();
-          toast('Descarga enviada. Revisa tu carpeta Descargas.', 'ok');
+          if (!win || typeof win.buildPDFBlob !== 'function') throw new Error('La vista de descarga aun no esta lista.');
+          const fallbackName = `${(ebook.title || 'ebook').replace(/[\\/:*?"<>|]+/g, '').trim() || 'ebook'}.pdf`;
+          const result = await win.buildPDFBlob((label) => { btn.textContent = label; });
+          if (!result?.blob || result.blob.size < 1024) throw new Error('El PDF se genero vacio.');
+          showReadyDownload(result.blob, result.filename || fallbackName);
+          toast('PDF listo. Haz clic en "Guardar PDF listo".', 'ok');
         } catch (err) {
-          toast('No pude descargar: ' + (err?.message || err), 'err');
+          toast('No pude preparar el PDF: ' + (err?.message || err), 'err');
         } finally {
           btn.textContent = original;
           btn.disabled = false;
