@@ -2550,18 +2550,18 @@
       if (!ebook || !ebook.chapters?.length) return;
       ensureEbookVisuals(ebook);
       syncEbookTheme(ebook);
-      setStatus('Generando PDF final...');
+      setStatus('Preparando vista previa PDF...');
       downloadBtn.disabled = true;
       const originalDownloadText = downloadBtn.innerHTML;
       downloadBtn.innerHTML = '<span class="thinking-dot"></span><span class="thinking-dot"></span><span class="thinking-dot"></span>';
 
       try {
+        await optimizeEbookEmbeddedImages(ebook);
         await persistEbook();
-        await downloadServerPdf();
-        toast('PDF final descargado. Revisa tu carpeta Descargas.', 'ok');
+        openPrintPreview();
       } catch (err) {
-        console.warn('[pdf] server export unavailable', err);
-        toast('No pude generar el PDF final: ' + (err?.message || 'error'), 'err');
+        console.warn('[pdf] preview unavailable', err);
+        toast('No pude abrir la vista previa PDF: ' + (err?.message || 'error'), 'err');
       } finally {
         setStatus('');
         downloadBtn.disabled = false;
