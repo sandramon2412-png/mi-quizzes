@@ -311,7 +311,7 @@
   </button>
   <button id="btn-download" class="hidden h-9 px-4 rounded-lg primary-gradient text-white text-xs font-bold flex items-center gap-1.5 hover:opacity-90 transition">
     <span class="material-symbols-outlined" style="font-size:16px">download</span>
-    Descargar PDF
+    Vista previa PDF
   </button>
 </header>
 
@@ -2410,38 +2410,17 @@
       if (!ebook || !ebook.chapters?.length) return;
       ensureEbookVisuals(ebook);
       syncEbookTheme(ebook);
-      setStatus('Abriendo vista PDF...');
+      setStatus('Preparando vista previa PDF...');
       downloadBtn.disabled = true;
       const originalDownloadText = downloadBtn.innerHTML;
       downloadBtn.innerHTML = '<span class="thinking-dot"></span><span class="thinking-dot"></span><span class="thinking-dot"></span>';
 
       try {
         await persistEbook();
-        try { await DB.ebooks.incrementDownloads(ebook.id); } catch {}
-        const response = await fetch('/api/generate-ebook-pdf', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ ebook }),
-        });
-        if (!response.ok) throw new Error('PDF_API_UNAVAILABLE');
-        const blob = await response.blob();
-        if (!blob || blob.size < 1024) throw new Error('PDF_EMPTY');
-        const filename = `${(ebook.title || 'ebook').replace(/[\\/:*?"<>|]+/g, '').trim() || 'ebook'}.pdf`;
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = filename;
-        a.style.display = 'none';
-        document.body.appendChild(a);
-        a.click();
-        a.remove();
-        setTimeout(() => URL.revokeObjectURL(url), 2000);
-        setStatus('');
-        toast('PDF generado. Revisa tu carpeta Descargas.', 'ok');
+        await openDownloadPreviewDeprecated();
       } catch (err) {
-        console.warn('[pdf] server generation unavailable, opening print page', err);
-        const id = ebook.id || editingId;
-        window.location.href = `./ebook-print.html${id ? `?id=${encodeURIComponent(id)}` : ''}`;
+        console.warn('[pdf] preview unavailable', err);
+        toast('No pude abrir la vista previa PDF: ' + (err?.message || 'error'), 'err');
       } finally {
         downloadBtn.disabled = false;
         downloadBtn.innerHTML = originalDownloadText;
