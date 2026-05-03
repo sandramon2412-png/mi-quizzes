@@ -2453,18 +2453,29 @@
 
     // ── PDF download ──
     async function downloadServerPdf() {
-      const response = await fetch('/api/generate-ebook-pdf', {
+      renderEbookPreview();
+      applyThemeInline(document.getElementById('eb-theme')?.value || ebook.theme || ebook.cover?.theme || 'light');
+      applyPageScales();
+      const filename = `${(ebook.title || 'ebook').replace(/[\\/:*?"<>|]+/g, '').trim() || 'ebook'}.pdf`;
+      let response = await fetch('/api/render-ebook-pdf', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ebook }),
+        body: JSON.stringify({ html: buildPrintableHtml(), filename }),
       });
+      if (!response.ok) {
+        response = await fetch('/api/generate-ebook-pdf', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ ebook }),
+        });
+      }
       if (!response.ok) throw new Error('No pude generar el PDF final en el servidor.');
       const blob = await response.blob();
       if (!blob || blob.size < 1024) throw new Error('El PDF llego vacio.');
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = `${(ebook.title || 'ebook').replace(/[\\/:*?"<>|]+/g, '').trim() || 'ebook'}.pdf`;
+      a.download = filename;
       a.style.display = 'none';
       document.body.appendChild(a);
       a.click();
