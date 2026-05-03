@@ -1538,8 +1538,8 @@ function getPlanBadge(plan) {
 const PlanLimits = {
   free:    { quizzes: 1,   responses: 500,      leads: false, ai: false, miniApps: 2,   customDomain: false, metaPixel: false, integrations: false, whiteLabel: false, subdomains: 0, nicheAssistant: false, botLab: false, landings: 0,   ebooks: 1   },
   starter: { quizzes: 5,   responses: 5000,     leads: true,  ai: false, miniApps: 5,   customDomain: false, metaPixel: true,  integrations: false, whiteLabel: false, subdomains: 0, nicheAssistant: false, botLab: true,  landings: 1,   ebooks: 3   },
-  pro:     { quizzes: 10,  responses: 50000,    leads: true,  ai: true,  miniApps: 10,  customDomain: true,  metaPixel: true,  integrations: true,  whiteLabel: false, subdomains: 0, nicheAssistant: false, botLab: true,  landings: 5,   ebooks: 5   },
-  growth:  { quizzes: 30,  responses: 150000,   leads: true,  ai: true,  miniApps: 30,  customDomain: true,  metaPixel: true,  integrations: true,  whiteLabel: false, subdomains: 0, nicheAssistant: true,  botLab: true,  landings: 20,  ebooks: 20  },
+  pro:     { quizzes: 10,  responses: 50000,    leads: true,  ai: true,  miniApps: 10,  customDomain: true,  metaPixel: true,  integrations: true,  whiteLabel: false, subdomains: 0, nicheAssistant: false, botLab: true,  landings: 5,   ebooks: 999 },
+  growth:  { quizzes: 30,  responses: 150000,   leads: true,  ai: true,  miniApps: 30,  customDomain: true,  metaPixel: true,  integrations: true,  whiteLabel: false, subdomains: 0, nicheAssistant: true,  botLab: true,  landings: 20,  ebooks: 999 },
   elite:   { quizzes: 999, responses: Infinity, leads: true,  ai: true,  miniApps: 999, customDomain: true,  metaPixel: true,  integrations: true,  whiteLabel: true,  subdomains: 5, nicheAssistant: true,  botLab: true,  landings: 999, ebooks: 999 },
 };
 
