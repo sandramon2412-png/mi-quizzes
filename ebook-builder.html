@@ -658,6 +658,51 @@
     const setStatus = (s) => { statusEl.textContent = s; };
     const escapeHtml = (s) => (s || '').toString().replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
     const validImageUrl = (url) => /^https?:\/\/\S+\.\S+/i.test((url || '').trim()) || /^data:image\/(png|jpe?g|webp);base64,/i.test((url || '').trim());
+    const dataUrlBytes = (url = '') => Math.ceil(String(url).length * 0.75);
+    const loadImageFromUrl = (url) => new Promise((resolve, reject) => {
+      const img = new Image();
+      img.onload = () => resolve(img);
+      img.onerror = reject;
+      img.src = url;
+    });
+    async function optimizeImageSource(src, maxBytes = 180000) {
+      if (!src || (/^https?:\/\//i.test(src) && dataUrlBytes(src) < maxBytes)) return src;
+      if (/^data:image\//i.test(src) && dataUrlBytes(src) <= maxBytes) return src;
+      const img = await loadImageFromUrl(src);
+      const maxW = 1100;
+      const maxH = 520;
+      const scale = Math.min(1, maxW / img.naturalWidth, maxH / img.naturalHeight);
+      const canvas = document.createElement('canvas');
+      canvas.width = Math.max(1, Math.round(img.naturalWidth * scale));
+      canvas.height = Math.max(1, Math.round(img.naturalHeight * scale));
+      const ctx = canvas.getContext('2d');
+      ctx.fillStyle = '#ffffff';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+      for (const quality of [0.74, 0.64, 0.54, 0.44, 0.34]) {
+        const out = canvas.toDataURL('image/jpeg', quality);
+        if (dataUrlBytes(out) <= maxBytes || quality === 0.34) return out;
+      }
+      return canvas.toDataURL('image/jpeg', 0.34);
+    }
+    async function optimizeEbookEmbeddedImages(book) {
+      if (!book) return book;
+      if (book.cover?.imageUrl && /^data:image\//i.test(book.cover.imageUrl)) {
+        book.cover.imageUrl = await optimizeImageSource(book.cover.imageUrl, 200000);
+      }
+      for (const chapter of (book.chapters || [])) {
+        let body = chapter.body_md || '';
+        const matches = [...new Set((body.match(/data:image\/(?:png|jpe?g|webp);base64,[^"'<>\s)]+/gi) || []))];
+        for (const match of matches) {
+          if (dataUrlBytes(match) > 180000) {
+            const optimized = await optimizeImageSource(match, 180000);
+            body = body.split(match).join(optimized);
+          }
+        }
+        chapter.body_md = body;
+      }
+      return book;
+    }
     function askImageUrl(title, currentUrl = '') {
       return new Promise((resolve) => {
         if (!imageUrlModal || !imageUrlInput) {
@@ -691,7 +736,7 @@
           if (e.key === 'Enter') onSave();
           if (e.key === 'Escape') onCancel();
         };
-        const onFile = () => {
+        const onFile = async () => {
           const file = imageUrlFile?.files?.[0];
           if (!file) return;
           if (!/^image\/(png|jpe?g|webp)$/i.test(file.type)) {
@@ -699,18 +744,21 @@
             imageUrlError?.classList.remove('hidden');
             return;
           }
-          if (file.size > 2.5 * 1024 * 1024) {
-            if (imageUrlError) imageUrlError.textContent = 'La imagen es muy pesada. Usa una de menos de 2.5 MB.';
+          if (file.size > 8 * 1024 * 1024) {
+            if (imageUrlError) imageUrlError.textContent = 'La imagen es muy pesada. Usa una de menos de 8 MB.';
             imageUrlError?.classList.remove('hidden');
             return;
           }
-          const reader = new FileReader();
-          reader.onload = () => finish(reader.result);
-          reader.onerror = () => {
-            if (imageUrlError) imageUrlError.textContent = 'No pude leer esa imagen. Intenta con otra.';
+          try {
+            if (imageUrlError) imageUrlError.classList.add('hidden');
+            const tempUrl = URL.createObjectURL(file);
+            const optimized = await optimizeImageSource(tempUrl, 180000);
+            URL.revokeObjectURL(tempUrl);
+            finish(optimized);
+          } catch {
+            if (imageUrlError) imageUrlError.textContent = 'No pude optimizar esa imagen. Intenta con otra.';
             imageUrlError?.classList.remove('hidden');
-          };
-          reader.readAsDataURL(file);
+          }
         };
         if (imageUrlTitle) imageUrlTitle.textContent = title || 'Cambiar imagen';
         if (imageUrlError) imageUrlError.classList.add('hidden');
@@ -1970,9 +2018,11 @@
       syncEbookTheme(ebook);
       try {
         setStatus('Guardando…');
+        await optimizeEbookEmbeddedImages(ebook);
         const saved = await DB.ebooks.save(ebook, user.id);
         ebook = { ...ebook, ...saved };
-        Ebooks.save(ebook);
+        try { Ebooks.save(ebook); }
+        catch (localErr) { console.warn('[ebook] local cache skipped', localErr); }
         setStatus('Guardado');
         setTimeout(() => setStatus(''), 1200);
       } catch (e) {
@@ -2457,6 +2507,7 @@
       if (isStaticLocal) {
         throw new Error('En 127.0.0.1:8000 no corren las funciones del servidor. El PDF final debe probarse en luminous-studio.com despues del deploy, o con vercel dev.');
       }
+      await optimizeEbookEmbeddedImages(ebook);
       renderEbookPreview();
       applyThemeInline(document.getElementById('eb-theme')?.value || ebook.theme || ebook.cover?.theme || 'light');
       applyPageScales();
