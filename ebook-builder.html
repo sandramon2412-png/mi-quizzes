@@ -3190,7 +3190,21 @@ ${pagesHtml}
       }
 
       const safeName = (ebookTitle || 'ebook').replace(/[^\\w\\s\\-áéíóúÁÉÍÓÚñÑ]/g, '').trim().slice(0, 80) || 'ebook';
-      pdf.save(safeName + '.pdf');
+      const filename = safeName + '.pdf';
+      const blob = pdf.output('blob');
+      if (window.parent && window.parent !== window && typeof window.parent.downloadEbookPdfBlob === 'function') {
+        await window.parent.downloadEbookPdfBlob(blob, filename);
+      } else {
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        setTimeout(() => URL.revokeObjectURL(url), 2000);
+      }
+      return { blob, filename };
     } catch (e) {
       console.error(e);
       alert('Error al generar el PDF: ' + (e.message || e));
@@ -3225,6 +3239,18 @@ ${pagesHtml}
       `;
       document.body.appendChild(overlay);
       const frame = overlay.querySelector('iframe');
+      window.downloadEbookPdfBlob = async (blob, filename) => {
+        if (!blob || blob.size < 1024) throw new Error('El PDF se genero vacio.');
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = filename || `${(ebook.title || 'ebook').replace(/[\\/:*?"<>|]+/g, '').trim() || 'ebook'}.pdf`;
+        a.style.display = 'none';
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        setTimeout(() => URL.revokeObjectURL(url), 2500);
+      };
       overlay.querySelector('#ebook-download-close').onclick = () => overlay.remove();
       overlay.querySelector('#ebook-download-now').onclick = async () => {
         const btn = overlay.querySelector('#ebook-download-now');
