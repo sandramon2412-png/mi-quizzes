@@ -2453,6 +2453,10 @@
 
     // ── PDF download ──
     async function downloadServerPdf() {
+      const isStaticLocal = ['127.0.0.1', 'localhost'].includes(location.hostname) && location.port === '8000';
+      if (isStaticLocal) {
+        throw new Error('En 127.0.0.1:8000 no corren las funciones del servidor. El PDF final debe probarse en luminous-studio.com despues del deploy, o con vercel dev.');
+      }
       renderEbookPreview();
       applyThemeInline(document.getElementById('eb-theme')?.value || ebook.theme || ebook.cover?.theme || 'light');
       applyPageScales();
@@ -2469,7 +2473,14 @@
           body: JSON.stringify({ ebook }),
         });
       }
-      if (!response.ok) throw new Error('No pude generar el PDF final en el servidor.');
+      if (!response.ok) {
+        let detail = '';
+        try {
+          const data = await response.json();
+          detail = data?.error || data?.message || '';
+        } catch {}
+        throw new Error(detail || 'No pude generar el PDF final en el servidor.');
+      }
       const blob = await response.blob();
       if (!blob || blob.size < 1024) throw new Error('El PDF llego vacio.');
       const url = URL.createObjectURL(blob);
