@@ -2589,6 +2589,334 @@
       return { pdf, blob: pdf.output('blob'), filename };
     }
 
+    function pdf2Decode(text = '') {
+      return String(text)
+        .replace(/&nbsp;/gi, ' ')
+        .replace(/&amp;/gi, '&')
+        .replace(/&quot;/gi, '"')
+        .replace(/&#39;/gi, "'")
+        .replace(/&lt;/gi, '<')
+        .replace(/&gt;/gi, '>');
+    }
+
+    function pdf2Clean(text = '') {
+      return pdf2Decode(text)
+        .replace(/<[^>]+>/g, ' ')
+        .replace(/\bP[AÁ]GINA\s+\d+\s*[-:]\s*/gi, '')
+        .replace(/\bPAGINA\s+\d+\s*[-:]\s*/gi, '')
+        .replace(/\bSlide\s+\d+\s*[:.-]\s*/gi, '')
+        .replace(/\s+/g, ' ')
+        .trim();
+    }
+
+    function pdf2Blocks(body = '') {
+      let source = String(body || '')
+        .replace(/<figure[\s\S]*?<figcaption[^>]*>([\s\S]*?)<\/figcaption>[\s\S]*?<\/figure>/gi, '\n\n[[visual::$1]]\n\n')
+        .replace(/<figure[\s\S]*?<\/figure>/gi, '\n\n[[visual::Visual editorial]]\n\n')
+        .replace(/<blockquote[^>]*>([\s\S]*?)<\/blockquote>/gi, '\n\n[[quote::$1]]\n\n')
+        .replace(/<h[1-4][^>]*>([\s\S]*?)<\/h[1-4]>/gi, '\n\n## $1\n\n')
+        .replace(/<li[^>]*>([\s\S]*?)<\/li>/gi, '\n- $1\n')
+        .replace(/<\/(p|div|section|article|tr)>/gi, '\n\n')
+        .replace(/<br\s*\/?>/gi, '\n');
+      const lines = source.split(/\n/).map(line => pdf2Clean(line));
+      const blocks = [];
+      let i = 0;
+      const isTable = line => /^\|.*\|$/.test(line);
+      const isBullet = line => /^[-*\u2022]\s+/.test(line);
+      const isNumbered = line => /^\d+[.)]\s+/.test(line);
+      const isHeading = line => /^#{1,4}\s+/.test(line);
+      const isSpecial = line => isTable(line) || isBullet(line) || isNumbered(line) || isHeading(line) || /^\[\[(visual|quote)::/i.test(line);
+      while (i < lines.length) {
+        const line = lines[i];
+        if (!line) { i++; continue; }
+        if (/^\[\[visual::/i.test(line)) {
+          blocks.push({ type: 'visual', text: line.replace(/^\[\[visual::/i, '').replace(/\]\]$/, '').trim() || 'Visual editorial' });
+          i++;
+          continue;
+        }
+        if (/^\[\[quote::/i.test(line)) {
+          blocks.push({ type: 'quote', text: line.replace(/^\[\[quote::/i, '').replace(/\]\]$/, '').trim() });
+          i++;
+          continue;
+        }
+        if (isHeading(line)) {
+          blocks.push({ type: 'heading', text: line.replace(/^#{1,4}\s+/, '').trim() });
+          i++;
+          continue;
+        }
+        if (isTable(line)) {
+          const rows = [];
+          while (i < lines.length && isTable(lines[i])) rows.push(lines[i++]);
+          blocks.push({ type: 'table', rows });
+          continue;
+        }
+        if (isBullet(line)) {
+          const items = [];
+          while (i < lines.length && isBullet(lines[i])) items.push(lines[i++].replace(/^[-*\u2022]\s+/, '').trim());
+          blocks.push({ type: items.length >= 3 ? 'features' : 'bullets', items });
+          continue;
+        }
+        if (isNumbered(line)) {
+          const items = [];
+          while (i < lines.length && isNumbered(lines[i])) items.push(lines[i++].replace(/^\d+[.)]\s+/, '').trim());
+          blocks.push({ type: 'steps', items });
+          continue;
+        }
+        const parts = [line];
+        i++;
+        while (i < lines.length && lines[i] && !isSpecial(lines[i])) {
+          parts.push(lines[i]);
+          i++;
+        }
+        const text = parts.join(' ').trim();
+        if (text) blocks.push({ type: text.length < 80 && /:$/.test(text) ? 'heading-small' : 'paragraph', text });
+      }
+      return blocks;
+    }
+
+    function pdf2ParseTable(rows = []) {
+      return rows
+        .filter(row => !/^\|\s*:?-{2,}:?\s*(\|\s*:?-{2,}:?\s*)+\|?$/.test(row))
+        .map(row => row.split('|').map(cell => pdf2Clean(cell)).filter(Boolean))
+        .filter(row => row.length);
+    }
+
+    function buildStablePdfPremium(JsPdfCtor, book, theme, filename) {
+      const pdf = new JsPdfCtor('p', 'mm', 'a4');
+      const vars = THEME_VARS[theme] || THEME_VARS.light;
+      const primary = vars['--doc-primary'];
+      const accent = vars['--doc-accent'];
+      const fg = vars['--doc-fg'];
+      const muted = vars['--doc-muted'];
+      const surface = vars['--doc-surface'];
+      const bg = vars['--doc-bg'];
+      const pageW = 210;
+      const pageH = 297;
+      const marginX = 17;
+      const contentW = pageW - marginX * 2;
+      const bottomY = 275;
+      let pageNumber = 1;
+      let y = 0;
+
+      const drawLines = (lines, x, startY, lineHeight) => {
+        let yy = startY;
+        lines.forEach(line => {
+          pdf.text(line, x, yy);
+          yy += lineHeight;
+        });
+        return yy;
+      };
+      const need = (height) => {
+        if (y + height <= bottomY) return;
+        newContentPage();
+      };
+      const newContentPage = () => {
+        pdf.addPage('a4', 'portrait');
+        pageNumber++;
+        setPdfColor(pdf, bg, 'fill');
+        pdf.rect(0, 0, pageW, pageH, 'F');
+        setPdfColor(pdf, muted);
+        pdf.setFont('helvetica', 'normal');
+        pdf.setFontSize(7.5);
+        pdf.text((book.title || 'Ebook').slice(0, 80), marginX, 11);
+        pdf.text(String(pageNumber), pageW - marginX - 4, 286);
+        setPdfColor(pdf, primary, 'draw');
+        pdf.setLineWidth(0.35);
+        pdf.line(marginX, 16, pageW - marginX, 16);
+        y = 28;
+      };
+      const paragraph = (text, opts = {}) => {
+        const clean = pdf2Clean(text);
+        if (!clean) return;
+        pdf.setFont('helvetica', opts.bold ? 'bold' : 'normal');
+        pdf.setFontSize(opts.size || 9.4);
+        setPdfColor(pdf, opts.color || fg);
+        const lineHeight = opts.lineHeight || 5.2;
+        pdf.splitTextToSize(clean, opts.width || contentW).forEach(line => {
+          need(lineHeight + 2);
+          pdf.text(line, opts.x || marginX, y);
+          y += lineHeight;
+        });
+        y += opts.after == null ? 3 : opts.after;
+      };
+      const heading = (text, small = false) => {
+        const lines = pdf.splitTextToSize(pdf2Clean(text || 'Seccion'), small ? 158 : contentW);
+        need(lines.length * (small ? 6 : 8) + 8);
+        setPdfColor(pdf, small ? accent : primary);
+        pdf.setFont('helvetica', 'bold');
+        pdf.setFontSize(small ? 12 : 17);
+        y = drawLines(lines, marginX, y, small ? 6 : 8);
+        y += small ? 3 : 5;
+      };
+      const callout = (text) => {
+        const lines = pdf.splitTextToSize(pdf2Clean(text), contentW - 18);
+        const h = Math.max(20, lines.length * 4.8 + 12);
+        need(h + 4);
+        setPdfColor(pdf, surface, 'fill');
+        pdf.roundedRect(marginX, y, contentW, h, 3, 3, 'F');
+        setPdfColor(pdf, accent, 'fill');
+        pdf.roundedRect(marginX + 3, y + 5, 2.2, h - 10, 1, 1, 'F');
+        setPdfColor(pdf, fg);
+        pdf.setFont('helvetica', 'normal');
+        pdf.setFontSize(8.8);
+        drawLines(lines, marginX + 10, y + 10, 4.8);
+        y += h + 6;
+      };
+      const visual = (caption) => {
+        const h = 46;
+        need(h + 7);
+        setPdfColor(pdf, surface, 'fill');
+        pdf.roundedRect(marginX, y, contentW, h, 4, 4, 'F');
+        setPdfColor(pdf, primary, 'draw');
+        pdf.setLineWidth(0.45);
+        pdf.roundedRect(marginX + 5, y + 6, contentW - 10, h - 12, 3, 3, 'S');
+        setPdfColor(pdf, primary);
+        pdf.setFont('helvetica', 'bold');
+        pdf.setFontSize(9.5);
+        pdf.text('Visual editorial', marginX + 12, y + 19);
+        setPdfColor(pdf, muted);
+        pdf.setFont('helvetica', 'normal');
+        pdf.setFontSize(8);
+        drawLines(pdf.splitTextToSize(pdf2Clean(caption), contentW - 28), marginX + 12, y + 29, 4.3);
+        y += h + 7;
+      };
+      const featureCards = (items = []) => {
+        const gap = 5;
+        const colW = (contentW - gap) / 2;
+        for (let i = 0; i < items.length; i += 2) {
+          const row = items.slice(i, i + 2).map(item => {
+            const clean = pdf2Clean(item).replace(/\*\*/g, '');
+            const split = clean.split(/\s[-:]\s/);
+            const title = split[0] || clean;
+            const desc = split.slice(1).join(' - ') || clean;
+            return {
+              title: pdf.splitTextToSize(title, colW - 16),
+              desc: pdf.splitTextToSize(desc, colW - 12).slice(0, 4)
+            };
+          });
+          const rowH = Math.max(...row.map(card => 16 + card.title.length * 4.7 + card.desc.length * 4.2), 28);
+          need(rowH + 6);
+          row.forEach((card, j) => {
+            const x = marginX + j * (colW + gap);
+            setPdfColor(pdf, surface, 'fill');
+            pdf.roundedRect(x, y, colW, rowH, 3, 3, 'F');
+            setPdfColor(pdf, primary, 'fill');
+            pdf.circle(x + 7, y + 8, 2.1, 'F');
+            setPdfColor(pdf, fg);
+            pdf.setFont('helvetica', 'bold');
+            pdf.setFontSize(8.8);
+            drawLines(card.title, x + 12, y + 9, 4.7);
+            setPdfColor(pdf, muted);
+            pdf.setFont('helvetica', 'normal');
+            pdf.setFontSize(7.9);
+            drawLines(card.desc, x + 7, y + 19, 4.2);
+          });
+          y += rowH + 6;
+        }
+      };
+      const steps = (items = []) => {
+        items.forEach((item, idx) => {
+          const lines = pdf.splitTextToSize(pdf2Clean(item).replace(/\*\*/g, ''), contentW - 20);
+          const h = Math.max(17, lines.length * 4.7 + 10);
+          need(h + 4);
+          setPdfColor(pdf, surface, 'fill');
+          pdf.roundedRect(marginX, y, contentW, h, 3, 3, 'F');
+          setPdfColor(pdf, primary, 'fill');
+          pdf.roundedRect(marginX + 5, y + 5, 8, 8, 2, 2, 'F');
+          pdf.setTextColor(255, 255, 255);
+          pdf.setFont('helvetica', 'bold');
+          pdf.setFontSize(7.8);
+          pdf.text(String(idx + 1), marginX + 9, y + 10.7, { align: 'center' });
+          setPdfColor(pdf, fg);
+          pdf.setFont('helvetica', 'normal');
+          pdf.setFontSize(8.8);
+          drawLines(lines, marginX + 18, y + 10, 4.7);
+          y += h + 4;
+        });
+        y += 2;
+      };
+      const bullets = (items = []) => {
+        items.forEach(item => {
+          const lines = pdf.splitTextToSize(pdf2Clean(item), contentW - 14);
+          const h = Math.max(12, lines.length * 4.6 + 6);
+          need(h + 3);
+          setPdfColor(pdf, surface, 'fill');
+          pdf.roundedRect(marginX, y, contentW, h, 2.5, 2.5, 'F');
+          setPdfColor(pdf, primary, 'fill');
+          pdf.circle(marginX + 6, y + 7, 1.7, 'F');
+          setPdfColor(pdf, fg);
+          pdf.setFont('helvetica', 'normal');
+          pdf.setFontSize(8.8);
+          drawLines(lines, marginX + 12, y + 7.5, 4.6);
+          y += h + 3;
+        });
+        y += 2;
+      };
+      const table = (rows) => {
+        const parsed = pdf2ParseTable(rows);
+        if (!parsed.length) return;
+        const cols = Math.min(Math.max(...parsed.map(row => row.length)), 4);
+        const colW = contentW / cols;
+        parsed.forEach((row, idx) => {
+          const cells = Array.from({ length: cols }, (_, i) => row[i] || '');
+          const wrapped = cells.map(cell => pdf.splitTextToSize(pdf2Clean(cell), colW - 6));
+          const h = Math.max(12, Math.max(...wrapped.map(lines => lines.length)) * 4.2 + 7);
+          need(h + 1);
+          setPdfColor(pdf, idx === 0 ? primary : surface, 'fill');
+          pdf.rect(marginX, y, contentW, h, 'F');
+          setPdfColor(pdf, idx === 0 ? primary : vars['--doc-border'], 'draw');
+          pdf.setLineWidth(0.15);
+          for (let c = 0; c <= cols; c++) pdf.line(marginX + c * colW, y, marginX + c * colW, y + h);
+          pdf.line(marginX, y + h, marginX + contentW, y + h);
+          pdf.setFont('helvetica', idx === 0 ? 'bold' : 'normal');
+          pdf.setFontSize(7.6);
+          if (idx === 0) pdf.setTextColor(255, 255, 255);
+          else setPdfColor(pdf, fg);
+          wrapped.forEach((lines, c) => drawLines(lines, marginX + c * colW + 3, y + 6, 4.2));
+          y += h;
+        });
+        y += 7;
+      };
+      const block = (item) => {
+        if (item.type === 'heading') return heading(item.text, false);
+        if (item.type === 'heading-small') return heading(item.text, true);
+        if (item.type === 'quote') return callout(item.text);
+        if (item.type === 'visual') return visual(item.text);
+        if (item.type === 'features') return featureCards(item.items);
+        if (item.type === 'bullets') return bullets(item.items);
+        if (item.type === 'steps') return steps(item.items);
+        if (item.type === 'table') return table(item.rows);
+        return paragraph(item.text);
+      };
+
+      setPdfColor(pdf, primary, 'fill');
+      pdf.rect(0, 0, pageW, pageH, 'F');
+      setPdfColor(pdf, accent, 'fill');
+      pdf.roundedRect(120, 42, 62, 150, 10, 10, 'F');
+      setPdfColor(pdf, primary, 'draw');
+      pdf.setLineWidth(0.7);
+      pdf.roundedRect(128, 52, 46, 130, 7, 7, 'S');
+      pdf.setTextColor(255, 255, 255);
+      pdf.setFont('helvetica', 'bold');
+      pdf.setFontSize(29);
+      let coverY = 72;
+      pdf.splitTextToSize(book.title || 'Ebook', 94).forEach(line => { pdf.text(line, marginX, coverY); coverY += 12; });
+      pdf.setFont('helvetica', 'normal');
+      pdf.setFontSize(12);
+      pdf.splitTextToSize(book.cover?.subtitle || book.subtitle || 'Guia practica', 95).forEach(line => { pdf.text(line, marginX, coverY + 6); coverY += 6.2; });
+      pdf.setFont('helvetica', 'bold');
+      pdf.setFontSize(8);
+      pdf.text('LUMINOUS STUDIO', 151, 125, { align: 'center' });
+
+      if (book.chapters?.length) newContentPage();
+      (book.chapters || []).forEach((chapter, idx) => {
+        if (idx > 0) y += 4;
+        heading(chapter.title || `Seccion ${idx + 1}`, false);
+        pdf2Blocks(chapter.body_md || '').forEach(block);
+      });
+      return { pdf, blob: pdf.output('blob'), filename };
+    }
+
     async function openDownloadPreviewDeprecated() {
       if (!ebook || !ebook.chapters?.length) return;
       ensureEbookVisuals(ebook);
@@ -3261,7 +3589,7 @@ ${pagesHtml}
           const JsPdfCtor = window.jspdf?.jsPDF;
           if (!JsPdfCtor) throw new Error('La libreria PDF no esta lista.');
           const filename = `${(ebook.title || 'ebook').replace(/[\\/:*?"<>|]+/g, '').trim() || 'ebook'}.pdf`;
-          const result = buildStablePdf(JsPdfCtor, ebook, theme, filename);
+          const result = buildStablePdfPremium(JsPdfCtor, ebook, theme, filename);
           await window.downloadEbookPdfBlob(result.blob, result.filename);
           toast('Descarga enviada. Revisa tu carpeta Descargas.', 'ok');
         } catch (err) {
