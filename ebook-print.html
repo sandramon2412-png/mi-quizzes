@@ -238,12 +238,12 @@
     btn.disabled = true;
     btn.innerHTML = '<span class="material-symbols-outlined" style="font-size:16px">hourglass_empty</span>Generando...';
     try {
-      const response = await fetch('/api/render-ebook-pdf', {
+      const response = await fetch('/api/generate-ebook-pdf', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ ebook: currentBook }),
       });
-      if (!response.ok) throw new Error('La descarga final solo funciona en la web publicada con Vercel.');
+      if (!response.ok) throw new Error('No pude generar el PDF final en el servidor.');
       const blob = await response.blob();
       if (!blob || blob.size < 1024) throw new Error('El PDF llego vacio.');
       const url = URL.createObjectURL(blob);
