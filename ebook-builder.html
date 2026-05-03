@@ -272,6 +272,8 @@
   .ebook-page .image-card, .ebook-page .cover-media { position: relative; }
   .image-edit-btn { position: absolute; right: 12px; top: 12px; z-index: 80; border: 0; border-radius: 999px; background: rgba(15,23,42,0.88); color: #fff; display: inline-flex; align-items: center; gap: 6px; padding: 9px 13px; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 11px; font-weight: 800; letter-spacing: 0.04em; text-transform: uppercase; cursor: pointer; box-shadow: 0 10px 24px rgba(0,0,0,0.28); opacity: 1; pointer-events: auto; }
   .image-edit-btn .material-symbols-outlined { font-size: 16px; }
+  .image-inline-action { width: 100%; border: 0; border-top: 1px solid var(--doc-border); background: var(--doc-surface); color: var(--doc-primary); display: flex; align-items: center; justify-content: center; gap: 6px; padding: 9px 12px; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 11px; font-weight: 800; cursor: pointer; }
+  .image-inline-action .material-symbols-outlined { font-size: 16px; }
   .image-card:hover .image-edit-btn, .cover-media:hover .image-edit-btn { transform: translateY(-1px); }
   .ebook-page .image-visual { position: relative; width: 100%; aspect-ratio: 21 / 8; overflow: hidden; background: linear-gradient(135deg, var(--doc-primary), var(--doc-accent)); display: flex; align-items: flex-end; padding: 20px; color: #fff; }
   .ebook-page .image-visual::before { content: ''; position: absolute; inset: 0; background: linear-gradient(120deg, rgba(255,255,255,0.20) 0 18%, transparent 18% 31%, rgba(255,255,255,0.13) 31% 44%, transparent 44% 100%); }
@@ -1300,15 +1302,15 @@
         const coverClone = coverWrap.cloneNode(true);
         coverClone.classList.add('print-cover-wrap');
         coverClone.setAttribute('data-theme', theme);
-        coverClone.querySelectorAll('.image-edit-btn,.eb-regen-btn,.ebook-page-label').forEach(el => el.remove());
+        coverClone.querySelectorAll('.image-edit-btn,.image-inline-action,.eb-regen-btn,.ebook-page-label').forEach(el => el.remove());
         coverClone.querySelectorAll('[contenteditable]').forEach(el => el.removeAttribute('contenteditable'));
         coverHtml = coverClone.outerHTML;
       }
       const chapterHtml = (ebook?.chapters || []).map((chapter, chapterIndex) => {
         const temp = document.createElement('div');
         temp.innerHTML = smartMd(chapter.body_md || '');
-        temp.querySelectorAll('.image-edit-btn,.eb-regen-btn,[contenteditable]').forEach(el => {
-          if (el.classList?.contains('image-edit-btn') || el.classList?.contains('eb-regen-btn')) el.remove();
+        temp.querySelectorAll('.image-edit-btn,.image-inline-action,.eb-regen-btn,[contenteditable]').forEach(el => {
+          if (el.classList?.contains('image-edit-btn') || el.classList?.contains('image-inline-action') || el.classList?.contains('eb-regen-btn')) el.remove();
           else el.removeAttribute('contenteditable');
         });
         return `<section class="print-chapter">
@@ -1364,7 +1366,7 @@
   .print-chapter .image-visual::before { content: ''; position: absolute; inset: 0; background: linear-gradient(120deg, rgba(255,255,255,.20) 0 18%, transparent 18% 31%, rgba(255,255,255,.13) 31% 44%, transparent 44% 100%); }
   .print-chapter .image-visual span { position: relative; z-index: 1; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 10px; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; }
   .print-chapter figcaption { padding: 7px 10px 9px; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 9.5px; line-height: 1.35; color: var(--doc-muted); text-transform: uppercase; letter-spacing: .08em; }
-  .editable-block, .image-edit-btn, .eb-regen-btn { outline: none !important; background: transparent !important; display: none !important; }
+  .editable-block, .image-edit-btn, .image-inline-action, .eb-regen-btn { outline: none !important; background: transparent !important; display: none !important; }
   @media print {
     html, body { background: #fff !important; }
     .print-cover-wrap { margin: 0 !important; }
@@ -1443,7 +1445,7 @@
       const caption = fig.querySelector('figcaption')?.textContent?.trim() || 'Imagen editorial';
       const prompt = fig.dataset.imagePrompt || caption;
       fig.dataset.imageUrl = safeUrl;
-      fig.innerHTML = `<button type="button" class="image-edit-btn" contenteditable="false"><span class="material-symbols-outlined">image</span>Cambiar</button><img src="${escapeHtml(safeUrl)}" alt="${escapeHtml(caption)}" crossorigin="anonymous" referrerpolicy="no-referrer"><figcaption>${escapeHtml(caption)}</figcaption>`;
+      fig.innerHTML = `<button type="button" class="image-edit-btn" contenteditable="false"><span class="material-symbols-outlined">image</span>Cambiar</button><img src="${escapeHtml(safeUrl)}" alt="${escapeHtml(caption)}" crossorigin="anonymous" referrerpolicy="no-referrer"><figcaption>${escapeHtml(caption)}</figcaption><button type="button" class="image-inline-action" contenteditable="false"><span class="material-symbols-outlined">upload_file</span>Cambiar imagen o subir archivo</button>`;
       fig.dataset.imagePrompt = prompt;
     }
 
@@ -1477,17 +1479,32 @@
             await changeFigureImage(fig);
           });
         }
-        if (fig.querySelector('.image-edit-btn')) return;
-        const btn = document.createElement('button');
-        btn.type = 'button';
-        btn.className = 'image-edit-btn';
-        btn.contentEditable = 'false';
-        btn.innerHTML = '<span class="material-symbols-outlined">image</span>Cambiar';
-        btn.addEventListener('click', async (e) => {
-          e.preventDefault(); e.stopPropagation();
-          await changeFigureImage(fig);
+        let floatingBtn = fig.querySelector('.image-edit-btn');
+        if (!floatingBtn) {
+          floatingBtn = document.createElement('button');
+          floatingBtn.type = 'button';
+          floatingBtn.className = 'image-edit-btn';
+          floatingBtn.contentEditable = 'false';
+          floatingBtn.innerHTML = '<span class="material-symbols-outlined">image</span>Cambiar';
+          fig.insertBefore(floatingBtn, fig.firstChild);
+        }
+        let inlineBtn = fig.querySelector('.image-inline-action');
+        if (!inlineBtn) {
+          inlineBtn = document.createElement('button');
+          inlineBtn.type = 'button';
+          inlineBtn.className = 'image-inline-action';
+          inlineBtn.contentEditable = 'false';
+          inlineBtn.innerHTML = '<span class="material-symbols-outlined">upload_file</span>Cambiar imagen o subir archivo';
+          fig.appendChild(inlineBtn);
+        }
+        [floatingBtn, inlineBtn].forEach(btn => {
+          if (btn.dataset.boundImageChange) return;
+          btn.dataset.boundImageChange = '1';
+          btn.addEventListener('click', async (e) => {
+            e.preventDefault(); e.stopPropagation();
+            await changeFigureImage(fig);
+          });
         });
-        fig.appendChild(btn);
       });
     }
 
@@ -2970,7 +2987,7 @@
       const pdfThemeCss = `
         .page.chapter, .page.chapter * { ${pdfVarsCss} }
         .page.chapter { background: ${pdfVars['--doc-bg']} !important; color: ${pdfVars['--doc-fg']} !important; }
-        .page.chapter .flow-title, .page.chapter h2 { background: linear-gradient(135deg, ${pdfVars['--doc-primary']}, ${pdfVars['--doc-accent']}) !important; -webkit-background-clip: text !important; background-clip: text !important; -webkit-text-fill-color: transparent !important; color: ${pdfVars['--doc-primary']} !important; }
+        .page.chapter .flow-title, .page.chapter h2 { background: none !important; -webkit-background-clip: initial !important; background-clip: initial !important; -webkit-text-fill-color: ${pdfVars['--doc-primary']} !important; color: ${pdfVars['--doc-primary']} !important; }
         .page.chapter h3, .page.chapter p, .page.chapter li, .page.chapter td { color: ${pdfVars['--doc-fg']} !important; }
         .page.chapter strong, .page.chapter a { color: ${pdfVars['--doc-primary']} !important; }
         .page.chapter ul li, .page.chapter blockquote, .page.chapter .callout, .page.chapter .callout-info, .page.chapter .callout-tip, .page.chapter .callout-quote { background: ${pdfVars['--doc-surface']} !important; border-color: ${pdfVars['--doc-accent']} !important; color: ${pdfVars['--doc-fg']} !important; }
@@ -3121,11 +3138,11 @@
     .page.cover { width: 100% !important; height: 100% !important; min-height: 100vh !important; margin: 0 !important; padding: 0 !important; }
   }
 
-  .chapter-title { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 30px; font-weight: 800; line-height: 1.08; letter-spacing: -0.03em; margin: 0 0 20px; page-break-after: avoid; break-after: avoid; background: linear-gradient(135deg, var(--doc-title-grad-from), var(--doc-title-grad-to)); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; color: var(--doc-fg); }
-  .chapter-body .flow-title { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 21px; font-weight: 800; line-height: 1.15; letter-spacing: -0.02em; margin: 24px 0 12px; page-break-after: avoid; break-after: avoid; background: linear-gradient(135deg, var(--doc-primary), var(--doc-accent)); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; color: var(--doc-primary); }
+  .chapter-title { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 30px; font-weight: 800; line-height: 1.08; letter-spacing: -0.03em; margin: 0 0 20px; page-break-after: avoid; break-after: avoid; background: none !important; -webkit-background-clip: initial !important; background-clip: initial !important; -webkit-text-fill-color: var(--doc-primary) !important; color: var(--doc-primary); }
+  .chapter-body .flow-title { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 21px; font-weight: 800; line-height: 1.15; letter-spacing: -0.02em; margin: 24px 0 12px; page-break-after: avoid; break-after: avoid; background: none !important; -webkit-background-clip: initial !important; background-clip: initial !important; -webkit-text-fill-color: var(--doc-primary) !important; color: var(--doc-primary); }
   .chapter-body .flow-title:first-child { margin-top: 0; }
 
-  .chapter-body h2 { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 22px; font-weight: 800; margin: 28px 0 14px; letter-spacing: -0.02em; page-break-after: avoid; break-after: avoid; background: linear-gradient(135deg, var(--doc-primary), var(--doc-accent)); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; color: var(--doc-primary); }
+  .chapter-body h2 { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 22px; font-weight: 800; margin: 28px 0 14px; letter-spacing: -0.02em; page-break-after: avoid; break-after: avoid; background: none !important; -webkit-background-clip: initial !important; background-clip: initial !important; -webkit-text-fill-color: var(--doc-primary) !important; color: var(--doc-primary); }
   .chapter-body h3 { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 17px; font-weight: 700; color: var(--doc-fg); margin: 22px 0 10px; page-break-after: avoid; break-after: avoid; }
   .chapter-body p { font-size: 13.4px; line-height: 1.62; margin: 0 0 11px; orphans: 2; widows: 2; color: var(--doc-fg); }
   .chapter-body ul { list-style: none; padding: 0; margin: 0 0 16px; }
@@ -3222,7 +3239,7 @@
   .hover-bar button { cursor: pointer; background: transparent; color: #fff; border: none; padding: 5px 8px; border-radius: 5px; font-weight: 600; font-size: 11px; white-space: nowrap; }
   .hover-bar button:hover { background: rgba(255,255,255,0.15); }
   .hover-bar button.danger:hover { background: #d95a2a; }
-  .image-edit-btn { display: none !important; }
+  .image-edit-btn, .image-inline-action { display: none !important; }
   .edit-indicator { position: fixed; bottom: 16px; left: 16px; background: #1a1a1a; color: #fff; padding: 8px 14px; border-radius: 20px; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 12px; z-index: 15; box-shadow: 0 4px 14px rgba(0,0,0,0.2); }
   .edit-indicator .dot { display: inline-block; width: 7px; height: 7px; border-radius: 50%; background: #22c55e; margin-right: 7px; vertical-align: middle; }
   @media print {
