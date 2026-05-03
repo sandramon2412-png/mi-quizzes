@@ -2452,22 +2452,45 @@
     });
 
     // ── PDF download ──
+    async function downloadServerPdf() {
+      const response = await fetch('/api/generate-ebook-pdf', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ebook }),
+      });
+      if (!response.ok) throw new Error('No pude generar el PDF final en el servidor.');
+      const blob = await response.blob();
+      if (!blob || blob.size < 1024) throw new Error('El PDF llego vacio.');
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `${(ebook.title || 'ebook').replace(/[\\/:*?"<>|]+/g, '').trim() || 'ebook'}.pdf`;
+      a.style.display = 'none';
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      setTimeout(() => URL.revokeObjectURL(url), 2500);
+      try { await DB.ebooks.incrementDownloads(ebook.id); } catch {}
+    }
+
     downloadBtn.onclick = async () => {
       if (!ebook || !ebook.chapters?.length) return;
       ensureEbookVisuals(ebook);
       syncEbookTheme(ebook);
-      setStatus('Preparando vista previa PDF...');
+      setStatus('Generando PDF final...');
       downloadBtn.disabled = true;
       const originalDownloadText = downloadBtn.innerHTML;
       downloadBtn.innerHTML = '<span class="thinking-dot"></span><span class="thinking-dot"></span><span class="thinking-dot"></span>';
 
       try {
         await persistEbook();
-        await openDownloadPreviewDeprecated();
+        await downloadServerPdf();
+        toast('PDF final descargado. Revisa tu carpeta Descargas.', 'ok');
       } catch (err) {
-        console.warn('[pdf] preview unavailable', err);
-        toast('No pude abrir la vista previa PDF: ' + (err?.message || 'error'), 'err');
+        console.warn('[pdf] server export unavailable', err);
+        toast('No pude generar el PDF final: ' + (err?.message || 'error'), 'err');
       } finally {
+        setStatus('');
         downloadBtn.disabled = false;
         downloadBtn.innerHTML = originalDownloadText;
       }
