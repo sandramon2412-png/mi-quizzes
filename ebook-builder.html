@@ -533,7 +533,7 @@
     <div class="flex items-start justify-between gap-4 border-b border-outline-variant/30 px-5 py-4">
       <div>
         <h3 id="image-url-title" class="text-sm font-extrabold text-on-surface">Cambiar imagen</h3>
-        <p class="mt-1 text-xs text-on-surface-variant">Pega una URL directa de imagen. Puede ser JPG, PNG o WebP.</p>
+        <p class="mt-1 text-xs text-on-surface-variant">Pega una URL directa o sube una imagen desde tu computador.</p>
       </div>
       <button id="image-url-close" type="button" class="h-8 w-8 rounded-lg bg-surface-container text-on-surface-variant hover:text-white">
         <span class="material-symbols-outlined" style="font-size:18px">close</span>
@@ -542,7 +542,11 @@
     <div class="px-5 py-4">
       <label for="image-url-input" class="mb-2 block text-[11px] font-bold uppercase tracking-[0.16em] text-on-surface-variant">URL de imagen</label>
       <input id="image-url-input" type="url" placeholder="https://..." class="w-full rounded-xl border border-outline-variant/40 bg-black/30 px-3 py-3 text-sm text-white placeholder:text-on-surface-variant focus:border-primary focus:ring-primary"/>
-      <p id="image-url-error" class="mt-2 hidden text-xs font-semibold text-red-300">Pega una URL valida que empiece por http:// o https://</p>
+      <div class="mt-3 rounded-xl border border-outline-variant/30 bg-black/20 p-3">
+        <label for="image-url-file" class="mb-2 block text-[11px] font-bold uppercase tracking-[0.16em] text-on-surface-variant">O subir archivo</label>
+        <input id="image-url-file" type="file" accept="image/png,image/jpeg,image/webp" class="block w-full text-xs text-on-surface-variant file:mr-3 file:rounded-lg file:border-0 file:bg-surface-container file:px-3 file:py-2 file:text-xs file:font-bold file:text-white"/>
+      </div>
+      <p id="image-url-error" class="mt-2 hidden text-xs font-semibold text-red-300">Pega una URL valida que empiece por http:// o https://, o sube una imagen.</p>
     </div>
     <div class="flex justify-end gap-2 px-5 pb-5">
       <button id="image-url-cancel" type="button" class="h-10 rounded-xl border border-outline-variant/40 px-4 text-xs font-bold text-on-surface-variant hover:text-white">Cancelar</button>
@@ -632,6 +636,7 @@
     const imageUrlModal = document.getElementById('image-url-modal');
     const imageUrlTitle = document.getElementById('image-url-title');
     const imageUrlInput = document.getElementById('image-url-input');
+    const imageUrlFile = document.getElementById('image-url-file');
     const imageUrlError = document.getElementById('image-url-error');
     const imageUrlSave = document.getElementById('image-url-save');
     const imageUrlCancel = document.getElementById('image-url-cancel');
@@ -650,7 +655,7 @@
     };
     const setStatus = (s) => { statusEl.textContent = s; };
     const escapeHtml = (s) => (s || '').toString().replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-    const validImageUrl = (url) => /^https?:\/\/\S+\.\S+/i.test((url || '').trim());
+    const validImageUrl = (url) => /^https?:\/\/\S+\.\S+/i.test((url || '').trim()) || /^data:image\/(png|jpe?g|webp);base64,/i.test((url || '').trim());
     function askImageUrl(title, currentUrl = '') {
       return new Promise((resolve) => {
         if (!imageUrlModal || !imageUrlInput) {
@@ -667,6 +672,7 @@
           imageUrlCancel?.removeEventListener('click', onCancel);
           imageUrlClose?.removeEventListener('click', onCancel);
           imageUrlInput?.removeEventListener('keydown', onKeydown);
+          imageUrlFile?.removeEventListener('change', onFile);
           resolve(value);
         };
         const onCancel = () => finish(null);
@@ -683,15 +689,38 @@
           if (e.key === 'Enter') onSave();
           if (e.key === 'Escape') onCancel();
         };
+        const onFile = () => {
+          const file = imageUrlFile?.files?.[0];
+          if (!file) return;
+          if (!/^image\/(png|jpe?g|webp)$/i.test(file.type)) {
+            if (imageUrlError) imageUrlError.textContent = 'Elige una imagen JPG, PNG o WebP.';
+            imageUrlError?.classList.remove('hidden');
+            return;
+          }
+          if (file.size > 2.5 * 1024 * 1024) {
+            if (imageUrlError) imageUrlError.textContent = 'La imagen es muy pesada. Usa una de menos de 2.5 MB.';
+            imageUrlError?.classList.remove('hidden');
+            return;
+          }
+          const reader = new FileReader();
+          reader.onload = () => finish(reader.result);
+          reader.onerror = () => {
+            if (imageUrlError) imageUrlError.textContent = 'No pude leer esa imagen. Intenta con otra.';
+            imageUrlError?.classList.remove('hidden');
+          };
+          reader.readAsDataURL(file);
+        };
         if (imageUrlTitle) imageUrlTitle.textContent = title || 'Cambiar imagen';
         if (imageUrlError) imageUrlError.classList.add('hidden');
         imageUrlInput.value = currentUrl || '';
+        if (imageUrlFile) imageUrlFile.value = '';
         imageUrlModal.classList.remove('hidden');
         imageUrlModal.classList.add('flex');
         imageUrlSave?.addEventListener('click', onSave);
         imageUrlCancel?.addEventListener('click', onCancel);
         imageUrlClose?.addEventListener('click', onCancel);
         imageUrlInput?.addEventListener('keydown', onKeydown);
+        imageUrlFile?.addEventListener('change', onFile);
         setTimeout(() => imageUrlInput.focus(), 50);
       });
     }
@@ -3556,7 +3585,7 @@ ${pagesHtml}
         <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;background:#fff;color:#0f172a;border-radius:14px 14px 0 0;padding:12px 16px;font-family:Plus Jakarta Sans,system-ui,sans-serif;">
           <div>
             <strong style="font-size:14px;display:block">Vista de descarga del ebook</strong>
-            <span style="font-size:12px;color:#64748b">Haz clic en Descargar PDF. El archivo se guarda en la carpeta Descargas del navegador.</span>
+            <span style="font-size:12px;color:#64748b">Haz clic en Descargar PDF. Se exporta esta misma vista, con sus colores, imagenes y margenes.</span>
           </div>
           <div style="display:flex;gap:8px;align-items:center">
             <button type="button" id="ebook-download-now" style="border:0;border-radius:9px;background:linear-gradient(135deg,#2E5BFF,#7c3aed);color:#fff;padding:9px 13px;font-weight:800;cursor:pointer">Descargar PDF</button>
@@ -3586,11 +3615,9 @@ ${pagesHtml}
         btn.textContent = 'Preparando...';
         btn.disabled = true;
         try {
-          const JsPdfCtor = window.jspdf?.jsPDF;
-          if (!JsPdfCtor) throw new Error('La libreria PDF no esta lista.');
-          const filename = `${(ebook.title || 'ebook').replace(/[\\/:*?"<>|]+/g, '').trim() || 'ebook'}.pdf`;
-          const result = buildStablePdfPremium(JsPdfCtor, ebook, theme, filename);
-          await window.downloadEbookPdfBlob(result.blob, result.filename);
+          const win = frame?.contentWindow;
+          if (!win || typeof win.saveAsPDF !== 'function') throw new Error('La vista de descarga aun no esta lista.');
+          await win.saveAsPDF();
           toast('Descarga enviada. Revisa tu carpeta Descargas.', 'ok');
         } catch (err) {
           toast('No pude descargar: ' + (err?.message || err), 'err');
