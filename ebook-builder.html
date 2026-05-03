@@ -3258,12 +3258,11 @@ ${pagesHtml}
         btn.textContent = 'Preparando...';
         btn.disabled = true;
         try {
-          for (let i = 0; i < 80; i++) {
-            if (frame.contentWindow?.saveAsPDF && frame.contentWindow?.html2canvas && frame.contentWindow?.jspdf) break;
-            await new Promise(r => setTimeout(r, 250));
-          }
-          if (!frame.contentWindow?.saveAsPDF) throw new Error('La vista de PDF no esta lista.');
-          await frame.contentWindow.saveAsPDF();
+          const JsPdfCtor = window.jspdf?.jsPDF;
+          if (!JsPdfCtor) throw new Error('La libreria PDF no esta lista.');
+          const filename = `${(ebook.title || 'ebook').replace(/[\\/:*?"<>|]+/g, '').trim() || 'ebook'}.pdf`;
+          const result = buildStablePdf(JsPdfCtor, ebook, theme, filename);
+          await window.downloadEbookPdfBlob(result.blob, result.filename);
           toast('Descarga enviada. Revisa tu carpeta Descargas.', 'ok');
         } catch (err) {
           toast('No pude descargar: ' + (err?.message || err), 'err');
