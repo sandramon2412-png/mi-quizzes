@@ -790,3 +790,64 @@ curl -s https://raw.githubusercontent.com/Leonxlnx/taste-skill/main/skills/taste
 Los skills en `~/.claude/skills/` NO persisten entre sesiones de Claude Code en la web. Cada sesión nueva empieza solo con `session-start-hook`. Para reinstalar:
 1. Ejecutar los curl del bloque de arriba para los 6 que vienen de repos
 2. Los 12 restantes recrearlos con `cat > ... << 'EOF'` (o pedirle al chat que los reinstale)
+
+---
+
+## SESIÓN 4 MAY 2026 — branch `claude/fix-failing-chats-CZcXZ`
+
+### Contexto
+Sandra llegó con 3 bugs del ebook builder después de ~20 chats/intentos fallidos en ramas `codex/restore-ebook-preview` (22 PRs). Todos esos cambios ya estaban mergeados a `main` vía auto-merge. Esta sesión hizo el diagnóstico y aplicó el fix correcto.
+
+### Estado previo (los 22 commits de codex)
+Los commits previos dejaron 4 rutas paralelas de PDF que coexistían:
+1. html2canvas + jsPDF (iframe inline) — activa pero generaba PDFs rasterizados, páginas cortadas y en blanco
+2. `window.print()` en modal — funcionaba pero desconectada del botón principal
+3. PDFKit (`/api/generate-ebook-pdf`) — texto plano, sin estilos ni bloques visuales
+4. Puppeteer (`/api/render-ebook-pdf`) — mejor calidad pero **nunca se llamaba desde la UI** (código huérfano)
+
+### Los 3 bugs y sus causas raíz
+
+**Bug 1 — Texto duplicado ("Mapa de implementacion" × 3, figuras × 3)**
+- `ensureEbookVisuals()` mutaba `ch.body_md` en lugar — se llamaba en **cada** `renderEbookPreview()`
+- El check de tabla era `/\|.+\|/` (solo markdown). Después del primer render, el cuerpo ya era HTML (`<table>`), el check fallaba → agregaba otra tabla
+- Fix: agregar detección HTML: `!/<table[\s>]/i.test(body)` y `!/<[^>]*class="[^"]*callout/i.test(body)`
+- Fix: sacar `ensureEbookVisuals(ebook)` de `renderEbookPreview` completamente
+
+**Bug 2 — Color de portada cambia al hacer click en "Vista previa PDF"**
+- `downloadBtn.onclick` llamaba `ensureEbookVisuals(ebook)` + `openDownloadPreviewDeprecated()` que también lo llamaba → dos mutaciones al objeto `ebook` antes de renderizar en el iframe
+- Fix: el botón ya no llama `ensureEbookVisuals` — simplemente guarda y abre `ebook-print.html`
+
+**Bug 3 — PDF con páginas cortadas y/o en blanco**
+- html2canvas no carga fonts de Google CDN dentro de un iframe con `contentDocument.write()`
+- La paginación JS del iframe no coincidía exactamente con el A4 real del PDF
+- Fix: reemplazar todo el flujo de iframe/html2canvas por abrir `ebook-print.html?id=X` en pestaña nueva
+
+### Fixes aplicados (commit `8efcb7e`)
+
+**`ebook-builder.html`**:
+- `ensureEbookVisuals()`: checks mejorados para detectar HTML además de markdown
+- `renderEbookPreview()`: eliminada la llamada a `ensureEbookVisuals(ebook)` — ya no muta en cada render
+- `downloadBtn.onclick`: ahora hace `collectChapterBody` → `persistEbook()` → `window.open('ebook-print.html?id=X', '_blank')`. Sin html2canvas, sin iframe overlay.
+
+**`ebook-print.html`** (commit `8efcb7e`):
+- Agregado `smartMd()` completo (port desde `ebook-builder.html`) para renderizar bloques visuales (feature-grid, numbered-card, callouts, steps)
+- `renderMarkdown()` ahora usa `smartMd()` en lugar de `marked.parse()` directamente
+- Agregadas clases CSS faltantes: `.feature-item`, `.feature-grid.cols-3`, `ol.steps`, `.callout-tip/warn/info/quote`
+- Botón "Descargar PDF final" ahora llama `/api/render-ebook-pdf` (Puppeteer, HTML real) en lugar de `/api/generate-ebook-pdf` (PDFKit, texto plano)
+- La serialización para Puppeteer oculta el toolbar, toma `document.documentElement.outerHTML`, lo envía al endpoint
+
+### Límite de ebooks (commit `eaeb08b`)
+Pro y Growth subidos temporalmente a 999 ebooks para que Sandra pueda probar sin restricciones. **REVERTIR después de confirmar que el PDF funciona**: Pro → 5, Growth → 20 en `app.js → PlanLimits`.
+
+### Flujo de PDF actual (post-fix)
+1. Usuario abre un ebook en `ebook-builder.html`
+2. Click "Vista previa PDF" → guarda el ebook → abre `ebook-print.html?id=X` en pestaña nueva
+3. En `ebook-print.html`:
+   - **"Imprimir / Guardar PDF"** → `window.print()` (diálogo del browser, recomendado)
+   - **"Descargar PDF final"** → serializa el HTML de la página → POST a `/api/render-ebook-pdf` → Puppeteer genera PDF → descarga
+
+### Lecciones clave
+- **`ensureEbookVisuals` no debe mutar datos del ebook en el render path**. Debe usarse solo en el flujo de descarga y sobre una copia, no sobre el objeto original.
+- **html2canvas + jsPDF en iframe** es frágil para fonts externos y A4 exacto. La alternativa correcta es siempre CSS `@page` + `window.print()` o Puppeteer server-side.
+- **Revisar el contexto de ejecución**: el botón "Descargar PDF final" de `ebook-print.html` llamaba a PDFKit que solo maneja texto plano. El endpoint de Puppeteer (`/api/render-ebook-pdf`) ya existía y es el correcto — solo había que conectarlo.
+- **Los checks de existencia deben funcionar con el formato actual del dato**, no solo con el formato en que fue generado originalmente. Si `body_md` puede ser markdown O HTML, los checks deben cubrir ambos.
