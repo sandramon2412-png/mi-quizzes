@@ -1356,7 +1356,7 @@ REGLAS GENERALES:
 
 // ── Groq API (vía proxy con master key de la plataforma) ───
 const Groq = {
-  async _call(messages, maxTokens = 3000) {
+  async _call(messages, maxTokens = 3000, model = 'llama-3.3-70b-versatile') {
     const doRequest = async (token) => fetch(`${SUPABASE_URL}/functions/v1/groq-proxy`, {
       method: 'POST',
       headers: {
@@ -1364,7 +1364,7 @@ const Groq = {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'llama-3.3-70b-versatile',
+        model,
         max_tokens: maxTokens,
         messages,
       }),
@@ -1454,12 +1454,21 @@ const Groq = {
     const fullMessages = opts.system
       ? [{ role: 'system', content: opts.system }, ...messages]
       : messages;
-    return this._call(fullMessages, maxTokens);
+    return this._call(fullMessages, maxTokens, opts.model);
+  },
+
+  // Igual que _callWithSystem pero usa llama-3.1-8b-instant (131K TPM) para ebooks
+  // llama-3.3-70b-versatile solo tiene 12K TPM — demasiado bajo para generación de capítulos
+  _callWithSystemEbook(messages, maxTokens = 3000, opts = {}) {
+    const fullMessages = opts.system
+      ? [{ role: 'system', content: opts.system }, ...messages]
+      : messages;
+    return this._call(fullMessages, maxTokens, 'llama-3.1-8b-instant');
   },
 
   async generateEbookOutline(brief, docType = 'ebook') {
     const ctx = {
-      _call: this._callWithSystem.bind(this),
+      _call: this._callWithSystemEbook.bind(this),
       _parseJSONLoose: Claude._parseJSONLoose.bind(Claude),
       _docTypePrompt: Claude._docTypePrompt.bind(Claude),
     };
@@ -1468,7 +1477,7 @@ const Groq = {
 
   async generateEbookChapter(params) {
     const ctx = {
-      _call: this._callWithSystem.bind(this),
+      _call: this._callWithSystemEbook.bind(this),
       _parseJSONLoose: Claude._parseJSONLoose.bind(Claude),
       _docTypePrompt: Claude._docTypePrompt.bind(Claude),
       _docPatternRules: Claude._docPatternRules.bind(Claude),
@@ -1479,7 +1488,7 @@ const Groq = {
 
   async generateEbook(brief, history = [], onProgress, docType = 'ebook') {
     const ctx = {
-      _call: this._callWithSystem.bind(this),
+      _call: this._callWithSystemEbook.bind(this),
       _parseJSONLoose: Claude._parseJSONLoose.bind(Claude),
       _extractFromBadJSON: Claude._extractFromBadJSON.bind(Claude),
       _ebookChatSystemPrompt: Claude._ebookChatSystemPrompt.bind(Claude),
