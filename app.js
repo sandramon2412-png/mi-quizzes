@@ -1375,9 +1375,17 @@ const Groq = {
 
     let res = await doRequest(token);
     if (res.status === 401) {
-      // Retry once with fresh token
       token = await Auth.getToken();
       if (token) res = await doRequest(token);
+    }
+    // Rate limit: Groq devuelve "try again in Xs" — esperamos ese tiempo y reintentamos
+    if (res.status === 429) {
+      const err = await res.json().catch(() => ({}));
+      const msg = err.error?.message || '';
+      const waitMatch = msg.match(/try again in ([\d.]+)s/i);
+      const waitMs = waitMatch ? Math.min(Math.ceil(parseFloat(waitMatch[1]) * 1000) + 500, 12000) : 4000;
+      await new Promise(r => setTimeout(r, waitMs));
+      res = await doRequest(token);
     }
     if (!res.ok) {
       const err = await res.json().catch(() => ({}));
