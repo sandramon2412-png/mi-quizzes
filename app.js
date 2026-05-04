@@ -1439,6 +1439,50 @@ const Groq = {
       niche, product
     );
   },
+
+  // Wraps _call para que el campo `system` de opts se inserte como primer mensaje
+  // (Groq/OpenAI-compatible: system va en el array de messages, no en campo separado)
+  _callWithSystem(messages, maxTokens = 3000, opts = {}) {
+    const fullMessages = opts.system
+      ? [{ role: 'system', content: opts.system }, ...messages]
+      : messages;
+    return this._call(fullMessages, maxTokens);
+  },
+
+  async generateEbookOutline(brief, docType = 'ebook') {
+    const ctx = {
+      _call: this._callWithSystem.bind(this),
+      _parseJSONLoose: Claude._parseJSONLoose.bind(Claude),
+      _docTypePrompt: Claude._docTypePrompt.bind(Claude),
+    };
+    return Claude.generateEbookOutline.call(ctx, brief, docType);
+  },
+
+  async generateEbookChapter(params) {
+    const ctx = {
+      _call: this._callWithSystem.bind(this),
+      _parseJSONLoose: Claude._parseJSONLoose.bind(Claude),
+      _docTypePrompt: Claude._docTypePrompt.bind(Claude),
+      _docPatternRules: Claude._docPatternRules.bind(Claude),
+      _docBlocksReference: Claude._docBlocksReference.bind(Claude),
+    };
+    return Claude.generateEbookChapter.call(ctx, params);
+  },
+
+  async generateEbook(brief, history = [], onProgress, docType = 'ebook') {
+    const ctx = {
+      _call: this._callWithSystem.bind(this),
+      _parseJSONLoose: Claude._parseJSONLoose.bind(Claude),
+      _extractFromBadJSON: Claude._extractFromBadJSON.bind(Claude),
+      _ebookChatSystemPrompt: Claude._ebookChatSystemPrompt.bind(Claude),
+      _docTypePrompt: Claude._docTypePrompt.bind(Claude),
+      _docPatternRules: Claude._docPatternRules.bind(Claude),
+      _docBlocksReference: Claude._docBlocksReference.bind(Claude),
+      generateEbookOutline: this.generateEbookOutline.bind(this),
+      generateEbookChapter: this.generateEbookChapter.bind(this),
+    };
+    return Claude.generateEbook.call(ctx, brief, history, onProgress, docType);
+  },
 };
 
 // ── AI helper: CREACIÓN paga por la plataforma ─────────────
@@ -1473,14 +1517,23 @@ const AI = {
   async generateLanding(brief, history = []) {
     return Claude.generateLanding(brief, history);
   },
-  // Complejo: ebook estructurado (JSON con capítulos en Markdown)
+  // Complejo: ebook estructurado — intenta Claude, cae a Groq si no hay créditos
   async generateEbook(brief, history = [], onProgress, docType = 'ebook') {
-    return Claude.generateEbook(brief, history, onProgress, docType);
+    try {
+      return await Claude.generateEbook(brief, history, onProgress, docType);
+    } catch (e) {
+      console.warn('[ebook] Claude falló, usando Groq como fallback:', e.message);
+      return Groq.generateEbook(brief, history, onProgress, docType);
+    }
   },
-  // Complejo: regenera UNA sola sección de un documento (usado por el botón
-  // "Expandir con IA" del builder para rellenar páginas cortas sin regenerar todo)
+  // Complejo: regenera UNA sola sección — intenta Claude, cae a Groq si no hay créditos
   async generateEbookChapter(params) {
-    return Claude.generateEbookChapter(params);
+    try {
+      return await Claude.generateEbookChapter(params);
+    } catch (e) {
+      console.warn('[ebook-chapter] Claude falló, usando Groq como fallback:', e.message);
+      return Groq.generateEbookChapter(params);
+    }
   },
 };
 
