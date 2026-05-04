@@ -105,9 +105,21 @@
   td { padding:8px 10px; border-top:1px solid var(--doc-border); }
   tbody tr:nth-child(even) td { background:var(--doc-surface-2); }
   .feature-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:12px; margin:12px 0; break-inside:avoid; page-break-inside:avoid; }
+  .feature-grid.cols-3 { grid-template-columns:repeat(3,1fr); }
+  .feature-item { background:var(--doc-surface); border-radius:10px; padding:10px 12px; break-inside:avoid; page-break-inside:avoid; }
   .feature-icon { width:30px; height:30px; border-radius:50%; background:var(--doc-primary); color:#fff; display:flex; align-items:center; justify-content:center; font-family:'Material Symbols Outlined'; font-size:16px; }
   .feature-title { font-family:'Plus Jakarta Sans',sans-serif; font-size:13px; font-weight:800; margin:5px 0 2px; }
   .feature-desc { font-size:11.5px; line-height:1.45; color:var(--doc-muted); margin:0; }
+  ol.steps { list-style:none; counter-reset:steps-ctr; padding:0; margin:0 0 12px; }
+  ol.steps li { counter-increment:steps-ctr; position:relative; padding:8px 10px 8px 40px; margin:5px 0; border-radius:9px; background:var(--doc-surface-2); font-size:12.7px; line-height:1.48; break-inside:avoid; page-break-inside:avoid; }
+  ol.steps li::before { content:counter(steps-ctr); position:absolute; left:9px; top:8px; width:21px; height:21px; border-radius:6px; background:var(--doc-primary); color:#fff; font-family:'Plus Jakarta Sans',sans-serif; font-size:10px; font-weight:800; display:flex; align-items:center; justify-content:center; }
+  .callout { display:block; margin:12px 0; padding:10px 14px; border-radius:0 10px 10px 0; border-left:4px solid var(--doc-accent); background:var(--doc-surface); font-family:'Plus Jakarta Sans',sans-serif; font-size:12px; line-height:1.55; break-inside:avoid; page-break-inside:avoid; }
+  .callout strong { display:block; font-size:10px; font-weight:800; text-transform:uppercase; letter-spacing:.08em; margin-bottom:4px; color:var(--doc-primary); }
+  .callout p { margin:0; color:var(--doc-fg); }
+  .callout-tip { border-color:var(--doc-primary); } .callout-tip strong { color:var(--doc-primary); }
+  .callout-warn { background:#fff5f0; border-color:#ea6d3a; } .callout-warn strong { color:#d95a2a; }
+  .callout-info { border-color:var(--doc-accent); } .callout-info strong { color:var(--doc-accent); }
+  .callout-quote { font-style:italic; } .callout-quote p { font-size:14px; }
   .numbered-card { display:flex; margin:9px 0; border-radius:10px; overflow:hidden; background:var(--doc-surface-2); break-inside:avoid; page-break-inside:avoid; }
   .numbered-card .n { flex:0 0 46px; background:var(--doc-primary); color:#fff; font-family:'Plus Jakarta Sans',sans-serif; font-size:20px; font-weight:800; display:flex; align-items:center; justify-content:center; }
   .numbered-card .body { padding:10px 12px; }
@@ -156,8 +168,72 @@
   if (id) back.href = './ebook-builder.html?id=' + encodeURIComponent(id);
 
   const escapeHtml = (s) => (s || '').toString().replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-  const stripLegacyTitle = (title) => (title || '').replace(/^cap[ií]tulo\s+\d+\s*[:\\-–—]?\\s*/i, '').trim();
+  const stripLegacyTitle = (title) => (title || '').replace(/^cap[ií]tulo\s+\d+\s*[:\-–—]?\s*/i, '').trim();
   if (window.marked?.setOptions) marked.setOptions({ gfm:true, breaks:false });
+
+  // ── smartMd: convert markdown patterns to visual HTML blocks ──
+  const _ICONS = ['check_circle','rocket_launch','insights','verified','campaign','auto_awesome','paid','schedule','analytics','design_services','groups','handshake','trending_up','workspace_premium','savings','article','palette','videocam','language','target'];
+  function _upgradeBlock(block) {
+    const lines = block.split('\n').filter(l => l.trim());
+    if (!lines.length) return block;
+    if (/^<[a-zA-Z]/.test(lines[0].trim())) return block; // already HTML
+    const bulletBoldRe = /^[-*•]\s+\*\*(.+?)\*\*(?:\s*[—–\-:]\s*(.+))?$/;
+    const isBulletLine = l => /^[-*•]\s/.test(l.trim());
+    const isBoldBullet = l => bulletBoldRe.test(l.trim());
+    if (lines.filter(isBoldBullet).length >= 3) {
+      const items = [];
+      for (let i = 0; i < lines.length; i++) {
+        const m = lines[i].trim().match(bulletBoldRe);
+        if (m) {
+          let desc = m[2] || '';
+          if (!desc && i + 1 < lines.length && !isBulletLine(lines[i+1]) && !/^#+\s/.test(lines[i+1].trim())) { desc = lines[i+1].trim(); i++; }
+          items.push({ title: m[1], desc });
+        }
+      }
+      if (items.length >= 3) {
+        const cls = items.length >= 5 ? 'feature-grid cols-3' : 'feature-grid';
+        return `<div class="${cls}">\n${items.map(({title,desc},i)=>`<div class="feature-item"><div class="feature-icon">${_ICONS[i%_ICONS.length]}</div><h4 class="feature-title">${title}</h4>${desc?`<p class="feature-desc">${desc}</p>`:''}</div>`).join('\n')}\n</div>`;
+      }
+    }
+    const numRe = /^(\d+)[.)]\s+\*\*(.+?)\*\*(?:\s*[—–\-:]\s*(.+))?$/;
+    const numBoldLines = lines.filter(l => numRe.test(l.trim()));
+    if (numBoldLines.length >= 2 && numBoldLines.length <= 8) {
+      const cards = []; let i = 0;
+      while (i < lines.length) {
+        const m = lines[i].trim().match(numRe);
+        if (m) { let desc = m[3]||''; if (!desc && i+1<lines.length && !/^\d+[.)]/.test(lines[i+1].trim())) { desc=lines[i+1].trim(); i++; } cards.push(`<div class="numbered-card"><div class="n">${m[1]}</div><div class="body"><h4>${m[2]}</h4>${desc?`<p>${desc}</p>`:''}</div></div>`); }
+        i++;
+      }
+      if (cards.length >= 2) return cards.join('\n');
+    }
+    const stepRe = /^(\d+)[.)]\s+(.+)$/;
+    const stepLines = lines.filter(l => stepRe.test(l.trim()));
+    if (stepLines.length >= 3 && stepLines.length === lines.length) return `<ol class="steps">\n${stepLines.map(l=>{const m=l.trim().match(stepRe);return `<li>${m[2]}</li>`;}).join('\n')}\n</ol>`;
+    if (lines.every(l => /^>\s?/.test(l))) {
+      const text = lines.map(l=>l.replace(/^>\s?/,'')).join(' ').trim();
+      const tl = text.toLowerCase();
+      let type='info', label='Dato clave';
+      if (/^(tip|💡)/.test(tl)){type='tip';label='Tip';}
+      else if (/^(cuidado|⚠|advertencia|atenci)/.test(tl)){type='warn';label='Cuidado';}
+      else if (/^(nota|importante)/.test(tl)){type='info';label='Nota';}
+      else if (/^["""«]/.test(text)){type='quote';label='';}
+      const body = text.replace(/^(tip|cuidado|nota|importante|advertencia|dato clave|💡|⚠️)[:\s]*/i,'').trim();
+      if (type==='quote') return `<div class="callout callout-quote"><p>${body}</p></div>`;
+      return `<div class="callout callout-${type}"><strong>${label}</strong><p>${body}</p></div>`;
+    }
+    return block;
+  }
+  function smartMd(md) {
+    if (!md) return '';
+    let cleaned = md
+      .replace(/P[ÁA]GINA\s+\d+\s*[–\-—]\s*[^\n]*?\btext\b/gi,'')
+      .replace(/P[ÁA]GINA\s+\d+\s*[–\-—]\s*[A-ZÁÉÍÓÚÑ][A-ZÁÉÍÓÚÑ ]{2,}$/gim,'')
+      .replace(/\bSlide\s+\d+\s*[:\-–—][^\n]*/gi,'')
+      .replace(/^\s*text\s*$/gim,'').replace(/\s+text\s*$/gim,'')
+      .replace(/\[Fecha\s+actual\]/gi,'').replace(/\n{3,}/g,'\n\n').trim();
+    let pre = cleaned.replace(/((?:^|\n)[-*•] \*\*[^\n]+\n?)(\n+)([-*•] \*\*)/gm,'$1\n$3');
+    return marked.parse(pre.split(/\n\n+/).map(_upgradeBlock).join('\n\n'));
+  }
 
   async function loadEbook() {
     let row = null;
@@ -167,7 +243,7 @@
   }
 
   function renderMarkdown(md) {
-    return marked.parse(md || '');
+    return smartMd(md || '');
   }
 
   function inferTheme(row) {
@@ -236,26 +312,38 @@
     const btn = document.getElementById('server-pdf-btn');
     const original = btn.innerHTML;
     btn.disabled = true;
-    btn.innerHTML = '<span class="material-symbols-outlined" style="font-size:16px">hourglass_empty</span>Generando...';
+    btn.innerHTML = '<span class="material-symbols-outlined" style="font-size:16px">hourglass_empty</span>Generando PDF...';
     try {
-      const response = await fetch('/api/generate-ebook-pdf', {
+      // Build the full page HTML to send to Puppeteer (hide toolbar first)
+      const toolbar = document.querySelector('.toolbar');
+      if (toolbar) toolbar.style.display = 'none';
+      const html = '<!DOCTYPE html>' + document.documentElement.outerHTML;
+      if (toolbar) toolbar.style.display = '';
+
+      const filename = `${(currentBook.title || 'ebook').replace(/[\\/:*?"<>|]+/g, '').trim() || 'ebook'}.pdf`;
+      const response = await fetch('/api/render-ebook-pdf', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ebook: currentBook }),
+        body: JSON.stringify({ html, filename }),
       });
-      if (!response.ok) throw new Error('No pude generar el PDF final en el servidor.');
+      if (!response.ok) {
+        const err = await response.json().catch(() => ({}));
+        throw new Error(err.error || 'No pude generar el PDF en el servidor.');
+      }
       const blob = await response.blob();
-      if (!blob || blob.size < 1024) throw new Error('El PDF llego vacio.');
+      if (!blob || blob.size < 1024) throw new Error('El PDF llegó vacío.');
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = `${(currentBook.title || 'ebook').replace(/[\\/:*?"<>|]+/g, '').trim() || 'ebook'}.pdf`;
+      a.download = filename;
       document.body.appendChild(a);
       a.click();
       a.remove();
       setTimeout(() => URL.revokeObjectURL(url), 2000);
     } catch (error) {
       alert(error.message || 'No pude generar el PDF final.');
+      const toolbar = document.querySelector('.toolbar');
+      if (toolbar) toolbar.style.display = '';
     } finally {
       btn.disabled = false;
       btn.innerHTML = original;

@@ -810,6 +810,7 @@
       if (Array.isArray(book.chapters)) {
         book.chapters.forEach((ch, i) => {
           const body = ch.body_md || '';
+          // Detect figures in both markdown and HTML (body may already be HTML after editing)
           if (/<(figure|img)\b/i.test(body) || /class=["']image-card/i.test(body)) return;
           if (i > 0 && i % 2 !== 0) return;
           const prompt = buildVisualPrompt(book, ch.title || `section ${i + 1}`);
@@ -821,10 +822,12 @@
         });
         book.chapters.forEach((ch, i) => {
           let body = ch.body_md || '';
-          if (!/\|.+\|/.test(body) && i % 2 === 0) {
+          // Detect tables in both markdown (|...|) AND HTML (<table) to prevent duplicates
+          if (!/\|.+\|/.test(body) && !/<table[\s>]/i.test(body) && i % 2 === 0) {
             body += `\n\n## Mapa de implementacion\n\n${premiumTable(ch.title || 'Plan')}`;
           }
-          if (!/callout-|^>\s?/m.test(body)) {
+          // Detect callouts in both markdown (>) AND HTML (class="callout") to prevent duplicates
+          if (!/callout-|^>\s?/m.test(body) && !/<[^>]*class=["'][^"']*callout/i.test(body)) {
             body += `\n\n> Nota: usa esta seccion como una guia practica. Ajusta cada paso al contexto real de tu oferta, tu audiencia y el resultado que quieres prometer.`;
           }
           ch.body_md = body;
@@ -1013,7 +1016,6 @@
         coverImageBtn?.classList.add('hidden');
         return;
       }
-      ensureEbookVisuals(ebook);
       previewEmpty.classList.add('hidden');
       ebookPreview.classList.remove('hidden');
       downloadBtn.classList.remove('hidden');
@@ -2548,20 +2550,20 @@
 
     downloadBtn.onclick = async () => {
       if (!ebook || !ebook.chapters?.length) return;
-      ensureEbookVisuals(ebook);
       syncEbookTheme(ebook);
-      setStatus('Preparando vista previa PDF...');
+      setStatus('Guardando...');
       downloadBtn.disabled = true;
       const originalDownloadText = downloadBtn.innerHTML;
       downloadBtn.innerHTML = '<span class="thinking-dot"></span><span class="thinking-dot"></span><span class="thinking-dot"></span>';
-
       try {
-        await optimizeEbookEmbeddedImages(ebook);
+        ebook.chapters.forEach((_, i) => {
+          const body = collectChapterBody(i);
+          if (body) ebook.chapters[i].body_md = body;
+        });
         await persistEbook();
-        await openDownloadPreviewDeprecated();
+        window.open(`./ebook-print.html?id=${encodeURIComponent(ebook.id)}`, '_blank');
       } catch (err) {
-        console.warn('[pdf] preview unavailable', err);
-        toast('No pude abrir la vista previa PDF: ' + (err?.message || 'error'), 'err');
+        toast('Error al abrir vista PDF: ' + (err?.message || 'error'), 'err');
       } finally {
         setStatus('');
         downloadBtn.disabled = false;
