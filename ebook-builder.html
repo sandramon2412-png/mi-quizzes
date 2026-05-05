@@ -490,6 +490,16 @@
           </select>
         </div>
         <div>
+          <label class="text-[11px] font-semibold text-on-surface-variant block mb-1">Imágenes por sección</label>
+          <select id="eb-images" class="w-full bg-surface-container border border-outline-variant/40 rounded-lg px-3 py-2 text-sm focus:border-primary focus:ring-0 outline-none">
+            <option value="none">Sin imágenes</option>
+            <option value="low">Pocas — 1 cada 3 secciones</option>
+            <option value="medium" selected>Normal — 1 cada 2 secciones</option>
+            <option value="all">Una por sección</option>
+          </select>
+          <p class="text-[10px] text-on-surface-variant/60 mt-1">Las imágenes son placeholders editables — podés cambiarlas después.</p>
+        </div>
+        <div>
           <label class="text-[11px] font-semibold text-on-surface-variant block mb-1">Detalles extra (opcional)</label>
           <textarea id="eb-extras" rows="2" placeholder="Ej: agregá un capítulo de conclusión, evitá tecnicismos, incluí ejemplos…"
                     class="w-full bg-surface-container border border-outline-variant/40 rounded-lg px-3 py-2 text-sm focus:border-primary focus:ring-0 outline-none resize-none"></textarea>
@@ -834,11 +844,16 @@
         book.cover.imagePrompt = book.cover.imagePrompt || buildVisualPrompt(book, 'cover image');
       }
       if (Array.isArray(book.chapters)) {
+        // Image density: read from saved settings, then from form selector
+        const density = book.settings?.imageDensity || document.getElementById('eb-images')?.value || 'medium';
         book.chapters.forEach((ch, i) => {
           const body = ch.body_md || '';
           // Detect figures in both markdown and HTML (body may already be HTML after editing)
           if (/<(figure|img)\b/i.test(body) || /class=["']image-card/i.test(body)) return;
-          if (i > 0 && i % 2 !== 0) return;
+          if (density === 'none') return;
+          if (density === 'low'    && i % 3 !== 0) return;
+          if (density === 'medium' && i > 0 && i % 2 !== 0) return;
+          // 'all' → no skip
           const prompt = buildVisualPrompt(book, ch.title || `section ${i + 1}`);
           const fig = imageFigure(prompt, ch.title ? `Visual: ${ch.title}` : 'Visual editorial', i);
           const parts = body.split(/\n\s*\n/);
@@ -2241,6 +2256,7 @@
       const extras = document.getElementById('eb-extras').value.trim();
       const docType = document.getElementById('eb-doctype')?.value || 'ebook';
       const theme = document.getElementById('eb-theme')?.value || 'light';
+      const imageDensity = document.getElementById('eb-images')?.value || 'medium';
 
       let brief = '';
       let sourceMaterial = '';
@@ -2356,13 +2372,14 @@
             brief,
             chapters: data.chapters || [],
             cover: { theme, gradientFrom: themeGrad[0], gradientTo: themeGrad[1], subtitle: data.subtitle || '' },
-            settings: { theme, docType },
+            settings: { theme, docType, imageDensity },
             messages: history,
           });
         } else {
           ebook.chapters = data.chapters || [];
           ebook.cover = { ...(ebook.cover || {}), theme, gradientFrom: themeGrad[0], gradientTo: themeGrad[1], subtitle: data.subtitle || ebook.cover?.subtitle || '' };
           ebook.docType = docType;
+          if (ebook.settings) ebook.settings.imageDensity = imageDensity;
           ebook.theme = theme;
           ebook.settings = { ...(ebook.settings || {}), theme, docType };
           if (data.title && !titleEl.value.trim()) { ebook.title = data.title; titleEl.value = data.title; }
