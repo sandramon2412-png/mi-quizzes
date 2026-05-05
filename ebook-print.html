@@ -131,6 +131,13 @@
   figcaption { padding:7px 10px 9px; font-family:'Plus Jakarta Sans',sans-serif; font-size:9.5px; line-height:1.35; color:var(--doc-muted); text-transform:uppercase; letter-spacing:.08em; }
   .empty { min-height:70vh; display:grid; place-items:center; color:#fff; font-family:'Plus Jakarta Sans',sans-serif; }
   .json-export { position: fixed; left: -9999px; top: 0; width: 1px; height: 1px; overflow: hidden; white-space: pre-wrap; }
+  .chapter-page {
+    width:210mm; min-height:230mm; margin:16px auto; padding:14mm 16mm;
+    background:var(--doc-bg); color:var(--doc-fg);
+    box-shadow:0 2px 20px rgba(0,0,0,.2);
+    break-before:page; page-break-before:always;
+  }
+  .chapter-page:first-of-type { break-before:auto; page-break-before:auto; }
   @page { size:A4; margin:14mm 16mm; }
   @page:first { margin:0; }
   @media print {
@@ -138,7 +145,19 @@
     .toolbar { display:none !important; }
     .page-shell { background:#fff !important; padding:0 !important; }
     .cover { width:210mm; height:297mm; margin:0; box-shadow:none; }
-    .document { width:auto; min-height:0; margin:0; padding:0; background:var(--doc-bg); }
+    .chapter-page { margin:0 !important; box-shadow:none !important; min-height:0 !important; }
+    /* Dark-neon: text is light-on-dark in browser but printers strip backgrounds.
+       Force white background + dark text so the PDF is always readable. */
+    body.theme-dark-neon .chapter-page { background:#ffffff !important; color:#1a1a1a !important; }
+    body.theme-dark-neon .chapter h2 { color:#4d7cff !important; -webkit-text-fill-color:#4d7cff !important; }
+    body.theme-dark-neon .chapter h3,
+    body.theme-dark-neon .chapter p,
+    body.theme-dark-neon .chapter li { color:#1a1a1a !important; }
+    body.theme-dark-neon .chapter ul li { background:#f0f5ff !important; }
+    body.theme-dark-neon .chapter ol li { background:#f7f8fb !important; }
+    body.theme-dark-neon .chapter blockquote,
+    body.theme-dark-neon .chapter .callout { background:#f0f5ff !important; color:#1a1a1a !important; }
+    body.theme-dark-neon .chapter td { color:#1a1a1a !important; }
   }
 </style>
 </head>
@@ -286,12 +305,14 @@
         </div>
       </section>`;
     const chaptersHtml = book.chapters.map((chapter, index) => `
-      <section class="chapter">
-        <h2>${escapeHtml(stripLegacyTitle(chapter.title) || `Seccion ${index + 1}`)}</h2>
-        ${renderMarkdown(chapter.body_md || '')}
-      </section>
+      <div class="chapter-page">
+        <section class="chapter">
+          <h2>${escapeHtml(stripLegacyTitle(chapter.title) || `Seccion ${index + 1}`)}</h2>
+          ${renderMarkdown(chapter.body_md || '')}
+        </section>
+      </div>
     `).join('');
-    root.innerHTML = coverHtml + `<article class="document">${chaptersHtml}</article>`;
+    root.innerHTML = coverHtml + chaptersHtml;
   }
 
   try {
