@@ -121,10 +121,13 @@
   .ebook-page-label { position: absolute; top: 8px; right: 12px; font-size: 10px; font-family: 'Plus Jakarta Sans', sans-serif; color: var(--doc-muted); opacity: 0.6; font-weight: 500; letter-spacing: 0.05em; text-transform: uppercase; }
   /* Regen button lives OUTSIDE .ebook-page (sibling inside the wrap) so it
      doesn't get clipped by overflow:hidden on chapter-body-scroll for short pages. */
-  .ebook-page-wrap .eb-regen-btn { position: absolute; bottom: 14px; right: 14px; display: inline-flex; align-items: center; gap: 6px; padding: 8px 13px; border-radius: 8px; background: linear-gradient(135deg, var(--doc-primary), var(--doc-accent)); color: #fff; border: none; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 11px; font-weight: 700; cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,0.25); opacity: 0; transition: opacity 0.15s; z-index: 10; }
-  .ebook-page-wrap:hover .eb-regen-btn { opacity: 0.95; }
+  .ebook-page-wrap .eb-regen-btn { position: absolute; top: 10px; right: 12px; display: inline-flex; align-items: center; gap: 6px; padding: 8px 13px; border-radius: 8px; background: linear-gradient(135deg, var(--doc-primary), var(--doc-accent)); color: #fff; border: none; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 11px; font-weight: 700; cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,0.25); opacity: 0; transition: opacity 0.15s; z-index: 10; }
+  .ebook-page-wrap:hover .eb-regen-btn { opacity: 0.9; }
   .ebook-page-wrap .eb-regen-btn:hover { opacity: 1 !important; transform: translateY(-1px); }
   .ebook-page-wrap .eb-regen-btn:disabled { opacity: 0.5 !important; cursor: wait; }
+  /* Chapter cards: button always visible at top-right (no need to scroll to bottom) */
+  .chapter-doc-wrap .eb-regen-btn { opacity: 0.75 !important; }
+  .chapter-doc-wrap:hover .eb-regen-btn { opacity: 1 !important; }
   /* Chapter doc cards — auto-height, no content clipping.
      Reuses all .ebook-page CSS rules but removes fixed A4 constraints. */
   .ebook-page-wrap.chapter-doc-wrap {
