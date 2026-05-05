@@ -125,6 +125,29 @@
   .ebook-page-wrap:hover .eb-regen-btn { opacity: 0.95; }
   .ebook-page-wrap .eb-regen-btn:hover { opacity: 1 !important; transform: translateY(-1px); }
   .ebook-page-wrap .eb-regen-btn:disabled { opacity: 0.5 !important; cursor: wait; }
+  /* Chapter doc cards — auto-height, no content clipping.
+     Reuses all .ebook-page CSS rules but removes fixed A4 constraints. */
+  .ebook-page-wrap.chapter-doc-wrap {
+    aspect-ratio: auto;
+    overflow: visible;
+    min-height: 280px;
+  }
+  .ebook-page-wrap.chapter-doc-wrap .ebook-page {
+    position: relative !important;
+    width: 100% !important;
+    height: auto !important;
+    min-height: 260px;
+    overflow: visible !important;
+    transform: none !important;
+    padding: 32px 36px !important;
+  }
+  .ebook-page-wrap.chapter-doc-wrap .chapter-body-scroll {
+    overflow: visible !important;
+    flex: none !important;
+  }
+  .ebook-page-wrap.chapter-doc-wrap .chapter-section-body {
+    min-height: 32px;
+  }
   .ebook-page h1, .ebook-page h2, .ebook-page h3 { font-family: 'Plus Jakarta Sans', sans-serif; letter-spacing: -0.02em; }
   .ebook-page h2 { font-size: 22px; font-weight: 800; margin: 28px 0 14px; background: linear-gradient(135deg, var(--doc-primary), var(--doc-accent)); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; color: var(--doc-primary); }
   .ebook-page h3 { font-size: 17px; font-weight: 700; margin: 22px 0 10px; color: var(--doc-fg); }
@@ -1058,34 +1081,17 @@
           </div>
         </div>`;
 
-      const chapterChunks = [];
-      let activeChunk = [];
-      let activeUnits = 0;
-      ebook.chapters.forEach((ch, i) => {
-        const plain = stripHtml(ch.body_md || '');
-        const units = 18 + Math.ceil(plain.length / 650) * 22 + (/<figure|image-card|<table|\|.+\|/i.test(ch.body_md || '') ? 20 : 0);
-        if (activeChunk.length && activeUnits + units > 54) {
-          chapterChunks.push(activeChunk);
-          activeChunk = [];
-          activeUnits = 0;
-        }
-        activeChunk.push({ ch, i });
-        activeUnits += units;
-      });
-      if (activeChunk.length) chapterChunks.push(activeChunk);
-
-      const chaptersHtml = chapterChunks.map((chunk, pageIndex) => `
-        <div class="ebook-page-wrap" data-theme="${escapeHtml(theme)}">
-          <div class="ebook-page chapter-page" data-chapter-idx="${pageIndex}">
-            <div class="chapter-body-scroll" data-page-idx="${pageIndex}">
-              ${chunk.map(({ ch, i }) => `
-                <section class="chapter-section" data-chapter-idx="${i}">
-                  <h2 class="flow-title" data-edit="chapter-title" data-idx="${i}">${escapeHtml(ch.title || `Seccion ${i + 1}`)}</h2>
-                  <div class="chapter-section-body" data-edit="chapter-section-body" data-idx="${i}">${smartMd(ch.body_md || '')}</div>
-                </section>
-              `).join('')}
+      // One card per chapter — no pagination, no overflow:hidden clipping
+      const chaptersHtml = ebook.chapters.map((ch, i) => `
+        <div class="ebook-page-wrap chapter-doc-wrap" data-theme="${escapeHtml(theme)}" data-chapter-doc="${i}">
+          <div class="ebook-page chapter-page" data-chapter-idx="${i}">
+            <div class="chapter-body-scroll" data-page-idx="${i}">
+              <section class="chapter-section" data-chapter-idx="${i}">
+                <h2 class="flow-title" data-edit="chapter-title" data-idx="${i}">${escapeHtml(ch.title || `Sección ${i + 1}`)}</h2>
+                <div class="chapter-section-body" data-edit="chapter-section-body" data-idx="${i}">${smartMd(ch.body_md || '')}</div>
+              </section>
             </div>
-            <div class="ebook-page-label">Pagina ${pageIndex + 1} · A4</div>
+            <div class="ebook-page-label">Sección ${i + 1}</div>
           </div>
         </div>`).join('');
 
@@ -1206,7 +1212,7 @@
     };
     const applyThemeInline = (theme) => {
       const vars = THEME_VARS[theme] || THEME_VARS.light;
-      ebookPages.querySelectorAll('.ebook-page-wrap').forEach(wrap => {
+      ebookPages.querySelectorAll('.ebook-page-wrap, .chapter-doc-wrap').forEach(wrap => {
         wrap.setAttribute('data-theme', theme);
         for (const [k, v] of Object.entries(vars)) wrap.style.setProperty(k, v);
       });
@@ -1295,7 +1301,7 @@
     // wrapper's width via transform. This keeps line-wrap identical to the PDF.
     const A4_WIDTH_CSS_PX = 210 * (96 / 25.4); // ≈ 793.7px
     function applyPageScales() {
-      ebookPages.querySelectorAll('.ebook-page-wrap').forEach(wrap => {
+      ebookPages.querySelectorAll('.ebook-page-wrap:not(.chapter-doc-wrap)').forEach(wrap => {
         const page = wrap.querySelector('.ebook-page');
         if (!page) return;
         const w = wrap.clientWidth;
