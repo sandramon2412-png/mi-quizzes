@@ -126,7 +126,7 @@
   .ebook-page-wrap .eb-regen-btn:hover { opacity: 1 !important; transform: translateY(-1px); }
   .ebook-page-wrap .eb-regen-btn:disabled { opacity: 0.5 !important; cursor: wait; }
   /* Chapter cards: button always visible at top-right (no need to scroll to bottom) */
-  .chapter-doc-wrap .eb-regen-btn { opacity: 0.75 !important; }
+  .chapter-doc-wrap .eb-regen-btn { opacity: 0.75 !important; pointer-events: auto !important; }
   .chapter-doc-wrap:hover .eb-regen-btn { opacity: 1 !important; }
   /* Chapter doc cards — auto-height, no content clipping.
      Reuses all .ebook-page CSS rules but removes fixed A4 constraints. */
@@ -1119,16 +1119,19 @@
         if (idx == null) return;
         const btn = document.createElement('button');
         btn.className = 'eb-regen-btn';
+        btn.type = 'button';
         btn.dataset.regenIdx = idx;
         btn.title = 'Regenerar esta sección con IA';
-        btn.contentEditable = 'false';
         btn.innerHTML = '<span class="material-symbols-outlined" style="font-size:14px;vertical-align:middle">auto_awesome</span><span>Expandir con IA</span>';
-        btn.addEventListener('click', async (e) => {
+        btn.onclick = async (e) => {
           e.preventDefault(); e.stopPropagation();
-          if (!ebook || btn.disabled) return;
+          if (btn.disabled) return;
           const i = parseInt(btn.dataset.regenIdx, 10);
+          if (isNaN(i) || !ebook?.chapters?.[i]) {
+            toast('No se encontró la sección. Recargá la página.', 'err');
+            return;
+          }
           const ch = ebook.chapters[i];
-          if (!ch) return;
           btn.disabled = true;
           const originalHtml = btn.innerHTML;
           btn.innerHTML = '<span class="thinking-dot"></span><span class="thinking-dot"></span><span class="thinking-dot"></span>';
@@ -1137,6 +1140,7 @@
             const { tone, audience, docType, title, cover, chapters } = ebook;
             const existingBody = (ch.body_md || '').replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
             const sourceExcerpt = existingBody ? `Contenido actual (expandí y mejorá sobre esto):\n${existingBody}` : '';
+            if (typeof AI?.generateEbookChapter !== 'function') throw new Error('AI.generateEbookChapter no está disponible');
             const result = await AI.generateEbookChapter({
               bookTitle: title || 'Documento',
               bookSubtitle: cover?.subtitle || '',
@@ -1148,6 +1152,7 @@
               audience: audience || '',
               docType: docType || 'ebook',
             });
+            if (!result?.body_md) throw new Error('La IA devolvió contenido vacío');
             ebook.chapters[i].body_md = result.body_md;
             scheduleSave();
             renderEbookPreview();
@@ -1155,7 +1160,7 @@
             setStatus('');
           } catch (err) {
             console.error('[expand] failed:', err);
-            toast('No se pudo expandir: ' + (err?.message || 'error'), 'err');
+            toast('Error al expandir: ' + (err?.message || 'error desconocido'), 'err');
             btn.disabled = false;
             btn.innerHTML = originalHtml;
             setStatus('');
