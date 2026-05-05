@@ -132,12 +132,12 @@
   .empty { min-height:70vh; display:grid; place-items:center; color:#fff; font-family:'Plus Jakarta Sans',sans-serif; }
   .json-export { position: fixed; left: -9999px; top: 0; width: 1px; height: 1px; overflow: hidden; white-space: pre-wrap; }
   .chapter-page {
-    width:210mm; min-height:230mm; margin:16px auto; padding:14mm 16mm;
+    width:210mm; margin:16px auto; padding:14mm 16mm;
     background:var(--doc-bg); color:var(--doc-fg);
     box-shadow:0 2px 20px rgba(0,0,0,.2);
-    break-before:page; page-break-before:always;
   }
-  .chapter-page:first-of-type { break-before:auto; page-break-before:auto; }
+  /* No break-before:page — content flows naturally across A4 pages.
+     Only block elements get break-inside:avoid to avoid cuts mid-element. */
   @page { size:A4; margin:14mm 16mm; }
   @page:first { margin:0; }
   @media print {
