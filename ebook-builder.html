@@ -754,6 +754,7 @@
           done = true;
           imageUrlModal.classList.add('hidden');
           imageUrlModal.classList.remove('flex');
+          imageUrlModal.removeEventListener('click', onBackdrop);
           imageUrlSave?.removeEventListener('click', onSave);
           imageUrlCancel?.removeEventListener('click', onCancel);
           imageUrlClose?.removeEventListener('click', onCancel);
@@ -761,6 +762,7 @@
           imageUrlFile?.removeEventListener('change', onFile);
           resolve(value);
         };
+        const onBackdrop = (e) => { if (e.target === imageUrlModal) finish(null); };
         const onCancel = () => finish(null);
         const onSave = () => {
           const value = (imageUrlInput.value || '').trim();
@@ -805,6 +807,7 @@
         if (imageUrlFile) imageUrlFile.value = '';
         imageUrlModal.classList.remove('hidden');
         imageUrlModal.classList.add('flex');
+        imageUrlModal.addEventListener('click', onBackdrop);
         imageUrlSave?.addEventListener('click', onSave);
         imageUrlCancel?.addEventListener('click', onCancel);
         imageUrlClose?.addEventListener('click', onCancel);
@@ -1274,6 +1277,7 @@
         .ebook-page:not(.cover) .callout-info,
         .ebook-page:not(.cover) .callout-quote { background: ${v['--doc-surface']} !important; border-color: ${v['--doc-accent']} !important; color: ${v['--doc-fg']} !important; }
         .ebook-page:not(.cover) .callout p { color: ${v['--doc-fg']} !important; }
+        .ebook-page:not(.cover) .callout-warn p { color: #1a1a1a !important; }
         .ebook-page:not(.cover) .stat-card,
         .ebook-page:not(.cover) .pill.accent,
         .ebook-page:not(.cover) .tab-chips .chip.active,
@@ -1434,7 +1438,7 @@
   .print-chapter th { background: var(--doc-primary); color: #fff; padding: 8px 10px; text-align: left; }
   .print-chapter td { border-top: 1px solid var(--doc-border); padding: 8px 10px; color: var(--doc-fg); }
   .print-chapter tbody tr:nth-child(even) td { background: var(--doc-surface-2); }
-  .print-chapter .feature-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin: 12px 0; break-inside: avoid; page-break-inside: avoid; }
+  .print-chapter .feature-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin: 12px 0; }
   .print-chapter .feature-item { break-inside: avoid; page-break-inside: avoid; }
   .print-chapter .feature-icon { width: 30px; height: 30px; border-radius: 50%; background: var(--doc-primary); color: #fff; display: flex; align-items: center; justify-content: center; font-family: 'Material Symbols Outlined'; font-size: 16px; }
   .print-chapter .feature-title { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 13px; font-weight: 800; margin: 5px 0 2px; color: var(--doc-fg); }
@@ -1609,7 +1613,7 @@
             ebook.chapters[idx].body_md = `${ebook.chapters[idx].body_md || ''}\n\n${imageHtml}`;
           }
           scheduleSave();
-          renderEbookPreview();
+          schedulePaginate();
         });
         sectionBody.appendChild(btn);
       });
