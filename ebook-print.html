@@ -115,7 +115,8 @@
   ol.steps li::before { content:counter(steps-ctr); position:absolute; left:9px; top:8px; width:21px; height:21px; border-radius:6px; background:var(--doc-primary); color:#fff; font-family:'Plus Jakarta Sans',sans-serif; font-size:10px; font-weight:800; display:flex; align-items:center; justify-content:center; }
   .callout { display:block; margin:12px 0; padding:10px 14px; border-radius:0 10px 10px 0; border-left:4px solid var(--doc-accent); background:var(--doc-surface); font-family:'Plus Jakarta Sans',sans-serif; font-size:12px; line-height:1.55; break-inside:avoid; page-break-inside:avoid; }
   .callout strong { display:block; font-size:10px; font-weight:800; text-transform:uppercase; letter-spacing:.08em; margin-bottom:4px; color:var(--doc-primary); }
-  .callout p { margin:0; color:var(--doc-fg); }
+  /* Callout backgrounds are always light — force text dark so dark themes don't inherit light text */
+  .callout p { margin:0; color:#1a1a1a; }
   .callout-tip { border-color:var(--doc-primary); } .callout-tip strong { color:var(--doc-primary); }
   .callout-warn { background:#fff5f0; border-color:#ea6d3a; } .callout-warn strong { color:#d95a2a; }
   .callout-info { border-color:var(--doc-accent); } .callout-info strong { color:var(--doc-accent); }
@@ -129,6 +130,22 @@
   .image-visual::before { content:''; position:absolute; inset:0; background:linear-gradient(120deg,rgba(255,255,255,.20) 0 18%,transparent 18% 31%,rgba(255,255,255,.13) 31% 44%,transparent 44% 100%); }
   .image-visual span { position:relative; z-index:1; font-family:'Plus Jakarta Sans',sans-serif; font-size:10px; font-weight:800; letter-spacing:.12em; text-transform:uppercase; }
   figcaption { padding:7px 10px 9px; font-family:'Plus Jakarta Sans',sans-serif; font-size:9.5px; line-height:1.35; color:var(--doc-muted); text-transform:uppercase; letter-spacing:.08em; }
+  /* ── Extra visual blocks (stat-card, pricing-card, pill, tab-chips) ── */
+  .stat-card { display:inline-flex; flex-direction:column; padding:18px 22px; margin:16px 12px 16px 0; border-radius:14px; background:linear-gradient(135deg,var(--doc-primary),var(--doc-accent)); color:#fff; min-width:160px; font-family:'Plus Jakarta Sans',sans-serif; break-inside:avoid; page-break-inside:avoid; vertical-align:top; }
+  .stat-card .stat-number { display:block; font-size:32px; font-weight:800; line-height:1; letter-spacing:-0.02em; }
+  .stat-card .stat-label { display:block; font-size:12px; opacity:0.9; margin-top:6px; font-weight:500; }
+  .pricing-card { display:inline-flex; flex-direction:column; padding:20px 22px; margin:10px 10px 10px 0; border-radius:14px; background:var(--doc-surface); border:1px solid var(--doc-border); min-width:200px; font-family:'Plus Jakarta Sans',sans-serif; vertical-align:top; break-inside:avoid; page-break-inside:avoid; }
+  .pricing-card .plan { font-size:12px; font-weight:700; text-transform:uppercase; letter-spacing:0.1em; color:var(--doc-accent); margin:0 0 6px; }
+  .pricing-card .price { font-size:28px; font-weight:800; color:var(--doc-fg); margin:0 0 10px; letter-spacing:-0.02em; }
+  .pricing-card .price small { font-size:13px; font-weight:500; color:var(--doc-muted); }
+  .pricing-card ul { margin:0; padding:0; list-style:none; }
+  .pricing-card ul li { font-size:12.5px; color:var(--doc-fg); padding:4px 0 4px 20px; position:relative; line-height:1.5; margin:0; }
+  .pricing-card ul li::before { content:'✓'; position:absolute; left:0; color:var(--doc-primary); font-weight:800; }
+  .pill { display:inline-block; padding:3px 10px; border-radius:999px; font-size:10.5px; font-weight:700; letter-spacing:0.08em; text-transform:uppercase; font-family:'Plus Jakarta Sans',sans-serif; background:var(--doc-surface); color:var(--doc-primary); margin:0 6px 8px 0; }
+  .pill.accent { background:linear-gradient(135deg,var(--doc-primary),var(--doc-accent)); color:#fff; }
+  .tab-chips { display:flex; flex-wrap:wrap; gap:8px; margin:16px 0; }
+  .tab-chips .chip { padding:6px 14px; border-radius:8px; background:var(--doc-surface-2); color:var(--doc-fg); font-size:12px; font-weight:600; }
+  .tab-chips .chip.active { background:linear-gradient(135deg,var(--doc-primary),var(--doc-accent)); color:#fff; }
   .empty { min-height:70vh; display:grid; place-items:center; color:#fff; font-family:'Plus Jakarta Sans',sans-serif; }
   .json-export { position: fixed; left: -9999px; top: 0; width: 1px; height: 1px; overflow: hidden; white-space: pre-wrap; }
   .chapter-page {
@@ -161,23 +178,25 @@
       --doc-surface-2: #f7f8fb;
       --doc-border: #e5e7eb;
     }
-    /* Visual blocks — explicit background so print engines never skip them */
+    /* Visual blocks — explicit background so print engines never skip them.
+       Also forces gradient elements to print with print-color-adjust:exact. */
     .feature-item { background:#f0f5ff !important; -webkit-print-color-adjust:exact; print-color-adjust:exact; }
     .callout, .callout-tip, .callout-info, .callout-quote { background:#f0f5ff !important; -webkit-print-color-adjust:exact; print-color-adjust:exact; }
-    .callout-warn { background:#fff5f0 !important; -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+    .callout-warn { background:#fff5f0 !important; border-color:#ea6d3a !important; -webkit-print-color-adjust:exact; print-color-adjust:exact; }
     .numbered-card { background:#f7f8fb !important; -webkit-print-color-adjust:exact; print-color-adjust:exact; }
-    .numbered-card .n, th, .image-visual { -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+    .numbered-card .n, th, .image-visual, .stat-card, .pill.accent, .tab-chips .chip.active { -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+    .stat-card { -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+    .pricing-card { background:#f7f8fb !important; -webkit-print-color-adjust:exact; print-color-adjust:exact; }
     .chapter ul li { background:#f0f5ff !important; -webkit-print-color-adjust:exact; print-color-adjust:exact; }
     .chapter ol:not(.steps) li, ol.steps li { background:#f7f8fb !important; -webkit-print-color-adjust:exact; print-color-adjust:exact; }
-    /* Dark/themed chapters: force white page + dark text */
-    body.theme-dark-neon .chapter-page,
-    body.theme-dark-neon .chapter-page * { background-color:transparent; color:#1a1a1a !important; }
-    body.theme-dark-neon .chapter-page { background:#ffffff !important; }
-    body.theme-dark-neon .feature-item { background:#f0f5ff !important; }
-    body.theme-dark-neon .numbered-card { background:#f7f8fb !important; }
-    body.theme-dark-neon .callout { background:#f0f5ff !important; color:#1a1a1a !important; }
-    body.theme-dark-neon .chapter ul li { background:#f0f5ff !important; }
-    body.theme-dark-neon .chapter ol li { background:#f7f8fb !important; }
+    /* Dark themes: force white chapter background + dark text.
+       Use specific selectors (no wildcard) to avoid overriding block backgrounds. */
+    body.theme-dark-neon .chapter-page { background:#ffffff !important; color:#1a1a1a !important; }
+    body.theme-dark-neon .chapter h2 { color:var(--doc-primary) !important; -webkit-text-fill-color:var(--doc-primary) !important; }
+    body.theme-dark-neon .chapter h3,
+    body.theme-dark-neon .chapter p,
+    body.theme-dark-neon .chapter li { color:#1a1a1a !important; }
+    body.theme-dark-neon .chapter td { color:#1a1a1a !important; }
   }
 </style>
 </head>
