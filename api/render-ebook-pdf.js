@@ -28,7 +28,9 @@ module.exports = async function handler(req, res) {
     });
     const page = await browser.newPage();
     await page.setJavaScriptEnabled(false);
-    await page.setContent(html, { waitUntil: ['load', 'networkidle0'], timeout: 30000 });
+    // 'load' waits for CSS/images without requiring zero-idle connections.
+    // 'networkidle0' times out when Google Fonts CDN is slow in Lambda.
+    await page.setContent(html, { waitUntil: 'load', timeout: 20000 });
     await page.emulateMediaType('print');
     const pdf = await page.pdf({
       format: 'A4',

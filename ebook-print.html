@@ -138,8 +138,7 @@
   }
   /* No break-before:page — content flows naturally across A4 pages.
      Only block elements get break-inside:avoid to avoid cuts mid-element. */
-  @page { size:A4; margin:14mm 16mm; }
-  @page:first { margin:0; }
+  @page { size:A4; margin:0; }
   @media print {
     html, body { background:#fff !important; }
     .toolbar { display:none !important; }
@@ -262,7 +261,11 @@
   }
 
   function renderMarkdown(md) {
-    return smartMd(md || '');
+    if (!md) return '';
+    // body_md is HTML when the builder's collectChapterBody ran before opening print view.
+    // Passing HTML through marked.parse() corrupts block structure; return it directly.
+    if (/^\s*</.test(md.trim())) return md;
+    return smartMd(md);
   }
 
   function inferTheme(row) {
@@ -335,11 +338,19 @@
     btn.disabled = true;
     btn.innerHTML = '<span class="material-symbols-outlined" style="font-size:16px">hourglass_empty</span>Generando PDF...';
     try {
-      // Build the full page HTML to send to Puppeteer (hide toolbar first)
+      // Build static HTML to send to Puppeteer.
+      // Strip external scripts (not needed – content already rendered) and
+      // the inline IIFE (would re-run auth/DB calls in headless context).
+      // Removing them also prevents networkidle0 timing out on failed loads.
       const toolbar = document.querySelector('.toolbar');
       if (toolbar) toolbar.style.display = 'none';
-      const html = '<!DOCTYPE html>' + document.documentElement.outerHTML;
+      let rawHtml = document.documentElement.outerHTML;
       if (toolbar) toolbar.style.display = '';
+      // Remove <script src="..."> tags (external JS files)
+      rawHtml = rawHtml.replace(/<script\b[^>]+src="[^"]*"[^>]*><\/script>/gi, '');
+      // Remove the inline async IIFE that re-initializes the page
+      rawHtml = rawHtml.replace(/<script>([\s\S]*?)<\/script>/, '');
+      const html = '<!DOCTYPE html>' + rawHtml;
 
       const filename = `${(currentBook.title || 'ebook').replace(/[\\/:*?"<>|]+/g, '').trim() || 'ebook'}.pdf`;
       const response = await fetch('/api/render-ebook-pdf', {
