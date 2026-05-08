@@ -145,18 +145,39 @@
     .page-shell { background:#fff !important; padding:0 !important; }
     .cover { width:210mm; height:297mm; margin:0; box-shadow:none; }
     .chapter-page { margin:0 !important; box-shadow:none !important; min-height:0 !important; }
-    /* Dark-neon: text is light-on-dark in browser but printers strip backgrounds.
-       Force white background + dark text so the PDF is always readable. */
-    body.theme-dark-neon .chapter-page { background:#ffffff !important; color:#1a1a1a !important; }
-    body.theme-dark-neon .chapter h2 { color:#4d7cff !important; -webkit-text-fill-color:#4d7cff !important; }
-    body.theme-dark-neon .chapter h3,
-    body.theme-dark-neon .chapter p,
-    body.theme-dark-neon .chapter li { color:#1a1a1a !important; }
+    /* Chrome sometimes fails to resolve CSS var() inside @media print, making
+       background-colored blocks invisible. Freeze all theme vars to concrete
+       light-print values so every element gets a real hex color to print. */
+    :root,
+    body.theme-dark-neon,
+    body.theme-pastel,
+    body.theme-corporate,
+    body.theme-finance,
+    body.theme-spiritual {
+      --doc-bg: #ffffff;
+      --doc-fg: #1a1a1a;
+      --doc-muted: #555555;
+      --doc-surface: #f0f5ff;
+      --doc-surface-2: #f7f8fb;
+      --doc-border: #e5e7eb;
+    }
+    /* Visual blocks — explicit background so print engines never skip them */
+    .feature-item { background:#f0f5ff !important; -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+    .callout, .callout-tip, .callout-info, .callout-quote { background:#f0f5ff !important; -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+    .callout-warn { background:#fff5f0 !important; -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+    .numbered-card { background:#f7f8fb !important; -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+    .numbered-card .n, th, .image-visual { -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+    .chapter ul li { background:#f0f5ff !important; -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+    .chapter ol:not(.steps) li, ol.steps li { background:#f7f8fb !important; -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+    /* Dark/themed chapters: force white page + dark text */
+    body.theme-dark-neon .chapter-page,
+    body.theme-dark-neon .chapter-page * { background-color:transparent; color:#1a1a1a !important; }
+    body.theme-dark-neon .chapter-page { background:#ffffff !important; }
+    body.theme-dark-neon .feature-item { background:#f0f5ff !important; }
+    body.theme-dark-neon .numbered-card { background:#f7f8fb !important; }
+    body.theme-dark-neon .callout { background:#f0f5ff !important; color:#1a1a1a !important; }
     body.theme-dark-neon .chapter ul li { background:#f0f5ff !important; }
     body.theme-dark-neon .chapter ol li { background:#f7f8fb !important; }
-    body.theme-dark-neon .chapter blockquote,
-    body.theme-dark-neon .chapter .callout { background:#f0f5ff !important; color:#1a1a1a !important; }
-    body.theme-dark-neon .chapter td { color:#1a1a1a !important; }
   }
 </style>
 </head>
@@ -331,56 +352,9 @@
   }
 
   document.getElementById('print-btn').addEventListener('click', () => window.print());
-  document.getElementById('server-pdf-btn')?.addEventListener('click', async () => {
-    if (!currentBook) return;
-    const btn = document.getElementById('server-pdf-btn');
-    const original = btn.innerHTML;
-    btn.disabled = true;
-    btn.innerHTML = '<span class="material-symbols-outlined" style="font-size:16px">hourglass_empty</span>Generando PDF...';
-    try {
-      // Build static HTML to send to Puppeteer.
-      // Strip external scripts (not needed – content already rendered) and
-      // the inline IIFE (would re-run auth/DB calls in headless context).
-      // Removing them also prevents networkidle0 timing out on failed loads.
-      const toolbar = document.querySelector('.toolbar');
-      if (toolbar) toolbar.style.display = 'none';
-      let rawHtml = document.documentElement.outerHTML;
-      if (toolbar) toolbar.style.display = '';
-      // Remove <script src="..."> tags (external JS files)
-      rawHtml = rawHtml.replace(/<script\b[^>]+src="[^"]*"[^>]*><\/script>/gi, '');
-      // Remove the inline async IIFE that re-initializes the page
-      rawHtml = rawHtml.replace(/<script>([\s\S]*?)<\/script>/, '');
-      const html = '<!DOCTYPE html>' + rawHtml;
-
-      const filename = `${(currentBook.title || 'ebook').replace(/[\\/:*?"<>|]+/g, '').trim() || 'ebook'}.pdf`;
-      const response = await fetch('/api/render-ebook-pdf', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ html, filename }),
-      });
-      if (!response.ok) {
-        const err = await response.json().catch(() => ({}));
-        throw new Error(err.error || 'No pude generar el PDF en el servidor.');
-      }
-      const blob = await response.blob();
-      if (!blob || blob.size < 1024) throw new Error('El PDF llegó vacío.');
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = filename;
-      document.body.appendChild(a);
-      a.click();
-      a.remove();
-      setTimeout(() => URL.revokeObjectURL(url), 2000);
-    } catch (error) {
-      alert(error.message || 'No pude generar el PDF final.');
-      const toolbar = document.querySelector('.toolbar');
-      if (toolbar) toolbar.style.display = '';
-    } finally {
-      btn.disabled = false;
-      btn.innerHTML = original;
-    }
-  });
+  // "Descargar PDF final" also uses window.print() — the Puppeteer server
+  // endpoint times out on Vercel free tier; the browser dialog is reliable.
+  document.getElementById('server-pdf-btn')?.addEventListener('click', () => window.print());
 })();
 </script>
 </body>
