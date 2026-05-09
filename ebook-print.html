@@ -155,17 +155,21 @@
     background:var(--doc-bg); color:var(--doc-fg);
     box-shadow:0 2px 20px rgba(0,0,0,.2);
   }
+  /* Screen: @page with no margins; chapter-page padding acts as margins */
   @page { size:A4; margin:0; }
   @media print {
+    /* Page 1 (cover): full-bleed, no margins */
+    @page :first { size:A4; margin:0; }
+    /* Pages 2+ (chapters): 14mm top/bottom, 16mm left/right — browser handles margins */
+    @page { size:A4; margin:14mm 16mm; }
     html, body { background:#fff !important; }
     .toolbar { display:none !important; }
     .page-shell { background:#fff !important; padding:0 !important; }
     .cover { width:210mm; height:297mm; margin:0; box-shadow:none; }
-    /* Chapters flow naturally across pages — no forced break per chapter.
-       This eliminates large empty gaps when a chapter doesn't fill one A4 page.
-       Each .chapter-page keeps its 14mm/16mm padding as print margins.
-       Individual blocks keep break-inside:avoid so they're never cut mid-element. */
-    .chapter-page { width:210mm !important; margin:0 !important; box-shadow:none !important; min-height:0 !important; break-before:auto; page-break-before:auto; }
+    /* Chapters flow naturally — @page margin handles spacing, so remove chapter-page
+       padding in print to avoid the 28mm double-gap (14mm bottom + 14mm top of next
+       chapter-page) that creates near-blank pages when a page break falls inside it. */
+    .chapter-page { width:100% !important; margin:0 !important; padding:0 !important; box-shadow:none !important; min-height:0 !important; break-before:auto; page-break-before:auto; }
     /* h2 stays with the paragraph that follows it — no orphaned headings */
     .chapter h2 { break-after:avoid; page-break-after:avoid; margin-top:10mm; }
     /* Chrome sometimes fails to resolve CSS var() inside @media print, making
