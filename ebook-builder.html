@@ -213,9 +213,10 @@
   .ebook-page .callout cite { display: block; margin-top: 8px; font-size: 11px; color: var(--doc-muted); font-style: normal; }
   .ebook-page .callout-tip    { background: var(--doc-surface); border-color: var(--doc-primary); }
   .ebook-page .callout-tip strong    { color: var(--doc-primary); }
-  .ebook-page .callout-warn   { background: #fff5f0; border-color: #ea6d3a; }
-  .ebook-page .callout-warn strong   { color: #d95a2a; }
-  .ebook-page-wrap[data-theme="dark-neon"] .callout-warn { background: #fff5f0 !important; }
+  /* callout-warn: semi-transparent amber — readable on both light AND dark themes */
+  .ebook-page .callout-warn   { background: rgba(234,109,58,0.13); border-color: #ea6d3a; }
+  .ebook-page .callout-warn strong   { color: #ea6d3a; }
+  .ebook-page .callout-warn p { color: var(--doc-fg); }
   .ebook-page .callout-info   { background: var(--doc-surface); border-color: var(--doc-accent); }
   .ebook-page .callout-info strong   { color: var(--doc-accent); }
   .ebook-page .callout-quote  { background: linear-gradient(135deg, var(--doc-surface) 0%, var(--doc-surface-2) 100%); border-color: var(--doc-accent); font-style: italic; }
@@ -295,8 +296,8 @@
   /* Gamma-style editorial visual blocks. These are deterministic placeholders
      with saved prompts, ready to connect to a controlled image API later. */
   .ebook-page .image-card { margin: 12px 0 16px; border-radius: 14px; overflow: hidden; background: var(--doc-surface-2); border: 1px solid var(--doc-border); box-shadow: 0 10px 24px rgba(15,23,42,0.10); font-family: 'Plus Jakarta Sans', sans-serif; }
-  /* Default: natural proportions — the image scales to full width, height follows its own aspect ratio */
-  .ebook-page .image-card img { display: block; width: 100%; height: auto; background: var(--doc-surface); }
+  /* Default: natural proportions — capped at 280px so tall/portrait images don't fill the page */
+  .ebook-page .image-card img { display: block; width: 100%; height: auto; max-height: 280px; object-fit: cover; background: var(--doc-surface); }
   /* Size presets — set via data-size attribute on <figure> */
   .ebook-page .image-card[data-size="banner"] img   { aspect-ratio: 21/8; object-fit: cover; height: unset; width: 100%; }
   .ebook-page .image-card[data-size="wide"] img     { aspect-ratio: 16/9; object-fit: cover; height: unset; width: 100%; }
@@ -326,13 +327,15 @@
   .ebook-page .image-card figcaption { padding: 9px 14px 11px; font-size: 10.5px; line-height: 1.45; color: var(--doc-muted); text-transform: uppercase; letter-spacing: 0.08em; font-weight: 700; }
   .ebook-page.cover.hero-split .cover-media { width: 100%; min-height: 145mm; border-radius: 28px; overflow: hidden; background: rgba(255,255,255,0.12); box-shadow: 0 24px 70px rgba(0,0,0,0.32); border: 1px solid rgba(255,255,255,0.20); }
   .ebook-page.cover.hero-split .cover-media img { width: 100%; height: 100%; min-height: 145mm; object-fit: cover; object-position: center; display: block; }
-  /* Cover image position presets via data-size on .cover-media */
-  .ebook-page.cover.hero-split .cover-media[data-size="top"]     img { object-position: top; }
-  .ebook-page.cover.hero-split .cover-media[data-size="bottom"]  img { object-position: bottom; }
-  .ebook-page.cover.hero-split .cover-media[data-size="contain"] img { object-fit: contain; background: rgba(255,255,255,.1); }
-  /* Cover size picker — same pill style, shown on hover */
+  /* Cover position presets */
+  .ebook-page.cover.hero-split .cover-media[data-size="top"]    img { object-position: top; }
+  .ebook-page.cover.hero-split .cover-media[data-size="bottom"] img { object-position: bottom; }
+  /* Fit: shows full image without cropping — column height adjusts to image */
+  .ebook-page.cover.hero-split .cover-media[data-size="fit"]     { min-height: unset !important; }
+  .ebook-page.cover.hero-split .cover-media[data-size="fit"] img { height: auto !important; min-height: unset !important; object-fit: contain; }
+  /* Cover size picker: absolute overlay at bottom, visible on hover, above image */
+  .cover-media .image-size-picker { position: absolute; bottom: 0; left: 0; right: 0; z-index: 82; background: rgba(0,0,0,.65); backdrop-filter: blur(6px); border-radius: 0 0 28px 28px; border-top: none; }
   .cover-media:hover .image-size-picker { opacity: 1; pointer-events: auto; }
-  .cover-media .image-size-picker { position: absolute; bottom: 0; left: 0; right: 0; background: rgba(0,0,0,.6); backdrop-filter: blur(4px); border-radius: 0 0 28px 28px; }
   .ebook-page.cover.hero-split .cover-visual { position: relative; width: 100%; height: 100%; min-height: 145mm; background: rgba(255,255,255,0.12); overflow: hidden; display: flex; align-items: flex-end; padding: 24px; }
   .ebook-page.cover.hero-split .cover-visual::before { content: ''; position: absolute; inset: 0; background: linear-gradient(135deg, rgba(255,255,255,0.28) 0 19%, transparent 19% 34%, rgba(255,255,255,0.16) 34% 52%, transparent 52% 100%); }
   .ebook-page.cover.hero-split .cover-visual::after { content: ''; position: absolute; inset: 18px; border: 1px solid rgba(255,255,255,0.28); border-radius: 18px; }
@@ -1005,7 +1008,7 @@
         else if (/^["""«]/.test(text)) { type = 'quote'; label = ''; }
         const body = text.replace(/^(tip|cuidado|nota|importante|advertencia|dato clave|💡|⚠️)[:\s]*/i, '').trim();
         if (type === 'quote') return `<div class="callout callout-quote"><p>${body}</p></div>`;
-        if (type === 'warn') return `<div class="callout callout-warn" style="background:#fff5f0;border-color:#ea6d3a"><strong style="color:#d95a2a">${label}</strong><p style="color:#1a1a1a;margin:0">${body}</p></div>`;
+        if (type === 'warn') return `<div class="callout callout-warn"><strong>${label}</strong><p style="margin:0">${body}</p></div>`;
         return `<div class="callout callout-${type}"><strong>${label}</strong><p>${body}</p></div>`;
       }
 
@@ -1305,9 +1308,9 @@
         .ebook-page:not(.cover) .callout-info,
         .ebook-page:not(.cover) .callout-quote { background: ${v['--doc-surface']} !important; border-color: ${v['--doc-accent']} !important; color: ${v['--doc-fg']} !important; }
         .ebook-page:not(.cover) .callout p { color: ${v['--doc-fg']} !important; }
-        .ebook-page:not(.cover) .callout-warn { background: #fff5f0 !important; border-color: #ea6d3a !important; }
-        .ebook-page:not(.cover) .callout-warn p { color: #1a1a1a !important; }
-        .ebook-page:not(.cover) .callout-warn strong { color: #d95a2a !important; }
+        .ebook-page:not(.cover) .callout-warn { background: rgba(234,109,58,0.13) !important; border-color: #ea6d3a !important; }
+        .ebook-page:not(.cover) .callout-warn p { color: ${v['--doc-fg']} !important; }
+        .ebook-page:not(.cover) .callout-warn strong { color: #ea6d3a !important; }
         .ebook-page:not(.cover) .stat-card,
         .ebook-page:not(.cover) .pill.accent,
         .ebook-page:not(.cover) .tab-chips .chip.active,
@@ -1569,12 +1572,12 @@
 
     function buildCoverSizePicker(currentSize) {
       const sizes = [
-        { val: 'center',  label: 'Centro' },
-        { val: 'top',     label: 'Arriba' },
-        { val: 'bottom',  label: 'Abajo' },
-        { val: 'contain', label: 'Contener' },
+        { val: 'center', label: 'Centro' },
+        { val: 'top',    label: 'Arriba' },
+        { val: 'bottom', label: 'Abajo' },
+        { val: 'fit',    label: 'Completo' }, // shows full image, no crop
       ];
-      return `<div class="image-size-picker" contenteditable="false"><span class="size-label">Posición</span>${sizes.map(s => `<button type="button" class="image-size-btn${(currentSize||'center')===s.val?' active':''}" data-size-val="${s.val}">${s.label}</button>`).join('')}</div>`;
+      return `<div class="image-size-picker" contenteditable="false"><span class="size-label" style="color:rgba(255,255,255,.7)">Posición</span>${sizes.map(s => `<button type="button" class="image-size-btn${(currentSize||'center')===s.val?' active':''}" data-size-val="${s.val}">${s.label}</button>`).join('')}</div>`;
     }
 
     function wireSizePicker(fig) {
