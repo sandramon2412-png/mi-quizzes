@@ -857,9 +857,70 @@ Pro y Growth subidos temporalmente a 999 ebooks para que Sandra pueda probar sin
 ## SESIÓN 9 MAY 2026 — branch `claude/fix-failing-chats-CZcXZ`
 
 ### Contexto
-Sandra continuó con bugs del ebook-builder. Llegó con 5 problemas reportados en dos mensajes consecutivos.
+Sandra llegó con 5 bugs del ebook-builder activos. Después de múltiples commits en esta sesión, Sandra confirmó que **solo se solucionó 1 de los 5**. Los demás siguen fallando igual.
 
-### Fixes aplicados (commits `9f2a991`, `9583b1c`)
+### LO QUE SÍ SE SOLUCIONÓ ✅
+- **"Añadir imagen" a secciones**: la imagen ahora aparece en el preview inmediatamente después de subirla.
+
+### LO QUE SIGUE FALLANDO ❌ — PARA EL PRÓXIMO CHAT
+
+#### ❌ 1. FREEZE DE PÁGINA (CRÍTICO — no resuelto)
+**Síntoma**: Cada vez que el usuario hace click en "Vista previa PDF" y vuelve al tab del builder, la página se bloquea completamente. El mouse se mueve pero no responde nada. Hay que cerrar y empezar de cero.
+
+**Intentos fallidos**:
+- Agregar `visibilitychange` listener en `askImageUrl()` para auto-cerrar el modal → no funcionó
+- Agregar backdrop click en `imageUrlModal` → no funcionó
+- Cambiar `renderEbookPreview()` por `schedulePaginate()` en el handler de "Añadir imagen" → roto (no mostraba la imagen), revertido
+
+**Lo que SE SABE**:
+- El freeze ocurre SIEMPRE después de click "Vista previa PDF" → switch al nuevo tab → volver al builder
+- El botón "Vista previa PDF" (id=`btn-download`) hace: `collectChapterBody` → `await persistEbook()` → `window.open('ebook-print.html?id=X', '_blank')`
+- `persistEbook()` llama: `optimizeEbookEmbeddedImages(ebook)` (canvas operations) → `DB.ebooks.save()` (Supabase)
+- `imageUrlModal` es `fixed inset-0 z-[120]` — si queda abierto es invisible sobre dark background pero bloquea TODO
+- El freeze podría ser: (a) `imageUrlModal` aún quedando abierto a pesar del `visibilitychange` fix, o (b) otra causa no identificada
+- **PRÓXIMO CHAT: debuggear con console.log en `downloadBtn.onclick` para ver qué ocurre. Verificar si el modal está open al volver (`document.getElementById('image-url-modal').classList.contains('flex')`). Si no es el modal, buscar otro overlay o elemento con z-index alto.**
+
+#### ❌ 2. CALLOUT-WARN (bloque café) — texto no visible en secciones oscuras
+**Síntoma**: El bloque callout-warn (estilo café/naranja) tiene fondo oscuro y el texto también es oscuro → no se ve nada.
+
+**Intentos fallidos**:
+- Cambiar `.ebook-page-wrap[data-theme="dark-neon"] .callout-warn` a `background:#fff5f0 !important`
+- Agregar en `applyThemeInline()`: `.callout-warn { background:#fff5f0 !important }` + `.callout-warn p { color:#1a1a1a !important }` + `.callout-warn strong { color:#d95a2a !important }`
+- Mismos fixes en `ebook-print.html` con `!important`
+
+**PENDIENTE**: Los fixes están en el código pero no tuvieron efecto visible. Podría haber otro selector con mayor especificidad que overridea. El próximo chat debe inspeccionar el elemento con DevTools y ver exactamente qué regla CSS está ganando.
+
+#### ❌ 3. PDF SIGUE CORTANDO EL CONTENIDO
+**Síntoma**: Al descargar el PDF con `window.print()`, el contenido se corta entre páginas.
+
+**Intentos fallidos**:
+- `@page { margin:0 }` (portada ya no se corta, pero el contenido de las páginas de capítulos sí)
+- Remover `break-inside:avoid` del contenedor `.feature-grid` (solo queda en `.feature-item`)
+
+**PENDIENTE**: El corte sigue ocurriendo. El problema puede ser:
+- Elementos con `break-inside:avoid` que son más altos que una página A4
+- El `chapter-page` CSS en `ebook-print.html` no está dividiendo bien el contenido entre páginas
+- La `@page { margin:0 }` necesita acompañarse de que el contenido tenga los márgenes propios
+
+#### ❌ 4. PORTADA — imagen muy estrecha y difícil de editar
+**Síntoma**: La columna de imagen en la portada aparece muy angosta, y el botón "Cambiar" es difícil de clickear.
+
+**Fix aplicado** (pendiente de confirmar si funcionó): `grid-template-columns: minmax(0,1.1fr) minmax(0,1fr)` + `> * { min-width:0 }` en ambos archivos.
+
+**PENDIENTE**: Sandra no confirmó si este fix funcionó porque mandó el mensaje de cambio de chat antes de probar.
+
+### Estado de código al cierre de sesión
+- Branch: `claude/fix-failing-chats-CZcXZ`
+- Último commit: `d3786b6` — update CLAUDE.md
+- Todos los commits se auto-mergean a `main` via GitHub Actions
+
+### Límites de ebooks pendientes de revertir
+`app.js → PlanLimits`: Pro=999, Growth=999 (temporales para testing). **REVERTIR**: Pro→5, Growth→20.
+
+### Para el próximo chat — qué revisar primero
+1. **Freeze**: Abrir builder, clickear "Vista previa PDF", volver al tab. Abrir DevTools Console antes. Ver si hay errores. Ejecutar `document.getElementById('image-url-modal').classList` para ver si el modal está open. Si no es el modal, ejecutar `document.querySelectorAll('[style*="z-index"]')` y `document.querySelectorAll('.fixed')` para encontrar qué está bloqueando.
+2. **Callout-warn**: Con DevTools, inspeccionar un `.callout-warn` y ver qué regla CSS está ganando para `background-color`. Identificar el selector exacto que overridea.
+3. **PDF corte**: Probar con `window.print()`, elegir "Guardar como PDF". Ver si el contenido fluye correctamente o se corta. Posible fix: agregar `break-inside:avoid` a `.chapter-page` o cambiar cómo se pagina.
 
 #### 1. Botones del builder no funcionaban (commit previo `d76e84c`, ya en main)
 Stray `)` en la línea 1183 (`});` en lugar de `};`) rompía TODOS los botones de la UI silenciosamente.
