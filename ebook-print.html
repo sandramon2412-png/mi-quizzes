@@ -52,9 +52,10 @@
   .cover {
     width:210mm; height:297mm; margin:0 auto 18px; overflow:hidden; color:#fff;
     background:linear-gradient(135deg,var(--doc-primary),var(--doc-accent));
-    display:grid; grid-template-columns:1.05fr .95fr; gap:12mm; align-items:center; padding:24mm 22mm;
+    display:grid; grid-template-columns:minmax(0,1.05fr) minmax(0,.95fr); gap:12mm; align-items:center; padding:24mm 22mm;
     page-break-after:always; break-after:page;
   }
+  .cover > * { min-width: 0; }
   .cover h1 {
     font-family:'Plus Jakarta Sans',sans-serif; font-size:52px; line-height:1.04; letter-spacing:0; margin:0 0 18px; font-weight:800;
   }
@@ -118,7 +119,8 @@
   /* Callout backgrounds are always light — force text dark so dark themes don't inherit light text */
   .callout p { margin:0; color:#1a1a1a; }
   .callout-tip { border-color:var(--doc-primary); } .callout-tip strong { color:var(--doc-primary); }
-  .callout-warn { background:#fff5f0; border-color:#ea6d3a; } .callout-warn strong { color:#d95a2a; }
+  /* callout-warn always uses cream — never inherits dark theme surface color */
+  .callout-warn { background:#fff5f0 !important; border-color:#ea6d3a !important; } .callout-warn p { color:#1a1a1a !important; } .callout-warn strong { color:#d95a2a !important; }
   .callout-info { border-color:var(--doc-accent); } .callout-info strong { color:var(--doc-accent); }
   .callout-quote { font-style:italic; } .callout-quote p { font-size:14px; }
   .numbered-card { display:flex; margin:9px 0; border-radius:10px; overflow:hidden; background:var(--doc-surface-2); break-inside:avoid; page-break-inside:avoid; }
