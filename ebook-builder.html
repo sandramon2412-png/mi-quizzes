@@ -2637,7 +2637,9 @@
       // Wrap in try in case localStorage is full.
       try { Ebooks.save(ebook); } catch (e) { console.warn('[download] localStorage save:', e); }
       // Open the PDF tab immediately — no blocking operations before this point.
-      window.open(`./ebook-print.html?id=${encodeURIComponent(ebook.id)}`, '_blank');
+      // noopener puts it in a separate browser process so window.print() there
+      // does not freeze this builder tab.
+      window.open(`./ebook-print.html?id=${encodeURIComponent(ebook.id)}`, '_blank', 'noopener');
       // In the background: optimize images + push to Supabase.
       // This runs after the current call stack completes (never blocks the UI).
       Promise.resolve().then(async () => {
