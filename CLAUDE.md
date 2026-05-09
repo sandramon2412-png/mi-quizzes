@@ -851,3 +851,68 @@ Pro y Growth subidos temporalmente a 999 ebooks para que Sandra pueda probar sin
 - **html2canvas + jsPDF en iframe** es frágil para fonts externos y A4 exacto. La alternativa correcta es siempre CSS `@page` + `window.print()` o Puppeteer server-side.
 - **Revisar el contexto de ejecución**: el botón "Descargar PDF final" de `ebook-print.html` llamaba a PDFKit que solo maneja texto plano. El endpoint de Puppeteer (`/api/render-ebook-pdf`) ya existía y es el correcto — solo había que conectarlo.
 - **Los checks de existencia deben funcionar con el formato actual del dato**, no solo con el formato en que fue generado originalmente. Si `body_md` puede ser markdown O HTML, los checks deben cubrir ambos.
+
+---
+
+## SESIÓN 9 MAY 2026 — branch `claude/fix-failing-chats-CZcXZ`
+
+### Contexto
+Sandra continuó con bugs del ebook-builder. Llegó con 5 problemas reportados en dos mensajes consecutivos.
+
+### Fixes aplicados (commits `9f2a991`, `9583b1c`)
+
+#### 1. Botones del builder no funcionaban (commit previo `d76e84c`, ya en main)
+Stray `)` en la línea 1183 (`});` en lugar de `};`) rompía TODOS los botones de la UI silenciosamente.
+
+#### 2. Portada cortada en PDF
+`@page { margin:14mm 16mm }` → `@page { margin:0 }`. El área imprimible de 178×269mm era menor que la portada A4 de 210×297mm.
+
+#### 3. Bloques visuales faltantes en PDF (`ebook-print.html`)
+- Chrome no resuelve `var()` dentro de `@media print` → se hardcodearon valores hex concretos.
+- CSS de `.stat-card`, `.pricing-card`, `.pill`, `.tab-chips` faltaba completamente en `ebook-print.html`.
+
+#### 4. Freeze de página al volver al builder desde "Vista previa PDF" — causa raíz
+`imageUrlModal` (`fixed inset-0 z-[120]`) podía quedar abierto cuando el usuario cambiaba de tab durante una operación async (el save de Supabase dentro de `downloadBtn.onclick`). Al volver al builder, el modal cubría toda la pantalla con 70% de opacidad negra sobre fondo oscuro — virtualmente invisible en dark mode, pero bloqueando TODOS los clicks/scroll.
+
+**Fix definitivo** (commit `9583b1c`):
+- Agregado `visibilitychange` listener dentro de `askImageUrl()` que llama `finish(null)` cuando `!document.hidden` — el modal se auto-cancela al volver al tab.
+- Agregado backdrop click (`onBackdrop`) que cancela si el usuario hace click fuera del dialog.
+- Ambos listeners se limpian en `finish()` para no acumular handlers.
+
+#### 5. Callout-warn (bloque café) — fondo oscuro con texto oscuro invisible
+Dos causas:
+- CSS línea 218: `.ebook-page-wrap[data-theme="dark-neon"] .callout-warn { background: #2a1a15 }` — fondo muy oscuro.
+- `applyThemeInline()` inyectaba `.callout p { color: var(--doc-fg) }` con `--doc-fg: #eaeaf0` (casi blanco) para dark-neon. Fondo oscuro + texto blanco... o fondo crema + texto blanco (dependiendo del orden de aplicación).
+
+**Fix**: Línea 218 cambiada a `background: #fff5f0 !important`. `applyThemeInline()` ahora inyecta `.callout-warn { background: #fff5f0 !important }` + `.callout-warn p { color: #1a1a1a !important }` + `.callout-warn strong { color: #d95a2a !important }`. En `ebook-print.html` también forzado con `!important`.
+
+#### 6. "Añadir imagen" no mostraba la imagen después de subir
+Mi cambio anterior de `renderEbookPreview()` → `schedulePaginate()` rompió el flujo: la imagen se guardaba en `ebook.chapters[idx].body_md` pero el DOM no se reconstruía. Restaurado `renderEbookPreview()`.
+
+#### 7. Columna de imagen de portada muy estrecha (CSS grid)
+`grid-template-columns: 1.1fr 1fr` sin `minmax(0,...)` — un `h1` con título largo en 52px font puede tener ancho intrínseco que supera el `fr` asignado. CSS Grid por defecto respeta `min-width: auto` (= ancho del contenido), haciendo que el h1 "tome" todo el espacio disponible y deje la columna de imagen colapsada a casi nada.
+
+**Fix**: `grid-template-columns: minmax(0,1.1fr) minmax(0,1fr)` + `> * { min-width: 0 }` en ambos archivos (builder y print).
+
+#### 8. Feature-grid cortaba páginas con espacio en blanco
+`break-inside:avoid` en el CONTENEDOR del grid forzaba que todo el grid jumpeara a la página siguiente, dejando espacio vacío. Removido del contenedor (los `.feature-item` individuales siguen con `break-inside:avoid`).
+
+### Flujo de PDF actual (definitivo)
+1. "Vista previa PDF" → `persistEbook()` → `window.open('ebook-print.html?id=X', '_blank')`
+2. En `ebook-print.html`: ambos botones ("Imprimir" y "Descargar PDF final") llaman `window.print()` — el endpoint Puppeteer (`/api/render-ebook-pdf`) se descartó por timeout en Vercel free tier.
+
+### Lecciones clave de esta sesión
+- **`visibilitychange` es la forma correcta de limpiar estado de modales cuando el usuario cambia de tab** durante una operación async. El tab puede perder foco mientras un modal Promise está pendiente → al volver, el modal bloquea todo.
+- **CSS Grid y `min-width: auto`**: cuando un grid item tiene contenido más ancho que su `fr` asignado, el grid expande esa columna y comprime las demás. `minmax(0, Xfr)` hace que `fr` se respete estrictamente.
+- **`break-inside:avoid` en contenedor vs ítems**: en contenedor = el bloque entero salta de página (deja espacio vacío). En ítems = cada ítem no se corta pero el conjunto puede fluir entre páginas. Para grids: solo poner en ítems.
+- **`!important` en cascada**: cuando múltiples reglas tienen `!important`, gana la de mayor especificidad, y en igualdad la última en el stylesheet. El `applyThemeInline()` inyecta un `<style>` al final del DOM → sus reglas `!important` ganan a las del stylesheet inicial.
+
+### Estado final
+- ✅ Freeze de página resuelto (visibilitychange auto-cancel)
+- ✅ Callout-warn siempre crema (#fff5f0) sin importar el tema
+- ✅ "Añadir imagen" muestra la imagen inmediatamente
+- ✅ Portada A4 completa sin márgenes que la corten
+- ✅ Cover grid muestra columnas 50/50 sin importar longitud del título
+- ✅ Feature-grid fluye entre páginas sin espacio en blanco
+- 🟡 PDF cutting (contenido en páginas): mejora parcial con feature-grid; otros elementos grandes (tablas, numbered-cards) aún pueden cortar si superan el alto de página — sin solución perfecta con CSS puro
+- 🟡 Límites de ebooks (Pro=999, Growth=999) — REVERTIR cuando Sandra confirme que el flujo funciona: Pro→5, Growth→20 en `app.js → PlanLimits`
