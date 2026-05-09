@@ -128,10 +128,15 @@
   .numbered-card .body { padding:10px 12px; }
   .image-card { margin:10px 0 12px; border-radius:12px; overflow:hidden; background:var(--doc-surface-2); border:1px solid var(--doc-border); break-inside:avoid; page-break-inside:avoid; }
   .image-card img { display:block; width:100%; height:auto; }
-  .image-card[data-size="banner"] img { aspect-ratio:21/8; object-fit:cover; height:unset; }
-  .image-card[data-size="wide"] img   { aspect-ratio:16/9; object-fit:cover; height:unset; }
-  .image-card[data-size="square"] img { aspect-ratio:1/1;  object-fit:cover; height:unset; }
-  .image-card[data-size="tall"] img   { aspect-ratio:3/4;  object-fit:cover; height:unset; }
+  .image-card[data-size="banner"] img   { aspect-ratio:21/8; object-fit:cover; height:unset; width:100%; }
+  .image-card[data-size="wide"] img     { aspect-ratio:16/9; object-fit:cover; height:unset; width:100%; }
+  .image-card[data-size="square"] img   { aspect-ratio:1/1;  object-fit:cover; height:unset; width:100%; }
+  .image-card[data-size="tall"] img     { aspect-ratio:3/4;  object-fit:cover; height:unset; width:52%; margin:0 auto; }
+  .image-card[data-size="portrait"] img { aspect-ratio:9/16; object-fit:cover; height:unset; width:40%; margin:0 auto; }
+  /* Cover position presets */
+  .cover-media[data-size="top"]     img { object-position:top; }
+  .cover-media[data-size="bottom"]  img { object-position:bottom; }
+  .cover-media[data-size="contain"] img { object-fit:contain; }
   .image-size-picker { display:none; } /* hide UI controls in print */
   .image-visual { position:relative; width:100%; aspect-ratio:21/7; background:linear-gradient(135deg,var(--doc-primary),var(--doc-accent)); display:flex; align-items:flex-end; padding:16px; color:#fff; overflow:hidden; }
   .image-visual::before { content:''; position:absolute; inset:0; background:linear-gradient(120deg,rgba(255,255,255,.20) 0 18%,transparent 18% 31%,rgba(255,255,255,.13) 31% 44%,transparent 44% 100%); }
