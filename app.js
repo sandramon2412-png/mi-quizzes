@@ -406,7 +406,19 @@ ARQUETIPOS de personas en este nicho: ${ctx.archetypes.join('; ')}`;
 const Claude = {
   async _call(messages, maxTokens = 3000, opts = {}) {
     const model = opts.model || 'claude-haiku-4-5-20251001';
-    const body = { model, max_tokens: maxTokens, messages };
+    // Sanitize: drop empty/non-string content, enforce user→assistant alternation,
+    // cap to 40 messages to prevent Anthropic's auto prompt-caching from failing on empty blocks.
+    const cleaned = [];
+    for (const m of messages) {
+      const text = typeof m.content === 'string' ? m.content.trim() : '';
+      if (!text) continue;
+      if (cleaned.length > 0 && cleaned[cleaned.length - 1].role === m.role) continue;
+      cleaned.push({ role: m.role, content: m.content });
+    }
+    // First message must be from user; cap tail to 40 messages
+    const firstUser = cleaned.findIndex(m => m.role === 'user');
+    const safeMessages = (firstUser < 0 ? [] : cleaned.slice(firstUser)).slice(-40);
+    const body = { model, max_tokens: maxTokens, messages: safeMessages };
     if (opts.system) body.system = opts.system;
     const doRequest = async (token) => fetch(`${SUPABASE_URL}/functions/v1/claude-proxy`, {
       method: 'POST',
