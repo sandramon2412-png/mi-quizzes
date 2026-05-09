@@ -127,7 +127,12 @@
   .numbered-card .n { flex:0 0 46px; background:var(--doc-primary); color:#fff; font-family:'Plus Jakarta Sans',sans-serif; font-size:20px; font-weight:800; display:flex; align-items:center; justify-content:center; }
   .numbered-card .body { padding:10px 12px; }
   .image-card { margin:10px 0 12px; border-radius:12px; overflow:hidden; background:var(--doc-surface-2); border:1px solid var(--doc-border); break-inside:avoid; page-break-inside:avoid; }
-  .image-card img { display:block; width:100%; aspect-ratio:21/7; object-fit:cover; }
+  .image-card img { display:block; width:100%; height:auto; }
+  .image-card[data-size="banner"] img { aspect-ratio:21/8; object-fit:cover; height:unset; }
+  .image-card[data-size="wide"] img   { aspect-ratio:16/9; object-fit:cover; height:unset; }
+  .image-card[data-size="square"] img { aspect-ratio:1/1;  object-fit:cover; height:unset; }
+  .image-card[data-size="tall"] img   { aspect-ratio:3/4;  object-fit:cover; height:unset; }
+  .image-size-picker { display:none; } /* hide UI controls in print */
   .image-visual { position:relative; width:100%; aspect-ratio:21/7; background:linear-gradient(135deg,var(--doc-primary),var(--doc-accent)); display:flex; align-items:flex-end; padding:16px; color:#fff; overflow:hidden; }
   .image-visual::before { content:''; position:absolute; inset:0; background:linear-gradient(120deg,rgba(255,255,255,.20) 0 18%,transparent 18% 31%,rgba(255,255,255,.13) 31% 44%,transparent 44% 100%); }
   .image-visual span { position:relative; z-index:1; font-family:'Plus Jakarta Sans',sans-serif; font-size:10px; font-weight:800; letter-spacing:.12em; text-transform:uppercase; }
