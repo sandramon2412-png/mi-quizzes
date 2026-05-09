@@ -155,15 +155,16 @@
     background:var(--doc-bg); color:var(--doc-fg);
     box-shadow:0 2px 20px rgba(0,0,0,.2);
   }
-  /* No break-before:page — content flows naturally across A4 pages.
-     Only block elements get break-inside:avoid to avoid cuts mid-element. */
+  /* Screen: chapters flow as cards. Print: each chapter starts on its own page.
+     Block elements use break-inside:avoid to avoid cuts mid-element. */
   @page { size:A4; margin:0; }
   @media print {
     html, body { background:#fff !important; }
     .toolbar { display:none !important; }
     .page-shell { background:#fff !important; padding:0 !important; }
     .cover { width:210mm; height:297mm; margin:0; box-shadow:none; }
-    .chapter-page { margin:0 !important; box-shadow:none !important; min-height:0 !important; }
+    .chapter-page { margin:0 !important; box-shadow:none !important; min-height:0 !important; break-before:page; page-break-before:always; }
+    .chapter-page:first-of-type { break-before:auto; page-break-before:auto; }
     /* Chrome sometimes fails to resolve CSS var() inside @media print, making
        background-colored blocks invisible. Freeze all theme vars to concrete
        light-print values so every element gets a real hex color to print. */
@@ -279,6 +280,7 @@
       else if (/^["""«]/.test(text)){type='quote';label='';}
       const body = text.replace(/^(tip|cuidado|nota|importante|advertencia|dato clave|💡|⚠️)[:\s]*/i,'').trim();
       if (type==='quote') return `<div class="callout callout-quote"><p>${body}</p></div>`;
+      if (type==='warn') return `<div class="callout callout-warn" style="background:#fff5f0!important;border-color:#ea6d3a!important"><strong style="color:#d95a2a!important">${label}</strong><p style="color:#1a1a1a!important;margin:0">${body}</p></div>`;
       return `<div class="callout callout-${type}"><strong>${label}</strong><p>${body}</p></div>`;
     }
     return block;

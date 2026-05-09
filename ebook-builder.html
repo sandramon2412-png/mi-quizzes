@@ -984,6 +984,7 @@
         else if (/^["""«]/.test(text)) { type = 'quote'; label = ''; }
         const body = text.replace(/^(tip|cuidado|nota|importante|advertencia|dato clave|💡|⚠️)[:\s]*/i, '').trim();
         if (type === 'quote') return `<div class="callout callout-quote"><p>${body}</p></div>`;
+        if (type === 'warn') return `<div class="callout callout-warn" style="background:#fff5f0;border-color:#ea6d3a"><strong style="color:#d95a2a">${label}</strong><p style="color:#1a1a1a;margin:0">${body}</p></div>`;
         return `<div class="callout callout-${type}"><strong>${label}</strong><p>${body}</p></div>`;
       }
 
@@ -2627,7 +2628,7 @@
     downloadBtn.onclick = async () => {
       if (!ebook || !ebook.chapters?.length) return;
       syncEbookTheme(ebook);
-      setStatus('Guardando...');
+      setStatus('Abriendo PDF...');
       downloadBtn.disabled = true;
       const originalDownloadText = downloadBtn.innerHTML;
       downloadBtn.innerHTML = '<span class="thinking-dot"></span><span class="thinking-dot"></span><span class="thinking-dot"></span>';
@@ -2636,7 +2637,14 @@
           const body = collectChapterBody(i);
           if (body) ebook.chapters[i].body_md = body;
         });
-        await persistEbook();
+        // Optimize embedded images (fast for most documents)
+        await optimizeEbookEmbeddedImages(ebook);
+        // Save to localStorage immediately — print page uses this as fallback
+        try { Ebooks.save(ebook); } catch {}
+        // Fire-and-forget Supabase save — don't let it block opening the PDF tab
+        DB.ebooks.save(ebook, user.id)
+          .then(saved => { if (saved) { ebook = { ...ebook, ...saved }; try { Ebooks.save(ebook); } catch {} } })
+          .catch(e => console.warn('[download] DB save:', e));
         window.open(`./ebook-print.html?id=${encodeURIComponent(ebook.id)}`, '_blank');
       } catch (err) {
         toast('Error al abrir vista PDF: ' + (err?.message || 'error'), 'err');
