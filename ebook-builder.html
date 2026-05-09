@@ -2625,34 +2625,31 @@
       try { await DB.ebooks.incrementDownloads(ebook.id); } catch {}
     }
 
-    downloadBtn.onclick = async () => {
+    downloadBtn.onclick = () => {
       if (!ebook || !ebook.chapters?.length) return;
       syncEbookTheme(ebook);
-      setStatus('Abriendo PDF...');
-      downloadBtn.disabled = true;
-      const originalDownloadText = downloadBtn.innerHTML;
-      downloadBtn.innerHTML = '<span class="thinking-dot"></span><span class="thinking-dot"></span><span class="thinking-dot"></span>';
-      try {
-        ebook.chapters.forEach((_, i) => {
-          const body = collectChapterBody(i);
-          if (body) ebook.chapters[i].body_md = body;
-        });
-        // Optimize embedded images (fast for most documents)
-        await optimizeEbookEmbeddedImages(ebook);
-        // Save to localStorage immediately — print page uses this as fallback
-        try { Ebooks.save(ebook); } catch {}
-        // Fire-and-forget Supabase save — don't let it block opening the PDF tab
-        DB.ebooks.save(ebook, user.id)
-          .then(saved => { if (saved) { ebook = { ...ebook, ...saved }; try { Ebooks.save(ebook); } catch {} } })
-          .catch(e => console.warn('[download] DB save:', e));
-        window.open(`./ebook-print.html?id=${encodeURIComponent(ebook.id)}`, '_blank');
-      } catch (err) {
-        toast('Error al abrir vista PDF: ' + (err?.message || 'error'), 'err');
-      } finally {
-        setStatus('');
-        downloadBtn.disabled = false;
-        downloadBtn.innerHTML = originalDownloadText;
-      }
+      // Collect latest chapter content from DOM
+      ebook.chapters.forEach((_, i) => {
+        const body = collectChapterBody(i);
+        if (body) ebook.chapters[i].body_md = body;
+      });
+      // Save to localStorage synchronously so ebook-print.html can load it.
+      // Wrap in try in case localStorage is full.
+      try { Ebooks.save(ebook); } catch (e) { console.warn('[download] localStorage save:', e); }
+      // Open the PDF tab immediately — no blocking operations before this point.
+      window.open(`./ebook-print.html?id=${encodeURIComponent(ebook.id)}`, '_blank');
+      // In the background: optimize images + push to Supabase.
+      // This runs after the current call stack completes (never blocks the UI).
+      Promise.resolve().then(async () => {
+        try {
+          const optimized = await optimizeEbookEmbeddedImages(ebook);
+          if (optimized) {
+            try { Ebooks.save(optimized); } catch {}
+            const saved = await DB.ebooks.save(optimized, user.id);
+            if (saved) { ebook = { ...ebook, ...saved }; try { Ebooks.save(ebook); } catch {} }
+          }
+        } catch (e) { console.warn('[download] background save:', e); }
+      });
     };
 
     function withExportTimeout(promise, ms, label) {
