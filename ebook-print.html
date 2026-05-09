@@ -172,6 +172,12 @@
     .chapter-page { width:100% !important; margin:0 !important; padding:0 !important; box-shadow:none !important; min-height:0 !important; break-before:auto; page-break-before:auto; }
     /* h2 stays with the paragraph that follows it — no orphaned headings */
     .chapter h2 { break-after:avoid; page-break-after:avoid; margin-top:10mm; }
+    /* Increase widows/orphans to reduce single-word lines at page top/bottom.
+       Chrome PDF often ignores widows:3, so pushing to 5 helps catch more cases. */
+    .chapter p { widows:5; orphans:5; }
+    /* image-card: allow it to flow across pages — break-inside:avoid was leaving
+       large empty gaps when the image didn't fit and jumped to the next page. */
+    .image-card { break-inside:auto !important; page-break-inside:auto !important; }
     /* Chrome sometimes fails to resolve CSS var() inside @media print, making
        background-colored blocks invisible. Freeze all theme vars to concrete
        light-print values so every element gets a real hex color to print. */
