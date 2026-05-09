@@ -155,16 +155,19 @@
     background:var(--doc-bg); color:var(--doc-fg);
     box-shadow:0 2px 20px rgba(0,0,0,.2);
   }
-  /* Screen: chapters flow as cards. Print: each chapter starts on its own page.
-     Block elements use break-inside:avoid to avoid cuts mid-element. */
   @page { size:A4; margin:0; }
   @media print {
     html, body { background:#fff !important; }
     .toolbar { display:none !important; }
     .page-shell { background:#fff !important; padding:0 !important; }
     .cover { width:210mm; height:297mm; margin:0; box-shadow:none; }
-    .chapter-page { margin:0 !important; box-shadow:none !important; min-height:0 !important; break-before:page; page-break-before:always; }
-    .chapter-page:first-of-type { break-before:auto; page-break-before:auto; }
+    /* Chapters flow naturally across pages — no forced break per chapter.
+       This eliminates large empty gaps when a chapter doesn't fill one A4 page.
+       Each .chapter-page keeps its 14mm/16mm padding as print margins.
+       Individual blocks keep break-inside:avoid so they're never cut mid-element. */
+    .chapter-page { width:210mm !important; margin:0 !important; box-shadow:none !important; min-height:0 !important; break-before:auto; page-break-before:auto; }
+    /* h2 stays with the paragraph that follows it — no orphaned headings */
+    .chapter h2 { break-after:avoid; page-break-after:avoid; margin-top:10mm; }
     /* Chrome sometimes fails to resolve CSS var() inside @media print, making
        background-colored blocks invisible. Freeze all theme vars to concrete
        light-print values so every element gets a real hex color to print. */
