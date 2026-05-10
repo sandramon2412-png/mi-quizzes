@@ -976,4 +976,106 @@ Mi cambio anterior de `renderEbookPreview()` → `schedulePaginate()` rompió el
 - ✅ Cover grid muestra columnas 50/50 sin importar longitud del título
 - ✅ Feature-grid fluye entre páginas sin espacio en blanco
 - 🟡 PDF cutting (contenido en páginas): mejora parcial con feature-grid; otros elementos grandes (tablas, numbered-cards) aún pueden cortar si superan el alto de página — sin solución perfecta con CSS puro
+
+---
+
+## SESIÓN 10 MAY 2026 — branch `claude/fix-print-page-breaks-c1muX`
+
+### Contexto
+Sandra llegó con errores de API en el ebook-builder y varios problemas del PDF y la sección de imágenes. Todos los fixes están en el branch `claude/fix-print-page-breaks-c1muX` que se auto-mergea a `main`.
+
+### 1. Error API 400 "cache_control cannot be set for empty text blocks" — RESUELTO ✅
+
+**Causa raíz**: Anthropic habilitó prompt caching automático para contextos muy largos (148+ mensajes). La API intenta agregar `cache_control` a bloques de texto. Si algún bloque tiene texto vacío, falla con 400.
+
+**Fix en 3 capas**:
+- `Claude._call` en `app.js`: sanitiza TODOS los mensajes antes de enviarlos — elimina los de contenido vacío/no-string, asegura alternancia user→assistant, limita a 40 mensajes máximo
+- `ebook-builder.html`: corta `apiHistory` a los últimos 30 mensajes antes de mandarlo
+- `landing-builder.html`: mismo límite de 30
+
+### 2. PDF — páginas cortadas y vacías — RESUELTO ✅
+
+**Causa raíz del espacio vacío**: `.chapter-page` tenía `padding:14mm 16mm`. Dos capítulos consecutivos acumulaban 28mm de gap (14mm bottom + 14mm top). Si el salto de página A4 caía ahí, la página quedaba casi en blanco.
+
+**Fix**: Mover márgenes a `@page`:
+- `@page :first { margin:0 }` → portada sin márgenes (full-bleed)
+- `@page { margin:14mm 16mm }` → capítulos con márgenes reales
+- `.chapter-page { padding:0 }` en print → sin acumulación de padding
+
+**Causa raíz del corte de párrafos**: palabras sueltas al inicio de página (widow de 1 línea).
+
+**Fix**: `widows:5; orphans:5` en `.chapter p` dentro de `@media print` — Chrome ignora valores bajos.
+
+**Image-card vacío antes**: `break-inside:avoid` empujaba la imagen entera a la página siguiente, dejando espacio vacío. → `break-inside:auto` en print para `.image-card`.
+
+### 3. Presets de tamaño para imágenes en el editor — NUEVO ✅
+
+**Antes**: todas las imágenes forzadas a ratio 21:8 (banner ancho), sin opción de cambio.
+
+**Ahora**: selector de tamaño que aparece al hacer hover sobre la imagen:
+- `Natural` — proporciones de la imagen, capped a 280px de alto (object-fit:cover) para que 9:16 no ocupe toda la página
+- `16:9` — formato video/horizontal
+- `2:1` — banner ancho (el anterior por defecto)
+- `1:1` — cuadrado
+- `3:4` — retrato, con `width:52%` para no ocupar toda la página
+- `9:16` — vertical, con `width:40%`
+
+**Implementación**:
+- `buildSizePicker(currentSize)` → genera los botones pill
+- `wireSizePicker(fig)` → conecta los clicks al `data-size` del `<figure>`
+- `buildImageCardHtml(url, caption, idx, sizeVal)` → helper que centraliza la generación del HTML de la figura incluyendo `data-size`
+- El tamaño se persiste en `body_md` del capítulo vía regex replace del atributo `data-size`
+- `ebook-print.html` tiene los mismos selectores CSS para que el PDF respete el tamaño elegido
+- Imágenes 3:4 y 9:16 usan `width:52%`/`width:40%` para no ocupar toda la página
+
+### 4. Picker de imagen en portada — NUEVO ✅
+
+**Opciones**:
+- `Centro` (default) — recorte centrado
+- `Arriba` — muestra la parte superior de la foto
+- `Abajo` — muestra la parte inferior
+- `Completo` — sin recorte (`object-fit:contain`), la columna se ajusta a la foto
+
+**Implementación**:
+- `buildCoverSizePicker(currentSize)` en `wireImageControls()`
+- La elección se guarda en `ebook.cover.imageSize` y se aplica como `data-size` en `.cover-media` al renderizar
+- CSS: `.cover-media[data-size="fit"] { min-height:unset !important }` para el modo "Completo"
+- El picker aparece como overlay oscuro (`rgba(0,0,0,.65)`) en la parte inferior de la columna de imagen, `z-index:82`
+
+### 5. Callout "Cuidado" (warn) — colores que no machean el tema — RESUELTO ✅
+
+**Problema**: la sección `callout-warn` tenía colores hardcodeados con `!important` (fondo crema `#fff5f0`, texto naranja) en 3 lugares distintos:
+- CSS estático en el `<style>` del builder (líneas 216-218)
+- `smartMd()` generaba el HTML con inline styles
+- `applyThemeInline()` inyectaba `!important` hardcodeados
+
+Esto hacía que en temas oscuros (dark-neon) el bloque crema se viera totalmente fuera de lugar.
+
+**Fix**: Cambio a `rgba(234,109,58,0.13)` como fondo — semi-transparente sobre cualquier color:
+- En tema claro: tinte beige suave (similar al crema anterior)
+- En tema oscuro: tinte ámbar oscuro (se integra con el fondo)
+- Texto: `var(--doc-fg)` → hereda el color del tema
+- Strong: `#ea6d3a` → naranja visible en ambos temas
+- `applyThemeInline()` ahora inyecta `${v['--doc-fg']}` en lugar de `#1a1a1a`
+- `smartMd()` ya no genera inline styles en callout-warn
+
+**En `ebook-print.html`**: sigue siendo crema con `!important` ya que la impresión siempre es sobre papel blanco.
+
+### Estado al cierre de sesión — 10 mayo 2026
+- ✅ Error API 400 cache_control resuelto
+- ✅ PDF: páginas vacías por padding acumulado → resuelto con @page
+- ✅ PDF: palabras solas al inicio de página → widows:5
+- ✅ PDF: image-card con espacio vacío antes → break-inside:auto
+- ✅ Presets de tamaño de imagen (6 opciones) con picker en hover
+- ✅ Picker de posición en foto de portada (4 opciones)
+- ✅ Callout-warn adaptado a temas oscuros
+- 🟡 Límites de ebooks: Pro=999, Growth=999 en `app.js → PlanLimits` — **REVERTIR** a Pro→5, Growth→20 cuando Sandra confirme que el PDF funciona bien
+
+### Archivos modificados esta sesión
+| Archivo | Cambios |
+|---------|---------|
+| `app.js` | `Claude._call`: sanitiza mensajes, cap 40, alternancia user/assistant |
+| `ebook-builder.html` | Picker tamaño imágenes, picker portada, callout-warn adaptativo, natural max-height |
+| `ebook-print.html` | @page margins, widows/orphans, image-card break-inside:auto, size presets CSS |
+| `landing-builder.html` | Cap apiHistory a 30 mensajes |
 - 🟡 Límites de ebooks (Pro=999, Growth=999) — REVERTIR cuando Sandra confirme que el flujo funciona: Pro→5, Growth→20 en `app.js → PlanLimits`
