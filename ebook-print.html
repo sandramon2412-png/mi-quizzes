@@ -114,15 +114,14 @@
   ol.steps { list-style:none; counter-reset:steps-ctr; padding:0; margin:0 0 12px; }
   ol.steps li { counter-increment:steps-ctr; position:relative; padding:8px 10px 8px 40px; margin:5px 0; border-radius:9px; background:var(--doc-surface-2); font-size:12.7px; line-height:1.48; break-inside:avoid; page-break-inside:avoid; }
   ol.steps li::before { content:counter(steps-ctr); position:absolute; left:9px; top:8px; width:21px; height:21px; border-radius:6px; background:var(--doc-primary); color:#fff; font-family:'Plus Jakarta Sans',sans-serif; font-size:10px; font-weight:800; display:flex; align-items:center; justify-content:center; }
-  .callout { display:block; margin:12px 0; padding:10px 14px; border-radius:0 10px 10px 0; border-left:4px solid var(--doc-accent); background:var(--doc-surface); font-family:'Plus Jakarta Sans',sans-serif; font-size:12px; line-height:1.55; break-inside:avoid; page-break-inside:avoid; }
-  .callout strong { display:block; font-size:10px; font-weight:800; text-transform:uppercase; letter-spacing:.08em; margin-bottom:4px; color:var(--doc-primary); }
-  /* Callout backgrounds are always light — force text dark so dark themes don't inherit light text */
-  .callout p { margin:0; color:#1a1a1a; }
-  .callout-tip { border-color:var(--doc-primary); } .callout-tip strong { color:var(--doc-primary); }
-  /* callout-warn always uses cream — never inherits dark theme surface color */
+  .callout { display:block; margin:12px 0; padding:10px 14px; border-radius:0 10px 10px 0; border-left:4px solid var(--doc-accent); font-family:'Plus Jakarta Sans',sans-serif; font-size:12px; line-height:1.55; break-inside:avoid; page-break-inside:avoid; }
+  .callout strong { display:block; font-size:10px; font-weight:800; text-transform:uppercase; letter-spacing:.08em; margin-bottom:4px; }
+  /* All callout backgrounds are hardcoded light — print is always on white paper */
+  .callout p { margin:0; color:#1a1a1a !important; }
+  .callout-tip { background:#eff4ff !important; border-color:#2E5BFF !important; } .callout-tip strong { color:#2E5BFF !important; }
   .callout-warn { background:#fff5f0 !important; border-color:#ea6d3a !important; } .callout-warn p { color:#1a1a1a !important; } .callout-warn strong { color:#d95a2a !important; }
-  .callout-info { border-color:var(--doc-accent); } .callout-info strong { color:var(--doc-accent); }
-  .callout-quote { font-style:italic; } .callout-quote p { font-size:14px; }
+  .callout-info { background:#f3eeff !important; border-color:#7c3aed !important; } .callout-info strong { color:#7c3aed !important; }
+  .callout-quote { background:#f7f7ff !important; border-color:#7c3aed !important; font-style:italic; } .callout-quote p { font-size:14px; color:#1a1a1a !important; }
   .numbered-card { display:flex; margin:9px 0; border-radius:10px; overflow:hidden; background:var(--doc-surface-2); break-inside:avoid; page-break-inside:avoid; }
   .numbered-card .n { flex:0 0 46px; background:var(--doc-primary); color:#fff; font-family:'Plus Jakarta Sans',sans-serif; font-size:20px; font-weight:800; display:flex; align-items:center; justify-content:center; }
   .numbered-card .body { padding:10px 12px; }
@@ -207,7 +206,9 @@
     /* Visual blocks — explicit background so print engines never skip them.
        Also forces gradient elements to print with print-color-adjust:exact. */
     .feature-item { background:#f0f5ff !important; -webkit-print-color-adjust:exact; print-color-adjust:exact; }
-    .callout, .callout-tip, .callout-info, .callout-quote { background:#f0f5ff !important; -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+    .callout-tip { background:#eff4ff !important; -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+    .callout-info { background:#f3eeff !important; -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+    .callout-quote { background:#f7f7ff !important; -webkit-print-color-adjust:exact; print-color-adjust:exact; }
     .callout-warn { background:#fff5f0 !important; border-color:#ea6d3a !important; -webkit-print-color-adjust:exact; print-color-adjust:exact; }
     .numbered-card { background:#f7f8fb !important; -webkit-print-color-adjust:exact; print-color-adjust:exact; }
     .numbered-card .n, th, .image-visual, .stat-card, .pill.accent, .tab-chips .chip.active { -webkit-print-color-adjust:exact; print-color-adjust:exact; }
