@@ -205,10 +205,15 @@
     font-family: 'Plus Jakarta Sans', sans-serif; font-size: 13px; line-height: 1.6;
     border-left: 4px solid; position: relative;
   }
-  .ebook-page .callout strong {
+  /* Only the direct-child strong (the TYPE LABEL) gets block/uppercase treatment */
+  .ebook-page .callout > strong {
     display: block; font-size: 11px; font-weight: 800; text-transform: uppercase;
     letter-spacing: 0.1em; margin-bottom: 6px; color: inherit;
   }
+  /* Inline strong/em inside callout body text must stay inline with readable color */
+  .ebook-page .callout p strong,
+  .ebook-page .callout p em,
+  .ebook-page .callout p b { display: inline; font-size: inherit; text-transform: none; letter-spacing: normal; color: inherit; }
   .ebook-page .callout p { margin: 0; font-size: 13px; color: var(--doc-fg); }
   .ebook-page .callout cite { display: block; margin-top: 8px; font-size: 11px; color: var(--doc-muted); font-style: normal; }
   /* All callouts: semi-transparent bg — readable on both light AND dark themes */
@@ -1308,6 +1313,9 @@
         .ebook-page:not(.cover) .callout-info { background: rgba(124,58,237,0.10) !important; border-color: ${v['--doc-accent']} !important; color: ${v['--doc-fg']} !important; }
         .ebook-page:not(.cover) .callout-quote { background: rgba(100,100,160,0.10) !important; border-color: ${v['--doc-accent']} !important; color: ${v['--doc-fg']} !important; }
         .ebook-page:not(.cover) .callout p { color: ${v['--doc-fg']} !important; }
+        .ebook-page:not(.cover) .callout p strong,
+        .ebook-page:not(.cover) .callout p em,
+        .ebook-page:not(.cover) .callout p b { color: ${v['--doc-fg']} !important; display: inline !important; font-size: inherit !important; text-transform: none !important; }
         .ebook-page:not(.cover) .callout-warn { background: rgba(234,109,58,0.13) !important; border-color: #ea6d3a !important; color: ${v['--doc-fg']} !important; }
         .ebook-page:not(.cover) .callout-warn p { color: ${v['--doc-fg']} !important; }
         .ebook-page:not(.cover) .callout-warn strong { color: #ea6d3a !important; }
