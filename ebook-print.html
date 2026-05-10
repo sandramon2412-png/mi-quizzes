@@ -79,6 +79,8 @@
   .chapter h3 { font-family:'Plus Jakarta Sans',sans-serif; font-size:15.5px; margin:18px 0 8px; break-after:avoid; page-break-after:avoid; }
   .chapter p { font-size:12.8px; line-height:1.58; margin:0 0 8px; orphans:3; widows:3; }
   .chapter strong { color:var(--doc-primary); font-weight:700; }
+  /* Inline strong/em inside callout body text must stay inline — override .chapter strong */
+  .callout p strong, .callout p em, .callout p b { color:inherit !important; display:inline !important; font-size:inherit !important; text-transform:none !important; }
   .chapter a { color:var(--doc-accent); }
   .chapter ul, .chapter ol { padding:0; margin:0 0 12px; }
   .chapter li { break-inside:avoid; page-break-inside:avoid; }
@@ -163,6 +165,7 @@
     width:210mm; margin:16px auto; padding:14mm 16mm;
     background:var(--doc-bg); color:var(--doc-fg);
     box-shadow:0 2px 20px rgba(0,0,0,.2);
+    -webkit-print-color-adjust:exact; print-color-adjust:exact;
   }
   /* Screen: @page with no margins; chapter-page padding acts as margins */
   @page { size:A4; margin:0; }
@@ -218,12 +221,7 @@
     .chapter ol:not(.steps) li, ol.steps li { background:#f7f8fb !important; -webkit-print-color-adjust:exact; print-color-adjust:exact; }
     /* Dark themes: force white chapter background + dark text.
        Use specific selectors (no wildcard) to avoid overriding block backgrounds. */
-    body.theme-dark-neon .chapter-page { background:#ffffff !important; color:#1a1a1a !important; }
-    body.theme-dark-neon .chapter h2 { color:var(--doc-primary) !important; -webkit-text-fill-color:var(--doc-primary) !important; }
-    body.theme-dark-neon .chapter h3,
-    body.theme-dark-neon .chapter p,
-    body.theme-dark-neon .chapter li { color:#1a1a1a !important; }
-    body.theme-dark-neon .chapter td { color:#1a1a1a !important; }
+    /* Dark themes keep their background in print — print-color-adjust:exact handles it */
   }
 </style>
 </head>
