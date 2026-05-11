@@ -135,7 +135,7 @@
     border-radius: 24px;
     overflow: hidden;
     background:
-      linear-gradient(145deg, color-mix(in srgb, var(--brand) 88%, #000), color-mix(in srgb, var(--brand-light) 82%, #fff)),
+      linear-gradient(145deg, color-mix(in srgb, var(--brand) 54%, transparent), color-mix(in srgb, var(--brand-light) 34%, transparent)),
       var(--quiz-hero-image, linear-gradient(135deg, var(--brand), var(--brand-light)));
     background-size: cover;
     background-position: center;
@@ -612,8 +612,6 @@
       const wrap = document.getElementById('intro-cover-wrap');
       img.src = QUIZ.coverImage;
       wrap.classList.remove('hidden');
-      document.getElementById('intro-icon-wrap').classList.add('hidden');
-      document.getElementById('intro-brand').classList.add('hidden');
     }
   });
 
