@@ -52,8 +52,42 @@
   .report-card {
     background: rgba(255,255,255,0.88);
     border: 1px solid var(--brand-border);
+    border-radius: 34px;
     box-shadow: 0 24px 70px var(--brand-shadow), inset 0 1px 0 rgba(255,255,255,0.9);
     backdrop-filter: blur(18px);
+  }
+  .report-card > .relative:first-child {
+    min-height: 300px;
+    background:
+      linear-gradient(145deg, color-mix(in srgb, var(--brand) 86%, #000), color-mix(in srgb, var(--brand-light) 78%, #fff)),
+      var(--quiz-hero-image, linear-gradient(135deg, var(--brand), var(--brand-light))) !important;
+    background-size: cover !important;
+    background-position: center !important;
+    color: #fff;
+  }
+  .report-card > .relative:first-child::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background:
+      linear-gradient(135deg, rgba(255,255,255,0.22), transparent 38%),
+      linear-gradient(180deg, rgba(0,0,0,0.04), rgba(0,0,0,0.46));
+  }
+  .report-card > .relative:first-child > * {
+    position: relative;
+    z-index: 1;
+  }
+  .report-card > .relative:first-child .text-gray-800,
+  .report-card > .relative:first-child .text-gray-400,
+  .report-card > .relative:first-child .text-brand,
+  .report-card > .relative:first-child .text-brand\/60 {
+    color: #fff !important;
+  }
+  .report-card > .relative:first-child .bg-brand-light\/20 {
+    background: rgba(255,255,255,0.24) !important;
+  }
+  .report-card > .bg-white {
+    background: rgba(255,255,255,0.94) !important;
   }
   .insight-card {
     background: rgba(255,255,255,0.74);
@@ -85,6 +119,10 @@
     background: rgba(18,18,24,0.84);
     border-color: rgba(255,255,255,0.12);
     box-shadow: 0 28px 78px rgba(0,0,0,0.36), inset 0 1px 0 rgba(255,255,255,0.08);
+  }
+  :root[data-quiz-mode="dark"] .report-card > .bg-white,
+  :root[data-quiz-mode="dark"] #solution-block .bg-white {
+    background: rgba(18,18,24,0.88) !important;
   }
   :root[data-quiz-mode="dark"] .insight-card,
   :root[data-quiz-mode="dark"] #result-brand-card {
@@ -119,7 +157,7 @@
   </div>
 </header>
 
-<main class="max-w-3xl mx-auto px-5 py-12 md:py-16 space-y-8">
+<main class="max-w-5xl mx-auto px-5 py-12 md:py-16 space-y-8">
 
   <div id="result-brand-card" class="hidden mx-auto max-w-sm rounded-2xl border border-brand-light/25 bg-white/85 shadow-sm px-4 py-3 items-center justify-center gap-3 fade-up">
     <img id="result-brand-logo-large" src="" alt="" class="hidden h-9 w-auto max-w-[140px] object-contain"/>
@@ -557,6 +595,10 @@
     document.documentElement.style.setProperty('--brand-muted', muted);
     document.documentElement.style.setProperty('--brand-border', nicheTheme.mode === 'dark' ? 'rgba(255,255,255,0.12)' : brandColor + '2e');
     document.documentElement.style.setProperty('--brand-shadow', nicheTheme.mode === 'dark' ? 'rgba(0,0,0,0.36)' : brandColor + '1f');
+    const heroImage = (quiz && quiz.coverImage) || nicheTheme.coverImage || '';
+    if (heroImage) {
+      document.documentElement.style.setProperty('--quiz-hero-image', `url("${String(heroImage).replace(/"/g, '%22')}")`);
+    }
     document.documentElement.dataset.quizTheme = nicheTheme.id || 'custom';
     document.documentElement.dataset.quizMode = nicheTheme.mode || 'light';
   }
