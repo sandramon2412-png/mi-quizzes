@@ -117,6 +117,86 @@
   @keyframes progress-glow { 0%,100%{opacity:0.5} 50%{opacity:1} }
   .progress-rail { box-shadow: inset 0 1px 2px rgba(49,33,60,0.08); }
   .progress-fill { box-shadow: 0 0 24px rgba(139,106,160,0.38); }
+  #quiz-wrapper {
+    max-width: 980px;
+    transition: max-width 0.35s ease, padding 0.35s ease;
+  }
+  #quiz-wrapper.quiz-compact {
+    max-width: 620px;
+  }
+  #screen-intro {
+    position: relative;
+    min-height: 560px;
+  }
+  .intro-visual-panel {
+    position: absolute;
+    inset: 0 0 0 auto;
+    width: min(40%, 360px);
+    border-radius: 24px;
+    overflow: hidden;
+    background:
+      linear-gradient(145deg, color-mix(in srgb, var(--brand) 88%, #000), color-mix(in srgb, var(--brand-light) 82%, #fff)),
+      var(--quiz-hero-image, linear-gradient(135deg, var(--brand), var(--brand-light)));
+    background-size: cover;
+    background-position: center;
+    box-shadow: 0 28px 70px var(--brand-shadow);
+  }
+  .intro-visual-panel::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background:
+      linear-gradient(135deg, rgba(255,255,255,0.20), transparent 36%),
+      linear-gradient(180deg, transparent 30%, rgba(0,0,0,0.42));
+  }
+  .intro-visual-card {
+    position: absolute;
+    left: 22px;
+    right: 22px;
+    bottom: 22px;
+    z-index: 1;
+    padding: 18px;
+    border-radius: 20px;
+    border: 1px solid rgba(255,255,255,0.28);
+    background: rgba(255,255,255,0.16);
+    backdrop-filter: blur(18px);
+    color: #fff;
+    text-align: left;
+  }
+  .intro-copy {
+    width: min(54%, 520px);
+    text-align: left;
+  }
+  .intro-copy .justify-center { justify-content: flex-start; }
+  .intro-copy #intro-brand-card { margin-left: 0; margin-right: 0; }
+  .intro-copy #intro-title,
+  .intro-copy #intro-subtitle,
+  .intro-copy #intro-time { margin-left: 0; margin-right: 0; }
+  .intro-copy #intro-name { text-align: left; }
+  .option-card {
+    position: relative;
+    overflow: hidden;
+  }
+  .option-card::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    width: 5px;
+    background: linear-gradient(180deg, var(--brand), var(--brand-light));
+    opacity: 0;
+    transition: opacity 0.2s ease;
+  }
+  .option-card:hover::before,
+  .option-card.selected::before { opacity: 1; }
+  .option-card .material-symbols-outlined:not(.opt-check) {
+    width: 34px;
+    height: 34px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 12px;
+    background: color-mix(in srgb, var(--brand) 12%, #fff);
+  }
   :root[data-quiz-mode="dark"] body {
     background:
       radial-gradient(circle at top left, color-mix(in srgb, var(--brand) 30%, transparent), transparent 30rem),
@@ -143,7 +223,7 @@
   }
   :root[data-quiz-mode="dark"] .option-card span:not(.material-symbols-outlined),
   :root[data-quiz-mode="dark"] #intro-title,
-  :root[data-quiz-mode="dark"] #question-text {
+  :root[data-quiz-mode="dark"] #q-text {
     color: var(--brand-text) !important;
   }
   :root[data-quiz-mode="dark"] .text-gray-500,
@@ -153,6 +233,35 @@
   }
   @media (max-width: 640px) {
     .quiz-card { border-radius: 24px; }
+  }
+  @media (max-width: 767px) {
+    #quiz-wrapper,
+    #quiz-wrapper.quiz-compact { max-width: 100%; }
+    #screen-intro {
+      min-height: 0;
+      text-align: center;
+    }
+    .intro-copy {
+      width: 100%;
+      text-align: center;
+    }
+    .intro-copy .justify-center { justify-content: center; }
+    .intro-copy #intro-brand-card { margin-left: auto; margin-right: auto; }
+    .intro-copy #intro-title,
+    .intro-copy #intro-subtitle,
+    .intro-copy #intro-time { margin-left: auto; margin-right: auto; }
+    .intro-copy #intro-name { text-align: center; }
+    .intro-visual-panel {
+      position: relative;
+      width: 100%;
+      height: 220px;
+      margin-bottom: 24px;
+    }
+  }
+  @media (min-width: 768px) {
+    #intro-cover-wrap {
+      display: none !important;
+    }
   }
 </style>
 </head>
@@ -191,6 +300,20 @@
         <div class="absolute inset-0 pointer-events-none" style="background:linear-gradient(to bottom,transparent 40%,rgba(255,255,255,0.85) 100%)"></div>
       </div>
 
+      <div class="intro-visual-panel" aria-hidden="true">
+        <div class="intro-visual-card">
+          <p class="text-[10px] font-black tracking-[0.22em] uppercase opacity-75 mb-2">Diagnostico interactivo</p>
+          <div class="flex items-end justify-between gap-3">
+            <div>
+              <p class="text-3xl font-black leading-none">01</p>
+              <p class="text-xs font-semibold opacity-80 mt-1">Resultado personalizado</p>
+            </div>
+            <span class="material-symbols-outlined" style="font-size:34px;font-variation-settings:'FILL' 1">auto_awesome</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="intro-copy space-y-6">
       <!-- Brand icon (hidden when cover image is shown) -->
       <div id="intro-icon-wrap" class="float-icon inline-block">
         <div id="intro-icon" class="w-16 h-16 mx-auto rounded-2xl bg-brand-bg border border-brand-light/30 flex items-center justify-center text-brand shadow-sm">
@@ -248,6 +371,7 @@
 
       <!-- Time estimate -->
       <p id="intro-time" class="text-gray-400 text-xs">Solo 5 preguntas · Menos de 2 minutos</p>
+      </div>
     </div>
 
     <!-- ═══ QUESTION SCREEN ═══ -->
@@ -513,12 +637,17 @@
     document.documentElement.style.setProperty('--brand-muted', muted);
     document.documentElement.style.setProperty('--brand-border', nicheTheme.mode === 'dark' ? 'rgba(255,255,255,0.12)' : brandColor + '2e');
     document.documentElement.style.setProperty('--brand-shadow', nicheTheme.mode === 'dark' ? 'rgba(0,0,0,0.36)' : brandColor + '1f');
+    const heroImage = (quiz && quiz.coverImage) || nicheTheme.coverImage || '';
+    if (heroImage) {
+      document.documentElement.style.setProperty('--quiz-hero-image', `url("${String(heroImage).replace(/"/g, '%22')}")`);
+    }
     document.documentElement.dataset.quizTheme = nicheTheme.id || 'custom';
     document.documentElement.dataset.quizMode = nicheTheme.mode || 'light';
   }
 
   // ── Quiz flow ──────────────────────────────────────────
   function startQuiz() {
+    document.getElementById('quiz-wrapper').classList.add('quiz-compact');
     document.getElementById('screen-intro').classList.add('hidden');
     document.getElementById('screen-question').classList.remove('hidden');
     renderQuestion();
