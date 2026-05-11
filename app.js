@@ -402,6 +402,28 @@ MÉTRICAS que les importan: ${ctx.metrics.join(', ')}
 ARQUETIPOS de personas en este nicho: ${ctx.archetypes.join('; ')}`;
 }
 
+window.getPremiumNicheTheme = function getPremiumNicheTheme(niche = '', product = '') {
+  const text = `${niche} ${product}`.toLowerCase();
+  const themes = [
+    { id:'spiritual', test:/espirit|bibl|fe\b|dios|oraci|cristi|religi|angel|sagr|devocional|comuni[oó]n|iglesi/, mode:'light', accent:'#B96F5F', accent2:'#D8A06F', bg:'#FBF4ED', card:'#FFFAF6', text:'#372620', muted:'#8B7065', font:'serif', imageKeywords:'spiritual journal warm light', coverImage:'https://source.unsplash.com/featured/1200x630/?spiritual,journal,warm-light' },
+    { id:'wellness', test:/bienestar|wellness|ansiedad|estr[eé]s|mindful|medita|terapia|autoestima|habitos|hábitos|autocuidado|sue[nñ]o/, mode:'light', accent:'#4F8A8B', accent2:'#D6A77A', bg:'#F6F3EE', card:'#FFFDF8', text:'#273A38', muted:'#75827B', font:'serif', imageKeywords:'calm wellness journal', coverImage:'https://source.unsplash.com/featured/1200x630/?wellness,journal,calm' },
+    { id:'beauty', test:/belleza|skincare|maquill|est[eé]tic|cosmet|cabello|piel|salon|u[nñ]as/, mode:'light', accent:'#B85C8E', accent2:'#D9A66A', bg:'#FFF6F8', card:'#FFFFFF', text:'#3A2431', muted:'#9A7587', font:'serif', imageKeywords:'premium beauty skincare', coverImage:'https://source.unsplash.com/featured/1200x630/?beauty,skincare,premium' },
+    { id:'motherhood', test:/maternidad|mam[aá]|madre|beb[eé]|embaraz|crianza|lactancia|posparto|hijo|infantil|ni[nñ]o|familia/, mode:'light', accent:'#D96F8C', accent2:'#E7B86B', bg:'#FFF7F3', card:'#FFFFFF', text:'#3B2528', muted:'#9C7478', font:'serif', imageKeywords:'warm motherhood lifestyle', coverImage:'https://source.unsplash.com/featured/1200x630/?motherhood,warm,lifestyle' },
+    { id:'nutrition', test:/nutri|dieta|alimenta|comida|receta|cocina|meal|keto|vegano|ayuno|saludable/, mode:'light', accent:'#2F8F5B', accent2:'#E2A950', bg:'#F3FAF2', card:'#FFFFFF', text:'#1F3A2B', muted:'#6E8374', font:'sans', imageKeywords:'healthy food fresh kitchen', coverImage:'https://source.unsplash.com/featured/1200x630/?healthy-food,fresh,kitchen' },
+    { id:'fitness', test:/fitness|gym|ejercicio|entren|peso|muscul|cardio|crossfit|deport|pilates/, mode:'dark', accent:'#F97316', accent2:'#EF4444', bg:'#0A0A0A', card:'#18181B', text:'#F7F7F5', muted:'#A3A3A3', font:'sans', imageKeywords:'premium fitness training', coverImage:'https://source.unsplash.com/featured/1200x630/?fitness,training,premium' },
+    { id:'finance', test:/finanz|dinero|ahorro|invers|deuda|presupuesto|wealth|money|trading|cripto|bolsa|forex/, mode:'dark', accent:'#1F7A5A', accent2:'#C8A24A', bg:'#0D1117', card:'#151B24', text:'#F4F7F5', muted:'#8FA199', font:'sans', imageKeywords:'personal finance savings', coverImage:'https://source.unsplash.com/featured/1200x630/?personal-finance,savings' },
+    { id:'business', test:/negocio|marketing|ventas|ads|emprend|startup|copy|email|lanzamiento|funnel|embudo|redes|contenido|lider/, mode:'dark', accent:'#3157C9', accent2:'#31C48D', bg:'#0B1020', card:'#141B2F', text:'#F3F7FF', muted:'#94A3B8', font:'sans', imageKeywords:'digital business strategy', coverImage:'https://source.unsplash.com/featured/1200x630/?digital-business,strategy' },
+    { id:'education', test:/educaci|curso|idioma|ingl[eé]s|aprendiz|estudi|escuela|lectura|academ/, mode:'light', accent:'#3157C9', accent2:'#E0A84E', bg:'#F5F7FB', card:'#FFFFFF', text:'#1D2A3B', muted:'#6F7B8D', font:'sans', imageKeywords:'premium education study', coverImage:'https://source.unsplash.com/featured/1200x630/?education,study,premium' },
+    { id:'relationships', test:/relacion|pareja|amor|cita|matrimon|divorcio|seducci|atracci|noviazgo/, mode:'light', accent:'#B96072', accent2:'#C79A63', bg:'#FFF5F2', card:'#FFFFFF', text:'#392428', muted:'#8F7073', font:'serif', imageKeywords:'warm relationship journal', coverImage:'https://source.unsplash.com/featured/1200x630/?relationship,journal,warm' },
+  ];
+  const theme = themes.find(t => t.test.test(text)) || { id:'premium', mode:'light', accent:'#7A5C8F', accent2:'#C4A7D7', bg:'#F7F4FA', card:'#FFFFFF', text:'#2F2837', muted:'#7A7082', font:'sans', imageKeywords:'premium digital product', coverImage:'https://source.unsplash.com/featured/1200x630/?premium,digital-product' };
+  return { ...theme, brandColor: theme.accent, accentColor: theme.accent2 };
+};
+
+window.getSuggestedOfferTheme = function getSuggestedOfferTheme(niche = '', product = '') {
+  return { ...window.getPremiumNicheTheme(niche, product) };
+};
+
 // ── Claude API ─────────────────────────────────────────────
 const Claude = {
   async _call(messages, maxTokens = 3000, opts = {}) {
@@ -498,11 +520,11 @@ ${nQ > 6 ? Array.from({length: nQ - 6}, (_,k) => `${k+7}. Pregunta sobre un aspe
 Cada pregunta: exactamente ${nO} opciones. Cada opción:
 - Describe UNA SITUACIÓN CONCRETA que solo alguien de este nicho reconocería (no "Sí / No / A veces")
 - Usa el vocabulario técnico del nicho en la redacción
-- Tiene un EMOJI que represente emocionalmente esa situación
+- NO uses emojis. El diseño visual usa iconos premium de la interfaz, no caracteres emoji.
 
 ═══ REGLAS PARA LOS PERFILES (3 perfiles) ═══${archetypeHint}
 • name: Identidad poderosa y específica del nicho (NO genérica como "El Principiante")
-• emoji: Emoji representativo del perfil
+• emoji: déjalo vacío como "".
 • description: 2-3 oraciones que hagan que el usuario piense "¡ESO SOY YO!" — con situaciones, vocabulario y frustraciones concretas del nicho
 • recommendation: Por qué "${productName}" resuelve exactamente el problema de ESTE perfil (menciona características específicas del producto)
 • matchScore: Número 83-96 (diferente por perfil)
@@ -519,10 +541,10 @@ Cada pregunta: exactamente ${nO} opciones. Cada opción:
       "text": "pregunta usando vocabulario real del nicho",
       "imageKeywords": "2-3 palabras en inglés para imagen (ej: 'gym workout frustration')",
       "options": [
-        {"text": "situación reconocible del nicho con jerga real", "emoji": "😊", "profiles": ["id_perfil"]},
-        {"text": "situación reconocible del nicho con jerga real", "emoji": "😔", "profiles": ["id_perfil"]},
-        {"text": "situación reconocible del nicho con jerga real", "emoji": "😤", "profiles": ["id_perfil", "id_perfil2"]},
-        {"text": "situación reconocible del nicho con jerga real", "emoji": "😩", "profiles": ["id_perfil"]}
+        {"text": "situación reconocible del nicho con jerga real", "profiles": ["id_perfil"]},
+        {"text": "situación reconocible del nicho con jerga real", "profiles": ["id_perfil"]},
+        {"text": "situación reconocible del nicho con jerga real", "profiles": ["id_perfil", "id_perfil2"]},
+        {"text": "situación reconocible del nicho con jerga real", "profiles": ["id_perfil"]}
       ]
     }
   ],
@@ -530,7 +552,7 @@ Cada pregunta: exactamente ${nO} opciones. Cada opción:
     {
       "id": "id_perfil",
       "name": "Nombre Identidad Específica del Nicho",
-      "emoji": "🎯",
+      "emoji": "",
       "description": "Descripción con vocabulario del nicho que hace que el usuario diga 'eso soy yo'",
       "recommendation": "Por qué ${productName} resuelve exactamente el problema de este perfil",
       "matchScore": 91,
@@ -567,7 +589,7 @@ ELIGE los 3 tipos que MÁS SENTIDO tengan para "${niche}". Por ejemplo:
 - Bienestar → tracker, meditacion, diario
 
 RESPONDE SOLO CON ESTE JSON VÁLIDO (sin texto antes ni después):
-{"apps":[{"name":"Nombre específico del nicho","icon":"emoji relevante","type":"tipo_elegido","description":"Qué hace exactamente y cómo ayuda al usuario con un dolor real del nicho en 1 oración","features":["Función clave específica del nicho 1","Función clave 2","Función clave 3"]}]}
+{"apps":[{"name":"Nombre específico del nicho","icon":"nombre de Material Symbol en inglés, ejemplo: checklist, route, psychology","type":"tipo_elegido","description":"Qué hace exactamente y cómo ayuda al usuario con un dolor real del nicho en 1 oración","features":["Función clave específica del nicho 1","Función clave 2","Función clave 3"]}]}
 
 Genera 3 apps distintas con tipos distintos. Devuelve SOLO el JSON, sin markdown, sin explicaciones.`;
 

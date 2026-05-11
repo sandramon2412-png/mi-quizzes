@@ -146,6 +146,14 @@ const DB = {
         // All extra settings in one JSONB column (postQuizAction, landingUrl, pixelId, etc.)
         settings: {
           postQuizAction:   quiz.postQuizAction   || 'result_page',
+          description:      quiz.description      || '',
+          brandName:        quiz.brandName        || '',
+          brandColor:       quiz.brandColor       || '',
+          brandLogo:        quiz.brandLogo        || '',
+          coverImage:       quiz.coverImage       || '',
+          imageKeywords:    quiz.imageKeywords    || '',
+          emailResultEnabled: !!quiz.emailResultEnabled,
+          showLuminousCta:  quiz.showLuminousCta === true,
           productUrl:       quiz.productUrl        || '',
           paymentUrl:       quiz.paymentUrl        || '',
           landingUrl:       quiz.landingUrl        || '',
