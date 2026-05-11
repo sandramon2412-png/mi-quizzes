@@ -159,6 +159,14 @@
         </div>
       </div>
 
+      <div id="intro-brand-card" class="hidden mx-auto max-w-sm rounded-2xl border border-brand-light/25 bg-white/80 shadow-sm px-4 py-3 items-center justify-center gap-3">
+        <img id="intro-brand-logo" src="" alt="" class="hidden h-9 w-auto max-w-[140px] object-contain"/>
+        <div class="text-left min-w-0">
+          <p class="text-[10px] font-black tracking-[0.18em] uppercase text-brand/60">Presentado por</p>
+          <p id="intro-brand-name" class="text-sm font-extrabold text-gray-900 truncate"></p>
+        </div>
+      </div>
+
       <!-- Brand label -->
       <div class="flex justify-center">
         <p id="intro-brand" class="diagnostic-pill text-[11px] font-black tracking-[0.22em] uppercase text-brand px-4 py-2 rounded-full"></p>
@@ -369,7 +377,11 @@
     applyQuizTheme(QUIZ.brandColor || QUIZ.themeColor);
     if (QUIZ.brandLogo) {
       const logoEl = document.getElementById('quiz-logo');
-      if (logoEl) { logoEl.src = QUIZ.brandLogo; logoEl.classList.remove('hidden'); }
+      if (logoEl) {
+        logoEl.src = QUIZ.brandLogo;
+        logoEl.onerror = () => logoEl.classList.add('hidden');
+        logoEl.classList.remove('hidden');
+      }
     }
     if (QUIZ.brandName) {
       const nameEl = document.getElementById('quiz-brand-label');
@@ -413,6 +425,19 @@
     const headerBrand = document.getElementById('quiz-brand-label');
     if (headerBrand && !headerBrand.textContent) headerBrand.textContent = QUIZ.product || QUIZ.niche || '';
     document.getElementById('intro-brand').textContent = QUIZ.product || QUIZ.niche || '';
+    const brandCard = document.getElementById('intro-brand-card');
+    const brandLogo = document.getElementById('intro-brand-logo');
+    const brandName = document.getElementById('intro-brand-name');
+    if (brandCard && brandName && (QUIZ.brandName || QUIZ.brandLogo)) {
+      brandName.textContent = QUIZ.brandName || QUIZ.product || QUIZ.niche || 'Marca';
+      if (QUIZ.brandLogo && brandLogo) {
+        brandLogo.src = QUIZ.brandLogo;
+        brandLogo.onerror = () => brandLogo.classList.add('hidden');
+        brandLogo.onload = () => brandLogo.classList.remove('hidden');
+      }
+      brandCard.classList.remove('hidden');
+      brandCard.classList.add('flex');
+    }
     document.getElementById('intro-title').innerHTML = QUIZ.title || 'Descubre tu perfil ideal';
     document.getElementById('intro-subtitle').textContent = QUIZ.subtitle || `Responde ${QUIZ.questions?.length || 5} preguntas y descubre el origen de lo que te está frenando — personalizado para ti.`;
     document.getElementById('intro-time').textContent = `Solo ${QUIZ.questions?.length || 5} preguntas · Menos de ${QUIZ.estimatedMinutes || 2} minutos`;

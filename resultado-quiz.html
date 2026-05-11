@@ -80,6 +80,14 @@
 
 <main class="max-w-3xl mx-auto px-5 py-12 md:py-16 space-y-8">
 
+  <div id="result-brand-card" class="hidden mx-auto max-w-sm rounded-2xl border border-brand-light/25 bg-white/85 shadow-sm px-4 py-3 items-center justify-center gap-3 fade-up">
+    <img id="result-brand-logo-large" src="" alt="" class="hidden h-9 w-auto max-w-[140px] object-contain"/>
+    <div class="text-left min-w-0">
+      <p class="text-[10px] font-black tracking-[0.18em] uppercase text-brand/60">Resultado de</p>
+      <p id="result-brand-name-large" class="text-sm font-extrabold text-gray-900 truncate"></p>
+    </div>
+  </div>
+
   <!-- ── COMPLETED badge ── -->
   <div class="text-center fade-up">
     <span class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-brand-bg border border-brand-light/40 text-xs font-bold tracking-widest uppercase text-brand">
@@ -345,7 +353,24 @@
     applyResultTheme(quiz.brandColor || quiz.themeColor);
     if (quiz.brandLogo) {
       const logoEl = document.getElementById('result-logo');
-      if (logoEl) { logoEl.src = quiz.brandLogo; logoEl.classList.remove('hidden'); }
+      if (logoEl) {
+        logoEl.src = quiz.brandLogo;
+        logoEl.onerror = () => logoEl.classList.add('hidden');
+        logoEl.classList.remove('hidden');
+      }
+    }
+    const resultBrandCard = document.getElementById('result-brand-card');
+    const resultBrandLogo = document.getElementById('result-brand-logo-large');
+    const resultBrandName = document.getElementById('result-brand-name-large');
+    if (resultBrandCard && resultBrandName && (quiz.brandName || quiz.brandLogo)) {
+      resultBrandName.textContent = quiz.brandName || quiz.product || quiz.niche || 'Marca';
+      if (quiz.brandLogo && resultBrandLogo) {
+        resultBrandLogo.src = quiz.brandLogo;
+        resultBrandLogo.onerror = () => resultBrandLogo.classList.add('hidden');
+        resultBrandLogo.onload = () => resultBrandLogo.classList.remove('hidden');
+      }
+      resultBrandCard.classList.remove('hidden');
+      resultBrandCard.classList.add('flex');
     }
 
     const profile = (answers && answers.length > 0) ? calculateProfile(quiz, answers) : quiz.profiles[0];
