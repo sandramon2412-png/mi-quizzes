@@ -86,27 +86,37 @@
   .report-card > .relative:first-child .bg-brand-light\/20 {
     background: rgba(255,255,255,0.24) !important;
   }
+  #profile-emoji-wrap {
+    background: rgba(255,255,255,0.16) !important;
+    border-color: rgba(255,255,255,0.38) !important;
+    box-shadow: 0 22px 48px rgba(0,0,0,0.18), inset 0 1px 0 rgba(255,255,255,0.24) !important;
+    backdrop-filter: blur(18px);
+  }
+  #profile-emoji-wrap .material-symbols-outlined {
+    color: #fff !important;
+    text-shadow: 0 8px 22px rgba(0,0,0,0.22);
+  }
   .report-card > .bg-white {
     background: rgba(255,255,255,0.94) !important;
   }
   .next-action-card {
     position: relative;
-    min-height: 168px;
-    padding: 22px;
+    min-height: 198px;
+    padding: 24px;
     border-radius: 28px;
     overflow: hidden;
-    border: 1px solid color-mix(in srgb, var(--brand-light) 42%, #ffffff);
+    border: 1.5px solid color-mix(in srgb, var(--brand-light) 62%, rgba(255,255,255,0.22));
     background:
-      linear-gradient(180deg, rgba(255,255,255,0.88), rgba(255,255,255,0.76)),
-      radial-gradient(circle at 50% 110%, color-mix(in srgb, var(--brand-light) 72%, #ffffff), transparent 46%),
-      linear-gradient(135deg, color-mix(in srgb, var(--brand) 12%, #fff), #fff);
-    box-shadow: 0 20px 52px var(--brand-shadow);
+      radial-gradient(circle at 50% 116%, color-mix(in srgb, var(--brand-light) 96%, #ffffff), transparent 44%),
+      linear-gradient(180deg, #19191e 0%, #17171c 54%, color-mix(in srgb, var(--brand) 58%, #111) 100%);
+    box-shadow: 0 24px 70px color-mix(in srgb, var(--brand) 24%, transparent);
+    color: #fff;
     transition: transform 0.22s ease, box-shadow 0.22s ease, border-color 0.22s ease;
   }
   .next-action-card:hover {
     transform: translateY(-3px);
     border-color: var(--brand-light);
-    box-shadow: 0 26px 64px var(--brand-shadow);
+    box-shadow: 0 30px 80px color-mix(in srgb, var(--brand) 34%, transparent);
   }
   .next-action-card::after {
     content: "";
@@ -114,14 +124,24 @@
     left: 0;
     right: 0;
     bottom: 0;
-    height: 54%;
-    background: linear-gradient(180deg, transparent, color-mix(in srgb, var(--brand) 26%, transparent));
-    opacity: 0.55;
+    height: 48%;
+    background: linear-gradient(180deg, transparent, color-mix(in srgb, var(--brand-light) 72%, transparent));
+    opacity: 0.78;
     pointer-events: none;
   }
   .next-action-card > * {
     position: relative;
     z-index: 1;
+  }
+  .next-action-card h3,
+  .next-action-card p,
+  .next-action-card span {
+    color: #fff !important;
+  }
+  .next-action-card .action-card-icon {
+    background: rgba(255,255,255,0.08) !important;
+    border: 1px solid rgba(255,255,255,0.14);
+    box-shadow: 0 14px 30px rgba(0,0,0,0.22);
   }
   .insight-card {
     background: rgba(255,255,255,0.74);
@@ -681,7 +701,7 @@
 
     grid.innerHTML = cards.slice(0, 3).map(card => `
       <a class="next-action-card block" href="${escHtml(card.href)}" ${/^https?:\/\//.test(card.href) ? 'target="_blank" rel="noopener noreferrer"' : ''}>
-        <span class="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-white/70 text-brand shadow-sm mb-8">
+        <span class="action-card-icon inline-flex h-10 w-10 items-center justify-center rounded-xl text-white mb-8">
           <span class="material-symbols-outlined" style="font-size:20px">${escHtml(card.icon)}</span>
         </span>
         <p class="text-[10px] font-black tracking-[0.18em] uppercase text-brand/70 mb-2">${escHtml(card.label)}</p>
