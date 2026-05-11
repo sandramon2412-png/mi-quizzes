@@ -18,6 +18,9 @@
           "brand": "var(--brand,#8B6AA0)",
           "brand-light": "var(--brand-light,#C4A7D7)",
           "brand-bg": "var(--brand-bg,#f7f2fa)",
+          "brand-surface": "var(--brand-surface,#faf8fc)",
+          "brand-text": "var(--brand-text,#26212b)",
+          "brand-muted": "var(--brand-muted,#6f6677)",
         },
         fontFamily: {
           "serif": ["Playfair Display","Georgia","serif"],
@@ -28,25 +31,33 @@
   }
 </script>
 <style>
-  :root { --brand:#8B6AA0; --brand-light:#C4A7D7; --brand-bg:#f7f2fa; }
+  :root {
+    --brand:#8B6AA0;
+    --brand-light:#C4A7D7;
+    --brand-bg:#f7f2fa;
+    --brand-surface:#faf8fc;
+    --brand-text:#26212b;
+    --brand-muted:#6f6677;
+    --brand-border:rgba(139,106,160,0.18);
+    --brand-shadow:rgba(49,33,60,0.12);
+  }
   body {
     font-family:'Plus Jakarta Sans',sans-serif;
     background:
-      linear-gradient(135deg, rgba(250,248,252,0.96), rgba(255,255,255,0.98) 44%, rgba(247,242,250,0.86)),
-      repeating-linear-gradient(90deg, rgba(139,106,160,0.04) 0 1px, transparent 1px 76px),
-      repeating-linear-gradient(180deg, rgba(139,106,160,0.035) 0 1px, transparent 1px 76px);
-    color:#26212b;
+      radial-gradient(circle at top left, var(--brand-bg), transparent 34rem),
+      linear-gradient(135deg, var(--brand-surface), #fff 48%, var(--brand-bg));
+    color:var(--brand-text);
   }
   .material-symbols-outlined { font-variation-settings:'FILL' 0,'wght' 500,'GRAD' 0,'opsz' 24; }
   .report-card {
     background: rgba(255,255,255,0.88);
-    border: 1px solid rgba(139,106,160,0.18);
-    box-shadow: 0 24px 70px rgba(49,33,60,0.12), inset 0 1px 0 rgba(255,255,255,0.9);
+    border: 1px solid var(--brand-border);
+    box-shadow: 0 24px 70px var(--brand-shadow), inset 0 1px 0 rgba(255,255,255,0.9);
     backdrop-filter: blur(18px);
   }
   .insight-card {
     background: rgba(255,255,255,0.74);
-    border: 1px solid rgba(139,106,160,0.16);
+    border: 1px solid var(--brand-border);
   }
   .report-icon {
     background: linear-gradient(135deg,var(--brand),var(--brand-light));
@@ -59,13 +70,43 @@
   @keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-8px)} }
   .float { animation: float 3.5s ease-in-out infinite; }
   .match-bar-fill { transition: width 1.4s cubic-bezier(0.16,1,0.3,1); }
+  :root[data-quiz-mode="dark"] body {
+    background:
+      radial-gradient(circle at top left, color-mix(in srgb, var(--brand) 30%, transparent), transparent 30rem),
+      radial-gradient(circle at bottom right, color-mix(in srgb, var(--brand-light) 18%, transparent), transparent 32rem),
+      linear-gradient(135deg, #0e0e10, #17131d 58%, #0d1117);
+    color: var(--brand-text);
+  }
+  :root[data-quiz-mode="dark"] header {
+    background: rgba(12,12,16,0.72) !important;
+    border-color: rgba(255,255,255,0.12) !important;
+  }
+  :root[data-quiz-mode="dark"] .report-card {
+    background: rgba(18,18,24,0.84);
+    border-color: rgba(255,255,255,0.12);
+    box-shadow: 0 28px 78px rgba(0,0,0,0.36), inset 0 1px 0 rgba(255,255,255,0.08);
+  }
+  :root[data-quiz-mode="dark"] .insight-card,
+  :root[data-quiz-mode="dark"] #result-brand-card {
+    background: rgba(255,255,255,0.07);
+    border-color: rgba(255,255,255,0.12);
+  }
+  :root[data-quiz-mode="dark"] .text-gray-800,
+  :root[data-quiz-mode="dark"] .text-gray-900 {
+    color: var(--brand-text) !important;
+  }
+  :root[data-quiz-mode="dark"] .text-gray-400,
+  :root[data-quiz-mode="dark"] .text-gray-500,
+  :root[data-quiz-mode="dark"] .text-gray-600 {
+    color: var(--brand-muted) !important;
+  }
 </style>
 </head>
 <body class="min-h-screen">
 
 <!-- Soft gradient band at top -->
 <div class="fixed inset-x-0 top-0 h-64 pointer-events-none -z-10"
-     style="background:linear-gradient(180deg,var(--brand-bg) 0%,#fff 100%)"></div>
+     style="background:linear-gradient(180deg,var(--brand-bg) 0%,var(--brand-surface) 100%)"></div>
 
 <!-- Minimal header -->
 <header class="sticky top-0 z-50 backdrop-blur-md bg-white/80 border-b border-brand-light/20 px-6 py-3 flex items-center justify-between">
@@ -108,7 +149,7 @@
   <div class="rounded-3xl overflow-hidden report-card fade-up-2">
 
     <!-- Profile visual strip -->
-    <div class="relative px-8 pt-12 pb-8 text-center" style="background:linear-gradient(160deg,var(--brand-bg) 0%,#fff 80%)">
+    <div class="relative px-8 pt-12 pb-8 text-center" style="background:linear-gradient(160deg,var(--brand-bg) 0%,var(--brand-surface) 80%)">
       <!-- Decorative petals -->
       <div class="absolute top-5 left-7 w-2 h-2 rounded-full bg-brand/25 select-none pointer-events-none"></div>
       <div class="absolute top-7 right-9 w-10 h-px bg-brand/20 rotate-45 select-none pointer-events-none"></div>
@@ -175,7 +216,7 @@
 
       <!-- Solution block -->
       <div id="solution-block" class="hidden rounded-2xl overflow-hidden" style="border:1.5px solid var(--brand-light);box-shadow:0 4px 24px 0 rgba(139,106,160,0.10)">
-        <div class="px-5 py-3.5 flex items-center gap-2.5" style="background:linear-gradient(90deg,var(--brand) 0%,#b98fd4 100%)">
+        <div class="px-5 py-3.5 flex items-center gap-2.5" style="background:linear-gradient(90deg,var(--brand) 0%,var(--brand-light) 100%)">
           <span class="material-symbols-outlined text-white" style="font-size:18px;font-variation-settings:'FILL' 1">auto_awesome</span>
           <p class="text-white text-xs font-bold uppercase tracking-widest">Tu solución personalizada</p>
         </div>
@@ -188,7 +229,7 @@
       <!-- CTA button -->
       <a id="btn-cta" href="./acceso-exito.html"
         class="w-full block text-center py-4 rounded-full text-white font-bold text-sm tracking-wide transition-all duration-300 shadow-lg active:scale-[0.98]"
-        style="background:linear-gradient(90deg,var(--brand) 0%,#b98fd4 100%);box-shadow:0 6px 24px 0 rgba(139,106,160,0.30)">
+        style="background:linear-gradient(90deg,var(--brand) 0%,var(--brand-light) 100%);box-shadow:0 6px 24px 0 rgba(139,106,160,0.30)">
         Ver la solución →
       </a>
 
@@ -350,7 +391,7 @@
     }
 
     // Apply branding
-    applyResultTheme(quiz.brandColor || quiz.themeColor);
+    applyResultTheme(quiz);
     if (quiz.brandLogo) {
       const logoEl = document.getElementById('result-logo');
       if (logoEl) {
@@ -496,11 +537,28 @@
     }
   });
 
-  function applyResultTheme(brandColor) {
-    if (!brandColor) return;
+  function applyResultTheme(quizOrColor) {
+    const quiz = typeof quizOrColor === 'object' && quizOrColor ? quizOrColor : null;
+    const nicheTheme = quiz && window.getPremiumNicheTheme
+      ? window.getPremiumNicheTheme(quiz.niche || quiz.product || quiz.title || '', quiz.product || quiz.title || '')
+      : {};
+    const brandColor = (quiz && (quiz.brandColor || quiz.themeColor)) || quizOrColor || nicheTheme.accent || '#8B6AA0';
+    const accent2 = (quiz && quiz.accentColor) || nicheTheme.accent2 || brandColor + '99';
+    const bg = nicheTheme.bg || brandColor + '12';
+    const surface = nicheTheme.card || brandColor + '08';
+    const text = nicheTheme.text || '#26212b';
+    const muted = nicheTheme.muted || '#6f6677';
+
     document.documentElement.style.setProperty('--brand', brandColor);
-    document.documentElement.style.setProperty('--brand-light', brandColor + '99');
-    document.documentElement.style.setProperty('--brand-bg', brandColor + '12');
+    document.documentElement.style.setProperty('--brand-light', accent2);
+    document.documentElement.style.setProperty('--brand-bg', bg);
+    document.documentElement.style.setProperty('--brand-surface', surface);
+    document.documentElement.style.setProperty('--brand-text', text);
+    document.documentElement.style.setProperty('--brand-muted', muted);
+    document.documentElement.style.setProperty('--brand-border', nicheTheme.mode === 'dark' ? 'rgba(255,255,255,0.12)' : brandColor + '2e');
+    document.documentElement.style.setProperty('--brand-shadow', nicheTheme.mode === 'dark' ? 'rgba(0,0,0,0.36)' : brandColor + '1f');
+    document.documentElement.dataset.quizTheme = nicheTheme.id || 'custom';
+    document.documentElement.dataset.quizMode = nicheTheme.mode || 'light';
   }
 
   function retakeQuiz() {

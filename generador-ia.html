@@ -368,8 +368,8 @@
                 </p>
               </div>
               <div>
-                <label class="text-xs font-bold text-primary uppercase tracking-widest block mb-1"><span class="material-symbols-outlined text-sm align-middle">link</span> URL del botón "Comprar" en el resultado</label>
-                <p class="text-[10px] text-on-surface-variant/60 mb-1.5">Tu landing, Hotmart, Stripe, checkout… Si lo dejas vacío el botón no irá a ningún lado.</p>
+                <label class="text-xs font-bold text-primary uppercase tracking-widest block mb-1"><span class="material-symbols-outlined text-sm align-middle">link</span> URL general del resultado</label>
+                <p class="text-[10px] text-on-surface-variant/60 mb-1.5">Esta es la pagina principal a donde ira el boton final. Si un perfil tiene su propia URL, ese perfil usara la suya.</p>
                 <div class="relative">
                   <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant/40 text-sm">link</span>
                   <input id="quiz-product-url" type="url" placeholder="https://tu-landing.com o https://hotmart.com/..."
@@ -500,8 +500,11 @@
           <div>
             <h3 class="text-sm font-bold mb-2 flex items-center gap-2">
               <span class="material-symbols-outlined text-secondary text-base">groups</span>
-              Perfiles de Resultado
+              Resultados posibles del cliente
             </h3>
+            <p class="text-[10px] text-on-surface-variant/60 -mt-1 mb-3">
+              Cada persona termina en uno de estos perfiles segun sus respuestas. Puedes mandar todos a la misma landing o poner una URL distinta para cada resultado.
+            </p>
             <div id="profiles-list" class="space-y-3"></div>
           </div>
         </div>
@@ -1000,15 +1003,15 @@ function renderProfiles(profiles) {
           <textarea rows="2" onchange="currentQuiz.profiles[${pi}].description=this.value"
             class="w-full bg-surface-container-high border border-outline-variant/10 rounded-lg px-3 py-2 text-xs text-on-surface-variant outline-none focus:border-secondary transition-colors resize-none">${esc(p.description)}</textarea>
           <input type="text" value="${esc(p.cta)}" onchange="currentQuiz.profiles[${pi}].cta=this.value"
-            placeholder="Texto del botón CTA..."
+            placeholder="Texto del boton para este resultado..."
             class="w-full bg-surface-container-high border border-outline-variant/10 rounded-lg px-3 py-2 text-xs text-primary font-semibold outline-none focus:border-primary transition-colors"/>
           <div class="relative mt-1">
             <span class="material-symbols-outlined absolute left-2.5 top-1/2 -translate-y-1/2 text-on-surface-variant/40 text-xs">link</span>
             <input type="url" value="${esc(p.ctaUrl||'')}" onchange="currentQuiz.profiles[${pi}].ctaUrl=this.value.trim()"
-              placeholder="URL de este perfil (Hotmart, Shopify, landing…)"
+              placeholder="URL solo para este resultado (landing, checkout, Hotmart...)"
               class="w-full bg-surface-container-high border border-outline-variant/10 rounded-lg pl-8 pr-3 py-2 text-xs text-on-surface-variant outline-none focus:border-secondary focus:ring-1 focus:ring-secondary/30 transition-colors"/>
           </div>
-          <p class="text-[10px] text-on-surface-variant/40 mt-0.5">Si vacío, usa la URL general del quiz.</p>
+          <p class="text-[10px] text-on-surface-variant/55 mt-0.5">Opcional: si lo dejas vacio, usa la URL general del resultado.</p>
         </div>
       </div>`;
     c.appendChild(d);
@@ -1385,7 +1388,7 @@ function setNumOpts(n) {
 // ── Template questions modal ───────────────────────────────
 const TEMPLATE_QUESTIONS = [
   {
-    id: 'tq_gender', category: '👤 Perfil',
+    id: 'tq_gender', category: 'Perfil', icon: 'person_search',
     text: '¿Con qué género te identificas?',
     options: [
       { text: 'Mujer',  imageUrl: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400&h=280&fit=crop&auto=format&q=80' },
@@ -1394,7 +1397,7 @@ const TEMPLATE_QUESTIONS = [
     ]
   },
   {
-    id: 'tq_age', category: '👤 Perfil',
+    id: 'tq_age', category: 'Perfil', icon: 'calendar_month',
     text: '¿En qué rango de edad estás?',
     options: [
       { text: '18 - 25 años', imageUrl: 'https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?w=400&h=280&fit=crop&auto=format&q=80' },
@@ -1404,7 +1407,7 @@ const TEMPLATE_QUESTIONS = [
     ]
   },
   {
-    id: 'tq_experience', category: '📊 Experiencia',
+    id: 'tq_experience', category: 'Experiencia', icon: 'insights',
     text: '¿Cuál es tu nivel de experiencia en el tema?',
     options: [
       { text: 'Soy principiante, estoy empezando desde cero', imageUrl: 'https://images.unsplash.com/photo-1499209974431-9dddcece7f88?w=400&h=280&fit=crop&auto=format&q=80' },
@@ -1414,7 +1417,7 @@ const TEMPLATE_QUESTIONS = [
     ]
   },
   {
-    id: 'tq_goal', category: '🎯 Objetivo',
+    id: 'tq_goal', category: 'Objetivo', icon: 'flag',
     text: '¿Cuál es tu objetivo principal ahora mismo?',
     options: [
       { text: 'Perder peso y sentirme mejor', imageUrl: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=280&fit=crop&auto=format&q=80' },
@@ -1424,7 +1427,7 @@ const TEMPLATE_QUESTIONS = [
     ]
   },
   {
-    id: 'tq_time', category: '⏰ Disponibilidad',
+    id: 'tq_time', category: 'Disponibilidad', icon: 'schedule',
     text: '¿Cuánto tiempo puedes dedicar por día?',
     options: [
       { text: 'Menos de 15 minutos', imageUrl: 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=400&h=280&fit=crop&auto=format&q=80' },
@@ -1434,7 +1437,7 @@ const TEMPLATE_QUESTIONS = [
     ]
   },
   {
-    id: 'tq_obstacle', category: '🚧 Obstáculo',
+    id: 'tq_obstacle', category: 'Obstaculo', icon: 'warning',
     text: '¿Qué te ha impedido lograr tu objetivo hasta ahora?',
     options: [
       { text: 'Falta de tiempo y mil ocupaciones', imageUrl: 'https://images.unsplash.com/photo-1483389127117-b6a2102724ae?w=400&h=280&fit=crop&auto=format&q=80' },
@@ -1444,7 +1447,7 @@ const TEMPLATE_QUESTIONS = [
     ]
   },
   {
-    id: 'tq_lifestyle', category: '🌿 Estilo de vida',
+    id: 'tq_lifestyle', category: 'Estilo de vida', icon: 'routine',
     text: '¿Cómo describes tu estilo de vida actual?',
     options: [
       { text: 'Muy activo/a, siempre en movimiento', imageUrl: 'https://images.unsplash.com/photo-1552674605-db6ffd4facb5?w=400&h=280&fit=crop&auto=format&q=80' },
@@ -1461,9 +1464,9 @@ function openTemplateModal() {
     <button onclick="addTemplateQuestion(${idx})"
       class="tpl-q-card w-full text-left p-4 rounded-xl border border-outline-variant/10 bg-surface transition-all hover:border-primary/30">
       <div class="flex items-start gap-3">
-        <span class="text-lg shrink-0">${tq.category.split(' ')[0]}</span>
+        <span class="material-symbols-outlined text-primary shrink-0">${tq.icon || 'add_circle'}</span>
         <div class="flex-1 min-w-0">
-          <p class="text-xs font-bold text-on-surface-variant uppercase tracking-widest mb-0.5">${tq.category.split(' ').slice(1).join(' ')}</p>
+          <p class="text-xs font-bold text-on-surface-variant uppercase tracking-widest mb-0.5">${tq.category}</p>
           <p class="text-sm font-semibold text-on-surface">${tq.text}</p>
           <div class="flex flex-wrap gap-1.5 mt-2">
             ${tq.options.map(o => `
