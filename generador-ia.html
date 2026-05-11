@@ -265,6 +265,7 @@
               <div class="flex-1">
                 <label class="text-[10px] text-on-surface-variant block mb-1">Nombre de tu marca</label>
                 <input id="quiz-brand-name" type="text" placeholder="Ej: Academia Fitness Pro"
+                  oninput="updateBrandPreview()"
                   class="w-full bg-surface-container-high border border-outline-variant/10 rounded-lg px-3 py-2 text-xs text-on-surface outline-none focus:border-primary transition-colors"/>
               </div>
               <div class="w-24">
@@ -276,9 +277,21 @@
               </div>
             </div>
             <div>
-              <label class="text-[10px] text-on-surface-variant block mb-1">URL del logo <span class="text-on-surface-variant/50">(opcional)</span></label>
+              <label class="text-[10px] text-on-surface-variant block mb-1">Logo de marca <span class="text-on-surface-variant/50">(se ve en el quiz y resultado)</span></label>
+              <div id="brand-logo-preview" class="hidden mb-2 rounded-lg border border-outline-variant/10 bg-surface-container-high px-3 py-2 items-center gap-2">
+                <img id="brand-logo-preview-img" src="" alt="" class="h-8 w-auto max-w-[120px] object-contain"/>
+                <span id="brand-logo-preview-name" class="text-xs font-bold text-on-surface"></span>
+              </div>
               <input id="quiz-brand-logo" type="url" placeholder="https://tu-logo.com/logo.png"
+                oninput="updateBrandPreview()"
                 class="w-full bg-surface-container-high border border-outline-variant/10 rounded-lg px-3 py-2 text-xs text-on-surface outline-none focus:border-primary transition-colors"/>
+              <div class="mt-2 flex items-center gap-2">
+                <label class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-surface-container-high border border-outline-variant/20 text-[10px] font-bold text-on-surface-variant hover:text-primary cursor-pointer">
+                  <span class="material-symbols-outlined text-xs">upload_file</span>Subir logo
+                  <input type="file" accept="image/png,image/jpeg,image/webp" class="hidden" onchange="uploadLogoImage(this)"/>
+                </label>
+                <span class="text-[10px] text-on-surface-variant/50">PNG/JPG/WebP. Lo optimizo antes de guardar.</span>
+              </div>
             </div>
             <div>
               <label class="text-[10px] text-on-surface-variant block mb-1">Imagen de portada <span class="text-on-surface-variant/50">(opcional — se muestra al inicio)</span></label>
@@ -496,7 +509,7 @@
 
       <!-- Save / Share -->
       <div id="action-buttons" class="hidden flex gap-3">
-        <button onclick="saveQuiz()" class="flex-1 py-3 bg-secondary font-bold text-sm rounded-xl hover:opacity-90 transition-all flex items-center justify-center gap-2" style="color:#00452d">
+        <button id="btn-save-bottom" onclick="saveQuiz()" class="flex-1 py-3 bg-secondary font-bold text-sm rounded-xl hover:opacity-90 transition-all flex items-center justify-center gap-2" style="color:#00452d">
           <span class="material-symbols-outlined text-base">save</span>Guardar Quiz
         </button>
         <button onclick="copyShareLink()" class="flex-1 py-3 border border-primary/30 text-primary rounded-xl font-bold text-sm hover:bg-primary/5 transition-all flex items-center justify-center gap-2">
@@ -583,6 +596,20 @@ async function uploadCoverImage(input) {
   }
 }
 
+async function uploadLogoImage(input) {
+  try {
+    const src = await optimizeQuizImageFile(input.files?.[0], 520, 220, 0.86);
+    document.getElementById('quiz-brand-logo').value = '';
+    if (currentQuiz) currentQuiz.brandLogo = src;
+    updateBrandPreview();
+    showToast('Logo subido. Se verá en el quiz y en el resultado.');
+  } catch (err) {
+    showToast(err.message || 'No pude subir el logo', 'error');
+  } finally {
+    input.value = '';
+  }
+}
+
 async function uploadQuestionImage(input, qi) {
   try {
     const src = await optimizeQuizImageFile(input.files?.[0], 1200, 900, 0.82);
@@ -617,6 +644,29 @@ function clearQuestionImage(qi) {
 function clearOptionImage(qi, oi) {
   currentQuiz.questions[qi].options[oi].imageUrl = '';
   renderQuestions(currentQuiz.questions);
+}
+
+function updateBrandPreview() {
+  const wrap = document.getElementById('brand-logo-preview');
+  const img = document.getElementById('brand-logo-preview-img');
+  const name = document.getElementById('brand-logo-preview-name');
+  if (!wrap || !img || !name) return;
+  const logo = document.getElementById('quiz-brand-logo')?.value.trim() || currentQuiz?.brandLogo || '';
+  const brand = document.getElementById('quiz-brand-name')?.value.trim() || currentQuiz?.brandName || currentQuiz?.product || '';
+  name.textContent = brand || 'Tu marca';
+  if (logo) {
+    img.src = logo;
+    img.onerror = () => {
+      img.classList.add('hidden');
+      name.textContent = `${brand || 'Tu marca'} - revisa el logo`;
+    };
+    img.onload = () => img.classList.remove('hidden');
+  } else {
+    img.removeAttribute('src');
+    img.classList.add('hidden');
+  }
+  wrap.classList.remove('hidden');
+  wrap.classList.add('flex');
 }
 
 
@@ -844,6 +894,7 @@ function loadQuizIntoEditor(quiz) {
   document.getElementById('quiz-brand-color-hex').textContent = quiz.brandColor || '#8B6AA0';
   document.getElementById('quiz-brand-logo').value   = quiz.brandLogo   || '';
   document.getElementById('quiz-cover-image').value  = isDataImage(quiz.coverImage) ? '' : (quiz.coverImage || '');
+  updateBrandPreview();
   updateThemeSuggestion();
   document.getElementById('quiz-lead-capture').checked      = leadOn;
   document.getElementById('quiz-wa-lead-capture').checked   = leadOn;
@@ -895,8 +946,8 @@ function renderQuestions(questions) {
       </div>
       <!-- Question image -->
       <div class="flex items-center gap-2 mb-2">
-        <span class="material-symbols-outlined text-sm text-on-surface-variant/50">image</span>
-        <input type="url" value="${qImageValue}" placeholder="URL de imagen decorativa (se muestra a la derecha de la pregunta)"
+        <span class="material-symbols-outlined text-sm text-on-surface-variant/50" title="Imagen de pregunta">image</span>
+        <input type="url" value="${qImageValue}" placeholder="Imagen de la pregunta: URL o subir archivo (panel visual en escritorio)"
           onchange="currentQuiz.questions[${qi}].image=this.value.trim()"
           class="flex-1 bg-surface-container-high border border-outline-variant/10 rounded-lg px-3 py-1.5 text-xs text-on-surface-variant outline-none focus:border-primary transition-colors"/>
         <label class="px-2 py-1.5 rounded-lg border border-outline-variant/20 text-[10px] text-on-surface-variant hover:text-primary cursor-pointer inline-flex items-center gap-1">
@@ -914,7 +965,7 @@ function renderQuestions(questions) {
             <input type="text" value="${esc(opt.text)}" placeholder="Texto de la opción"
               onchange="currentQuiz.questions[${qi}].options[${oi}].text=this.value"
               class="flex-1 bg-transparent text-xs text-on-surface outline-none min-w-0"/>
-            <input type="url" value="${isDataImage(opt.imageUrl) ? '' : esc(opt.imageUrl||'')}" placeholder="URL imagen (opcional)"
+            <input type="url" value="${isDataImage(opt.imageUrl) ? '' : esc(opt.imageUrl||'')}" placeholder="Imagen opción: convierte la opción en tarjeta visual"
               onchange="currentQuiz.questions[${qi}].options[${oi}].imageUrl=this.value.trim()"
               class="w-32 bg-transparent text-[10px] text-on-surface-variant outline-none border-l border-outline-variant/20 pl-2 shrink-0"/>
             <label class="px-2 py-1 rounded-md border border-outline-variant/20 text-[10px] text-on-surface-variant hover:text-primary cursor-pointer shrink-0 inline-flex items-center gap-1">
@@ -1040,8 +1091,37 @@ function selectPostAction(action) {
 }
 
 // ── Save ──────────────────────────────────────────────────
+function setSaveBusy(isBusy) {
+  ['btn-save-header', 'btn-save-bottom'].forEach(id => {
+    const btn = document.getElementById(id);
+    if (!btn) return;
+    btn.disabled = isBusy;
+    btn.classList.toggle('opacity-60', isBusy);
+    btn.classList.toggle('cursor-wait', isBusy);
+  });
+}
+
+function stripHeavyLocalImages(value) {
+  if (typeof value === 'string') return isDataImage(value) ? '' : value;
+  if (Array.isArray(value)) return value.map(stripHeavyLocalImages);
+  if (value && typeof value === 'object') {
+    return Object.fromEntries(Object.entries(value).map(([k, v]) => [k, stripHeavyLocalImages(v)]));
+  }
+  return value;
+}
+
+function saveQuizLocalCopy(quiz, { allowHeavyImages = false } = {}) {
+  try {
+    return Quizzes.save(allowHeavyImages ? quiz : stripHeavyLocalImages(quiz));
+  } catch (err) {
+    console.warn('Local quiz copy skipped:', err);
+    return null;
+  }
+}
+
 async function saveQuiz() {
-  if (!currentQuiz) { showToast('Genera o crea un quiz primero', 'error'); return; }
+  if (!currentQuiz) { showToast('Genera o crea un quiz primero', 'error'); return null; }
+  setSaveBusy(true);
   delete currentQuiz.isDemo;
   currentQuiz.title       = document.getElementById('quiz-title').value.trim()       || currentQuiz.title;
   currentQuiz.subtitle    = document.getElementById('quiz-subtitle').value.trim()    || currentQuiz.subtitle;
@@ -1069,7 +1149,7 @@ async function saveQuiz() {
   currentQuiz.emailResultEnabled = document.getElementById('quiz-email-result').checked;
   currentQuiz.brandName   = document.getElementById('quiz-brand-name').value.trim() || '';
   currentQuiz.brandColor  = document.getElementById('quiz-brand-color').value || '#8B6AA0';
-  currentQuiz.brandLogo   = document.getElementById('quiz-brand-logo').value.trim() || '';
+  currentQuiz.brandLogo   = document.getElementById('quiz-brand-logo').value.trim() || currentQuiz.brandLogo || '';
   currentQuiz.coverImage  = document.getElementById('quiz-cover-image').value.trim() || currentQuiz.coverImage || '';
 
   // Meta Pixel / CAPI
@@ -1077,40 +1157,48 @@ async function saveQuiz() {
   currentQuiz.metaPixelId  = pixelEnabled ? (document.getElementById('quiz-pixel-id').value.trim() || '') : '';
   currentQuiz.metaCapiToken = pixelEnabled ? (document.getElementById('quiz-capi-token').value.trim() || '') : '';
 
+  if (!currentQuiz.id && !editingQuizId) currentQuiz.id = crypto.randomUUID();
   if (editingQuizId) currentQuiz.id = editingQuizId;
 
-  // Validate no placeholder text left
+  // Allow saving drafts, but warn when placeholder text remains
   const defaultTexts = ['Nueva pregunta', 'Opción A', 'Opción B', 'Opción C', 'Opción D', 'Nueva opción'];
   const incomplete = currentQuiz.questions.filter(q =>
     defaultTexts.includes(q.text) || q.options.some(o => defaultTexts.includes(o.text))
   );
   if (incomplete.length) {
-    showToast(`Hay ${incomplete.length} pregunta(s) con texto de ejemplo. Por favor edítalas antes de guardar.`, 'error');
-    // Scroll to first incomplete question
-    const idx = currentQuiz.questions.indexOf(incomplete[0]);
-    const cards = document.querySelectorAll('#questions-list > div');
-    if (cards[idx]) { cards[idx].scrollIntoView({ behavior: 'smooth', block: 'center' }); cards[idx].querySelector('input')?.focus(); }
-    return;
+    showToast(`Guardado como borrador: hay ${incomplete.length} pregunta(s) con texto de ejemplo.`, 'error');
   }
 
   try {
+    if (!_currentUser?.id) throw new Error('Sesión no disponible. Inicia sesión de nuevo.');
     const saved = await DB.quizzes.save(currentQuiz, _currentUser.id);
     editingQuizId = saved.id;
     currentQuiz.id = saved.id;
-    // Also keep a local copy so dashboard can always show it
-    Quizzes.save({ ...currentQuiz, id: saved.id });
-    showToast('¡Quiz guardado exitosamente! ✓');
+    saveQuizLocalCopy({ ...currentQuiz, id: saved.id });
+    if (!incomplete.length) showToast('Quiz guardado exitosamente');
+    return saved;
   } catch (err) {
-    // Fallback: save locally if Supabase fails
-    const saved = Quizzes.save(currentQuiz.id ? currentQuiz : Quizzes.create(currentQuiz));
+    console.warn('DB.quizzes.save failed, using localStorage fallback:', err);
+    let saved = saveQuizLocalCopy(currentQuiz, { allowHeavyImages: true });
+    if (!saved) saved = saveQuizLocalCopy(currentQuiz);
+    if (!saved) {
+      showToast('No pude guardar. Libera espacio del navegador o vuelve a iniciar sesión.', 'error');
+      return null;
+    }
     editingQuizId = saved.id;
     currentQuiz.id = saved.id;
-    showToast('Quiz guardado localmente ✓');
+    if (!incomplete.length) showToast('Quiz guardado localmente');
+    return saved;
+  } finally {
+    setSaveBusy(false);
   }
 }
 
-function copyShareLink() {
-  if (!editingQuizId) { saveQuiz(); if (!editingQuizId) return; }
+async function copyShareLink() {
+  if (!editingQuizId) {
+    const saved = await saveQuiz();
+    if (!saved || !editingQuizId) return;
+  }
   copyToClipboard(buildQuizUrl(editingQuizId));
 }
 
