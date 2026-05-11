@@ -1157,7 +1157,6 @@ async function saveQuiz() {
   currentQuiz.metaPixelId  = pixelEnabled ? (document.getElementById('quiz-pixel-id').value.trim() || '') : '';
   currentQuiz.metaCapiToken = pixelEnabled ? (document.getElementById('quiz-capi-token').value.trim() || '') : '';
 
-  if (!currentQuiz.id && !editingQuizId) currentQuiz.id = crypto.randomUUID();
   if (editingQuizId) currentQuiz.id = editingQuizId;
 
   // Allow saving drafts, but warn when placeholder text remains
@@ -1171,7 +1170,8 @@ async function saveQuiz() {
 
   try {
     if (!_currentUser?.id) throw new Error('Sesión no disponible. Inicia sesión de nuevo.');
-    const saved = await DB.quizzes.save(currentQuiz, _currentUser.id);
+    const dbQuiz = editingQuizId ? currentQuiz : { ...currentQuiz, id: undefined };
+    const saved = await DB.quizzes.save(dbQuiz, _currentUser.id);
     editingQuizId = saved.id;
     currentQuiz.id = saved.id;
     saveQuizLocalCopy({ ...currentQuiz, id: saved.id });
@@ -1179,6 +1179,7 @@ async function saveQuiz() {
     return saved;
   } catch (err) {
     console.warn('DB.quizzes.save failed, using localStorage fallback:', err);
+    if (!currentQuiz.id) currentQuiz.id = crypto.randomUUID();
     let saved = saveQuizLocalCopy(currentQuiz, { allowHeavyImages: true });
     if (!saved) saved = saveQuizLocalCopy(currentQuiz);
     if (!saved) {
