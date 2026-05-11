@@ -7,7 +7,7 @@
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="./supabase-config.js"></script>
-<script src="./app.js"></script>
+<script src="./app.js?v=offer-demo-1"></script>
 <script src="./ai-assistant.js" defer></script>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
@@ -82,8 +82,8 @@
         <span class="material-symbols-outlined text-white">psychology</span>
       </div>
       <div>
-        <h1 class="text-2xl font-extrabold tracking-tight">Generador de Quiz <span class="text-primary">con IA</span></h1>
-        <p class="text-on-surface-variant text-sm">Quizzes de alta conversión para Facebook Ads en segundos</p>
+        <h1 class="text-2xl font-extrabold tracking-tight">Generador de Quiz <span class="text-primary">de Oferta</span></h1>
+        <p class="text-on-surface-variant text-sm">Diagnósticos para vender ebooks, mini-apps y productos digitales</p>
       </div>
     </div>
   </div>
@@ -97,22 +97,36 @@
       <div class="bg-surface-container-low rounded-xl p-6 border border-outline-variant/10">
         <h2 class="font-bold text-sm mb-4 flex items-center gap-2">
           <span class="w-6 h-6 rounded-full primary-gradient flex items-center justify-center text-white text-xs font-black shrink-0">1</span>
-          Tu Producto Digital
+          Oferta digital
         </h2>
+        <div class="grid grid-cols-3 gap-2 mb-4">
+          <div class="rounded-lg border border-outline-variant/10 bg-surface-container px-3 py-2">
+            <span class="material-symbols-outlined text-primary text-base">ads_click</span>
+            <p class="text-[10px] text-on-surface-variant font-bold mt-1">Tráfico</p>
+          </div>
+          <div class="rounded-lg border border-outline-variant/10 bg-surface-container px-3 py-2">
+            <span class="material-symbols-outlined text-secondary text-base">psychology</span>
+            <p class="text-[10px] text-on-surface-variant font-bold mt-1">Diagnóstico</p>
+          </div>
+          <div class="rounded-lg border border-outline-variant/10 bg-surface-container px-3 py-2">
+            <span class="material-symbols-outlined text-tertiary text-base">shopping_bag</span>
+            <p class="text-[10px] text-on-surface-variant font-bold mt-1">Oferta</p>
+          </div>
+        </div>
         <div class="space-y-3">
           <div>
-            <label class="block text-xs font-bold text-on-surface-variant uppercase tracking-widest mb-1.5">Nombre del Producto *</label>
-            <input id="input-product" type="text" placeholder="Ej: eBook Finanzas para Freelancers"
+            <label class="block text-xs font-bold text-on-surface-variant uppercase tracking-widest mb-1.5">Nombre de la oferta *</label>
+            <input id="input-product" type="text" placeholder="Ej: Reset Financiero: eBook + Mini-App"
               class="w-full bg-surface-container-lowest border border-outline-variant/20 rounded-lg px-4 py-3 text-on-surface text-sm focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all"/>
           </div>
           <div>
-            <label class="block text-xs font-bold text-on-surface-variant uppercase tracking-widest mb-1.5">¿Qué logra el cliente?</label>
-            <textarea id="input-desc" rows="2" placeholder="Ej: Aprende a gestionar sus ingresos y ahorrar para invertir"
+            <label class="block text-xs font-bold text-on-surface-variant uppercase tracking-widest mb-1.5">¿Qué transformación promete?</label>
+            <textarea id="input-desc" rows="2" placeholder="Ej: Ordenar su dinero, ahorrar con método y empezar a invertir"
               class="w-full bg-surface-container-lowest border border-outline-variant/20 rounded-lg px-4 py-3 text-on-surface text-sm focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all resize-none"></textarea>
           </div>
           <div>
-            <label class="block text-xs font-bold text-on-surface-variant uppercase tracking-widest mb-1.5">Nicho / Audiencia</label>
-            <input id="input-niche" type="text" placeholder="Ej: freelancers, coaches, emprendedoras"
+            <label class="block text-xs font-bold text-on-surface-variant uppercase tracking-widest mb-1.5">Cliente ideal / Nicho</label>
+            <input id="input-niche" type="text" placeholder="Ej: emprendedoras que quieren organizar sus finanzas"
               class="w-full bg-surface-container-lowest border border-outline-variant/20 rounded-lg px-4 py-3 text-on-surface text-sm focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all"/>
           </div>
 
@@ -153,7 +167,7 @@
           <button onclick="createManual()"
             class="w-full border border-outline-variant/30 py-3 rounded-lg font-bold text-on-surface-variant text-sm hover:bg-surface-container-low transition-all flex items-center justify-center gap-2">
             <span class="material-symbols-outlined text-base">edit_note</span>
-            Crear Manualmente
+            Crear borrador manual
           </button>
         </div>
       </div>
@@ -186,6 +200,9 @@
             <p id="quiz-meta" class="text-xs text-on-surface-variant mt-0.5">Sin contenido todavía</p>
           </div>
           <div class="flex items-center gap-2">
+            <button onclick="loadDemo()" id="btn-demo-header" class="px-3 py-1.5 border border-secondary/30 text-secondary rounded-lg text-xs font-bold hover:bg-secondary/5 transition-colors flex items-center gap-1">
+            <span class="material-symbols-outlined text-sm">workspace_premium</span>Demo oferta
+            </button>
             <button onclick="addQuestion()" id="btn-add-q" class="hidden text-xs text-primary font-bold hover:underline flex items-center gap-1">
               <span class="material-symbols-outlined text-sm">add</span>Pregunta
             </button>
@@ -193,7 +210,7 @@
               <span class="material-symbols-outlined text-sm">dashboard</span>Plantillas
             </button>
             <button onclick="previewQuiz()" id="btn-preview" class="hidden px-3 py-1.5 border border-primary/30 text-primary rounded-lg text-xs font-bold hover:bg-primary/5 transition-colors flex items-center gap-1">
-              <span class="material-symbols-outlined text-sm">open_in_new</span>Preview
+              <span class="material-symbols-outlined text-sm">visibility</span>Ver quiz
             </button>
           </div>
         </div>
@@ -215,9 +232,9 @@
           <div class="w-16 h-16 rounded-2xl mx-auto mb-4 flex items-center justify-center" style="background: linear-gradient(135deg, rgba(46,91,255,0.15), rgba(105,246,184,0.1)); border: 1px solid rgba(46,91,255,0.2);">
             <span class="material-symbols-outlined text-primary" style="font-size:32px; font-variation-settings:'FILL' 1;">edit_note</span>
           </div>
-          <p class="font-semibold text-on-surface text-sm">Tu quiz aparecerá aquí</p>
-          <p class="text-on-surface-variant text-xs mt-1 max-w-[200px] mx-auto">Ingresa los datos de tu producto y genera el quiz con IA.</p>
-          <button onclick="loadDemo()" class="mt-4 text-xs font-bold text-primary border border-primary/20 px-4 py-2 rounded-lg hover:bg-primary/5 transition-colors">Ver demo →</button>
+          <p class="font-semibold text-on-surface text-sm">Tu quiz de venta aparecerá aquí</p>
+          <p class="text-on-surface-variant text-xs mt-1 max-w-[240px] mx-auto">Crea un diagnóstico que recomiende tu oferta y aumente el valor percibido.</p>
+          <button onclick="loadDemo()" class="mt-4 text-xs font-bold text-primary border border-primary/20 px-4 py-2 rounded-lg hover:bg-primary/5 transition-colors">Ver demo de oferta →</button>
         </div>
 
         <!-- Quiz Content -->
@@ -235,6 +252,15 @@
           <!-- Branding (White-label) -->
           <div class="bg-surface-container rounded-xl p-4 border border-outline-variant/10 space-y-3">
             <label class="text-xs font-bold text-on-surface-variant uppercase tracking-widest block"><span class="material-symbols-outlined text-sm align-middle" style="font-variation-settings:'FILL' 1">palette</span> Marca del quiz</label>
+            <div id="theme-suggestion-card" class="rounded-xl border border-primary/20 bg-primary/5 px-3 py-2 flex items-center justify-between gap-3">
+              <div class="min-w-0">
+                <p class="text-[10px] font-black uppercase tracking-widest text-primary">Tema sugerido</p>
+                <p id="theme-suggestion-text" class="text-xs text-on-surface-variant truncate">Detecta un nicho para sugerir color e imagen.</p>
+              </div>
+              <button type="button" onclick="applySuggestedTheme()" class="shrink-0 px-3 py-1.5 rounded-lg bg-primary text-white text-[10px] font-black hover:opacity-90 transition-opacity">
+                Aplicar
+              </button>
+            </div>
             <div class="flex gap-2">
               <div class="flex-1">
                 <label class="text-[10px] text-on-surface-variant block mb-1">Nombre de tu marca</label>
@@ -258,7 +284,14 @@
               <label class="text-[10px] text-on-surface-variant block mb-1">Imagen de portada <span class="text-on-surface-variant/50">(opcional — se muestra al inicio)</span></label>
               <input id="quiz-cover-image" type="url" placeholder="https://imagen.com/portada.jpg"
                 class="w-full bg-surface-container-high border border-outline-variant/10 rounded-lg px-3 py-2 text-xs text-on-surface outline-none focus:border-primary transition-colors"/>
-              <p class="text-[10px] text-on-surface-variant/50 mt-1">Recomendado: 1200×630px. Usa Unsplash, Pexels o tu propia imagen.</p>
+              <div class="mt-2 flex items-center gap-2">
+                <label class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-surface-container-high border border-outline-variant/20 text-[10px] font-bold text-on-surface-variant hover:text-primary cursor-pointer">
+                  <span class="material-symbols-outlined text-xs">upload_file</span>Subir imagen
+                  <input type="file" accept="image/png,image/jpeg,image/webp" class="hidden" onchange="uploadCoverImage(this)"/>
+                </label>
+                <span class="text-[10px] text-on-surface-variant/50">URL o archivo propio.</span>
+              </div>
+              <p class="text-[10px] text-on-surface-variant/50 mt-1">Recomendado: 1200×630px. Usa una imagen editorial limpia, no emojis.</p>
             </div>
           </div>
 
@@ -505,11 +538,95 @@ function getParam(name) {
   return new URLSearchParams(window.location.search).get(name);
 }
 
+function isDataImage(src = '') {
+  return /^data:image\/(png|jpe?g|webp);base64,/i.test(String(src));
+}
+
+function optimizeQuizImageFile(file, maxW = 1200, maxH = 900, quality = 0.82) {
+  return new Promise((resolve, reject) => {
+    if (!file || !/^image\/(png|jpe?g|webp)$/i.test(file.type)) {
+      reject(new Error('Elige una imagen JPG, PNG o WebP.'));
+      return;
+    }
+    const reader = new FileReader();
+    reader.onerror = () => reject(new Error('No pude leer la imagen.'));
+    reader.onload = () => {
+      const img = new Image();
+      img.onerror = () => reject(new Error('No pude cargar la imagen.'));
+      img.onload = () => {
+        const scale = Math.min(1, maxW / img.naturalWidth, maxH / img.naturalHeight);
+        const canvas = document.createElement('canvas');
+        canvas.width = Math.max(1, Math.round(img.naturalWidth * scale));
+        canvas.height = Math.max(1, Math.round(img.naturalHeight * scale));
+        const ctx = canvas.getContext('2d');
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+        resolve(canvas.toDataURL('image/jpeg', quality));
+      };
+      img.src = reader.result;
+    };
+    reader.readAsDataURL(file);
+  });
+}
+
+async function uploadCoverImage(input) {
+  try {
+    const src = await optimizeQuizImageFile(input.files?.[0], 1400, 760, 0.84);
+    document.getElementById('quiz-cover-image').value = '';
+    if (currentQuiz) currentQuiz.coverImage = src;
+    showToast('Imagen de portada subida.');
+  } catch (err) {
+    showToast(err.message || 'No pude subir la imagen', 'error');
+  } finally {
+    input.value = '';
+  }
+}
+
+async function uploadQuestionImage(input, qi) {
+  try {
+    const src = await optimizeQuizImageFile(input.files?.[0], 1200, 900, 0.82);
+    currentQuiz.questions[qi].image = src;
+    renderQuestions(currentQuiz.questions);
+    showToast('Imagen de pregunta subida.');
+  } catch (err) {
+    showToast(err.message || 'No pude subir la imagen', 'error');
+  } finally {
+    input.value = '';
+  }
+}
+
+async function uploadOptionImage(input, qi, oi) {
+  try {
+    const src = await optimizeQuizImageFile(input.files?.[0], 900, 700, 0.82);
+    currentQuiz.questions[qi].options[oi].imageUrl = src;
+    renderQuestions(currentQuiz.questions);
+    showToast('Imagen de opción subida.');
+  } catch (err) {
+    showToast(err.message || 'No pude subir la imagen', 'error');
+  } finally {
+    input.value = '';
+  }
+}
+
+function clearQuestionImage(qi) {
+  currentQuiz.questions[qi].image = '';
+  renderQuestions(currentQuiz.questions);
+}
+
+function clearOptionImage(qi, oi) {
+  currentQuiz.questions[qi].options[oi].imageUrl = '';
+  renderQuestions(currentQuiz.questions);
+}
+
 
 document.addEventListener('DOMContentLoaded', async () => {
   // Brand color picker live update
   document.getElementById('quiz-brand-color')?.addEventListener('input', function() {
     document.getElementById('quiz-brand-color-hex').textContent = this.value;
+  });
+  ['input-product', 'input-niche'].forEach(id => {
+    document.getElementById(id)?.addEventListener('input', updateThemeSuggestion);
   });
 
   _currentUser = await Auth.requireAuth();
@@ -530,6 +647,8 @@ document.addEventListener('DOMContentLoaded', async () => {
   }
   const tmpl = getParam('template');
   if (tmpl) loadTemplate(tmpl);
+  if (getParam('demo') === '1') setTimeout(loadDemo, 0);
+  updateThemeSuggestion();
 });
 
 // ── Generate with AI ──────────────────────────────────────
@@ -553,7 +672,17 @@ async function generateWithAI() {
     ]);
     setLoadingProgress(85, 'Organizando preguntas y perfiles...');
     await sleep(400);
-    currentQuiz = { ...data, product, description: desc, niche, status: 'draft' };
+    const theme = window.getSuggestedOfferTheme ? window.getSuggestedOfferTheme(niche, product) : null;
+    currentQuiz = {
+      ...data,
+      product,
+      description: desc,
+      niche,
+      status: 'draft',
+      brandColor: data.brandColor || theme?.brandColor || '#8B6AA0',
+      coverImage: data.coverImage || theme?.coverImage || '',
+      imageKeywords: data.imageKeywords || theme?.imageKeywords || '',
+    };
     loadQuizIntoEditor(currentQuiz);
     showToast('¡Quiz generado! Revisa y personaliza las preguntas.');
   } catch (e) {
@@ -567,41 +696,129 @@ async function generateWithAI() {
 // ── Create Manually ───────────────────────────────────────
 function createManual() {
   const product = document.getElementById('input-product').value.trim() || 'Mi Producto';
+  const niche = document.getElementById('input-niche').value.trim();
+  const theme = window.getSuggestedOfferTheme ? window.getSuggestedOfferTheme(niche, product) : null;
+  const pids = ['p1', 'p2', 'p3'];
+  editingQuizId = null;
   currentQuiz = {
     title: `¿Cuál es tu perfil como usuario de ${product}?`,
     subtitle: 'Responde estas preguntas y descubre qué necesitas',
     estimatedMinutes: 2,
     product,
     description: document.getElementById('input-desc').value.trim(),
-    niche: document.getElementById('input-niche').value.trim(),
+    niche,
+    brandColor: theme?.brandColor || '#8B6AA0',
+    coverImage: theme?.coverImage || '',
+    imageKeywords: theme?.imageKeywords || '',
     status: 'draft',
     questions: [
       {
         id: 'q1', text: '¿Cuál es tu mayor reto ahora mismo?',
         options: [
-          { text: 'Opción A', profiles: ['p1'] }, { text: 'Opción B', profiles: ['p2'] },
-          { text: 'Opción C', profiles: ['p1','p2'] }, { text: 'Opción D', profiles: ['p3'] },
+          { text: 'No sé por dónde empezar', profiles: ['p1'] },
+          { text: 'Tengo información pero me falta orden', profiles: ['p2'] },
+          { text: 'Ya empecé, pero necesito mejores resultados', profiles: ['p3'] },
+          { text: 'Me cuesta convertir interés en acción', profiles: ['p2','p3'] },
+        ],
+      },
+      {
+        id: 'q2', text: '¿Qué quieres lograr con este producto?',
+        options: [
+          { text: 'Resolver un problema concreto rápido', profiles: ['p1'] },
+          { text: 'Tener una guía paso a paso', profiles: ['p2'] },
+          { text: 'Acelerar un resultado que ya busco', profiles: ['p3'] },
+          { text: 'Sentirme acompañado durante el proceso', profiles: ['p2'] },
+        ],
+      },
+      {
+        id: 'q3', text: '¿Qué te ha frenado hasta ahora?',
+        options: [
+          { text: 'Falta de claridad', profiles: ['p1'] },
+          { text: 'Falta de constancia', profiles: ['p2'] },
+          { text: 'Falta de una estrategia que convierta', profiles: ['p3'] },
+          { text: 'Demasiadas opciones y poca dirección', profiles: ['p1','p2'] },
+        ],
+      },
+      {
+        id: 'q4', text: '¿Cómo prefieres aprender o avanzar?',
+        options: [
+          { text: 'Con algo simple y directo', profiles: ['p1'] },
+          { text: 'Con una estructura clara', profiles: ['p2'] },
+          { text: 'Con herramientas listas para aplicar', profiles: ['p3'] },
+          { text: 'Con ejemplos que pueda copiar y adaptar', profiles: ['p2','p3'] },
+        ],
+      },
+      {
+        id: 'q5', text: '¿Qué resultado te gustaría ver primero?',
+        options: [
+          { text: 'Entender qué camino tomar', profiles: ['p1'] },
+          { text: 'Organizarme y avanzar sin bloqueo', profiles: ['p2'] },
+          { text: 'Mejorar mis conversiones o ventas', profiles: ['p3'] },
+          { text: 'Tener una solución más profesional', profiles: ['p3'] },
         ],
       },
     ],
     profiles: [
-      { id: 'p1', name: 'Perfil 1', emoji: '🎯', description: 'Descripción del perfil 1', recommendation: 'Por qué el producto es ideal', cta: 'Quiero este producto' },
-      { id: 'p2', name: 'Perfil 2', emoji: '🚀', description: 'Descripción del perfil 2', recommendation: 'Por qué el producto es ideal', cta: 'Quiero este producto' },
-      { id: 'p3', name: 'Perfil 3', emoji: '💡', description: 'Descripción del perfil 3', recommendation: 'Por qué el producto es ideal', cta: 'Quiero este producto' },
+      { id: 'p1', name: 'El Explorador', emoji: '', description: 'Está buscando claridad antes de avanzar. Necesita una explicación simple, una ruta corta y una primera victoria que le dé confianza.', recommendation: `Presenta ${product} como el primer paso claro para pasar de la confusión a la acción.`, cta: 'Quiero empezar con claridad' },
+      { id: 'p2', name: 'El Estratega en Proceso', emoji: '', description: 'Ya entiende el problema, pero necesita estructura. Valora los métodos, los pasos y las herramientas que reducen la improvisación.', recommendation: `Muestra ${product} como un sistema práctico para avanzar con orden y constancia.`, cta: 'Quiero mi sistema' },
+      { id: 'p3', name: 'El Optimizador', emoji: '', description: 'Ya está en movimiento y quiere mejorar resultados. Busca una solución más profesional, accionable y orientada a conversión.', recommendation: `Posiciona ${product} como la forma de acelerar resultados sin rehacer todo desde cero.`, cta: 'Quiero optimizar mis resultados' },
     ],
   };
   loadQuizIntoEditor(currentQuiz);
+  showToast('Borrador manual creado. Ya puedes editarlo y guardarlo.');
 }
 
 function loadDemo() {
-  const demo = getBuiltinTemplates()[0];
+  const demo = window.OFFER_DEMO_QUIZ
+    ? window.OFFER_DEMO_QUIZ
+    : ((typeof DEMO_QUIZ !== 'undefined' && DEMO_QUIZ) ? DEMO_QUIZ : getBuiltinTemplates()[0]);
   if (!demo) return;
   document.getElementById('input-product').value = demo.product || '';
+  document.getElementById('input-desc').value    = demo.description || 'Oferta digital con ebook y mini-app bonus.';
   document.getElementById('input-niche').value   = demo.niche   || '';
+  editingQuizId = null;
   currentQuiz = JSON.parse(JSON.stringify(demo));
   currentQuiz.status = 'draft';
+  currentQuiz.isDemo = true;
+  delete currentQuiz.id;
   loadQuizIntoEditor(currentQuiz);
   showToast('Demo cargado. Personalízalo y guárdalo.');
+}
+
+function getCurrentSuggestedTheme() {
+  const product = document.getElementById('input-product').value.trim();
+  const niche = document.getElementById('input-niche').value.trim();
+  return window.getSuggestedOfferTheme ? window.getSuggestedOfferTheme(niche, product) : null;
+}
+
+function updateThemeSuggestion() {
+  const theme = getCurrentSuggestedTheme();
+  const text = document.getElementById('theme-suggestion-text');
+  if (!text || !theme) return;
+  const label = {
+    finance: 'Finanzas: verde confianza + acento dorado',
+    fitness: 'Fitness: energía cálida + contraste fuerte',
+    beauty: 'Belleza: rosa sofisticado + acento editorial',
+    wellness: 'Bienestar: calma, claridad y tonos suaves',
+    business: 'Negocios: azul estratégico + acento activo',
+    spiritual: 'Espiritualidad: violeta profundo + luz dorada',
+    premium: 'Premium general: violeta sobrio + imagen editorial',
+  }[theme.id] || 'Tema premium sugerido';
+  text.textContent = label;
+}
+
+function applySuggestedTheme() {
+  const theme = getCurrentSuggestedTheme();
+  if (!theme) return;
+  document.getElementById('quiz-brand-color').value = theme.brandColor;
+  document.getElementById('quiz-brand-color-hex').textContent = theme.brandColor;
+  document.getElementById('quiz-cover-image').value = theme.coverImage || '';
+  if (currentQuiz) {
+    currentQuiz.brandColor = theme.brandColor;
+    currentQuiz.coverImage = theme.coverImage || '';
+    currentQuiz.imageKeywords = theme.imageKeywords || '';
+  }
+  showToast('Tema aplicado: color e imagen ajustados al nicho.');
 }
 
 // ── Load quiz into UI ─────────────────────────────────────
@@ -626,7 +843,8 @@ function loadQuizIntoEditor(quiz) {
   document.getElementById('quiz-brand-color').value = quiz.brandColor || '#8B6AA0';
   document.getElementById('quiz-brand-color-hex').textContent = quiz.brandColor || '#8B6AA0';
   document.getElementById('quiz-brand-logo').value   = quiz.brandLogo   || '';
-  document.getElementById('quiz-cover-image').value  = quiz.coverImage  || '';
+  document.getElementById('quiz-cover-image').value  = isDataImage(quiz.coverImage) ? '' : (quiz.coverImage || '');
+  updateThemeSuggestion();
   document.getElementById('quiz-lead-capture').checked      = leadOn;
   document.getElementById('quiz-wa-lead-capture').checked   = leadOn;
   document.getElementById('quiz-pay-lead-capture').checked  = leadOn;
@@ -662,6 +880,9 @@ function renderQuestions(questions) {
   questions.forEach((q, qi) => {
     const d = document.createElement('div');
     d.className = 'bg-surface-container rounded-xl p-4 border border-outline-variant/10 fade-in';
+    const qImage = q.image || '';
+    const qImageValue = isDataImage(qImage) ? '' : esc(qImage);
+    const qImageStatus = qImage ? '<span class="text-[10px] text-secondary font-bold">Imagen activa</span>' : '';
     d.innerHTML = `
       <div class="flex items-center gap-2 mb-2">
         <span class="w-6 h-6 rounded-full primary-gradient text-white text-xs font-black flex items-center justify-center shrink-0">${qi+1}</span>
@@ -675,23 +896,32 @@ function renderQuestions(questions) {
       <!-- Question image -->
       <div class="flex items-center gap-2 mb-2">
         <span class="material-symbols-outlined text-sm text-on-surface-variant/50">image</span>
-        <input type="url" value="${esc(q.image||'')}" placeholder="URL de imagen decorativa (se muestra a la derecha de la pregunta)"
+        <input type="url" value="${qImageValue}" placeholder="URL de imagen decorativa (se muestra a la derecha de la pregunta)"
           onchange="currentQuiz.questions[${qi}].image=this.value.trim()"
           class="flex-1 bg-surface-container-high border border-outline-variant/10 rounded-lg px-3 py-1.5 text-xs text-on-surface-variant outline-none focus:border-primary transition-colors"/>
+        <label class="px-2 py-1.5 rounded-lg border border-outline-variant/20 text-[10px] text-on-surface-variant hover:text-primary cursor-pointer inline-flex items-center gap-1">
+          <span class="material-symbols-outlined text-xs">upload_file</span>Subir
+          <input type="file" accept="image/png,image/jpeg,image/webp" class="hidden" onchange="uploadQuestionImage(this, ${qi})"/>
+        </label>
+        ${qImageStatus}
+        ${qImage ? `<button type="button" onclick="clearQuestionImage(${qi})" class="text-[10px] text-on-surface-variant hover:text-error">Quitar</button>` : ''}
         ${q.imageKeywords ? `<a href="https://unsplash.com/s/photos/${encodeURIComponent(q.imageKeywords)}" target="_blank" class="text-[10px] text-primary hover:underline whitespace-nowrap flex items-center gap-0.5"><span class="material-symbols-outlined text-xs">search</span>Buscar</a>` : ''}
       </div>
       <div class="space-y-1.5">
         ${q.options.map((opt,oi)=>`
           <div class="flex items-center gap-2 bg-surface-container-high rounded-lg px-2 py-1.5">
-            <input type="text" value="${esc(opt.emoji||'')}" placeholder="😊"
-              onchange="currentQuiz.questions[${qi}].options[${oi}].emoji=this.value"
-              class="w-9 text-center text-lg bg-surface-container rounded-md border border-outline-variant/20 outline-none shrink-0 py-0.5"/>
+            <span class="w-9 h-9 bg-surface-container rounded-md border border-outline-variant/20 text-primary shrink-0 flex items-center justify-center material-symbols-outlined text-base">radio_button_checked</span>
             <input type="text" value="${esc(opt.text)}" placeholder="Texto de la opción"
               onchange="currentQuiz.questions[${qi}].options[${oi}].text=this.value"
               class="flex-1 bg-transparent text-xs text-on-surface outline-none min-w-0"/>
-            <input type="url" value="${esc(opt.imageUrl||'')}" placeholder="URL imagen (opcional)"
+            <input type="url" value="${isDataImage(opt.imageUrl) ? '' : esc(opt.imageUrl||'')}" placeholder="URL imagen (opcional)"
               onchange="currentQuiz.questions[${qi}].options[${oi}].imageUrl=this.value.trim()"
               class="w-32 bg-transparent text-[10px] text-on-surface-variant outline-none border-l border-outline-variant/20 pl-2 shrink-0"/>
+            <label class="px-2 py-1 rounded-md border border-outline-variant/20 text-[10px] text-on-surface-variant hover:text-primary cursor-pointer shrink-0 inline-flex items-center gap-1">
+              <span class="material-symbols-outlined text-xs">upload_file</span>
+              <input type="file" accept="image/png,image/jpeg,image/webp" class="hidden" onchange="uploadOptionImage(this, ${qi}, ${oi})"/>
+            </label>
+            ${opt.imageUrl ? `<button type="button" onclick="clearOptionImage(${qi}, ${oi})" class="text-[10px] text-on-surface-variant hover:text-error shrink-0">Quitar</button>` : ''}
           </div>`).join('')}
       </div>
       <button onclick="addOption(${qi})" class="mt-2 text-xs text-primary hover:underline flex items-center gap-1">
@@ -710,8 +940,9 @@ function renderProfiles(profiles) {
     d.className = 'bg-surface-container rounded-xl p-4 border border-outline-variant/10 fade-in';
     d.innerHTML = `
       <div class="flex items-start gap-3">
-        <input type="text" value="${esc(p.emoji)}" onchange="currentQuiz.profiles[${pi}].emoji=this.value"
-          class="w-10 h-10 text-2xl bg-surface-container-high rounded-lg text-center border border-outline-variant/20 outline-none shrink-0 flex items-center justify-center"/>
+        <div class="w-10 h-10 bg-surface-container-high rounded-lg border border-outline-variant/20 text-secondary shrink-0 flex items-center justify-center">
+          <span class="material-symbols-outlined text-xl" style="font-variation-settings:'FILL' 1">person_search</span>
+        </div>
         <div class="flex-1 space-y-2 min-w-0">
           <input type="text" value="${esc(p.name)}" onchange="currentQuiz.profiles[${pi}].name=this.value"
             class="w-full bg-transparent text-on-surface font-bold text-sm outline-none border-b border-outline-variant/20 focus:border-secondary pb-1 transition-colors"/>
@@ -811,6 +1042,7 @@ function selectPostAction(action) {
 // ── Save ──────────────────────────────────────────────────
 async function saveQuiz() {
   if (!currentQuiz) { showToast('Genera o crea un quiz primero', 'error'); return; }
+  delete currentQuiz.isDemo;
   currentQuiz.title       = document.getElementById('quiz-title').value.trim()       || currentQuiz.title;
   currentQuiz.subtitle    = document.getElementById('quiz-subtitle').value.trim()    || currentQuiz.subtitle;
   currentQuiz.miniAppId   = document.getElementById('quiz-miniapp-id').value         || currentQuiz.miniAppId  || '';
@@ -838,7 +1070,7 @@ async function saveQuiz() {
   currentQuiz.brandName   = document.getElementById('quiz-brand-name').value.trim() || '';
   currentQuiz.brandColor  = document.getElementById('quiz-brand-color').value || '#8B6AA0';
   currentQuiz.brandLogo   = document.getElementById('quiz-brand-logo').value.trim() || '';
-  currentQuiz.coverImage  = document.getElementById('quiz-cover-image').value.trim() || '';
+  currentQuiz.coverImage  = document.getElementById('quiz-cover-image').value.trim() || currentQuiz.coverImage || '';
 
   // Meta Pixel / CAPI
   const pixelEnabled = document.getElementById('quiz-meta-pixel-enabled').checked;
@@ -884,8 +1116,12 @@ function copyShareLink() {
 
 async function previewQuiz() {
   if (!currentQuiz) { showToast('Genera un quiz primero', 'error'); return; }
+  if (currentQuiz.isDemo) {
+    window.location.href = './quiz.html?quiz=demo';
+    return;
+  }
   if (!editingQuizId) await saveQuiz();
-  if (editingQuizId) window.open(`./quiz.html?quiz=${editingQuizId}`, '_blank');
+  if (editingQuizId) window.location.href = `./quiz.html?quiz=${editingQuizId}`;
   else showToast('Guarda el quiz antes de hacer preview', 'error');
 }
 
@@ -922,7 +1158,7 @@ async function generateMiniApps() {
             </label>`).join('')}
         </div>` : ''}
         <button onclick="createMiniAppFromIdea(${i})" class="mt-2.5 w-full text-[10px] px-3 py-1.5 rounded-lg bg-primary text-on-primary font-semibold hover:bg-primary/90 transition-colors">
-          ✨ Crear esta app
+          Crear esta app
         </button>
       </div>`).join('');
   } catch(e) {
@@ -999,7 +1235,7 @@ async function createMiniAppFromIdea(idx) {
     showToast(`Mini-app "${a.name}" creada. Búscala en el Dashboard.`);
   } catch(e) {
     btn.disabled = false;
-    btn.textContent = '✨ Crear esta app';
+    btn.textContent = 'Crear esta app';
     showToast('Error al crear la app: ' + e.message, 'error');
   }
 }
@@ -1009,8 +1245,15 @@ function loadTemplate(templateId) {
   const all = getBuiltinTemplates();
   const tmpl = all.find(t => t.id === templateId);
   if (!tmpl) return;
+  const theme = window.getSuggestedOfferTheme ? window.getSuggestedOfferTheme(tmpl.niche, tmpl.product) : null;
+  if (theme) {
+    tmpl.brandColor = tmpl.brandColor || theme.brandColor;
+    tmpl.coverImage = tmpl.coverImage || theme.coverImage;
+    tmpl.imageKeywords = tmpl.imageKeywords || theme.imageKeywords;
+  }
   document.getElementById('input-product').value = tmpl.product || '';
   document.getElementById('input-niche').value   = tmpl.niche   || '';
+  document.getElementById('input-desc').value    = tmpl.description || '';
   currentQuiz = JSON.parse(JSON.stringify(tmpl));
   loadQuizIntoEditor(currentQuiz);
   showToast(`Plantilla "${tmpl.title}" cargada. ¡Personalízala!`);

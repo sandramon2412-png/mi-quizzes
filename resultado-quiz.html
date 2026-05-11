@@ -6,9 +6,10 @@
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="./supabase-config.js"></script>
-<script src="./app.js"></script>
+<script src="./app.js?v=offer-demo-1"></script>
 <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.2/dist/confetti.browser.min.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
 <script>
   tailwind.config = {
     theme: {
@@ -28,7 +29,29 @@
 </script>
 <style>
   :root { --brand:#8B6AA0; --brand-light:#C4A7D7; --brand-bg:#f7f2fa; }
-  body { font-family:'Plus Jakarta Sans',sans-serif; background:#fff; color:#3d3d3d; }
+  body {
+    font-family:'Plus Jakarta Sans',sans-serif;
+    background:
+      linear-gradient(135deg, rgba(250,248,252,0.96), rgba(255,255,255,0.98) 44%, rgba(247,242,250,0.86)),
+      repeating-linear-gradient(90deg, rgba(139,106,160,0.04) 0 1px, transparent 1px 76px),
+      repeating-linear-gradient(180deg, rgba(139,106,160,0.035) 0 1px, transparent 1px 76px);
+    color:#26212b;
+  }
+  .material-symbols-outlined { font-variation-settings:'FILL' 0,'wght' 500,'GRAD' 0,'opsz' 24; }
+  .report-card {
+    background: rgba(255,255,255,0.88);
+    border: 1px solid rgba(139,106,160,0.18);
+    box-shadow: 0 24px 70px rgba(49,33,60,0.12), inset 0 1px 0 rgba(255,255,255,0.9);
+    backdrop-filter: blur(18px);
+  }
+  .insight-card {
+    background: rgba(255,255,255,0.74);
+    border: 1px solid rgba(139,106,160,0.16);
+  }
+  .report-icon {
+    background: linear-gradient(135deg,var(--brand),var(--brand-light));
+    box-shadow: 0 14px 32px rgba(139,106,160,0.20);
+  }
   .fade-up { animation: fadeUp 0.55s cubic-bezier(0.16,1,0.3,1) both; }
   .fade-up-2 { animation: fadeUp 0.55s cubic-bezier(0.16,1,0.3,1) 0.15s both; }
   .fade-up-3 { animation: fadeUp 0.55s cubic-bezier(0.16,1,0.3,1) 0.3s both; }
@@ -51,7 +74,7 @@
     <span id="header-brand" class="text-sm font-semibold tracking-widest uppercase text-brand"></span>
   </div>
   <div class="flex items-center gap-4">
-    <a href="./generador-ia.html" class="hidden md:inline text-xs text-gray-400 hover:text-brand transition-colors">Crear mi quiz</a>
+    <a id="creator-link" href="./generador-ia.html" class="hidden text-xs text-gray-400 hover:text-brand transition-colors">Crear mi quiz</a>
   </div>
 </header>
 
@@ -74,22 +97,22 @@
   </div>
 
   <!-- ── PROFILE CARD ── -->
-  <div class="rounded-3xl overflow-hidden border border-brand-light/30 shadow-xl shadow-brand/5 fade-up-2">
+  <div class="rounded-3xl overflow-hidden report-card fade-up-2">
 
     <!-- Profile visual strip -->
     <div class="relative px-8 pt-12 pb-8 text-center" style="background:linear-gradient(160deg,var(--brand-bg) 0%,#fff 80%)">
       <!-- Decorative petals -->
-      <div class="absolute top-4 left-6 text-3xl opacity-20 select-none pointer-events-none">🌸</div>
-      <div class="absolute top-6 right-8 text-2xl opacity-15 select-none pointer-events-none">✦</div>
-      <div class="absolute bottom-4 right-5 text-3xl opacity-10 select-none pointer-events-none">🌸</div>
+      <div class="absolute top-5 left-7 w-2 h-2 rounded-full bg-brand/25 select-none pointer-events-none"></div>
+      <div class="absolute top-7 right-9 w-10 h-px bg-brand/20 rotate-45 select-none pointer-events-none"></div>
+      <div class="absolute bottom-6 right-7 w-3 h-3 rounded-full border border-brand/20 select-none pointer-events-none"></div>
 
       <div class="float inline-block mb-5">
         <div id="profile-emoji-wrap"
           class="w-28 h-28 mx-auto rounded-3xl bg-white border-2 border-brand-light/50 shadow-xl shadow-brand/15 flex items-center justify-center text-6xl">
-          🎯
+          <span class="material-symbols-outlined text-brand" style="font-size:54px;font-variation-settings:'FILL' 1">workspace_premium</span>
         </div>
       </div>
-      <p class="text-[10px] font-black tracking-[0.2em] uppercase text-brand/60 mb-1">Tu Perfil</p>
+      <p class="text-[10px] font-black tracking-[0.2em] uppercase text-brand/60 mb-1">Reporte de Diagnóstico</p>
       <h2 id="profile-name" class="font-serif text-3xl font-semibold text-gray-800 mb-4">—</h2>
       <!-- Match bar -->
       <div class="max-w-xs mx-auto">
@@ -118,10 +141,34 @@
         <p id="result-recommendation" class="text-gray-600 text-sm leading-relaxed">—</p>
       </div>
 
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+        <div class="insight-card rounded-2xl p-4">
+          <div class="w-10 h-10 rounded-xl report-icon text-white flex items-center justify-center mb-3">
+            <span class="material-symbols-outlined" style="font-size:20px">psychology</span>
+          </div>
+          <p class="text-[10px] font-black tracking-widest uppercase text-brand mb-1">Patrón principal</p>
+          <p id="insight-pattern" class="text-sm font-semibold text-gray-800 leading-snug">Tu forma de decidir muestra una oportunidad clara.</p>
+        </div>
+        <div class="insight-card rounded-2xl p-4">
+          <div class="w-10 h-10 rounded-xl report-icon text-white flex items-center justify-center mb-3">
+            <span class="material-symbols-outlined" style="font-size:20px">route</span>
+          </div>
+          <p class="text-[10px] font-black tracking-widest uppercase text-brand mb-1">Ruta sugerida</p>
+          <p id="insight-path" class="text-sm font-semibold text-gray-800 leading-snug">Empieza por el paso más simple y evita dispersarte.</p>
+        </div>
+        <div class="insight-card rounded-2xl p-4">
+          <div class="w-10 h-10 rounded-xl report-icon text-white flex items-center justify-center mb-3">
+            <span class="material-symbols-outlined" style="font-size:20px">north_east</span>
+          </div>
+          <p class="text-[10px] font-black tracking-widest uppercase text-brand mb-1">Próximo paso</p>
+          <p id="insight-next" class="text-sm font-semibold text-gray-800 leading-snug">Usa tu resultado para elegir la solución correcta.</p>
+        </div>
+      </div>
+
       <!-- Solution block -->
       <div id="solution-block" class="hidden rounded-2xl overflow-hidden" style="border:1.5px solid var(--brand-light);box-shadow:0 4px 24px 0 rgba(139,106,160,0.10)">
         <div class="px-5 py-3.5 flex items-center gap-2.5" style="background:linear-gradient(90deg,var(--brand) 0%,#b98fd4 100%)">
-          <span class="text-lg">✨</span>
+          <span class="material-symbols-outlined text-white" style="font-size:18px;font-variation-settings:'FILL' 1">auto_awesome</span>
           <p class="text-white text-xs font-bold uppercase tracking-widest">Tu solución personalizada</p>
         </div>
         <div class="px-5 py-5 bg-white">
@@ -140,7 +187,7 @@
       <!-- Calendly secondary CTA (hidden unless creator has Calendly integration) -->
       <a id="btn-calendly" href="#" target="_blank" rel="noopener noreferrer"
         class="hidden w-full text-center py-3 rounded-full font-bold text-sm tracking-wide transition-all duration-300 active:scale-[0.98] border border-brand/30 text-brand hover:bg-brand/5">
-        📅 Agendar una llamada
+        <span class="material-symbols-outlined align-middle mr-1" style="font-size:16px">calendar_month</span> Agendar una llamada
       </a>
 
       <!-- Share row -->
@@ -171,13 +218,15 @@
   <!-- ── MINI-APP BONUS ── -->
   <div id="miniapp-bonus" class="hidden fade-up-3">
     <div class="rounded-2xl border border-brand-light/30 bg-brand-bg/40 p-6 flex items-start gap-4">
-      <div id="bonus-icon" class="w-14 h-14 rounded-xl bg-white border border-brand-light/30 flex items-center justify-center text-2xl shrink-0 shadow-sm">⚡</div>
+      <div id="bonus-icon" class="w-14 h-14 rounded-xl bg-white border border-brand-light/30 flex items-center justify-center text-brand shrink-0 shadow-sm">
+        <span class="material-symbols-outlined" style="font-size:26px;font-variation-settings:'FILL' 1">deployed_code</span>
+      </div>
       <div class="flex-1 min-w-0">
         <p class="text-[10px] font-black text-brand uppercase tracking-widest mb-1">Bonus incluido</p>
         <h3 id="bonus-name" class="font-serif text-base font-semibold text-gray-800 mb-1">Mini-App</h3>
         <p id="bonus-desc" class="text-gray-500 text-xs leading-relaxed mb-3">—</p>
         <div class="flex items-center gap-3 flex-wrap">
-          <span class="text-xs px-4 py-2 rounded-full bg-brand/10 text-brand font-semibold border border-brand-light/30">🔒 Incluido al comprar</span>
+          <span class="text-xs px-4 py-2 rounded-full bg-brand/10 text-brand font-semibold border border-brand-light/30 inline-flex items-center gap-1.5"><span class="material-symbols-outlined" style="font-size:14px">lock</span> Incluido al comprar</span>
           <a id="bonus-link" href="#" class="text-xs text-gray-400 hover:text-brand underline underline-offset-2 transition-colors">Ya compré → acceder</a>
         </div>
       </div>
@@ -187,8 +236,8 @@
   <!-- ── ALL PROFILES ── -->
   <div id="all-profiles-section" class="hidden fade-up-3 space-y-4">
     <div>
-      <h3 class="font-serif text-xl font-semibold text-gray-800">Los perfiles del quiz</h3>
-      <p class="text-gray-400 text-sm mt-1">¿Reconoces alguno en tu audiencia?</p>
+      <h3 class="font-serif text-xl font-semibold text-gray-800">Otros caminos posibles</h3>
+      <p class="text-gray-400 text-sm mt-1">Cada perfil muestra una ruta distinta según las respuestas.</p>
     </div>
     <div id="all-profiles-grid" class="grid grid-cols-1 md:grid-cols-3 gap-4"></div>
   </div>
@@ -230,7 +279,7 @@
 
     let quiz = null;
     if (quizId === 'demo') {
-      quiz = DEMO_QUIZ;
+      quiz = window.OFFER_DEMO_QUIZ || DEMO_QUIZ;
     } else if (quizId) {
       try { quiz = await DB.quizzes.get(quizId); } catch {}
       const localQuiz = Quizzes.get(quizId);
@@ -275,7 +324,10 @@
     const brandFooter = document.getElementById('brand-footer');
     const brandFooterText = document.getElementById('brand-footer-text');
     const ctaFooter = document.getElementById('cta-footer');
-    if (!whiteLabel) {
+    const creatorLink = document.getElementById('creator-link');
+    if (quiz.showLuminousCta === true && creatorLink) creatorLink.classList.add('md:inline');
+    if (quiz.showLuminousCta !== true && ctaFooter) ctaFooter.style.display = 'none';
+    if (!whiteLabel && quiz.showLuminousCta === true) {
       brandFooterText.innerHTML = 'Hecho con <a href="https://luminous.studio" target="_blank" rel="noopener" class="text-brand font-semibold hover:underline">Luminous Studio</a>';
       brandFooter.style.display = 'block';
     } else if (whiteLabelName) {
@@ -290,11 +342,7 @@
     }
 
     // Apply branding
-    const brandColor = quiz.brandColor || quiz.themeColor;
-    if (brandColor) {
-      document.documentElement.style.setProperty('--brand', brandColor);
-      document.documentElement.style.setProperty('--brand-light', brandColor + '99');
-    }
+    applyResultTheme(quiz.brandColor || quiz.themeColor);
     if (quiz.brandLogo) {
       const logoEl = document.getElementById('result-logo');
       if (logoEl) { logoEl.src = quiz.brandLogo; logoEl.classList.remove('hidden'); }
@@ -307,11 +355,18 @@
 
     // Profile card
     const emojiWrap = document.getElementById('profile-emoji-wrap');
-    emojiWrap.textContent = profile.emoji || '🌸';
+    emojiWrap.innerHTML = "<span class=\"material-symbols-outlined text-brand\" style=\"font-size:54px;font-variation-settings:'FILL' 1\">workspace_premium</span>";
     document.getElementById('profile-name').textContent        = profile.name || '—';
     document.getElementById('result-profile-name').textContent = profile.name || '—';
     document.getElementById('result-description').textContent  = profile.description || '';
     document.getElementById('result-recommendation').textContent = profile.recommendation || '';
+    const profileName = profile.name || 'este perfil';
+    document.getElementById('insight-pattern').textContent =
+      `Tu patrón se parece a "${profileName}": hay una forma más simple de resolver tu siguiente paso.`;
+    document.getElementById('insight-path').textContent =
+      quiz.product ? `La ruta recomendada es empezar con ${quiz.product}.` : 'La ruta recomendada es empezar por una solución clara y accionable.';
+    document.getElementById('insight-next').textContent =
+      profile.cta || 'Da el siguiente paso mientras tienes claro lo que necesitas.';
     document.getElementById('result-subtitle').textContent     =
       `Basado en tus respuestas al quiz "${quiz.title || ''}", este es tu perfil.`;
     const titleBrand = whiteLabel ? (whiteLabelName || quiz.product || '') : (quiz.product || 'Luminous Studio');
@@ -345,20 +400,20 @@
           : 'Hola! Acabo de completar el quiz y me gustaría más información.';
         ctaDest = `https://wa.me/${number}?text=${encodeURIComponent(quiz.whatsappMessage || defaultMsg)}`;
         ctaText = '¡Quiero más información por WhatsApp!';
-        ctaIcon = '💬 ';
+        ctaIcon = '';
       }
     } else if (action === 'payment') {
       ctaDest = quiz.paymentUrl || quiz.productUrl;
       ctaText = profile.cta || (quiz.product ? `Quiero acceder a ${quiz.product}` : 'Comprar ahora');
-      ctaIcon = '✨ ';
+      ctaIcon = '';
     } else if (action === 'landing') {
       ctaDest = quiz.landingUrl || quiz.productUrl;
       ctaText = profile.cta || (quiz.product ? `Ver ${quiz.product}` : 'Ver la solución');
-      ctaIcon = '→ ';
+      ctaIcon = '';
     } else {
       ctaDest = profile.ctaUrl || quiz.productUrl || quiz.landingUrl;
       ctaText = profile.cta || (quiz.product ? `Quiero acceder a ${quiz.product}` : 'Ver la solución');
-      ctaIcon = '✨ ';
+      ctaIcon = '';
     }
 
     ctaDest = ctaDest || `./acceso-exito.html${quizId ? '?quiz=' + quizId : ''}`;
@@ -395,7 +450,7 @@
     if (quiz.miniAppId) {
       const miniApp = MiniApps.get(quiz.miniAppId);
       if (miniApp) {
-        document.getElementById('bonus-icon').textContent = miniApp.icon || '⚡';
+        document.getElementById('bonus-icon').innerHTML = "<span class=\"material-symbols-outlined\" style=\"font-size:26px;font-variation-settings:'FILL' 1\">deployed_code</span>";
         document.getElementById('bonus-name').textContent = miniApp.name || 'Herramienta incluida';
         document.getElementById('bonus-desc').textContent = miniApp.description || '';
         document.getElementById('bonus-link').href = `./mini-app-player.html?id=${miniApp.id}`;
@@ -404,17 +459,24 @@
     }
 
     // All profiles
-    if (quiz.profiles && quiz.profiles.length > 1) {
+    if (quiz.showAllProfiles === true && quiz.profiles && quiz.profiles.length > 1) {
       document.getElementById('all-profiles-section').classList.remove('hidden');
       document.getElementById('all-profiles-grid').innerHTML = quiz.profiles.map(p => `
         <div class="p-5 rounded-2xl border ${p.id === profile.id ? 'border-brand bg-brand-bg/60' : 'border-gray-100 bg-white'} relative">
           ${p.id === profile.id ? '<span class="absolute top-3 right-3 text-[9px] font-black text-brand uppercase tracking-widest bg-brand-bg px-2 py-0.5 rounded-full">Tu perfil</span>' : ''}
-          <div class="w-12 h-12 rounded-xl bg-brand-bg/50 border border-brand-light/20 flex items-center justify-center text-2xl mb-3">${p.emoji || '🌸'}</div>
+          <div class="w-12 h-12 rounded-xl bg-brand-bg/50 border border-brand-light/20 flex items-center justify-center text-brand mb-3"><span class="material-symbols-outlined" style="font-size:24px;font-variation-settings:'FILL' 1">person_search</span></div>
           <h4 class="font-serif font-semibold text-gray-800 mb-1">${p.name}</h4>
           <p class="text-gray-400 text-xs leading-relaxed line-clamp-3">${p.description}</p>
         </div>`).join('');
     }
   });
+
+  function applyResultTheme(brandColor) {
+    if (!brandColor) return;
+    document.documentElement.style.setProperty('--brand', brandColor);
+    document.documentElement.style.setProperty('--brand-light', brandColor + '99');
+    document.documentElement.style.setProperty('--brand-bg', brandColor + '12');
+  }
 
   function retakeQuiz() {
     const quizId = getParam('quiz') || Session.getCurrentQuizId();
@@ -429,7 +491,7 @@
   function shareWhatsApp() {
     const name = document.getElementById('result-profile-name')?.textContent || '';
     const url  = encodeURIComponent(window.location.href);
-    const text = encodeURIComponent(`¡Acabo de descubrir mi perfil: "${name}"! Haz el quiz 👇`);
+    const text = encodeURIComponent(`Acabo de descubrir mi perfil: "${name}". Haz el quiz:`);
     window.open(`https://wa.me/?text=${text}%20${url}`, '_blank');
   }
 </script>
