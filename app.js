@@ -1539,7 +1539,22 @@ async function copyToClipboard(text) {
     await navigator.clipboard.writeText(text);
     showToast('¡Enlace copiado!');
   } catch {
-    showToast('No se pudo copiar', 'error');
+    try {
+      const input = document.createElement('textarea');
+      input.value = text;
+      input.setAttribute('readonly', '');
+      input.style.cssText = 'position:fixed;left:-9999px;top:-9999px;';
+      document.body.appendChild(input);
+      input.select();
+      input.setSelectionRange(0, input.value.length);
+      const ok = document.execCommand('copy');
+      input.remove();
+      if (ok) showToast('¡Enlace copiado!');
+      else throw new Error('copy failed');
+    } catch {
+      window.prompt('Copia este enlace:', text);
+      showToast('Te dejé el enlace listo para copiar', 'info');
+    }
   }
 }
 
