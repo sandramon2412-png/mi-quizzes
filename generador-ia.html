@@ -206,7 +206,7 @@
             <button onclick="addQuestion()" id="btn-add-q" class="hidden text-xs text-primary font-bold hover:underline flex items-center gap-1">
               <span class="material-symbols-outlined text-sm">add</span>Pregunta
             </button>
-            <button onclick="openTemplateModal()" id="btn-templates" class="hidden text-xs text-on-surface-variant font-bold hover:text-primary hover:underline flex items-center gap-1 transition-colors">
+            <button onclick="openTemplateModal()" id="btn-templates" class="text-xs text-on-surface-variant font-bold hover:text-primary hover:underline flex items-center gap-1 transition-colors">
               <span class="material-symbols-outlined text-sm">dashboard</span>Plantillas
             </button>
             <button onclick="previewQuiz()" id="btn-preview" class="hidden px-3 py-1.5 border border-primary/30 text-primary rounded-lg text-xs font-bold hover:bg-primary/5 transition-colors flex items-center gap-1">
@@ -295,7 +295,15 @@
             </div>
             <div>
               <label class="text-[10px] text-on-surface-variant block mb-1">Imagen de portada <span class="text-on-surface-variant/50">(opcional — se muestra al inicio)</span></label>
+              <div id="cover-image-preview" class="hidden mb-2 rounded-xl border border-outline-variant/10 bg-surface-container-high overflow-hidden items-center gap-3 pr-3">
+                <img id="cover-image-preview-img" src="" alt="" class="h-20 w-32 object-cover bg-surface-container"/>
+                <div class="min-w-0">
+                  <p class="text-[10px] font-black uppercase tracking-widest text-primary">Portada activa</p>
+                  <p id="cover-image-preview-status" class="text-xs text-on-surface-variant truncate">Imagen lista para el inicio del quiz</p>
+                </div>
+              </div>
               <input id="quiz-cover-image" type="url" placeholder="https://imagen.com/portada.jpg"
+                oninput="updateCoverPreview()"
                 class="w-full bg-surface-container-high border border-outline-variant/10 rounded-lg px-3 py-2 text-xs text-on-surface outline-none focus:border-primary transition-colors"/>
               <div class="mt-2 flex items-center gap-2">
                 <label class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-surface-container-high border border-outline-variant/20 text-[10px] font-bold text-on-surface-variant hover:text-primary cursor-pointer">
@@ -511,11 +519,14 @@
       </div>
 
       <!-- Save / Share -->
-      <div id="action-buttons" class="hidden flex gap-3">
-        <button id="btn-save-bottom" onclick="saveQuiz()" class="flex-1 py-3 bg-secondary font-bold text-sm rounded-xl hover:opacity-90 transition-all flex items-center justify-center gap-2" style="color:#00452d">
+      <div id="action-buttons" class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+        <button id="btn-save-bottom" onclick="saveQuiz()" class="py-3 bg-secondary font-bold text-sm rounded-xl hover:opacity-90 transition-all flex items-center justify-center gap-2" style="color:#00452d">
           <span class="material-symbols-outlined text-base">save</span>Guardar Quiz
         </button>
-        <button onclick="copyShareLink()" class="flex-1 py-3 border border-primary/30 text-primary rounded-xl font-bold text-sm hover:bg-primary/5 transition-all flex items-center justify-center gap-2">
+        <button onclick="previewQuiz()" class="py-3 border border-primary/30 text-primary rounded-xl font-bold text-sm hover:bg-primary/5 transition-all flex items-center justify-center gap-2">
+          <span class="material-symbols-outlined text-base">visibility</span>Vista previa
+        </button>
+        <button onclick="copyShareLink()" class="py-3 border border-primary/30 text-primary rounded-xl font-bold text-sm hover:bg-primary/5 transition-all flex items-center justify-center gap-2">
           <span class="material-symbols-outlined text-base">share</span>Copiar Enlace
         </button>
       </div>
@@ -549,6 +560,8 @@
 let currentQuiz = null;
 let editingQuizId = null;
 let _currentUser = null;
+let _pendingBrandLogo = '';
+let _pendingCoverImage = '';
 
 function getParam(name) {
   return new URLSearchParams(window.location.search).get(name);
@@ -590,7 +603,9 @@ async function uploadCoverImage(input) {
   try {
     const src = await optimizeQuizImageFile(input.files?.[0], 1400, 760, 0.84);
     document.getElementById('quiz-cover-image').value = '';
+    _pendingCoverImage = src;
     if (currentQuiz) currentQuiz.coverImage = src;
+    updateCoverPreview();
     showToast('Imagen de portada subida.');
   } catch (err) {
     showToast(err.message || 'No pude subir la imagen', 'error');
@@ -603,6 +618,7 @@ async function uploadLogoImage(input) {
   try {
     const src = await optimizeQuizImageFile(input.files?.[0], 520, 220, 0.86);
     document.getElementById('quiz-brand-logo').value = '';
+    _pendingBrandLogo = src;
     if (currentQuiz) currentQuiz.brandLogo = src;
     updateBrandPreview();
     showToast('Logo subido. Se verá en el quiz y en el resultado.');
@@ -654,7 +670,7 @@ function updateBrandPreview() {
   const img = document.getElementById('brand-logo-preview-img');
   const name = document.getElementById('brand-logo-preview-name');
   if (!wrap || !img || !name) return;
-  const logo = document.getElementById('quiz-brand-logo')?.value.trim() || currentQuiz?.brandLogo || '';
+  const logo = document.getElementById('quiz-brand-logo')?.value.trim() || currentQuiz?.brandLogo || _pendingBrandLogo || '';
   const brand = document.getElementById('quiz-brand-name')?.value.trim() || currentQuiz?.brandName || currentQuiz?.product || '';
   name.textContent = brand || 'Tu marca';
   if (logo) {
@@ -717,31 +733,43 @@ async function generateWithAI() {
   if (!product) { showToast('Escribe el nombre de tu producto', 'error'); return; }
   const btn = document.getElementById('btn-generate');
   btn.disabled = true;
+  const theme = window.getSuggestedOfferTheme ? window.getSuggestedOfferTheme(niche, product) : null;
+  const chosenBrandName = document.getElementById('quiz-brand-name')?.value.trim() || '';
+  const chosenBrandLogo = document.getElementById('quiz-brand-logo')?.value.trim() || _pendingBrandLogo || '';
+  const chosenCoverImage = document.getElementById('quiz-cover-image')?.value.trim() || _pendingCoverImage || '';
   showLoading(true, 'Analizando tu nicho y audiencia...', 15);
   try {
     const data = await Promise.race([
       AI.generateQuiz(product, desc, niche, _numQuestions, _numOptions),
-      new Promise((_, rej) => setTimeout(() => rej(new Error('Timeout: la IA tardó demasiado')), 30000))
+      new Promise((_, rej) => setTimeout(() => rej(new Error('La IA está tardando más de lo normal.')), 65000))
     ]);
     setLoadingProgress(85, 'Organizando preguntas y perfiles...');
     await sleep(400);
-    const theme = window.getSuggestedOfferTheme ? window.getSuggestedOfferTheme(niche, product) : null;
     currentQuiz = {
       ...data,
       product,
       description: desc,
       niche,
       status: 'draft',
-      brandColor: data.brandColor || theme?.brandColor || '#8B6AA0',
-      coverImage: data.coverImage || theme?.coverImage || '',
+      brandName: chosenBrandName || data.brandName || '',
+      brandLogo: chosenBrandLogo || data.brandLogo || '',
+      brandColor: document.getElementById('quiz-brand-color')?.value || data.brandColor || theme?.brandColor || '#8B6AA0',
+      coverImage: chosenCoverImage || data.coverImage || theme?.coverImage || '',
       imageKeywords: data.imageKeywords || theme?.imageKeywords || '',
     };
     ensureQuizShape(currentQuiz, _numQuestions, _numOptions);
     loadQuizIntoEditor(currentQuiz);
     showToast('¡Quiz generado! Revisa y personaliza las preguntas.');
   } catch (e) {
-    showToast('Error: ' + e.message, 'error');
-    showLoading(false);
+    console.warn('AI quiz generation failed, creating editable draft:', e);
+    currentQuiz = buildOfflineQuizDraft(product, desc, niche, theme);
+    currentQuiz.brandName = chosenBrandName || currentQuiz.brandName || '';
+    currentQuiz.brandLogo = chosenBrandLogo || currentQuiz.brandLogo || '';
+    currentQuiz.coverImage = chosenCoverImage || currentQuiz.coverImage || '';
+    currentQuiz.brandColor = document.getElementById('quiz-brand-color')?.value || currentQuiz.brandColor || '#8B6AA0';
+    ensureQuizShape(currentQuiz, _numQuestions, _numOptions);
+    loadQuizIntoEditor(currentQuiz);
+    showToast('La IA no respondiÃ³ a tiempo. Te dejÃ© un borrador premium editable para que puedas avanzar.', 'info');
   } finally {
     btn.disabled = false;
   }
@@ -753,6 +781,9 @@ function createManual() {
   const niche = document.getElementById('input-niche').value.trim();
   const theme = window.getSuggestedOfferTheme ? window.getSuggestedOfferTheme(niche, product) : null;
   const pids = ['p1', 'p2', 'p3'];
+  const chosenBrandName = document.getElementById('quiz-brand-name')?.value.trim() || '';
+  const chosenBrandLogo = document.getElementById('quiz-brand-logo')?.value.trim() || _pendingBrandLogo || '';
+  const chosenCoverImage = document.getElementById('quiz-cover-image')?.value.trim() || _pendingCoverImage || '';
   editingQuizId = null;
   currentQuiz = {
     title: `¿Cuál es tu perfil como usuario de ${product}?`,
@@ -761,8 +792,10 @@ function createManual() {
     product,
     description: document.getElementById('input-desc').value.trim(),
     niche,
-    brandColor: theme?.brandColor || '#8B6AA0',
-    coverImage: theme?.coverImage || '',
+    brandName: chosenBrandName,
+    brandLogo: chosenBrandLogo,
+    brandColor: document.getElementById('quiz-brand-color')?.value || theme?.brandColor || '#8B6AA0',
+    coverImage: chosenCoverImage || theme?.coverImage || '',
     imageKeywords: theme?.imageKeywords || '',
     status: 'draft',
     questions: [
@@ -840,6 +873,32 @@ function loadDemo() {
   showToast('Demo cargado. Personalízalo y guárdalo.');
 }
 
+function updateCoverPreview() {
+  const wrap = document.getElementById('cover-image-preview');
+  const img = document.getElementById('cover-image-preview-img');
+  const status = document.getElementById('cover-image-preview-status');
+  if (!wrap || !img || !status) return;
+  const cover = document.getElementById('quiz-cover-image')?.value.trim() || currentQuiz?.coverImage || _pendingCoverImage || '';
+  if (cover) {
+    img.src = cover;
+    img.onerror = () => {
+      img.classList.add('hidden');
+      status.textContent = 'No pude cargar la imagen. Revisa la URL o sube un archivo.';
+    };
+    img.onload = () => {
+      img.classList.remove('hidden');
+      status.textContent = isDataImage(cover) ? 'Archivo subido y optimizado' : 'URL de portada activa';
+    };
+    wrap.classList.remove('hidden');
+    wrap.classList.add('flex');
+  } else {
+    img.removeAttribute('src');
+    img.classList.add('hidden');
+    wrap.classList.add('hidden');
+    wrap.classList.remove('flex');
+  }
+}
+
 function getCurrentSuggestedTheme() {
   const product = document.getElementById('input-product').value.trim();
   const niche = document.getElementById('input-niche').value.trim();
@@ -868,11 +927,13 @@ function applySuggestedTheme() {
   document.getElementById('quiz-brand-color').value = theme.brandColor;
   document.getElementById('quiz-brand-color-hex').textContent = theme.brandColor;
   document.getElementById('quiz-cover-image').value = theme.coverImage || '';
+  _pendingCoverImage = '';
   if (currentQuiz) {
     currentQuiz.brandColor = theme.brandColor;
     currentQuiz.coverImage = theme.coverImage || '';
     currentQuiz.imageKeywords = theme.imageKeywords || '';
   }
+  updateCoverPreview();
   showToast('Tema aplicado: color e imagen ajustados al nicho.');
 }
 
@@ -897,9 +958,12 @@ function loadQuizIntoEditor(quiz) {
   document.getElementById('quiz-brand-name').value  = quiz.brandName  || '';
   document.getElementById('quiz-brand-color').value = quiz.brandColor || '#8B6AA0';
   document.getElementById('quiz-brand-color-hex').textContent = quiz.brandColor || '#8B6AA0';
-  document.getElementById('quiz-brand-logo').value   = quiz.brandLogo   || '';
+  document.getElementById('quiz-brand-logo').value   = isDataImage(quiz.brandLogo) ? '' : (quiz.brandLogo || '');
   document.getElementById('quiz-cover-image').value  = isDataImage(quiz.coverImage) ? '' : (quiz.coverImage || '');
+  _pendingBrandLogo = isDataImage(quiz.brandLogo) ? quiz.brandLogo : '';
+  _pendingCoverImage = isDataImage(quiz.coverImage) ? quiz.coverImage : '';
   updateBrandPreview();
+  updateCoverPreview();
   updateThemeSuggestion();
   document.getElementById('quiz-lead-capture').checked      = leadOn;
   document.getElementById('quiz-wa-lead-capture').checked   = leadOn;
@@ -939,6 +1003,10 @@ function renderQuestions(questions) {
     const qImage = q.image || '';
     const qImageValue = isDataImage(qImage) ? '' : esc(qImage);
     const qImageStatus = qImage ? '<span class="text-[10px] text-secondary font-bold">Imagen activa</span>' : '';
+    const qImagePreview = qImage ? `
+      <div class="mb-2 rounded-xl overflow-hidden border border-outline-variant/10 bg-surface-container-high">
+        <img src="${esc(qImage)}" alt="" class="w-full h-32 object-cover"/>
+      </div>` : '';
     d.innerHTML = `
       <div class="flex items-center gap-2 mb-2">
         <span class="w-6 h-6 rounded-full primary-gradient text-white text-xs font-black flex items-center justify-center shrink-0">${qi+1}</span>
@@ -950,6 +1018,7 @@ function renderQuestions(questions) {
         </button>
       </div>
       <!-- Question image -->
+      ${qImagePreview}
       <div class="flex items-center gap-2 mb-2">
         <span class="material-symbols-outlined text-sm text-on-surface-variant/50" title="Imagen de pregunta">image</span>
         <input type="url" value="${qImageValue}" placeholder="Imagen de la pregunta: URL o subir archivo (panel visual en escritorio)"
@@ -964,9 +1033,13 @@ function renderQuestions(questions) {
         ${q.imageKeywords ? `<a href="https://unsplash.com/s/photos/${encodeURIComponent(q.imageKeywords)}" target="_blank" class="text-[10px] text-primary hover:underline whitespace-nowrap flex items-center gap-0.5"><span class="material-symbols-outlined text-xs">search</span>Buscar</a>` : ''}
       </div>
       <div class="space-y-1.5">
-        ${q.options.map((opt,oi)=>`
+        ${q.options.map((opt,oi)=>{
+          const optImage = opt.imageUrl || '';
+          return `
           <div class="flex items-center gap-2 bg-surface-container-high rounded-lg px-2 py-1.5">
-            <span class="w-9 h-9 bg-surface-container rounded-md border border-outline-variant/20 text-primary shrink-0 flex items-center justify-center material-symbols-outlined text-base">radio_button_checked</span>
+            ${optImage
+              ? `<img src="${esc(optImage)}" alt="" class="w-10 h-10 rounded-md object-cover border border-outline-variant/20 shrink-0"/>`
+              : '<span class="w-9 h-9 bg-surface-container rounded-md border border-outline-variant/20 text-primary shrink-0 flex items-center justify-center material-symbols-outlined text-base">radio_button_checked</span>'}
             <input type="text" value="${esc(opt.text)}" placeholder="Texto de la opción"
               onchange="currentQuiz.questions[${qi}].options[${oi}].text=this.value"
               class="flex-1 bg-transparent text-xs text-on-surface outline-none min-w-0"/>
@@ -977,8 +1050,9 @@ function renderQuestions(questions) {
               <span class="material-symbols-outlined text-xs">upload_file</span>
               <input type="file" accept="image/png,image/jpeg,image/webp" class="hidden" onchange="uploadOptionImage(this, ${qi}, ${oi})"/>
             </label>
-            ${opt.imageUrl ? `<button type="button" onclick="clearOptionImage(${qi}, ${oi})" class="text-[10px] text-on-surface-variant hover:text-error shrink-0">Quitar</button>` : ''}
-          </div>`).join('')}
+            ${optImage ? `<button type="button" onclick="clearOptionImage(${qi}, ${oi})" class="text-[10px] text-on-surface-variant hover:text-error shrink-0">Quitar</button>` : ''}
+          </div>`;
+        }).join('')}
       </div>
       <button onclick="addOption(${qi})" class="mt-2 text-xs text-primary hover:underline flex items-center gap-1">
         <span class="material-symbols-outlined text-sm">add</span>Añadir opción
@@ -1370,6 +1444,109 @@ function esc(s) {
   return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
 
+function buildOfflineQuizDraft(product, desc, niche, theme = null) {
+  const cleanProduct = product || 'Tu producto';
+  const cleanNiche = niche || 'tu nicho';
+  const pids = ['inicio', 'orden', 'avance'];
+  return {
+    title: `Â¿CuÃ¡l es tu perfil ideal para ${cleanProduct}?`,
+    subtitle: `Descubre quÃ© necesitas ahora para avanzar en ${cleanNiche}.`,
+    estimatedMinutes: Math.max(1, Math.ceil((_numQuestions || 6) / 3)),
+    product: cleanProduct,
+    description: desc || '',
+    niche: cleanNiche,
+    status: 'draft',
+    brandColor: theme?.brandColor || '#8B6AA0',
+    coverImage: theme?.coverImage || '',
+    imageKeywords: theme?.imageKeywords || '',
+    questions: [
+      {
+        id: 'q1',
+        text: `Â¿QuÃ© describe mejor tu situaciÃ³n actual con ${cleanNiche}?`,
+        options: [
+          { text: 'Estoy empezando y necesito entender por dÃ³nde avanzar', profiles: ['inicio'] },
+          { text: 'Ya tengo informaciÃ³n, pero me falta orden y un plan claro', profiles: ['orden'] },
+          { text: 'Ya avancÃ©, pero quiero mejorar resultados y hacerlo mÃ¡s profesional', profiles: ['avance'] },
+        ],
+      },
+      {
+        id: 'q2',
+        text: 'Â¿CuÃ¡l es el obstÃ¡culo que mÃ¡s te frena ahora?',
+        options: [
+          { text: 'No tengo claridad y eso me hace postergar decisiones', profiles: ['inicio'] },
+          { text: 'Tengo muchas ideas, pero me cuesta convertirlas en pasos concretos', profiles: ['orden'] },
+          { text: 'Siento que podrÃ­a lograr mÃ¡s si tuviera una estrategia mejor', profiles: ['avance'] },
+        ],
+      },
+      {
+        id: 'q3',
+        text: `Â¿QuÃ© esperas lograr con ${cleanProduct}?`,
+        options: [
+          { text: 'Tener una primera victoria y recuperar confianza', profiles: ['inicio'] },
+          { text: 'Seguir un sistema simple que me quite la confusiÃ³n', profiles: ['orden'] },
+          { text: 'Acelerar el resultado sin improvisar tanto', profiles: ['avance'] },
+        ],
+      },
+      {
+        id: 'q4',
+        text: 'Â¿CÃ³mo prefieres aprender o implementar?',
+        options: [
+          { text: 'Con explicaciones simples y ejemplos fÃ¡ciles de aplicar', profiles: ['inicio'] },
+          { text: 'Con una ruta paso a paso y tareas concretas', profiles: ['orden'] },
+          { text: 'Con herramientas listas para adaptar y optimizar', profiles: ['avance'] },
+        ],
+      },
+      {
+        id: 'q5',
+        text: 'Â¿QuÃ© tipo de acompaÃ±amiento te servirÃ­a mÃ¡s?',
+        options: [
+          { text: 'Una guÃ­a clara para no sentirme perdido/a', profiles: ['inicio'] },
+          { text: 'Un plan estructurado para avanzar con constancia', profiles: ['orden'] },
+          { text: 'Un recurso premium que me ayude a tomar mejores decisiones', profiles: ['avance'] },
+        ],
+      },
+      {
+        id: 'q6',
+        text: 'Â¿QuÃ© frase se parece mÃ¡s a lo que necesitas hoy?',
+        options: [
+          { text: 'Quiero empezar sin sentirme abrumado/a', profiles: ['inicio'] },
+          { text: 'Quiero ordenar lo que ya tengo y convertirlo en acciÃ³n', profiles: ['orden'] },
+          { text: 'Quiero subir de nivel y ver resultados mÃ¡s consistentes', profiles: ['avance'] },
+        ],
+      },
+    ],
+    profiles: [
+      {
+        id: 'inicio',
+        name: 'El Punto de Partida Claro',
+        emoji: '',
+        description: `EstÃ¡s listo/a para avanzar, pero necesitas una entrada simple y bien guiada. Tu mayor necesidad no es mÃ¡s informaciÃ³n, sino claridad para tomar el primer paso sin sentirte abrumado/a.`,
+        recommendation: `${cleanProduct} puede funcionar como tu ruta inicial: te ayuda a entender quÃ© hacer primero y cÃ³mo convertir la intenciÃ³n en acciÃ³n.`,
+        matchScore: 86,
+        cta: 'Quiero empezar con claridad',
+      },
+      {
+        id: 'orden',
+        name: 'El Estratega que Necesita Orden',
+        emoji: '',
+        description: `Ya tienes interÃ©s y probablemente has probado varias cosas, pero te falta una estructura que lo conecte todo. Cuando tienes un sistema, avanzas con mÃ¡s calma y mejores decisiones.`,
+        recommendation: `${cleanProduct} es ideal para transformar ideas dispersas en una ruta concreta, con pasos que puedes aplicar sin improvisar.`,
+        matchScore: 91,
+        cta: 'Quiero mi plan paso a paso',
+      },
+      {
+        id: 'avance',
+        name: 'El Optimizador en ExpansiÃ³n',
+        emoji: '',
+        description: `Ya no estÃ¡s en cero: buscas mejorar, profesionalizar y conseguir un resultado mÃ¡s consistente. Tu siguiente paso es dejar de probar al azar y usar una estrategia mÃ¡s precisa.`,
+        recommendation: `${cleanProduct} puede ayudarte a optimizar lo que ya haces y convertirlo en una experiencia mÃ¡s completa, accionable y vendible.`,
+        matchScore: 94,
+        cta: 'Quiero subir de nivel',
+      },
+    ],
+  };
+}
+
 function ensureQuizShape(quiz, questionCount, optionCount) {
   const wantedQuestions = Math.max(1, parseInt(questionCount, 10) || 6);
   const wantedOptions = Math.max(2, parseInt(optionCount, 10) || 4);
@@ -1548,7 +1725,9 @@ function closeTemplateModal() {
   document.getElementById('modal-templates').classList.add('hidden');
 }
 function addTemplateQuestion(idx) {
-  if (!currentQuiz) { showToast('Genera un quiz primero', 'error'); return; }
+  if (!currentQuiz) {
+    createManual();
+  }
   const tq = TEMPLATE_QUESTIONS[idx];
   const pids = currentQuiz.profiles.map(p => p.id);
   const newQ = {

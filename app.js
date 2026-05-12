@@ -1544,7 +1544,21 @@ const Groq = {
 const AI = {
   // Complejo: quiz completo con preguntas + perfiles + CTAs
   async generateQuiz(product, desc, niche, numQ, numOpts) {
-    return Claude.generateQuiz(product, desc, niche, numQ, numOpts);
+    const withTimeout = (promise, ms, label) => Promise.race([
+      promise,
+      new Promise((_, reject) => setTimeout(() => reject(new Error(`${label} tardÃ³ demasiado`)), ms)),
+    ]);
+    try {
+      return await withTimeout(Claude.generateQuiz(product, desc, niche, numQ, numOpts), 30000, 'Claude');
+    } catch (claudeError) {
+      console.warn('Claude quiz fallÃ³, intentando Groq:', claudeError.message);
+      try {
+        return await withTimeout(Groq.generateQuiz(product, desc, niche, numQ, numOpts), 25000, 'Groq');
+      } catch (groqError) {
+        console.warn('Groq quiz fallÃ³:', groqError.message);
+        throw claudeError;
+      }
+    }
   },
   // Simple: lista de ideas — si falla Groq, cae a Claude
   async generateMiniAppIdeas(product, desc, niche) {
@@ -1621,7 +1635,22 @@ async function copyToClipboard(text) {
     await navigator.clipboard.writeText(text);
     showToast('¡Enlace copiado!');
   } catch {
-    showToast('No se pudo copiar', 'error');
+    try {
+      const input = document.createElement('textarea');
+      input.value = text;
+      input.setAttribute('readonly', '');
+      input.style.cssText = 'position:fixed;left:-9999px;top:-9999px;';
+      document.body.appendChild(input);
+      input.select();
+      input.setSelectionRange(0, input.value.length);
+      const ok = document.execCommand('copy');
+      input.remove();
+      if (ok) showToast('¡Enlace copiado!');
+      else throw new Error('copy failed');
+    } catch {
+      window.prompt('Copia este enlace:', text);
+      showToast('Te dejé el enlace listo para copiar', 'info');
+    }
   }
 }
 
