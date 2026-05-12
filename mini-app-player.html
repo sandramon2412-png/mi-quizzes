@@ -315,7 +315,7 @@
       <button class="btn-primary" onclick="enterApp()">Abrir app →</button>
     </div>
 
-    <a href="./dashboard.html" style="display:block;margin-top:24px;font-size:12px;color:var(--muted);text-decoration:none;opacity:.7">← Volver al dashboard</a>
+    <button onclick="goBackSafe()" style="display:inline-flex;align-items:center;justify-content:center;gap:6px;margin-top:24px;font-size:12px;color:var(--muted);background:transparent;border:none;text-decoration:none;opacity:.78;cursor:pointer;font-family:inherit"><span class="material-symbols-outlined" style="font-size:15px">arrow_back</span>Volver</button>
   </div>
 </div>
 
@@ -328,9 +328,9 @@
       <div id="app-header-name">App</div>
       <div id="app-header-greeting" style="font-size:11px;color:var(--accent);font-weight:600"></div>
     </div>
-    <a href="./dashboard.html" style="width:32px;height:32px;border-radius:10px;background:var(--card);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;color:var(--muted);text-decoration:none;flex-shrink:0">
-      <span class="material-symbols-outlined" style="font-size:16px">home</span>
-    </a>
+    <button onclick="goBackSafe()" title="Volver" style="width:32px;height:32px;border-radius:10px;background:var(--card);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;color:var(--muted);text-decoration:none;flex-shrink:0;cursor:pointer">
+      <span class="material-symbols-outlined" style="font-size:16px">arrow_back</span>
+    </button>
   </header>
 
   <!-- Top pill tabs (only for multi-type) -->
@@ -588,6 +588,66 @@ function showTab(idx) {
   try { renderSection(content, types[idx]); }
   catch(e) { content.innerHTML = `<p style="padding:24px;color:#e55;font-size:13px">Error: ${esc(e.message)}</p>`; }
   content.scrollTop = 0;
+}
+
+function goBackSafe() {
+  const ref = document.referrer || '';
+  if (ref.includes('plantillas-miniapps.html')) {
+    window.location.href = './plantillas-miniapps.html';
+    return;
+  }
+  if (ref.includes('dashboard.html')) {
+    window.location.href = './dashboard.html';
+    return;
+  }
+  if (window.history.length > 1) {
+    window.history.back();
+    return;
+  }
+  window.location.href = './plantillas-miniapps.html';
+}
+
+function localAIResponse(input, mode = 'generator') {
+  const topic = currentApp?.niche || currentApp?.name || 'este proceso';
+  const cleanInput = String(input || '').trim();
+  if (mode === 'chat') {
+    return `Te entiendo. Para avanzar en ${topic}, empieza por una acción pequeña y concreta: escribe qué necesitas resolver, elige un paso que puedas hacer hoy y revisa cómo te sientes después. Si quieres, cuéntame un poco más de tu situación y te ayudo a ordenarla.`;
+  }
+  return [
+    `Respuesta sugerida para ${topic}:`,
+    '',
+    `1. Punto de partida: ${cleanInput || 'define con claridad lo que necesitas resolver'}.`,
+    '2. Primer paso: elige una acción simple que puedas completar hoy sin complicarte.',
+    '3. Recomendación: convierte esa acción en una rutina pequeña y medible.',
+    '4. Cierre: revisa el resultado al final del día y ajusta el siguiente paso.'
+  ].join('\n');
+}
+
+async function callCreatorAI({ messages, systemPrompt, maxTokens = 700, mode = 'generator' }) {
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 25000);
+  try {
+    const r = await fetch(`${SUPABASE_URL}/functions/v1/creator-ai-proxy`, {
+      method: 'POST',
+      headers: { 'apikey': SUPABASE_ANON_KEY, 'Content-Type': 'application/json' },
+      signal: controller.signal,
+      body: JSON.stringify({ contentType: 'miniapp', contentId: currentApp.id, messages, systemPrompt, maxTokens })
+    });
+    let data = {};
+    try { data = await r.json(); } catch {}
+    if (!r.ok || data?.error) {
+      throw new Error(data?.error?.message || `Error ${r.status}`);
+    }
+    const content = data.content || data?.message || data?.choices?.[0]?.message?.content;
+    if (!content) throw new Error('La IA no devolvió contenido.');
+    return { content, fallback: false };
+  } catch (e) {
+    console.warn('[miniapp-ai] usando fallback local:', e.message);
+    const userText = messages?.map(m => m.content).join('\n') || '';
+    return { content: localAIResponse(userText, mode), fallback: true, error: e.message };
+  } finally {
+    clearTimeout(timeout);
+  }
 }
 
 // ── Section header card ───────────────────────────────────
@@ -965,19 +1025,14 @@ function renderGenerador(el) {
     const rawPrompt=currentApp.generatorPrompt||`Genera contenido útil y accionable. Responde en español con formato claro.`;
     const prompt=rawPrompt.replace('[input del usuario]',input).includes(input)?rawPrompt.replace('[input del usuario]',input):`${rawPrompt}\n\nSolicitud del usuario: ${input}`;
     try{
-      // Llama al proxy server-side que usa la groq key del CREADOR
-      const r=await fetch(`${SUPABASE_URL}/functions/v1/creator-ai-proxy`,{
-        method:'POST',
-        headers:{'apikey':SUPABASE_ANON_KEY,'Content-Type':'application/json'},
-        body:JSON.stringify({contentType:'miniapp',contentId:currentApp.id,messages:[{role:'user',content:prompt}],maxTokens:700})
-      });
-      const d=await r.json();
-      const result=d.content||d?.error?.message||'Sin respuesta';
+      const ai=await callCreatorAI({messages:[{role:'user',content:prompt}],maxTokens:700,mode:'generator'});
+      const result=ai.content;
       _lastResult=result;
       const resEl=document.getElementById('gen-result');
       resEl.textContent=result;resEl.style.display='block';
       const listenWrap=document.getElementById('gen-listen');
       if(listenWrap)listenWrap.style.display='flex';
+      if(ai.fallback) showToast('Modo prueba: respuesta local porque la IA no respondió.');
     }catch(e){showToast('Error: '+e.message,'error');}
     btn.disabled=false;btn.innerHTML=msIcon('auto_awesome',14)+' Generar con IA';
   };
@@ -1030,22 +1085,18 @@ function renderChatbot(el) {
     const statusEl=document.getElementById('chat-status');
     if(statusEl)statusEl.innerHTML=`<span style="width:6px;height:6px;border-radius:50%;background:var(--accent);display:inline-block;animation:pulseRing 1.4s infinite"></span><span style="color:var(--accent)">Escribiendo...</span>`;
     try{
-      let reply='';
-      // Llama al proxy server-side que usa la groq key del CREADOR del mini-app
-      const r=await fetch(`${SUPABASE_URL}/functions/v1/creator-ai-proxy`,{
-        method:'POST',
-        headers:{'apikey':SUPABASE_ANON_KEY,'Content-Type':'application/json'},
-        body:JSON.stringify({contentType:'miniapp',contentId:currentApp.id,systemPrompt,messages:msgs,maxTokens:250,model:'llama-3.1-8b-instant'})
-      });
-      const d=await r.json();
-      reply=d.content||d?.error?.message||'No pude responder.';
+      const ai=await callCreatorAI({systemPrompt,messages:msgs,maxTokens:250,mode:'chat'});
+      const reply=ai.content;
       msgs.push({role:'assistant',content:reply});
       document.getElementById(tid)?.remove();
       appendChatMsg('bot',reply);
       if(chatVoiceOn)speakShort(reply);
+      if(ai.fallback) showToast('Modo prueba: respuesta local porque la IA no respondió.');
     }catch(e){
       document.getElementById(tid)?.remove();
-      appendChatMsg('bot','Error al conectar. Intenta de nuevo.');
+      const reply=localAIResponse(text,'chat');
+      msgs.push({role:'assistant',content:reply});
+      appendChatMsg('bot',reply);
     }
     if(statusEl)statusEl.innerHTML=`<span style="width:6px;height:6px;border-radius:50%;background:var(--success);display:inline-block"></span><span>En línea</span>`;
     document.getElementById('chat-msgs').scrollTop=9999;
@@ -1508,10 +1559,12 @@ function _bestVoice(lang) {
   const prefix = (lang || 'es').split('-')[0];
   const matches = all.filter(v => v.lang.startsWith(prefix));
   if (!matches.length) return null;
-  return matches.find(v => /natural|neural|enhanced|premium/i.test(v.name))
-      || matches.find(v => /google/i.test(v.name))
-      || matches.find(v => !v.localService)
+  return matches.find(v => /dalia|sabina|mónica|monica|paulina|helena|elvira|alvaro|álvaro/i.test(v.name))
+      || matches.find(v => /natural|neural|online|enhanced|premium/i.test(v.name))
+      || matches.find(v => /google.*español|google.*spanish/i.test(v.name))
+      || matches.find(v => /^es-(MX|CO|US|AR|CL|PE)/i.test(v.lang))
       || matches.find(v => v.lang === lang)
+      || matches.find(v => !v.localService)
       || matches[0];
 }
 
@@ -1545,8 +1598,11 @@ function _speakNext(onDone) {
   if (_voiceStopped || _voicePaused) return;
   if (_voiceIdx >= _voiceQueue.length) { if (onDone) onDone(); return; }
   const u = new SpeechSynthesisUtterance(_voiceQueue[_voiceIdx++]);
-  const ttsLang = currentApp?.voiceLang || currentApp?.lang || 'es-ES';
-  u.lang = ttsLang; u.rate = 0.82; u.pitch = 1.0; u.volume = 1;
+  const ttsLang = currentApp?.voiceLang || currentApp?.lang || 'es-MX';
+  u.lang = ttsLang;
+  u.rate = Number(currentApp?.voiceRate || 0.9);
+  u.pitch = Number(currentApp?.voicePitch || 0.96);
+  u.volume = 1;
   const best = _bestVoice(ttsLang); if (best) u.voice = best;
   u.onend = () => { if (!_voiceStopped && !_voicePaused) setTimeout(() => _speakNext(onDone), 350); };
   u.onerror = (e) => { if (e.error !== 'interrupted') setTimeout(() => _speakNext(onDone), 150); };
@@ -1565,8 +1621,12 @@ function speakShort(text) {
   stopVoice();
   if (!window.speechSynthesis) return;
   const u = new SpeechSynthesisUtterance(_cleanForTTS(String(text||'')));
-  u.lang = 'es-ES'; u.rate = 0.85; u.pitch = 1.0; u.volume = 1;
-  const best = _bestSpanishVoice(); if (best) u.voice = best;
+  const ttsLang = currentApp?.voiceLang || currentApp?.lang || 'es-MX';
+  u.lang = ttsLang;
+  u.rate = Number(currentApp?.voiceRate || 0.9);
+  u.pitch = Number(currentApp?.voicePitch || 0.96);
+  u.volume = 1;
+  const best = _bestVoice(ttsLang); if (best) u.voice = best;
   window.speechSynthesis.speak(u);
 }
 
@@ -1593,4 +1653,5 @@ function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').
 </script>
 </body>
 </html>
+
 
