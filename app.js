@@ -1471,7 +1471,21 @@ const Groq = {
 const AI = {
   // Complejo: quiz completo con preguntas + perfiles + CTAs
   async generateQuiz(product, desc, niche, numQ, numOpts) {
-    return Claude.generateQuiz(product, desc, niche, numQ, numOpts);
+    const withTimeout = (promise, ms, label) => Promise.race([
+      promise,
+      new Promise((_, reject) => setTimeout(() => reject(new Error(`${label} tardÃ³ demasiado`)), ms)),
+    ]);
+    try {
+      return await withTimeout(Claude.generateQuiz(product, desc, niche, numQ, numOpts), 30000, 'Claude');
+    } catch (claudeError) {
+      console.warn('Claude quiz fallÃ³, intentando Groq:', claudeError.message);
+      try {
+        return await withTimeout(Groq.generateQuiz(product, desc, niche, numQ, numOpts), 25000, 'Groq');
+      } catch (groqError) {
+        console.warn('Groq quiz fallÃ³:', groqError.message);
+        throw claudeError;
+      }
+    }
   },
   // Simple: lista de ideas — si falla Groq, cae a Claude
   async generateMiniAppIdeas(product, desc, niche) {

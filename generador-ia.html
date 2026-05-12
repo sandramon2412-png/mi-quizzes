@@ -733,18 +733,18 @@ async function generateWithAI() {
   if (!product) { showToast('Escribe el nombre de tu producto', 'error'); return; }
   const btn = document.getElementById('btn-generate');
   btn.disabled = true;
+  const theme = window.getSuggestedOfferTheme ? window.getSuggestedOfferTheme(niche, product) : null;
+  const chosenBrandName = document.getElementById('quiz-brand-name')?.value.trim() || '';
+  const chosenBrandLogo = document.getElementById('quiz-brand-logo')?.value.trim() || _pendingBrandLogo || '';
+  const chosenCoverImage = document.getElementById('quiz-cover-image')?.value.trim() || _pendingCoverImage || '';
   showLoading(true, 'Analizando tu nicho y audiencia...', 15);
   try {
     const data = await Promise.race([
       AI.generateQuiz(product, desc, niche, _numQuestions, _numOptions),
-      new Promise((_, rej) => setTimeout(() => rej(new Error('La IA está tardando más de lo normal. Intenta otra vez en un momento o usa Crear borrador manual para avanzar sin esperar.')), 90000))
+      new Promise((_, rej) => setTimeout(() => rej(new Error('La IA está tardando más de lo normal.')), 65000))
     ]);
     setLoadingProgress(85, 'Organizando preguntas y perfiles...');
     await sleep(400);
-    const theme = window.getSuggestedOfferTheme ? window.getSuggestedOfferTheme(niche, product) : null;
-    const chosenBrandName = document.getElementById('quiz-brand-name')?.value.trim() || '';
-    const chosenBrandLogo = document.getElementById('quiz-brand-logo')?.value.trim() || _pendingBrandLogo || '';
-    const chosenCoverImage = document.getElementById('quiz-cover-image')?.value.trim() || _pendingCoverImage || '';
     currentQuiz = {
       ...data,
       product,
@@ -761,8 +761,15 @@ async function generateWithAI() {
     loadQuizIntoEditor(currentQuiz);
     showToast('¡Quiz generado! Revisa y personaliza las preguntas.');
   } catch (e) {
-    showToast('Error: ' + e.message, 'error');
-    showLoading(false);
+    console.warn('AI quiz generation failed, creating editable draft:', e);
+    currentQuiz = buildOfflineQuizDraft(product, desc, niche, theme);
+    currentQuiz.brandName = chosenBrandName || currentQuiz.brandName || '';
+    currentQuiz.brandLogo = chosenBrandLogo || currentQuiz.brandLogo || '';
+    currentQuiz.coverImage = chosenCoverImage || currentQuiz.coverImage || '';
+    currentQuiz.brandColor = document.getElementById('quiz-brand-color')?.value || currentQuiz.brandColor || '#8B6AA0';
+    ensureQuizShape(currentQuiz, _numQuestions, _numOptions);
+    loadQuizIntoEditor(currentQuiz);
+    showToast('La IA no respondiÃ³ a tiempo. Te dejÃ© un borrador premium editable para que puedas avanzar.', 'info');
   } finally {
     btn.disabled = false;
   }
@@ -1435,6 +1442,109 @@ function setLoadingProgress(pct, msg) {
 function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
 function esc(s) {
   return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function buildOfflineQuizDraft(product, desc, niche, theme = null) {
+  const cleanProduct = product || 'Tu producto';
+  const cleanNiche = niche || 'tu nicho';
+  const pids = ['inicio', 'orden', 'avance'];
+  return {
+    title: `Â¿CuÃ¡l es tu perfil ideal para ${cleanProduct}?`,
+    subtitle: `Descubre quÃ© necesitas ahora para avanzar en ${cleanNiche}.`,
+    estimatedMinutes: Math.max(1, Math.ceil((_numQuestions || 6) / 3)),
+    product: cleanProduct,
+    description: desc || '',
+    niche: cleanNiche,
+    status: 'draft',
+    brandColor: theme?.brandColor || '#8B6AA0',
+    coverImage: theme?.coverImage || '',
+    imageKeywords: theme?.imageKeywords || '',
+    questions: [
+      {
+        id: 'q1',
+        text: `Â¿QuÃ© describe mejor tu situaciÃ³n actual con ${cleanNiche}?`,
+        options: [
+          { text: 'Estoy empezando y necesito entender por dÃ³nde avanzar', profiles: ['inicio'] },
+          { text: 'Ya tengo informaciÃ³n, pero me falta orden y un plan claro', profiles: ['orden'] },
+          { text: 'Ya avancÃ©, pero quiero mejorar resultados y hacerlo mÃ¡s profesional', profiles: ['avance'] },
+        ],
+      },
+      {
+        id: 'q2',
+        text: 'Â¿CuÃ¡l es el obstÃ¡culo que mÃ¡s te frena ahora?',
+        options: [
+          { text: 'No tengo claridad y eso me hace postergar decisiones', profiles: ['inicio'] },
+          { text: 'Tengo muchas ideas, pero me cuesta convertirlas en pasos concretos', profiles: ['orden'] },
+          { text: 'Siento que podrÃ­a lograr mÃ¡s si tuviera una estrategia mejor', profiles: ['avance'] },
+        ],
+      },
+      {
+        id: 'q3',
+        text: `Â¿QuÃ© esperas lograr con ${cleanProduct}?`,
+        options: [
+          { text: 'Tener una primera victoria y recuperar confianza', profiles: ['inicio'] },
+          { text: 'Seguir un sistema simple que me quite la confusiÃ³n', profiles: ['orden'] },
+          { text: 'Acelerar el resultado sin improvisar tanto', profiles: ['avance'] },
+        ],
+      },
+      {
+        id: 'q4',
+        text: 'Â¿CÃ³mo prefieres aprender o implementar?',
+        options: [
+          { text: 'Con explicaciones simples y ejemplos fÃ¡ciles de aplicar', profiles: ['inicio'] },
+          { text: 'Con una ruta paso a paso y tareas concretas', profiles: ['orden'] },
+          { text: 'Con herramientas listas para adaptar y optimizar', profiles: ['avance'] },
+        ],
+      },
+      {
+        id: 'q5',
+        text: 'Â¿QuÃ© tipo de acompaÃ±amiento te servirÃ­a mÃ¡s?',
+        options: [
+          { text: 'Una guÃ­a clara para no sentirme perdido/a', profiles: ['inicio'] },
+          { text: 'Un plan estructurado para avanzar con constancia', profiles: ['orden'] },
+          { text: 'Un recurso premium que me ayude a tomar mejores decisiones', profiles: ['avance'] },
+        ],
+      },
+      {
+        id: 'q6',
+        text: 'Â¿QuÃ© frase se parece mÃ¡s a lo que necesitas hoy?',
+        options: [
+          { text: 'Quiero empezar sin sentirme abrumado/a', profiles: ['inicio'] },
+          { text: 'Quiero ordenar lo que ya tengo y convertirlo en acciÃ³n', profiles: ['orden'] },
+          { text: 'Quiero subir de nivel y ver resultados mÃ¡s consistentes', profiles: ['avance'] },
+        ],
+      },
+    ],
+    profiles: [
+      {
+        id: 'inicio',
+        name: 'El Punto de Partida Claro',
+        emoji: '',
+        description: `EstÃ¡s listo/a para avanzar, pero necesitas una entrada simple y bien guiada. Tu mayor necesidad no es mÃ¡s informaciÃ³n, sino claridad para tomar el primer paso sin sentirte abrumado/a.`,
+        recommendation: `${cleanProduct} puede funcionar como tu ruta inicial: te ayuda a entender quÃ© hacer primero y cÃ³mo convertir la intenciÃ³n en acciÃ³n.`,
+        matchScore: 86,
+        cta: 'Quiero empezar con claridad',
+      },
+      {
+        id: 'orden',
+        name: 'El Estratega que Necesita Orden',
+        emoji: '',
+        description: `Ya tienes interÃ©s y probablemente has probado varias cosas, pero te falta una estructura que lo conecte todo. Cuando tienes un sistema, avanzas con mÃ¡s calma y mejores decisiones.`,
+        recommendation: `${cleanProduct} es ideal para transformar ideas dispersas en una ruta concreta, con pasos que puedes aplicar sin improvisar.`,
+        matchScore: 91,
+        cta: 'Quiero mi plan paso a paso',
+      },
+      {
+        id: 'avance',
+        name: 'El Optimizador en ExpansiÃ³n',
+        emoji: '',
+        description: `Ya no estÃ¡s en cero: buscas mejorar, profesionalizar y conseguir un resultado mÃ¡s consistente. Tu siguiente paso es dejar de probar al azar y usar una estrategia mÃ¡s precisa.`,
+        recommendation: `${cleanProduct} puede ayudarte a optimizar lo que ya haces y convertirlo en una experiencia mÃ¡s completa, accionable y vendible.`,
+        matchScore: 94,
+        cta: 'Quiero subir de nivel',
+      },
+    ],
+  };
 }
 
 function ensureQuizShape(quiz, questionCount, optionCount) {
