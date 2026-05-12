@@ -41,14 +41,20 @@
     --brand-border:rgba(139,106,160,0.18);
     --brand-shadow:rgba(49,33,60,0.12);
   }
+  html,
+  body {
+    min-height: 100%;
+    background-color: #17171d;
+  }
   body {
     font-family:'Plus Jakarta Sans',sans-serif;
     background:
-      radial-gradient(circle at 18% 12%, color-mix(in srgb, var(--brand) 30%, transparent), transparent 32rem),
-      radial-gradient(circle at 86% 74%, color-mix(in srgb, var(--brand-light) 28%, transparent), transparent 34rem),
-      linear-gradient(rgba(255,255,255,0.055) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(255,255,255,0.055) 1px, transparent 1px),
-      #0d0d11;
+      radial-gradient(circle at 16% 10%, color-mix(in srgb, var(--brand) 38%, transparent), transparent 34rem),
+      radial-gradient(circle at 88% 76%, color-mix(in srgb, var(--brand-light) 34%, transparent), transparent 36rem),
+      radial-gradient(circle at 50% 112%, color-mix(in srgb, var(--brand) 18%, transparent), transparent 32rem),
+      linear-gradient(rgba(255,255,255,0.065) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.065) 1px, transparent 1px),
+      #17171d;
     background-size: auto, auto, 72px 72px, 72px 72px, auto;
     color:#f8fafc;
   }
@@ -64,13 +70,14 @@
   }
   .report-card {
     background:
-      radial-gradient(circle at 50% 105%, color-mix(in srgb, var(--brand-light) 22%, transparent), transparent 30rem),
-      linear-gradient(180deg, rgba(255,255,255,0.11), rgba(255,255,255,0.055)),
-      #15151b;
-    border: 1px solid rgba(255,255,255,0.16);
+      radial-gradient(circle at 50% 108%, color-mix(in srgb, var(--brand-light) 32%, transparent), transparent 34rem),
+      radial-gradient(circle at 18% 0%, rgba(255,255,255,0.20), transparent 22rem),
+      linear-gradient(180deg, rgba(255,255,255,0.15), rgba(255,255,255,0.07)),
+      rgba(30,30,38,0.78);
+    border: 1px solid rgba(255,255,255,0.20);
     border-radius: 34px;
-    box-shadow: 0 34px 96px rgba(0,0,0,0.42), 0 0 90px color-mix(in srgb, var(--brand) 18%, transparent), inset 0 1px 0 rgba(255,255,255,0.13);
-    backdrop-filter: blur(18px);
+    box-shadow: 0 36px 108px rgba(0,0,0,0.38), 0 0 120px color-mix(in srgb, var(--brand) 26%, transparent), inset 0 1px 0 rgba(255,255,255,0.18);
+    backdrop-filter: blur(26px) saturate(1.25);
   }
   .report-card > .relative:first-child {
     min-height: 300px;
@@ -103,9 +110,11 @@
     background: rgba(255,255,255,0.24) !important;
   }
   #profile-emoji-wrap {
-    background: rgba(255,255,255,0.16) !important;
-    border-color: rgba(255,255,255,0.38) !important;
-    box-shadow: 0 22px 48px rgba(0,0,0,0.18), inset 0 1px 0 rgba(255,255,255,0.24) !important;
+    background:
+      radial-gradient(circle at 35% 22%, rgba(255,255,255,0.54), transparent 34%),
+      linear-gradient(135deg, color-mix(in srgb, var(--brand-light) 46%, rgba(255,255,255,0.24)), color-mix(in srgb, var(--brand) 72%, rgba(255,255,255,0.12))) !important;
+    border-color: rgba(255,255,255,0.46) !important;
+    box-shadow: 0 22px 52px color-mix(in srgb, var(--brand) 34%, rgba(0,0,0,0.20)), 0 0 40px rgba(255,255,255,0.18), inset 0 1px 0 rgba(255,255,255,0.34) !important;
     backdrop-filter: blur(18px);
   }
   #profile-emoji-wrap .material-symbols-outlined {
@@ -114,9 +123,10 @@
   }
   .report-card > .bg-white {
     background:
-      radial-gradient(circle at 50% 112%, color-mix(in srgb, var(--brand-light) 18%, transparent), transparent 28rem),
-      linear-gradient(180deg, rgba(255,255,255,0.09), rgba(255,255,255,0.045)),
-      #15151b !important;
+      radial-gradient(circle at 20% 8%, rgba(255,255,255,0.14), transparent 20rem),
+      radial-gradient(circle at 86% 100%, color-mix(in srgb, var(--brand-light) 28%, transparent), transparent 30rem),
+      linear-gradient(180deg, rgba(255,255,255,0.105), rgba(255,255,255,0.055)),
+      rgba(22,22,28,0.94) !important;
     color: #f8fafc;
   }
   .next-action-card {
@@ -127,9 +137,10 @@
     overflow: hidden;
     border: 1.5px solid color-mix(in srgb, var(--brand-light) 62%, rgba(255,255,255,0.22));
     background:
-      radial-gradient(circle at 50% 116%, color-mix(in srgb, var(--brand-light) 96%, #ffffff), transparent 44%),
-      linear-gradient(180deg, #19191e 0%, #17171c 54%, color-mix(in srgb, var(--brand) 58%, #111) 100%);
-    box-shadow: 0 24px 70px color-mix(in srgb, var(--brand) 24%, transparent);
+      radial-gradient(circle at 50% 118%, color-mix(in srgb, var(--brand-light) 92%, #ffffff), transparent 44%),
+      linear-gradient(180deg, rgba(255,255,255,0.10), rgba(255,255,255,0.03) 42%, color-mix(in srgb, var(--brand) 58%, #141419) 100%),
+      #19191f;
+    box-shadow: 0 26px 76px color-mix(in srgb, var(--brand) 28%, transparent), inset 0 1px 0 rgba(255,255,255,0.14);
     color: #fff;
     transition: transform 0.22s ease, box-shadow 0.22s ease, border-color 0.22s ease;
   }
@@ -148,6 +159,18 @@
     background: linear-gradient(180deg, transparent, color-mix(in srgb, var(--brand-light) 72%, transparent));
     opacity: 0.78;
     pointer-events: none;
+  }
+  .next-action-card:nth-child(2) {
+    background:
+      radial-gradient(circle at 50% 118%, color-mix(in srgb, #8bb8ff 92%, #ffffff), transparent 44%),
+      linear-gradient(180deg, rgba(255,255,255,0.10), rgba(255,255,255,0.03) 42%, color-mix(in srgb, var(--brand) 42%, #16223d) 100%),
+      #19191f;
+  }
+  .next-action-card:nth-child(3) {
+    background:
+      radial-gradient(circle at 50% 118%, color-mix(in srgb, #8df4c2 86%, #ffffff), transparent 44%),
+      linear-gradient(180deg, rgba(255,255,255,0.10), rgba(255,255,255,0.03) 42%, color-mix(in srgb, var(--brand) 38%, #153326) 100%),
+      #19191f;
   }
   .next-action-card > * {
     position: relative;
@@ -194,11 +217,11 @@
   }
   .insight-card {
     background:
-      radial-gradient(circle at 50% 115%, color-mix(in srgb, var(--brand-light) 54%, transparent), transparent 48%),
-      linear-gradient(180deg, rgba(255,255,255,0.10), rgba(255,255,255,0.055)),
-      #181820;
-    border: 1.5px solid color-mix(in srgb, var(--brand-light) 48%, rgba(255,255,255,0.16));
-    box-shadow: 0 20px 52px color-mix(in srgb, var(--brand) 20%, transparent);
+      radial-gradient(circle at 50% 116%, color-mix(in srgb, var(--brand-light) 62%, transparent), transparent 48%),
+      linear-gradient(180deg, rgba(255,255,255,0.13), rgba(255,255,255,0.065)),
+      rgba(28,28,36,0.84);
+    border: 1.5px solid color-mix(in srgb, var(--brand-light) 56%, rgba(255,255,255,0.18));
+    box-shadow: 0 22px 58px color-mix(in srgb, var(--brand) 24%, transparent), inset 0 1px 0 rgba(255,255,255,0.14);
   }
   .report-icon {
     background: linear-gradient(135deg,var(--brand),var(--brand-light));
@@ -393,7 +416,7 @@
 
       <div id="result-action-cards" class="grid grid-cols-1 md:grid-cols-3 gap-4 pt-2"></div>
 
-      <p class="text-xs text-gray-300 text-center flex items-center justify-center gap-1.5">
+      <p id="result-trust-note" class="text-xs text-gray-300 text-center flex items-center justify-center gap-1.5">
         <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
         Resultado calculado con base en tus respuestas reales
       </p>
@@ -550,7 +573,8 @@
       resultBrandCard.classList.add('flex');
     }
 
-    const profile = (answers && answers.length > 0) ? calculateProfile(quiz, answers) : quiz.profiles[0];
+    const hasRealAnswers = Array.isArray(answers) && answers.length > 0;
+    const profile = hasRealAnswers ? calculateProfile(quiz, answers) : quiz.profiles[0];
 
     // Header brand
     document.getElementById('header-brand').textContent = quiz.brandName || quiz.product || quiz.niche || '';
@@ -569,8 +593,14 @@
       quiz.product ? `La ruta recomendada es empezar con ${quiz.product}.` : 'La ruta recomendada es empezar por una solución clara y accionable.';
     document.getElementById('insight-next').textContent =
       profile.cta || 'Da el siguiente paso mientras tienes claro lo que necesitas.';
-    document.getElementById('result-subtitle').textContent     =
-      `Basado en tus respuestas al quiz "${quiz.title || ''}", este es tu perfil.`;
+    document.getElementById('result-subtitle').textContent =
+      hasRealAnswers
+        ? `Basado en tus respuestas al quiz "${quiz.title || ''}", este es tu perfil.`
+        : `Vista de ejemplo para el quiz "${quiz.title || ''}". Completa el quiz para calcular un resultado real.`;
+    const trustNote = document.getElementById('result-trust-note');
+    if (trustNote && !hasRealAnswers) {
+      trustNote.innerHTML = '<span class="material-symbols-outlined" style="font-size:14px">visibility</span> Vista de prueba sin respuestas guardadas';
+    }
     const titleBrand = whiteLabel ? (whiteLabelName || quiz.product || '') : (quiz.product || 'Luminous Studio');
     document.title = `Tu perfil: ${profile.name}${titleBrand ? ' | ' + titleBrand : ''}`;
 
