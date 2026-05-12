@@ -1035,6 +1035,7 @@ async function applyPendingMiniAppTemplate() {
       ...templateContent
     } = tpl;
     const finalTypes = (Array.isArray(types) && types.length ? types : ['reto']).filter(Boolean);
+    const templatePalette = getTemplatePalette(tpl);
     const appFromTemplate = {
       ...templateContent,
       name: tpl.name || 'Mini-App desde plantilla',
@@ -1047,12 +1048,18 @@ async function applyPendingMiniAppTemplate() {
       accessCodes: [],
       status: 'active',
       created: new Date().toISOString(),
-      primaryColor,
-      secondaryColor,
-      bgColor: bgColor || '#0e0e0e',
+      primaryColor: templatePalette.accent || primaryColor,
+      secondaryColor: templatePalette.accent2 || secondaryColor,
+      bgColor: templatePalette.bg || bgColor || '#0e0e0e',
       headerGradient,
-      accent: primaryColor || '#2E5BFF',
-      accent2: secondaryColor || '#7c3aed',
+      mode: templatePalette.mode,
+      bg: templatePalette.bg,
+      card: templatePalette.card,
+      text: templatePalette.text,
+      muted: templatePalette.muted,
+      font: templatePalette.font,
+      accent: templatePalette.accent || primaryColor || '#2E5BFF',
+      accent2: templatePalette.accent2 || secondaryColor || '#7c3aed',
       _fromTemplate: true,
       _templateId: templateId || '',
     };
@@ -1446,6 +1453,35 @@ function getTemplateMaterialIcon(app, types = []) {
   return TYPE_ICONS[types[0]] || 'deployed_code';
 }
 
+function getTemplatePalette(app = {}) {
+  const n = `${app.category || ''} ${app.subcategory || ''} ${app.niche || ''} ${app.name || ''}`.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+  if (/fe|espirit|biblia|oraci|devocional|dios|cristi|manifestacion/.test(n))
+    return {mode:'light',accent:'#8b5cf6',accent2:'#c89b3c',bg:'#fbf7ef',card:'#fffdf8',text:'#2f2418',muted:'#806f5e',font:'serif'};
+  if (/bienestar|ansiedad|burnout|autoestima|mindful|gratitud|tdah|mental|ruptura/.test(n))
+    return {mode:'light',accent:'#9b5de5',accent2:'#00bbf9',bg:'#fbf7ff',card:'#ffffff',text:'#241b35',muted:'#7b6f8b',font:'serif'};
+  if (/fitness|yoga|running|funcional|movilidad|calistenia|ejercic|deport/.test(n))
+    return {mode:'dark',accent:'#22c55e',accent2:'#06b6d4',bg:'#101816',card:'#17201d',text:'#f3fff9',muted:'#9bb5aa',font:'sans'};
+  if (/nutric|alimenta|keto|meal|ayuno|vegano|cocina|dieta/.test(n))
+    return {mode:'light',accent:'#16a34a',accent2:'#84cc16',bg:'#f3fbf2',card:'#ffffff',text:'#17351f',muted:'#6a806d',font:'sans'};
+  if (/finanz|dinero|deuda|ahorr|inversion|presupuesto|libertad/.test(n))
+    return {mode:'light',accent:'#047857',accent2:'#0f766e',bg:'#eefbf5',card:'#ffffff',text:'#12332a',muted:'#5f7b70',font:'sans'};
+  if (/negocio|marketing|venta|copy|email|seo|freelance|infoproducto/.test(n))
+    return {mode:'dark',accent:'#60a5fa',accent2:'#a78bfa',bg:'#10121a',card:'#181b27',text:'#f7f8ff',muted:'#a5a9bd',font:'sans'};
+  if (/educaci|estudio|ingles|programacion|lectura|escritura|habitos/.test(n))
+    return {mode:'light',accent:'#2563eb',accent2:'#7c3aed',bg:'#f5f7ff',card:'#ffffff',text:'#172033',muted:'#68738d',font:'sans'};
+  if (/relacion|pareja|crianza|embarazo|comunicacion|codependencia/.test(n))
+    return {mode:'light',accent:'#db2777',accent2:'#f97316',bg:'#fff7f7',card:'#ffffff',text:'#3a1d2b',muted:'#8a6a74',font:'serif'};
+  if (/belleza|skincare|colorimetria|armario/.test(n))
+    return {mode:'light',accent:'#be185d',accent2:'#a855f7',bg:'#fff5fb',card:'#ffffff',text:'#351528',muted:'#8b6a7f',font:'serif'};
+  if (/hogar|limpieza|minimalismo|jardin|zero/.test(n))
+    return {mode:'light',accent:'#0f766e',accent2:'#65a30d',bg:'#f4fbf7',card:'#ffffff',text:'#17322d',muted:'#667b73',font:'sans'};
+  if (/mascota|cachorro|canino/.test(n))
+    return {mode:'light',accent:'#ca8a04',accent2:'#7c3aed',bg:'#fff8ed',card:'#ffffff',text:'#332315',muted:'#806f5f',font:'sans'};
+  if (/desarrollo|proposito|emocional|atomicos/.test(n))
+    return {mode:'dark',accent:'#38bdf8',accent2:'#c084fc',bg:'#11111a',card:'#1b1b28',text:'#fbfbff',muted:'#aaa6c2',font:'sans'};
+  return {mode:'dark',accent:'#4d7cff',accent2:'#a78bfa',bg:'#101014',card:'#181821',text:'#ffffff',muted:'#aaa7b8',font:'sans'};
+}
+
 // ── Quizzes ──────────────────────────────────────────────
 async function renderQuizzes() {
   const container = document.getElementById('quizzes-list');
@@ -1546,8 +1582,9 @@ function buildAppCard(app) {
   const typeIcon = getTemplateMaterialIcon(app, types);
   const appUrl = `./mini-app-player.html?id=${app.id}`;
   const hasEditableContent = types.some(t => SUPPORTED_CONTENT_TYPES?.has(t));
-  const accent = app.primaryColor || app.accent || '#2E5BFF';
-  const accent2 = app.secondaryColor || app.accent2 || '#7c3aed';
+  const palette = (app._fromTemplate || app.category) ? getTemplatePalette(app) : {};
+  const accent = palette.accent || app.primaryColor || app.accent || '#2E5BFF';
+  const accent2 = palette.accent2 || app.secondaryColor || app.accent2 || '#7c3aed';
 
   const iconHtml = `<div class="w-11 h-11 rounded-xl flex items-center justify-center shadow-[0_14px_30px_rgba(46,91,255,0.16)]" style="background:linear-gradient(135deg,${esc(accent)},${esc(accent2)})">
     <span class="material-symbols-outlined text-white text-lg" style="font-variation-settings:'FILL' 1,'wght' 500">${esc(typeIcon)}</span>

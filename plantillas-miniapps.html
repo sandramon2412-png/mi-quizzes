@@ -482,13 +482,31 @@ function typeIcon(type) {
 }
 
 function templateVisual(t) {
-  const a = t.primaryColor || '#2E5BFF';
-  const b = t.secondaryColor || '#7c3aed';
+  const palette = templatePalette(t);
+  const a = palette.a || t.primaryColor || '#2E5BFF';
+  const b = palette.b || t.secondaryColor || '#7c3aed';
   return {
     a, b,
     glow: hexToRgba(b, 0.62),
     soft: hexToRgba(b, 0.22)
   };
+}
+
+function templatePalette(t = {}) {
+  const n = normalizeText(`${t.category || ''} ${t.subcategory || ''} ${t.niche || ''} ${t.name || ''}`);
+  if (n.includes('fe') || n.includes('espiritual') || n.includes('biblia') || n.includes('oracion')) return { a:'#8b5cf6', b:'#c89b3c' };
+  if (n.includes('bienestar') || n.includes('ansiedad') || n.includes('autoestima') || n.includes('mental')) return { a:'#9b5de5', b:'#00bbf9' };
+  if (n.includes('fitness') || n.includes('yoga') || n.includes('running') || n.includes('movilidad')) return { a:'#22c55e', b:'#06b6d4' };
+  if (n.includes('nutricion') || n.includes('keto') || n.includes('vegano') || n.includes('ayuno')) return { a:'#16a34a', b:'#84cc16' };
+  if (n.includes('finanzas') || n.includes('deuda') || n.includes('ahorro') || n.includes('presupuesto')) return { a:'#047857', b:'#0f766e' };
+  if (n.includes('negocios') || n.includes('marketing') || n.includes('ventas') || n.includes('freelance')) return { a:'#60a5fa', b:'#a78bfa' };
+  if (n.includes('educacion') || n.includes('estudio') || n.includes('programacion')) return { a:'#2563eb', b:'#7c3aed' };
+  if (n.includes('relaciones') || n.includes('pareja') || n.includes('crianza')) return { a:'#db2777', b:'#f97316' };
+  if (n.includes('belleza') || n.includes('skincare')) return { a:'#be185d', b:'#a855f7' };
+  if (n.includes('hogar') || n.includes('limpieza') || n.includes('jardin')) return { a:'#0f766e', b:'#65a30d' };
+  if (n.includes('mascotas') || n.includes('cachorro')) return { a:'#ca8a04', b:'#7c3aed' };
+  if (n.includes('desarrollo') || n.includes('proposito') || n.includes('emocional')) return { a:'#38bdf8', b:'#c084fc' };
+  return { a:'#4d7cff', b:'#a78bfa' };
 }
 
 function sectionCountLabel(t) {

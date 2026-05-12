@@ -429,18 +429,22 @@ document.addEventListener('DOMContentLoaded', async () => {
     else if (/wellness|bienestar|salud|yoga|medita|mindful|emocio|autoam/i.test(n))
       Object.assign(app, {mode:'light',accent:'#c0635c',accent2:'#d4856a',bg:'#fdf8f4',card:'#fff',text:'#2d1f1a',muted:'#9c7b6e',font:'serif'});
     else if (/fitness|gym|ejercic|deport|muscula|crossfit/i.test(n))
-      Object.assign(app, {mode:'dark',accent:'#f97316',accent2:'#ef4444',bg:'#0a0a0a',card:'#1a1a1a',text:'#f0f0f0',muted:'#9a9a9a',font:'sans'});
+      Object.assign(app, {mode:'dark',accent:'#22c55e',accent2:'#06b6d4',bg:'#101816',card:'#17201d',text:'#f3fff9',muted:'#9bb5aa',font:'sans'});
     else if (/finanz|dinero|negocio|emprender|inversion|crypto/i.test(n))
-      Object.assign(app, {mode:'dark',accent:'#2563eb',accent2:'#1d4ed8',bg:'#0d1117',card:'#1a1f2e',text:'#f0f0f0',muted:'#6b7280',font:'sans'});
+      Object.assign(app, {mode:'light',accent:'#047857',accent2:'#0f766e',bg:'#eefbf5',card:'#ffffff',text:'#12332a',muted:'#5f7b70',font:'sans'});
     else if (/nutrici|alimentaci|cocina|dieta|receta/i.test(n))
       Object.assign(app, {mode:'light',accent:'#16a34a',accent2:'#15803d',bg:'#f0fdf4',card:'#fff',text:'#1a3a1a',muted:'#6b7c6b',font:'sans'});
     else if (/maternidad|bebe|embaraz|bebé|infantil|niño/i.test(n))
       Object.assign(app, {mode:'light',accent:'#ec4899',accent2:'#f472b6',bg:'#fff5f7',card:'#fff',text:'#3a1a2a',muted:'#9c6b7e',font:'serif'});
   }
 
-  if (app.primaryColor) app.accent = app.primaryColor;
-  if (app.secondaryColor) app.accent2 = app.secondaryColor;
-  if (app.bgColor && !app.bg) app.bg = app.bgColor;
+  if (app._fromTemplate || app.category) {
+    Object.assign(app, getNichePalette(app));
+  } else {
+    if (app.primaryColor) app.accent = app.primaryColor;
+    if (app.secondaryColor) app.accent2 = app.secondaryColor;
+    if (app.bgColor && !app.bg) app.bg = app.bgColor;
+  }
 
   // Apply dynamic theme from niche/product generation
   const root = document.documentElement;
@@ -604,6 +608,35 @@ function appIconHtml(size, type, rawIcon) {
 }
 function normalizeText(value) {
   return String(value || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+}
+
+function getNichePalette(app = {}) {
+  const n = normalizeText(`${app.category || ''} ${app.subcategory || ''} ${app.niche || ''} ${app.name || ''}`);
+  if (/fe|espirit|biblia|oraci|devocional|dios|cristi|manifestacion/.test(n))
+    return {mode:'light',accent:'#8b5cf6',accent2:'#c89b3c',bg:'#fbf7ef',card:'#fffdf8',text:'#2f2418',muted:'#806f5e',font:'serif'};
+  if (/bienestar|ansiedad|burnout|autoestima|mindful|gratitud|tdah|mental|ruptura/.test(n))
+    return {mode:'light',accent:'#9b5de5',accent2:'#00bbf9',bg:'#fbf7ff',card:'#ffffff',text:'#241b35',muted:'#7b6f8b',font:'serif'};
+  if (/fitness|yoga|running|funcional|movilidad|calistenia|ejercic|deport/.test(n))
+    return {mode:'dark',accent:'#22c55e',accent2:'#06b6d4',bg:'#101816',card:'#17201d',text:'#f3fff9',muted:'#9bb5aa',font:'sans'};
+  if (/nutric|alimenta|keto|meal|ayuno|vegano|cocina|dieta/.test(n))
+    return {mode:'light',accent:'#16a34a',accent2:'#84cc16',bg:'#f3fbf2',card:'#ffffff',text:'#17351f',muted:'#6a806d',font:'sans'};
+  if (/finanz|dinero|deuda|ahorr|inversion|presupuesto|libertad/.test(n))
+    return {mode:'light',accent:'#047857',accent2:'#0f766e',bg:'#eefbf5',card:'#ffffff',text:'#12332a',muted:'#5f7b70',font:'sans'};
+  if (/negocio|marketing|venta|copy|email|seo|freelance|infoproducto/.test(n))
+    return {mode:'dark',accent:'#60a5fa',accent2:'#a78bfa',bg:'#10121a',card:'#181b27',text:'#f7f8ff',muted:'#a5a9bd',font:'sans'};
+  if (/educaci|estudio|ingles|programacion|lectura|escritura|habitos/.test(n))
+    return {mode:'light',accent:'#2563eb',accent2:'#7c3aed',bg:'#f5f7ff',card:'#ffffff',text:'#172033',muted:'#68738d',font:'sans'};
+  if (/relacion|pareja|crianza|embarazo|comunicacion|codependencia/.test(n))
+    return {mode:'light',accent:'#db2777',accent2:'#f97316',bg:'#fff7f7',card:'#ffffff',text:'#3a1d2b',muted:'#8a6a74',font:'serif'};
+  if (/belleza|skincare|colorimetria|armario/.test(n))
+    return {mode:'light',accent:'#be185d',accent2:'#a855f7',bg:'#fff5fb',card:'#ffffff',text:'#351528',muted:'#8b6a7f',font:'serif'};
+  if (/hogar|limpieza|minimalismo|jardin|zero/.test(n))
+    return {mode:'light',accent:'#0f766e',accent2:'#65a30d',bg:'#f4fbf7',card:'#ffffff',text:'#17322d',muted:'#667b73',font:'sans'};
+  if (/mascota|cachorro|canino/.test(n))
+    return {mode:'light',accent:'#ca8a04',accent2:'#7c3aed',bg:'#fff8ed',card:'#ffffff',text:'#332315',muted:'#806f5f',font:'sans'};
+  if (/desarrollo|proposito|emocional|atomicos/.test(n))
+    return {mode:'dark',accent:'#38bdf8',accent2:'#c084fc',bg:'#11111a',card:'#1b1b28',text:'#fbfbff',muted:'#aaa6c2',font:'sans'};
+  return {mode:'dark',accent:'#4d7cff',accent2:'#a78bfa',bg:'#101014',card:'#181821',text:'#ffffff',muted:'#aaa7b8',font:'sans'};
 }
 
 function buildTabs(types) {
