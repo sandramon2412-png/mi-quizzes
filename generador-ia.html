@@ -206,7 +206,7 @@
             <button onclick="addQuestion()" id="btn-add-q" class="hidden text-xs text-primary font-bold hover:underline flex items-center gap-1">
               <span class="material-symbols-outlined text-sm">add</span>Pregunta
             </button>
-            <button onclick="openTemplateModal()" id="btn-templates" class="hidden text-xs text-on-surface-variant font-bold hover:text-primary hover:underline flex items-center gap-1 transition-colors">
+            <button onclick="openTemplateModal()" id="btn-templates" class="text-xs text-on-surface-variant font-bold hover:text-primary hover:underline flex items-center gap-1 transition-colors">
               <span class="material-symbols-outlined text-sm">dashboard</span>Plantillas
             </button>
             <button onclick="previewQuiz()" id="btn-preview" class="hidden px-3 py-1.5 border border-primary/30 text-primary rounded-lg text-xs font-bold hover:bg-primary/5 transition-colors flex items-center gap-1">
@@ -1725,7 +1725,9 @@ function closeTemplateModal() {
   document.getElementById('modal-templates').classList.add('hidden');
 }
 function addTemplateQuestion(idx) {
-  if (!currentQuiz) { showToast('Genera un quiz primero', 'error'); return; }
+  if (!currentQuiz) {
+    createManual();
+  }
   const tq = TEMPLATE_QUESTIONS[idx];
   const pids = currentQuiz.profiles.map(p => p.id);
   const newQ = {
