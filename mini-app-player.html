@@ -199,6 +199,13 @@
   /* Voice toggle */
   .voice-toggle { padding:6px 13px;border-radius:20px;border:1.5px solid var(--border);background:var(--card);color:var(--muted);font-size:11px;font-weight:700;cursor:pointer;transition:all .2s;display:inline-flex;align-items:center;gap:5px;font-family:inherit; }
   .voice-toggle.on { border-color:var(--accent);color:var(--accent); }
+  .icon-btn { width:32px;height:32px;border-radius:10px;background:var(--card);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;color:var(--muted);text-decoration:none;flex-shrink:0;cursor:pointer;transition:all .2s; }
+  .icon-btn:hover { color:var(--accent);border-color:var(--accent); }
+  .voice-panel { position:fixed;inset:0;z-index:200;display:none;align-items:flex-end;justify-content:center;background:rgba(0,0,0,.48);backdrop-filter:blur(8px);padding:18px; }
+  .voice-panel.open { display:flex; }
+  .voice-sheet { width:100%;max-width:480px;background:var(--card);border:1px solid var(--border);border-radius:24px;padding:18px;box-shadow:0 30px 90px rgba(0,0,0,.5); }
+  .voice-field { width:100%;background:var(--card2);border:1px solid var(--border);border-radius:14px;color:var(--text);font:inherit;font-size:13px;padding:11px 12px;outline:none; }
+  .voice-range { width:100%;accent-color:var(--accent); }
 
   /* Meditation timer */
   .med-timer { font-size:56px;font-weight:900;letter-spacing:3px;color:var(--accent);font-family:'Plus Jakarta Sans',monospace;line-height:1; }
@@ -328,7 +335,10 @@
       <div id="app-header-name">App</div>
       <div id="app-header-greeting" style="font-size:11px;color:var(--accent);font-weight:600"></div>
     </div>
-    <button onclick="goBackSafe()" title="Volver" style="width:32px;height:32px;border-radius:10px;background:var(--card);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;color:var(--muted);text-decoration:none;flex-shrink:0;cursor:pointer">
+    <button onclick="openVoicePanel()" title="Configurar voz" class="icon-btn">
+      <span class="material-symbols-outlined" style="font-size:16px">record_voice_over</span>
+    </button>
+    <button onclick="goBackSafe()" title="Volver" class="icon-btn">
       <span class="material-symbols-outlined" style="font-size:16px">arrow_back</span>
     </button>
   </header>
@@ -344,6 +354,29 @@
   <footer id="app-footer" style="display:none;padding:14px 16px;text-align:center;font-size:11px;color:var(--muted);border-top:1px solid var(--border);background:var(--bg);">
     <span id="footer-text">Hecho con <a href="https://luminous-studio.com" target="_blank" rel="noopener" style="color:var(--accent);text-decoration:none;font-weight:600;">Luminous Studio</a></span>
   </footer>
+</div>
+
+<div id="voice-panel" class="voice-panel" onclick="if(event.target.id==='voice-panel')closeVoicePanel()">
+  <div class="voice-sheet">
+    <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:14px">
+      <div>
+        <p style="font-size:13px;font-weight:900;color:var(--text)">Voz de lectura</p>
+        <p style="font-size:11px;color:var(--muted);margin-top:3px">La calidad depende de las voces instaladas en este navegador.</p>
+      </div>
+      <button onclick="closeVoicePanel()" class="icon-btn" style="width:34px;height:34px">${msIcon('close',17)}</button>
+    </div>
+    <label style="display:block;font-size:11px;font-weight:800;color:var(--accent);margin-bottom:6px;text-transform:uppercase;letter-spacing:.08em">Voz</label>
+    <select id="voice-select" class="voice-field" onchange="saveVoiceSettings()"></select>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:14px 0">
+      <label style="font-size:11px;color:var(--muted);font-weight:700">Velocidad
+        <input id="voice-rate" class="voice-range" type="range" min="0.75" max="1.05" step="0.01" onchange="saveVoiceSettings()" oninput="saveVoiceSettings()">
+      </label>
+      <label style="font-size:11px;color:var(--muted);font-weight:700">Tono
+        <input id="voice-pitch" class="voice-range" type="range" min="0.82" max="1.1" step="0.01" onchange="saveVoiceSettings()" oninput="saveVoiceSettings()">
+      </label>
+    </div>
+    <button class="btn-primary" onclick="testSelectedVoice()">${msIcon('play_arrow',16)} Probar voz</button>
+  </div>
 </div>
 
 <script>
@@ -598,10 +631,6 @@ function goBackSafe() {
   }
   if (ref.includes('dashboard.html')) {
     window.location.href = './dashboard.html';
-    return;
-  }
-  if (window.history.length > 1) {
-    window.history.back();
     return;
   }
   window.location.href = './plantillas-miniapps.html';
@@ -1551,11 +1580,78 @@ function playBell(freq=440, duration=2.5) {
 // ── TTS (Text-to-Speech) chunked — fix Chrome que corta textos largos ──
 let _voiceQueue = [], _voiceIdx = 0, _voiceStopped = true, _voicePaused = false;
 if (window.speechSynthesis) {
-  window.speechSynthesis.onvoiceschanged = () => {};
+  window.speechSynthesis.onvoiceschanged = () => hydrateVoicePanel();
+}
+
+function voiceSettings() {
+  let saved = {};
+  try { saved = JSON.parse(localStorage.getItem('ls_voice_settings') || '{}'); } catch {}
+  return {
+    name: saved.name || currentApp?.voiceName || '',
+    lang: saved.lang || currentApp?.voiceLang || currentApp?.lang || 'es-MX',
+    rate: Number(saved.rate || currentApp?.voiceRate || 0.88),
+    pitch: Number(saved.pitch || currentApp?.voicePitch || 0.94)
+  };
+}
+
+function spanishVoices() {
+  const all = window.speechSynthesis?.getVoices() || [];
+  const es = all.filter(v => /^es/i.test(v.lang));
+  return es.length ? es : all;
+}
+
+function hydrateVoicePanel() {
+  const select = document.getElementById('voice-select');
+  if (!select) return;
+  const voices = spanishVoices();
+  const settings = voiceSettings();
+  select.innerHTML = voices.map((v, i) => `<option value="${i}">${esc(v.name)} · ${esc(v.lang)}</option>`).join('');
+  const selectedIndex = Math.max(0, voices.findIndex(v => v.name === settings.name && v.lang === settings.lang));
+  select.value = String(selectedIndex < 0 ? 0 : selectedIndex);
+  const rate = document.getElementById('voice-rate');
+  const pitch = document.getElementById('voice-pitch');
+  if (rate) rate.value = String(settings.rate);
+  if (pitch) pitch.value = String(settings.pitch);
+}
+
+function openVoicePanel() {
+  hydrateVoicePanel();
+  document.getElementById('voice-panel')?.classList.add('open');
+}
+
+function closeVoicePanel() {
+  document.getElementById('voice-panel')?.classList.remove('open');
+}
+
+function saveVoiceSettings() {
+  const voices = spanishVoices();
+  const select = document.getElementById('voice-select');
+  const chosen = voices[Number(select?.value || 0)] || voices[0];
+  const settings = {
+    name: chosen?.name || '',
+    lang: chosen?.lang || 'es-MX',
+    rate: Number(document.getElementById('voice-rate')?.value || 0.88),
+    pitch: Number(document.getElementById('voice-pitch')?.value || 0.94)
+  };
+  localStorage.setItem('ls_voice_settings', JSON.stringify(settings));
+  if (currentApp) {
+    currentApp.voiceName = settings.name;
+    currentApp.voiceLang = settings.lang;
+    currentApp.voiceRate = settings.rate;
+    currentApp.voicePitch = settings.pitch;
+  }
+}
+
+function testSelectedVoice() {
+  saveVoiceSettings();
+  speakShort('Hola, esta es una prueba de voz para tu mini app. Puedes cambiarla hasta encontrar una que suene más amable.');
 }
 
 function _bestVoice(lang) {
   const all = window.speechSynthesis?.getVoices() || [];
+  const settings = voiceSettings();
+  const savedVoice = all.find(v => v.name === settings.name && v.lang === settings.lang);
+  if (savedVoice) return savedVoice;
   const prefix = (lang || 'es').split('-')[0];
   const matches = all.filter(v => v.lang.startsWith(prefix));
   if (!matches.length) return null;
@@ -1598,10 +1694,11 @@ function _speakNext(onDone) {
   if (_voiceStopped || _voicePaused) return;
   if (_voiceIdx >= _voiceQueue.length) { if (onDone) onDone(); return; }
   const u = new SpeechSynthesisUtterance(_voiceQueue[_voiceIdx++]);
-  const ttsLang = currentApp?.voiceLang || currentApp?.lang || 'es-MX';
+  const settings = voiceSettings();
+  const ttsLang = settings.lang || 'es-MX';
   u.lang = ttsLang;
-  u.rate = Number(currentApp?.voiceRate || 0.9);
-  u.pitch = Number(currentApp?.voicePitch || 0.96);
+  u.rate = settings.rate;
+  u.pitch = settings.pitch;
   u.volume = 1;
   const best = _bestVoice(ttsLang); if (best) u.voice = best;
   u.onend = () => { if (!_voiceStopped && !_voicePaused) setTimeout(() => _speakNext(onDone), 350); };
@@ -1621,10 +1718,11 @@ function speakShort(text) {
   stopVoice();
   if (!window.speechSynthesis) return;
   const u = new SpeechSynthesisUtterance(_cleanForTTS(String(text||'')));
-  const ttsLang = currentApp?.voiceLang || currentApp?.lang || 'es-MX';
+  const settings = voiceSettings();
+  const ttsLang = settings.lang || 'es-MX';
   u.lang = ttsLang;
-  u.rate = Number(currentApp?.voiceRate || 0.9);
-  u.pitch = Number(currentApp?.voicePitch || 0.96);
+  u.rate = settings.rate;
+  u.pitch = settings.pitch;
   u.volume = 1;
   const best = _bestVoice(ttsLang); if (best) u.voice = best;
   window.speechSynthesis.speak(u);
