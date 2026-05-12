@@ -295,7 +295,15 @@
             </div>
             <div>
               <label class="text-[10px] text-on-surface-variant block mb-1">Imagen de portada <span class="text-on-surface-variant/50">(opcional — se muestra al inicio)</span></label>
+              <div id="cover-image-preview" class="hidden mb-2 rounded-xl border border-outline-variant/10 bg-surface-container-high overflow-hidden items-center gap-3 pr-3">
+                <img id="cover-image-preview-img" src="" alt="" class="h-20 w-32 object-cover bg-surface-container"/>
+                <div class="min-w-0">
+                  <p class="text-[10px] font-black uppercase tracking-widest text-primary">Portada activa</p>
+                  <p id="cover-image-preview-status" class="text-xs text-on-surface-variant truncate">Imagen lista para el inicio del quiz</p>
+                </div>
+              </div>
               <input id="quiz-cover-image" type="url" placeholder="https://imagen.com/portada.jpg"
+                oninput="updateCoverPreview()"
                 class="w-full bg-surface-container-high border border-outline-variant/10 rounded-lg px-3 py-2 text-xs text-on-surface outline-none focus:border-primary transition-colors"/>
               <div class="mt-2 flex items-center gap-2">
                 <label class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-surface-container-high border border-outline-variant/20 text-[10px] font-bold text-on-surface-variant hover:text-primary cursor-pointer">
@@ -549,6 +557,8 @@
 let currentQuiz = null;
 let editingQuizId = null;
 let _currentUser = null;
+let _pendingBrandLogo = '';
+let _pendingCoverImage = '';
 
 function getParam(name) {
   return new URLSearchParams(window.location.search).get(name);
@@ -590,7 +600,9 @@ async function uploadCoverImage(input) {
   try {
     const src = await optimizeQuizImageFile(input.files?.[0], 1400, 760, 0.84);
     document.getElementById('quiz-cover-image').value = '';
+    _pendingCoverImage = src;
     if (currentQuiz) currentQuiz.coverImage = src;
+    updateCoverPreview();
     showToast('Imagen de portada subida.');
   } catch (err) {
     showToast(err.message || 'No pude subir la imagen', 'error');
@@ -603,6 +615,7 @@ async function uploadLogoImage(input) {
   try {
     const src = await optimizeQuizImageFile(input.files?.[0], 520, 220, 0.86);
     document.getElementById('quiz-brand-logo').value = '';
+    _pendingBrandLogo = src;
     if (currentQuiz) currentQuiz.brandLogo = src;
     updateBrandPreview();
     showToast('Logo subido. Se verá en el quiz y en el resultado.');
@@ -654,7 +667,7 @@ function updateBrandPreview() {
   const img = document.getElementById('brand-logo-preview-img');
   const name = document.getElementById('brand-logo-preview-name');
   if (!wrap || !img || !name) return;
-  const logo = document.getElementById('quiz-brand-logo')?.value.trim() || currentQuiz?.brandLogo || '';
+  const logo = document.getElementById('quiz-brand-logo')?.value.trim() || currentQuiz?.brandLogo || _pendingBrandLogo || '';
   const brand = document.getElementById('quiz-brand-name')?.value.trim() || currentQuiz?.brandName || currentQuiz?.product || '';
   name.textContent = brand || 'Tu marca';
   if (logo) {
@@ -726,14 +739,19 @@ async function generateWithAI() {
     setLoadingProgress(85, 'Organizando preguntas y perfiles...');
     await sleep(400);
     const theme = window.getSuggestedOfferTheme ? window.getSuggestedOfferTheme(niche, product) : null;
+    const chosenBrandName = document.getElementById('quiz-brand-name')?.value.trim() || '';
+    const chosenBrandLogo = document.getElementById('quiz-brand-logo')?.value.trim() || _pendingBrandLogo || '';
+    const chosenCoverImage = document.getElementById('quiz-cover-image')?.value.trim() || _pendingCoverImage || '';
     currentQuiz = {
       ...data,
       product,
       description: desc,
       niche,
       status: 'draft',
-      brandColor: data.brandColor || theme?.brandColor || '#8B6AA0',
-      coverImage: data.coverImage || theme?.coverImage || '',
+      brandName: chosenBrandName || data.brandName || '',
+      brandLogo: chosenBrandLogo || data.brandLogo || '',
+      brandColor: document.getElementById('quiz-brand-color')?.value || data.brandColor || theme?.brandColor || '#8B6AA0',
+      coverImage: chosenCoverImage || data.coverImage || theme?.coverImage || '',
       imageKeywords: data.imageKeywords || theme?.imageKeywords || '',
     };
     ensureQuizShape(currentQuiz, _numQuestions, _numOptions);
@@ -753,6 +771,9 @@ function createManual() {
   const niche = document.getElementById('input-niche').value.trim();
   const theme = window.getSuggestedOfferTheme ? window.getSuggestedOfferTheme(niche, product) : null;
   const pids = ['p1', 'p2', 'p3'];
+  const chosenBrandName = document.getElementById('quiz-brand-name')?.value.trim() || '';
+  const chosenBrandLogo = document.getElementById('quiz-brand-logo')?.value.trim() || _pendingBrandLogo || '';
+  const chosenCoverImage = document.getElementById('quiz-cover-image')?.value.trim() || _pendingCoverImage || '';
   editingQuizId = null;
   currentQuiz = {
     title: `¿Cuál es tu perfil como usuario de ${product}?`,
@@ -761,8 +782,10 @@ function createManual() {
     product,
     description: document.getElementById('input-desc').value.trim(),
     niche,
-    brandColor: theme?.brandColor || '#8B6AA0',
-    coverImage: theme?.coverImage || '',
+    brandName: chosenBrandName,
+    brandLogo: chosenBrandLogo,
+    brandColor: document.getElementById('quiz-brand-color')?.value || theme?.brandColor || '#8B6AA0',
+    coverImage: chosenCoverImage || theme?.coverImage || '',
     imageKeywords: theme?.imageKeywords || '',
     status: 'draft',
     questions: [
@@ -840,6 +863,32 @@ function loadDemo() {
   showToast('Demo cargado. Personalízalo y guárdalo.');
 }
 
+function updateCoverPreview() {
+  const wrap = document.getElementById('cover-image-preview');
+  const img = document.getElementById('cover-image-preview-img');
+  const status = document.getElementById('cover-image-preview-status');
+  if (!wrap || !img || !status) return;
+  const cover = document.getElementById('quiz-cover-image')?.value.trim() || currentQuiz?.coverImage || _pendingCoverImage || '';
+  if (cover) {
+    img.src = cover;
+    img.onerror = () => {
+      img.classList.add('hidden');
+      status.textContent = 'No pude cargar la imagen. Revisa la URL o sube un archivo.';
+    };
+    img.onload = () => {
+      img.classList.remove('hidden');
+      status.textContent = isDataImage(cover) ? 'Archivo subido y optimizado' : 'URL de portada activa';
+    };
+    wrap.classList.remove('hidden');
+    wrap.classList.add('flex');
+  } else {
+    img.removeAttribute('src');
+    img.classList.add('hidden');
+    wrap.classList.add('hidden');
+    wrap.classList.remove('flex');
+  }
+}
+
 function getCurrentSuggestedTheme() {
   const product = document.getElementById('input-product').value.trim();
   const niche = document.getElementById('input-niche').value.trim();
@@ -868,11 +917,13 @@ function applySuggestedTheme() {
   document.getElementById('quiz-brand-color').value = theme.brandColor;
   document.getElementById('quiz-brand-color-hex').textContent = theme.brandColor;
   document.getElementById('quiz-cover-image').value = theme.coverImage || '';
+  _pendingCoverImage = '';
   if (currentQuiz) {
     currentQuiz.brandColor = theme.brandColor;
     currentQuiz.coverImage = theme.coverImage || '';
     currentQuiz.imageKeywords = theme.imageKeywords || '';
   }
+  updateCoverPreview();
   showToast('Tema aplicado: color e imagen ajustados al nicho.');
 }
 
@@ -897,9 +948,12 @@ function loadQuizIntoEditor(quiz) {
   document.getElementById('quiz-brand-name').value  = quiz.brandName  || '';
   document.getElementById('quiz-brand-color').value = quiz.brandColor || '#8B6AA0';
   document.getElementById('quiz-brand-color-hex').textContent = quiz.brandColor || '#8B6AA0';
-  document.getElementById('quiz-brand-logo').value   = quiz.brandLogo   || '';
+  document.getElementById('quiz-brand-logo').value   = isDataImage(quiz.brandLogo) ? '' : (quiz.brandLogo || '');
   document.getElementById('quiz-cover-image').value  = isDataImage(quiz.coverImage) ? '' : (quiz.coverImage || '');
+  _pendingBrandLogo = isDataImage(quiz.brandLogo) ? quiz.brandLogo : '';
+  _pendingCoverImage = isDataImage(quiz.coverImage) ? quiz.coverImage : '';
   updateBrandPreview();
+  updateCoverPreview();
   updateThemeSuggestion();
   document.getElementById('quiz-lead-capture').checked      = leadOn;
   document.getElementById('quiz-wa-lead-capture').checked   = leadOn;
@@ -939,6 +993,10 @@ function renderQuestions(questions) {
     const qImage = q.image || '';
     const qImageValue = isDataImage(qImage) ? '' : esc(qImage);
     const qImageStatus = qImage ? '<span class="text-[10px] text-secondary font-bold">Imagen activa</span>' : '';
+    const qImagePreview = qImage ? `
+      <div class="mb-2 rounded-xl overflow-hidden border border-outline-variant/10 bg-surface-container-high">
+        <img src="${esc(qImage)}" alt="" class="w-full h-32 object-cover"/>
+      </div>` : '';
     d.innerHTML = `
       <div class="flex items-center gap-2 mb-2">
         <span class="w-6 h-6 rounded-full primary-gradient text-white text-xs font-black flex items-center justify-center shrink-0">${qi+1}</span>
@@ -950,6 +1008,7 @@ function renderQuestions(questions) {
         </button>
       </div>
       <!-- Question image -->
+      ${qImagePreview}
       <div class="flex items-center gap-2 mb-2">
         <span class="material-symbols-outlined text-sm text-on-surface-variant/50" title="Imagen de pregunta">image</span>
         <input type="url" value="${qImageValue}" placeholder="Imagen de la pregunta: URL o subir archivo (panel visual en escritorio)"
@@ -964,9 +1023,13 @@ function renderQuestions(questions) {
         ${q.imageKeywords ? `<a href="https://unsplash.com/s/photos/${encodeURIComponent(q.imageKeywords)}" target="_blank" class="text-[10px] text-primary hover:underline whitespace-nowrap flex items-center gap-0.5"><span class="material-symbols-outlined text-xs">search</span>Buscar</a>` : ''}
       </div>
       <div class="space-y-1.5">
-        ${q.options.map((opt,oi)=>`
+        ${q.options.map((opt,oi)=>{
+          const optImage = opt.imageUrl || '';
+          return `
           <div class="flex items-center gap-2 bg-surface-container-high rounded-lg px-2 py-1.5">
-            <span class="w-9 h-9 bg-surface-container rounded-md border border-outline-variant/20 text-primary shrink-0 flex items-center justify-center material-symbols-outlined text-base">radio_button_checked</span>
+            ${optImage
+              ? `<img src="${esc(optImage)}" alt="" class="w-10 h-10 rounded-md object-cover border border-outline-variant/20 shrink-0"/>`
+              : '<span class="w-9 h-9 bg-surface-container rounded-md border border-outline-variant/20 text-primary shrink-0 flex items-center justify-center material-symbols-outlined text-base">radio_button_checked</span>'}
             <input type="text" value="${esc(opt.text)}" placeholder="Texto de la opción"
               onchange="currentQuiz.questions[${qi}].options[${oi}].text=this.value"
               class="flex-1 bg-transparent text-xs text-on-surface outline-none min-w-0"/>
@@ -977,8 +1040,9 @@ function renderQuestions(questions) {
               <span class="material-symbols-outlined text-xs">upload_file</span>
               <input type="file" accept="image/png,image/jpeg,image/webp" class="hidden" onchange="uploadOptionImage(this, ${qi}, ${oi})"/>
             </label>
-            ${opt.imageUrl ? `<button type="button" onclick="clearOptionImage(${qi}, ${oi})" class="text-[10px] text-on-surface-variant hover:text-error shrink-0">Quitar</button>` : ''}
-          </div>`).join('')}
+            ${optImage ? `<button type="button" onclick="clearOptionImage(${qi}, ${oi})" class="text-[10px] text-on-surface-variant hover:text-error shrink-0">Quitar</button>` : ''}
+          </div>`;
+        }).join('')}
       </div>
       <button onclick="addOption(${qi})" class="mt-2 text-xs text-primary hover:underline flex items-center gap-1">
         <span class="material-symbols-outlined text-sm">add</span>Añadir opción
