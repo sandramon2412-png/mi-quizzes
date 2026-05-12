@@ -495,6 +495,10 @@ const Claude = {
   async generateQuiz(productName, description, niche, numQuestions, numOptions) {
     const nQ = numQuestions || 6;
     const nO = numOptions   || 4;
+    const optionJsonExample = Array.from({ length: nO }, (_, i) => {
+      const profiles = i === 2 ? '["id_perfil", "id_perfil2"]' : '["id_perfil"]';
+      return `        {"text": "situacion reconocible del nicho con jerga real", "profiles": ${profiles}}`;
+    }).join(',\n');
     const nicheBlock = buildNichePromptBlock(niche);
     const ctx = getNicheContext(niche);
     const archetypeHint = ctx ? `\nInspírate en estos arquetipos reales del nicho para crear los perfiles: ${ctx.archetypes.join('; ')}` : '';
@@ -541,10 +545,7 @@ Cada pregunta: exactamente ${nO} opciones. Cada opción:
       "text": "pregunta usando vocabulario real del nicho",
       "imageKeywords": "2-3 palabras en inglés para imagen (ej: 'gym workout frustration')",
       "options": [
-        {"text": "situación reconocible del nicho con jerga real", "profiles": ["id_perfil"]},
-        {"text": "situación reconocible del nicho con jerga real", "profiles": ["id_perfil"]},
-        {"text": "situación reconocible del nicho con jerga real", "profiles": ["id_perfil", "id_perfil2"]},
-        {"text": "situación reconocible del nicho con jerga real", "profiles": ["id_perfil"]}
+${optionJsonExample}
       ]
     }
   ],
