@@ -44,20 +44,55 @@
   }
   * { margin:0; padding:0; box-sizing:border-box; }
   html { background:var(--bg); }
-  body { font-family:'Plus Jakarta Sans',sans-serif; background:var(--access-bg,var(--bg)); color:var(--text); min-height:100dvh; display:flex; flex-direction:column; align-items:center; background-attachment:fixed; }
-  body:not([data-theme="light"]) { background-image:radial-gradient(ellipse 80% 50% at 50% -10%, rgba(46,91,255,0.08), transparent 60%), radial-gradient(ellipse 70% 50% at 50% 110%, rgba(124,58,237,0.06), transparent 60%); }
+  body {
+    font-family:'Plus Jakarta Sans',sans-serif;
+    background:var(--access-bg,var(--bg));
+    color:var(--text);
+    min-height:100dvh;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    background-attachment:fixed;
+  }
+  body:not([data-theme="light"]) {
+    background-image:
+      radial-gradient(ellipse 80% 50% at 50% -10%, rgba(77,124,255,0.20), transparent 62%),
+      radial-gradient(ellipse 70% 48% at 50% 112%, rgba(167,139,250,0.16), transparent 64%),
+      linear-gradient(rgba(255,255,255,0.028) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.028) 1px, transparent 1px);
+    background-size:auto, auto, 42px 42px, 42px 42px;
+  }
+  body[data-theme="light"] {
+    background-image:
+      radial-gradient(ellipse 70% 45% at 50% -10%, rgba(255,255,255,0.72), transparent 60%),
+      radial-gradient(ellipse 62% 48% at 50% 112%, rgba(212,133,106,0.18), transparent 65%);
+  }
   .serif { font-family:'Lora',Georgia,serif; }
   .material-symbols-outlined { font-variation-settings:'FILL' 0,'wght' 400,'GRAD' 0,'opsz' 24; }
 
   /* App container — phone-width centered */
   #screen-access, #screen-app {
     width: 100%;
-    max-width: 480px;
+    max-width: 520px;
   }
 
   /* Cards */
-  .card { background:var(--card); border:1px solid var(--border); border-radius:var(--radius); box-shadow:inset 0 1px 0 rgba(255,255,255,0.1), 0 8px 24px -8px rgba(0,0,0,0.6); }
-  .card2 { background:var(--card2); border:1px solid var(--border); border-radius:calc(var(--radius) - 4px); box-shadow:inset 0 1px 0 rgba(255,255,255,0.08); }
+  .card {
+    background:color-mix(in srgb, var(--card) 86%, transparent);
+    border:1px solid var(--border);
+    border-radius:var(--radius);
+    box-shadow:inset 0 1px 0 rgba(255,255,255,0.12), 0 18px 42px -24px rgba(0,0,0,0.82);
+    backdrop-filter: blur(18px) saturate(1.22);
+    -webkit-backdrop-filter: blur(18px) saturate(1.22);
+  }
+  .card2 {
+    background:color-mix(in srgb, var(--card2) 88%, transparent);
+    border:1px solid var(--border);
+    border-radius:calc(var(--radius) - 4px);
+    box-shadow:inset 0 1px 0 rgba(255,255,255,0.10);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+  }
   .card-dark { background:linear-gradient(135deg,var(--accent),var(--accent2,var(--accent))); color:#fff; border-radius:var(--radius); padding:20px; margin-bottom:14px; box-shadow:0 6px 24px rgba(0,0,0,0.18); }
   .quote-box { background:var(--bg3); border-left:3px solid var(--accent); border-radius:10px; padding:14px 16px; font-style:italic; color:var(--muted); font-size:13px; line-height:1.7; }
 
@@ -88,22 +123,22 @@
   /* Access screen */
   #screen-access { min-height:100vh; display:flex; align-items:center; justify-content:center; padding:24px; }
   .access-wrap { width:100%; max-width:360px; text-align:center; animation:fadeUp .4s ease; }
-  .access-icon-wrap { width:88px; height:88px; border-radius:28px; background:var(--btn); display:flex; align-items:center; justify-content:center; font-size:44px; margin:0 auto 20px; box-shadow:0 12px 40px rgba(0,0,0,0.25); }
+  .access-icon-wrap { width:88px; height:88px; border-radius:28px; background:var(--btn); display:flex; align-items:center; justify-content:center; font-size:44px; margin:0 auto 20px; box-shadow:0 16px 56px rgba(46,91,255,0.36), 0 0 0 12px color-mix(in srgb, var(--accent) 16%, transparent); }
   .access-title { font-family:'Lora',serif; font-size:28px; font-weight:700; margin-bottom:6px; line-height:1.2; }
   .access-subtitle { color:var(--muted); font-size:14px; margin-bottom:32px; line-height:1.5; }
-  .access-box { background:var(--card); border:1px solid var(--border); border-radius:20px; padding:24px; box-shadow:inset 0 1px 0 rgba(255,255,255,0.1), 0 12px 40px -10px rgba(0,0,0,0.6); }
+  .access-box { background:color-mix(in srgb, var(--card) 88%, transparent); border:1px solid var(--border); border-radius:24px; padding:24px; box-shadow:inset 0 1px 0 rgba(255,255,255,0.12), 0 24px 60px -24px rgba(0,0,0,0.72); backdrop-filter:blur(18px); -webkit-backdrop-filter:blur(18px); }
   .access-box-title { font-weight:700; font-size:15px; margin-bottom:6px; }
   .access-box-desc { color:var(--muted); font-size:12px; margin-bottom:16px; line-height:1.5; }
 
   /* App screen */
-  #screen-app { min-height:100dvh; flex-direction:column; background:var(--bg); }
+  #screen-app { min-height:100dvh; flex-direction:column; background:color-mix(in srgb, var(--bg) 84%, transparent); box-shadow:0 0 0 1px rgba(255,255,255,0.04), 0 30px 90px rgba(0,0,0,0.28); }
   #app-header { padding:14px 20px; border-bottom:1px solid var(--border); display:flex; align-items:center; gap:12px; position:sticky; top:0; z-index:50; background:var(--bg); width:100%; }
   #app-header-icon { font-size:22px; width:38px; height:38px; display:flex; align-items:center; justify-content:center; border-radius:12px; background:var(--btn); flex-shrink:0; box-shadow:0 2px 12px rgba(46,91,255,0.35); }
   #app-header-name { font-weight:800; font-size:14px; }
   #app-header-greeting { font-size:11px; color:var(--accent); font-weight:600; margin-left:auto; }
 
   /* Top pill tabs */
-  .tab-btn { flex-shrink:0; padding:7px 13px; border-radius:20px; font-size:11px; font-weight:700; color:var(--text); border:1.5px solid var(--border); background:var(--card); cursor:pointer; transition:all .2s; white-space:nowrap; display:flex; align-items:center; gap:4px; height:34px; opacity:.8; }
+  .tab-btn { flex-shrink:0; padding:8px 13px; border-radius:20px; font-size:11px; font-weight:800; color:var(--text); border:1.5px solid var(--border); background:color-mix(in srgb, var(--card) 82%, transparent); cursor:pointer; transition:all .2s; white-space:nowrap; display:flex; align-items:center; gap:5px; height:36px; opacity:.82; box-shadow:inset 0 1px 0 rgba(255,255,255,0.08); }
   .tab-btn:hover { opacity:1; border-color:var(--accent); }
   .tab-btn.active { background:var(--btn); color:#fff; border-color:transparent; box-shadow:0 2px 12px rgba(0,0,0,0.18); opacity:1; }
 
@@ -404,12 +439,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   // Access screen
   const accessIconEl = document.getElementById('access-icon');
-  if (app.icon) {
-    accessIconEl.textContent = app.icon;
-  } else {
-    const msIcon = TYPE_MS_ICONS[(app.types?.[0] || app.type)] || 'deployed_code';
-    accessIconEl.innerHTML = `<span class="material-symbols-outlined" style="font-size:48px;color:#fff">${msIcon}</span>`;
-  }
+  accessIconEl.innerHTML = appIconHtml(48, app.types?.[0] || app.type, app.icon);
   document.getElementById('access-title').textContent = app.name;
   document.getElementById('access-desc').textContent = app.description || (app.niche ? `${app.niche}` : 'Aplicación interactiva');
   // White-label: si el creador tiene Elite + white-label activo, ocultar marca Luminous Studio
@@ -465,12 +495,7 @@ function enterApp() {
   document.getElementById('screen-access').style.display = 'none';
   document.getElementById('screen-app').style.display = 'flex';
   const headerIconEl = document.getElementById('app-header-icon');
-  if (currentApp.icon) {
-    headerIconEl.textContent = currentApp.icon;
-  } else {
-    const msIcon = TYPE_MS_ICONS[(currentApp.types?.[0] || currentApp.type)] || 'deployed_code';
-    headerIconEl.innerHTML = `<span class="material-symbols-outlined" style="font-size:20px;color:#fff">${msIcon}</span>`;
-  }
+  headerIconEl.innerHTML = appIconHtml(20, currentApp.types?.[0] || currentApp.type, currentApp.icon);
   document.getElementById('app-header-name').textContent = currentApp.name;
   document.getElementById('app-header-greeting').textContent = getGreeting();
   try { renderApp(); } catch(e) {
@@ -518,6 +543,31 @@ function sectionIcon(type) {
 function msIcon(name, size) {
   return `<span class="material-symbols-outlined" style="font-size:${size||16}px">${name}</span>`;
 }
+function iconNameForApp(type, rawIcon) {
+  const raw = String(rawIcon || '').trim();
+  if (/^[a-z0-9_]+$/i.test(raw)) return raw;
+  if (type && TYPE_MS_ICONS[type]) return TYPE_MS_ICONS[type];
+  const n = normalizeText(`${currentApp?.category || ''} ${currentApp?.niche || ''} ${currentApp?.name || ''}`);
+  if (/finanz|dinero|deuda|ahorr|inversion|presupuesto/.test(n)) return 'account_balance_wallet';
+  if (/fe|dios|oraci|bibl|espiritual|devocional/.test(n)) return 'auto_stories';
+  if (/fitness|ejercic|yoga|movilidad|running/.test(n)) return 'fitness_center';
+  if (/nutric|alimenta|cocina|dieta|keto|vegano/.test(n)) return 'nutrition';
+  if (/negocio|marketing|venta|copy|email|seo|infoproducto/.test(n)) return 'monitoring';
+  if (/educaci|estudio|ingles|programacion|lectura/.test(n)) return 'school';
+  if (/relacion|pareja|crianza|embarazo|comunicacion/.test(n)) return 'favorite';
+  if (/belleza|skincare|colorimetria/.test(n)) return 'spa';
+  if (/hogar|limpieza|minimalismo|jardin/.test(n)) return 'home';
+  if (/mascota|cachorro|canino/.test(n)) return 'pets';
+  if (/ansiedad|burnout|autoestima|mindful|gratitud|habito|proposito/.test(n)) return 'self_improvement';
+  return 'deployed_code';
+}
+function appIconHtml(size, type, rawIcon) {
+  const icon = iconNameForApp(type, rawIcon);
+  return `<span class="material-symbols-outlined" style="font-size:${size || 22}px;color:#fff;font-variation-settings:'FILL' 1,'wght' 500;">${icon}</span>`;
+}
+function normalizeText(value) {
+  return String(value || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+}
 
 function buildTabs(types) {
   const tabsWrap = document.getElementById('top-tabs');
@@ -543,9 +593,11 @@ function showTab(idx) {
 // ── Section header card ───────────────────────────────────
 function sectionHdr(emoji, title, sub) {
   const isHtml = typeof emoji === 'string' && emoji.includes('<');
+  const types = (currentApp?.types?.length ? currentApp.types : [currentApp?.type]).filter(Boolean);
+  const activeType = types[activeTab] || types[0];
   const iconContent = isHtml
     ? emoji.replace(/font-size:\d+px/, 'font-size:26px').replace(/color:#fff/, 'color:#fff')
-    : `<span style="font-size:26px;line-height:1">${emoji}</span>`;
+    : appIconHtml(26, activeType, emoji);
   return `<div class="section-hero">
     <div class="section-hero-icon">${iconContent}</div>
     <h1 class="serif section-hero-title">${esc(title)}</h1>
@@ -934,7 +986,7 @@ function renderGenerador(el) {
 function renderChatbot(el) {
   const app=currentApp;
   const botName=app.chatbotName||app.name||'Asistente';
-  const botIcon=app.icon||msIcon('smart_toy',22);
+  const botIcon=appIconHtml(22, 'chatbot', app.icon);
   const systemPrompt=app.chatbotSystemPrompt||`Eres un asistente experto en ${app.niche||'este tema'}. Responde en español, de forma cálida, empática y útil. Máximo 4 oraciones.`;
   let msgs=[], chatVoiceOn=false;
   el.innerHTML=`<div style="display:flex;flex-direction:column;height:calc(100dvh - 130px);min-height:400px">
@@ -1140,7 +1192,7 @@ function renderRoadmap(el) {
       </div>
     </div>`;
   }
-  window.toggleRM=(i)=>{done[i]=!done[i];localStorage.setItem(storageKey,JSON.stringify(done));draw();if(done[i])showToast('¡Paso completado! 🎉');};
+  window.toggleRM=(i)=>{done[i]=!done[i];localStorage.setItem(storageKey,JSON.stringify(done));draw();if(done[i])showToast('Paso completado');};
   draw();
 }
 
@@ -1177,9 +1229,9 @@ function renderDiagnostico(el) {
     // Map answers to profile labels if available (use first option as "positive")
     const profiles=currentApp.profiles||currentApp.diagProfiles||[];
     el.innerHTML=`<div class="fade-up" style="padding:20px">
-      ${sectionHdr('🎉', '¡Diagnóstico completado!', `${total} preguntas respondidas`)}
+      ${sectionHdr('workspace_premium', '¡Diagnóstico completado!', `${total} preguntas respondidas`)}
       <div class="card" style="padding:24px;text-align:center;margin-bottom:16px">
-        <div style="font-size:56px;margin-bottom:12px">${currentApp.icon||'🩺'}</div>
+        <div style="margin-bottom:12px">${appIconHtml(56, 'diagnostico', currentApp.icon)}</div>
         <h2 class="serif" style="font-size:22px;font-weight:700;margin-bottom:8px;color:var(--text)">${esc(currentApp.name)}</h2>
         <p style="font-size:14px;color:var(--muted);line-height:1.6;margin-bottom:20px">${esc(currentApp.diagResultText||'Hemos analizado tus respuestas. Aquí está tu resultado personalizado.')}</p>
         <div class="stat-row" style="justify-content:center">
@@ -1404,7 +1456,7 @@ function renderQuizEmbed(el) {
 // ── GENERIC ───────────────────────────────────────────────
 function renderGeneric(el) {
   el.innerHTML=`<div class="fade-up" style="padding:40px;text-align:center">
-    <div style="font-size:60px;margin-bottom:12px">${currentApp.icon ? esc(currentApp.icon) : msIcon('bolt',60)}</div>
+    <div style="margin-bottom:12px">${appIconHtml(60, currentApp.type || currentApp.types?.[0], currentApp.icon)}</div>
     <h2 class="serif" style="font-size:22px;font-weight:700;margin-bottom:8px">${esc(currentApp.name)}</h2>
     <p style="color:var(--muted);font-size:13px">${esc(currentApp.description||'')}</p>
   </div>`;
@@ -1521,7 +1573,7 @@ function speakShort(text) {
 // ── Utils ─────────────────────────────────────────────────
 function showError(msg) {
   document.getElementById('screen-access').innerHTML=`<div style="text-align:center;padding:40px">
-    <div style="font-size:48px;margin-bottom:16px">⚠️</div>
+    <div style="margin-bottom:16px;color:var(--warn)">${msIcon('warning',48)}</div>
     <p style="font-weight:700;font-size:18px;margin-bottom:8px">Algo salió mal</p>
     <p style="color:var(--muted);font-size:13px;margin-bottom:24px">${esc(msg)}</p>
     <a href="./dashboard.html" style="padding:12px 24px;background:var(--btn);color:#fff;border-radius:50px;text-decoration:none;font-weight:700;font-size:14px">← Volver</a>
@@ -1541,3 +1593,4 @@ function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').
 </script>
 </body>
 </html>
+
