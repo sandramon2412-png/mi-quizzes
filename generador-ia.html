@@ -737,7 +737,7 @@ async function generateWithAI() {
   try {
     const data = await Promise.race([
       AI.generateQuiz(product, desc, niche, _numQuestions, _numOptions),
-      new Promise((_, rej) => setTimeout(() => rej(new Error('Timeout: la IA tardó demasiado')), 30000))
+      new Promise((_, rej) => setTimeout(() => rej(new Error('La IA está tardando más de lo normal. Intenta otra vez en un momento o usa Crear borrador manual para avanzar sin esperar.')), 90000))
     ]);
     setLoadingProgress(85, 'Organizando preguntas y perfiles...');
     await sleep(400);
