@@ -44,22 +44,38 @@
   body {
     font-family:'Plus Jakarta Sans',sans-serif;
     background:
-      radial-gradient(circle at top left, var(--brand-bg), transparent 34rem),
-      linear-gradient(135deg, var(--brand-surface), #fff 48%, var(--brand-bg));
-    color:var(--brand-text);
+      radial-gradient(circle at 18% 12%, color-mix(in srgb, var(--brand) 30%, transparent), transparent 32rem),
+      radial-gradient(circle at 86% 74%, color-mix(in srgb, var(--brand-light) 28%, transparent), transparent 34rem),
+      linear-gradient(rgba(255,255,255,0.055) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.055) 1px, transparent 1px),
+      #0d0d11;
+    background-size: auto, auto, 72px 72px, 72px 72px, auto;
+    color:#f8fafc;
   }
   .material-symbols-outlined { font-variation-settings:'FILL' 0,'wght' 500,'GRAD' 0,'opsz' 24; }
+  body > .fixed.inset-x-0.top-0.h-64 {
+    background:
+      radial-gradient(circle at 20% 20%, color-mix(in srgb, var(--brand) 24%, transparent), transparent 26rem),
+      linear-gradient(180deg, rgba(255,255,255,0.06), transparent) !important;
+  }
+  header {
+    background: rgba(13,13,17,0.78) !important;
+    border-color: rgba(255,255,255,0.12) !important;
+  }
   .report-card {
-    background: rgba(255,255,255,0.88);
-    border: 1px solid var(--brand-border);
+    background:
+      radial-gradient(circle at 50% 105%, color-mix(in srgb, var(--brand-light) 22%, transparent), transparent 30rem),
+      linear-gradient(180deg, rgba(255,255,255,0.11), rgba(255,255,255,0.055)),
+      #15151b;
+    border: 1px solid rgba(255,255,255,0.16);
     border-radius: 34px;
-    box-shadow: 0 24px 70px var(--brand-shadow), inset 0 1px 0 rgba(255,255,255,0.9);
+    box-shadow: 0 34px 96px rgba(0,0,0,0.42), 0 0 90px color-mix(in srgb, var(--brand) 18%, transparent), inset 0 1px 0 rgba(255,255,255,0.13);
     backdrop-filter: blur(18px);
   }
   .report-card > .relative:first-child {
     min-height: 300px;
     background:
-      linear-gradient(145deg, color-mix(in srgb, var(--brand) 60%, transparent), color-mix(in srgb, var(--brand-light) 38%, transparent)),
+      linear-gradient(145deg, color-mix(in srgb, var(--brand) 46%, transparent), color-mix(in srgb, var(--brand-light) 30%, transparent)),
       var(--quiz-hero-image, linear-gradient(135deg, var(--brand), var(--brand-light))) !important;
     background-size: cover !important;
     background-position: center !important;
@@ -71,7 +87,7 @@
     inset: 0;
     background:
       linear-gradient(135deg, rgba(255,255,255,0.22), transparent 38%),
-      linear-gradient(180deg, rgba(0,0,0,0.04), rgba(0,0,0,0.46));
+      linear-gradient(180deg, rgba(0,0,0,0.02), rgba(0,0,0,0.36));
   }
   .report-card > .relative:first-child > * {
     position: relative;
@@ -97,7 +113,11 @@
     text-shadow: 0 8px 22px rgba(0,0,0,0.22);
   }
   .report-card > .bg-white {
-    background: rgba(255,255,255,0.94) !important;
+    background:
+      radial-gradient(circle at 50% 112%, color-mix(in srgb, var(--brand-light) 18%, transparent), transparent 28rem),
+      linear-gradient(180deg, rgba(255,255,255,0.09), rgba(255,255,255,0.045)),
+      #15151b !important;
+    color: #f8fafc;
   }
   .next-action-card {
     position: relative;
@@ -143,13 +163,46 @@
     border: 1px solid rgba(255,255,255,0.14);
     box-shadow: 0 14px 30px rgba(0,0,0,0.22);
   }
+  #result-brand-card,
+  .fade-up > span,
+  .report-card .bg-brand-bg\/40,
+  #solution-block,
+  #solution-block .bg-white {
+    background: rgba(255,255,255,0.075) !important;
+    border-color: rgba(255,255,255,0.16) !important;
+    color: #f8fafc !important;
+  }
+  #result-brand-card p,
+  .fade-up > span,
+  .report-card .bg-brand-bg\/40 p,
+  #solution-block p,
+  #solution-block .text-brand {
+    color: #f8fafc !important;
+  }
+  .report-card .text-gray-900,
+  .report-card .text-gray-800,
+  .report-card .text-gray-700,
+  main > .fade-up .text-gray-800 {
+    color: #f8fafc !important;
+  }
+  .report-card .text-gray-600,
+  .report-card .text-gray-500,
+  .report-card .text-gray-400,
+  main > .fade-up .text-gray-500,
+  main > .fade-up-3 .text-gray-500 {
+    color: #a1a1aa !important;
+  }
   .insight-card {
-    background: rgba(255,255,255,0.74);
-    border: 1px solid var(--brand-border);
+    background:
+      radial-gradient(circle at 50% 115%, color-mix(in srgb, var(--brand-light) 54%, transparent), transparent 48%),
+      linear-gradient(180deg, rgba(255,255,255,0.10), rgba(255,255,255,0.055)),
+      #181820;
+    border: 1.5px solid color-mix(in srgb, var(--brand-light) 48%, rgba(255,255,255,0.16));
+    box-shadow: 0 20px 52px color-mix(in srgb, var(--brand) 20%, transparent);
   }
   .report-icon {
     background: linear-gradient(135deg,var(--brand),var(--brand-light));
-    box-shadow: 0 14px 32px rgba(139,106,160,0.20);
+    box-shadow: 0 14px 34px color-mix(in srgb, var(--brand) 30%, transparent);
   }
   .fade-up { animation: fadeUp 0.55s cubic-bezier(0.16,1,0.3,1) both; }
   .fade-up-2 { animation: fadeUp 0.55s cubic-bezier(0.16,1,0.3,1) 0.15s both; }
