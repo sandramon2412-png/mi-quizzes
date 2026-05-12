@@ -543,8 +543,8 @@ function useTemplate(id) {
   const tpl = getBuiltinMiniAppTemplates().find(t => t.id === id);
   if (!tpl) return;
   localStorage.setItem('ls_miniapp_template_pending', JSON.stringify(tpl));
-  showToast('Plantilla lista. Redirigiendo al dashboard...');
-  setTimeout(() => { window.location.href = './dashboard.html?miniapp_template=1'; }, 1200);
+  showToast('Creando mini-app desde la plantilla...');
+  setTimeout(() => { window.location.href = './dashboard.html?miniapp_template=1&tab=miniapps'; }, 900);
 }
 
 function showToast(msg) {

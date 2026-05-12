@@ -422,8 +422,8 @@ document.addEventListener('DOMContentLoaded', async () => {
   } catch (_) {}
 
   // Fallback theme if no AI-generated theme data
-  if (!app.mode && !app.accent) {
-    const n = (app.niche || '').toLowerCase();
+  if (!app.mode) {
+    const n = `${app.niche || ''} ${app.category || ''} ${app.subcategory || ''} ${app.name || ''}`.toLowerCase();
     if (/espirit|bibl|fe\b|dios|oraci|cristi|religi|angel|manna|sagr/i.test(n))
       Object.assign(app, {mode:'light',accent:'#7c3aed',accent2:'#a855f7',bg:'#f5f0ff',card:'#fff',text:'#2d1f3a',muted:'#7c6890',font:'serif'});
     else if (/wellness|bienestar|salud|yoga|medita|mindful|emocio|autoam/i.test(n))
@@ -437,6 +437,10 @@ document.addEventListener('DOMContentLoaded', async () => {
     else if (/maternidad|bebe|embaraz|bebé|infantil|niño/i.test(n))
       Object.assign(app, {mode:'light',accent:'#ec4899',accent2:'#f472b6',bg:'#fff5f7',card:'#fff',text:'#3a1a2a',muted:'#9c6b7e',font:'serif'});
   }
+
+  if (app.primaryColor) app.accent = app.primaryColor;
+  if (app.secondaryColor) app.accent2 = app.secondaryColor;
+  if (app.bgColor && !app.bg) app.bg = app.bgColor;
 
   // Apply dynamic theme from niche/product generation
   const root = document.documentElement;
@@ -630,7 +634,7 @@ function goBackSafe() {
     return;
   }
   if (ref.includes('dashboard.html')) {
-    window.location.href = './dashboard.html';
+    window.location.href = './dashboard.html?tab=miniapps';
     return;
   }
   window.location.href = './plantillas-miniapps.html';

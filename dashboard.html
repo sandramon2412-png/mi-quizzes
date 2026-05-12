@@ -996,12 +996,15 @@ document.addEventListener('DOMContentLoaded', async () => {
   await Promise.all([renderMiniApps(), renderQuizzes(), renderLandings(), renderEbooks()]);
   loadLeadsCount();
   loadUsageWidget();
+  const pageParams = new URLSearchParams(window.location.search);
+  const requestedTab = pageParams.get('tab');
+  if (requestedTab) switchDashTab(requestedTab);
   // Apply mini-app template if coming from plantillas-miniapps.html
-  if (new URLSearchParams(window.location.search).get('miniapp_template')) {
-    applyPendingMiniAppTemplate();
+  if (pageParams.get('miniapp_template')) {
+    await applyPendingMiniAppTemplate();
   }
   // Auto-open mini-app creation modal if ?create_miniapp=1
-  if (new URLSearchParams(window.location.search).get('create_miniapp')) {
+  if (pageParams.get('create_miniapp')) {
     setTimeout(() => openCreateModal(), 700);
   }
   // Show onboarding on first visit
@@ -1012,34 +1015,67 @@ document.addEventListener('DOMContentLoaded', async () => {
 });
 
 // ── Apply mini-app template from gallery ─────────────────
-function applyPendingMiniAppTemplate() {
+async function applyPendingMiniAppTemplate() {
   try {
     const raw = localStorage.getItem('ls_miniapp_template_pending');
-    if (!raw) return;
+    if (!raw) {
+      switchDashTab('miniapps');
+      return;
+    }
     localStorage.removeItem('ls_miniapp_template_pending');
     const tpl = JSON.parse(raw);
-    // Open the mini-app creation modal pre-filled with template data
-    openCreateModal();
-    // Fill in name and description
-    const nameEl = document.getElementById('ma-name');
-    const descEl = document.getElementById('ma-desc');
-    if (nameEl) nameEl.value = tpl.name || '';
-    if (descEl) descEl.value = tpl.description || '';
-    // Fill niche if field exists
-    const nicheEl = document.getElementById('ma-niche');
-    if (nicheEl && tpl.niche) nicheEl.value = tpl.niche;
-    // Check the right type checkboxes
-    if (tpl.types && tpl.types.length) {
-      document.querySelectorAll('input[name="ma-type"]').forEach(cb => {
-        cb.checked = tpl.types.includes(cb.value);
-      });
+
+    const {
+      id: templateId,
+      primaryColor,
+      secondaryColor,
+      bgColor,
+      headerGradient,
+      types,
+      ...templateContent
+    } = tpl;
+    const finalTypes = (Array.isArray(types) && types.length ? types : ['reto']).filter(Boolean);
+    const appFromTemplate = {
+      ...templateContent,
+      name: tpl.name || 'Mini-App desde plantilla',
+      description: tpl.description || '',
+      niche: tpl.niche || tpl.category || '',
+      product: tpl.product || tpl.name || '',
+      type: finalTypes[0],
+      types: finalTypes,
+      icon: tpl.icon || 'deployed_code',
+      accessCodes: [],
+      status: 'active',
+      created: new Date().toISOString(),
+      primaryColor,
+      secondaryColor,
+      bgColor: bgColor || '#0e0e0e',
+      headerGradient,
+      accent: primaryColor || '#2E5BFF',
+      accent2: secondaryColor || '#7c3aed',
+      _fromTemplate: true,
+      _templateId: templateId || '',
+    };
+
+    let localApp = null;
+    try {
+      const saved = await DB.miniApps.save(appFromTemplate, _currentUser.id);
+      localApp = MiniApps.save({ id: saved.id, ...saved, ...appFromTemplate });
+    } catch (dbErr) {
+      console.warn('Template DB save failed:', dbErr.message);
+      localApp = MiniApps.create(appFromTemplate);
     }
-    // Store template content so handleCreateMiniApp can merge it
-    window._pendingTemplateContent = tpl;
-    // Show toast
-    showToast(`Plantilla "${tpl.name}" cargada. Personaliza y crea.`);
+
+    await renderMiniApps();
+    switchDashTab('miniapps');
+    history.replaceState(null, '', './dashboard.html?tab=miniapps');
+    showToast(`Mini-App "${localApp.name}" creada desde plantilla.`);
+    setTimeout(() => {
+      document.getElementById('section-miniapps')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 150);
   } catch (e) {
     console.warn('applyPendingMiniAppTemplate:', e);
+    showToast('No pude crear la mini-app desde la plantilla.', 'error');
   }
 }
 
