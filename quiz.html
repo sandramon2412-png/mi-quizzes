@@ -44,49 +44,65 @@
   body {
     font-family: 'Plus Jakarta Sans', sans-serif;
     background:
-      radial-gradient(circle at top left, var(--brand-bg), transparent 34rem),
-      linear-gradient(135deg, var(--brand-surface), #fff 48%, var(--brand-bg));
-    color: var(--brand-text);
+      radial-gradient(circle at 18% 12%, color-mix(in srgb, var(--brand) 24%, transparent), transparent 30rem),
+      radial-gradient(circle at 88% 72%, color-mix(in srgb, var(--brand-light) 20%, transparent), transparent 32rem),
+      linear-gradient(rgba(255,255,255,0.035) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.035) 1px, transparent 1px),
+      #08080a;
+    background-size: auto, auto, 72px 72px, 72px 72px, auto;
+    color: #f8fafc;
   }
   .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 500, 'GRAD' 0, 'opsz' 24; }
   .brand-gradient { background: linear-gradient(180deg, var(--brand-bg) 0%, rgba(255,255,255,0) 100%); }
   .quiz-card {
-    background: rgba(255,255,255,0.86);
-    border: 1px solid var(--brand-border);
+    background:
+      radial-gradient(circle at 78% 76%, color-mix(in srgb, var(--brand-light) 18%, transparent), transparent 24rem),
+      linear-gradient(180deg, rgba(255,255,255,0.075), rgba(255,255,255,0.035)),
+      #111116;
+    border: 1px solid rgba(255,255,255,0.12);
     border-radius: 30px;
-    box-shadow: 0 24px 70px var(--brand-shadow), inset 0 1px 0 rgba(255,255,255,0.9);
+    box-shadow: 0 30px 90px rgba(0,0,0,0.44), inset 0 1px 0 rgba(255,255,255,0.10);
     backdrop-filter: blur(18px);
   }
   .diagnostic-pill {
-    background: linear-gradient(135deg, color-mix(in srgb, var(--brand) 12%, #fff), color-mix(in srgb, var(--brand-light) 16%, #fff));
-    border: 1px solid var(--brand-border);
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.14);
+    color: #fff !important;
   }
   .premium-icon {
     background: linear-gradient(135deg, var(--brand), var(--brand-light));
     box-shadow: 0 18px 40px rgba(139,106,160,0.24);
   }
   .micro-card {
-    border: 1px solid var(--brand-border);
-    background: rgba(255,255,255,0.72);
+    border: 1px solid rgba(255,255,255,0.14);
+    background: rgba(255,255,255,0.075);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.08);
   }
 
   /* Elegant option cards */
   .option-card {
     transition: all 0.22s cubic-bezier(0.34,1.56,0.64,1);
     cursor: pointer;
-    border: 1px solid var(--brand-border);
-    background: rgba(255,255,255,0.84);
-    box-shadow: 0 10px 28px var(--brand-shadow);
+    border: 1px solid rgba(255,255,255,0.13);
+    background:
+      linear-gradient(180deg, rgba(255,255,255,0.09), rgba(255,255,255,0.055)),
+      #16161b;
+    box-shadow: 0 16px 38px rgba(0,0,0,0.24);
   }
   .option-card:hover {
     border-color: var(--brand-light);
-    background: #ffffff;
+    background:
+      radial-gradient(circle at 94% 50%, color-mix(in srgb, var(--brand-light) 22%, transparent), transparent 11rem),
+      linear-gradient(180deg, rgba(255,255,255,0.12), rgba(255,255,255,0.065)),
+      #181820;
     transform: translateY(-2px);
     box-shadow: 0 16px 34px rgba(139,106,160,0.12);
   }
   .option-card.selected {
     border-color: var(--brand);
-    background: linear-gradient(135deg, color-mix(in srgb, var(--brand) 10%, #fff), rgba(255,255,255,0.92));
+    background:
+      radial-gradient(circle at 94% 50%, color-mix(in srgb, var(--brand-light) 32%, transparent), transparent 12rem),
+      linear-gradient(135deg, color-mix(in srgb, var(--brand) 18%, #17171c), rgba(255,255,255,0.09));
     box-shadow: 0 0 0 4px rgba(139,106,160,0.13), 0 18px 38px rgba(139,106,160,0.14);
   }
   .option-card.selected .opt-check { opacity: 1 !important; transform: scale(1) !important; }
@@ -98,7 +114,7 @@
     transition: all 0.22s cubic-bezier(0.34,1.56,0.64,1);
     cursor: pointer;
     border: 2px solid color-mix(in srgb, var(--brand-light) 36%, #ffffff);
-    background: #ffffff;
+    background: #141419;
     border-radius: 1rem;
     overflow: hidden;
   }
@@ -117,6 +133,34 @@
   @keyframes progress-glow { 0%,100%{opacity:0.5} 50%{opacity:1} }
   .progress-rail { box-shadow: inset 0 1px 2px rgba(49,33,60,0.08); }
   .progress-fill { box-shadow: 0 0 24px rgba(139,106,160,0.38); }
+  #quiz-wrapper .text-gray-900,
+  #quiz-wrapper .text-gray-800,
+  #quiz-wrapper .text-gray-700 {
+    color: #f8fafc !important;
+  }
+  #quiz-wrapper .text-gray-600,
+  #quiz-wrapper .text-gray-500,
+  #quiz-wrapper .text-gray-400 {
+    color: #a1a1aa !important;
+  }
+  #quiz-wrapper input {
+    background: rgba(255,255,255,0.08) !important;
+    border-color: rgba(255,255,255,0.18) !important;
+    color: #fff !important;
+  }
+  #quiz-wrapper input::placeholder {
+    color: rgba(255,255,255,0.48) !important;
+  }
+  #intro-brand-card,
+  #intro-icon {
+    background: rgba(255,255,255,0.08) !important;
+    border-color: rgba(255,255,255,0.16) !important;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.08), 0 14px 34px rgba(0,0,0,0.18) !important;
+  }
+  #intro-brand-card p,
+  #intro-icon .material-symbols-outlined {
+    color: #fff !important;
+  }
   #quiz-wrapper {
     max-width: 980px;
     transition: max-width 0.35s ease, padding 0.35s ease;
@@ -135,11 +179,14 @@
     border-radius: 24px;
     overflow: hidden;
     background:
-      linear-gradient(145deg, color-mix(in srgb, var(--brand) 54%, transparent), color-mix(in srgb, var(--brand-light) 34%, transparent)),
-      var(--quiz-hero-image, linear-gradient(135deg, var(--brand), var(--brand-light)));
+      linear-gradient(180deg, rgba(10,10,13,0.08), rgba(10,10,13,0.30)),
+      var(--quiz-hero-image, radial-gradient(circle at 50% 112%, color-mix(in srgb, var(--brand-light) 92%, #ffffff), transparent 42%)),
+      radial-gradient(circle at 50% 112%, color-mix(in srgb, var(--brand-light) 88%, #ffffff), transparent 44%),
+      linear-gradient(180deg, #1a1a20 0%, #141419 55%, color-mix(in srgb, var(--brand) 58%, #111) 100%);
     background-size: cover;
     background-position: center;
-    box-shadow: 0 28px 70px var(--brand-shadow);
+    border: 1.5px solid color-mix(in srgb, var(--brand-light) 62%, rgba(255,255,255,0.16));
+    box-shadow: 0 30px 86px color-mix(in srgb, var(--brand) 30%, transparent);
   }
   .intro-visual-panel::before {
     content: "";
@@ -147,7 +194,7 @@
     inset: 0;
     background:
       linear-gradient(135deg, rgba(255,255,255,0.20), transparent 36%),
-      linear-gradient(180deg, transparent 30%, rgba(0,0,0,0.42));
+      linear-gradient(180deg, transparent 28%, rgba(0,0,0,0.58));
   }
   .intro-visual-card {
     position: absolute;
