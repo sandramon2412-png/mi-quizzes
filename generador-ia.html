@@ -736,6 +736,7 @@ async function generateWithAI() {
       coverImage: data.coverImage || theme?.coverImage || '',
       imageKeywords: data.imageKeywords || theme?.imageKeywords || '',
     };
+    ensureQuizShape(currentQuiz, _numQuestions, _numOptions);
     loadQuizIntoEditor(currentQuiz);
     showToast('¡Quiz generado! Revisa y personaliza las preguntas.');
   } catch (e) {
@@ -817,6 +818,7 @@ function createManual() {
       { id: 'p3', name: 'El Optimizador', emoji: '', description: 'Ya está en movimiento y quiere mejorar resultados. Busca una solución más profesional, accionable y orientada a conversión.', recommendation: `Posiciona ${product} como la forma de acelerar resultados sin rehacer todo desde cero.`, cta: 'Quiero optimizar mis resultados' },
     ],
   };
+  ensureQuizShape(currentQuiz, _numQuestions, _numOptions);
   loadQuizIntoEditor(currentQuiz);
   showToast('Borrador manual creado. Ya puedes editarlo y guardarlo.');
 }
@@ -1366,6 +1368,68 @@ function setLoadingProgress(pct, msg) {
 function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
 function esc(s) {
   return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function ensureQuizShape(quiz, questionCount, optionCount) {
+  const wantedQuestions = Math.max(1, parseInt(questionCount, 10) || 6);
+  const wantedOptions = Math.max(2, parseInt(optionCount, 10) || 4);
+  const product = quiz?.product || document.getElementById('input-product')?.value?.trim() || 'tu producto';
+
+  if (!Array.isArray(quiz.profiles) || quiz.profiles.length < 1) {
+    quiz.profiles = [
+      { id: 'p1', name: 'Perfil Inicial', emoji: '', description: 'Necesita claridad para dar el primer paso.', recommendation: `Usa ${product} como una ruta simple para empezar.`, cta: 'Quiero empezar' },
+      { id: 'p2', name: 'Perfil Estratega', emoji: '', description: 'Necesita estructura para avanzar con mas seguridad.', recommendation: `Usa ${product} como un sistema practico para ordenar el proceso.`, cta: 'Quiero mi plan' },
+      { id: 'p3', name: 'Perfil Avanzado', emoji: '', description: 'Busca optimizar lo que ya esta haciendo.', recommendation: `Usa ${product} para mejorar resultados sin empezar desde cero.`, cta: 'Quiero avanzar' },
+    ];
+  }
+
+  const profileIds = quiz.profiles.map((p, i) => {
+    p.id = p.id || `p${i + 1}`;
+    return p.id;
+  });
+  const optionLabels = [
+    'Estoy empezando y necesito claridad',
+    'Tengo informacion pero me falta orden',
+    'Ya avance, pero quiero mejores resultados',
+    'Necesito una solucion mas profesional',
+    'Quiero algo simple y accionable',
+    'Busco acompanamiento paso a paso',
+  ];
+
+  if (!Array.isArray(quiz.questions)) quiz.questions = [];
+  while (quiz.questions.length < wantedQuestions) {
+    const next = quiz.questions.length + 1;
+    quiz.questions.push({
+      id: `q${next}`,
+      text: next === 1 ? `Cual es tu mayor reto con ${product}?` : `Pregunta ${next}: que describe mejor tu situacion actual?`,
+      options: [],
+    });
+  }
+  quiz.questions = quiz.questions.slice(0, wantedQuestions);
+
+  quiz.questions.forEach((question, qi) => {
+    question.id = `q${qi + 1}`;
+    question.text = (question.text || '').trim() || `Pregunta ${qi + 1}: que describe mejor tu situacion actual?`;
+    if (!Array.isArray(question.options)) question.options = [];
+    while (question.options.length < wantedOptions) {
+      const oi = question.options.length;
+      question.options.push({
+        text: optionLabels[oi] || `Opcion ${oi + 1}`,
+        profiles: [profileIds[oi % profileIds.length]],
+      });
+    }
+    question.options = question.options.slice(0, wantedOptions);
+    question.options.forEach((option, oi) => {
+      option.text = (option.text || '').trim() || (optionLabels[oi] || `Opcion ${oi + 1}`);
+      const validProfiles = Array.isArray(option.profiles)
+        ? option.profiles.filter(id => profileIds.includes(id))
+        : [];
+      option.profiles = validProfiles.length ? validProfiles : [profileIds[oi % profileIds.length]];
+    });
+  });
+
+  quiz.estimatedMinutes = Math.max(1, Math.ceil(wantedQuestions / 3));
+  return quiz;
 }
 
 // ── Num questions / options state ─────────────────────────
