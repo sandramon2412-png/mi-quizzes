@@ -598,13 +598,20 @@ function getGreeting() {
 
 function enterApp() {
   if (!currentApp) return;
-  document.getElementById('screen-access').style.display = 'none';
-  document.getElementById('screen-app').style.display = 'flex';
-  const headerIconEl = document.getElementById('app-header-icon');
-  headerIconEl.innerHTML = appIconHtml(20, currentApp.types?.[0] || currentApp.type, currentApp.icon);
-  document.getElementById('app-header-name').textContent = currentApp.name;
-  document.getElementById('app-header-greeting').textContent = getGreeting();
-  try { renderApp(); } catch(e) {
+  try {
+    document.getElementById('screen-access').style.display = 'none';
+    document.getElementById('screen-app').style.display = 'flex';
+    const headerIconEl = document.getElementById('app-header-icon');
+    headerIconEl.innerHTML = appIconHtml(20, currentApp.types?.[0] || currentApp.type, currentApp.icon);
+    document.getElementById('app-header-name').textContent = currentApp.name || 'Mini-App';
+    document.getElementById('app-header-greeting').textContent = getGreeting();
+    renderApp();
+  } catch(e) {
+    console.error('[mini-app] enter error:', e);
+    const access = document.getElementById('screen-access');
+    const appScreen = document.getElementById('screen-app');
+    if (access) access.style.display = 'none';
+    if (appScreen) appScreen.style.display = 'flex';
     document.getElementById('app-content').innerHTML = `<p style="padding:32px;color:#e55;font-size:13px;text-align:center">Error al cargar: ${esc(e.message)}</p>`;
   }
 }
@@ -613,9 +620,22 @@ function enterApp() {
 function renderApp() {
   const types = (currentApp.types?.length ? currentApp.types : [currentApp.type]).filter(Boolean);
   document.getElementById('top-tabs').style.display = 'none';
-  buildBottomNav(types);
-  if (!types.length) { renderSection(document.getElementById('app-content'), 'generic'); return; }
-  showToday();
+  const content = document.getElementById('app-content');
+  try {
+    buildBottomNav(types);
+    if (!types.length) { renderSection(content, 'generic'); return; }
+    showToday();
+  } catch (e) {
+    console.warn('[mini-app] guided shell fallback:', e);
+    const fallbackType = types[0] || 'generic';
+    try {
+      const nav = document.getElementById('bottom-nav');
+      if (nav) nav.style.display = 'none';
+      renderSection(content, fallbackType);
+    } catch (inner) {
+      content.innerHTML = `<div style="padding:24px"><p style="color:#e55;font-size:13px">Error al abrir esta mini-app: ${esc(inner.message || e.message)}</p></div>`;
+    }
+  }
 }
 
 function typeLabel(t) {
@@ -794,6 +814,11 @@ function buildBottomNav(types) {
   const nav = document.getElementById('bottom-nav');
   if (!nav) return;
   const usableTypes = (types || []).filter(Boolean).slice(0, 4);
+  if (!usableTypes.length) {
+    nav.style.display = 'none';
+    nav.innerHTML = '';
+    return;
+  }
   const items = [
     { key:'today', label:'Hoy', icon:'local_florist', action:'showToday()' },
     ...usableTypes.map((type, idx) => ({
