@@ -1799,15 +1799,27 @@ function voiceSettings() {
   return {
     name: saved.name || currentApp?.voiceName || '',
     lang: saved.lang || currentApp?.voiceLang || currentApp?.lang || 'es-MX',
-    rate: Number(saved.rate || currentApp?.voiceRate || 0.88),
-    pitch: Number(saved.pitch || currentApp?.voicePitch || 0.94)
+    rate: Number(saved.rate || currentApp?.voiceRate || 0.84),
+    pitch: Number(saved.pitch || currentApp?.voicePitch || 0.98)
   };
 }
 
 function spanishVoices() {
   const all = window.speechSynthesis?.getVoices() || [];
   const es = all.filter(v => /^es/i.test(v.lang));
-  return es.length ? es : all;
+  const voices = es.length ? es : all;
+  return voices.slice().sort((a, b) => _voiceQualityScore(b) - _voiceQualityScore(a));
+}
+
+function _voiceQualityScore(v) {
+  const name = `${v?.name || ''} ${v?.lang || ''}`.toLowerCase();
+  let score = 0;
+  if (/neural|natural|online|premium|enhanced|cloud|google|microsoft/i.test(name)) score += 35;
+  if (/dalia|sabina|monica|mónica|paulina|helena|elvira|laura|lucia|lucía|sofia|sofía/i.test(name)) score += 25;
+  if (/es-(mx|co|us|ar|cl|pe|es)/i.test(v?.lang || '')) score += 15;
+  if (!v?.localService) score += 10;
+  if (/desktop|compact|legacy|eloquence|espeak/i.test(name)) score -= 25;
+  return score;
 }
 
 function hydrateVoicePanel() {
@@ -1816,8 +1828,8 @@ function hydrateVoicePanel() {
   const voices = spanishVoices();
   const settings = voiceSettings();
   select.innerHTML = voices.map((v, i) => `<option value="${i}">${esc(v.name)} · ${esc(v.lang)}</option>`).join('');
-  const selectedIndex = Math.max(0, voices.findIndex(v => v.name === settings.name && v.lang === settings.lang));
-  select.value = String(selectedIndex < 0 ? 0 : selectedIndex);
+  const selectedIndex = voices.findIndex(v => v.name === settings.name && v.lang === settings.lang);
+  select.value = String(selectedIndex >= 0 ? selectedIndex : 0);
   const rate = document.getElementById('voice-rate');
   const pitch = document.getElementById('voice-pitch');
   if (rate) rate.value = String(settings.rate);
@@ -1840,8 +1852,8 @@ function saveVoiceSettings() {
   const settings = {
     name: chosen?.name || '',
     lang: chosen?.lang || 'es-MX',
-    rate: Number(document.getElementById('voice-rate')?.value || 0.88),
-    pitch: Number(document.getElementById('voice-pitch')?.value || 0.94)
+    rate: Number(document.getElementById('voice-rate')?.value || 0.84),
+    pitch: Number(document.getElementById('voice-pitch')?.value || 0.98)
   };
   localStorage.setItem('ls_voice_settings', JSON.stringify(settings));
   if (currentApp) {
