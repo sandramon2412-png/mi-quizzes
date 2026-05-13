@@ -619,18 +619,24 @@ function enterApp() {
 // ── Routing ───────────────────────────────────────────────
 function renderApp() {
   const types = (currentApp.types?.length ? currentApp.types : [currentApp.type]).filter(Boolean);
-  document.getElementById('top-tabs').style.display = 'none';
   const content = document.getElementById('app-content');
+  const nav = document.getElementById('bottom-nav');
+  if (nav) nav.style.display = 'none';
   try {
-    buildBottomNav(types);
-    if (!types.length) { renderSection(content, 'generic'); return; }
-    showToday();
+    if (!types.length) {
+      renderSection(content, 'generic');
+      return;
+    }
+    if (types.length === 1) {
+      renderSection(content, types[0]);
+      return;
+    }
+    buildTabs(types);
+    showTab(0);
   } catch (e) {
-    console.warn('[mini-app] guided shell fallback:', e);
+    console.warn('[mini-app] render fallback:', e);
     const fallbackType = types[0] || 'generic';
     try {
-      const nav = document.getElementById('bottom-nav');
-      if (nav) nav.style.display = 'none';
       renderSection(content, fallbackType);
     } catch (inner) {
       content.innerHTML = `<div style="padding:24px"><p style="color:#e55;font-size:13px">Error al abrir esta mini-app: ${esc(inner.message || e.message)}</p></div>`;
