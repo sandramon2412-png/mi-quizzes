@@ -423,27 +423,39 @@
 let currentApp = null;
 let activeTab = 0;
 
+function withTimeout(promise, ms = 4000, message = 'timeout') {
+  return Promise.race([
+    promise,
+    new Promise((_, reject) => setTimeout(() => reject(new Error(message)), ms))
+  ]);
+}
+
 // ── Init ──────────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', async () => {
   const id = getParam('id');
   if (!id) { showError('No se especificó una mini-app.'); return; }
   const localApp = MiniApps.get(id);
-  let app = null;
-  if (typeof DB !== 'undefined') {
-    try { app = await DB.miniApps.get(id); } catch(e) {}
+  let app = localApp;
+  if (!app && typeof DB !== 'undefined') {
+    try { app = await withTimeout(DB.miniApps.get(id), 4500, 'No se pudo conectar con la base de datos.'); } catch(e) {
+      console.warn('[mini-app] DB load failed:', e.message);
+    }
   }
-  if (!app) app = localApp;
   if (!app) { showError('Mini-App no encontrada. Verifica el enlace.'); return; }
-  MiniApps.save(app);
+  try {
+    MiniApps.save(app);
+  } catch (storageErr) {
+    console.warn('[mini-app] no se pudo actualizar localStorage, continuo con la app remota:', storageErr);
+  }
   currentApp = app;
 
   // Track response (único por visitante, por mes) y verificar límite del plan
   const ownerId = app.owner_id || app.userId || app.user_id;
   try {
     if (ownerId && typeof ResponseTracker !== 'undefined') {
-      await ResponseTracker.track(ownerId, 'miniapp', id);
+      await withTimeout(ResponseTracker.track(ownerId, 'miniapp', id), 2500, 'tracking timeout');
       // Bloquear si el creador superó su límite mensual de respuestas
-      const usage = await ResponseTracker.getUsageStatus(ownerId);
+      const usage = await withTimeout(ResponseTracker.getUsageStatus(ownerId), 2500, 'usage timeout');
       if (usage.exceeded) {
         showError('Este contenido está temporalmente pausado. El creador ha alcanzado su límite mensual de visitas.');
         return;
@@ -456,7 +468,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   // Cargar white-label del creador (si existe)
   try {
     if (ownerId && typeof DB !== 'undefined') {
-      const profile = await DB.profiles.get(ownerId);
+      const profile = await withTimeout(DB.profiles.get(ownerId), 2500, 'profile timeout');
       if (profile) {
         app.whiteLabel     = !!profile.white_label;
         app.whiteLabelName = profile.white_label_name || '';
