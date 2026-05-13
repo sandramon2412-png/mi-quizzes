@@ -766,16 +766,7 @@ function showTab(idx) {
 }
 
 function goBackSafe() {
-  const ref = document.referrer || '';
-  if (ref.includes('plantillas-miniapps.html')) {
-    window.location.href = './plantillas-miniapps.html';
-    return;
-  }
-  if (ref.includes('dashboard.html')) {
-    window.location.href = './dashboard.html?tab=miniapps';
-    return;
-  }
-  window.location.href = './plantillas-miniapps.html';
+  window.location.href = './dashboard.html?tab=miniapps';
 }
 
 function localAIResponse(input, mode = 'generator') {
@@ -1796,11 +1787,12 @@ if (window.speechSynthesis) {
 function voiceSettings() {
   let saved = {};
   try { saved = JSON.parse(localStorage.getItem('ls_voice_settings') || '{}'); } catch {}
+  const useSaved = saved.version === 2;
   return {
-    name: saved.name || currentApp?.voiceName || '',
-    lang: saved.lang || currentApp?.voiceLang || currentApp?.lang || 'es-MX',
-    rate: Number(saved.rate || currentApp?.voiceRate || 0.84),
-    pitch: Number(saved.pitch || currentApp?.voicePitch || 0.98)
+    name: useSaved ? (saved.name || '') : '',
+    lang: useSaved ? (saved.lang || 'es-MX') : (currentApp?.lang || 'es-MX'),
+    rate: Number(useSaved ? (saved.rate || 0.82) : 0.82),
+    pitch: Number(useSaved ? (saved.pitch || 1) : 1)
   };
 }
 
@@ -1827,7 +1819,11 @@ function hydrateVoicePanel() {
   if (!select) return;
   const voices = spanishVoices();
   const settings = voiceSettings();
-  select.innerHTML = voices.map((v, i) => `<option value="${i}">${esc(v.name)} · ${esc(v.lang)}</option>`).join('');
+  select.innerHTML = voices.map((v, i) => {
+    const quality = _voiceQualityScore(v);
+    const label = quality >= 45 ? 'recomendada' : (v.localService ? 'local' : 'online');
+    return `<option value="${i}">${esc(v.name)} - ${esc(v.lang)} - ${label}</option>`;
+  }).join('');
   const selectedIndex = voices.findIndex(v => v.name === settings.name && v.lang === settings.lang);
   select.value = String(selectedIndex >= 0 ? selectedIndex : 0);
   const rate = document.getElementById('voice-rate');
@@ -1850,10 +1846,11 @@ function saveVoiceSettings() {
   const select = document.getElementById('voice-select');
   const chosen = voices[Number(select?.value || 0)] || voices[0];
   const settings = {
+    version: 2,
     name: chosen?.name || '',
     lang: chosen?.lang || 'es-MX',
-    rate: Number(document.getElementById('voice-rate')?.value || 0.84),
-    pitch: Number(document.getElementById('voice-pitch')?.value || 0.98)
+    rate: Number(document.getElementById('voice-rate')?.value || 0.82),
+    pitch: Number(document.getElementById('voice-pitch')?.value || 1)
   };
   localStorage.setItem('ls_voice_settings', JSON.stringify(settings));
   if (currentApp) {
@@ -1956,7 +1953,7 @@ function showError(msg) {
     <div style="margin-bottom:16px;color:var(--warn)">${msIcon('warning',48)}</div>
     <p style="font-weight:700;font-size:18px;margin-bottom:8px">Algo salió mal</p>
     <p style="color:var(--muted);font-size:13px;margin-bottom:24px">${esc(msg)}</p>
-    <a href="./dashboard.html" style="padding:12px 24px;background:var(--btn);color:#fff;border-radius:50px;text-decoration:none;font-weight:700;font-size:14px">← Volver</a>
+    <a href="./dashboard.html?tab=miniapps" style="padding:12px 24px;background:var(--btn);color:#fff;border-radius:50px;text-decoration:none;font-weight:700;font-size:14px">← Volver</a>
   </div>`;
 }
 
