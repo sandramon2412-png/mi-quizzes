@@ -387,12 +387,14 @@ let activeTab = 0;
 document.addEventListener('DOMContentLoaded', async () => {
   const id = getParam('id');
   if (!id) { showError('No se especificó una mini-app.'); return; }
-  let app = MiniApps.get(id);
-  if (!app && typeof DB !== 'undefined') {
+  const localApp = MiniApps.get(id);
+  let app = null;
+  if (typeof DB !== 'undefined') {
     try { app = await DB.miniApps.get(id); } catch(e) {}
   }
+  if (!app) app = localApp;
   if (!app) { showError('Mini-App no encontrada. Verifica el enlace.'); return; }
-  if (app && !MiniApps.get(id)) MiniApps.save(app);
+  MiniApps.save(app);
   currentApp = app;
 
   // Track response (único por visitante, por mes) y verificar límite del plan
@@ -408,6 +410,8 @@ document.addEventListener('DOMContentLoaded', async () => {
       }
     }
   } catch (_) {}
+
+  const originalTheme = extractAppTheme(app);
 
   // Cargar white-label del creador (si existe)
   try {
@@ -438,16 +442,37 @@ document.addEventListener('DOMContentLoaded', async () => {
       Object.assign(app, {mode:'light',accent:'#ec4899',accent2:'#f472b6',bg:'#fff5f7',card:'#fff',text:'#3a1a2a',muted:'#9c6b7e',font:'serif'});
   }
 
-  if (app._fromTemplate || app.category || isKnownNicheTheme(app)) {
+  const usesNichePalette = app._fromTemplate || app.category || isKnownNicheTheme(app);
+  const explicitTheme = {
+    accent: app.primaryColor || (!usesNichePalette ? app.accent : ''),
+    accent2: app.secondaryColor || (!usesNichePalette ? app.accent2 : ''),
+    bg: !usesNichePalette ? (app.bg || app.bgColor) : '',
+    card: !usesNichePalette ? app.card : '',
+    text: !usesNichePalette ? app.text : '',
+    muted: !usesNichePalette ? app.muted : '',
+    mode: !usesNichePalette ? app.mode : '',
+    font: !usesNichePalette ? app.font : '',
+  };
+
+  if (usesNichePalette) {
     Object.assign(app, getNichePalette(app));
+    Object.entries(explicitTheme).forEach(([key, value]) => {
+      if (value) app[key] = value;
+    });
   } else {
     if (app.primaryColor) app.accent = app.primaryColor;
     if (app.secondaryColor) app.accent2 = app.secondaryColor;
     if (app.bgColor && !app.bg) app.bg = app.bgColor;
   }
+  Object.assign(app, resolveAppTheme(app, originalTheme));
 
   // Apply dynamic theme from niche/product generation
   const root = document.documentElement;
+  const setThemeVar = (name, value) => {
+    if (!value) return;
+    root.style.setProperty(name, value);
+    document.body.style.setProperty(name, value);
+  };
   if (app.mode === 'light') {
     document.body.setAttribute('data-theme', 'light');
   } else if (app.mode === 'dark') {
@@ -455,22 +480,22 @@ document.addEventListener('DOMContentLoaded', async () => {
   } else if (app.theme === 'light') {
     document.body.setAttribute('data-theme', 'light');
   }
-  if (app.accent)  root.style.setProperty('--accent',  app.accent);
-  if (app.accent2) root.style.setProperty('--accent2', app.accent2);
-  if (app.bg)      root.style.setProperty('--bg',      app.bg);
-  if (app.card)    root.style.setProperty('--card',    app.card);
-  if (app.text)    root.style.setProperty('--text',    app.text);
-  if (app.muted)   root.style.setProperty('--muted',   app.muted);
+  setThemeVar('--accent', app.accent);
+  setThemeVar('--accent2', app.accent2);
+  setThemeVar('--bg', app.bg);
+  setThemeVar('--card', app.card);
+  setThemeVar('--text', app.text);
+  setThemeVar('--muted', app.muted);
   // Update btn gradient when accent colors are set
   if (app.accent || app.accent2) {
     const a1 = app.accent  || (app.mode === 'light' ? '#c0635c' : '#2E5BFF');
     const a2 = app.accent2 || (app.mode === 'light' ? '#d4856a' : '#7c3aed');
-    root.style.setProperty('--btn', `linear-gradient(135deg,${a1},${a2})`);
+    setThemeVar('--btn', `linear-gradient(135deg,${a1},${a2})`);
   }
   // Access screen background gradient
   if (app.mode === 'light' && app.bg) {
     // Slightly darker gradient for warmth
-    root.style.setProperty('--access-bg', `linear-gradient(160deg, ${app.bg} 0%, ${app.card||'#fff'} 50%, ${app.bg} 100%)`);
+    setThemeVar('--access-bg', `linear-gradient(160deg, ${app.bg} 0%, ${app.card||'#fff'} 50%, ${app.bg} 100%)`);
   }
   if (app.font === 'serif') {
     document.body.style.fontFamily = "'Lora', Georgia, serif";
@@ -610,6 +635,80 @@ function normalizeText(value) {
   return String(value || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
 }
 
+function normHex(value) {
+  const v = String(value || '').trim().toLowerCase();
+  return /^#[0-9a-f]{6}$/.test(v) ? v : '';
+}
+
+function extractAppTheme(app = {}) {
+  return {
+    mode: app.mode,
+    accent: app.primaryColor || app.accent,
+    accent2: app.secondaryColor || app.accent2,
+    bg: app.bg || app.bgColor,
+    card: app.card,
+    text: app.text,
+    muted: app.muted,
+    font: app.font,
+    primaryColor: app.primaryColor,
+    secondaryColor: app.secondaryColor,
+  };
+}
+
+function hasThemeValue(theme = {}) {
+  return ['mode', 'accent', 'accent2', 'bg', 'card', 'text', 'muted', 'font']
+    .some(key => !!theme[key]);
+}
+
+function isLegacyWarmTheme(theme = {}) {
+  const accent = normHex(theme.accent);
+  const accent2 = normHex(theme.accent2);
+  const bg = normHex(theme.bg);
+  const text = normHex(theme.text);
+  return (
+    (accent === '#c0635c' && accent2 === '#d4856a') ||
+    (accent === '#c0635c' && bg === '#fdf8f4') ||
+    (text === '#2d1f1a' && normHex(theme.muted) === '#9c7b6e')
+  );
+}
+
+function resolveAppTheme(app = {}, originalTheme = extractAppTheme(app)) {
+  const palette = getNichePalette(app);
+  const fromTemplate = !!(app._fromTemplate || app.category);
+  const explicitTheme = originalTheme || {};
+  const genericDarkBg = normHex(explicitTheme.bg) === '#0e0e0e';
+  const legacyWarm = isLegacyWarmTheme(explicitTheme);
+
+  if (fromTemplate) {
+    return {
+      ...palette,
+      accent: palette.accent,
+      accent2: palette.accent2,
+      bg: genericDarkBg ? palette.bg : (explicitTheme.bg || palette.bg),
+    };
+  }
+
+  if (isKnownNicheTheme(app)) {
+    return palette;
+  }
+
+  if (hasThemeValue(explicitTheme) && !legacyWarm) {
+    return {
+      ...palette,
+      ...Object.fromEntries(
+        Object.entries(explicitTheme).filter(([key, value]) =>
+          value && key !== 'primaryColor' && key !== 'secondaryColor'
+        )
+      ),
+      accent: explicitTheme.accent || palette.accent,
+      accent2: explicitTheme.accent2 || palette.accent2,
+      bg: genericDarkBg ? palette.bg : (explicitTheme.bg || palette.bg),
+    };
+  }
+
+  return palette;
+}
+
 function isKnownNicheTheme(app = {}) {
   return /fe|espirit|biblia|oraci|devocional|dios|cristi|manifestacion|bienestar|ansiedad|burnout|autoestima|mindful|gratitud|tdah|mental|ruptura|fitness|yoga|running|funcional|movilidad|calistenia|ejercic|deport|nutric|alimenta|keto|meal|ayuno|vegano|cocina|dieta|finanz|dinero|deuda|ahorr|inversion|presupuesto|libertad|negocio|marketing|venta|copy|email|seo|freelance|infoproducto|educaci|estudio|ingles|programacion|lectura|escritura|habitos|relacion|pareja|crianza|embarazo|comunicacion|codependencia|belleza|skincare|colorimetria|armario|hogar|limpieza|minimalismo|jardin|zero|mascota|cachorro|canino|desarrollo|proposito|emocional|atomicos/.test(
     normalizeText(`${app.category || ''} ${app.subcategory || ''} ${app.niche || ''} ${app.name || ''}`)
@@ -695,13 +794,81 @@ function localAIResponse(input, mode = 'generator') {
   ].join('\n');
 }
 
+function scoreTextForQuery(text, query) {
+  const haystack = normalizeText(text);
+  const words = normalizeText(query).split(/\s+/).filter(w => w.length > 3);
+  return words.reduce((score, word) => score + (haystack.includes(word) ? 1 : 0), 0);
+}
+
+function getRelevantAppSnippets(app = {}, query = '', limit = 5) {
+  const snippets = [];
+  const add = (label, text) => {
+    const clean = String(text || '').replace(/\s+/g, ' ').trim();
+    if (clean) snippets.push({ text: label ? `${label}: ${clean}` : clean, score: scoreTextForQuery(clean, query) });
+  };
+
+  (app.faqItems || []).forEach(item => add(item.q, item.a));
+  (app.glossaryTerms || []).forEach(item => add(item.term, item.def));
+  (app.retoContent || []).forEach(item => add(item.title, item.instructions || item.reflectionPrompt));
+  (app.cards || []).forEach(item => add(item.front, item.back));
+  (app.roadmapSteps || []).forEach(step => add('Paso sugerido', step));
+  (app.initialItems || []).forEach(item => add('Checklist', item));
+  (app.journalPrompts || []).forEach(item => add('Reflexion', item));
+  (app.affirmations || []).forEach(item => add('Afirmacion', item));
+  (app.calcFields || []).forEach(item => add('Dato importante', `${item.label || item.id}${item.placeholder ? ` (${item.placeholder})` : ''}`));
+  add('Habito a seguir', app.trackerHabit);
+  add('Contexto', app.generatorPrompt || app.chatbotSystemPrompt || app.description || app.niche);
+
+  return snippets
+    .sort((a, b) => b.score - a.score)
+    .slice(0, limit)
+    .map(item => item.text);
+}
+
+function nutritionFallback(question, topic) {
+  const q = normalizeText(question);
+  const context = normalizeText(`${topic} ${currentApp?.name || ''}`);
+  if (!/diabet|cocina|nutric|alimenta|receta|azucar|gluc/.test(context)) return '';
+  if (/desayun/.test(q)) {
+    return 'Para un desayuno mas estable, combina proteina + fibra + una porcion medida de carbohidrato: por ejemplo huevos con vegetales y una tortilla integral, yogur griego natural con nueces y frutos rojos, o avena en porcion pequena con chia. Evita jugos, pan dulce y cereales azucarados porque elevan rapido la glucosa.';
+  }
+  if (/comer|receta|ingred|plato|cena|almuerz/.test(q)) {
+    return 'Arma el plato asi: medio plato de verduras sin almidon, un cuarto de proteina magra y un cuarto de carbohidrato de bajo indice glucemico. Sazona con hierbas, limon, ajo o especias en vez de salsas azucaradas, y mide la porcion de carbohidratos para poder ajustar mejor.';
+  }
+  if (/azucar|glucosa|carbo|insulina|indice/.test(q)) {
+    return 'Para cuidar la glucosa, revisa tres cosas: cantidad total de carbohidratos, indice glucemico del alimento y combinacion con proteina/fibra. La app incluye esos datos porque ayudan a estimar mejor el impacto de una comida.';
+  }
+  return '';
+}
+
+function smartLocalAIResponse(input, mode = 'generator') {
+  const topic = currentApp?.niche || currentApp?.name || 'este tema';
+  const cleanInput = String(input || '').trim();
+  const specific = nutritionFallback(cleanInput, topic);
+  const snippets = getRelevantAppSnippets(currentApp, cleanInput, specific ? 3 : 5);
+
+  if (mode === 'chat') {
+    const parts = [specific || `Sobre "${cleanInput || topic}": te respondo usando el contenido de esta mini-app.`];
+    if (snippets.length) parts.push(`Puntos utiles:\n${snippets.map((s, i) => `${i + 1}. ${s}`).join('\n')}`);
+    parts.push('Toma esto como orientacion general; si se trata de diabetes, medicacion o dosis de insulina, confirma con tu profesional de salud.');
+    return parts.join('\n\n');
+  }
+
+  return [
+    `Respuesta para ${topic}:`,
+    specific || `Solicitud: ${cleanInput || 'sin detalle'}.`,
+    snippets.length ? `\nDatos de esta app:\n${snippets.map((s, i) => `${i + 1}. ${s}`).join('\n')}` : '',
+    '\nSiguiente paso: convierte esto en una accion concreta y medible para hoy.'
+  ].filter(Boolean).join('\n');
+}
+
 async function callCreatorAI({ messages, systemPrompt, maxTokens = 700, mode = 'generator' }) {
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), 25000);
   try {
     const r = await fetch(`${SUPABASE_URL}/functions/v1/creator-ai-proxy`, {
       method: 'POST',
-      headers: { 'apikey': SUPABASE_ANON_KEY, 'Content-Type': 'application/json' },
+      headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': `Bearer ${SUPABASE_ANON_KEY}`, 'Content-Type': 'application/json' },
       signal: controller.signal,
       body: JSON.stringify({ contentType: 'miniapp', contentId: currentApp.id, messages, systemPrompt, maxTokens })
     });
@@ -715,8 +882,8 @@ async function callCreatorAI({ messages, systemPrompt, maxTokens = 700, mode = '
     return { content, fallback: false };
   } catch (e) {
     console.warn('[miniapp-ai] usando fallback local:', e.message);
-    const userText = messages?.map(m => m.content).join('\n') || '';
-    return { content: localAIResponse(userText, mode), fallback: true, error: e.message };
+    const userText = [...(messages || [])].reverse().find(m => m.role === 'user')?.content || messages?.map(m => m.content).join('\n') || '';
+    return { content: smartLocalAIResponse(userText, mode), fallback: true, error: e.message };
   } finally {
     clearTimeout(timeout);
   }
@@ -1166,7 +1333,7 @@ function renderChatbot(el) {
       if(ai.fallback) showToast('Modo prueba: respuesta local porque la IA no respondió.');
     }catch(e){
       document.getElementById(tid)?.remove();
-      const reply=localAIResponse(text,'chat');
+      const reply=smartLocalAIResponse(text,'chat');
       msgs.push({role:'assistant',content:reply});
       appendChatMsg('bot',reply);
     }
@@ -1794,5 +1961,3 @@ function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').
 </script>
 </body>
 </html>
-
-
