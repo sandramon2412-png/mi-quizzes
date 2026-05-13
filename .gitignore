@@ -24,6 +24,12 @@ Thumbs.db
 *.log
 npm-debug.log*
 
+# Codex/local verification artifacts
+.codex-*
+ebook-export-preview.html
+quiz-no-emoji-mobile.png
+resultado-no-emoji-mobile.png
+
 # Build output
 dist/
 build/

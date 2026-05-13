@@ -7,7 +7,7 @@
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="./supabase-config.js"></script>
-<script src="./app.js"></script>
+<script src="./app.js?v=offer-demo-1"></script>
 <script src="./ai-assistant.js" defer></script>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
@@ -304,10 +304,17 @@ document.addEventListener('DOMContentLoaded', async () => {
 
 function renderTemplates(templates) {
   const grid = document.getElementById('templates-grid');
-  grid.innerHTML = templates.map(t => `
+  grid.innerHTML = templates.map(t => {
+    const theme = window.getSuggestedOfferTheme ? window.getSuggestedOfferTheme(t.niche, t.product) : null;
+    const brand = theme?.brandColor || '#2E5BFF';
+    const accent = theme?.accentColor || '#7c3aed';
+    const image = theme?.coverImage || '';
+    return `
     <div class="group bg-surface-container-low rounded-xl overflow-hidden border border-outline-variant/5 hover:border-primary/20 transition-all duration-400 flex flex-col">
-      <div class="aspect-video relative overflow-hidden flex items-center justify-center" style="${CATEGORY_BG[t.category] || 'background:#1a1a2e'}">
-        <span class="material-symbols-outlined text-white/20" style="font-size:120px; font-variation-settings:'FILL' 1,'wght' 200;">${t.icon}</span>
+      <div class="aspect-video relative overflow-hidden flex items-center justify-center" style="background:linear-gradient(135deg,${brand},${accent})">
+        ${image ? `<img src="${image}" alt="" loading="lazy" class="absolute inset-0 w-full h-full object-cover opacity-50 group-hover:scale-105 transition-transform duration-700"/>` : ''}
+        <div class="absolute inset-0" style="background:linear-gradient(135deg,${brand}cc,rgba(0,0,0,.36));"></div>
+        <span class="material-symbols-outlined text-white/10 relative" style="font-size:120px; font-variation-settings:'FILL' 1,'wght' 200;">${t.icon}</span>
         <div class="absolute inset-0 flex items-center justify-center">
           <span class="material-symbols-outlined text-white drop-shadow-lg" style="font-size:52px; font-variation-settings:'FILL' 1,'wght' 400;">${t.icon}</span>
         </div>
@@ -315,6 +322,10 @@ function renderTemplates(templates) {
           <a href="./generador-ia.html?template=${t.id}" class="primary-gradient w-full py-2 rounded-lg text-xs font-bold text-white text-center block">
             Usar Plantilla
           </a>
+        </div>
+        <div class="absolute top-3 left-3 flex items-center gap-1.5 rounded-full bg-black/35 backdrop-blur px-2.5 py-1">
+          <span class="w-2 h-2 rounded-full" style="background:${accent}"></span>
+          <span class="text-[9px] uppercase tracking-widest font-black text-white/85">${theme?.id || 'premium'}</span>
         </div>
       </div>
       <div class="p-5 flex-1 flex flex-col">
@@ -331,7 +342,8 @@ function renderTemplates(templates) {
           Usar esta plantilla
         </a>
       </div>
-    </div>`).join('');
+    </div>`;
+  }).join('');
 }
 
 let _activeCategory = '';

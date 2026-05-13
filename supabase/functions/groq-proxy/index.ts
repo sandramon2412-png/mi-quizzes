@@ -15,6 +15,7 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 const CORS = {
   "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Methods": "POST, OPTIONS",
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
@@ -68,9 +69,28 @@ serve(async (req) => {
     }
 
     const body = await req.json();
-    const apiKey = Deno.env.get("GROQ_API_KEY");
+
+    // Prefer the creator's own Groq key saved in their profile. This makes
+    // Settings > "Probar conexión" validate the same key used by published apps.
+    let apiKey = "";
+    const serviceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "";
+    if (serviceRoleKey) {
+      const admin = createClient(
+        Deno.env.get("SUPABASE_URL") ?? "",
+        serviceRoleKey
+      );
+      const { data: profile } = await admin
+        .from("profiles")
+        .select("groq_api_key")
+        .eq("id", user.id)
+        .single();
+      apiKey = profile?.groq_api_key || "";
+    }
+
+    // Fallback for platform-owned generation if the creator has no key.
+    if (!apiKey) apiKey = Deno.env.get("GROQ_API_KEY") || "";
     if (!apiKey) {
-      return new Response(JSON.stringify({ error: { message: "GROQ_API_KEY no configurada" } }), {
+      return new Response(JSON.stringify({ error: { message: "No hay API key de Groq configurada para esta cuenta" } }), {
         status: 500,
         headers: { ...CORS, "Content-Type": "application/json" },
       });

@@ -6,9 +6,10 @@
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="./supabase-config.js"></script>
-<script src="./app.js"></script>
+<script src="./app.js?v=offer-demo-1"></script>
 <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.2/dist/confetti.browser.min.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
 <script>
   tailwind.config = {
     theme: {
@@ -17,6 +18,9 @@
           "brand": "var(--brand,#8B6AA0)",
           "brand-light": "var(--brand-light,#C4A7D7)",
           "brand-bg": "var(--brand-bg,#f7f2fa)",
+          "brand-surface": "var(--brand-surface,#faf8fc)",
+          "brand-text": "var(--brand-text,#26212b)",
+          "brand-muted": "var(--brand-muted,#6f6677)",
         },
         fontFamily: {
           "serif": ["Playfair Display","Georgia","serif"],
@@ -27,8 +31,202 @@
   }
 </script>
 <style>
-  :root { --brand:#8B6AA0; --brand-light:#C4A7D7; --brand-bg:#f7f2fa; }
-  body { font-family:'Plus Jakarta Sans',sans-serif; background:#fff; color:#3d3d3d; }
+  :root {
+    --brand:#8B6AA0;
+    --brand-light:#C4A7D7;
+    --brand-bg:#f7f2fa;
+    --brand-surface:#faf8fc;
+    --brand-text:#26212b;
+    --brand-muted:#6f6677;
+    --brand-border:rgba(139,106,160,0.18);
+    --brand-shadow:rgba(49,33,60,0.12);
+  }
+  html,
+  body {
+    min-height: 100%;
+    background-color: #17171d;
+  }
+  body {
+    font-family:'Plus Jakarta Sans',sans-serif;
+    background:
+      radial-gradient(circle at 16% 10%, color-mix(in srgb, var(--brand) 38%, transparent), transparent 34rem),
+      radial-gradient(circle at 88% 76%, color-mix(in srgb, var(--brand-light) 34%, transparent), transparent 36rem),
+      radial-gradient(circle at 50% 112%, color-mix(in srgb, var(--brand) 18%, transparent), transparent 32rem),
+      linear-gradient(rgba(255,255,255,0.065) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.065) 1px, transparent 1px),
+      #17171d;
+    background-size: auto, auto, 72px 72px, 72px 72px, auto;
+    color:#f8fafc;
+  }
+  .material-symbols-outlined { font-variation-settings:'FILL' 0,'wght' 500,'GRAD' 0,'opsz' 24; }
+  body > .fixed.inset-x-0.top-0.h-64 {
+    background:
+      radial-gradient(circle at 20% 20%, color-mix(in srgb, var(--brand) 24%, transparent), transparent 26rem),
+      linear-gradient(180deg, rgba(255,255,255,0.06), transparent) !important;
+  }
+  header {
+    background: rgba(13,13,17,0.78) !important;
+    border-color: rgba(255,255,255,0.12) !important;
+  }
+  .report-card {
+    background:
+      radial-gradient(circle at 50% 108%, color-mix(in srgb, var(--brand-light) 32%, transparent), transparent 34rem),
+      radial-gradient(circle at 18% 0%, rgba(255,255,255,0.20), transparent 22rem),
+      linear-gradient(180deg, rgba(255,255,255,0.15), rgba(255,255,255,0.07)),
+      rgba(30,30,38,0.78);
+    border: 1px solid rgba(255,255,255,0.20);
+    border-radius: 34px;
+    box-shadow: 0 36px 108px rgba(0,0,0,0.38), 0 0 120px color-mix(in srgb, var(--brand) 26%, transparent), inset 0 1px 0 rgba(255,255,255,0.18);
+    backdrop-filter: blur(26px) saturate(1.25);
+  }
+  .report-card > .relative:first-child {
+    min-height: 300px;
+    background:
+      linear-gradient(145deg, color-mix(in srgb, var(--brand) 46%, transparent), color-mix(in srgb, var(--brand-light) 30%, transparent)),
+      var(--quiz-hero-image, linear-gradient(135deg, var(--brand), var(--brand-light))) !important;
+    background-size: cover !important;
+    background-position: center !important;
+    color: #fff;
+  }
+  .report-card > .relative:first-child::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background:
+      linear-gradient(135deg, rgba(255,255,255,0.22), transparent 38%),
+      linear-gradient(180deg, rgba(0,0,0,0.02), rgba(0,0,0,0.36));
+  }
+  .report-card > .relative:first-child > * {
+    position: relative;
+    z-index: 1;
+  }
+  .report-card > .relative:first-child .text-gray-800,
+  .report-card > .relative:first-child .text-gray-400,
+  .report-card > .relative:first-child .text-brand,
+  .report-card > .relative:first-child .text-brand\/60 {
+    color: #fff !important;
+  }
+  .report-card > .relative:first-child .bg-brand-light\/20 {
+    background: rgba(255,255,255,0.24) !important;
+  }
+  #profile-emoji-wrap {
+    background:
+      radial-gradient(circle at 35% 22%, rgba(255,255,255,0.54), transparent 34%),
+      linear-gradient(135deg, color-mix(in srgb, var(--brand-light) 46%, rgba(255,255,255,0.24)), color-mix(in srgb, var(--brand) 72%, rgba(255,255,255,0.12))) !important;
+    border-color: rgba(255,255,255,0.46) !important;
+    box-shadow: 0 22px 52px color-mix(in srgb, var(--brand) 34%, rgba(0,0,0,0.20)), 0 0 40px rgba(255,255,255,0.18), inset 0 1px 0 rgba(255,255,255,0.34) !important;
+    backdrop-filter: blur(18px);
+  }
+  #profile-emoji-wrap .material-symbols-outlined {
+    color: #fff !important;
+    text-shadow: 0 8px 22px rgba(0,0,0,0.22);
+  }
+  .report-card > .bg-white {
+    background:
+      radial-gradient(circle at 20% 8%, rgba(255,255,255,0.14), transparent 20rem),
+      radial-gradient(circle at 86% 100%, color-mix(in srgb, var(--brand-light) 28%, transparent), transparent 30rem),
+      linear-gradient(180deg, rgba(255,255,255,0.105), rgba(255,255,255,0.055)),
+      rgba(22,22,28,0.94) !important;
+    color: #f8fafc;
+  }
+  .next-action-card {
+    position: relative;
+    min-height: 198px;
+    padding: 24px;
+    border-radius: 28px;
+    overflow: hidden;
+    border: 1.5px solid color-mix(in srgb, var(--brand-light) 62%, rgba(255,255,255,0.22));
+    background:
+      radial-gradient(circle at 50% 118%, color-mix(in srgb, var(--brand-light) 92%, #ffffff), transparent 44%),
+      linear-gradient(180deg, rgba(255,255,255,0.10), rgba(255,255,255,0.03) 42%, color-mix(in srgb, var(--brand) 58%, #141419) 100%),
+      #19191f;
+    box-shadow: 0 26px 76px color-mix(in srgb, var(--brand) 28%, transparent), inset 0 1px 0 rgba(255,255,255,0.14);
+    color: #fff;
+    transition: transform 0.22s ease, box-shadow 0.22s ease, border-color 0.22s ease;
+  }
+  .next-action-card:hover {
+    transform: translateY(-3px);
+    border-color: var(--brand-light);
+    box-shadow: 0 30px 80px color-mix(in srgb, var(--brand) 34%, transparent);
+  }
+  .next-action-card::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 48%;
+    background: linear-gradient(180deg, transparent, color-mix(in srgb, var(--brand-light) 72%, transparent));
+    opacity: 0.78;
+    pointer-events: none;
+  }
+  .next-action-card:nth-child(2) {
+    background:
+      radial-gradient(circle at 50% 118%, color-mix(in srgb, #8bb8ff 92%, #ffffff), transparent 44%),
+      linear-gradient(180deg, rgba(255,255,255,0.10), rgba(255,255,255,0.03) 42%, color-mix(in srgb, var(--brand) 42%, #16223d) 100%),
+      #19191f;
+  }
+  .next-action-card:nth-child(3) {
+    background:
+      radial-gradient(circle at 50% 118%, color-mix(in srgb, #8df4c2 86%, #ffffff), transparent 44%),
+      linear-gradient(180deg, rgba(255,255,255,0.10), rgba(255,255,255,0.03) 42%, color-mix(in srgb, var(--brand) 38%, #153326) 100%),
+      #19191f;
+  }
+  .next-action-card > * {
+    position: relative;
+    z-index: 1;
+  }
+  .next-action-card h3,
+  .next-action-card p,
+  .next-action-card span {
+    color: #fff !important;
+  }
+  .next-action-card .action-card-icon {
+    background: rgba(255,255,255,0.08) !important;
+    border: 1px solid rgba(255,255,255,0.14);
+    box-shadow: 0 14px 30px rgba(0,0,0,0.22);
+  }
+  #result-brand-card,
+  .fade-up > span,
+  .report-card .bg-brand-bg\/40,
+  #solution-block,
+  #solution-block .bg-white {
+    background: rgba(255,255,255,0.075) !important;
+    border-color: rgba(255,255,255,0.16) !important;
+    color: #f8fafc !important;
+  }
+  #result-brand-card p,
+  .fade-up > span,
+  .report-card .bg-brand-bg\/40 p,
+  #solution-block p,
+  #solution-block .text-brand {
+    color: #f8fafc !important;
+  }
+  .report-card .text-gray-900,
+  .report-card .text-gray-800,
+  .report-card .text-gray-700,
+  main > .fade-up .text-gray-800 {
+    color: #f8fafc !important;
+  }
+  .report-card .text-gray-600,
+  .report-card .text-gray-500,
+  .report-card .text-gray-400,
+  main > .fade-up .text-gray-500,
+  main > .fade-up-3 .text-gray-500 {
+    color: #a1a1aa !important;
+  }
+  .insight-card {
+    background:
+      radial-gradient(circle at 50% 116%, color-mix(in srgb, var(--brand-light) 62%, transparent), transparent 48%),
+      linear-gradient(180deg, rgba(255,255,255,0.13), rgba(255,255,255,0.065)),
+      rgba(28,28,36,0.84);
+    border: 1.5px solid color-mix(in srgb, var(--brand-light) 56%, rgba(255,255,255,0.18));
+    box-shadow: 0 22px 58px color-mix(in srgb, var(--brand) 24%, transparent), inset 0 1px 0 rgba(255,255,255,0.14);
+  }
+  .report-icon {
+    background: linear-gradient(135deg,var(--brand),var(--brand-light));
+    box-shadow: 0 14px 34px color-mix(in srgb, var(--brand) 30%, transparent);
+  }
   .fade-up { animation: fadeUp 0.55s cubic-bezier(0.16,1,0.3,1) both; }
   .fade-up-2 { animation: fadeUp 0.55s cubic-bezier(0.16,1,0.3,1) 0.15s both; }
   .fade-up-3 { animation: fadeUp 0.55s cubic-bezier(0.16,1,0.3,1) 0.3s both; }
@@ -36,13 +234,54 @@
   @keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-8px)} }
   .float { animation: float 3.5s ease-in-out infinite; }
   .match-bar-fill { transition: width 1.4s cubic-bezier(0.16,1,0.3,1); }
+  :root[data-quiz-mode="dark"] body {
+    background:
+      radial-gradient(circle at top left, color-mix(in srgb, var(--brand) 30%, transparent), transparent 30rem),
+      radial-gradient(circle at bottom right, color-mix(in srgb, var(--brand-light) 18%, transparent), transparent 32rem),
+      linear-gradient(135deg, #0e0e10, #17131d 58%, #0d1117);
+    color: var(--brand-text);
+  }
+  :root[data-quiz-mode="dark"] header {
+    background: rgba(12,12,16,0.72) !important;
+    border-color: rgba(255,255,255,0.12) !important;
+  }
+  :root[data-quiz-mode="dark"] .report-card {
+    background: rgba(18,18,24,0.84);
+    border-color: rgba(255,255,255,0.12);
+    box-shadow: 0 28px 78px rgba(0,0,0,0.36), inset 0 1px 0 rgba(255,255,255,0.08);
+  }
+  :root[data-quiz-mode="dark"] .report-card > .bg-white,
+  :root[data-quiz-mode="dark"] #solution-block .bg-white {
+    background: rgba(18,18,24,0.88) !important;
+  }
+  :root[data-quiz-mode="dark"] .insight-card,
+  :root[data-quiz-mode="dark"] #result-brand-card {
+    background: rgba(255,255,255,0.07);
+    border-color: rgba(255,255,255,0.12);
+  }
+  :root[data-quiz-mode="dark"] .next-action-card {
+    border-color: rgba(255,255,255,0.18);
+    background:
+      radial-gradient(circle at 50% 112%, color-mix(in srgb, var(--brand-light) 68%, transparent), transparent 52%),
+      linear-gradient(180deg, rgba(255,255,255,0.10), rgba(255,255,255,0.055)),
+      #17171b;
+  }
+  :root[data-quiz-mode="dark"] .text-gray-800,
+  :root[data-quiz-mode="dark"] .text-gray-900 {
+    color: var(--brand-text) !important;
+  }
+  :root[data-quiz-mode="dark"] .text-gray-400,
+  :root[data-quiz-mode="dark"] .text-gray-500,
+  :root[data-quiz-mode="dark"] .text-gray-600 {
+    color: var(--brand-muted) !important;
+  }
 </style>
 </head>
 <body class="min-h-screen">
 
 <!-- Soft gradient band at top -->
 <div class="fixed inset-x-0 top-0 h-64 pointer-events-none -z-10"
-     style="background:linear-gradient(180deg,var(--brand-bg) 0%,#fff 100%)"></div>
+     style="background:linear-gradient(180deg,var(--brand-bg) 0%,var(--brand-surface) 100%)"></div>
 
 <!-- Minimal header -->
 <header class="sticky top-0 z-50 backdrop-blur-md bg-white/80 border-b border-brand-light/20 px-6 py-3 flex items-center justify-between">
@@ -51,11 +290,19 @@
     <span id="header-brand" class="text-sm font-semibold tracking-widest uppercase text-brand"></span>
   </div>
   <div class="flex items-center gap-4">
-    <a href="./generador-ia.html" class="hidden md:inline text-xs text-gray-400 hover:text-brand transition-colors">Crear mi quiz</a>
+    <a id="creator-link" href="./generador-ia.html" class="hidden text-xs text-gray-400 hover:text-brand transition-colors">Crear mi quiz</a>
   </div>
 </header>
 
-<main class="max-w-3xl mx-auto px-5 py-12 md:py-16 space-y-8">
+<main class="max-w-5xl mx-auto px-5 py-12 md:py-16 space-y-8">
+
+  <div id="result-brand-card" class="hidden mx-auto max-w-sm rounded-2xl border border-brand-light/25 bg-white/85 shadow-sm px-4 py-3 items-center justify-center gap-3 fade-up">
+    <img id="result-brand-logo-large" src="" alt="" class="hidden h-9 w-auto max-w-[140px] object-contain"/>
+    <div class="text-left min-w-0">
+      <p class="text-[10px] font-black tracking-[0.18em] uppercase text-brand/60">Resultado de</p>
+      <p id="result-brand-name-large" class="text-sm font-extrabold text-gray-900 truncate"></p>
+    </div>
+  </div>
 
   <!-- ── COMPLETED badge ── -->
   <div class="text-center fade-up">
@@ -74,22 +321,22 @@
   </div>
 
   <!-- ── PROFILE CARD ── -->
-  <div class="rounded-3xl overflow-hidden border border-brand-light/30 shadow-xl shadow-brand/5 fade-up-2">
+  <div class="rounded-3xl overflow-hidden report-card fade-up-2">
 
     <!-- Profile visual strip -->
-    <div class="relative px-8 pt-12 pb-8 text-center" style="background:linear-gradient(160deg,var(--brand-bg) 0%,#fff 80%)">
+    <div class="relative px-8 pt-12 pb-8 text-center" style="background:linear-gradient(160deg,var(--brand-bg) 0%,var(--brand-surface) 80%)">
       <!-- Decorative petals -->
-      <div class="absolute top-4 left-6 text-3xl opacity-20 select-none pointer-events-none">🌸</div>
-      <div class="absolute top-6 right-8 text-2xl opacity-15 select-none pointer-events-none">✦</div>
-      <div class="absolute bottom-4 right-5 text-3xl opacity-10 select-none pointer-events-none">🌸</div>
+      <div class="absolute top-5 left-7 w-2 h-2 rounded-full bg-brand/25 select-none pointer-events-none"></div>
+      <div class="absolute top-7 right-9 w-10 h-px bg-brand/20 rotate-45 select-none pointer-events-none"></div>
+      <div class="absolute bottom-6 right-7 w-3 h-3 rounded-full border border-brand/20 select-none pointer-events-none"></div>
 
       <div class="float inline-block mb-5">
         <div id="profile-emoji-wrap"
           class="w-28 h-28 mx-auto rounded-3xl bg-white border-2 border-brand-light/50 shadow-xl shadow-brand/15 flex items-center justify-center text-6xl">
-          🎯
+          <span class="material-symbols-outlined text-brand" style="font-size:54px;font-variation-settings:'FILL' 1">workspace_premium</span>
         </div>
       </div>
-      <p class="text-[10px] font-black tracking-[0.2em] uppercase text-brand/60 mb-1">Tu Perfil</p>
+      <p class="text-[10px] font-black tracking-[0.2em] uppercase text-brand/60 mb-1">Reporte de Diagnóstico</p>
       <h2 id="profile-name" class="font-serif text-3xl font-semibold text-gray-800 mb-4">—</h2>
       <!-- Match bar -->
       <div class="max-w-xs mx-auto">
@@ -118,10 +365,34 @@
         <p id="result-recommendation" class="text-gray-600 text-sm leading-relaxed">—</p>
       </div>
 
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+        <div class="insight-card rounded-2xl p-4">
+          <div class="w-10 h-10 rounded-xl report-icon text-white flex items-center justify-center mb-3">
+            <span class="material-symbols-outlined" style="font-size:20px">psychology</span>
+          </div>
+          <p class="text-[10px] font-black tracking-widest uppercase text-brand mb-1">Patrón principal</p>
+          <p id="insight-pattern" class="text-sm font-semibold text-gray-800 leading-snug">Tu forma de decidir muestra una oportunidad clara.</p>
+        </div>
+        <div class="insight-card rounded-2xl p-4">
+          <div class="w-10 h-10 rounded-xl report-icon text-white flex items-center justify-center mb-3">
+            <span class="material-symbols-outlined" style="font-size:20px">route</span>
+          </div>
+          <p class="text-[10px] font-black tracking-widest uppercase text-brand mb-1">Ruta sugerida</p>
+          <p id="insight-path" class="text-sm font-semibold text-gray-800 leading-snug">Empieza por el paso más simple y evita dispersarte.</p>
+        </div>
+        <div class="insight-card rounded-2xl p-4">
+          <div class="w-10 h-10 rounded-xl report-icon text-white flex items-center justify-center mb-3">
+            <span class="material-symbols-outlined" style="font-size:20px">north_east</span>
+          </div>
+          <p class="text-[10px] font-black tracking-widest uppercase text-brand mb-1">Próximo paso</p>
+          <p id="insight-next" class="text-sm font-semibold text-gray-800 leading-snug">Usa tu resultado para elegir la solución correcta.</p>
+        </div>
+      </div>
+
       <!-- Solution block -->
       <div id="solution-block" class="hidden rounded-2xl overflow-hidden" style="border:1.5px solid var(--brand-light);box-shadow:0 4px 24px 0 rgba(139,106,160,0.10)">
-        <div class="px-5 py-3.5 flex items-center gap-2.5" style="background:linear-gradient(90deg,var(--brand) 0%,#b98fd4 100%)">
-          <span class="text-lg">✨</span>
+        <div class="px-5 py-3.5 flex items-center gap-2.5" style="background:linear-gradient(90deg,var(--brand) 0%,var(--brand-light) 100%)">
+          <span class="material-symbols-outlined text-white" style="font-size:18px;font-variation-settings:'FILL' 1">auto_awesome</span>
           <p class="text-white text-xs font-bold uppercase tracking-widest">Tu solución personalizada</p>
         </div>
         <div class="px-5 py-5 bg-white">
@@ -133,35 +404,19 @@
       <!-- CTA button -->
       <a id="btn-cta" href="./acceso-exito.html"
         class="w-full block text-center py-4 rounded-full text-white font-bold text-sm tracking-wide transition-all duration-300 shadow-lg active:scale-[0.98]"
-        style="background:linear-gradient(90deg,var(--brand) 0%,#b98fd4 100%);box-shadow:0 6px 24px 0 rgba(139,106,160,0.30)">
+        style="background:linear-gradient(90deg,var(--brand) 0%,var(--brand-light) 100%);box-shadow:0 6px 24px 0 rgba(139,106,160,0.30)">
         Ver la solución →
       </a>
 
       <!-- Calendly secondary CTA (hidden unless creator has Calendly integration) -->
       <a id="btn-calendly" href="#" target="_blank" rel="noopener noreferrer"
         class="hidden w-full text-center py-3 rounded-full font-bold text-sm tracking-wide transition-all duration-300 active:scale-[0.98] border border-brand/30 text-brand hover:bg-brand/5">
-        📅 Agendar una llamada
+        <span class="material-symbols-outlined align-middle mr-1" style="font-size:16px">calendar_month</span> Agendar una llamada
       </a>
 
-      <!-- Share row -->
-      <div class="flex gap-2 pt-1">
-        <button onclick="shareWhatsApp()"
-          class="flex-1 py-3 rounded-full border border-[#25D366]/30 text-[#25D366] text-xs font-bold hover:bg-[#25D366]/10 transition-colors flex items-center justify-center gap-2">
-          <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
-          Compartir
-        </button>
-        <button onclick="shareResult()"
-          class="flex-1 py-3 rounded-full border border-gray-200 text-gray-400 text-xs font-bold hover:bg-gray-50 transition-colors flex items-center justify-center gap-1.5">
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"/></svg>
-          Copiar enlace
-        </button>
-        <button onclick="retakeQuiz()" title="Repetir quiz"
-          class="w-12 py-3 rounded-full border border-gray-200 text-gray-400 hover:bg-gray-50 transition-colors flex items-center justify-center">
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
-        </button>
-      </div>
+      <div id="result-action-cards" class="grid grid-cols-1 md:grid-cols-3 gap-4 pt-2"></div>
 
-      <p class="text-xs text-gray-300 text-center flex items-center justify-center gap-1.5">
+      <p id="result-trust-note" class="text-xs text-gray-300 text-center flex items-center justify-center gap-1.5">
         <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
         Resultado calculado con base en tus respuestas reales
       </p>
@@ -171,13 +426,15 @@
   <!-- ── MINI-APP BONUS ── -->
   <div id="miniapp-bonus" class="hidden fade-up-3">
     <div class="rounded-2xl border border-brand-light/30 bg-brand-bg/40 p-6 flex items-start gap-4">
-      <div id="bonus-icon" class="w-14 h-14 rounded-xl bg-white border border-brand-light/30 flex items-center justify-center text-2xl shrink-0 shadow-sm">⚡</div>
+      <div id="bonus-icon" class="w-14 h-14 rounded-xl bg-white border border-brand-light/30 flex items-center justify-center text-brand shrink-0 shadow-sm">
+        <span class="material-symbols-outlined" style="font-size:26px;font-variation-settings:'FILL' 1">deployed_code</span>
+      </div>
       <div class="flex-1 min-w-0">
         <p class="text-[10px] font-black text-brand uppercase tracking-widest mb-1">Bonus incluido</p>
         <h3 id="bonus-name" class="font-serif text-base font-semibold text-gray-800 mb-1">Mini-App</h3>
         <p id="bonus-desc" class="text-gray-500 text-xs leading-relaxed mb-3">—</p>
         <div class="flex items-center gap-3 flex-wrap">
-          <span class="text-xs px-4 py-2 rounded-full bg-brand/10 text-brand font-semibold border border-brand-light/30">🔒 Incluido al comprar</span>
+          <span class="text-xs px-4 py-2 rounded-full bg-brand/10 text-brand font-semibold border border-brand-light/30 inline-flex items-center gap-1.5"><span class="material-symbols-outlined" style="font-size:14px">lock</span> Incluido al comprar</span>
           <a id="bonus-link" href="#" class="text-xs text-gray-400 hover:text-brand underline underline-offset-2 transition-colors">Ya compré → acceder</a>
         </div>
       </div>
@@ -187,8 +444,8 @@
   <!-- ── ALL PROFILES ── -->
   <div id="all-profiles-section" class="hidden fade-up-3 space-y-4">
     <div>
-      <h3 class="font-serif text-xl font-semibold text-gray-800">Los perfiles del quiz</h3>
-      <p class="text-gray-400 text-sm mt-1">¿Reconoces alguno en tu audiencia?</p>
+      <h3 class="font-serif text-xl font-semibold text-gray-800">Otros caminos posibles</h3>
+      <p class="text-gray-400 text-sm mt-1">Cada perfil muestra una ruta distinta según las respuestas.</p>
     </div>
     <div id="all-profiles-grid" class="grid grid-cols-1 md:grid-cols-3 gap-4"></div>
   </div>
@@ -230,7 +487,7 @@
 
     let quiz = null;
     if (quizId === 'demo') {
-      quiz = DEMO_QUIZ;
+      quiz = window.OFFER_DEMO_QUIZ || DEMO_QUIZ;
     } else if (quizId) {
       try { quiz = await DB.quizzes.get(quizId); } catch {}
       const localQuiz = Quizzes.get(quizId);
@@ -275,7 +532,10 @@
     const brandFooter = document.getElementById('brand-footer');
     const brandFooterText = document.getElementById('brand-footer-text');
     const ctaFooter = document.getElementById('cta-footer');
-    if (!whiteLabel) {
+    const creatorLink = document.getElementById('creator-link');
+    if (quiz.showLuminousCta === true && creatorLink) creatorLink.classList.add('md:inline');
+    if (quiz.showLuminousCta !== true && ctaFooter) ctaFooter.style.display = 'none';
+    if (!whiteLabel && quiz.showLuminousCta === true) {
       brandFooterText.innerHTML = 'Hecho con <a href="https://luminous.studio" target="_blank" rel="noopener" class="text-brand font-semibold hover:underline">Luminous Studio</a>';
       brandFooter.style.display = 'block';
     } else if (whiteLabelName) {
@@ -290,30 +550,57 @@
     }
 
     // Apply branding
-    const brandColor = quiz.brandColor || quiz.themeColor;
-    if (brandColor) {
-      document.documentElement.style.setProperty('--brand', brandColor);
-      document.documentElement.style.setProperty('--brand-light', brandColor + '99');
-    }
+    applyResultTheme(quiz);
     if (quiz.brandLogo) {
       const logoEl = document.getElementById('result-logo');
-      if (logoEl) { logoEl.src = quiz.brandLogo; logoEl.classList.remove('hidden'); }
+      if (logoEl) {
+        logoEl.src = quiz.brandLogo;
+        logoEl.onerror = () => logoEl.classList.add('hidden');
+        logoEl.classList.remove('hidden');
+      }
+    }
+    const resultBrandCard = document.getElementById('result-brand-card');
+    const resultBrandLogo = document.getElementById('result-brand-logo-large');
+    const resultBrandName = document.getElementById('result-brand-name-large');
+    if (resultBrandCard && resultBrandName && (quiz.brandName || quiz.brandLogo)) {
+      resultBrandName.textContent = quiz.brandName || quiz.product || quiz.niche || 'Marca';
+      if (quiz.brandLogo && resultBrandLogo) {
+        resultBrandLogo.src = quiz.brandLogo;
+        resultBrandLogo.onerror = () => resultBrandLogo.classList.add('hidden');
+        resultBrandLogo.onload = () => resultBrandLogo.classList.remove('hidden');
+      }
+      resultBrandCard.classList.remove('hidden');
+      resultBrandCard.classList.add('flex');
     }
 
-    const profile = (answers && answers.length > 0) ? calculateProfile(quiz, answers) : quiz.profiles[0];
+    const hasRealAnswers = Array.isArray(answers) && answers.length > 0;
+    const profile = hasRealAnswers ? calculateProfile(quiz, answers) : quiz.profiles[0];
 
     // Header brand
     document.getElementById('header-brand').textContent = quiz.brandName || quiz.product || quiz.niche || '';
 
     // Profile card
     const emojiWrap = document.getElementById('profile-emoji-wrap');
-    emojiWrap.textContent = profile.emoji || '🌸';
+    emojiWrap.innerHTML = "<span class=\"material-symbols-outlined text-brand\" style=\"font-size:54px;font-variation-settings:'FILL' 1\">workspace_premium</span>";
     document.getElementById('profile-name').textContent        = profile.name || '—';
     document.getElementById('result-profile-name').textContent = profile.name || '—';
     document.getElementById('result-description').textContent  = profile.description || '';
     document.getElementById('result-recommendation').textContent = profile.recommendation || '';
-    document.getElementById('result-subtitle').textContent     =
-      `Basado en tus respuestas al quiz "${quiz.title || ''}", este es tu perfil.`;
+    const profileName = profile.name || 'este perfil';
+    document.getElementById('insight-pattern').textContent =
+      `Tu patrón se parece a "${profileName}": hay una forma más simple de resolver tu siguiente paso.`;
+    document.getElementById('insight-path').textContent =
+      quiz.product ? `La ruta recomendada es empezar con ${quiz.product}.` : 'La ruta recomendada es empezar por una solución clara y accionable.';
+    document.getElementById('insight-next').textContent =
+      profile.cta || 'Da el siguiente paso mientras tienes claro lo que necesitas.';
+    document.getElementById('result-subtitle').textContent =
+      hasRealAnswers
+        ? `Basado en tus respuestas al quiz "${quiz.title || ''}", este es tu perfil.`
+        : `Vista de ejemplo para el quiz "${quiz.title || ''}". Completa el quiz para calcular un resultado real.`;
+    const trustNote = document.getElementById('result-trust-note');
+    if (trustNote && !hasRealAnswers) {
+      trustNote.innerHTML = '<span class="material-symbols-outlined" style="font-size:14px">visibility</span> Vista de prueba sin respuestas guardadas';
+    }
     const titleBrand = whiteLabel ? (whiteLabelName || quiz.product || '') : (quiz.product || 'Luminous Studio');
     document.title = `Tu perfil: ${profile.name}${titleBrand ? ' | ' + titleBrand : ''}`;
 
@@ -345,29 +632,34 @@
           : 'Hola! Acabo de completar el quiz y me gustaría más información.';
         ctaDest = `https://wa.me/${number}?text=${encodeURIComponent(quiz.whatsappMessage || defaultMsg)}`;
         ctaText = '¡Quiero más información por WhatsApp!';
-        ctaIcon = '💬 ';
+        ctaIcon = '';
       }
     } else if (action === 'payment') {
       ctaDest = quiz.paymentUrl || quiz.productUrl;
       ctaText = profile.cta || (quiz.product ? `Quiero acceder a ${quiz.product}` : 'Comprar ahora');
-      ctaIcon = '✨ ';
+      ctaIcon = '';
     } else if (action === 'landing') {
       ctaDest = quiz.landingUrl || quiz.productUrl;
       ctaText = profile.cta || (quiz.product ? `Ver ${quiz.product}` : 'Ver la solución');
-      ctaIcon = '→ ';
+      ctaIcon = '';
     } else {
-      ctaDest = profile.ctaUrl || quiz.productUrl || quiz.landingUrl;
+      ctaDest = profile.ctaUrl || quiz.productUrl || quiz.landingUrl || quiz.paymentUrl;
       ctaText = profile.cta || (quiz.product ? `Quiero acceder a ${quiz.product}` : 'Ver la solución');
-      ctaIcon = '✨ ';
+      ctaIcon = '';
     }
 
-    ctaDest = ctaDest || `./acceso-exito.html${quizId ? '?quiz=' + quizId : ''}`;
     ctaText = ctaText || 'Ver la solución';
 
     const btnCta = document.getElementById('btn-cta');
     btnCta.textContent = ctaIcon + ctaText + ' →';
-    btnCta.href = ctaDest;
-    if (/^https?:\/\//.test(ctaDest)) { btnCta.target = '_blank'; btnCta.rel = 'noopener noreferrer'; }
+    if (ctaDest) {
+      btnCta.href = ctaDest;
+      if (/^https?:\/\//.test(ctaDest)) { btnCta.target = '_blank'; btnCta.rel = 'noopener noreferrer'; }
+    } else {
+      btnCta.textContent = 'Destino pendiente';
+      btnCta.removeAttribute('href');
+      btnCta.classList.add('opacity-60', 'cursor-not-allowed');
+    }
 
     // Meta Pixel
     if (quiz.metaPixelId) {
@@ -379,10 +671,12 @@
     }
 
     // Calendly CTA (integración global del creador)
+    let calendlyUrl = '';
     try {
       const integrations = JSON.parse(localStorage.getItem('ls_integrations') || '{}');
       const cal = integrations.calendly;
       if (cal?.connected && cal.url && /^https:\/\/calendly\.com\//i.test(cal.url)) {
+        calendlyUrl = cal.url;
         const btnCal = document.getElementById('btn-calendly');
         if (btnCal) {
           btnCal.href = cal.url;
@@ -392,10 +686,12 @@
     } catch (_) {}
 
     // Mini-App bonus
+    let linkedMiniApp = null;
     if (quiz.miniAppId) {
       const miniApp = MiniApps.get(quiz.miniAppId);
       if (miniApp) {
-        document.getElementById('bonus-icon').textContent = miniApp.icon || '⚡';
+        linkedMiniApp = miniApp;
+        document.getElementById('bonus-icon').innerHTML = "<span class=\"material-symbols-outlined\" style=\"font-size:26px;font-variation-settings:'FILL' 1\">deployed_code</span>";
         document.getElementById('bonus-name').textContent = miniApp.name || 'Herramienta incluida';
         document.getElementById('bonus-desc').textContent = miniApp.description || '';
         document.getElementById('bonus-link').href = `./mini-app-player.html?id=${miniApp.id}`;
@@ -403,18 +699,130 @@
       }
     }
 
+    renderResultActionCards({ quiz, profile, ctaDest, ctaText, calendlyUrl, miniApp: linkedMiniApp });
+
     // All profiles
-    if (quiz.profiles && quiz.profiles.length > 1) {
+    if (quiz.showAllProfiles === true && quiz.profiles && quiz.profiles.length > 1) {
       document.getElementById('all-profiles-section').classList.remove('hidden');
       document.getElementById('all-profiles-grid').innerHTML = quiz.profiles.map(p => `
         <div class="p-5 rounded-2xl border ${p.id === profile.id ? 'border-brand bg-brand-bg/60' : 'border-gray-100 bg-white'} relative">
           ${p.id === profile.id ? '<span class="absolute top-3 right-3 text-[9px] font-black text-brand uppercase tracking-widest bg-brand-bg px-2 py-0.5 rounded-full">Tu perfil</span>' : ''}
-          <div class="w-12 h-12 rounded-xl bg-brand-bg/50 border border-brand-light/20 flex items-center justify-center text-2xl mb-3">${p.emoji || '🌸'}</div>
+          <div class="w-12 h-12 rounded-xl bg-brand-bg/50 border border-brand-light/20 flex items-center justify-center text-brand mb-3"><span class="material-symbols-outlined" style="font-size:24px;font-variation-settings:'FILL' 1">person_search</span></div>
           <h4 class="font-serif font-semibold text-gray-800 mb-1">${p.name}</h4>
           <p class="text-gray-400 text-xs leading-relaxed line-clamp-3">${p.description}</p>
         </div>`).join('');
     }
   });
+
+  function escHtml(value) {
+    return String(value || '').replace(/[&<>"']/g, ch => ({
+      '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+    }[ch]));
+  }
+
+  function sameUrl(a, b) {
+    return String(a || '').trim() === String(b || '').trim();
+  }
+
+  function addActionCard(cards, { title, description, href, icon, label }) {
+    if (!href || cards.some(card => sameUrl(card.href, href))) return;
+    cards.push({ title, description, href, icon, label });
+  }
+
+  function renderResultActionCards({ quiz, profile, ctaDest, ctaText, calendlyUrl, miniApp }) {
+    const grid = document.getElementById('result-action-cards');
+    if (!grid) return;
+    const cards = [];
+    addActionCard(cards, {
+      title: ctaText || 'Ver la solucion',
+      description: quiz.product ? `Continua con ${quiz.product}.` : 'Abre la pagina recomendada para tu resultado.',
+      href: ctaDest,
+      icon: 'north_east',
+      label: 'Siguiente paso'
+    });
+    if (quiz.whatsappNumber) {
+      const number = String(quiz.whatsappNumber || '').replace(/\D/g, '');
+      const msg = quiz.whatsappMessage || `Hola! Complete el quiz "${quiz.title || ''}" y mi perfil es "${profile?.name || ''}". Me gustaria mas informacion.`;
+      addActionCard(cards, {
+        title: 'Hablar por WhatsApp',
+        description: 'Pregunta por tu resultado y recibe orientacion directa.',
+        href: number ? `https://wa.me/${number}?text=${encodeURIComponent(msg)}` : '',
+        icon: 'chat',
+        label: 'Contacto'
+      });
+    }
+    addActionCard(cards, {
+      title: 'Ver la pagina de venta',
+      description: 'Conoce la oferta completa y los detalles antes de decidir.',
+      href: quiz.landingUrl || quiz.productUrl,
+      icon: 'web',
+      label: 'Oferta'
+    });
+    addActionCard(cards, {
+      title: 'Ir al checkout',
+      description: 'Entra directo a la pagina de pago configurada.',
+      href: quiz.paymentUrl,
+      icon: 'local_fire_department',
+      label: 'Acceso'
+    });
+    addActionCard(cards, {
+      title: 'Agendar una llamada',
+      description: 'Reserva un espacio para resolver dudas antes de avanzar.',
+      href: calendlyUrl,
+      icon: 'calendar_month',
+      label: 'Agenda'
+    });
+    if (miniApp?.id) {
+      addActionCard(cards, {
+        title: miniApp.name || 'Abrir bonus',
+        description: miniApp.description || 'Accede a la herramienta incluida para este resultado.',
+        href: `./mini-app-player.html?id=${miniApp.id}`,
+        icon: 'deployed_code',
+        label: 'Bonus'
+      });
+    }
+
+    grid.innerHTML = cards.slice(0, 3).map(card => `
+      <a class="next-action-card block" href="${escHtml(card.href)}" ${/^https?:\/\//.test(card.href) ? 'target="_blank" rel="noopener noreferrer"' : ''}>
+        <span class="action-card-icon inline-flex h-10 w-10 items-center justify-center rounded-xl text-white mb-8">
+          <span class="material-symbols-outlined" style="font-size:20px">${escHtml(card.icon)}</span>
+        </span>
+        <p class="text-[10px] font-black tracking-[0.18em] uppercase text-brand/70 mb-2">${escHtml(card.label)}</p>
+        <h3 class="text-base font-extrabold text-gray-900 mb-2">${escHtml(card.title)}</h3>
+        <p class="text-xs text-gray-500 leading-relaxed mb-4">${escHtml(card.description)}</p>
+        <span class="text-xs font-black text-brand">${escHtml(card.title)} -></span>
+      </a>
+    `).join('');
+    grid.classList.toggle('hidden', cards.length === 0);
+  }
+
+  function applyResultTheme(quizOrColor) {
+    const quiz = typeof quizOrColor === 'object' && quizOrColor ? quizOrColor : null;
+    const nicheTheme = quiz && window.getPremiumNicheTheme
+      ? window.getPremiumNicheTheme(quiz.niche || quiz.product || quiz.title || '', quiz.product || quiz.title || '')
+      : {};
+    const brandColor = (quiz && (quiz.brandColor || quiz.themeColor)) || quizOrColor || nicheTheme.accent || '#8B6AA0';
+    const accent2 = (quiz && quiz.accentColor) || nicheTheme.accent2 || brandColor + '99';
+    const bg = nicheTheme.bg || brandColor + '12';
+    const surface = nicheTheme.card || brandColor + '08';
+    const text = nicheTheme.text || '#26212b';
+    const muted = nicheTheme.muted || '#6f6677';
+
+    document.documentElement.style.setProperty('--brand', brandColor);
+    document.documentElement.style.setProperty('--brand-light', accent2);
+    document.documentElement.style.setProperty('--brand-bg', bg);
+    document.documentElement.style.setProperty('--brand-surface', surface);
+    document.documentElement.style.setProperty('--brand-text', text);
+    document.documentElement.style.setProperty('--brand-muted', muted);
+    document.documentElement.style.setProperty('--brand-border', nicheTheme.mode === 'dark' ? 'rgba(255,255,255,0.12)' : brandColor + '2e');
+    document.documentElement.style.setProperty('--brand-shadow', nicheTheme.mode === 'dark' ? 'rgba(0,0,0,0.36)' : brandColor + '1f');
+    const heroImage = (quiz && quiz.coverImage) || nicheTheme.coverImage || '';
+    if (heroImage) {
+      document.documentElement.style.setProperty('--quiz-hero-image', `url("${String(heroImage).replace(/"/g, '%22')}")`);
+    }
+    document.documentElement.dataset.quizTheme = nicheTheme.id || 'custom';
+    document.documentElement.dataset.quizMode = nicheTheme.mode || 'light';
+  }
 
   function retakeQuiz() {
     const quizId = getParam('quiz') || Session.getCurrentQuizId();
@@ -429,7 +837,7 @@
   function shareWhatsApp() {
     const name = document.getElementById('result-profile-name')?.textContent || '';
     const url  = encodeURIComponent(window.location.href);
-    const text = encodeURIComponent(`¡Acabo de descubrir mi perfil: "${name}"! Haz el quiz 👇`);
+    const text = encodeURIComponent(`Acabo de descubrir mi perfil: "${name}". Haz el quiz:`);
     window.open(`https://wa.me/?text=${text}%20${url}`, '_blank');
   }
 </script>

@@ -402,6 +402,28 @@ MÉTRICAS que les importan: ${ctx.metrics.join(', ')}
 ARQUETIPOS de personas en este nicho: ${ctx.archetypes.join('; ')}`;
 }
 
+window.getPremiumNicheTheme = function getPremiumNicheTheme(niche = '', product = '') {
+  const text = `${niche} ${product}`.toLowerCase();
+  const themes = [
+    { id:'spiritual', test:/espirit|bibl|fe\b|dios|oraci|cristi|religi|angel|sagr|devocional|comuni[oó]n|iglesi/, mode:'light', accent:'#B96F5F', accent2:'#D8A06F', bg:'#FBF4ED', card:'#FFFAF6', text:'#372620', muted:'#8B7065', font:'serif', imageKeywords:'spiritual journal warm light', coverImage:'https://source.unsplash.com/featured/1200x630/?spiritual,journal,warm-light' },
+    { id:'wellness', test:/bienestar|wellness|ansiedad|estr[eé]s|mindful|medita|terapia|autoestima|habitos|hábitos|autocuidado|sue[nñ]o/, mode:'light', accent:'#4F8A8B', accent2:'#D6A77A', bg:'#F6F3EE', card:'#FFFDF8', text:'#273A38', muted:'#75827B', font:'serif', imageKeywords:'calm wellness journal', coverImage:'https://source.unsplash.com/featured/1200x630/?wellness,journal,calm' },
+    { id:'beauty', test:/belleza|skincare|maquill|est[eé]tic|cosmet|cabello|piel|salon|u[nñ]as/, mode:'light', accent:'#B85C8E', accent2:'#D9A66A', bg:'#FFF6F8', card:'#FFFFFF', text:'#3A2431', muted:'#9A7587', font:'serif', imageKeywords:'premium beauty skincare', coverImage:'https://source.unsplash.com/featured/1200x630/?beauty,skincare,premium' },
+    { id:'motherhood', test:/maternidad|mam[aá]|madre|beb[eé]|embaraz|crianza|lactancia|posparto|hijo|infantil|ni[nñ]o|familia/, mode:'light', accent:'#D96F8C', accent2:'#E7B86B', bg:'#FFF7F3', card:'#FFFFFF', text:'#3B2528', muted:'#9C7478', font:'serif', imageKeywords:'warm motherhood lifestyle', coverImage:'https://source.unsplash.com/featured/1200x630/?motherhood,warm,lifestyle' },
+    { id:'nutrition', test:/nutri|dieta|alimenta|comida|receta|cocina|meal|keto|vegano|ayuno|saludable/, mode:'light', accent:'#2F8F5B', accent2:'#E2A950', bg:'#F3FAF2', card:'#FFFFFF', text:'#1F3A2B', muted:'#6E8374', font:'sans', imageKeywords:'healthy food fresh kitchen', coverImage:'https://source.unsplash.com/featured/1200x630/?healthy-food,fresh,kitchen' },
+    { id:'fitness', test:/fitness|gym|ejercicio|entren|peso|muscul|cardio|crossfit|deport|pilates/, mode:'dark', accent:'#F97316', accent2:'#EF4444', bg:'#0A0A0A', card:'#18181B', text:'#F7F7F5', muted:'#A3A3A3', font:'sans', imageKeywords:'premium fitness training', coverImage:'https://source.unsplash.com/featured/1200x630/?fitness,training,premium' },
+    { id:'finance', test:/finanz|dinero|ahorro|invers|deuda|presupuesto|wealth|money|trading|cripto|bolsa|forex/, mode:'dark', accent:'#1F7A5A', accent2:'#C8A24A', bg:'#0D1117', card:'#151B24', text:'#F4F7F5', muted:'#8FA199', font:'sans', imageKeywords:'personal finance savings', coverImage:'https://source.unsplash.com/featured/1200x630/?personal-finance,savings' },
+    { id:'business', test:/negocio|marketing|ventas|ads|emprend|startup|copy|email|lanzamiento|funnel|embudo|redes|contenido|lider/, mode:'dark', accent:'#3157C9', accent2:'#31C48D', bg:'#0B1020', card:'#141B2F', text:'#F3F7FF', muted:'#94A3B8', font:'sans', imageKeywords:'digital business strategy', coverImage:'https://source.unsplash.com/featured/1200x630/?digital-business,strategy' },
+    { id:'education', test:/educaci|curso|idioma|ingl[eé]s|aprendiz|estudi|escuela|lectura|academ/, mode:'light', accent:'#3157C9', accent2:'#E0A84E', bg:'#F5F7FB', card:'#FFFFFF', text:'#1D2A3B', muted:'#6F7B8D', font:'sans', imageKeywords:'premium education study', coverImage:'https://source.unsplash.com/featured/1200x630/?education,study,premium' },
+    { id:'relationships', test:/relacion|pareja|amor|cita|matrimon|divorcio|seducci|atracci|noviazgo/, mode:'light', accent:'#B96072', accent2:'#C79A63', bg:'#FFF5F2', card:'#FFFFFF', text:'#392428', muted:'#8F7073', font:'serif', imageKeywords:'warm relationship journal', coverImage:'https://source.unsplash.com/featured/1200x630/?relationship,journal,warm' },
+  ];
+  const theme = themes.find(t => t.test.test(text)) || { id:'premium', mode:'light', accent:'#7A5C8F', accent2:'#C4A7D7', bg:'#F7F4FA', card:'#FFFFFF', text:'#2F2837', muted:'#7A7082', font:'sans', imageKeywords:'premium digital product', coverImage:'https://source.unsplash.com/featured/1200x630/?premium,digital-product' };
+  return { ...theme, brandColor: theme.accent, accentColor: theme.accent2 };
+};
+
+window.getSuggestedOfferTheme = function getSuggestedOfferTheme(niche = '', product = '') {
+  return { ...window.getPremiumNicheTheme(niche, product) };
+};
+
 // ── Claude API ─────────────────────────────────────────────
 const Claude = {
   async _call(messages, maxTokens = 3000, opts = {}) {
@@ -473,6 +495,10 @@ const Claude = {
   async generateQuiz(productName, description, niche, numQuestions, numOptions) {
     const nQ = numQuestions || 6;
     const nO = numOptions   || 4;
+    const optionJsonExample = Array.from({ length: nO }, (_, i) => {
+      const profiles = i === 2 ? '["id_perfil", "id_perfil2"]' : '["id_perfil"]';
+      return `        {"text": "situacion reconocible del nicho con jerga real", "profiles": ${profiles}}`;
+    }).join(',\n');
     const nicheBlock = buildNichePromptBlock(niche);
     const ctx = getNicheContext(niche);
     const archetypeHint = ctx ? `\nInspírate en estos arquetipos reales del nicho para crear los perfiles: ${ctx.archetypes.join('; ')}` : '';
@@ -498,11 +524,11 @@ ${nQ > 6 ? Array.from({length: nQ - 6}, (_,k) => `${k+7}. Pregunta sobre un aspe
 Cada pregunta: exactamente ${nO} opciones. Cada opción:
 - Describe UNA SITUACIÓN CONCRETA que solo alguien de este nicho reconocería (no "Sí / No / A veces")
 - Usa el vocabulario técnico del nicho en la redacción
-- Tiene un EMOJI que represente emocionalmente esa situación
+- NO uses emojis. El diseño visual usa iconos premium de la interfaz, no caracteres emoji.
 
 ═══ REGLAS PARA LOS PERFILES (3 perfiles) ═══${archetypeHint}
 • name: Identidad poderosa y específica del nicho (NO genérica como "El Principiante")
-• emoji: Emoji representativo del perfil
+• emoji: déjalo vacío como "".
 • description: 2-3 oraciones que hagan que el usuario piense "¡ESO SOY YO!" — con situaciones, vocabulario y frustraciones concretas del nicho
 • recommendation: Por qué "${productName}" resuelve exactamente el problema de ESTE perfil (menciona características específicas del producto)
 • matchScore: Número 83-96 (diferente por perfil)
@@ -519,10 +545,7 @@ Cada pregunta: exactamente ${nO} opciones. Cada opción:
       "text": "pregunta usando vocabulario real del nicho",
       "imageKeywords": "2-3 palabras en inglés para imagen (ej: 'gym workout frustration')",
       "options": [
-        {"text": "situación reconocible del nicho con jerga real", "emoji": "😊", "profiles": ["id_perfil"]},
-        {"text": "situación reconocible del nicho con jerga real", "emoji": "😔", "profiles": ["id_perfil"]},
-        {"text": "situación reconocible del nicho con jerga real", "emoji": "😤", "profiles": ["id_perfil", "id_perfil2"]},
-        {"text": "situación reconocible del nicho con jerga real", "emoji": "😩", "profiles": ["id_perfil"]}
+${optionJsonExample}
       ]
     }
   ],
@@ -530,7 +553,7 @@ Cada pregunta: exactamente ${nO} opciones. Cada opción:
     {
       "id": "id_perfil",
       "name": "Nombre Identidad Específica del Nicho",
-      "emoji": "🎯",
+      "emoji": "",
       "description": "Descripción con vocabulario del nicho que hace que el usuario diga 'eso soy yo'",
       "recommendation": "Por qué ${productName} resuelve exactamente el problema de este perfil",
       "matchScore": 91,
@@ -558,16 +581,16 @@ CRITERIOS:
 • Cada mini-app debe resolver un DOLOR ESPECÍFICO del público de este nicho
 • Debe ser algo que el usuario use MIENTRAS aplica lo aprendido del producto
 • Los nombres deben usar vocabulario del nicho, no genéricos
-• Usa SOLO estos tipos exactos: calculadora, tracker, generador, checklist, planificador, chatbot, reto, diagnostico, roadmap, simulador, meditacion, afirmaciones, flashcards, comparador, biblioteca, faq, devocional, diario, glosario
+• Usa SOLO estos tipos exactos: calculadora, tracker, generador, checklist, planificador, chatbot, reto, diagnostico, roadmap, simulador, meditacion, afirmaciones, flashcards, comparador, biblioteca, faq, devocional, diario, glosario, bodymap
 
 ELIGE los 3 tipos que MÁS SENTIDO tengan para "${niche}". Por ejemplo:
 - Fitness → tracker, calculadora, reto
 - Espiritualidad → devocional, meditacion, afirmaciones
 - Finanzas → calculadora, planificador, simulador
-- Bienestar → tracker, meditacion, diario
+- Bienestar/somático → bodymap, meditacion, diario
 
 RESPONDE SOLO CON ESTE JSON VÁLIDO (sin texto antes ni después):
-{"apps":[{"name":"Nombre específico del nicho","icon":"emoji relevante","type":"tipo_elegido","description":"Qué hace exactamente y cómo ayuda al usuario con un dolor real del nicho en 1 oración","features":["Función clave específica del nicho 1","Función clave 2","Función clave 3"]}]}
+{"apps":[{"name":"Nombre específico del nicho","icon":"nombre de Material Symbol en inglés, ejemplo: checklist, route, psychology","type":"tipo_elegido","description":"Qué hace exactamente y cómo ayuda al usuario con un dolor real del nicho en 1 oración","features":["Función clave específica del nicho 1","Función clave 2","Función clave 3"]}]}
 
 Genera 3 apps distintas con tipos distintos. Devuelve SOLO el JSON, sin markdown, sin explicaciones.`;
 
@@ -636,15 +659,16 @@ Devuelve SOLO este JSON sin texto adicional:
   },
 
   async generateMiniAppContent(appIdea, product, niche, creatorCtx = null) {
-    const { type, name, description, features = [] } = appIdea;
+    const { type, name, description, features = [], supportRole = '', useCase = '' } = appIdea;
     const featuresCtx = features.length ? `\nFunciones que debe incluir: ${features.join(', ')}` : '';
+    const supportCtx = [supportRole && `Rol de soporte: ${supportRole}`, useCase && `Caso de uso real: ${useCase}`].filter(Boolean).join('\n');
     const nicheBlock = buildNichePromptBlock(niche);
     const ctx = getNicheContext(niche);
     const exForType = ctx?.examples || {};
 
     const typeInstructions = {
       reto: `Genera contenido guiado para un reto de 7 días llamado "${name}".
-${nicheBlock}${featuresCtx}
+${nicheBlock}${supportCtx ? '\n' + supportCtx : ''}${featuresCtx}
 IMPORTANTE: Cada día debe tener contenido ÚNICO y progresivo — día 1 no puede parecerse a día 7.
 - Día 1-2: Fundamentos y primeras acciones simples del nicho
 - Día 3-4: Profundización con técnicas específicas
@@ -652,10 +676,10 @@ IMPORTANTE: Cada día debe tener contenido ÚNICO y progresivo — día 1 no pue
 - Día 7: Integración y plan de continuidad
 Las instrucciones deben mencionar herramientas, técnicas o conceptos REALES del nicho, no generalidades.
 Devuelve SOLO este JSON:
-{"retoDays":7,"retoContent":[{"day":1,"title":"Título con vocabulario del nicho","icon":"emoji","quote":"Insight basado en conocimiento real del nicho (2-3 oraciones)","instructions":"Instrucciones paso a paso usando terminología del nicho (3-5 oraciones)","reflectionPrompt":"Pregunta de reflexión que use conceptos del nicho"}]}`,
+{"retoDays":7,"retoContent":[{"day":1,"title":"Título con vocabulario del nicho","icon":"nombre Material Symbol, ejemplo: route","quote":"Insight basado en conocimiento real del nicho (2-3 oraciones)","instructions":"Instrucciones paso a paso usando terminología del nicho (3-5 oraciones)","reflectionPrompt":"Pregunta de reflexión que use conceptos del nicho"}]}`,
 
       chatbot: `Diseña un asistente IA especializado en "${name}".
-${nicheBlock}${featuresCtx}
+${nicheBlock}${supportCtx ? '\n' + supportCtx : ''}${featuresCtx}
 El asistente debe:
 - Tener personalidad alineada con el tono del nicho (${ctx ? 'vocabulario: ' + ctx.vocabulary.slice(0, 5).join(', ') : 'profesional y cercano'})
 - Responder SOLO sobre temas del nicho — redirigir lo demás amablemente
@@ -664,7 +688,7 @@ Devuelve SOLO este JSON sin texto adicional:
 {"chatbotName":"Nombre que refleje la experticia del nicho","chatbotGreeting":"Bienvenida que demuestre conocimiento del nicho y sus dolores (1-2 oraciones)","chatbotSystemPrompt":"Eres [nombre], experto en [área específica del nicho]. Conoces: [${ctx ? ctx.vocabulary.slice(0, 4).join(', ') : 'conceptos clave del tema'}]. Ayudas a resolver: [${ctx ? ctx.painPoints.slice(0, 3).join(', ') : 'problemas del público'}]. Responde en español, máximo 4 oraciones por respuesta. Usa vocabulario técnico del nicho pero explícalo si es necesario. Si preguntan algo ajeno, redirige amablemente.","chatbotSuggestions":["Pregunta sobre dolor real #1 del nicho","Pregunta técnica #2","Pregunta práctica #3"]}`,
 
       checklist: `Genera 12-15 ítems de checklist para que el USUARIO FINAL los marque mientras avanza en "${name}".
-${nicheBlock}${featuresCtx}
+${nicheBlock}${supportCtx ? '\n' + supportCtx : ''}${featuresCtx}
 IMPORTANTE: Los ítems son acciones que el usuario hace en su vida real, NO funciones del producto ni ideas para el creador.
 ${exForType.checklist ? `Ejemplo correcto para este nicho: "✓ ${exForType.checklist}"` : ''}
 Ejemplo INCORRECTO: "Desarrollar plan de...", "Crear sección de...", "Implementar sistema de..."
@@ -672,7 +696,7 @@ Cada ítem debe usar VOCABULARIO TÉCNICO del nicho y ser una acción medible y 
 Devuelve SOLO este JSON: {"initialItems":["acción medible con vocabulario del nicho 1","acción concreta 2",...]}`,
 
       planificador: `Genera 10-12 tareas concretas que el USUARIO FINAL debe completar para avanzar en "${name}".
-${nicheBlock}${featuresCtx}
+${nicheBlock}${supportCtx ? '\n' + supportCtx : ''}${featuresCtx}
 IMPORTANTE: Son tareas que el usuario realiza en su vida real, en orden lógico de ejecución.
 ${exForType.planner ? `Ejemplo correcto para este nicho: "${exForType.planner}"` : ''}
 Ejemplo INCORRECTO: "Desarrollar herramienta de...", "Crear sección de..."
@@ -680,13 +704,13 @@ Cada tarea debe usar terminología del nicho y ser específica (no "mejorar mi s
 Devuelve SOLO este JSON: {"initialTasks":["tarea concreta con vocabulario del nicho 1","tarea 2",...]}`,
 
       tracker: `Define el hábito y duración para "${name}".
-${nicheBlock}${featuresCtx}
+${nicheBlock}${supportCtx ? '\n' + supportCtx : ''}${featuresCtx}
 ${exForType.tracker ? `Ejemplo de hábito para este nicho: "${exForType.tracker}"` : ''}
 El hábito debe ser específico del nicho, medible y realista para hacer diariamente.
 Devuelve SOLO este JSON: {"trackerDays":30,"trackerHabit":"hábito diario específico con vocabulario del nicho"}`,
 
       calculadora: `Diseña una calculadora práctica y útil para "${name}".
-${nicheBlock}${featuresCtx}
+${nicheBlock}${supportCtx ? '\n' + supportCtx : ''}${featuresCtx}
 ${exForType.calculator ? `Ejemplo de cálculo para este nicho: "${exForType.calculator}"` : ''}
 Los campos deben usar etiquetas con TERMINOLOGÍA REAL del nicho (no "valor A", sino "${ctx ? ctx.metrics[0] || 'métrica del nicho' : 'métrica del nicho'}").
 La fórmula debe calcular algo que realmente le importe al público de este nicho.
@@ -694,39 +718,46 @@ Define 2-3 campos con etiquetas claras y una fórmula JS simple usando las varia
 Devuelve SOLO este JSON: {"calcFields":[{"id":"a","label":"Etiqueta con terminología del nicho","placeholder":"valor ejemplo realista"}],"calcFormula":"a * b","calcResultLabel":"Nombre del resultado usando vocabulario del nicho"}`,
 
       generador: `Define el prompt y etiquetas para el generador "${name}".
-${nicheBlock}${featuresCtx}
+${nicheBlock}${supportCtx ? '\n' + supportCtx : ''}${featuresCtx}
 El generador debe producir contenido que un profesional del nicho valoraría — no texto genérico.
 Devuelve SOLO este JSON: {"generatorPrompt":"Genera [tipo de contenido específico del nicho] personalizado para: [input del usuario]. Usa terminología de ${niche}. Incluye: [elementos específicos del nicho]. Responde en español con formato claro y accionable.","inputLabel":"Etiqueta con contexto del nicho","inputPlaceholder":"Ejemplo realista del nicho..."}`,
 
       simulador: `Define el prompt y etiquetas para el simulador "${name}".
-${nicheBlock}${featuresCtx}
+${nicheBlock}${supportCtx ? '\n' + supportCtx : ''}${featuresCtx}
 El simulador debe recrear escenarios REALES que el público de ${niche} enfrenta.
 Devuelve SOLO este JSON: {"generatorPrompt":"Simula un escenario de ${niche} basado en: [input del usuario]. Usa datos y terminología real del nicho. Explica paso a paso qué pasaría, con números y ejemplos concretos. Responde en español.","inputLabel":"Describe tu situación en ${niche}","inputPlaceholder":"Ejemplo realista de escenario del nicho..."}`,
 
       roadmap: `Genera 8-12 pasos que el USUARIO FINAL debe recorrer en su camino con "${name}".
-${nicheBlock}${featuresCtx}
+${nicheBlock}${supportCtx ? '\n' + supportCtx : ''}${featuresCtx}
 IMPORTANTE: Cada paso debe usar vocabulario técnico del nicho y representar un LOGRO REAL del usuario — no pasos de desarrollo.
 Los pasos deben seguir una progresión lógica: Fundamentos → Práctica → Dominio → Maestría.
 Devuelve SOLO este JSON:
 {"roadmapSteps":["Paso 1: acción concreta con vocabulario del nicho","Paso 2: siguiente logro medible","Paso 3: ..."]}`,
 
       diagnostico: `Genera 6-8 preguntas de diagnóstico para evaluar al usuario sobre "${name}".
-${nicheBlock}${featuresCtx}
+${nicheBlock}${supportCtx ? '\n' + supportCtx : ''}${featuresCtx}
 Las preguntas deben evaluar DIMENSIONES REALES del nicho (${ctx ? ctx.metrics.slice(0, 3).join(', ') : 'aspectos clave del tema'}).
 Las opciones deben representar niveles de experiencia/habilidad reconocibles en el nicho.
 Devuelve SOLO este JSON:
 {"diagQuestions":[{"q":"¿Pregunta que evalúe un aspecto real del nicho?","opts":["Nivel 1: principiante reconocible","Nivel 2: intermedio","Nivel 3: avanzado","Nivel 4: experto"]}]}`,
 
       meditacion: `Crea una meditación guiada completa para "${name}".
-${nicheBlock}${featuresCtx}
+${nicheBlock}${supportCtx ? '\n' + supportCtx : ''}${featuresCtx}
 IMPORTANTE: La meditación debe estar CONTEXTUALIZADA al nicho. No es una meditación genérica — incorpora visualizaciones y metáforas específicas del tema.
 ${ctx?.id === 'fitness' ? 'Enfócate en visualización del cuerpo, conexión mente-músculo y recuperación.' : ''}${ctx?.id === 'finance' ? 'Enfócate en abundancia, claridad financiera y soltar el estrés del dinero.' : ''}${ctx?.id === 'business' ? 'Enfócate en visualización de metas empresariales, claridad estratégica y liderazgo.' : ''}
 El script debe ser cálido, fluido y listo para TTS. Usa "..." para pausas de respiración.
 Devuelve SOLO este JSON:
 {"meditationDuration":10,"meditationScript":"Texto completo (400-600 palabras). Comienza con respiración. Incluye visualizaciones y metáforas específicas del nicho. Segunda persona, tono cálido.","meditationTips":["Tip práctico 1 usando vocabulario del nicho","Tip 2","Tip 3"],"bellFreq":432}`,
 
+      bodymap: `Crea una experiencia interactiva tipo mapa corporal o mapa de señales para "${name}".
+${nicheBlock}${supportCtx ? '\n' + supportCtx : ''}${featuresCtx}
+IMPORTANTE: debe sentirse PERSONALIZADA al nicho, no genérica. Si el nicho es cuerpo, ansiedad, piel, ciclo, fitness, dolor, bienestar o emociones, las zonas deben conectar sensación física + posible emoción/patrón + práctica breve.
+Si el nicho no es corporal, adapta el mapa a "señales" del usuario (ej: señales financieras, señales de burnout, señales de aprendizaje), pero conserva los campos.
+Devuelve SOLO este JSON:
+{"todayPrompt":"Pregunta de inicio personalizada para el nicho","bodySignals":[{"id":"cabeza","label":"Cabeza","x":50,"y":12,"icon":"psychology","title":"Título breve de la señal","meaning":"Qué podría estar indicando esta señal en el contexto del nicho (2-3 oraciones cálidas, sin diagnosticar)","prompt":"Pregunta de reflexión concreta","practice":"Práctica breve de 1-3 minutos"}],"practiceItems":[{"title":"Nombre de práctica guiada","description":"Cuándo usarla","duration":8,"icon":"self_improvement","script":"Guión cálido listo para voz TTS, con pausas usando ..."}]}`,
+
       afirmaciones: `Genera 12-18 afirmaciones poderosas y específicas para "${name}" en el nicho "${niche}".
-${nicheBlock}${featuresCtx}
+${nicheBlock}${supportCtx ? '\n' + supportCtx : ''}${featuresCtx}
 REGLAS:
 - Primera persona, presente, positivas
 - CADA afirmación debe contener vocabulario técnico del nicho (${ctx ? ctx.vocabulary.slice(0, 4).join(', ') : 'términos del tema'})
@@ -736,44 +767,44 @@ Devuelve SOLO este JSON:
 {"affirmations":["Afirmación con vocabulario del nicho 1","Afirmación 2","..."],"affirmationInstruction":"Instrucción contextualizada al nicho sobre cómo usar estas afirmaciones"}`,
 
       faq: `Genera 8-12 preguntas frecuentes con respuestas para "${name}".
-${nicheBlock}${featuresCtx}
+${nicheBlock}${supportCtx ? '\n' + supportCtx : ''}${featuresCtx}
 Las preguntas deben ser dudas REALES que el público de ${niche} tiene — no genéricas.
 Las respuestas deben usar vocabulario técnico del nicho y ser útiles (3-4 oraciones cada una).
 Devuelve SOLO este JSON:
 {"faqItems":[{"q":"¿Pregunta real que se haría alguien del nicho?","a":"Respuesta con vocabulario técnico del nicho, útil y accionable"}]}`,
 
       flashcards: `Genera 12-15 flashcards educativas para "${name}".
-${nicheBlock}${featuresCtx}
+${nicheBlock}${supportCtx ? '\n' + supportCtx : ''}${featuresCtx}
 El frente debe ser un concepto/término REAL del nicho y el reverso su explicación práctica.
 Devuelve SOLO este JSON:
 {"cards":[{"front":"Concepto/término técnico del nicho","back":"Explicación práctica y clara con vocabulario del nicho"}]}`,
 
       glosario: `Genera 10-15 términos clave con definiciones para "${name}".
-${nicheBlock}${featuresCtx}
+${nicheBlock}${supportCtx ? '\n' + supportCtx : ''}${featuresCtx}
 Los términos deben ser vocabulario REAL que alguien en ${niche} necesita dominar (${ctx ? ctx.vocabulary.slice(0, 5).join(', ') + ', etc.' : 'términos técnicos del nicho'}).
 Devuelve SOLO este JSON:
 {"glossaryTerms":[{"term":"Término técnico del nicho","def":"Definición clara y práctica con ejemplo de uso"}]}`,
 
       comparador: `Genera una tabla comparativa útil para "${name}".
-${nicheBlock}${featuresCtx}
+${nicheBlock}${supportCtx ? '\n' + supportCtx : ''}${featuresCtx}
 Compara 2-3 opciones/enfoques/métodos REALES que el público de ${niche} debate frecuentemente.
 Devuelve SOLO este JSON:
 {"comparatorTitle":"¿Qué se compara?","comparatorItems":[{"name":"Opción/método A del nicho","pros":["Ventaja real 1","Ventaja 2"],"cons":["Desventaja real 1","Desventaja 2"]},{"name":"Opción/método B del nicho","pros":["Ventaja 1","Ventaja 2"],"cons":["Desventaja 1","Desventaja 2"]}]}`,
 
       biblioteca: `Genera 6-10 recursos recomendados para "${name}".
-${nicheBlock}${featuresCtx}
+${nicheBlock}${supportCtx ? '\n' + supportCtx : ''}${featuresCtx}
 Los recursos deben ser útiles para alguien en ${niche}: guías, herramientas, lecturas, videos.
 Devuelve SOLO este JSON:
 {"resources":[{"title":"Nombre del recurso relevante al nicho","url":"#","description":"Por qué es útil para alguien en ${niche} (1 oración)"}]}`,
 
       devocional: `Genera un devocional/reflexión guiada para "${name}".
-${nicheBlock}${featuresCtx}
+${nicheBlock}${supportCtx ? '\n' + supportCtx : ''}${featuresCtx}
 El texto debe ser profundo, usar vocabulario del nicho, y guiar al usuario a reflexionar sobre su proceso.
 Devuelve SOLO este JSON:
 {"devotionalText":"Texto de reflexión guiada (200-300 palabras) con vocabulario del nicho, tono cálido, invitando a la introspección"}`,
 
       diario: `Genera 8-12 prompts de journaling para "${name}".
-${nicheBlock}${featuresCtx}
+${nicheBlock}${supportCtx ? '\n' + supportCtx : ''}${featuresCtx}
 Cada prompt debe invitar a reflexionar sobre un aspecto REAL del nicho — no preguntas genéricas.
 Devuelve SOLO este JSON:
 {"journalPrompts":["¿Pregunta de reflexión sobre aspecto real del nicho?","Prompt 2","..."]}`,
@@ -1448,7 +1479,21 @@ const Groq = {
 const AI = {
   // Complejo: quiz completo con preguntas + perfiles + CTAs
   async generateQuiz(product, desc, niche, numQ, numOpts) {
-    return Claude.generateQuiz(product, desc, niche, numQ, numOpts);
+    const withTimeout = (promise, ms, label) => Promise.race([
+      promise,
+      new Promise((_, reject) => setTimeout(() => reject(new Error(`${label} tardÃ³ demasiado`)), ms)),
+    ]);
+    try {
+      return await withTimeout(Claude.generateQuiz(product, desc, niche, numQ, numOpts), 30000, 'Claude');
+    } catch (claudeError) {
+      console.warn('Claude quiz fallÃ³, intentando Groq:', claudeError.message);
+      try {
+        return await withTimeout(Groq.generateQuiz(product, desc, niche, numQ, numOpts), 25000, 'Groq');
+      } catch (groqError) {
+        console.warn('Groq quiz fallÃ³:', groqError.message);
+        throw claudeError;
+      }
+    }
   },
   // Simple: lista de ideas — si falla Groq, cae a Claude
   async generateMiniAppIdeas(product, desc, niche) {
@@ -1516,7 +1561,22 @@ async function copyToClipboard(text) {
     await navigator.clipboard.writeText(text);
     showToast('¡Enlace copiado!');
   } catch {
-    showToast('No se pudo copiar', 'error');
+    try {
+      const input = document.createElement('textarea');
+      input.value = text;
+      input.setAttribute('readonly', '');
+      input.style.cssText = 'position:fixed;left:-9999px;top:-9999px;';
+      document.body.appendChild(input);
+      input.select();
+      input.setSelectionRange(0, input.value.length);
+      const ok = document.execCommand('copy');
+      input.remove();
+      if (ok) showToast('¡Enlace copiado!');
+      else throw new Error('copy failed');
+    } catch {
+      window.prompt('Copia este enlace:', text);
+      showToast('Te dejé el enlace listo para copiar', 'info');
+    }
   }
 }
 

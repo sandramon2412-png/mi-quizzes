@@ -1,5 +1,5 @@
 // Luminous Studio — Mini-App Templates Library
-// 58 plantillas organizadas por categoría con contenido real en español
+// 60 plantillas organizadas por categoría con contenido real en español
 
 function getBuiltinMiniAppTemplates() {
   return [
@@ -8,11 +8,25 @@ function getBuiltinMiniAppTemplates() {
 
 {
   id:'tpl-ansiedad-21', name:'Calmar la Ansiedad en 21 Días',
-  types:['reto','meditacion','afirmaciones','diario','checklist'],
+  types:['bodymap','reto','meditacion','diario','afirmaciones','checklist'],
   niche:'ansiedad, bienestar mental', category:'Bienestar', subcategory:'Ansiedad',
   description:'Técnicas diarias de respiración, journaling y meditación para reducir la ansiedad paso a paso.',
-  icon:'🧘', primaryColor:'#6366f1', secondaryColor:'#818cf8', bgColor:'#0e0e0e',
+  icon:'self_improvement', primaryColor:'#6366f1', secondaryColor:'#818cf8', bgColor:'#0e0e0e',
   headerGradient:'linear-gradient(135deg,#6366f1,#818cf8)',
+  todayPrompt:'Toca la zona donde sientes la ansiedad hoy y recibe una lectura suave, una pregunta y una práctica breve.',
+  bodySignals:[
+    {id:'cabeza',label:'Cabeza',x:50,y:12,icon:'psychology',title:'Ruido mental',meaning:'Cuando la ansiedad sube a la cabeza, puede sentirse como pensamientos repetidos, anticipación o necesidad de controlar todo. No significa que estés fallando; tu mente está intentando protegerte.',prompt:'¿Qué pensamiento está pidiendo demasiada atención hoy?',practice:'Mira un punto fijo, exhala más largo de lo que inhalas y nombra 3 cosas reales que sí están pasando ahora.'},
+    {id:'garganta',label:'Garganta',x:50,y:28,icon:'record_voice_over',title:'Lo que no sale',meaning:'El nudo en la garganta suele aparecer cuando hay palabras guardadas, límites pendientes o miedo a incomodar.',prompt:'¿Qué necesitarías decir para sentirte un poco más libre?',practice:'Escribe una frase que empiece con: “Hoy necesito permitirme...”'},
+    {id:'pecho',label:'Pecho',x:50,y:39,icon:'favorite',title:'Alarma emocional',meaning:'La presión en el pecho puede acompañar miedo, tristeza, preocupación o sensación de estar sola/o con demasiado.',prompt:'Si esta presión tuviera una emoción, ¿cuál sería?',practice:'Pon una mano en el pecho y repite tres veces: “Estoy a salvo en este momento”.'},
+    {id:'hombros',label:'Hombros',x:30,y:34,icon:'fitness_center',title:'Carga sostenida',meaning:'Los hombros tensos suelen hablar de exigencia, responsabilidades acumuladas o estar sosteniendo más de lo que toca.',prompt:'¿Qué carga podrías soltar, delegar o pausar hoy?',practice:'Sube los hombros al inhalar y suéltalos al exhalar. Hazlo 7 veces, lento.'},
+    {id:'vientre',label:'Vientre',x:50,y:58,icon:'self_improvement',title:'Intuición nerviosa',meaning:'El vientre puede reaccionar cuando algo se siente incierto, amenazante o fuera de tu control.',prompt:'¿Qué sabe tu cuerpo que tu mente todavía discute?',practice:'Respira hacia el abdomen durante un minuto. No busques calmarlo perfecto; solo acompáñalo.'},
+    {id:'manos',label:'Manos',x:22,y:52,icon:'back_hand',title:'Urgencia de hacer',meaning:'La inquietud en manos o brazos puede ser energía de ansiedad buscando salida.',prompt:'¿Qué acción pequeña y segura puedes hacer ahora?',practice:'Aprieta y suelta las manos 10 veces, luego toca algo frío o con textura.'}
+  ],
+  practiceItems:[
+    {title:'Volver al cuerpo',description:'Para cuando la ansiedad se siente en pecho o vientre',duration:8,icon:'self_improvement',script:'Cierra los ojos si te sientes segura/o... lleva una mano al pecho y otra al abdomen... Inhala suave por la nariz... exhala lento por la boca... No tienes que resolver toda tu vida ahora... solo volver a este momento... Siente el peso de tu cuerpo sostenido... Nombra en silencio: estoy aquí... estoy respirando... esto va a pasar...'},
+    {title:'Desactivar la alarma',description:'Respiración guiada para bajar intensidad',duration:5,icon:'air',script:'Inhala contando cuatro... sostén uno... exhala contando seis... otra vez... inhala cuatro... exhala seis... Deja que tus hombros bajen un milímetro más... Tu cuerpo puede aprender calma en pequeñas dosis...'},
+    {title:'Tapping de seguridad',description:'Para miedo o anticipación',duration:6,icon:'touch_app',script:'Toca suavemente el centro del pecho... aunque una parte de mí siente ansiedad, puedo acompañarme con respeto... toca la clavícula... no necesito pelear con mi cuerpo... toca debajo del ojo... puedo estar aquí, paso a paso...'}
+  ],
   retoContent:[
     {title:'Día 1: Respiración 4-7-8', instructions:'Inhala 4 segundos, sostén 7, exhala 8. Repite 4 veces. Esta técnica activa tu sistema nervioso parasimpático y reduce el cortisol.', reflectionPrompt:'¿Cómo se siente tu cuerpo después de respirar conscientemente?'},
     {title:'Día 2: Body Scan', instructions:'Acuéstate y recorre mentalmente cada parte de tu cuerpo desde los pies hasta la cabeza. Nota tensiones sin juzgar. Dedica 10 minutos.', reflectionPrompt:'¿En qué zona de tu cuerpo guardas más tensión?'},
@@ -30,11 +44,22 @@ function getBuiltinMiniAppTemplates() {
 
 {
   id:'tpl-burnout-30', name:'Reset Mental: Superar el Burnout',
-  types:['reto','checklist','diario','afirmaciones','meditacion'],
+  types:['bodymap','reto','checklist','diario','afirmaciones','meditacion'],
   niche:'burnout, estrés laboral', category:'Bienestar', subcategory:'Burnout',
   description:'Recupera tu energía y establece límites saludables con este plan de 30 días contra el agotamiento.',
-  icon:'🔋', primaryColor:'#059669', secondaryColor:'#34d399', bgColor:'#0e0e0e',
+  icon:'battery_charging_full', primaryColor:'#059669', secondaryColor:'#34d399', bgColor:'#0e0e0e',
   headerGradient:'linear-gradient(135deg,#059669,#34d399)',
+  todayPrompt:'Detecta dónde se está acumulando el agotamiento y elige una reparación pequeña para hoy.',
+  bodySignals:[
+    {id:'ojos',label:'Ojos',x:50,y:14,icon:'visibility',title:'Fatiga de alerta',meaning:'Cansancio visual, presión o pesadez puede aparecer cuando llevas demasiado tiempo en modo rendimiento.',prompt:'¿Cuándo fue la última pausa real que hiciste sin pantalla?',practice:'Mira a lo lejos 30 segundos, parpadea lento y baja el brillo si puedes.'},
+    {id:'hombros',label:'Hombros',x:31,y:34,icon:'fitness_center',title:'Responsabilidad acumulada',meaning:'El burnout suele instalarse en hombros y cuello cuando estás sosteniendo urgencias propias y ajenas.',prompt:'¿Qué tarea no era tuya pero terminaste cargando?',practice:'Suelta los hombros al exhalar y elige una tarea para mover a mañana.'},
+    {id:'pecho',label:'Pecho',x:50,y:40,icon:'favorite',title:'Cansancio emocional',meaning:'La opresión puede señalar que has dado más disponibilidad emocional de la que tenías.',prompt:'¿A quién necesitas responder con un límite amable?',practice:'Escribe: “Hoy puedo ofrecer ___, pero no puedo ___”.'},
+    {id:'espalda',label:'Espalda',x:50,y:50,icon:'accessibility_new',title:'Sostener demasiado',meaning:'La espalda puede recordar que tu sistema necesita soporte, descanso y estructura.',prompt:'¿Qué apoyo concreto podrías pedir esta semana?',practice:'Apoya toda la espalda en una silla o pared durante 60 segundos y deja que algo te sostenga.'}
+  ],
+  practiceItems:[
+    {title:'Cerrar la jornada',description:'Para soltar trabajo mental al final del día',duration:7,icon:'bedtime',script:'Respira... reconoce todo lo que hiciste hoy... incluso si quedó pendiente... repite: por hoy es suficiente... mi descanso también sostiene mi vida... suelta la mandíbula... suelta los hombros... vuelve a tu cuerpo.'},
+    {title:'Límite de 2 minutos',description:'Ensayo breve para decir no sin culpa',duration:4,icon:'front_hand',script:'Piensa en una petición que te pesa... inhala... al exhalar di en voz baja: gracias por pensar en mí, ahora no puedo tomar esto... otra vez... ahora no puedo tomar esto... deja que tu cuerpo practique el límite antes de la conversación.'}
+  ],
   retoContent:[
     {title:'Día 1: Reconoce tu agotamiento', instructions:'Hoy solo observa. Anota en tu diario los síntomas de burnout que reconoces: fatiga constante, cinismo, baja productividad, dolores físicos.', reflectionPrompt:'¿Cuándo empezaste a sentirte agotado/a?'},
     {title:'Día 2: Define un límite', instructions:'Elige UNA cosa que dejarás de hacer esta semana: revisar emails después de las 7pm, decir sí a todo, trabajar fines de semana. Solo una.', reflectionPrompt:'¿Qué límite elegiste y por qué te cuesta ponerlo?'},
@@ -55,7 +80,7 @@ function getBuiltinMiniAppTemplates() {
   types:['reto','checklist','tracker','meditacion'],
   niche:'sueño, insomnio, descanso', category:'Bienestar', subcategory:'Sueño',
   description:'Transforma tu higiene del sueño con hábitos nocturnos que te ayudarán a dormir profundamente.',
-  icon:'🌙', primaryColor:'#4338ca', secondaryColor:'#6366f1', bgColor:'#0e0e0e',
+  icon:'bedtime', primaryColor:'#4338ca', secondaryColor:'#6366f1', bgColor:'#0e0e0e',
   headerGradient:'linear-gradient(135deg,#4338ca,#6366f1)',
   retoContent:[
     {title:'Día 1: Establece tu horario', instructions:'Elige una hora fija para acostarte y despertar. Mantén máximo 30 min de variación incluso fines de semana. Tu reloj biológico necesita consistencia.'},
@@ -76,7 +101,7 @@ function getBuiltinMiniAppTemplates() {
   types:['reto','afirmaciones','diario','flashcards'],
   niche:'autoestima, amor propio', category:'Bienestar', subcategory:'Autoestima',
   description:'Transforma tu diálogo interno y construye una autoestima sólida con ejercicios diarios.',
-  icon:'💎', primaryColor:'#e11d48', secondaryColor:'#fb7185', bgColor:'#0e0e0e',
+  icon:'diamond', primaryColor:'#e11d48', secondaryColor:'#fb7185', bgColor:'#0e0e0e',
   headerGradient:'linear-gradient(135deg,#e11d48,#fb7185)',
   retoContent:[
     {title:'Día 1: Tu diálogo interno', instructions:'Hoy observa cómo te hablas a ti mismo/a. Cada vez que notes un pensamiento negativo, escríbelo. No lo juzgues, solo regístralo.', reflectionPrompt:'¿Qué frases negativas te dices con más frecuencia?'},
@@ -105,11 +130,22 @@ function getBuiltinMiniAppTemplates() {
 
 {
   id:'tpl-mindfulness-21', name:'Mindfulness para Principiantes',
-  types:['reto','meditacion','tracker','diario'],
+  types:['bodymap','reto','meditacion','tracker','diario'],
   niche:'mindfulness, meditación, atención plena', category:'Bienestar', subcategory:'Mindfulness',
   description:'Aprende a vivir en el presente con ejercicios simples de atención plena para cada día.',
-  icon:'🍃', primaryColor:'#0d9488', secondaryColor:'#2dd4bf', bgColor:'#0e0e0e',
+  icon:'self_improvement', primaryColor:'#0d9488', secondaryColor:'#2dd4bf', bgColor:'#0e0e0e',
   headerGradient:'linear-gradient(135deg,#0d9488,#2dd4bf)',
+  todayPrompt:'Elige una señal de tu cuerpo y úsala como puerta de entrada al presente.',
+  bodySignals:[
+    {id:'respiracion',label:'Respiración',x:50,y:38,icon:'air',title:'Ritmo interno',meaning:'La respiración corta suele mostrar prisa, alerta o desconexión del momento presente.',prompt:'¿Estoy respirando como si tuviera que correr?',practice:'Haz 5 respiraciones dejando que la exhalación sea un poco más larga.'},
+    {id:'mandibula',label:'Mandíbula',x:50,y:21,icon:'sentiment_calm',title:'Control retenido',meaning:'La mandíbula apretada puede aparecer cuando intentas sostener control o contener una emoción.',prompt:'¿Qué estoy intentando controlar ahora mismo?',practice:'Separa ligeramente los dientes y deja la lengua descansar.'},
+    {id:'manos',label:'Manos',x:22,y:54,icon:'back_hand',title:'Ancla sensorial',meaning:'Las manos pueden ayudarte a volver al presente a través del tacto.',prompt:'¿Qué textura puedo sentir ahora sin analizarla?',practice:'Toca una superficie y describe mentalmente temperatura, textura y peso.'},
+    {id:'pies',label:'Pies',x:50,y:93,icon:'footprint',title:'Volver al suelo',meaning:'Sentir los pies ayuda a recordarle al sistema nervioso que hay soporte aquí y ahora.',prompt:'¿Qué cambia cuando dejo que el suelo me sostenga?',practice:'Presiona los pies contra el suelo durante 20 segundos y suelta.'}
+  ],
+  practiceItems:[
+    {title:'Presencia de 3 sentidos',description:'Para volver al ahora en menos de 3 minutos',duration:3,icon:'sensors',script:'Mira una cosa que puedas ver... escucha un sonido cercano... siente un punto de contacto del cuerpo... no necesitas cambiar nada... solo notar... ver... escuchar... sentir... aquí.'},
+    {title:'Respiración amable',description:'Para cuando la mente va muy rápido',duration:6,icon:'air',script:'Inhala suave... exhala más lento... deja que el aire entre sin esfuerzo... y salga como si soltaras una bolsa pesada... cada exhalación te trae un poco más cerca de este momento.'}
+  ],
   retoContent:[
     {title:'Día 1: Respiración consciente', instructions:'Siéntate 5 minutos y cuenta tus respiraciones del 1 al 10. Cuando pierdas la cuenta (vas a perderla), vuelve a empezar sin juzgarte.'},
     {title:'Día 2: Comer con atención', instructions:'Elige una comida y cómela sin teléfono, sin TV. Nota los colores, olores, texturas y sabores. Mastica lento.'},
@@ -129,7 +165,7 @@ function getBuiltinMiniAppTemplates() {
   types:['diario','afirmaciones','checklist','roadmap'],
   niche:'ruptura, duelo emocional, amor propio', category:'Bienestar', subcategory:'Sanación',
   description:'Un camino guiado para procesar el duelo, reconstruirte y volver a ti misma/o con amor.',
-  icon:'💔', primaryColor:'#db2777', secondaryColor:'#f472b6', bgColor:'#0e0e0e',
+  icon:'diamond', primaryColor:'#db2777', secondaryColor:'#f472b6', bgColor:'#0e0e0e',
   headerGradient:'linear-gradient(135deg,#db2777,#f472b6)',
   affirmations:['Merezco un amor que me sume, no que me reste','Esta pérdida está creando espacio para algo mejor','Mi valor no depende de nadie más','Elijo sanar a mi ritmo','Soltar es un acto de amor propio','Estoy reaprendiendo a habitarme','El amor empieza dentro de mí','Soy suficiente tal como soy','Permito que las emociones pasen por mí','Cada día me siento más completo/a'],
   journalPrompts:['¿Qué extraño exactamente: a esta persona o lo que representaba?','¿Qué aprendí de mí en esta relación?','¿Qué patrones quiero dejar de repetir?','¿Qué necesito perdonarme?','¿Cómo sería mi vida si me pusiera primero?','¿Qué me da miedo de estar solo/a y por qué?','Carta que nunca enviaré: escribe todo lo que necesitas decir.'],
@@ -149,7 +185,7 @@ function getBuiltinMiniAppTemplates() {
   types:['checklist','planificador','flashcards','faq'],
   niche:'tdah, déficit de atención, productividad neurodivergente', category:'Bienestar', subcategory:'TDAH',
   description:'Estrategias prácticas para personas con TDAH: organización, foco y autocompasión.',
-  icon:'🧠', primaryColor:'#7c3aed', secondaryColor:'#a78bfa', bgColor:'#0e0e0e',
+  icon:'psychology', primaryColor:'#7c3aed', secondaryColor:'#a78bfa', bgColor:'#0e0e0e',
   headerGradient:'linear-gradient(135deg,#7c3aed,#a78bfa)',
   initialItems:['Preparar la ropa la noche anterior','Usar la regla de los 2 minutos (si toma menos, hazlo ya)','Timer Pomodoro para tareas largas','Escribir TODO en un solo lugar (no confiar en memoria)','Dejar llaves/cartera siempre en el mismo lugar','Body doubling: trabajar junto a alguien (real o por video)','Tomar medicación/suplementos a la misma hora','Moverme al menos 20 minutos','Descansar sin culpa cuando la batería se acabó'],
   initialTasks:['Revisar calendario y elegir 3 prioridades','Dividir tareas grandes en pasos de 15 min','Preparar agua, snacks y todo lo necesario ANTES de empezar','Usar timer visual (Time Timer) para no perder noción','Bloquear redes sociales en horas de foco','Cerrar el día anotando lo logrado (no lo faltante)'],
@@ -178,7 +214,7 @@ function getBuiltinMiniAppTemplates() {
   types:['diario','afirmaciones','tracker','reto'],
   niche:'gratitud, mindset positivo, bienestar', category:'Bienestar', subcategory:'Gratitud',
   description:'Cultiva el hábito de notar lo bueno con prompts diarios de gratitud durante 30 días.',
-  icon:'🌻', primaryColor:'#f59e0b', secondaryColor:'#fbbf24', bgColor:'#0e0e0e',
+  icon:'wb_sunny', primaryColor:'#f59e0b', secondaryColor:'#fbbf24', bgColor:'#0e0e0e',
   headerGradient:'linear-gradient(135deg,#f59e0b,#fbbf24)',
   trackerHabit:'Escribir 3 cosas por las que estoy agradecido/a hoy',
   affirmations:['Mi vida está llena de razones para agradecer','La gratitud atrae más bendiciones','Aprecio las pequeñas cosas','Soy afortunado/a de estar donde estoy','Elijo enfocarme en lo que tengo','Cada día descubro nuevas razones para agradecer','Mi corazón está abierto al bien','Agradezco mi cuerpo, mi mente y mi camino','Reconozco la belleza en lo cotidiano','La gratitud me conecta con el presente'],
@@ -201,7 +237,7 @@ function getBuiltinMiniAppTemplates() {
   types:['reto','tracker','checklist','faq'],
   niche:'fitness, ejercicio, transformación corporal', category:'Fitness', subcategory:'General',
   description:'Plan progresivo de 30 días con entrenamiento en casa, alimentación y hábitos clave.',
-  icon:'💪', primaryColor:'#dc2626', secondaryColor:'#f87171', bgColor:'#0e0e0e',
+  icon:'fitness_center', primaryColor:'#dc2626', secondaryColor:'#f87171', bgColor:'#0e0e0e',
   headerGradient:'linear-gradient(135deg,#dc2626,#f87171)',
   trackerHabit:'Entrené y seguí mi plan de alimentación hoy',
   retoContent:[
@@ -229,7 +265,7 @@ function getBuiltinMiniAppTemplates() {
   types:['reto','glosario','meditacion','flashcards'],
   niche:'yoga, flexibilidad, mente-cuerpo', category:'Fitness', subcategory:'Yoga',
   description:'21 días para construir una práctica de yoga estable desde cero, con posturas y filosofía.',
-  icon:'🧘‍♀️', primaryColor:'#0891b2', secondaryColor:'#22d3ee', bgColor:'#0e0e0e',
+  icon:'self_improvement', primaryColor:'#0891b2', secondaryColor:'#22d3ee', bgColor:'#0e0e0e',
   headerGradient:'linear-gradient(135deg,#0891b2,#22d3ee)',
   retoContent:[
     {title:'Día 1: Saludo al sol básico', instructions:'Aprende el Surya Namaskar (saludo al sol A): montaña → flexión → plancha → cobra → perro boca abajo → flexión → montaña. 5 rondas.', reflectionPrompt:'¿Qué postura sentiste más extraña?'},
@@ -268,7 +304,7 @@ function getBuiltinMiniAppTemplates() {
   types:['reto','roadmap','tracker','faq'],
   niche:'running, correr, cardio', category:'Fitness', subcategory:'Running',
   description:'Plan de 8 semanas para personas sedentarias que quieren completar su primer 5K corriendo.',
-  icon:'🏃', primaryColor:'#ea580c', secondaryColor:'#fb923c', bgColor:'#0e0e0e',
+  icon:'directions_run', primaryColor:'#ea580c', secondaryColor:'#fb923c', bgColor:'#0e0e0e',
   headerGradient:'linear-gradient(135deg,#ea580c,#fb923c)',
   trackerHabit:'Completé mi sesión de running de hoy',
   retoContent:[
@@ -304,7 +340,7 @@ function getBuiltinMiniAppTemplates() {
   types:['reto','checklist','flashcards','tracker'],
   niche:'entrenamiento funcional, fitness en casa', category:'Fitness', subcategory:'Funcional',
   description:'Entrenamiento funcional sin equipo: fuerza, cardio y movilidad en 30 min diarios.',
-  icon:'🏋️', primaryColor:'#16a34a', secondaryColor:'#4ade80', bgColor:'#0e0e0e',
+  icon:'fitness_center', primaryColor:'#16a34a', secondaryColor:'#4ade80', bgColor:'#0e0e0e',
   headerGradient:'linear-gradient(135deg,#16a34a,#4ade80)',
   trackerHabit:'Entrené funcional hoy',
   retoContent:[
@@ -334,7 +370,7 @@ function getBuiltinMiniAppTemplates() {
   types:['reto','flashcards','checklist'],
   niche:'movilidad articular, flexibilidad, recuperación', category:'Fitness', subcategory:'Movilidad',
   description:'21 días para mejorar tu rango de movimiento, prevenir lesiones y aliviar rigidez.',
-  icon:'🤸', primaryColor:'#0d9488', secondaryColor:'#5eead4', bgColor:'#0e0e0e',
+  icon:'sports_gymnastics', primaryColor:'#0d9488', secondaryColor:'#5eead4', bgColor:'#0e0e0e',
   headerGradient:'linear-gradient(135deg,#0d9488,#5eead4)',
   retoContent:[
     {title:'Día 1: Cadera profunda', instructions:'Malasana (sentadilla profunda) 2 min + mariposa 2 min + 90/90 stretch 1 min por lado + paloma 1 min por lado.', reflectionPrompt:'¿Qué cadera está más rígida?'},
@@ -361,7 +397,7 @@ function getBuiltinMiniAppTemplates() {
   types:['roadmap','flashcards','glosario','tracker'],
   niche:'calistenia, peso corporal, street workout', category:'Fitness', subcategory:'Calistenia',
   description:'Plan progresivo hacia tu primer muscle-up con progresiones de pull-up, dip y core.',
-  icon:'🤾', primaryColor:'#1e40af', secondaryColor:'#60a5fa', bgColor:'#0e0e0e',
+  icon:'sports_martial_arts', primaryColor:'#1e40af', secondaryColor:'#60a5fa', bgColor:'#0e0e0e',
   headerGradient:'linear-gradient(135deg,#1e40af,#60a5fa)',
   trackerHabit:'Entrené calistenia hoy',
   roadmapSteps:[
@@ -401,7 +437,7 @@ function getBuiltinMiniAppTemplates() {
   types:['reto','checklist','flashcards','faq'],
   niche:'nutrición, alimentación saludable', category:'Nutrición', subcategory:'General',
   description:'21 días para crear hábitos de alimentación equilibrada sin dietas restrictivas.',
-  icon:'🥗', primaryColor:'#65a30d', secondaryColor:'#a3e635', bgColor:'#0e0e0e',
+  icon:'nutrition', primaryColor:'#65a30d', secondaryColor:'#a3e635', bgColor:'#0e0e0e',
   headerGradient:'linear-gradient(135deg,#65a30d,#a3e635)',
   retoContent:[
     {title:'Día 1: Vaso de agua al despertar', instructions:'Antes de café o desayuno, toma 500ml de agua. Hidrata tras 8h de ayuno nocturno y activa metabolismo.', reflectionPrompt:'¿Cómo te sentiste?'},
@@ -438,7 +474,7 @@ function getBuiltinMiniAppTemplates() {
   types:['reto','glosario','faq','checklist'],
   niche:'keto, dieta cetogénica, low carb', category:'Nutrición', subcategory:'Keto',
   description:'Plan de 30 días para entrar en cetosis, quemar grasa y estabilizar energía.',
-  icon:'🥑', primaryColor:'#047857', secondaryColor:'#6ee7b7', bgColor:'#0e0e0e',
+  icon:'eco', primaryColor:'#047857', secondaryColor:'#6ee7b7', bgColor:'#0e0e0e',
   headerGradient:'linear-gradient(135deg,#047857,#6ee7b7)',
   retoContent:[
     {title:'Día 1: Limpia la despensa', instructions:'Regala o tira: pan, pasta, arroz, galletas, azúcar, refrescos, cereales. Llena con: huevos, carne, pescado, aguacate, aceite oliva, verduras bajas en carbo.', reflectionPrompt:'¿Qué fue más difícil tirar?'},
@@ -475,7 +511,7 @@ function getBuiltinMiniAppTemplates() {
   types:['planificador','checklist','flashcards'],
   niche:'meal prep, cocina semanal, organización', category:'Nutrición', subcategory:'Meal Prep',
   description:'Organiza tu cocina semanal en 2 horas: comidas ricas, saludables y sin estrés.',
-  icon:'🥘', primaryColor:'#ea580c', secondaryColor:'#fdba74', bgColor:'#0e0e0e',
+  icon:'restaurant', primaryColor:'#ea580c', secondaryColor:'#fdba74', bgColor:'#0e0e0e',
   headerGradient:'linear-gradient(135deg,#ea580c,#fdba74)',
   initialTasks:['Domingo 10am: Planear menú de la semana','Domingo 11am: Hacer lista de compras','Domingo 12pm: Comprar en el super','Domingo 2pm: Lavar y cortar verduras','Domingo 3pm: Cocinar proteínas de la semana','Domingo 4pm: Cocinar carbohidratos (arroz, quinoa)','Domingo 5pm: Preparar 2-3 salsas/aderezos','Domingo 6pm: Porcionar en taper','Lunes-Viernes 7am: Llevar taper al trabajo'],
   initialItems:['10 tapers con tapa','Básculas digital','Cuchillo bien afilado','Tabla de cortar','Etiquetas para fecha','Olla arrocera o Instant Pot','Sartén antiadherente grande','Bolsas ziploc para congelar','Hierbas y especias básicas'],
@@ -495,7 +531,7 @@ function getBuiltinMiniAppTemplates() {
   types:['reto','tracker','faq','glosario'],
   niche:'ayuno intermitente, ayuno 16:8', category:'Nutrición', subcategory:'Ayuno',
   description:'Implementa el ayuno intermitente 16:8 de forma sostenible en 21 días.',
-  icon:'⏰', primaryColor:'#7c2d12', secondaryColor:'#fb923c', bgColor:'#0e0e0e',
+  icon:'schedule', primaryColor:'#7c2d12', secondaryColor:'#fb923c', bgColor:'#0e0e0e',
   headerGradient:'linear-gradient(135deg,#7c2d12,#fb923c)',
   trackerHabit:'Completé mi ventana de ayuno 16h hoy',
   retoContent:[
@@ -532,7 +568,7 @@ function getBuiltinMiniAppTemplates() {
   types:['glosario','faq','flashcards','checklist'],
   niche:'veganismo, plant based, nutrición vegetal', category:'Nutrición', subcategory:'Vegano',
   description:'Guía completa para una alimentación vegana equilibrada y sin déficits nutricionales.',
-  icon:'🌱', primaryColor:'#15803d', secondaryColor:'#86efac', bgColor:'#0e0e0e',
+  icon:'eco', primaryColor:'#15803d', secondaryColor:'#86efac', bgColor:'#0e0e0e',
   headerGradient:'linear-gradient(135deg,#15803d,#86efac)',
   glossaryTerms:[
     {term:'Vegano', def:'No consume ningún producto de origen animal: carne, pescado, lácteos, huevos, miel.'},
@@ -576,7 +612,7 @@ function getBuiltinMiniAppTemplates() {
   types:['reto','devocional','diario','afirmaciones'],
   niche:'fe cristiana, devocional, espiritualidad cristiana', category:'Fe', subcategory:'Cristianismo',
   description:'30 días para profundizar tu caminar con Dios: lectura, oración y reflexión diaria.',
-  icon:'✝️', primaryColor:'#6d28d9', secondaryColor:'#c4b5fd', bgColor:'#0e0e0e',
+  icon:'auto_stories', primaryColor:'#6d28d9', secondaryColor:'#c4b5fd', bgColor:'#0e0e0e',
   headerGradient:'linear-gradient(135deg,#6d28d9,#c4b5fd)',
   devotionalText:'Amado/a, el Señor te llama hoy a caminar con Él. Dios no busca tu perfección, busca tu corazón. Romanos 8:38-39 nos recuerda: "Estoy convencido de que ni la muerte ni la vida, ni ángeles ni demonios, ni lo presente ni lo porvenir... podrá apartarnos del amor que Dios nos ha manifestado en Cristo Jesús." Toma este momento para respirar profundo. Entrégale a Dios esa preocupación que cargas. Él cuida de ti más de lo que imaginas. Oración: "Padre, gracias por tu fidelidad constante. Hoy suelto mis cargas en tus manos. Ayúdame a confiar en tu tiempo y tu voluntad. En el nombre de Jesús, Amén."',
   retoContent:[
@@ -597,7 +633,7 @@ function getBuiltinMiniAppTemplates() {
   types:['reto','afirmaciones','diario','meditacion'],
   niche:'manifestación, ley atracción, abundancia', category:'Fe', subcategory:'Espiritualidad',
   description:'21 días para alinear tu mente y energía con lo que deseas manifestar en tu vida.',
-  icon:'✨', primaryColor:'#a855f7', secondaryColor:'#e9d5ff', bgColor:'#0e0e0e',
+  icon:'self_improvement', primaryColor:'#a855f7', secondaryColor:'#e9d5ff', bgColor:'#0e0e0e',
   headerGradient:'linear-gradient(135deg,#a855f7,#e9d5ff)',
   retoContent:[
     {title:'Día 1: Visión clara', instructions:'Escribe en detalle tu vida ideal en 1 año: trabajo, salud, relaciones, dinero. Sé específico/a. La claridad es el primer paso.', reflectionPrompt:'¿Qué parte te cuesta más creer posible?'},
@@ -618,7 +654,7 @@ function getBuiltinMiniAppTemplates() {
   types:['reto','tracker','checklist','diario'],
   niche:'oración, vida de oración, intimidad con Dios', category:'Fe', subcategory:'Cristianismo',
   description:'30 días para construir una vida de oración profunda y constante.',
-  icon:'🙏', primaryColor:'#4338ca', secondaryColor:'#a5b4fc', bgColor:'#0e0e0e',
+  icon:'auto_stories', primaryColor:'#4338ca', secondaryColor:'#a5b4fc', bgColor:'#0e0e0e',
   headerGradient:'linear-gradient(135deg,#4338ca,#a5b4fc)',
   trackerHabit:'Oré hoy (al menos 15 minutos)',
   retoContent:[
@@ -639,7 +675,7 @@ function getBuiltinMiniAppTemplates() {
   types:['flashcards','reto','tracker'],
   niche:'memorizar versículos, biblia, escritura', category:'Fe', subcategory:'Cristianismo',
   description:'Memoriza 30 versículos clave de la Biblia en 30 días usando flashcards y repetición.',
-  icon:'📖', primaryColor:'#be123c', secondaryColor:'#fda4af', bgColor:'#0e0e0e',
+  icon:'auto_stories', primaryColor:'#be123c', secondaryColor:'#fda4af', bgColor:'#0e0e0e',
   headerGradient:'linear-gradient(135deg,#be123c,#fda4af)',
   trackerHabit:'Memoricé el versículo de hoy',
   cards:[
@@ -675,7 +711,7 @@ function getBuiltinMiniAppTemplates() {
   types:['meditacion','afirmaciones','diario','reto'],
   niche:'meditación espiritual, conexión interior', category:'Fe', subcategory:'Espiritualidad',
   description:'Conecta con tu esencia a través de la meditación, mantras y reflexión espiritual.',
-  icon:'🕯️', primaryColor:'#9333ea', secondaryColor:'#d8b4fe', bgColor:'#0e0e0e',
+  icon:'self_improvement', primaryColor:'#9333ea', secondaryColor:'#d8b4fe', bgColor:'#0e0e0e',
   headerGradient:'linear-gradient(135deg,#9333ea,#d8b4fe)',
   meditationScript:'Enciende una vela si puedes. Siéntate cómodo, columna erguida, palmas hacia arriba sobre los muslos. Cierra los ojos suavemente. Respira profundo 3 veces, liberando tensiones. Lleva tu atención al centro de tu pecho, tu corazón. Siente el latido, la presencia de vida. Imagina una luz cálida en ese lugar. Esa luz eres tú, tu esencia pura. Observa cómo esa luz se expande suavemente. Llena tu cuerpo. Trasciende tu cuerpo. Te conecta con todo lo que es. No eres tu mente. No eres tus pensamientos. Eres ese espacio consciente que los observa. Descansa en ese espacio. No hay nada que hacer, solo ser. Ahora repite mentalmente: "Soy paz. Soy luz. Soy amor." Siente cómo cada palabra vibra en ti. Quédate aquí el tiempo que necesites. Cuando estés listo/a, toca suavemente tu corazón, da gracias, y abre los ojos.',
   affirmations:['Soy luz, soy amor, soy paz','Mi esencia es divina','Estoy conectado/a con todo lo que es','El universo me sostiene','Confío en mi camino','Mi intuición me guía','Soy un alma en experiencia humana','La paz que busco vive en mí','Soy uno con la fuente','Todo está bien en este momento'],
@@ -698,7 +734,7 @@ function getBuiltinMiniAppTemplates() {
   types:['reto','tracker','checklist','diario'],
   niche:'ahorro, finanzas personales, no spend', category:'Finanzas', subcategory:'Ahorro',
   description:'30 días sin gastos innecesarios para reiniciar tu relación con el dinero y ahorrar.',
-  icon:'💰', primaryColor:'#15803d', secondaryColor:'#86efac', bgColor:'#0e0e0e',
+  icon:'savings', primaryColor:'#15803d', secondaryColor:'#86efac', bgColor:'#0e0e0e',
   headerGradient:'linear-gradient(135deg,#15803d,#86efac)',
   trackerHabit:'Hoy NO gasté en nada innecesario',
   retoContent:[
@@ -719,7 +755,7 @@ function getBuiltinMiniAppTemplates() {
   types:['roadmap','checklist','flashcards','faq'],
   niche:'deudas, libertad financiera, plan de pago', category:'Finanzas', subcategory:'Deudas',
   description:'Plan paso a paso para eliminar tus deudas usando el método bola de nieve o avalancha.',
-  icon:'🧗', primaryColor:'#dc2626', secondaryColor:'#fecaca', bgColor:'#0e0e0e',
+  icon:'credit_score', primaryColor:'#dc2626', secondaryColor:'#fecaca', bgColor:'#0e0e0e',
   headerGradient:'linear-gradient(135deg,#dc2626,#fecaca)',
   roadmapSteps:[
     {title:'Paso 1: Lista todas tus deudas', description:'Tarjetas, préstamos, deudas familiares. Anota: monto, interés, pago mínimo. La claridad es paso 1.'},
@@ -757,7 +793,7 @@ function getBuiltinMiniAppTemplates() {
   types:['checklist','planificador','flashcards','faq'],
   niche:'presupuesto, control de gastos, finanzas', category:'Finanzas', subcategory:'Presupuesto',
   description:'Crea y mantén un presupuesto que realmente funcione usando el método 50/30/20.',
-  icon:'📊', primaryColor:'#1e40af', secondaryColor:'#93c5fd', bgColor:'#0e0e0e',
+  icon:'savings', primaryColor:'#1e40af', secondaryColor:'#93c5fd', bgColor:'#0e0e0e',
   headerGradient:'linear-gradient(135deg,#1e40af,#93c5fd)',
   initialItems:['Listar todos los ingresos del mes','Categorizar gastos: necesidades / deseos / ahorro','50% necesidades (techo, comida, transporte)','30% deseos (ocio, hobbies, restaurantes)','20% ahorro e inversión','Anotar cada gasto en app o cuaderno','Revisar presupuesto cada semana','Ajustar al final del mes según realidad'],
   initialTasks:['Día 1: Calcular ingreso neto mensual','Día 2: Sumar gastos fijos (renta, luz, internet)','Día 3: Calcular promedio gastos variables (3 meses)','Día 4: Asignar % según método 50/30/20','Día 5: Configurar app de control (YNAB, Fintonic)','Día 7: Primera revisión semanal','Día 14: Ajuste de medio mes','Día 30: Cierre y planificar siguiente mes'],
@@ -786,7 +822,7 @@ function getBuiltinMiniAppTemplates() {
   types:['roadmap','glosario','flashcards','faq'],
   niche:'inversión, bolsa, fondos indexados', category:'Finanzas', subcategory:'Inversión',
   description:'Empieza a invertir desde cero con conceptos claros y un plan simple a largo plazo.',
-  icon:'📈', primaryColor:'#0e7490', secondaryColor:'#67e8f9', bgColor:'#0e0e0e',
+  icon:'account_balance_wallet', primaryColor:'#0e7490', secondaryColor:'#67e8f9', bgColor:'#0e0e0e',
   headerGradient:'linear-gradient(135deg,#0e7490,#67e8f9)',
   roadmapSteps:[
     {title:'Paso 1: Salud financiera primero', description:'NO inviertas si tienes deudas de alto interés (>8%) o sin fondo de emergencia. Resuelve eso antes.'},
@@ -832,7 +868,7 @@ function getBuiltinMiniAppTemplates() {
   types:['roadmap','tracker','diario','afirmaciones'],
   niche:'libertad financiera, FIRE, independencia económica', category:'Finanzas', subcategory:'Libertad',
   description:'Plan a largo plazo para alcanzar independencia financiera y vivir según tus términos.',
-  icon:'🦅', primaryColor:'#0c4a6e', secondaryColor:'#7dd3fc', bgColor:'#0e0e0e',
+  icon:'account_balance_wallet', primaryColor:'#0c4a6e', secondaryColor:'#7dd3fc', bgColor:'#0e0e0e',
   headerGradient:'linear-gradient(135deg,#0c4a6e,#7dd3fc)',
   trackerHabit:'Hoy ahorré/invertí algo hacia mi libertad financiera',
   roadmapSteps:[
@@ -856,7 +892,7 @@ function getBuiltinMiniAppTemplates() {
   types:['roadmap','checklist','planificador','faq'],
   niche:'infoproducto, curso online, emprendimiento digital', category:'Negocios', subcategory:'Infoproductos',
   description:'Plan paso a paso para crear, lanzar y vender tu primer infoproducto digital.',
-  icon:'🚀', primaryColor:'#2563eb', secondaryColor:'#93c5fd', bgColor:'#0e0e0e',
+  icon:'rocket_launch', primaryColor:'#2563eb', secondaryColor:'#93c5fd', bgColor:'#0e0e0e',
   headerGradient:'linear-gradient(135deg,#2563eb,#93c5fd)',
   roadmapSteps:[
     {title:'Paso 1: Valida la idea', description:'Habla con 10 personas de tu audiencia. ¿Pagarían por esto? Si no obtienes 3 "sí claros", pivota.'},
@@ -884,7 +920,7 @@ function getBuiltinMiniAppTemplates() {
   types:['roadmap','checklist','flashcards'],
   niche:'freelance, cliente, trabajo independiente', category:'Negocios', subcategory:'Freelance',
   description:'De cero a tu primer cliente pagando en 30 días, con servicios que sí se venden.',
-  icon:'💼', primaryColor:'#7c2d12', secondaryColor:'#fed7aa', bgColor:'#0e0e0e',
+  icon:'business_center', primaryColor:'#7c2d12', secondaryColor:'#fed7aa', bgColor:'#0e0e0e',
   headerGradient:'linear-gradient(135deg,#7c2d12,#fed7aa)',
   roadmapSteps:[
     {title:'Paso 1: Elige 1 servicio específico', description:'NO "diseño gráfico". SÍ "diseño Reels para nutricionistas". Nicho + servicio = cliente claro.'},
@@ -912,7 +948,7 @@ function getBuiltinMiniAppTemplates() {
   types:['flashcards','roadmap','glosario','faq'],
   niche:'ventas, cierre, persuasión ética', category:'Negocios', subcategory:'Ventas',
   description:'Metodología de ventas consultiva: vender sin vender, escuchar más que hablar.',
-  icon:'🤝', primaryColor:'#b45309', secondaryColor:'#fcd34d', bgColor:'#0e0e0e',
+  icon:'business_center', primaryColor:'#b45309', secondaryColor:'#fcd34d', bgColor:'#0e0e0e',
   headerGradient:'linear-gradient(135deg,#b45309,#fcd34d)',
   roadmapSteps:[
     {title:'Paso 1: Prospectar correctamente', description:'Cliente ideal claro. Calidad > cantidad. 10 prospects bien calificados > 100 fríos.'},
@@ -951,7 +987,7 @@ function getBuiltinMiniAppTemplates() {
   types:['flashcards','glosario','checklist','reto'],
   niche:'copywriting, redacción persuasiva, escritura ventas', category:'Negocios', subcategory:'Copywriting',
   description:'Aprende los frameworks de copywriting que convierten lectores en compradores.',
-  icon:'✍️', primaryColor:'#831843', secondaryColor:'#fbcfe8', bgColor:'#0e0e0e',
+  icon:'business_center', primaryColor:'#831843', secondaryColor:'#fbcfe8', bgColor:'#0e0e0e',
   headerGradient:'linear-gradient(135deg,#831843,#fbcfe8)',
   cards:[
     {front:'AIDA', back:'Atención, Interés, Deseo, Acción. Framework clásico de toda pieza persuasiva.'},
@@ -992,7 +1028,7 @@ function getBuiltinMiniAppTemplates() {
   types:['roadmap','checklist','glosario','flashcards'],
   niche:'SEO, posicionamiento Google, tráfico orgánico', category:'Negocios', subcategory:'SEO',
   description:'Aprende SEO desde fundamentos hasta ranking en Google con un plan paso a paso.',
-  icon:'🔍', primaryColor:'#1d4ed8', secondaryColor:'#bfdbfe', bgColor:'#0e0e0e',
+  icon:'business_center', primaryColor:'#1d4ed8', secondaryColor:'#bfdbfe', bgColor:'#0e0e0e',
   headerGradient:'linear-gradient(135deg,#1d4ed8,#bfdbfe)',
   roadmapSteps:[
     {title:'Paso 1: Investigación de palabras clave', description:'Usa Google Keyword Planner, Ahrefs, Ubersuggest. Busca volumen + intención + dificultad baja al inicio.'},
@@ -1032,7 +1068,7 @@ function getBuiltinMiniAppTemplates() {
   types:['roadmap','flashcards','checklist','glosario'],
   niche:'email marketing, newsletter, automatización', category:'Negocios', subcategory:'Email',
   description:'Construye una lista de email rentable desde cero con automatizaciones y secuencias que venden.',
-  icon:'📧', primaryColor:'#0891b2', secondaryColor:'#a5f3fc', bgColor:'#0e0e0e',
+  icon:'business_center', primaryColor:'#0891b2', secondaryColor:'#a5f3fc', bgColor:'#0e0e0e',
   headerGradient:'linear-gradient(135deg,#0891b2,#a5f3fc)',
   roadmapSteps:[
     {title:'Paso 1: Elige plataforma', description:'MailerLite (gratis hasta 1000 subs), ActiveCampaign (más completo), ConvertKit (creators), Beehiiv (newsletters).'},
@@ -1072,7 +1108,7 @@ function getBuiltinMiniAppTemplates() {
   types:['reto','flashcards','glosario','faq'],
   niche:'inglés, idiomas, aprender inglés', category:'Educación', subcategory:'Idiomas',
   description:'30 días para construir base sólida en inglés con vocabulario, gramática y práctica diaria.',
-  icon:'🇬🇧', primaryColor:'#1e3a8a', secondaryColor:'#bfdbfe', bgColor:'#0e0e0e',
+  icon:'translate', primaryColor:'#1e3a8a', secondaryColor:'#bfdbfe', bgColor:'#0e0e0e',
   headerGradient:'linear-gradient(135deg,#1e3a8a,#bfdbfe)',
   retoContent:[
     {title:'Día 1: Pronunciación básica', instructions:'Vocales del inglés. Hay 12 sonidos vocálicos vs 5 en español. Mira un video de "vowel sounds" y repite cada uno 5 veces.', reflectionPrompt:'¿Qué sonido te costó más?'},
@@ -1117,7 +1153,7 @@ function getBuiltinMiniAppTemplates() {
   types:['reto','tracker','checklist','flashcards'],
   niche:'productividad, hábitos, gestión tiempo', category:'Educación', subcategory:'Productividad',
   description:'Construye hábitos productivos sostenibles aplicando ciencia conductual y sistemas.',
-  icon:'⚡', primaryColor:'#facc15', secondaryColor:'#fef08a', bgColor:'#0e0e0e',
+  icon:'school', primaryColor:'#facc15', secondaryColor:'#fef08a', bgColor:'#0e0e0e',
   headerGradient:'linear-gradient(135deg,#facc15,#fef08a)',
   trackerHabit:'Hoy completé mi rutina productiva clave',
   retoContent:[
@@ -1147,7 +1183,7 @@ function getBuiltinMiniAppTemplates() {
   types:['reto','diario','flashcards'],
   niche:'escritura creativa, creatividad, contar historias', category:'Educación', subcategory:'Escritura',
   description:'30 días de prompts creativos para desbloquear tu voz como escritor/a.',
-  icon:'📝', primaryColor:'#7c3aed', secondaryColor:'#ddd6fe', bgColor:'#0e0e0e',
+  icon:'draw', primaryColor:'#7c3aed', secondaryColor:'#ddd6fe', bgColor:'#0e0e0e',
   headerGradient:'linear-gradient(135deg,#7c3aed,#ddd6fe)',
   retoContent:[
     {title:'Día 1: Página en blanco', instructions:'Escribe lo que sea durante 15 minutos sin parar. No edites. No juzgues. Free writing despeja la mente.', reflectionPrompt:'¿Qué descubriste?'},
@@ -1174,7 +1210,7 @@ function getBuiltinMiniAppTemplates() {
   types:['roadmap','glosario','flashcards','faq'],
   niche:'programación, código, desarrollador', category:'Educación', subcategory:'Programación',
   description:'Roadmap para aprender a programar desde cero hasta tu primer proyecto real.',
-  icon:'💻', primaryColor:'#16a34a', secondaryColor:'#86efac', bgColor:'#0e0e0e',
+  icon:'code', primaryColor:'#16a34a', secondaryColor:'#86efac', bgColor:'#0e0e0e',
   headerGradient:'linear-gradient(135deg,#16a34a,#86efac)',
   roadmapSteps:[
     {title:'Paso 1: Elige el lenguaje correcto', description:'Web: JavaScript. Datos/IA: Python. Mobile: Swift/Kotlin. Para empezar: Python o JavaScript.'},
@@ -1222,7 +1258,7 @@ function getBuiltinMiniAppTemplates() {
   types:['flashcards','checklist','roadmap','faq'],
   niche:'estudio, aprendizaje, técnicas estudiantiles', category:'Educación', subcategory:'Estudio',
   description:'Aprende a estudiar mejor con técnicas científicamente probadas, no estudiando más horas.',
-  icon:'📚', primaryColor:'#0d9488', secondaryColor:'#5eead4', bgColor:'#0e0e0e',
+  icon:'school', primaryColor:'#0d9488', secondaryColor:'#5eead4', bgColor:'#0e0e0e',
   headerGradient:'linear-gradient(135deg,#0d9488,#5eead4)',
   roadmapSteps:[
     {title:'Paso 1: Active recall', description:'En lugar de releer, hazte preguntas y responde sin mirar. La mejor técnica científicamente probada.'},
@@ -1257,7 +1293,7 @@ function getBuiltinMiniAppTemplates() {
   types:['reto','tracker','diario'],
   niche:'lectura, libros, hábito lector', category:'Educación', subcategory:'Lectura',
   description:'Construye el hábito de leer todos los días con un reto progresivo de 30 días.',
-  icon:'📖', primaryColor:'#854d0e', secondaryColor:'#fde68a', bgColor:'#0e0e0e',
+  icon:'menu_book', primaryColor:'#854d0e', secondaryColor:'#fde68a', bgColor:'#0e0e0e',
   headerGradient:'linear-gradient(135deg,#854d0e,#fde68a)',
   trackerHabit:'Hoy leí al menos 20 minutos',
   retoContent:[
@@ -1279,7 +1315,7 @@ function getBuiltinMiniAppTemplates() {
   types:['reto','diario','checklist','afirmaciones'],
   niche:'pareja, relación, conexión emocional', category:'Relaciones', subcategory:'Pareja',
   description:'21 días para reavivar la conexión y profundizar la intimidad emocional con tu pareja.',
-  icon:'💕', primaryColor:'#e11d48', secondaryColor:'#fda4af', bgColor:'#0e0e0e',
+  icon:'favorite', primaryColor:'#e11d48', secondaryColor:'#fda4af', bgColor:'#0e0e0e',
   headerGradient:'linear-gradient(135deg,#e11d48,#fda4af)',
   retoContent:[
     {title:'Día 1: Las 36 preguntas', instructions:'Existen 36 preguntas (Arthur Aron) que generan intimidad. Hagan las primeras 12 hoy en una cita relajada.', reflectionPrompt:'¿Qué descubrieron?'},
@@ -1300,7 +1336,7 @@ function getBuiltinMiniAppTemplates() {
   types:['checklist','faq','tracker','diario'],
   niche:'embarazo, primer trimestre, maternidad', category:'Relaciones', subcategory:'Embarazo',
   description:'Acompaña tu primer trimestre con información clara, checklists y journaling.',
-  icon:'🤰', primaryColor:'#ec4899', secondaryColor:'#fbcfe8', bgColor:'#0e0e0e',
+  icon:'pregnant_woman', primaryColor:'#ec4899', secondaryColor:'#fbcfe8', bgColor:'#0e0e0e',
   headerGradient:'linear-gradient(135deg,#ec4899,#fbcfe8)',
   trackerHabit:'Tomé ácido fólico hoy',
   initialItems:['Confirmar embarazo (test + análisis sangre)','Cita con ginecólogo/a','Ácido fólico 400mcg diario','Eliminar alcohol y tabaco','Reducir cafeína (<200mg/día)','Evitar carnes crudas y pescados altos en mercurio','Hidratarse 2-2.5L agua diarios','Vitaminas prenatales','Investigar baja por maternidad','Empezar diario de embarazo'],
@@ -1322,7 +1358,7 @@ function getBuiltinMiniAppTemplates() {
   types:['faq','checklist','flashcards','glosario'],
   niche:'crianza respetuosa, primeros años, parentalidad positiva', category:'Relaciones', subcategory:'Crianza',
   description:'Guía de crianza respetuosa para los primeros 3 años con bases científicas.',
-  icon:'👶', primaryColor:'#7e22ce', secondaryColor:'#e9d5ff', bgColor:'#0e0e0e',
+  icon:'family_restroom', primaryColor:'#7e22ce', secondaryColor:'#e9d5ff', bgColor:'#0e0e0e',
   headerGradient:'linear-gradient(135deg,#7e22ce,#e9d5ff)',
   faqItems:[
     {q:'¿Hasta qué edad colechar?', a:'Decisión familiar. Es seguro siguiendo guías AEPED. Algunos hasta 1-2 años, otros más. No hay edad correcta.'},
@@ -1359,7 +1395,7 @@ function getBuiltinMiniAppTemplates() {
   types:['reto','flashcards','diario','roadmap'],
   niche:'comunicación, asertividad, relaciones', category:'Relaciones', subcategory:'Comunicación',
   description:'Aprende a expresar lo que sientes y necesitas con respeto, claridad y firmeza.',
-  icon:'🗣️', primaryColor:'#0369a1', secondaryColor:'#7dd3fc', bgColor:'#0e0e0e',
+  icon:'forum', primaryColor:'#0369a1', secondaryColor:'#7dd3fc', bgColor:'#0e0e0e',
   headerGradient:'linear-gradient(135deg,#0369a1,#7dd3fc)',
   retoContent:[
     {title:'Día 1: Identifica tu estilo', instructions:'¿Pasivo (no dices lo que sientes), agresivo (atacas), pasivo-agresivo (sarcasmo, indirectas) o asertivo? Reconócelo sin juicio.', reflectionPrompt:'¿Cuál es tu patrón?'},
@@ -1396,7 +1432,7 @@ function getBuiltinMiniAppTemplates() {
   types:['diario','afirmaciones','roadmap','flashcards'],
   niche:'codependencia, dependencia emocional, amor propio', category:'Relaciones', subcategory:'Codependencia',
   description:'Identifica patrones de codependencia y construye relaciones saludables desde el amor propio.',
-  icon:'🪢', primaryColor:'#9f1239', secondaryColor:'#fda4af', bgColor:'#0e0e0e',
+  icon:'diamond', primaryColor:'#9f1239', secondaryColor:'#fda4af', bgColor:'#0e0e0e',
   headerGradient:'linear-gradient(135deg,#9f1239,#fda4af)',
   affirmations:['Yo no soy responsable de las emociones de otros','Mi valor no depende de ser necesitado/a','Puedo amar sin perderme','Soltar no es abandonar','Merezco amor que no exija renunciar a mí','Pongo límites desde el amor, no desde el miedo','Mi felicidad es mi responsabilidad','No tengo que rescatar a nadie','Estoy completo/a sin pareja','Mi paz vale más que su aprobación'],
   journalPrompts:['¿En qué relaciones me pierdo a mí mismo/a?','¿A quién intento "salvar" y por qué?','¿Qué necesidades propias ignoro por atender a otros?','¿Cómo era el amor en mi familia de origen?','¿Qué temo si pongo un límite?','¿Quién soy cuando estoy sola/o?','¿Qué emoción evito cuando la otra persona se molesta?'],
@@ -1427,7 +1463,7 @@ function getBuiltinMiniAppTemplates() {
   types:['reto','checklist','glosario','faq'],
   niche:'skincare, cuidado piel, rutina nocturna', category:'Belleza', subcategory:'Skincare',
   description:'30 días para construir una rutina nocturna efectiva sin gastar fortunas en productos.',
-  icon:'✨', primaryColor:'#db2777', secondaryColor:'#fbcfe8', bgColor:'#0e0e0e',
+  icon:'spa', primaryColor:'#db2777', secondaryColor:'#fbcfe8', bgColor:'#0e0e0e',
   headerGradient:'linear-gradient(135deg,#db2777,#fbcfe8)',
   retoContent:[
     {title:'Día 1: Conoce tu piel', instructions:'Identifica tu tipo: grasa, seca, mixta, sensible. Test del kleenex 2h tras lavar: brillos = mixta/grasa.', reflectionPrompt:'¿Qué tipo eres?'},
@@ -1466,7 +1502,7 @@ function getBuiltinMiniAppTemplates() {
   types:['flashcards','glosario','faq','checklist'],
   niche:'colorimetría, estilo personal, paleta de colores', category:'Belleza', subcategory:'Colorimetría',
   description:'Identifica tu paleta personal y aprende a vestir colores que te favorecen.',
-  icon:'🎨', primaryColor:'#9333ea', secondaryColor:'#e9d5ff', bgColor:'#0e0e0e',
+  icon:'spa', primaryColor:'#9333ea', secondaryColor:'#e9d5ff', bgColor:'#0e0e0e',
   headerGradient:'linear-gradient(135deg,#9333ea,#e9d5ff)',
   cards:[
     {front:'Subtono cálido', back:'Venas verdosas, pelo dorado/cobre, piel marfil/dorada, ojos cálidos. Te favorecen tonos tierra, mostaza, coral.'},
@@ -1503,7 +1539,7 @@ function getBuiltinMiniAppTemplates() {
   types:['checklist','roadmap','flashcards'],
   niche:'armario cápsula, minimalismo, estilo personal', category:'Belleza', subcategory:'Estilo',
   description:'Crea un armario cápsula con 30-40 piezas que combinan entre sí y reflejan tu estilo.',
-  icon:'👗', primaryColor:'#475569', secondaryColor:'#cbd5e1', bgColor:'#0e0e0e',
+  icon:'spa', primaryColor:'#475569', secondaryColor:'#cbd5e1', bgColor:'#0e0e0e',
   headerGradient:'linear-gradient(135deg,#475569,#cbd5e1)',
   initialItems:['Camiseta blanca básica','Camiseta negra básica','Jeans bien cortados (azul oscuro)','Pantalón sastre','Vestido negro versátil','Camisa blanca clásica','Blazer atemporal','Cárdigan o suéter neutro','Falda midi','Chaqueta cuero o denim','Trench o gabardina','Zapatillas blancas','Botines neutros','Bailarinas o mocasines','Tacones nude/negros','Bolso medianos neutros','Cinturón básico','Pañuelo o accesorio statement','Pijama bonito','Ropa interior funcional'],
   roadmapSteps:[
@@ -1534,7 +1570,7 @@ function getBuiltinMiniAppTemplates() {
   types:['reto','checklist','planificador'],
   niche:'limpieza, hogar, organización', category:'Hogar', subcategory:'Limpieza',
   description:'21 días para una limpieza profunda zona por zona, sin agotarte un fin de semana entero.',
-  icon:'🧹', primaryColor:'#0891b2', secondaryColor:'#a5f3fc', bgColor:'#0e0e0e',
+  icon:'home', primaryColor:'#0891b2', secondaryColor:'#a5f3fc', bgColor:'#0e0e0e',
   headerGradient:'linear-gradient(135deg,#0891b2,#a5f3fc)',
   retoContent:[
     {title:'Día 1: Cocina - encimeras', instructions:'Despeja todo, limpia a fondo encimeras, azulejos y campana. Solo deja lo esencial visible.', reflectionPrompt:'¿Qué quitarás permanentemente?'},
@@ -1554,7 +1590,7 @@ function getBuiltinMiniAppTemplates() {
   types:['reto','checklist','diario','afirmaciones'],
   niche:'minimalismo, declutter, ordenar', category:'Hogar', subcategory:'Minimalismo',
   description:'30 días para soltar lo que no necesitas y ganar espacio físico y mental.',
-  icon:'📦', primaryColor:'#525252', secondaryColor:'#d4d4d4', bgColor:'#0e0e0e',
+  icon:'home', primaryColor:'#525252', secondaryColor:'#d4d4d4', bgColor:'#0e0e0e',
   headerGradient:'linear-gradient(135deg,#525252,#d4d4d4)',
   retoContent:[
     {title:'Día 1: Tira 1 cosa', instructions:'Cualquier cosa. Algo roto, vencido, sin uso. Establece el ritual: 1 cosa al día = 30 cosas al mes.', reflectionPrompt:'¿Qué tiraste?'},
@@ -1575,7 +1611,7 @@ function getBuiltinMiniAppTemplates() {
   types:['roadmap','checklist','glosario','faq'],
   niche:'jardinería, plantas, huerto urbano', category:'Hogar', subcategory:'Jardinería',
   description:'Crea tu primer jardín o huerto urbano paso a paso, aunque tengas poco espacio.',
-  icon:'🪴', primaryColor:'#16a34a', secondaryColor:'#86efac', bgColor:'#0e0e0e',
+  icon:'eco', primaryColor:'#16a34a', secondaryColor:'#86efac', bgColor:'#0e0e0e',
   headerGradient:'linear-gradient(135deg,#16a34a,#86efac)',
   roadmapSteps:[
     {title:'Paso 1: Evalúa tu espacio', description:'Luz: ¿cuántas horas de sol directo? Eso define qué plantas pueden vivir ahí.'},
@@ -1611,7 +1647,7 @@ function getBuiltinMiniAppTemplates() {
   types:['reto','checklist','flashcards','glosario'],
   niche:'zero waste, sostenibilidad, vida sin residuos', category:'Hogar', subcategory:'Sostenibilidad',
   description:'30 días para reducir tus residuos y vivir más sostenible sin volverse extremo.',
-  icon:'♻️', primaryColor:'#15803d', secondaryColor:'#bbf7d0', bgColor:'#0e0e0e',
+  icon:'home', primaryColor:'#15803d', secondaryColor:'#bbf7d0', bgColor:'#0e0e0e',
   headerGradient:'linear-gradient(135deg,#15803d,#bbf7d0)',
   retoContent:[
     {title:'Día 1: Auditoría de tu basura', instructions:'Una semana sin tirar nada (lleva contigo en bolsa). El final de semana revisa: ¿de qué es 80% tu basura?', reflectionPrompt:'¿Qué descubriste?'},
@@ -1698,7 +1734,7 @@ function getBuiltinMiniAppTemplates() {
   category:'Mascotas',
   subcategory:'Adiestramiento',
   description:'Aprende los fundamentos del adiestramiento en positivo y enseña comandos básicos a tu perro.',
-  icon:'sports_score',
+  icon:'pets',
   primaryColor:'#10b981',
   secondaryColor:'#059669',
   bgColor:'#0e0e0e',
@@ -1751,7 +1787,7 @@ function getBuiltinMiniAppTemplates() {
   category:'Desarrollo Personal',
   subcategory:'Hábitos',
   description:'Construye hábitos que duran aplicando los principios de los hábitos atómicos durante 66 días.',
-  icon:'loop',
+  icon:'target',
   primaryColor:'#6366f1',
   secondaryColor:'#4f46e5',
   bgColor:'#0e0e0e',
@@ -1795,7 +1831,7 @@ function getBuiltinMiniAppTemplates() {
   category:'Desarrollo Personal',
   subcategory:'Propósito',
   description:'Un viaje guiado para descubrir tu propósito, alinear tu vida con tus valores y diseñar el camino hacia quien quieres ser.',
-  icon:'self_improvement',
+  icon:'explore',
   primaryColor:'#8b5cf6',
   secondaryColor:'#7c3aed',
   bgColor:'#0e0e0e',
@@ -1904,7 +1940,7 @@ function getBuiltinMiniAppTemplates() {
   category:'Educación',
   subcategory:'Idiomas',
   description:'Practica conversación real en inglés con un chatbot IA que te corrige, responde y te ayuda a perder el miedo a hablar.',
-  icon:'record_voice_over',
+  icon:'translate',
   primaryColor:'#2E5BFF',
   secondaryColor:'#7c3aed',
   bgColor:'#0e0e0e',
@@ -1948,7 +1984,7 @@ function getBuiltinMiniAppTemplates() {
   category:'Educación',
   subcategory:'Idiomas',
   description:'Entrena tu oído con audios reales en inglés (TTS), aprende idioms avanzados y ejercita pronunciación con retos diarios.',
-  icon:'hearing',
+  icon:'self_improvement',
   primaryColor:'#0891b2',
   secondaryColor:'#0e7490',
   bgColor:'#0e0e0e',

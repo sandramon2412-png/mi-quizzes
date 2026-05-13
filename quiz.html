@@ -6,9 +6,10 @@
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="./supabase-config.js"></script>
-<script src="./app.js"></script>
+<script src="./app.js?v=offer-demo-1"></script>
 <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.2/dist/confetti.browser.min.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
 <script>
   tailwind.config = {
     theme: {
@@ -18,6 +19,8 @@
           "brand-light": "var(--brand-light, #C4A7D7)",
           "brand-bg": "var(--brand-bg, #f7f2fa)",
           "brand-surface": "var(--brand-surface, #faf8fc)",
+          "brand-text": "var(--brand-text, #26212b)",
+          "brand-muted": "var(--brand-muted, #6f6677)",
         },
         fontFamily: {
           "serif": ["Playfair Display", "Georgia", "serif"],
@@ -33,27 +36,121 @@
     --brand-light: #C4A7D7;
     --brand-bg: #f7f2fa;
     --brand-surface: #faf8fc;
+    --brand-text: #26212b;
+    --brand-muted: #6f6677;
+    --brand-border: rgba(139,106,160,0.18);
+    --brand-shadow: rgba(49,33,60,0.12);
   }
-  body { font-family: 'Plus Jakarta Sans', sans-serif; background: #ffffff; color: #3d3d3d; }
-  .brand-gradient { background: linear-gradient(180deg, var(--brand-bg) 0%, #ffffff 100%); }
+  html {
+    background:
+      radial-gradient(circle at 18% 12%, color-mix(in srgb, var(--brand) 42%, transparent), transparent 34rem),
+      radial-gradient(circle at 88% 72%, color-mix(in srgb, var(--brand-light) 38%, transparent), transparent 36rem),
+      linear-gradient(rgba(255,255,255,0.075) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.075) 1px, transparent 1px),
+      #1b1b21;
+    background-size: auto, auto, 72px 72px, 72px 72px, auto;
+  }
+  html,
+  body {
+    min-height: 100%;
+    background-color: #1b1b21 !important;
+  }
+  body {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    position: relative;
+    isolation: isolate;
+    background:
+      radial-gradient(circle at 18% 12%, color-mix(in srgb, var(--brand) 42%, transparent), transparent 34rem),
+      radial-gradient(circle at 88% 72%, color-mix(in srgb, var(--brand-light) 38%, transparent), transparent 36rem),
+      linear-gradient(rgba(255,255,255,0.075) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.075) 1px, transparent 1px),
+      #1b1b21 !important;
+    background-size: auto, auto, 72px 72px, 72px 72px, auto;
+    color: #f8fafc;
+  }
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    background:
+      radial-gradient(circle at 18% 12%, color-mix(in srgb, var(--brand) 42%, transparent), transparent 34rem),
+      radial-gradient(circle at 88% 72%, color-mix(in srgb, var(--brand-light) 38%, transparent), transparent 36rem),
+      linear-gradient(rgba(255,255,255,0.075) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.075) 1px, transparent 1px),
+      #1b1b21;
+    background-size: auto, auto, 72px 72px, 72px 72px, auto;
+  }
+  .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 500, 'GRAD' 0, 'opsz' 24; }
+  #quiz-main {
+    background:
+      radial-gradient(circle at 18% 12%, color-mix(in srgb, var(--brand) 32%, transparent), transparent 34rem),
+      radial-gradient(circle at 84% 80%, color-mix(in srgb, var(--brand-light) 30%, transparent), transparent 34rem),
+      linear-gradient(rgba(255,255,255,0.07) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.07) 1px, transparent 1px),
+      #1b1b21 !important;
+    background-size: auto, auto, 72px 72px, 72px 72px, auto !important;
+  }
+  .brand-gradient {
+    background:
+      radial-gradient(circle at 22% 20%, color-mix(in srgb, var(--brand) 30%, transparent), transparent 28rem),
+      radial-gradient(circle at 78% 78%, color-mix(in srgb, var(--brand-light) 26%, transparent), transparent 30rem),
+      linear-gradient(180deg, rgba(255,255,255,0.05), transparent 72%);
+  }
+  .quiz-card {
+    background:
+      radial-gradient(circle at 78% 76%, color-mix(in srgb, var(--brand-light) 46%, transparent), transparent 26rem),
+      radial-gradient(circle at 30% 8%, rgba(255,255,255,0.28), transparent 18rem),
+      linear-gradient(180deg, rgba(255,255,255,0.32), rgba(255,255,255,0.15)),
+      rgba(72,72,84,0.58);
+    border: 1px solid rgba(255,255,255,0.36);
+    border-radius: 30px;
+    box-shadow: 0 34px 96px rgba(0,0,0,0.28), 0 0 145px color-mix(in srgb, var(--brand) 34%, transparent), inset 0 1px 0 rgba(255,255,255,0.34);
+    backdrop-filter: blur(38px) saturate(1.45);
+  }
+  .diagnostic-pill {
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.14);
+    color: #fff !important;
+  }
+  .premium-icon {
+    background: linear-gradient(135deg, var(--brand), var(--brand-light));
+    box-shadow: 0 18px 40px rgba(139,106,160,0.24);
+  }
+  .micro-card {
+    border: 1px solid rgba(255,255,255,0.14);
+    background: rgba(255,255,255,0.105);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.08);
+  }
 
   /* Elegant option cards */
   .option-card {
     transition: all 0.22s cubic-bezier(0.34,1.56,0.64,1);
     cursor: pointer;
-    border: 1.5px solid #e8e0ed;
-    background: #ffffff;
+    border: 1px solid rgba(255,255,255,0.13);
+    background:
+      radial-gradient(circle at 92% 50%, color-mix(in srgb, var(--brand-light) 14%, transparent), transparent 10rem),
+      linear-gradient(180deg, rgba(255,255,255,0.22), rgba(255,255,255,0.10)),
+      rgba(60,60,70,0.52);
+    box-shadow: 0 18px 44px rgba(0,0,0,0.22), 0 0 42px color-mix(in srgb, var(--brand) 14%, transparent), inset 0 1px 0 rgba(255,255,255,0.10);
+    backdrop-filter: blur(18px);
   }
   .option-card:hover {
     border-color: var(--brand-light);
-    background: var(--brand-bg);
-    transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(139,106,160,0.08);
+    background:
+      radial-gradient(circle at 94% 50%, color-mix(in srgb, var(--brand-light) 22%, transparent), transparent 11rem),
+      linear-gradient(180deg, rgba(255,255,255,0.16), rgba(255,255,255,0.085)),
+      #1d1d26;
+    transform: translateY(-2px);
+    box-shadow: 0 20px 48px rgba(0,0,0,0.28), 0 0 44px color-mix(in srgb, var(--brand-light) 18%, transparent);
   }
   .option-card.selected {
     border-color: var(--brand);
-    background: var(--brand-bg);
-    box-shadow: 0 0 0 3px rgba(139,106,160,0.15);
+    background:
+      radial-gradient(circle at 94% 50%, color-mix(in srgb, var(--brand-light) 32%, transparent), transparent 12rem),
+      linear-gradient(135deg, color-mix(in srgb, var(--brand) 18%, #17171c), rgba(255,255,255,0.09));
+    box-shadow: 0 0 0 4px rgba(139,106,160,0.13), 0 18px 38px rgba(139,106,160,0.14);
   }
   .option-card.selected .opt-check { opacity: 1 !important; transform: scale(1) !important; }
   .option-card .opt-check { transform: scale(0.5); transition: all 0.2s cubic-bezier(0.34,1.56,0.64,1); }
@@ -63,8 +160,8 @@
   .option-card-img {
     transition: all 0.22s cubic-bezier(0.34,1.56,0.64,1);
     cursor: pointer;
-    border: 2px solid #e8e0ed;
-    background: #ffffff;
+    border: 2px solid color-mix(in srgb, var(--brand-light) 36%, #ffffff);
+    background: #141419;
     border-radius: 1rem;
     overflow: hidden;
   }
@@ -81,6 +178,197 @@
   @keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-6px)} }
   .float-icon { animation: float 3s ease-in-out infinite; }
   @keyframes progress-glow { 0%,100%{opacity:0.5} 50%{opacity:1} }
+  .progress-rail { box-shadow: inset 0 1px 2px rgba(49,33,60,0.08); }
+  .progress-fill { box-shadow: 0 0 24px rgba(139,106,160,0.38); }
+  #quiz-wrapper .text-gray-900,
+  #quiz-wrapper .text-gray-800,
+  #quiz-wrapper .text-gray-700 {
+    color: #f8fafc !important;
+  }
+  #quiz-wrapper .text-gray-600,
+  #quiz-wrapper .text-gray-500,
+  #quiz-wrapper .text-gray-400 {
+    color: #a1a1aa !important;
+  }
+  #quiz-wrapper input {
+    background: rgba(255,255,255,0.08) !important;
+    border-color: rgba(255,255,255,0.18) !important;
+    color: #fff !important;
+  }
+  #quiz-wrapper input::placeholder {
+    color: rgba(255,255,255,0.48) !important;
+  }
+  footer {
+    background: #1b1b21 !important;
+  }
+  #intro-brand-card,
+  #intro-icon {
+    background: rgba(255,255,255,0.08) !important;
+    border-color: rgba(255,255,255,0.16) !important;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.08), 0 14px 34px rgba(0,0,0,0.18) !important;
+  }
+  #intro-brand-card p,
+  #intro-icon .material-symbols-outlined {
+    color: #fff !important;
+  }
+  #quiz-wrapper {
+    max-width: 980px;
+    transition: max-width 0.35s ease, padding 0.35s ease;
+  }
+  #quiz-wrapper.quiz-compact {
+    max-width: 620px;
+  }
+  #screen-intro {
+    position: relative;
+    min-height: 560px;
+  }
+  .intro-visual-panel {
+    position: absolute;
+    inset: 0 0 0 auto;
+    width: min(40%, 360px);
+    border-radius: 24px;
+    overflow: hidden;
+    background:
+      linear-gradient(180deg, rgba(12,12,15,0.02), rgba(12,12,15,0.18)),
+      var(--quiz-hero-image, radial-gradient(circle at 50% 112%, color-mix(in srgb, var(--brand-light) 92%, #ffffff), transparent 42%)),
+      radial-gradient(circle at 50% 112%, color-mix(in srgb, var(--brand-light) 88%, #ffffff), transparent 44%),
+      linear-gradient(180deg, #24242b 0%, #1b1b22 50%, color-mix(in srgb, var(--brand) 68%, #151519) 100%);
+    background-size: cover;
+    background-position: center;
+    border: 1.5px solid color-mix(in srgb, var(--brand-light) 72%, rgba(255,255,255,0.24));
+    box-shadow: 0 34px 96px color-mix(in srgb, var(--brand) 42%, transparent), 0 0 70px color-mix(in srgb, var(--brand-light) 24%, transparent);
+  }
+  .intro-visual-panel::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background:
+      linear-gradient(135deg, rgba(255,255,255,0.20), transparent 36%),
+      linear-gradient(180deg, transparent 28%, rgba(0,0,0,0.40));
+  }
+  .intro-visual-card {
+    position: absolute;
+    left: 22px;
+    right: 22px;
+    bottom: 22px;
+    z-index: 1;
+    padding: 18px;
+    border-radius: 20px;
+    border: 1px solid rgba(255,255,255,0.28);
+    background: rgba(255,255,255,0.16);
+    backdrop-filter: blur(18px);
+    color: #fff;
+    text-align: left;
+  }
+  .intro-copy {
+    width: min(54%, 520px);
+    text-align: left;
+  }
+  .intro-copy .justify-center { justify-content: flex-start; }
+  .intro-copy #intro-brand-card { margin-left: 0; margin-right: 0; }
+  .intro-copy #intro-title,
+  .intro-copy #intro-subtitle,
+  .intro-copy #intro-time { margin-left: 0; margin-right: 0; }
+  .intro-copy #intro-name { text-align: left; }
+  .option-card {
+    position: relative;
+    overflow: hidden;
+  }
+  .option-card::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    width: 5px;
+    background: linear-gradient(180deg, var(--brand), var(--brand-light));
+    opacity: 0;
+    transition: opacity 0.2s ease;
+  }
+  .option-card:hover::before,
+  .option-card.selected::before { opacity: 1; }
+  .option-card .material-symbols-outlined:not(.opt-check) {
+    width: 34px;
+    height: 34px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 12px;
+    background: rgba(255,255,255,0.11);
+  }
+  .option-card > div:first-child {
+    background: rgba(255,255,255,0.11) !important;
+    border-color: rgba(255,255,255,0.20) !important;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.16), 0 10px 24px rgba(0,0,0,0.18);
+  }
+  .option-card > div:first-child .material-symbols-outlined {
+    color: #fff !important;
+    opacity: 0.96;
+  }
+  :root[data-quiz-mode="dark"] body {
+    background:
+      radial-gradient(circle at top left, color-mix(in srgb, var(--brand) 30%, transparent), transparent 30rem),
+      radial-gradient(circle at bottom right, color-mix(in srgb, var(--brand-light) 18%, transparent), transparent 32rem),
+      linear-gradient(135deg, #0e0e10, #17131d 58%, #0d1117);
+    color: var(--brand-text);
+  }
+  :root[data-quiz-mode="dark"] header {
+    background: rgba(12,12,16,0.72) !important;
+    border-color: rgba(255,255,255,0.12) !important;
+  }
+  :root[data-quiz-mode="dark"] .quiz-card {
+    background: rgba(18,18,24,0.82);
+    border-color: rgba(255,255,255,0.12);
+    box-shadow: 0 28px 78px rgba(0,0,0,0.36), inset 0 1px 0 rgba(255,255,255,0.08);
+  }
+  :root[data-quiz-mode="dark"] .option-card,
+  :root[data-quiz-mode="dark"] .micro-card {
+    background: rgba(255,255,255,0.07);
+    border-color: rgba(255,255,255,0.12);
+  }
+  :root[data-quiz-mode="dark"] .option-card:hover {
+    background: rgba(255,255,255,0.11);
+  }
+  :root[data-quiz-mode="dark"] .option-card span:not(.material-symbols-outlined),
+  :root[data-quiz-mode="dark"] #intro-title,
+  :root[data-quiz-mode="dark"] #q-text {
+    color: var(--brand-text) !important;
+  }
+  :root[data-quiz-mode="dark"] .text-gray-500,
+  :root[data-quiz-mode="dark"] .text-gray-600,
+  :root[data-quiz-mode="dark"] .text-gray-700 {
+    color: var(--brand-muted) !important;
+  }
+  @media (max-width: 640px) {
+    .quiz-card { border-radius: 24px; }
+  }
+  @media (max-width: 767px) {
+    #quiz-wrapper,
+    #quiz-wrapper.quiz-compact { max-width: 100%; }
+    #screen-intro {
+      min-height: 0;
+      text-align: center;
+    }
+    .intro-copy {
+      width: 100%;
+      text-align: center;
+    }
+    .intro-copy .justify-center { justify-content: center; }
+    .intro-copy #intro-brand-card { margin-left: auto; margin-right: auto; }
+    .intro-copy #intro-title,
+    .intro-copy #intro-subtitle,
+    .intro-copy #intro-time { margin-left: auto; margin-right: auto; }
+    .intro-copy #intro-name { text-align: center; }
+    .intro-visual-panel {
+      position: relative;
+      width: 100%;
+      height: 220px;
+      margin-bottom: 24px;
+    }
+  }
+  @media (min-width: 768px) {
+    #intro-cover-wrap {
+      display: none !important;
+    }
+  }
 </style>
 </head>
 <body class="min-h-screen">
@@ -100,13 +388,13 @@
 </header>
 
 <!-- Progress bar -->
-<div class="w-full h-1 bg-brand-light/20">
-  <div id="progress-bar" class="h-full bg-brand rounded-full transition-all duration-500" style="width:0%"></div>
+<div class="w-full h-1.5 bg-brand-light/10 progress-rail">
+  <div id="progress-bar" class="h-full bg-brand rounded-full transition-all duration-500 progress-fill" style="width:0%"></div>
 </div>
 
 <!-- Quiz container -->
-<main class="flex-1 flex items-stretch justify-center px-5 py-10" id="quiz-main">
-  <div class="w-full max-w-lg" id="quiz-wrapper">
+<main class="flex-1 flex items-stretch justify-center px-4 py-8 md:py-12" id="quiz-main">
+  <div class="w-full max-w-xl quiz-card px-5 py-7 md:px-9 md:py-9" id="quiz-wrapper">
 
     <!-- ═══ INTRO SCREEN ═══ -->
     <div id="screen-intro" class="text-center space-y-6 slide-in">
@@ -118,36 +406,78 @@
         <div class="absolute inset-0 pointer-events-none" style="background:linear-gradient(to bottom,transparent 40%,rgba(255,255,255,0.85) 100%)"></div>
       </div>
 
+      <div class="intro-visual-panel" aria-hidden="true">
+        <div class="intro-visual-card">
+          <p class="text-[10px] font-black tracking-[0.22em] uppercase opacity-75 mb-2">Diagnostico interactivo</p>
+          <div class="flex items-end justify-between gap-3">
+            <div>
+              <p class="text-3xl font-black leading-none">01</p>
+              <p class="text-xs font-semibold opacity-80 mt-1">Resultado personalizado</p>
+            </div>
+            <span class="material-symbols-outlined" style="font-size:34px;font-variation-settings:'FILL' 1">auto_awesome</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="intro-copy space-y-6">
       <!-- Brand icon (hidden when cover image is shown) -->
       <div id="intro-icon-wrap" class="float-icon inline-block">
-        <div id="intro-icon" class="w-16 h-16 mx-auto rounded-2xl bg-brand-bg border border-brand-light/30 flex items-center justify-center text-3xl shadow-sm">🌸</div>
+        <div id="intro-icon" class="w-16 h-16 mx-auto rounded-2xl bg-brand-bg border border-brand-light/30 flex items-center justify-center text-brand shadow-sm">
+          <span class="material-symbols-outlined" style="font-size:30px;font-variation-settings:'FILL' 1">psychology</span>
+        </div>
+      </div>
+
+      <div id="intro-brand-card" class="hidden mx-auto max-w-sm rounded-2xl border border-brand-light/25 bg-white/80 shadow-sm px-4 py-3 items-center justify-center gap-3">
+        <img id="intro-brand-logo" src="" alt="" class="hidden h-9 w-auto max-w-[140px] object-contain"/>
+        <div class="text-left min-w-0">
+          <p class="text-[10px] font-black tracking-[0.18em] uppercase text-brand/60">Presentado por</p>
+          <p id="intro-brand-name" class="text-sm font-extrabold text-gray-900 truncate"></p>
+        </div>
       </div>
 
       <!-- Brand label -->
-      <p id="intro-brand" class="text-xs font-bold tracking-[0.25em] uppercase text-brand"></p>
+      <div class="flex justify-center">
+        <p id="intro-brand" class="diagnostic-pill text-[11px] font-black tracking-[0.22em] uppercase text-brand px-4 py-2 rounded-full"></p>
+      </div>
 
       <!-- Title -->
-      <h1 id="intro-title" class="font-serif text-3xl md:text-4xl font-semibold leading-tight text-gray-800">
+      <h1 id="intro-title" class="font-serif text-4xl md:text-5xl font-semibold leading-[1.04] text-gray-900">
         Descubre tu perfil ideal
       </h1>
 
       <!-- Subtitle -->
       <p id="intro-subtitle" class="text-gray-500 text-base max-w-md mx-auto leading-relaxed"></p>
 
+      <div class="grid grid-cols-3 gap-2 max-w-md mx-auto">
+        <div class="micro-card rounded-2xl px-3 py-3">
+          <span class="material-symbols-outlined text-brand" style="font-size:20px">timer</span>
+          <p class="text-[10px] font-bold text-gray-500 mt-1">2 min</p>
+        </div>
+        <div class="micro-card rounded-2xl px-3 py-3">
+          <span class="material-symbols-outlined text-brand" style="font-size:20px">insights</span>
+          <p class="text-[10px] font-bold text-gray-500 mt-1">Diagnóstico</p>
+        </div>
+        <div class="micro-card rounded-2xl px-3 py-3">
+          <span class="material-symbols-outlined text-brand" style="font-size:20px">verified</span>
+          <p class="text-[10px] font-bold text-gray-500 mt-1">Personalizado</p>
+        </div>
+      </div>
+
       <!-- Name input (optional, elegant) -->
       <div class="max-w-xs mx-auto pt-2">
-        <input id="intro-name" type="text" placeholder="¿Cómo te llamo, cariño?"
-          class="w-full text-center bg-white border border-brand-light/40 rounded-full px-6 py-3.5 text-sm text-gray-700 placeholder:text-gray-400 focus:outline-none focus:border-brand focus:ring-2 focus:ring-brand/20 transition-all shadow-sm"/>
+        <input id="intro-name" type="text" placeholder="¿Cómo te llamo?"
+          class="w-full text-center bg-white/85 border border-brand-light/40 rounded-full px-6 py-3.5 text-sm text-gray-700 placeholder:text-gray-400 focus:outline-none focus:border-brand focus:ring-2 focus:ring-brand/20 transition-all shadow-sm"/>
       </div>
 
       <!-- CTA button -->
       <button onclick="startQuiz()"
-        class="inline-block bg-brand hover:bg-brand/90 text-white font-bold text-sm tracking-wider uppercase px-10 py-4 rounded-full transition-all duration-300 hover:shadow-lg hover:shadow-brand/25 active:scale-[0.97]">
+        class="inline-flex items-center justify-center gap-2 bg-brand hover:bg-brand/90 text-white font-bold text-sm tracking-wider uppercase px-10 py-4 rounded-full transition-all duration-300 hover:shadow-lg hover:shadow-brand/25 active:scale-[0.97]">
         <span id="intro-cta-text">Descubrir mi resultado →</span>
       </button>
 
       <!-- Time estimate -->
       <p id="intro-time" class="text-gray-400 text-xs">Solo 5 preguntas · Menos de 2 minutos</p>
+      </div>
     </div>
 
     <!-- ═══ QUESTION SCREEN ═══ -->
@@ -159,7 +489,10 @@
       </div>
 
       <!-- Question text -->
-      <h2 id="q-text" class="font-serif text-2xl md:text-3xl font-semibold leading-snug text-gray-800 slide-in"></h2>
+      <div class="space-y-3">
+        <p class="text-[10px] font-black tracking-[0.24em] uppercase text-brand/60">Elige lo que más se parece a ti</p>
+        <h2 id="q-text" class="font-serif text-3xl md:text-4xl font-semibold leading-tight text-gray-900 slide-in"></h2>
+      </div>
 
       <!-- Options -->
       <div id="q-options" class="space-y-3 stagger-in"></div>
@@ -183,10 +516,12 @@
     <!-- ═══ LOADING SCREEN ═══ -->
     <div id="screen-loading" class="hidden text-center space-y-6 slide-in">
       <div class="float-icon inline-block">
-        <div class="w-20 h-20 mx-auto rounded-full bg-brand-bg border border-brand-light/30 flex items-center justify-center text-4xl shadow-sm">✨</div>
+        <div class="w-20 h-20 mx-auto rounded-3xl bg-brand-bg border border-brand-light/30 flex items-center justify-center text-brand shadow-sm">
+          <span class="material-symbols-outlined" style="font-size:34px;font-variation-settings:'FILL' 1">auto_awesome</span>
+        </div>
       </div>
       <h2 class="font-serif text-2xl font-semibold text-gray-800">Analizando tus respuestas...</h2>
-      <p class="text-gray-500 text-sm max-w-xs mx-auto">Estamos preparando tu resultado personalizado</p>
+      <p class="text-gray-500 text-sm max-w-xs mx-auto">Estamos convirtiendo tus respuestas en un reporte personalizado.</p>
       <div class="w-full max-w-xs mx-auto bg-brand-light/20 rounded-full h-1.5 overflow-hidden">
         <div id="loading-bar" class="h-full bg-brand rounded-full" style="width:0%; transition:width 0.4s ease"></div>
       </div>
@@ -197,7 +532,9 @@
     <div id="screen-lead" class="hidden space-y-6 slide-in">
       <div class="text-center space-y-4">
         <div class="float-icon inline-block">
-          <div class="w-20 h-20 mx-auto rounded-full bg-brand-bg border border-brand-light/30 flex items-center justify-center text-4xl shadow-sm">🎉</div>
+          <div class="w-20 h-20 mx-auto rounded-3xl bg-brand-bg border border-brand-light/30 flex items-center justify-center text-brand shadow-sm">
+            <span class="material-symbols-outlined" style="font-size:34px;font-variation-settings:'FILL' 1">workspace_premium</span>
+          </div>
         </div>
         <h2 class="font-serif text-2xl md:text-3xl font-semibold text-gray-800">¡Tu perfil está listo!</h2>
         <p class="text-gray-500 max-w-sm mx-auto leading-relaxed text-sm">
@@ -296,7 +633,7 @@
     const quizId = getParam('quiz');
 
     if (quizId === 'demo') {
-      QUIZ = DEMO_QUIZ;
+      QUIZ = window.OFFER_DEMO_QUIZ || DEMO_QUIZ;
     } else if (quizId) {
       try { QUIZ = await DB.quizzes.get(quizId); } catch {}
       const localQuiz = Quizzes.get(quizId);
@@ -306,14 +643,14 @@
     if (!QUIZ) QUIZ = DEMO_QUIZ;
 
     // Apply branding
-    const brandColor = QUIZ.brandColor || QUIZ.themeColor;
-    if (brandColor) {
-      document.documentElement.style.setProperty('--brand', brandColor);
-      document.documentElement.style.setProperty('--brand-light', brandColor + '99');
-    }
+    applyQuizTheme(QUIZ);
     if (QUIZ.brandLogo) {
       const logoEl = document.getElementById('quiz-logo');
-      if (logoEl) { logoEl.src = QUIZ.brandLogo; logoEl.classList.remove('hidden'); }
+      if (logoEl) {
+        logoEl.src = QUIZ.brandLogo;
+        logoEl.onerror = () => logoEl.classList.add('hidden');
+        logoEl.classList.remove('hidden');
+      }
     }
     if (QUIZ.brandName) {
       const nameEl = document.getElementById('quiz-brand-label');
@@ -352,11 +689,24 @@
     Session.setAnswers([]);
 
     // ── Populate intro ────────────────────────────────────
-    const firstEmoji = QUIZ.profiles?.[0]?.emoji || '🌸';
-    document.getElementById('intro-icon').textContent = firstEmoji;
+    const introIcon = document.getElementById('intro-icon');
+    introIcon.innerHTML = "<span class=\"material-symbols-outlined\" style=\"font-size:30px;font-variation-settings:'FILL' 1\">psychology</span>";
     const headerBrand = document.getElementById('quiz-brand-label');
     if (headerBrand && !headerBrand.textContent) headerBrand.textContent = QUIZ.product || QUIZ.niche || '';
     document.getElementById('intro-brand').textContent = QUIZ.product || QUIZ.niche || '';
+    const brandCard = document.getElementById('intro-brand-card');
+    const brandLogo = document.getElementById('intro-brand-logo');
+    const brandName = document.getElementById('intro-brand-name');
+    if (brandCard && brandName && (QUIZ.brandName || QUIZ.brandLogo)) {
+      brandName.textContent = QUIZ.brandName || QUIZ.product || QUIZ.niche || 'Marca';
+      if (QUIZ.brandLogo && brandLogo) {
+        brandLogo.src = QUIZ.brandLogo;
+        brandLogo.onerror = () => brandLogo.classList.add('hidden');
+        brandLogo.onload = () => brandLogo.classList.remove('hidden');
+      }
+      brandCard.classList.remove('hidden');
+      brandCard.classList.add('flex');
+    }
     document.getElementById('intro-title').innerHTML = QUIZ.title || 'Descubre tu perfil ideal';
     document.getElementById('intro-subtitle').textContent = QUIZ.subtitle || `Responde ${QUIZ.questions?.length || 5} preguntas y descubre el origen de lo que te está frenando — personalizado para ti.`;
     document.getElementById('intro-time').textContent = `Solo ${QUIZ.questions?.length || 5} preguntas · Menos de ${QUIZ.estimatedMinutes || 2} minutos`;
@@ -368,16 +718,74 @@
       const wrap = document.getElementById('intro-cover-wrap');
       img.src = QUIZ.coverImage;
       wrap.classList.remove('hidden');
-      document.getElementById('intro-icon-wrap').classList.add('hidden');
-      document.getElementById('intro-brand').classList.add('hidden');
     }
   });
 
+  function applyQuizTheme(quizOrColor) {
+    const quiz = typeof quizOrColor === 'object' && quizOrColor ? quizOrColor : null;
+    const nicheTheme = quiz && window.getPremiumNicheTheme
+      ? window.getPremiumNicheTheme(quiz.niche || quiz.product || quiz.title || '', quiz.product || quiz.title || '')
+      : {};
+    const brandColor = (quiz && (quiz.brandColor || quiz.themeColor)) || quizOrColor || nicheTheme.accent || '#8B6AA0';
+    const accent2 = (quiz && quiz.accentColor) || nicheTheme.accent2 || brandColor + '99';
+    const bg = nicheTheme.bg || brandColor + '12';
+    const surface = nicheTheme.card || brandColor + '08';
+    const text = nicheTheme.text || '#26212b';
+    const muted = nicheTheme.muted || '#6f6677';
+
+    document.documentElement.style.setProperty('--brand', brandColor);
+    document.documentElement.style.setProperty('--brand-light', accent2);
+    document.documentElement.style.setProperty('--brand-bg', bg);
+    document.documentElement.style.setProperty('--brand-surface', surface);
+    document.documentElement.style.setProperty('--brand-text', text);
+    document.documentElement.style.setProperty('--brand-muted', muted);
+    document.documentElement.style.setProperty('--brand-border', nicheTheme.mode === 'dark' ? 'rgba(255,255,255,0.12)' : brandColor + '2e');
+    document.documentElement.style.setProperty('--brand-shadow', nicheTheme.mode === 'dark' ? 'rgba(0,0,0,0.36)' : brandColor + '1f');
+    const heroImage = (quiz && quiz.coverImage) || nicheTheme.coverImage || '';
+    if (heroImage) {
+      document.documentElement.style.setProperty('--quiz-hero-image', `url("${String(heroImage).replace(/"/g, '%22')}")`);
+    }
+    document.documentElement.dataset.quizTheme = nicheTheme.id || 'custom';
+    document.documentElement.dataset.quizMode = nicheTheme.mode || 'light';
+  }
+
   // ── Quiz flow ──────────────────────────────────────────
   function startQuiz() {
+    document.getElementById('quiz-wrapper').classList.add('quiz-compact');
     document.getElementById('screen-intro').classList.add('hidden');
     document.getElementById('screen-question').classList.remove('hidden');
     renderQuestion();
+  }
+
+  function premiumQuizIcon(index) {
+    const icons = ['tune', 'explore', 'insights', 'verified', 'route', 'workspace_premium'];
+    return icons[index % icons.length];
+  }
+
+  function buildPostQuizDestination(profile) {
+    const action = QUIZ.postQuizAction || 'result_page';
+    if (action === 'whatsapp') {
+      const number = (QUIZ.whatsappNumber || '').replace(/\D/g, '');
+      if (!number) return '';
+      const defaultMsg = profile
+        ? `Hola! Completé el quiz "${QUIZ.title || ''}" y mi perfil es "${profile.name}". Me gustaría más información.`
+        : `Hola! Completé el quiz "${QUIZ.title || ''}" y me gustaría más información.`;
+      return `https://wa.me/${number}?text=${encodeURIComponent(QUIZ.whatsappMessage || defaultMsg)}`;
+    }
+    if (action === 'payment') return QUIZ.paymentUrl || QUIZ.productUrl || '';
+    if (action === 'landing') return QUIZ.landingUrl || QUIZ.productUrl || '';
+    return '';
+  }
+
+  function continueAfterQuiz() {
+    Session.setAnswers(answers);
+    const action = QUIZ.postQuizAction || 'result_page';
+    const destination = buildPostQuizDestination(_calculatedProfile);
+    if (action !== 'result_page' && destination) {
+      window.location.href = destination;
+      return;
+    }
+    _goToResultPage();
   }
 
   function renderQuestion() {
@@ -397,11 +805,10 @@
     const sidePanel = document.getElementById('q-side-panel');
     const sideImg   = document.getElementById('q-side-img');
     const wrapper   = document.getElementById('quiz-wrapper');
-    const imgSrc = q.image || (q.imageKeywords
-      ? `https://source.unsplash.com/featured/800x1000/?${encodeURIComponent(q.imageKeywords)}`
-      : '');
+    const imgSrc = q.image || q.imageUrl || '';
     if (imgSrc && window.innerWidth >= 768) {
       sideImg.src = imgSrc;
+      sideImg.onerror = () => sidePanel.classList.add('hidden');
       sidePanel.classList.remove('hidden');
       wrapper.style.maxWidth = '480px';
     } else {
@@ -439,10 +846,9 @@
             <span class="font-semibold text-gray-700 text-sm">${opt.text}</span>
           </div>`;
       } else {
-        // Use emoji if set, otherwise letter badge
-        const badge = opt.emoji
-          ? `<span class="text-2xl shrink-0 w-10 text-center">${opt.emoji}</span>`
-          : `<div class="w-9 h-9 rounded-xl bg-brand-bg flex items-center justify-center shrink-0 text-brand font-bold text-sm">${String.fromCharCode(65 + i)}</div>`;
+        const badge = `<div class="w-10 h-10 rounded-xl bg-brand-bg border border-brand-light/25 flex items-center justify-center shrink-0 text-brand">
+          <span class="material-symbols-outlined" style="font-size:20px;font-variation-settings:'FILL' 0,'wght' 600">${premiumQuizIcon(i)}</span>
+        </div>`;
         div.className = 'option-card flex items-center gap-4 p-4 rounded-2xl';
         if (isSelected) div.classList.add('selected');
         div.innerHTML = `
@@ -531,10 +937,8 @@
   }
 
   function showLeadCapture() {
-    const action = QUIZ.postQuizAction || 'result_page';
-    // Only show email capture for result_page action when explicitly enabled
-    if (QUIZ.leadCapture === false || action !== 'result_page' || !QUIZ.userId) {
-      _goToResultPage();
+    if (QUIZ.leadCapture === false || !QUIZ.userId) {
+      continueAfterQuiz();
       return;
     }
 
@@ -600,20 +1004,19 @@
     fbTrack('Lead', { content_name: QUIZ.title || 'Quiz' });
     gaTrack('generate_lead', { quiz_id: QUIZ.id || '', quiz_title: QUIZ.title || '' });
     ttTrack('CompleteRegistration', { content_name: QUIZ.title || 'Quiz' });
-    _goToResultPage();
+    continueAfterQuiz();
   }
 
   function skipLead() {
     if (QUIZ.id && QUIZ.userId) {
       DB.analytics.track(QUIZ.id, QUIZ.userId, 'completion', _calculatedProfile?.id || null).catch(() => {});
     }
-    _goToResultPage();
+    continueAfterQuiz();
   }
 
   function handlePostQuizAction() {
-    // Always show the result page first — the CTA button there handles the final redirect
     Session.setAnswers(answers);
-    _goToResultPage();
+    continueAfterQuiz();
   }
 
   function _goToResultPage() {

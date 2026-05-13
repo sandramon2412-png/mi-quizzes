@@ -272,6 +272,8 @@
   .ebook-page .image-card, .ebook-page .cover-media { position: relative; }
   .image-edit-btn { position: absolute; right: 12px; top: 12px; z-index: 80; border: 0; border-radius: 999px; background: rgba(15,23,42,0.88); color: #fff; display: inline-flex; align-items: center; gap: 6px; padding: 9px 13px; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 11px; font-weight: 800; letter-spacing: 0.04em; text-transform: uppercase; cursor: pointer; box-shadow: 0 10px 24px rgba(0,0,0,0.28); opacity: 1; pointer-events: auto; }
   .image-edit-btn .material-symbols-outlined { font-size: 16px; }
+  .image-inline-action { width: 100%; border: 0; border-top: 1px solid var(--doc-border); background: var(--doc-surface); color: var(--doc-primary); display: flex; align-items: center; justify-content: center; gap: 6px; padding: 9px 12px; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 11px; font-weight: 800; cursor: pointer; }
+  .image-inline-action .material-symbols-outlined { font-size: 16px; }
   .image-card:hover .image-edit-btn, .cover-media:hover .image-edit-btn { transform: translateY(-1px); }
   .ebook-page .image-visual { position: relative; width: 100%; aspect-ratio: 21 / 8; overflow: hidden; background: linear-gradient(135deg, var(--doc-primary), var(--doc-accent)); display: flex; align-items: flex-end; padding: 20px; color: #fff; }
   .ebook-page .image-visual::before { content: ''; position: absolute; inset: 0; background: linear-gradient(120deg, rgba(255,255,255,0.20) 0 18%, transparent 18% 31%, rgba(255,255,255,0.13) 31% 44%, transparent 44% 100%); }
@@ -311,7 +313,7 @@
   </button>
   <button id="btn-download" class="hidden h-9 px-4 rounded-lg primary-gradient text-white text-xs font-bold flex items-center gap-1.5 hover:opacity-90 transition">
     <span class="material-symbols-outlined" style="font-size:16px">download</span>
-    Descargar PDF
+    Vista previa PDF
   </button>
 </header>
 
@@ -533,7 +535,7 @@
     <div class="flex items-start justify-between gap-4 border-b border-outline-variant/30 px-5 py-4">
       <div>
         <h3 id="image-url-title" class="text-sm font-extrabold text-on-surface">Cambiar imagen</h3>
-        <p class="mt-1 text-xs text-on-surface-variant">Pega una URL directa de imagen. Puede ser JPG, PNG o WebP.</p>
+        <p class="mt-1 text-xs text-on-surface-variant">Pega una URL directa o sube una imagen desde tu computador.</p>
       </div>
       <button id="image-url-close" type="button" class="h-8 w-8 rounded-lg bg-surface-container text-on-surface-variant hover:text-white">
         <span class="material-symbols-outlined" style="font-size:18px">close</span>
@@ -542,7 +544,11 @@
     <div class="px-5 py-4">
       <label for="image-url-input" class="mb-2 block text-[11px] font-bold uppercase tracking-[0.16em] text-on-surface-variant">URL de imagen</label>
       <input id="image-url-input" type="url" placeholder="https://..." class="w-full rounded-xl border border-outline-variant/40 bg-black/30 px-3 py-3 text-sm text-white placeholder:text-on-surface-variant focus:border-primary focus:ring-primary"/>
-      <p id="image-url-error" class="mt-2 hidden text-xs font-semibold text-red-300">Pega una URL valida que empiece por http:// o https://</p>
+      <div class="mt-3 rounded-xl border border-outline-variant/30 bg-black/20 p-3">
+        <label for="image-url-file" class="mb-2 block text-[11px] font-bold uppercase tracking-[0.16em] text-on-surface-variant">O subir archivo</label>
+        <input id="image-url-file" type="file" accept="image/png,image/jpeg,image/webp" class="block w-full text-xs text-on-surface-variant file:mr-3 file:rounded-lg file:border-0 file:bg-surface-container file:px-3 file:py-2 file:text-xs file:font-bold file:text-white"/>
+      </div>
+      <p id="image-url-error" class="mt-2 hidden text-xs font-semibold text-red-300">Pega una URL valida que empiece por http:// o https://, o sube una imagen.</p>
     </div>
     <div class="flex justify-end gap-2 px-5 pb-5">
       <button id="image-url-cancel" type="button" class="h-10 rounded-xl border border-outline-variant/40 px-4 text-xs font-bold text-on-surface-variant hover:text-white">Cancelar</button>
@@ -632,6 +638,7 @@
     const imageUrlModal = document.getElementById('image-url-modal');
     const imageUrlTitle = document.getElementById('image-url-title');
     const imageUrlInput = document.getElementById('image-url-input');
+    const imageUrlFile = document.getElementById('image-url-file');
     const imageUrlError = document.getElementById('image-url-error');
     const imageUrlSave = document.getElementById('image-url-save');
     const imageUrlCancel = document.getElementById('image-url-cancel');
@@ -650,7 +657,52 @@
     };
     const setStatus = (s) => { statusEl.textContent = s; };
     const escapeHtml = (s) => (s || '').toString().replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-    const validImageUrl = (url) => /^https?:\/\/\S+\.\S+/i.test((url || '').trim());
+    const validImageUrl = (url) => /^https?:\/\/\S+\.\S+/i.test((url || '').trim()) || /^data:image\/(png|jpe?g|webp);base64,/i.test((url || '').trim());
+    const dataUrlBytes = (url = '') => Math.ceil(String(url).length * 0.75);
+    const loadImageFromUrl = (url) => new Promise((resolve, reject) => {
+      const img = new Image();
+      img.onload = () => resolve(img);
+      img.onerror = reject;
+      img.src = url;
+    });
+    async function optimizeImageSource(src, maxBytes = 180000) {
+      if (!src || (/^https?:\/\//i.test(src) && dataUrlBytes(src) < maxBytes)) return src;
+      if (/^data:image\//i.test(src) && dataUrlBytes(src) <= maxBytes) return src;
+      const img = await loadImageFromUrl(src);
+      const maxW = 1100;
+      const maxH = 520;
+      const scale = Math.min(1, maxW / img.naturalWidth, maxH / img.naturalHeight);
+      const canvas = document.createElement('canvas');
+      canvas.width = Math.max(1, Math.round(img.naturalWidth * scale));
+      canvas.height = Math.max(1, Math.round(img.naturalHeight * scale));
+      const ctx = canvas.getContext('2d');
+      ctx.fillStyle = '#ffffff';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+      for (const quality of [0.74, 0.64, 0.54, 0.44, 0.34]) {
+        const out = canvas.toDataURL('image/jpeg', quality);
+        if (dataUrlBytes(out) <= maxBytes || quality === 0.34) return out;
+      }
+      return canvas.toDataURL('image/jpeg', 0.34);
+    }
+    async function optimizeEbookEmbeddedImages(book) {
+      if (!book) return book;
+      if (book.cover?.imageUrl && /^data:image\//i.test(book.cover.imageUrl)) {
+        book.cover.imageUrl = await optimizeImageSource(book.cover.imageUrl, 200000);
+      }
+      for (const chapter of (book.chapters || [])) {
+        let body = chapter.body_md || '';
+        const matches = [...new Set((body.match(/data:image\/(?:png|jpe?g|webp);base64,[^"'<>\s)]+/gi) || []))];
+        for (const match of matches) {
+          if (dataUrlBytes(match) > 180000) {
+            const optimized = await optimizeImageSource(match, 180000);
+            body = body.split(match).join(optimized);
+          }
+        }
+        chapter.body_md = body;
+      }
+      return book;
+    }
     function askImageUrl(title, currentUrl = '') {
       return new Promise((resolve) => {
         if (!imageUrlModal || !imageUrlInput) {
@@ -667,6 +719,7 @@
           imageUrlCancel?.removeEventListener('click', onCancel);
           imageUrlClose?.removeEventListener('click', onCancel);
           imageUrlInput?.removeEventListener('keydown', onKeydown);
+          imageUrlFile?.removeEventListener('change', onFile);
           resolve(value);
         };
         const onCancel = () => finish(null);
@@ -683,15 +736,41 @@
           if (e.key === 'Enter') onSave();
           if (e.key === 'Escape') onCancel();
         };
+        const onFile = async () => {
+          const file = imageUrlFile?.files?.[0];
+          if (!file) return;
+          if (!/^image\/(png|jpe?g|webp)$/i.test(file.type)) {
+            if (imageUrlError) imageUrlError.textContent = 'Elige una imagen JPG, PNG o WebP.';
+            imageUrlError?.classList.remove('hidden');
+            return;
+          }
+          if (file.size > 8 * 1024 * 1024) {
+            if (imageUrlError) imageUrlError.textContent = 'La imagen es muy pesada. Usa una de menos de 8 MB.';
+            imageUrlError?.classList.remove('hidden');
+            return;
+          }
+          try {
+            if (imageUrlError) imageUrlError.classList.add('hidden');
+            const tempUrl = URL.createObjectURL(file);
+            const optimized = await optimizeImageSource(tempUrl, 180000);
+            URL.revokeObjectURL(tempUrl);
+            finish(optimized);
+          } catch {
+            if (imageUrlError) imageUrlError.textContent = 'No pude optimizar esa imagen. Intenta con otra.';
+            imageUrlError?.classList.remove('hidden');
+          }
+        };
         if (imageUrlTitle) imageUrlTitle.textContent = title || 'Cambiar imagen';
         if (imageUrlError) imageUrlError.classList.add('hidden');
         imageUrlInput.value = currentUrl || '';
+        if (imageUrlFile) imageUrlFile.value = '';
         imageUrlModal.classList.remove('hidden');
         imageUrlModal.classList.add('flex');
         imageUrlSave?.addEventListener('click', onSave);
         imageUrlCancel?.addEventListener('click', onCancel);
         imageUrlClose?.addEventListener('click', onCancel);
         imageUrlInput?.addEventListener('keydown', onKeydown);
+        imageUrlFile?.addEventListener('change', onFile);
         setTimeout(() => imageUrlInput.focus(), 50);
       });
     }
@@ -1271,15 +1350,15 @@
         const coverClone = coverWrap.cloneNode(true);
         coverClone.classList.add('print-cover-wrap');
         coverClone.setAttribute('data-theme', theme);
-        coverClone.querySelectorAll('.image-edit-btn,.eb-regen-btn,.ebook-page-label').forEach(el => el.remove());
+        coverClone.querySelectorAll('.image-edit-btn,.image-inline-action,.eb-regen-btn,.ebook-page-label').forEach(el => el.remove());
         coverClone.querySelectorAll('[contenteditable]').forEach(el => el.removeAttribute('contenteditable'));
         coverHtml = coverClone.outerHTML;
       }
       const chapterHtml = (ebook?.chapters || []).map((chapter, chapterIndex) => {
         const temp = document.createElement('div');
         temp.innerHTML = smartMd(chapter.body_md || '');
-        temp.querySelectorAll('.image-edit-btn,.eb-regen-btn,[contenteditable]').forEach(el => {
-          if (el.classList?.contains('image-edit-btn') || el.classList?.contains('eb-regen-btn')) el.remove();
+        temp.querySelectorAll('.image-edit-btn,.image-inline-action,.eb-regen-btn,[contenteditable]').forEach(el => {
+          if (el.classList?.contains('image-edit-btn') || el.classList?.contains('image-inline-action') || el.classList?.contains('eb-regen-btn')) el.remove();
           else el.removeAttribute('contenteditable');
         });
         return `<section class="print-chapter">
@@ -1335,7 +1414,7 @@
   .print-chapter .image-visual::before { content: ''; position: absolute; inset: 0; background: linear-gradient(120deg, rgba(255,255,255,.20) 0 18%, transparent 18% 31%, rgba(255,255,255,.13) 31% 44%, transparent 44% 100%); }
   .print-chapter .image-visual span { position: relative; z-index: 1; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 10px; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; }
   .print-chapter figcaption { padding: 7px 10px 9px; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 9.5px; line-height: 1.35; color: var(--doc-muted); text-transform: uppercase; letter-spacing: .08em; }
-  .editable-block, .image-edit-btn, .eb-regen-btn { outline: none !important; background: transparent !important; display: none !important; }
+  .editable-block, .image-edit-btn, .image-inline-action, .eb-regen-btn { outline: none !important; background: transparent !important; display: none !important; }
   @media print {
     html, body { background: #fff !important; }
     .print-cover-wrap { margin: 0 !important; }
@@ -1414,7 +1493,7 @@
       const caption = fig.querySelector('figcaption')?.textContent?.trim() || 'Imagen editorial';
       const prompt = fig.dataset.imagePrompt || caption;
       fig.dataset.imageUrl = safeUrl;
-      fig.innerHTML = `<button type="button" class="image-edit-btn" contenteditable="false"><span class="material-symbols-outlined">image</span>Cambiar</button><img src="${escapeHtml(safeUrl)}" alt="${escapeHtml(caption)}" crossorigin="anonymous" referrerpolicy="no-referrer"><figcaption>${escapeHtml(caption)}</figcaption>`;
+      fig.innerHTML = `<button type="button" class="image-edit-btn" contenteditable="false"><span class="material-symbols-outlined">image</span>Cambiar</button><img src="${escapeHtml(safeUrl)}" alt="${escapeHtml(caption)}" crossorigin="anonymous" referrerpolicy="no-referrer"><figcaption>${escapeHtml(caption)}</figcaption><button type="button" class="image-inline-action" contenteditable="false"><span class="material-symbols-outlined">upload_file</span>Cambiar imagen o subir archivo</button>`;
       fig.dataset.imagePrompt = prompt;
     }
 
@@ -1448,17 +1527,32 @@
             await changeFigureImage(fig);
           });
         }
-        if (fig.querySelector('.image-edit-btn')) return;
-        const btn = document.createElement('button');
-        btn.type = 'button';
-        btn.className = 'image-edit-btn';
-        btn.contentEditable = 'false';
-        btn.innerHTML = '<span class="material-symbols-outlined">image</span>Cambiar';
-        btn.addEventListener('click', async (e) => {
-          e.preventDefault(); e.stopPropagation();
-          await changeFigureImage(fig);
+        let floatingBtn = fig.querySelector('.image-edit-btn');
+        if (!floatingBtn) {
+          floatingBtn = document.createElement('button');
+          floatingBtn.type = 'button';
+          floatingBtn.className = 'image-edit-btn';
+          floatingBtn.contentEditable = 'false';
+          floatingBtn.innerHTML = '<span class="material-symbols-outlined">image</span>Cambiar';
+          fig.insertBefore(floatingBtn, fig.firstChild);
+        }
+        let inlineBtn = fig.querySelector('.image-inline-action');
+        if (!inlineBtn) {
+          inlineBtn = document.createElement('button');
+          inlineBtn.type = 'button';
+          inlineBtn.className = 'image-inline-action';
+          inlineBtn.contentEditable = 'false';
+          inlineBtn.innerHTML = '<span class="material-symbols-outlined">upload_file</span>Cambiar imagen o subir archivo';
+          fig.appendChild(inlineBtn);
+        }
+        [floatingBtn, inlineBtn].forEach(btn => {
+          if (btn.dataset.boundImageChange) return;
+          btn.dataset.boundImageChange = '1';
+          btn.addEventListener('click', async (e) => {
+            e.preventDefault(); e.stopPropagation();
+            await changeFigureImage(fig);
+          });
         });
-        fig.appendChild(btn);
       });
     }
 
@@ -1924,9 +2018,11 @@
       syncEbookTheme(ebook);
       try {
         setStatus('Guardando…');
+        await optimizeEbookEmbeddedImages(ebook);
         const saved = await DB.ebooks.save(ebook, user.id);
         ebook = { ...ebook, ...saved };
-        Ebooks.save(ebook);
+        try { Ebooks.save(ebook); }
+        catch (localErr) { console.warn('[ebook] local cache skipped', localErr); }
         setStatus('Guardado');
         setTimeout(() => setStatus(''), 1200);
       } catch (e) {
@@ -2406,43 +2502,68 @@
     });
 
     // ── PDF download ──
+    async function downloadServerPdf() {
+      const isStaticLocal = ['127.0.0.1', 'localhost'].includes(location.hostname) && location.port === '8000';
+      if (isStaticLocal) {
+        throw new Error('En 127.0.0.1:8000 no corren las funciones del servidor. El PDF final debe probarse en luminous-studio.com despues del deploy, o con vercel dev.');
+      }
+      await optimizeEbookEmbeddedImages(ebook);
+      renderEbookPreview();
+      applyThemeInline(document.getElementById('eb-theme')?.value || ebook.theme || ebook.cover?.theme || 'light');
+      applyPageScales();
+      const filename = `${(ebook.title || 'ebook').replace(/[\\/:*?"<>|]+/g, '').trim() || 'ebook'}.pdf`;
+      let response = await fetch('/api/render-ebook-pdf', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ html: buildPrintableHtml(), filename }),
+      });
+      if (!response.ok) {
+        response = await fetch('/api/generate-ebook-pdf', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ ebook }),
+        });
+      }
+      if (!response.ok) {
+        let detail = '';
+        try {
+          const data = await response.json();
+          detail = data?.error || data?.message || '';
+        } catch {}
+        throw new Error(detail || 'No pude generar el PDF final en el servidor.');
+      }
+      const blob = await response.blob();
+      if (!blob || blob.size < 1024) throw new Error('El PDF llego vacio.');
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = filename;
+      a.style.display = 'none';
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      setTimeout(() => URL.revokeObjectURL(url), 2500);
+      try { await DB.ebooks.incrementDownloads(ebook.id); } catch {}
+    }
+
     downloadBtn.onclick = async () => {
       if (!ebook || !ebook.chapters?.length) return;
       ensureEbookVisuals(ebook);
       syncEbookTheme(ebook);
-      setStatus('Abriendo vista PDF...');
+      setStatus('Preparando vista previa PDF...');
       downloadBtn.disabled = true;
       const originalDownloadText = downloadBtn.innerHTML;
       downloadBtn.innerHTML = '<span class="thinking-dot"></span><span class="thinking-dot"></span><span class="thinking-dot"></span>';
 
       try {
+        await optimizeEbookEmbeddedImages(ebook);
         await persistEbook();
-        try { await DB.ebooks.incrementDownloads(ebook.id); } catch {}
-        const response = await fetch('/api/generate-ebook-pdf', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ ebook }),
-        });
-        if (!response.ok) throw new Error('PDF_API_UNAVAILABLE');
-        const blob = await response.blob();
-        if (!blob || blob.size < 1024) throw new Error('PDF_EMPTY');
-        const filename = `${(ebook.title || 'ebook').replace(/[\\/:*?"<>|]+/g, '').trim() || 'ebook'}.pdf`;
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = filename;
-        a.style.display = 'none';
-        document.body.appendChild(a);
-        a.click();
-        a.remove();
-        setTimeout(() => URL.revokeObjectURL(url), 2000);
-        setStatus('');
-        toast('PDF generado. Revisa tu carpeta Descargas.', 'ok');
+        await openDownloadPreviewDeprecated();
       } catch (err) {
-        console.warn('[pdf] server generation unavailable, opening print page', err);
-        const id = ebook.id || editingId;
-        window.location.href = `./ebook-print.html${id ? `?id=${encodeURIComponent(id)}` : ''}`;
+        console.warn('[pdf] preview unavailable', err);
+        toast('No pude abrir la vista previa PDF: ' + (err?.message || 'error'), 'err');
       } finally {
+        setStatus('');
         downloadBtn.disabled = false;
         downloadBtn.innerHTML = originalDownloadText;
       }
@@ -2610,6 +2731,334 @@
       return { pdf, blob: pdf.output('blob'), filename };
     }
 
+    function pdf2Decode(text = '') {
+      return String(text)
+        .replace(/&nbsp;/gi, ' ')
+        .replace(/&amp;/gi, '&')
+        .replace(/&quot;/gi, '"')
+        .replace(/&#39;/gi, "'")
+        .replace(/&lt;/gi, '<')
+        .replace(/&gt;/gi, '>');
+    }
+
+    function pdf2Clean(text = '') {
+      return pdf2Decode(text)
+        .replace(/<[^>]+>/g, ' ')
+        .replace(/\bP[AÁ]GINA\s+\d+\s*[-:]\s*/gi, '')
+        .replace(/\bPAGINA\s+\d+\s*[-:]\s*/gi, '')
+        .replace(/\bSlide\s+\d+\s*[:.-]\s*/gi, '')
+        .replace(/\s+/g, ' ')
+        .trim();
+    }
+
+    function pdf2Blocks(body = '') {
+      let source = String(body || '')
+        .replace(/<figure[\s\S]*?<figcaption[^>]*>([\s\S]*?)<\/figcaption>[\s\S]*?<\/figure>/gi, '\n\n[[visual::$1]]\n\n')
+        .replace(/<figure[\s\S]*?<\/figure>/gi, '\n\n[[visual::Visual editorial]]\n\n')
+        .replace(/<blockquote[^>]*>([\s\S]*?)<\/blockquote>/gi, '\n\n[[quote::$1]]\n\n')
+        .replace(/<h[1-4][^>]*>([\s\S]*?)<\/h[1-4]>/gi, '\n\n## $1\n\n')
+        .replace(/<li[^>]*>([\s\S]*?)<\/li>/gi, '\n- $1\n')
+        .replace(/<\/(p|div|section|article|tr)>/gi, '\n\n')
+        .replace(/<br\s*\/?>/gi, '\n');
+      const lines = source.split(/\n/).map(line => pdf2Clean(line));
+      const blocks = [];
+      let i = 0;
+      const isTable = line => /^\|.*\|$/.test(line);
+      const isBullet = line => /^[-*\u2022]\s+/.test(line);
+      const isNumbered = line => /^\d+[.)]\s+/.test(line);
+      const isHeading = line => /^#{1,4}\s+/.test(line);
+      const isSpecial = line => isTable(line) || isBullet(line) || isNumbered(line) || isHeading(line) || /^\[\[(visual|quote)::/i.test(line);
+      while (i < lines.length) {
+        const line = lines[i];
+        if (!line) { i++; continue; }
+        if (/^\[\[visual::/i.test(line)) {
+          blocks.push({ type: 'visual', text: line.replace(/^\[\[visual::/i, '').replace(/\]\]$/, '').trim() || 'Visual editorial' });
+          i++;
+          continue;
+        }
+        if (/^\[\[quote::/i.test(line)) {
+          blocks.push({ type: 'quote', text: line.replace(/^\[\[quote::/i, '').replace(/\]\]$/, '').trim() });
+          i++;
+          continue;
+        }
+        if (isHeading(line)) {
+          blocks.push({ type: 'heading', text: line.replace(/^#{1,4}\s+/, '').trim() });
+          i++;
+          continue;
+        }
+        if (isTable(line)) {
+          const rows = [];
+          while (i < lines.length && isTable(lines[i])) rows.push(lines[i++]);
+          blocks.push({ type: 'table', rows });
+          continue;
+        }
+        if (isBullet(line)) {
+          const items = [];
+          while (i < lines.length && isBullet(lines[i])) items.push(lines[i++].replace(/^[-*\u2022]\s+/, '').trim());
+          blocks.push({ type: items.length >= 3 ? 'features' : 'bullets', items });
+          continue;
+        }
+        if (isNumbered(line)) {
+          const items = [];
+          while (i < lines.length && isNumbered(lines[i])) items.push(lines[i++].replace(/^\d+[.)]\s+/, '').trim());
+          blocks.push({ type: 'steps', items });
+          continue;
+        }
+        const parts = [line];
+        i++;
+        while (i < lines.length && lines[i] && !isSpecial(lines[i])) {
+          parts.push(lines[i]);
+          i++;
+        }
+        const text = parts.join(' ').trim();
+        if (text) blocks.push({ type: text.length < 80 && /:$/.test(text) ? 'heading-small' : 'paragraph', text });
+      }
+      return blocks;
+    }
+
+    function pdf2ParseTable(rows = []) {
+      return rows
+        .filter(row => !/^\|\s*:?-{2,}:?\s*(\|\s*:?-{2,}:?\s*)+\|?$/.test(row))
+        .map(row => row.split('|').map(cell => pdf2Clean(cell)).filter(Boolean))
+        .filter(row => row.length);
+    }
+
+    function buildStablePdfPremium(JsPdfCtor, book, theme, filename) {
+      const pdf = new JsPdfCtor('p', 'mm', 'a4');
+      const vars = THEME_VARS[theme] || THEME_VARS.light;
+      const primary = vars['--doc-primary'];
+      const accent = vars['--doc-accent'];
+      const fg = vars['--doc-fg'];
+      const muted = vars['--doc-muted'];
+      const surface = vars['--doc-surface'];
+      const bg = vars['--doc-bg'];
+      const pageW = 210;
+      const pageH = 297;
+      const marginX = 17;
+      const contentW = pageW - marginX * 2;
+      const bottomY = 275;
+      let pageNumber = 1;
+      let y = 0;
+
+      const drawLines = (lines, x, startY, lineHeight) => {
+        let yy = startY;
+        lines.forEach(line => {
+          pdf.text(line, x, yy);
+          yy += lineHeight;
+        });
+        return yy;
+      };
+      const need = (height) => {
+        if (y + height <= bottomY) return;
+        newContentPage();
+      };
+      const newContentPage = () => {
+        pdf.addPage('a4', 'portrait');
+        pageNumber++;
+        setPdfColor(pdf, bg, 'fill');
+        pdf.rect(0, 0, pageW, pageH, 'F');
+        setPdfColor(pdf, muted);
+        pdf.setFont('helvetica', 'normal');
+        pdf.setFontSize(7.5);
+        pdf.text((book.title || 'Ebook').slice(0, 80), marginX, 11);
+        pdf.text(String(pageNumber), pageW - marginX - 4, 286);
+        setPdfColor(pdf, primary, 'draw');
+        pdf.setLineWidth(0.35);
+        pdf.line(marginX, 16, pageW - marginX, 16);
+        y = 28;
+      };
+      const paragraph = (text, opts = {}) => {
+        const clean = pdf2Clean(text);
+        if (!clean) return;
+        pdf.setFont('helvetica', opts.bold ? 'bold' : 'normal');
+        pdf.setFontSize(opts.size || 9.4);
+        setPdfColor(pdf, opts.color || fg);
+        const lineHeight = opts.lineHeight || 5.2;
+        pdf.splitTextToSize(clean, opts.width || contentW).forEach(line => {
+          need(lineHeight + 2);
+          pdf.text(line, opts.x || marginX, y);
+          y += lineHeight;
+        });
+        y += opts.after == null ? 3 : opts.after;
+      };
+      const heading = (text, small = false) => {
+        const lines = pdf.splitTextToSize(pdf2Clean(text || 'Seccion'), small ? 158 : contentW);
+        need(lines.length * (small ? 6 : 8) + 8);
+        setPdfColor(pdf, small ? accent : primary);
+        pdf.setFont('helvetica', 'bold');
+        pdf.setFontSize(small ? 12 : 17);
+        y = drawLines(lines, marginX, y, small ? 6 : 8);
+        y += small ? 3 : 5;
+      };
+      const callout = (text) => {
+        const lines = pdf.splitTextToSize(pdf2Clean(text), contentW - 18);
+        const h = Math.max(20, lines.length * 4.8 + 12);
+        need(h + 4);
+        setPdfColor(pdf, surface, 'fill');
+        pdf.roundedRect(marginX, y, contentW, h, 3, 3, 'F');
+        setPdfColor(pdf, accent, 'fill');
+        pdf.roundedRect(marginX + 3, y + 5, 2.2, h - 10, 1, 1, 'F');
+        setPdfColor(pdf, fg);
+        pdf.setFont('helvetica', 'normal');
+        pdf.setFontSize(8.8);
+        drawLines(lines, marginX + 10, y + 10, 4.8);
+        y += h + 6;
+      };
+      const visual = (caption) => {
+        const h = 46;
+        need(h + 7);
+        setPdfColor(pdf, surface, 'fill');
+        pdf.roundedRect(marginX, y, contentW, h, 4, 4, 'F');
+        setPdfColor(pdf, primary, 'draw');
+        pdf.setLineWidth(0.45);
+        pdf.roundedRect(marginX + 5, y + 6, contentW - 10, h - 12, 3, 3, 'S');
+        setPdfColor(pdf, primary);
+        pdf.setFont('helvetica', 'bold');
+        pdf.setFontSize(9.5);
+        pdf.text('Visual editorial', marginX + 12, y + 19);
+        setPdfColor(pdf, muted);
+        pdf.setFont('helvetica', 'normal');
+        pdf.setFontSize(8);
+        drawLines(pdf.splitTextToSize(pdf2Clean(caption), contentW - 28), marginX + 12, y + 29, 4.3);
+        y += h + 7;
+      };
+      const featureCards = (items = []) => {
+        const gap = 5;
+        const colW = (contentW - gap) / 2;
+        for (let i = 0; i < items.length; i += 2) {
+          const row = items.slice(i, i + 2).map(item => {
+            const clean = pdf2Clean(item).replace(/\*\*/g, '');
+            const split = clean.split(/\s[-:]\s/);
+            const title = split[0] || clean;
+            const desc = split.slice(1).join(' - ') || clean;
+            return {
+              title: pdf.splitTextToSize(title, colW - 16),
+              desc: pdf.splitTextToSize(desc, colW - 12).slice(0, 4)
+            };
+          });
+          const rowH = Math.max(...row.map(card => 16 + card.title.length * 4.7 + card.desc.length * 4.2), 28);
+          need(rowH + 6);
+          row.forEach((card, j) => {
+            const x = marginX + j * (colW + gap);
+            setPdfColor(pdf, surface, 'fill');
+            pdf.roundedRect(x, y, colW, rowH, 3, 3, 'F');
+            setPdfColor(pdf, primary, 'fill');
+            pdf.circle(x + 7, y + 8, 2.1, 'F');
+            setPdfColor(pdf, fg);
+            pdf.setFont('helvetica', 'bold');
+            pdf.setFontSize(8.8);
+            drawLines(card.title, x + 12, y + 9, 4.7);
+            setPdfColor(pdf, muted);
+            pdf.setFont('helvetica', 'normal');
+            pdf.setFontSize(7.9);
+            drawLines(card.desc, x + 7, y + 19, 4.2);
+          });
+          y += rowH + 6;
+        }
+      };
+      const steps = (items = []) => {
+        items.forEach((item, idx) => {
+          const lines = pdf.splitTextToSize(pdf2Clean(item).replace(/\*\*/g, ''), contentW - 20);
+          const h = Math.max(17, lines.length * 4.7 + 10);
+          need(h + 4);
+          setPdfColor(pdf, surface, 'fill');
+          pdf.roundedRect(marginX, y, contentW, h, 3, 3, 'F');
+          setPdfColor(pdf, primary, 'fill');
+          pdf.roundedRect(marginX + 5, y + 5, 8, 8, 2, 2, 'F');
+          pdf.setTextColor(255, 255, 255);
+          pdf.setFont('helvetica', 'bold');
+          pdf.setFontSize(7.8);
+          pdf.text(String(idx + 1), marginX + 9, y + 10.7, { align: 'center' });
+          setPdfColor(pdf, fg);
+          pdf.setFont('helvetica', 'normal');
+          pdf.setFontSize(8.8);
+          drawLines(lines, marginX + 18, y + 10, 4.7);
+          y += h + 4;
+        });
+        y += 2;
+      };
+      const bullets = (items = []) => {
+        items.forEach(item => {
+          const lines = pdf.splitTextToSize(pdf2Clean(item), contentW - 14);
+          const h = Math.max(12, lines.length * 4.6 + 6);
+          need(h + 3);
+          setPdfColor(pdf, surface, 'fill');
+          pdf.roundedRect(marginX, y, contentW, h, 2.5, 2.5, 'F');
+          setPdfColor(pdf, primary, 'fill');
+          pdf.circle(marginX + 6, y + 7, 1.7, 'F');
+          setPdfColor(pdf, fg);
+          pdf.setFont('helvetica', 'normal');
+          pdf.setFontSize(8.8);
+          drawLines(lines, marginX + 12, y + 7.5, 4.6);
+          y += h + 3;
+        });
+        y += 2;
+      };
+      const table = (rows) => {
+        const parsed = pdf2ParseTable(rows);
+        if (!parsed.length) return;
+        const cols = Math.min(Math.max(...parsed.map(row => row.length)), 4);
+        const colW = contentW / cols;
+        parsed.forEach((row, idx) => {
+          const cells = Array.from({ length: cols }, (_, i) => row[i] || '');
+          const wrapped = cells.map(cell => pdf.splitTextToSize(pdf2Clean(cell), colW - 6));
+          const h = Math.max(12, Math.max(...wrapped.map(lines => lines.length)) * 4.2 + 7);
+          need(h + 1);
+          setPdfColor(pdf, idx === 0 ? primary : surface, 'fill');
+          pdf.rect(marginX, y, contentW, h, 'F');
+          setPdfColor(pdf, idx === 0 ? primary : vars['--doc-border'], 'draw');
+          pdf.setLineWidth(0.15);
+          for (let c = 0; c <= cols; c++) pdf.line(marginX + c * colW, y, marginX + c * colW, y + h);
+          pdf.line(marginX, y + h, marginX + contentW, y + h);
+          pdf.setFont('helvetica', idx === 0 ? 'bold' : 'normal');
+          pdf.setFontSize(7.6);
+          if (idx === 0) pdf.setTextColor(255, 255, 255);
+          else setPdfColor(pdf, fg);
+          wrapped.forEach((lines, c) => drawLines(lines, marginX + c * colW + 3, y + 6, 4.2));
+          y += h;
+        });
+        y += 7;
+      };
+      const block = (item) => {
+        if (item.type === 'heading') return heading(item.text, false);
+        if (item.type === 'heading-small') return heading(item.text, true);
+        if (item.type === 'quote') return callout(item.text);
+        if (item.type === 'visual') return visual(item.text);
+        if (item.type === 'features') return featureCards(item.items);
+        if (item.type === 'bullets') return bullets(item.items);
+        if (item.type === 'steps') return steps(item.items);
+        if (item.type === 'table') return table(item.rows);
+        return paragraph(item.text);
+      };
+
+      setPdfColor(pdf, primary, 'fill');
+      pdf.rect(0, 0, pageW, pageH, 'F');
+      setPdfColor(pdf, accent, 'fill');
+      pdf.roundedRect(120, 42, 62, 150, 10, 10, 'F');
+      setPdfColor(pdf, primary, 'draw');
+      pdf.setLineWidth(0.7);
+      pdf.roundedRect(128, 52, 46, 130, 7, 7, 'S');
+      pdf.setTextColor(255, 255, 255);
+      pdf.setFont('helvetica', 'bold');
+      pdf.setFontSize(29);
+      let coverY = 72;
+      pdf.splitTextToSize(book.title || 'Ebook', 94).forEach(line => { pdf.text(line, marginX, coverY); coverY += 12; });
+      pdf.setFont('helvetica', 'normal');
+      pdf.setFontSize(12);
+      pdf.splitTextToSize(book.cover?.subtitle || book.subtitle || 'Guia practica', 95).forEach(line => { pdf.text(line, marginX, coverY + 6); coverY += 6.2; });
+      pdf.setFont('helvetica', 'bold');
+      pdf.setFontSize(8);
+      pdf.text('LUMINOUS STUDIO', 151, 125, { align: 'center' });
+
+      if (book.chapters?.length) newContentPage();
+      (book.chapters || []).forEach((chapter, idx) => {
+        if (idx > 0) y += 4;
+        heading(chapter.title || `Seccion ${idx + 1}`, false);
+        pdf2Blocks(chapter.body_md || '').forEach(block);
+      });
+      return { pdf, blob: pdf.output('blob'), filename };
+    }
+
     async function openDownloadPreviewDeprecated() {
       if (!ebook || !ebook.chapters?.length) return;
       ensureEbookVisuals(ebook);
@@ -2634,7 +3083,7 @@
       const pdfThemeCss = `
         .page.chapter, .page.chapter * { ${pdfVarsCss} }
         .page.chapter { background: ${pdfVars['--doc-bg']} !important; color: ${pdfVars['--doc-fg']} !important; }
-        .page.chapter .flow-title, .page.chapter h2 { background: linear-gradient(135deg, ${pdfVars['--doc-primary']}, ${pdfVars['--doc-accent']}) !important; -webkit-background-clip: text !important; background-clip: text !important; -webkit-text-fill-color: transparent !important; color: ${pdfVars['--doc-primary']} !important; }
+        .page.chapter .flow-title, .page.chapter h2 { background: none !important; -webkit-background-clip: initial !important; background-clip: initial !important; -webkit-text-fill-color: ${pdfVars['--doc-primary']} !important; color: ${pdfVars['--doc-primary']} !important; }
         .page.chapter h3, .page.chapter p, .page.chapter li, .page.chapter td { color: ${pdfVars['--doc-fg']} !important; }
         .page.chapter strong, .page.chapter a { color: ${pdfVars['--doc-primary']} !important; }
         .page.chapter ul li, .page.chapter blockquote, .page.chapter .callout, .page.chapter .callout-info, .page.chapter .callout-tip, .page.chapter .callout-quote { background: ${pdfVars['--doc-surface']} !important; border-color: ${pdfVars['--doc-accent']} !important; color: ${pdfVars['--doc-fg']} !important; }
@@ -2785,11 +3234,11 @@
     .page.cover { width: 100% !important; height: 100% !important; min-height: 100vh !important; margin: 0 !important; padding: 0 !important; }
   }
 
-  .chapter-title { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 30px; font-weight: 800; line-height: 1.08; letter-spacing: -0.03em; margin: 0 0 20px; page-break-after: avoid; break-after: avoid; background: linear-gradient(135deg, var(--doc-title-grad-from), var(--doc-title-grad-to)); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; color: var(--doc-fg); }
-  .chapter-body .flow-title { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 21px; font-weight: 800; line-height: 1.15; letter-spacing: -0.02em; margin: 24px 0 12px; page-break-after: avoid; break-after: avoid; background: linear-gradient(135deg, var(--doc-primary), var(--doc-accent)); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; color: var(--doc-primary); }
+  .chapter-title { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 30px; font-weight: 800; line-height: 1.08; letter-spacing: -0.03em; margin: 0 0 20px; page-break-after: avoid; break-after: avoid; background: none !important; -webkit-background-clip: initial !important; background-clip: initial !important; -webkit-text-fill-color: var(--doc-primary) !important; color: var(--doc-primary); }
+  .chapter-body .flow-title { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 21px; font-weight: 800; line-height: 1.15; letter-spacing: -0.02em; margin: 24px 0 12px; page-break-after: avoid; break-after: avoid; background: none !important; -webkit-background-clip: initial !important; background-clip: initial !important; -webkit-text-fill-color: var(--doc-primary) !important; color: var(--doc-primary); }
   .chapter-body .flow-title:first-child { margin-top: 0; }
 
-  .chapter-body h2 { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 22px; font-weight: 800; margin: 28px 0 14px; letter-spacing: -0.02em; page-break-after: avoid; break-after: avoid; background: linear-gradient(135deg, var(--doc-primary), var(--doc-accent)); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; color: var(--doc-primary); }
+  .chapter-body h2 { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 22px; font-weight: 800; margin: 28px 0 14px; letter-spacing: -0.02em; page-break-after: avoid; break-after: avoid; background: none !important; -webkit-background-clip: initial !important; background-clip: initial !important; -webkit-text-fill-color: var(--doc-primary) !important; color: var(--doc-primary); }
   .chapter-body h3 { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 17px; font-weight: 700; color: var(--doc-fg); margin: 22px 0 10px; page-break-after: avoid; break-after: avoid; }
   .chapter-body p { font-size: 13.4px; line-height: 1.62; margin: 0 0 11px; orphans: 2; widows: 2; color: var(--doc-fg); }
   .chapter-body ul { list-style: none; padding: 0; margin: 0 0 16px; }
@@ -2886,7 +3335,7 @@
   .hover-bar button { cursor: pointer; background: transparent; color: #fff; border: none; padding: 5px 8px; border-radius: 5px; font-weight: 600; font-size: 11px; white-space: nowrap; }
   .hover-bar button:hover { background: rgba(255,255,255,0.15); }
   .hover-bar button.danger:hover { background: #d95a2a; }
-  .image-edit-btn { display: none !important; }
+  .image-edit-btn, .image-inline-action { display: none !important; }
   .edit-indicator { position: fixed; bottom: 16px; left: 16px; background: #1a1a1a; color: #fff; padding: 8px 14px; border-radius: 20px; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 12px; z-index: 15; box-shadow: 0 4px 14px rgba(0,0,0,0.2); }
   .edit-indicator .dot { display: inline-block; width: 7px; height: 7px; border-radius: 50%; background: #22c55e; margin-right: 7px; vertical-align: middle; }
   @media print {
@@ -3161,14 +3610,11 @@ ${pagesHtml}
     wireBlocks();
   })();
 
-  async function saveAsPDF() {
+  async function buildPDFBlob(onProgress) {
     if (!window.html2canvas || !window.jspdf) {
-      alert('Librerías aún cargando, intentá de nuevo en un segundo.');
-      return;
+      throw new Error('Librerias aun cargando, intenta de nuevo en un segundo.');
     }
     const { jsPDF } = window.jspdf;
-    dlBtn.disabled = true;
-    const originalLabel = dlBtn.textContent;
     // Hide edit UI so it doesn't appear in the capture
     hoverBar.style.display = 'none';
     document.querySelector('.edit-indicator')?.style.setProperty('display', 'none', 'important');
@@ -3181,7 +3627,7 @@ ${pagesHtml}
       let firstPage = true;
 
       for (let i = 0; i < pages.length; i++) {
-        dlBtn.textContent = 'Generando… ' + (i+1) + '/' + pages.length;
+        if (typeof onProgress === 'function') onProgress('Generando... ' + (i+1) + '/' + pages.length);
         const el = pages[i];
         const canvas = await html2canvas(el, {
           scale: 2,
@@ -3211,15 +3657,41 @@ ${pagesHtml}
       }
 
       const safeName = (ebookTitle || 'ebook').replace(/[^\\w\\s\\-áéíóúÁÉÍÓÚñÑ]/g, '').trim().slice(0, 80) || 'ebook';
-      pdf.save(safeName + '.pdf');
+      const filename = safeName + '.pdf';
+      const blob = pdf.output('blob');
+      return { blob, filename };
+    } finally {
+      const ind = document.querySelector('.edit-indicator');
+      if (ind) ind.style.display = '';
+    }
+  }
+
+  window.buildPDFBlob = buildPDFBlob;
+
+  async function saveAsPDF() {
+    dlBtn.disabled = true;
+    const originalLabel = dlBtn.textContent;
+    try {
+      const { blob, filename } = await buildPDFBlob((label) => { dlBtn.textContent = label; });
+      if (window.parent && window.parent !== window && typeof window.parent.downloadEbookPdfBlob === 'function') {
+        await window.parent.downloadEbookPdfBlob(blob, filename);
+      } else {
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        setTimeout(() => URL.revokeObjectURL(url), 2000);
+      }
+      return { blob, filename };
     } catch (e) {
       console.error(e);
       alert('Error al generar el PDF: ' + (e.message || e));
     } finally {
       dlBtn.disabled = false;
       dlBtn.textContent = originalLabel;
-      const ind = document.querySelector('.edit-indicator');
-      if (ind) ind.style.display = '';
     }
   }
 
@@ -3235,10 +3707,10 @@ ${pagesHtml}
         <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;background:#fff;color:#0f172a;border-radius:14px 14px 0 0;padding:12px 16px;font-family:Plus Jakarta Sans,system-ui,sans-serif;">
           <div>
             <strong style="font-size:14px;display:block">Vista de descarga del ebook</strong>
-            <span style="font-size:12px;color:#64748b">Haz clic en Descargar PDF. El archivo se guarda en la carpeta Descargas del navegador.</span>
+            <span style="font-size:12px;color:#64748b">Haz clic en Preparar PDF. Cuando termine, usa Guardar PDF listo.</span>
           </div>
           <div style="display:flex;gap:8px;align-items:center">
-            <button type="button" id="ebook-download-now" style="border:0;border-radius:9px;background:linear-gradient(135deg,#2E5BFF,#7c3aed);color:#fff;padding:9px 13px;font-weight:800;cursor:pointer">Descargar PDF</button>
+            <button type="button" id="ebook-download-now" style="border:0;border-radius:9px;background:linear-gradient(135deg,#2E5BFF,#7c3aed);color:#fff;padding:9px 13px;font-weight:800;cursor:pointer">Preparar PDF</button>
             <button type="button" id="ebook-download-close" style="border:0;border-radius:9px;background:#f1f5f9;color:#0f172a;padding:9px 12px;font-weight:800;cursor:pointer">Cerrar</button>
           </div>
         </div>
@@ -3246,22 +3718,44 @@ ${pagesHtml}
       `;
       document.body.appendChild(overlay);
       const frame = overlay.querySelector('iframe');
-      overlay.querySelector('#ebook-download-close').onclick = () => overlay.remove();
+      let readyPdfUrl = '';
+      const showReadyDownload = (blob, filename) => {
+        if (readyPdfUrl) URL.revokeObjectURL(readyPdfUrl);
+        readyPdfUrl = URL.createObjectURL(blob);
+        let link = overlay.querySelector('#ebook-download-ready');
+        if (!link) {
+          link = document.createElement('a');
+          link.id = 'ebook-download-ready';
+          link.style.cssText = 'display:inline-flex;align-items:center;border-radius:9px;background:#0f172a;color:#fff;padding:9px 13px;font-weight:800;text-decoration:none;font-family:Plus Jakarta Sans,system-ui,sans-serif;';
+        link.textContent = 'Guardar PDF listo';
+          overlay.querySelector('#ebook-download-now').insertAdjacentElement('afterend', link);
+        }
+        link.href = readyPdfUrl;
+        link.download = filename || `${(ebook.title || 'ebook').replace(/[\\/:*?"<>|]+/g, '').trim() || 'ebook'}.pdf`;
+      };
+      window.downloadEbookPdfBlob = async (blob, filename) => {
+        if (!blob || blob.size < 1024) throw new Error('El PDF se genero vacio.');
+        showReadyDownload(blob, filename);
+      };
+      overlay.querySelector('#ebook-download-close').onclick = () => {
+        if (readyPdfUrl) URL.revokeObjectURL(readyPdfUrl);
+        overlay.remove();
+      };
       overlay.querySelector('#ebook-download-now').onclick = async () => {
         const btn = overlay.querySelector('#ebook-download-now');
         const original = btn.textContent;
         btn.textContent = 'Preparando...';
         btn.disabled = true;
         try {
-          for (let i = 0; i < 80; i++) {
-            if (frame.contentWindow?.saveAsPDF && frame.contentWindow?.html2canvas && frame.contentWindow?.jspdf) break;
-            await new Promise(r => setTimeout(r, 250));
-          }
-          if (!frame.contentWindow?.saveAsPDF) throw new Error('La vista de PDF no esta lista.');
-          await frame.contentWindow.saveAsPDF();
-          toast('Descarga enviada. Revisa tu carpeta Descargas.', 'ok');
+          const win = frame?.contentWindow;
+          if (!win || typeof win.buildPDFBlob !== 'function') throw new Error('La vista de descarga aun no esta lista.');
+          const fallbackName = `${(ebook.title || 'ebook').replace(/[\\/:*?"<>|]+/g, '').trim() || 'ebook'}.pdf`;
+          const result = await win.buildPDFBlob((label) => { btn.textContent = label; });
+          if (!result?.blob || result.blob.size < 1024) throw new Error('El PDF se genero vacio.');
+          showReadyDownload(result.blob, result.filename || fallbackName);
+          toast('PDF listo. Haz clic en "Guardar PDF listo".', 'ok');
         } catch (err) {
-          toast('No pude descargar: ' + (err?.message || err), 'err');
+          toast('No pude preparar el PDF: ' + (err?.message || err), 'err');
         } finally {
           btn.textContent = original;
           btn.disabled = false;

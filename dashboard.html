@@ -804,13 +804,13 @@ function toggleFbGuide() {
         </div>
       </div>
 
-      <!-- Nombre + Emoji -->
+      <!-- Nombre + icono -->
       <div class="flex gap-3">
         <div class="w-20">
           <label class="text-xs text-on-surface-variant font-semibold block mb-1.5">Ícono</label>
-          <input type="text" id="ma-icon" value="⚡" maxlength="4"
-            class="w-full bg-surface-container border border-outline-variant/30 rounded-xl px-3 py-2.5 text-xl text-center focus:ring-1 focus:ring-primary focus:border-primary outline-none transition"
-            placeholder="⚡"
+          <input type="text" id="ma-icon" value="deployed_code" maxlength="32"
+            class="w-full bg-surface-container border border-outline-variant/30 rounded-xl px-3 py-2.5 text-[11px] font-bold text-center focus:ring-1 focus:ring-primary focus:border-primary outline-none transition"
+            placeholder="deployed_code"
             oninput="this.value=this.value.trim()"/>
         </div>
         <div class="flex-1">
@@ -868,6 +868,7 @@ function toggleFbGuide() {
               <label class="type-chip"><input type="checkbox" name="ma-type" value="tracker" class="sr-only"/><span class="material-symbols-outlined">show_chart</span>Tracker</label>
               <label class="type-chip"><input type="checkbox" name="ma-type" value="reto" class="sr-only"/><span class="material-symbols-outlined">local_fire_department</span>Reto 30 días</label>
               <label class="type-chip"><input type="checkbox" name="ma-type" value="diario" class="sr-only"/><span class="material-symbols-outlined">edit_note</span>Diario</label>
+              <label class="type-chip"><input type="checkbox" name="ma-type" value="bodymap" class="sr-only"/><span class="material-symbols-outlined">accessibility_new</span>Mapa de señales</label>
             </div>
           </div>
           <div>
@@ -996,12 +997,15 @@ document.addEventListener('DOMContentLoaded', async () => {
   await Promise.all([renderMiniApps(), renderQuizzes(), renderLandings(), renderEbooks()]);
   loadLeadsCount();
   loadUsageWidget();
+  const pageParams = new URLSearchParams(window.location.search);
+  const requestedTab = pageParams.get('tab');
+  if (requestedTab) switchDashTab(requestedTab);
   // Apply mini-app template if coming from plantillas-miniapps.html
-  if (new URLSearchParams(window.location.search).get('miniapp_template')) {
-    applyPendingMiniAppTemplate();
+  if (pageParams.get('miniapp_template')) {
+    await applyPendingMiniAppTemplate();
   }
   // Auto-open mini-app creation modal if ?create_miniapp=1
-  if (new URLSearchParams(window.location.search).get('create_miniapp')) {
+  if (pageParams.get('create_miniapp')) {
     setTimeout(() => openCreateModal(), 700);
   }
   // Show onboarding on first visit
@@ -1012,34 +1016,74 @@ document.addEventListener('DOMContentLoaded', async () => {
 });
 
 // ── Apply mini-app template from gallery ─────────────────
-function applyPendingMiniAppTemplate() {
+async function applyPendingMiniAppTemplate() {
   try {
     const raw = localStorage.getItem('ls_miniapp_template_pending');
-    if (!raw) return;
+    if (!raw) {
+      switchDashTab('miniapps');
+      return;
+    }
     localStorage.removeItem('ls_miniapp_template_pending');
     const tpl = JSON.parse(raw);
-    // Open the mini-app creation modal pre-filled with template data
-    openCreateModal();
-    // Fill in name and description
-    const nameEl = document.getElementById('ma-name');
-    const descEl = document.getElementById('ma-desc');
-    if (nameEl) nameEl.value = tpl.name || '';
-    if (descEl) descEl.value = tpl.description || '';
-    // Fill niche if field exists
-    const nicheEl = document.getElementById('ma-niche');
-    if (nicheEl && tpl.niche) nicheEl.value = tpl.niche;
-    // Check the right type checkboxes
-    if (tpl.types && tpl.types.length) {
-      document.querySelectorAll('input[name="ma-type"]').forEach(cb => {
-        cb.checked = tpl.types.includes(cb.value);
-      });
+
+    const {
+      id: templateId,
+      primaryColor,
+      secondaryColor,
+      bgColor,
+      headerGradient,
+      types,
+      ...templateContent
+    } = tpl;
+    const finalTypes = (Array.isArray(types) && types.length ? types : ['reto']).filter(Boolean);
+    const templatePalette = getTemplatePalette(tpl);
+    const appFromTemplate = {
+      ...templateContent,
+      name: tpl.name || 'Mini-App desde plantilla',
+      description: tpl.description || '',
+      niche: tpl.niche || tpl.category || '',
+      product: tpl.product || tpl.name || '',
+      type: finalTypes[0],
+      types: finalTypes,
+      icon: getTemplateMaterialIcon(tpl, finalTypes),
+      accessCodes: [],
+      status: 'active',
+      created: new Date().toISOString(),
+      primaryColor: primaryColor || templatePalette.accent || '#2E5BFF',
+      secondaryColor: secondaryColor || templatePalette.accent2 || '#7c3aed',
+      bgColor: bgColor || templatePalette.bg || '#0e0e0e',
+      headerGradient,
+      mode: templatePalette.mode,
+      bg: templatePalette.bg,
+      card: templatePalette.card,
+      text: templatePalette.text,
+      muted: templatePalette.muted,
+      font: templatePalette.font,
+      accent: primaryColor || templatePalette.accent || '#2E5BFF',
+      accent2: secondaryColor || templatePalette.accent2 || '#7c3aed',
+      _fromTemplate: true,
+      _templateId: templateId || '',
+    };
+
+    let localApp = null;
+    try {
+      const saved = await DB.miniApps.save(appFromTemplate, _currentUser.id);
+      localApp = MiniApps.save({ id: saved.id, ...saved, ...appFromTemplate });
+    } catch (dbErr) {
+      console.warn('Template DB save failed:', dbErr.message);
+      localApp = MiniApps.create(appFromTemplate);
     }
-    // Store template content so handleCreateMiniApp can merge it
-    window._pendingTemplateContent = tpl;
-    // Show toast
-    showToast(`Plantilla "${tpl.name}" cargada. Personaliza y crea.`);
+
+    await renderMiniApps();
+    switchDashTab('miniapps');
+    history.replaceState(null, '', './dashboard.html?tab=miniapps');
+    showToast(`Mini-App "${localApp.name}" creada desde plantilla.`);
+    setTimeout(() => {
+      document.getElementById('section-miniapps')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 150);
   } catch (e) {
     console.warn('applyPendingMiniAppTemplate:', e);
+    showToast('No pude crear la mini-app desde la plantilla.', 'error');
   }
 }
 
@@ -1161,6 +1205,7 @@ async function renderMiniApps() {
     // Supabase unreachable — fall back entirely to localStorage
     apps = MiniApps.getAll();
   }
+  window._miniAppsCache = apps;
 
   const dynamicCards = apps.map(app => buildAppCard(app)).join('');
   const addCard = `
@@ -1391,6 +1436,54 @@ function escapeHtml(s) {
   return (s || '').toString().replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 }
 
+function getTemplateMaterialIcon(app, types = []) {
+  const raw = String(app?.icon || '').trim();
+  if (/^[a-z][a-z0-9_]*$/.test(raw)) return raw;
+  const cat = `${app?.category || ''} ${app?.subcategory || ''} ${app?.niche || ''}`.toLowerCase();
+  if (/bienestar|ansiedad|mindful|autoestima|gratitud|burnout|tdah|mental/.test(cat)) return 'self_improvement';
+  if (/fitness|yoga|running|funcional|movilidad|calistenia/.test(cat)) return 'fitness_center';
+  if (/nutrici|keto|meal|ayuno|vegano|aliment/.test(cat)) return 'nutrition';
+  if (/\bfe\b|espirit|biblia|oraci|devocional|dios|cristi/.test(cat)) return 'auto_stories';
+  if (/finanz|deuda|ahorro|presupuesto|invers/.test(cat)) return 'account_balance_wallet';
+  if (/negocio|marketing|ventas|copy|seo|email|freelance|infoproducto/.test(cat)) return 'monitoring';
+  if (/educaci|ingles|estudio|programaci|lectura|escritura/.test(cat)) return 'school';
+  if (/relacion|pareja|embarazo|crianza|comunicacion|codependencia/.test(cat)) return 'favorite';
+  if (/belleza|skincare|colorimetria|armario/.test(cat)) return 'spa';
+  if (/hogar|limpieza|minimalismo|jardin|zero/.test(cat)) return 'home';
+  if (/mascota|cachorro|canino/.test(cat)) return 'pets';
+  if (/desarrollo|habitos|proposito|emocional/.test(cat)) return 'psychology';
+  return TYPE_ICONS[types[0]] || 'deployed_code';
+}
+
+function getTemplatePalette(app = {}) {
+  const n = `${app.category || ''} ${app.subcategory || ''} ${app.niche || ''} ${app.name || ''}`.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+  if (/fe|espirit|biblia|oraci|devocional|dios|cristi|manifestacion/.test(n))
+    return {mode:'light',accent:'#8b5cf6',accent2:'#c89b3c',bg:'#fbf7ef',card:'#fffdf8',text:'#2f2418',muted:'#806f5e',font:'serif'};
+  if (/bienestar|ansiedad|burnout|autoestima|mindful|gratitud|tdah|mental|ruptura/.test(n))
+    return {mode:'light',accent:'#9b5de5',accent2:'#00bbf9',bg:'#fbf7ff',card:'#ffffff',text:'#241b35',muted:'#7b6f8b',font:'serif'};
+  if (/fitness|yoga|running|funcional|movilidad|calistenia|ejercic|deport/.test(n))
+    return {mode:'dark',accent:'#22c55e',accent2:'#06b6d4',bg:'#101816',card:'#17201d',text:'#f3fff9',muted:'#9bb5aa',font:'sans'};
+  if (/nutric|alimenta|keto|meal|ayuno|vegano|cocina|dieta/.test(n))
+    return {mode:'light',accent:'#16a34a',accent2:'#84cc16',bg:'#f3fbf2',card:'#ffffff',text:'#17351f',muted:'#6a806d',font:'sans'};
+  if (/finanz|dinero|deuda|ahorr|inversion|presupuesto|libertad/.test(n))
+    return {mode:'light',accent:'#047857',accent2:'#0f766e',bg:'#eefbf5',card:'#ffffff',text:'#12332a',muted:'#5f7b70',font:'sans'};
+  if (/negocio|marketing|venta|copy|email|seo|freelance|infoproducto/.test(n))
+    return {mode:'dark',accent:'#60a5fa',accent2:'#a78bfa',bg:'#10121a',card:'#181b27',text:'#f7f8ff',muted:'#a5a9bd',font:'sans'};
+  if (/educaci|estudio|ingles|programacion|lectura|escritura|habitos/.test(n))
+    return {mode:'light',accent:'#2563eb',accent2:'#7c3aed',bg:'#f5f7ff',card:'#ffffff',text:'#172033',muted:'#68738d',font:'sans'};
+  if (/relacion|pareja|crianza|embarazo|comunicacion|codependencia/.test(n))
+    return {mode:'light',accent:'#db2777',accent2:'#f97316',bg:'#fff7f7',card:'#ffffff',text:'#3a1d2b',muted:'#8a6a74',font:'serif'};
+  if (/belleza|skincare|colorimetria|armario/.test(n))
+    return {mode:'light',accent:'#be185d',accent2:'#a855f7',bg:'#fff5fb',card:'#ffffff',text:'#351528',muted:'#8b6a7f',font:'serif'};
+  if (/hogar|limpieza|minimalismo|jardin|zero/.test(n))
+    return {mode:'light',accent:'#0f766e',accent2:'#65a30d',bg:'#f4fbf7',card:'#ffffff',text:'#17322d',muted:'#667b73',font:'sans'};
+  if (/mascota|cachorro|canino/.test(n))
+    return {mode:'light',accent:'#ca8a04',accent2:'#7c3aed',bg:'#fff8ed',card:'#ffffff',text:'#332315',muted:'#806f5f',font:'sans'};
+  if (/desarrollo|proposito|emocional|atomicos/.test(n))
+    return {mode:'dark',accent:'#38bdf8',accent2:'#c084fc',bg:'#11111a',card:'#1b1b28',text:'#fbfbff',muted:'#aaa6c2',font:'sans'};
+  return {mode:'dark',accent:'#4d7cff',accent2:'#a78bfa',bg:'#101014',card:'#181821',text:'#ffffff',muted:'#aaa7b8',font:'sans'};
+}
+
 // ── Quizzes ──────────────────────────────────────────────
 async function renderQuizzes() {
   const container = document.getElementById('quizzes-list');
@@ -1488,14 +1581,16 @@ function buildAppCard(app) {
   const typeLabel = types.length > 1
     ? `${types.length} secciones`
     : (TYPE_NAMES[types[0]] || types[0] || '—');
-  const typeIcon = TYPE_ICONS[types[0]] || 'deployed_code';
-  const icon = app.icon || '';
+  const typeIcon = getTemplateMaterialIcon(app, types);
   const appUrl = `./mini-app-player.html?id=${app.id}`;
-  const hasEditableContent = types.some(t => SUPPORTED_CONTENT_TYPES?.has(t));
+  const hasEditableContent = true;
+  const palette = (app._fromTemplate || app.category) ? getTemplatePalette(app) : {};
+  const accent = app.primaryColor || app.accent || palette.accent || '#2E5BFF';
+  const accent2 = app.secondaryColor || app.accent2 || palette.accent2 || '#7c3aed';
 
-  const iconHtml = icon
-    ? `<div class="w-11 h-11 rounded-xl flex items-center justify-center text-2xl" style="background:linear-gradient(135deg,rgba(46,91,255,0.15),rgba(124,58,237,0.1))">${esc(icon)}</div>`
-    : `<div class="w-11 h-11 rounded-xl flex items-center justify-center" style="background:linear-gradient(135deg,#2E5BFF,#7c3aed)"><span class="material-symbols-outlined text-white text-lg">${typeIcon}</span></div>`;
+  const iconHtml = `<div class="w-11 h-11 rounded-xl flex items-center justify-center shadow-[0_14px_30px_rgba(46,91,255,0.16)]" style="background:linear-gradient(135deg,${esc(accent)},${esc(accent2)})">
+    <span class="material-symbols-outlined text-white text-lg" style="font-variation-settings:'FILL' 1,'wght' 500">${esc(typeIcon)}</span>
+  </div>`;
 
   return `
     <div class="rounded-2xl p-5 flex flex-col gap-3 bg-surface-container border border-outline-variant/10 hover:border-primary/20 transition-all">
@@ -1508,11 +1603,11 @@ function buildAppCard(app) {
         <p class="text-xs text-on-surface-variant mt-0.5 line-clamp-2">${esc(app.description || app.niche || '')}</p>
       </div>
       <div class="flex gap-2 mt-auto">
-        <a href="${appUrl}" target="_blank" class="flex-1 py-2 bg-primary text-white text-xs font-bold rounded-xl text-center hover:opacity-90 transition-opacity">Abrir App</a>
+        <a href="${appUrl}" class="flex-1 py-2 bg-primary text-white text-xs font-bold rounded-xl text-center hover:opacity-90 transition-opacity">Abrir App</a>
         ${hasEditableContent ? `<button id="edit-btn-${app.id}" onclick="openEditContent('${app.id}')" class="w-9 h-9 rounded-xl bg-surface-container-high flex items-center justify-center hover:bg-primary/10 transition-colors" title="Editar contenido">
           <span class="material-symbols-outlined text-sm text-on-surface-variant">edit</span>
         </button>` : ''}
-        <button onclick="copyToClipboard(window.location.origin.replace(/\\/[^\\/]*$/, '')+'/mini-app-player.html?id=${app.id}')" class="w-9 h-9 rounded-xl bg-surface-container-high flex items-center justify-center hover:bg-primary/10 transition-colors" title="Copiar enlace">
+        <button onclick="copyToClipboard(buildMiniAppUrl('${app.id}'))" class="w-9 h-9 rounded-xl bg-surface-container-high flex items-center justify-center hover:bg-primary/10 transition-colors" title="Copiar enlace">
           <span class="material-symbols-outlined text-sm text-on-surface-variant">share</span>
         </button>
         <button onclick="deleteApp('${app.id}')" class="w-9 h-9 rounded-xl bg-surface-container-high flex items-center justify-center hover:bg-error/10 transition-colors" title="Eliminar">
@@ -1522,15 +1617,22 @@ function buildAppCard(app) {
     </div>`;
 }
 
+function buildMiniAppUrl(appId) {
+  return `${window.location.origin}/mini-app-player.html?id=${encodeURIComponent(appId)}`;
+}
+
 async function deleteApp(id) {
   if (!confirm('¿Eliminar esta mini-app? No se puede deshacer.')) return;
+  MiniApps.delete(id);
+  window._miniAppsCache = (window._miniAppsCache || []).filter(app => app.id !== id);
   try {
     await DB.miniApps.delete(id);
-    renderMiniApps();
     showToast('Mini-App eliminada.');
   } catch (err) {
-    showToast('Error al eliminar: ' + err.message, 'error');
+    console.warn('deleteApp:', err);
+    showToast('Mini-App eliminada de este navegador. Revisa conexión para sincronizar.', 'info');
   }
+  renderMiniApps();
 }
 
 function copyLink(quizId, isLocal) {
@@ -1653,8 +1755,7 @@ async function showQuizAnalytics(quizId, quizTitle) {
     const profileCounts = {};
     leads.forEach(l => {
       const key = l.profile_name || l.profile_id || 'Sin perfil';
-      const emoji = l.profile_emoji || '🎯';
-      profileCounts[key] = profileCounts[key] || { count: 0, emoji };
+      profileCounts[key] = profileCounts[key] || { count: 0, icon: 'person_search' };
       profileCounts[key].count++;
     });
     const topProfiles = Object.entries(profileCounts).sort((a,b) => b[1].count - a[1].count);
@@ -1709,11 +1810,11 @@ async function showQuizAnalytics(quizId, quizTitle) {
       <div class="bg-surface-container rounded-xl p-4">
         <p class="text-sm font-bold mb-3">Perfiles más elegidos</p>
         <div class="space-y-2">
-          ${topProfiles.map(([name, {count, emoji}]) => {
+          ${topProfiles.map(([name, {count, icon}]) => {
             const pct = leads.length > 0 ? Math.round((count / leads.length) * 100) : 0;
             return `<div>
               <div class="flex items-center justify-between text-xs mb-1">
-                <span>${emoji} ${esc(name)}</span>
+                <span class="inline-flex items-center gap-1.5"><span class="material-symbols-outlined text-primary text-sm">${icon}</span>${esc(name)}</span>
                 <span class="font-bold text-primary">${count} (${pct}%)</span>
               </div>
               <div class="h-1.5 bg-surface-container-high rounded-full overflow-hidden">
@@ -1844,7 +1945,7 @@ function closeModal() {
   document.getElementById('ai-ideas-box').classList.add('hidden');
   document.getElementById('ai-ideas-box').innerHTML = '';
   document.getElementById('icon-suggestions').classList.add('hidden');
-  document.getElementById('ma-icon').value = '⚡';
+  document.getElementById('ma-icon').value = 'deployed_code';
 }
 
 function handleOverlayClick(e) {
@@ -1858,12 +1959,13 @@ async function handleCreateMiniApp(e) {
   const niche = document.getElementById('ma-niche').value.trim();
   const product = document.getElementById('ma-product').value.trim();
   const description = document.getElementById('ma-desc').value.trim();
-  const icon = document.getElementById('ma-icon').value.trim() || '⚡';
+  const rawIcon = document.getElementById('ma-icon').value.trim();
   const codesRaw = document.getElementById('ma-codes').value.trim();
   const accessCodes = codesRaw ? codesRaw.split(',').map(c => c.trim()).filter(Boolean) : [];
 
   // Collect all checked types
   const types = [...document.querySelectorAll('input[name="ma-type"]:checked')].map(cb => cb.value);
+  const icon = normalizeMaterialIcon(rawIcon, types[0]);
 
   if (!name || !niche) {
     showToast('Completa los campos obligatorios.', 'error');
@@ -2004,22 +2106,22 @@ async function handleCreateMiniApp(e) {
 
 // ── Icon suggestions based on niche ───────────────────────
 const NICHE_ICONS = [
-  [/espirit|bibl|fe\b|dios|oraci|cristi|religi|angel|manna|sagr|iglesi/i, ['📖','🕊️','✝️','🙏','🌟','🔆']],
-  [/wellness|bienestar|yoga|medita|mindful|autoam|holistic/i,              ['🌿','🧘','🌸','💆','✨','🌙']],
-  [/salud|sanación|terapia|psicolog|emocio|mental/i,                       ['💙','🧠','🌈','🦋','💚','🌺']],
-  [/fitness|gym|ejercic|deport|muscula|crossfit|entrena/i,                 ['💪','🏋️','🔥','⚡','🏃','🎯']],
-  [/nutrici|alimentaci|dieta|receta|cocina|gastro/i,                       ['🥗','🍎','🌱','🥦','🍽️','🫐']],
-  [/finanz|dinero|inversion|ahorro|crypto|bolsa/i,                         ['💰','📈','💎','🏦','🪙','💳']],
-  [/negocio|emprender|startup|empresa|marketing/i,                         ['🚀','💼','📊','⚡','🎯','🔑']],
-  [/maternidad|bebe|embaraz|bebé|infantil|niño|crianza/i,                  ['👶','🤱','🌸','💕','🍼','⭐']],
-  [/arte|creativ|diseño|pintura|ilustra/i,                                 ['🎨','✏️','🖌️','🎭','🌈','💡']],
-  [/música|cantar|guitarra|piano|producci/i,                               ['🎵','🎸','🎹','🎤','🎶','🎧']],
-  [/viaje|travel|turismo|aventura|mochila/i,                               ['✈️','🌍','🗺️','🧳','🏔️','🌊']],
-  [/moda|belleza|makeup|cosmetic|estilo/i,                                 ['💄','👗','✨','💅','🪞','👑']],
-  [/educaci|aprendiz|estudio|curso|libr|enseña/i,                         ['📚','🎓','💡','📝','🔬','✏️']],
-  [/tecnolog|programaci|código|software|web|app/i,                         ['💻','🔧','⚙️','🤖','📱','🔌']],
-  [/mascotas|perro|gato|animal|veterinar/i,                                ['🐾','🐕','🐈','🌿','❤️','🦮']],
-  [/coaching|liderazgo|productivid|habit|reto/i,                          ['🎯','🔥','⚡','🏆','💪','🌟']],
+  [/espirit|bibl|fe\b|dios|oraci|cristi|religi|angel|manna|sagr|iglesi/i, ['auto_stories','volunteer_activism','church','menu_book','flare','self_improvement']],
+  [/wellness|bienestar|yoga|medita|mindful|autoam|holistic/i,              ['self_improvement','spa','psychiatry','favorite','bedtime','emoji_nature']],
+  [/salud|sanación|terapia|psicolog|emocio|mental/i,                       ['monitor_heart','psychology','healing','health_and_safety','favorite','spa']],
+  [/fitness|gym|ejercic|deport|muscula|crossfit|entrena/i,                 ['fitness_center','directions_run','monitor_heart','sports_gymnastics','bolt','flag']],
+  [/nutrici|alimentaci|dieta|receta|cocina|gastro/i,                       ['nutrition','restaurant','eco','local_dining','grocery','health_and_safety']],
+  [/finanz|dinero|inversion|ahorro|crypto|bolsa/i,                         ['account_balance_wallet','savings','trending_up','account_balance','paid','credit_card']],
+  [/negocio|emprender|startup|empresa|marketing/i,                         ['rocket_launch','business_center','monitoring','campaign','target','key']],
+  [/maternidad|bebe|embaraz|bebé|infantil|niño|crianza/i,                  ['child_care','family_restroom','favorite','crib','stars','health_and_safety']],
+  [/arte|creativ|diseño|pintura|ilustra/i,                                 ['palette','draw','brush','theater_comedy','lightbulb','auto_awesome']],
+  [/música|cantar|guitarra|piano|producci/i,                               ['music_note','graphic_eq','mic','headphones','piano','equalizer']],
+  [/viaje|travel|turismo|aventura|mochila/i,                               ['flight_takeoff','public','map','luggage','landscape','waves']],
+  [/moda|belleza|makeup|cosmetic|estilo/i,                                 ['face_retouching_natural','styler','spa','palette','diamond','workspace_premium']],
+  [/educaci|aprendiz|estudio|curso|libr|enseña/i,                          ['school','menu_book','lightbulb','edit_note','science','draw']],
+  [/tecnolog|programaci|código|software|web|app/i,                         ['devices','construction','settings','smart_toy','phone_iphone','memory']],
+  [/mascotas|perro|gato|animal|veterinar/i,                                ['pets','cruelty_free','health_and_safety','home','favorite','school']],
+  [/coaching|liderazgo|productivid|habit|reto/i,                           ['target','local_fire_department','bolt','emoji_events','psychology','trending_up']],
 ];
 
 function suggestIcons(niche) {
@@ -2028,21 +2130,21 @@ function suggestIcons(niche) {
   if (!niche || niche.length < 3) { suggestEl.classList.add('hidden'); return; }
 
   let icons = [];
-  for (const [pattern, emojis] of NICHE_ICONS) {
-    if (pattern.test(niche)) { icons = emojis; break; }
+  for (const [pattern, materialIcons] of NICHE_ICONS) {
+    if (pattern.test(niche)) { icons = materialIcons; break; }
   }
   if (!icons.length) { suggestEl.classList.add('hidden'); return; }
 
   gridEl.innerHTML = icons.map(e =>
     `<button type="button" onclick="document.getElementById('ma-icon').value='${e}';document.querySelectorAll('#icon-suggestions-grid button').forEach(b=>b.classList.remove('ring-2','ring-primary'));this.classList.add('ring-2','ring-primary')"
-      style="width:38px;height:38px;border-radius:10px;font-size:20px;border:1px solid rgba(255,255,255,0.1);background:rgba(255,255,255,0.05);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s"
-      onmouseover="this.style.transform='scale(1.15)'" onmouseout="this.style.transform=''">${e}</button>`
+      title="${e}" style="width:38px;height:38px;border-radius:10px;border:1px solid rgba(255,255,255,0.1);background:rgba(255,255,255,0.05);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s"
+      onmouseover="this.style.transform='scale(1.15)'" onmouseout="this.style.transform=''"><span class="material-symbols-outlined text-sm">${e}</span></button>`
   ).join('');
   suggestEl.classList.remove('hidden');
 
   // Auto-set first icon if icon field still has default
   const iconField = document.getElementById('ma-icon');
-  if (!iconField.value || iconField.value === '⚡') {
+  if (!iconField.value || iconField.value === '⚡' || iconField.value === 'deployed_code') {
     iconField.value = icons[0];
     gridEl.querySelector('button')?.classList.add('ring-2','ring-primary');
   }
@@ -2053,7 +2155,7 @@ const NICHE_TYPES = [
   [/espirit|bibl|fe\b|dios|oraci|cristi|religi|angel|manna|sagr|iglesi/i,
     ['devocional','afirmaciones','meditacion','reto','diario']],
   [/wellness|bienestar|yoga|medita|mindful|autoam|holistic/i,
-    ['meditacion','tracker','diario','afirmaciones','reto']],
+    ['bodymap','meditacion','tracker','diario','afirmaciones']],
   [/fitness|gym|ejercic|deport|muscula|crossfit|entrena/i,
     ['tracker','reto','calculadora','checklist','diagnostico']],
   [/finanz|dinero|negocio|emprender|inversion|crypto|ahorro/i,
@@ -2083,8 +2185,16 @@ const TYPE_ICONS = {
   roadmap:'map', glosario:'menu_book', faq:'chat',
   flashcards:'style', biblioteca:'local_library', chatbot:'smart_toy',
   generador:'auto_awesome', afirmaciones:'brightness_7', meditacion:'self_improvement',
+  bodymap:'accessibility_new',
   simulador:'science',
 };
+
+function normalizeMaterialIcon(icon, type = '') {
+  const raw = String(icon || '').trim();
+  if (/^[a-z][a-z0-9_]*$/.test(raw)) return raw;
+  return TYPE_ICONS[type] || 'deployed_code';
+}
+
 const TYPE_NAMES = {
   devocional:'Devocional', checklist:'Checklist', tracker:'Tracker',
   reto:'Reto', diario:'Diario', calculadora:'Calculadora',
@@ -2092,6 +2202,7 @@ const TYPE_NAMES = {
   roadmap:'Roadmap', glosario:'Glosario', faq:'FAQ',
   flashcards:'Flashcards', biblioteca:'Biblioteca', chatbot:'Asistente IA',
   generador:'Generador', afirmaciones:'Afirmaciones', meditacion:'Meditación',
+  bodymap:'Mapa de señales',
   simulador:'Simulador',
 };
 const TYPE_LABELS = Object.fromEntries(
@@ -2175,7 +2286,7 @@ async function generateIdeas() {
         <div class="p-3 bg-surface-container rounded-xl border border-primary/10 cursor-pointer hover:border-primary/30 transition-all"
              onclick="applyIdea(${JSON.stringify(idea).replace(/"/g,'&quot;')})">
           <div class="flex items-center gap-2 mb-1">
-            <span class="text-base">${esc(idea.icon||'⚡')}</span>
+            <span class="material-symbols-outlined text-base">${esc(normalizeMaterialIcon(idea.icon, idea.type))}</span>
             <span class="text-xs font-bold text-on-surface">${esc(idea.name)}</span>
           </div>
           <p class="text-[11px] text-on-surface-variant">${esc(idea.description)}</p>
@@ -2195,7 +2306,7 @@ async function generateIdeas() {
 
 function applyIdea(idea) {
   if (idea.name) document.getElementById('ma-name').value = idea.name;
-  if (idea.icon) document.getElementById('ma-icon').value = idea.icon;
+  document.getElementById('ma-icon').value = normalizeMaterialIcon(idea.icon, idea.type);
   if (idea.description) document.getElementById('ma-desc').value = idea.description;
   // Select the matching type chip
   if (idea.type) {
@@ -2327,6 +2438,7 @@ const CONTENT_CFG = {
   diario:      { label:'Preguntas de reflexión',    hint:'Una pregunta por línea  →  "¿Cómo me siento hoy?"', rows:4, parse:'lines',      key:'journalPrompts' },
   devocional:  { label:'Texto devocional',          hint:'Cita, reflexión o versículo principal',              rows:4, parse:'single',     key:'devotionalText' },
   meditacion:  { label:'Guión de meditación',       hint:'Texto completo en voz alta. Usa "..." para pausas.', rows:8, parse:'single',     key:'meditationScript' },
+  bodymap:     { label:'Señales del mapa',          hint:'Señal o zona | significado | pregunta | práctica  (una por línea)', rows:6, parse:'pipes', key:'bodySignals', pipeKeys:['label','meaning','prompt','practice'] },
   tracker:     { label:'Nombre del hábito',         hint:'Ej: "Meditar 10 minutos cada mañana"',               rows:1, parse:'single',     key:'trackerHabit', input:true },
   chatbot:     { label:'Mensaje de bienvenida del asistente', hint:'Primer mensaje que enviará el bot',         rows:2, parse:'single',     key:'chatbotGreeting' },
   biblioteca:  { label:'Recursos',                  hint:'Título | URL  (uno por línea)',                      rows:5, parse:'pipes',      key:'resources',   pipeKeys:['title','url'] },
@@ -2375,11 +2487,19 @@ function parseContentValue(type, rawValue) {
   if (cfg.parse === 'single') return rawValue.trim();
   if (cfg.parse === 'lines') return lines;
   if (cfg.parse === 'pipes') {
-    const [k1, k2] = cfg.pipeKeys;
-    return lines.map(l => {
-      const [a, ...rest] = l.split('|');
-      return { [k1]: a.trim(), [k2]: rest.join('|').trim() };
-    }).filter(o => o[k1]);
+    const keys = cfg.pipeKeys || [];
+    return lines.map((l, idx) => {
+      const parts = l.split('|').map(p => p.trim());
+      const item = {};
+      keys.forEach((key, keyIdx) => { item[key] = parts[keyIdx] || ''; });
+      if (type === 'bodymap') {
+        item.id = (item.label || `senal-${idx + 1}`).normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+        item.x = [50, 50, 32, 68, 50, 50][idx % 6];
+        item.y = [12, 32, 38, 38, 56, 72][idx % 6];
+        item.icon = ['psychology','record_voice_over','fitness_center','favorite','self_improvement','spa'][idx % 6];
+      }
+      return item;
+    }).filter(o => o[keys[0]]);
   }
   return null;
 }
@@ -2399,22 +2519,65 @@ function getCreatorContent() {
 // ── Edit existing app content ─────────────────────────────
 let _editingAppId = null;
 
-function openEditContent(appId) {
-  const app = MiniApps.get(appId);
-  if (!app) { alert('App no encontrada. Recarga la página.'); return; }
-  _editingAppId = appId;
+function findMiniApp(appId) {
+  return (window._miniAppsCache || []).find(app => app.id === appId) || MiniApps.get(appId);
+}
 
-  const types = (app.types?.length ? app.types : [app.type]).filter(Boolean);
+function getEditableTypes() {
+  return [
+    'reto', 'checklist', 'tracker', 'diario', 'devocional',
+    'planificador', 'roadmap', 'faq', 'flashcards', 'glosario', 'biblioteca',
+    'chatbot', 'generador', 'afirmaciones', 'meditacion', 'bodymap',
+    'calculadora', 'diagnostico', 'comparador', 'simulador'
+  ].filter(type => TYPE_NAMES[type]);
+}
+
+function buildEditTypesHTML(selectedTypes = []) {
+  const selected = new Set(selectedTypes);
+  return `
+    <div class="rounded-2xl border border-white/10 bg-white/[0.03] p-4">
+      <div class="flex items-start justify-between gap-3 mb-3">
+        <div>
+          <p class="text-xs font-extrabold text-on-surface uppercase tracking-wider">Herramientas de esta mini-app</p>
+          <p class="text-[11px] text-on-surface-variant mt-0.5">Agrega o quita secciones sin recrear la plantilla.</p>
+        </div>
+        <span id="edit-type-count" class="text-[10px] font-bold px-2 py-1 rounded-full bg-primary/10 text-primary">${selected.size} activas</span>
+      </div>
+      <div class="flex flex-wrap gap-1.5">
+        ${getEditableTypes().map(type => `
+          <label class="type-chip ${selected.has(type) ? 'selected' : ''}" style="font-size:11px">
+            <input type="checkbox" name="edit-type" value="${type}" class="sr-only" ${selected.has(type) ? 'checked' : ''} onchange="handleEditTypeChange(this)"/>
+            <span class="material-symbols-outlined">${TYPE_ICONS[type] || 'deployed_code'}</span>${TYPE_NAMES[type]}
+          </label>
+        `).join('')}
+      </div>
+    </div>
+    <div id="edit-content-fields" class="space-y-4"></div>`;
+}
+
+function getEditSelectedTypes() {
+  return [...document.querySelectorAll('input[name="edit-type"]:checked')].map(cb => cb.value);
+}
+
+function collectEditFieldValues() {
+  const values = {};
+  document.querySelectorAll('#edit-content-fields [id^="ec-"]').forEach(el => {
+    values[el.id.replace('ec-', '')] = el.value;
+  });
+  return values;
+}
+
+function renderEditContentFields(app, types, fieldValues = {}) {
+  const fieldsEl = document.getElementById('edit-content-fields');
+  if (!fieldsEl) return;
   const supported = types.filter(t => SUPPORTED_CONTENT_TYPES.has(t));
-
   const fieldsHtml = supported.map(type => {
     const cfg = CONTENT_CFG[type];
-    // Serialize existing value back to text
-    let current = app[cfg.key] ?? app.content?.[cfg.key] ?? '';
+    let current = fieldValues[type] ?? app[cfg.key] ?? app.content?.[cfg.key] ?? '';
     if (Array.isArray(current)) {
       if (cfg.parse === 'pipes') {
-        const [k1, k2] = cfg.pipeKeys;
-        current = current.map(o => `${o[k1] ?? ''} | ${o[k2] ?? ''}`).join('\n');
+        const keys = cfg.pipeKeys || [];
+        current = current.map(o => keys.map(k => o[k] ?? '').join(' | ')).join('\n');
       } else {
         current = current.join('\n');
       }
@@ -2422,22 +2585,46 @@ function openEditContent(appId) {
     return buildContentFieldHTML(type, current);
   }).join('');
 
-  document.getElementById('edit-content-title').textContent = app.name;
-  document.getElementById('edit-content-body').innerHTML = fieldsHtml || '<p style="color:#888;font-size:13px;padding:12px 0">Este tipo de app no tiene contenido editable.</p>';
-
-  // Rename IDs to edit-prefixed to avoid conflict with create form
-  document.querySelectorAll('#edit-content-body [id^="cc-"]').forEach(el => {
+  fieldsEl.innerHTML = fieldsHtml || '<p style="color:#888;font-size:13px;padding:12px 0">Estas herramientas no necesitan contenido manual. Se mostrarán con sus controles base.</p>';
+  fieldsEl.querySelectorAll('[id^="cc-"]').forEach(el => {
     el.id = 'ec-' + el.id.replace('cc-', '');
   });
+}
+
+function handleEditTypeChange(input) {
+  const chip = input.closest('.type-chip');
+  if (chip) chip.classList.toggle('selected', input.checked);
+  const app = findMiniApp(_editingAppId);
+  if (!app) return;
+  const selected = getEditSelectedTypes();
+  const countEl = document.getElementById('edit-type-count');
+  if (countEl) countEl.textContent = `${selected.length} activas`;
+  renderEditContentFields(app, selected, collectEditFieldValues());
+}
+
+function openEditContent(appId) {
+  const app = findMiniApp(appId);
+  if (!app) { alert('App no encontrada. Recarga la página.'); return; }
+  MiniApps.save(app);
+  _editingAppId = appId;
+
+  const types = (app.types?.length ? app.types : [app.type]).filter(Boolean);
+  document.getElementById('edit-content-title').textContent = app.name;
+  document.getElementById('edit-content-body').innerHTML = buildEditTypesHTML(types);
+  renderEditContentFields(app, types);
 
   document.getElementById('modal-edit-content').classList.remove('hidden');
 }
 
 async function saveEditContent() {
-  const app = MiniApps.get(_editingAppId);
+  const app = findMiniApp(_editingAppId);
   if (!app) return;
 
-  const types = (app.types?.length ? app.types : [app.type]).filter(Boolean);
+  const types = getEditSelectedTypes();
+  if (!types.length) {
+    showToast('Selecciona al menos una herramienta.', 'error');
+    return;
+  }
   const supported = types.filter(t => SUPPORTED_CONTENT_TYPES.has(t));
 
   const updates = {};
@@ -2449,14 +2636,16 @@ async function saveEditContent() {
     if (parsed !== null) updates[cfg.key] = parsed;
   });
 
-  const updated = { ...app, ...updates };
+  const updated = { ...app, type: types[0], types, ...updates };
   MiniApps.save(updated);
-  try { await DB.miniApps.save(updated); } catch(e) {}
+  window._miniAppsCache = (window._miniAppsCache || []).map(item => item.id === updated.id ? updated : item);
+  try { await DB.miniApps.save(updated, _currentUser.id); } catch(e) { console.warn('saveEditContent:', e); }
 
   document.getElementById('modal-edit-content').classList.add('hidden');
+  renderMiniApps();
   const btn = document.getElementById(`edit-btn-${_editingAppId}`);
-  if (btn) btn.textContent = 'Guardado';
-  setTimeout(() => { if (btn) btn.textContent = 'Editar'; }, 2000);
+  if (btn) btn.title = 'Guardado';
+  showToast('Contenido guardado.');
 }
 
 </script>

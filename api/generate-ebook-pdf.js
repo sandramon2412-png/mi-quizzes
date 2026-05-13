@@ -163,7 +163,12 @@ function drawVisual(doc, caption, theme) {
 }
 
 async function fetchImageBuffer(url) {
-  if (!url || !/^https?:\/\//i.test(url)) return null;
+  if (!url) return null;
+  const dataMatch = String(url).match(/^data:image\/(png|jpe?g);base64,([\s\S]+)$/i);
+  if (dataMatch) {
+    try { return Buffer.from(dataMatch[2], 'base64'); } catch { return null; }
+  }
+  if (!/^https?:\/\//i.test(url)) return null;
   try {
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), 6000);
@@ -271,7 +276,9 @@ function parseBlocks(input = '') {
 
 async function drawCover(doc, ebook, theme) {
   doc.rect(0, 0, doc.page.width, doc.page.height).fill(theme.primary);
-  doc.rect(0, doc.page.height * 0.70, doc.page.width, doc.page.height * 0.30).fill(theme.accent);
+  doc.rect(0, 0, doc.page.width, doc.page.height).fill(theme.primary);
+  doc.roundedRect(340, 104, 178, 360, 24).fillOpacity(0.16).fill('#ffffff').fillOpacity(1);
+  doc.circle(525, 690, 220).fillOpacity(0.14).fill(theme.accent).fillOpacity(1);
   doc.fillColor('#ffffff').font('Helvetica-Bold').fontSize(36)
     .text(ebook.title || 'Mi ebook', 58, 145, { width: 260, lineGap: 2 });
   const subtitle = ebook.cover?.subtitle || '';
@@ -296,7 +303,8 @@ async function drawCover(doc, ebook, theme) {
 }
 
 async function renderChapter(doc, chapter, index, theme) {
-  doc.addPage();
+  if (index > 0) doc.moveDown(0.8);
+  addPageIfNeeded(doc, 90);
   drawHeading(doc, chapter.title || `Seccion ${index + 1}`, theme, 2);
   const blocks = parseBlocks(chapter.body_md || '');
   for (const block of blocks) {
@@ -331,6 +339,7 @@ module.exports = async function handler(req, res) {
     });
     const done = collectPdf(doc);
     await drawCover(doc, ebook, theme);
+    doc.addPage();
     for (const [index, chapter] of ebook.chapters.entries()) {
       await renderChapter(doc, chapter, index, theme);
     }
