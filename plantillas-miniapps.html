@@ -223,7 +223,7 @@
             </a>
             <span class="inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-bold text-white" style="background:linear-gradient(135deg,#2E5BFF,#7c3aed);">
               <span class="material-symbols-outlined" style="font-size:15px;font-variation-settings:'FILL' 1">deployed_code</span>
-              58 Mini-Apps
+              60 Mini-Apps
             </span>
             <span class="inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-bold" style="background:rgba(255,255,255,0.08);color:rgba(255,255,255,0.75);">
               <span class="material-symbols-outlined" style="font-size:15px;font-variation-settings:'FILL' 1">bolt</span>
@@ -379,7 +379,7 @@ const TYPE_LABELS = {
   planificador:'Planificador', calculadora:'Calculadora', diario:'Diario',
   chatbot:'Chatbot', generador:'Generador', simulador:'Simulador',
   afirmaciones:'Afirmaciones', meditacion:'Meditación', faq:'FAQ',
-  flashcards:'Flashcards', glosario:'Glosario', roadmap:'Roadmap',
+  flashcards:'Flashcards', glosario:'Glosario', roadmap:'Roadmap', bodymap:'Mapa de señales',
   diagnostico:'Diagnóstico', comparador:'Comparador', biblioteca:'Biblioteca'
 };
 
@@ -477,7 +477,8 @@ function typeIcon(type) {
     chatbot:'forum', generador:'auto_fix_high', simulador:'model_training',
     afirmaciones:'workspace_premium', meditacion:'self_improvement', faq:'help',
     flashcards:'style', glosario:'menu_book', roadmap:'conversion_path',
-    diagnostico:'psychology', comparador:'compare_arrows', biblioteca:'local_library'
+    diagnostico:'psychology', comparador:'compare_arrows', biblioteca:'local_library',
+    bodymap:'accessibility_new'
   })[type] || 'deployed_code';
 }
 

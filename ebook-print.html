@@ -52,10 +52,9 @@
   .cover {
     width:210mm; height:297mm; margin:0 auto 18px; overflow:hidden; color:#fff;
     background:linear-gradient(135deg,var(--doc-primary),var(--doc-accent));
-    display:grid; grid-template-columns:minmax(0,1.05fr) minmax(0,.95fr); gap:12mm; align-items:center; padding:24mm 22mm;
+    display:grid; grid-template-columns:1.05fr .95fr; gap:12mm; align-items:center; padding:24mm 22mm;
     page-break-after:always; break-after:page;
   }
-  .cover > * { min-width: 0; }
   .cover h1 {
     font-family:'Plus Jakarta Sans',sans-serif; font-size:52px; line-height:1.04; letter-spacing:0; margin:0 0 18px; font-weight:800;
   }
@@ -79,8 +78,6 @@
   .chapter h3 { font-family:'Plus Jakarta Sans',sans-serif; font-size:15.5px; margin:18px 0 8px; break-after:avoid; page-break-after:avoid; }
   .chapter p { font-size:12.8px; line-height:1.58; margin:0 0 8px; orphans:3; widows:3; }
   .chapter strong { color:var(--doc-primary); font-weight:700; }
-  /* Inline strong/em inside callout body text must stay inline — override .chapter strong */
-  .callout p strong, .callout p em, .callout p b { color:inherit !important; display:inline !important; font-size:inherit !important; text-transform:none !important; }
   .chapter a { color:var(--doc-accent); }
   .chapter ul, .chapter ol { padding:0; margin:0 0 12px; }
   .chapter li { break-inside:avoid; page-break-inside:avoid; }
@@ -107,121 +104,36 @@
   th { background:var(--doc-primary); color:#fff; text-align:left; padding:8px 10px; }
   td { padding:8px 10px; border-top:1px solid var(--doc-border); }
   tbody tr:nth-child(even) td { background:var(--doc-surface-2); }
-  .feature-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:12px; margin:12px 0; }
+  .feature-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:12px; margin:12px 0; break-inside:avoid; page-break-inside:avoid; }
   .feature-grid.cols-3 { grid-template-columns:repeat(3,1fr); }
-  .feature-item { background:var(--doc-surface); border-radius:10px; padding:10px 12px; break-inside:avoid; page-break-inside:avoid; }
-  .feature-icon { width:30px; height:30px; border-radius:50%; background:var(--doc-primary); color:#fff; display:flex; align-items:center; justify-content:center; font-family:'Material Symbols Outlined'; font-size:16px; }
+  .feature-item { break-inside:avoid; page-break-inside:avoid; border:1px solid var(--doc-border); border-radius:12px; background:var(--doc-surface-2); padding:12px; }
+  .feature-icon { width:30px; height:30px; border-radius:50%; background:var(--doc-primary); color:#fff; display:flex; align-items:center; justify-content:center; font-family:'Plus Jakarta Sans',sans-serif; font-size:0; }
+  .feature-icon::before { content:'✓'; font-size:15px; font-weight:800; line-height:1; }
   .feature-title { font-family:'Plus Jakarta Sans',sans-serif; font-size:13px; font-weight:800; margin:5px 0 2px; }
   .feature-desc { font-size:11.5px; line-height:1.45; color:var(--doc-muted); margin:0; }
-  ol.steps { list-style:none; counter-reset:steps-ctr; padding:0; margin:0 0 12px; }
-  ol.steps li { counter-increment:steps-ctr; position:relative; padding:8px 10px 8px 40px; margin:5px 0; border-radius:9px; background:var(--doc-surface-2); font-size:12.7px; line-height:1.48; break-inside:avoid; page-break-inside:avoid; }
-  ol.steps li::before { content:counter(steps-ctr); position:absolute; left:9px; top:8px; width:21px; height:21px; border-radius:6px; background:var(--doc-primary); color:#fff; font-family:'Plus Jakarta Sans',sans-serif; font-size:10px; font-weight:800; display:flex; align-items:center; justify-content:center; }
-  .callout { display:block; margin:12px 0; padding:10px 14px; border-radius:0 10px 10px 0; border-left:4px solid var(--doc-accent); font-family:'Plus Jakarta Sans',sans-serif; font-size:12px; line-height:1.55; break-inside:avoid; page-break-inside:avoid; }
-  .callout strong { display:block; font-size:10px; font-weight:800; text-transform:uppercase; letter-spacing:.08em; margin-bottom:4px; }
-  /* All callout backgrounds are hardcoded light — print is always on white paper */
-  .callout p { margin:0; color:#1a1a1a !important; }
-  .callout-tip { background:#eff4ff !important; border-color:#2E5BFF !important; } .callout-tip strong { color:#2E5BFF !important; }
-  .callout-warn { background:#fff5f0 !important; border-color:#ea6d3a !important; } .callout-warn p { color:#1a1a1a !important; } .callout-warn strong { color:#d95a2a !important; }
-  .callout-info { background:#f3eeff !important; border-color:#7c3aed !important; } .callout-info strong { color:#7c3aed !important; }
-  .callout-quote { background:#f7f7ff !important; border-color:#7c3aed !important; font-style:italic; } .callout-quote p { font-size:14px; color:#1a1a1a !important; }
+  .steps { list-style:none; counter-reset:step; padding:0; margin:10px 0; }
+  .steps li { counter-increment:step; position:relative; padding-left:38px; background:var(--doc-surface-2); }
+  .steps li::before { content:counter(step); position:absolute; left:9px; top:8px; width:21px; height:21px; border-radius:999px; background:var(--doc-primary); color:#fff; font-family:'Plus Jakarta Sans',sans-serif; font-size:10px; font-weight:800; display:flex; align-items:center; justify-content:center; }
   .numbered-card { display:flex; margin:9px 0; border-radius:10px; overflow:hidden; background:var(--doc-surface-2); break-inside:avoid; page-break-inside:avoid; }
   .numbered-card .n { flex:0 0 46px; background:var(--doc-primary); color:#fff; font-family:'Plus Jakarta Sans',sans-serif; font-size:20px; font-weight:800; display:flex; align-items:center; justify-content:center; }
   .numbered-card .body { padding:10px 12px; }
   .image-card { margin:10px 0 12px; border-radius:12px; overflow:hidden; background:var(--doc-surface-2); border:1px solid var(--doc-border); break-inside:avoid; page-break-inside:avoid; }
-  .image-card img { display:block; width:100%; height:auto; max-height:200mm; object-fit:cover; }
-  .image-card[data-size="banner"] img   { aspect-ratio:21/8; object-fit:cover; height:unset; width:100%; }
-  .image-card[data-size="wide"] img     { aspect-ratio:16/9; object-fit:cover; height:unset; width:100%; }
-  .image-card[data-size="square"] img   { aspect-ratio:1/1;  object-fit:cover; height:unset; width:100%; }
-  .image-card[data-size="tall"] img     { aspect-ratio:3/4;  object-fit:cover; height:unset; width:52%; margin:0 auto; }
-  .image-card[data-size="portrait"] img { aspect-ratio:9/16; object-fit:cover; height:unset; width:40%; margin:0 auto; }
-  /* Cover position presets */
-  .cover-media[data-size="top"]     img { object-position:top; }
-  .cover-media[data-size="bottom"]  img { object-position:bottom; }
-  .cover-media[data-size="contain"] img { object-fit:contain; }
-  .image-size-picker { display:none; } /* hide UI controls in print */
+  .image-card img { display:block; width:100%; aspect-ratio:21/7; object-fit:cover; }
+  .chapter button, .chapter .image-edit-btn, .chapter .eb-regen-btn { display:none !important; }
   .image-visual { position:relative; width:100%; aspect-ratio:21/7; background:linear-gradient(135deg,var(--doc-primary),var(--doc-accent)); display:flex; align-items:flex-end; padding:16px; color:#fff; overflow:hidden; }
   .image-visual::before { content:''; position:absolute; inset:0; background:linear-gradient(120deg,rgba(255,255,255,.20) 0 18%,transparent 18% 31%,rgba(255,255,255,.13) 31% 44%,transparent 44% 100%); }
   .image-visual span { position:relative; z-index:1; font-family:'Plus Jakarta Sans',sans-serif; font-size:10px; font-weight:800; letter-spacing:.12em; text-transform:uppercase; }
   figcaption { padding:7px 10px 9px; font-family:'Plus Jakarta Sans',sans-serif; font-size:9.5px; line-height:1.35; color:var(--doc-muted); text-transform:uppercase; letter-spacing:.08em; }
-  /* ── Extra visual blocks (stat-card, pricing-card, pill, tab-chips) ── */
-  .stat-card { display:inline-flex; flex-direction:column; padding:18px 22px; margin:16px 12px 16px 0; border-radius:14px; background:linear-gradient(135deg,var(--doc-primary),var(--doc-accent)); color:#fff; min-width:160px; font-family:'Plus Jakarta Sans',sans-serif; break-inside:avoid; page-break-inside:avoid; vertical-align:top; }
-  .stat-card .stat-number { display:block; font-size:32px; font-weight:800; line-height:1; letter-spacing:-0.02em; }
-  .stat-card .stat-label { display:block; font-size:12px; opacity:0.9; margin-top:6px; font-weight:500; }
-  .pricing-card { display:inline-flex; flex-direction:column; padding:20px 22px; margin:10px 10px 10px 0; border-radius:14px; background:var(--doc-surface); border:1px solid var(--doc-border); min-width:200px; font-family:'Plus Jakarta Sans',sans-serif; vertical-align:top; break-inside:avoid; page-break-inside:avoid; }
-  .pricing-card .plan { font-size:12px; font-weight:700; text-transform:uppercase; letter-spacing:0.1em; color:var(--doc-accent); margin:0 0 6px; }
-  .pricing-card .price { font-size:28px; font-weight:800; color:var(--doc-fg); margin:0 0 10px; letter-spacing:-0.02em; }
-  .pricing-card .price small { font-size:13px; font-weight:500; color:var(--doc-muted); }
-  .pricing-card ul { margin:0; padding:0; list-style:none; }
-  .pricing-card ul li { font-size:12.5px; color:var(--doc-fg); padding:4px 0 4px 20px; position:relative; line-height:1.5; margin:0; }
-  .pricing-card ul li::before { content:'✓'; position:absolute; left:0; color:var(--doc-primary); font-weight:800; }
-  .pill { display:inline-block; padding:3px 10px; border-radius:999px; font-size:10.5px; font-weight:700; letter-spacing:0.08em; text-transform:uppercase; font-family:'Plus Jakarta Sans',sans-serif; background:var(--doc-surface); color:var(--doc-primary); margin:0 6px 8px 0; }
-  .pill.accent { background:linear-gradient(135deg,var(--doc-primary),var(--doc-accent)); color:#fff; }
-  .tab-chips { display:flex; flex-wrap:wrap; gap:8px; margin:16px 0; }
-  .tab-chips .chip { padding:6px 14px; border-radius:8px; background:var(--doc-surface-2); color:var(--doc-fg); font-size:12px; font-weight:600; }
-  .tab-chips .chip.active { background:linear-gradient(135deg,var(--doc-primary),var(--doc-accent)); color:#fff; }
   .empty { min-height:70vh; display:grid; place-items:center; color:#fff; font-family:'Plus Jakarta Sans',sans-serif; }
   .json-export { position: fixed; left: -9999px; top: 0; width: 1px; height: 1px; overflow: hidden; white-space: pre-wrap; }
-  .chapter-page {
-    width:210mm; margin:16px auto; padding:14mm 16mm;
-    background:var(--doc-bg); color:var(--doc-fg);
-    box-shadow:0 2px 20px rgba(0,0,0,.2);
-    -webkit-print-color-adjust:exact; print-color-adjust:exact;
-  }
-  /* Screen: @page with no margins; chapter-page padding acts as margins */
   @page { size:A4; margin:0; }
   @media print {
-    /* Page 1 (cover): full-bleed, no margins */
-    @page :first { size:A4; margin:0; }
-    /* Pages 2+ (chapters): 14mm top/bottom, 16mm left/right — browser handles margins */
-    @page { size:A4; margin:14mm 16mm; }
-    html, body { background:#fff !important; }
+    html, body { background:var(--doc-bg) !important; }
     .toolbar { display:none !important; }
     .page-shell { background:#fff !important; padding:0 !important; }
     .cover { width:210mm; height:297mm; margin:0; box-shadow:none; }
-    /* Chapters flow naturally — @page margin handles spacing, so remove chapter-page
-       padding in print to avoid the 28mm double-gap (14mm bottom + 14mm top of next
-       chapter-page) that creates near-blank pages when a page break falls inside it. */
-    .chapter-page { width:100% !important; margin:0 !important; padding:0 !important; box-shadow:none !important; min-height:0 !important; break-before:auto; page-break-before:auto; }
-    /* h2 stays with the paragraph that follows it — no orphaned headings */
-    .chapter h2 { break-after:avoid; page-break-after:avoid; margin-top:10mm; }
-    /* Increase widows/orphans to reduce single-word lines at page top/bottom.
-       Chrome PDF often ignores widows:3, so pushing to 5 helps catch more cases. */
-    .chapter p { widows:5; orphans:5; }
-    /* image-card: allow it to flow across pages — break-inside:avoid was leaving
-       large empty gaps when the image didn't fit and jumped to the next page. */
-    .image-card { break-inside:auto !important; page-break-inside:auto !important; }
-    /* Chrome sometimes fails to resolve CSS var() inside @media print, making
-       background-colored blocks invisible. Freeze all theme vars to concrete
-       light-print values so every element gets a real hex color to print. */
-    :root,
-    body.theme-dark-neon,
-    body.theme-pastel,
-    body.theme-corporate,
-    body.theme-finance,
-    body.theme-spiritual {
-      --doc-bg: #ffffff;
-      --doc-fg: #1a1a1a;
-      --doc-muted: #555555;
-      --doc-surface: #f0f5ff;
-      --doc-surface-2: #f7f8fb;
-      --doc-border: #e5e7eb;
-    }
-    /* Visual blocks — explicit background so print engines never skip them.
-       Also forces gradient elements to print with print-color-adjust:exact. */
-    .feature-item { background:#f0f5ff !important; -webkit-print-color-adjust:exact; print-color-adjust:exact; }
-    .callout-tip { background:#eff4ff !important; -webkit-print-color-adjust:exact; print-color-adjust:exact; }
-    .callout-info { background:#f3eeff !important; -webkit-print-color-adjust:exact; print-color-adjust:exact; }
-    .callout-quote { background:#f7f7ff !important; -webkit-print-color-adjust:exact; print-color-adjust:exact; }
-    .callout-warn { background:#fff5f0 !important; border-color:#ea6d3a !important; -webkit-print-color-adjust:exact; print-color-adjust:exact; }
-    .numbered-card { background:#f7f8fb !important; -webkit-print-color-adjust:exact; print-color-adjust:exact; }
-    .numbered-card .n, th, .image-visual, .stat-card, .pill.accent, .tab-chips .chip.active { -webkit-print-color-adjust:exact; print-color-adjust:exact; }
-    .stat-card { -webkit-print-color-adjust:exact; print-color-adjust:exact; }
-    .pricing-card { background:#f7f8fb !important; -webkit-print-color-adjust:exact; print-color-adjust:exact; }
-    .chapter ul li { background:#f0f5ff !important; -webkit-print-color-adjust:exact; print-color-adjust:exact; }
-    .chapter ol:not(.steps) li, ol.steps li { background:#f7f8fb !important; -webkit-print-color-adjust:exact; print-color-adjust:exact; }
-    /* Dark themes: force white chapter background + dark text.
-       Use specific selectors (no wildcard) to avoid overriding block backgrounds. */
-    /* Dark themes keep their background in print — print-color-adjust:exact handles it */
+    .document { width:210mm; min-height:0; margin:0; padding:18mm 20mm; background:var(--doc-bg); }
+    .chapter { margin-bottom:10mm; }
   }
 </style>
 </head>
@@ -234,7 +146,7 @@
   <div class="actions">
     <a id="back-link" class="btn ghost" href="./ebook-builder.html"><span class="material-symbols-outlined" style="font-size:16px">arrow_back</span>Volver al editor</a>
     <button id="server-pdf-btn" class="btn primary" type="button"><span class="material-symbols-outlined" style="font-size:16px">download</span>Descargar PDF final</button>
-    <button id="print-btn" class="btn primary" type="button"><span class="material-symbols-outlined" style="font-size:16px">print</span>Imprimir / Guardar PDF</button>
+    <button id="print-btn" class="btn primary" type="button"><span class="material-symbols-outlined" style="font-size:16px">print</span>Guardar como PDF</button>
   </div>
 </header>
 <main id="root" class="page-shell"><div class="empty">Cargando ebook...</div></main>
@@ -251,72 +163,47 @@
   if (id) back.href = './ebook-builder.html?id=' + encodeURIComponent(id);
 
   const escapeHtml = (s) => (s || '').toString().replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-  const stripLegacyTitle = (title) => (title || '').replace(/^cap[ií]tulo\s+\d+\s*[:\-–—]?\s*/i, '').trim();
+  const stripLegacyTitle = (title) => (title || '').replace(/^cap[ií]tulo\s+\d+\s*[:\\-–—]?\\s*/i, '').trim();
   if (window.marked?.setOptions) marked.setOptions({ gfm:true, breaks:false });
-
-  // ── smartMd: convert markdown patterns to visual HTML blocks ──
-  const _ICONS = ['check_circle','rocket_launch','insights','verified','campaign','auto_awesome','paid','schedule','analytics','design_services','groups','handshake','trending_up','workspace_premium','savings','article','palette','videocam','language','target'];
-  function _upgradeBlock(block) {
-    const lines = block.split('\n').filter(l => l.trim());
-    if (!lines.length) return block;
-    if (/^<[a-zA-Z]/.test(lines[0].trim())) return block; // already HTML
-    const bulletBoldRe = /^[-*•]\s+\*\*(.+?)\*\*(?:\s*[—–\-:]\s*(.+))?$/;
-    const isBulletLine = l => /^[-*•]\s/.test(l.trim());
-    const isBoldBullet = l => bulletBoldRe.test(l.trim());
-    if (lines.filter(isBoldBullet).length >= 3) {
-      const items = [];
-      for (let i = 0; i < lines.length; i++) {
-        const m = lines[i].trim().match(bulletBoldRe);
-        if (m) {
-          let desc = m[2] || '';
-          if (!desc && i + 1 < lines.length && !isBulletLine(lines[i+1]) && !/^#+\s/.test(lines[i+1].trim())) { desc = lines[i+1].trim(); i++; }
-          items.push({ title: m[1], desc });
-        }
-      }
-      if (items.length >= 3) {
-        const cls = items.length >= 5 ? 'feature-grid cols-3' : 'feature-grid';
-        return `<div class="${cls}">\n${items.map(({title,desc},i)=>`<div class="feature-item"><div class="feature-icon">${_ICONS[i%_ICONS.length]}</div><h4 class="feature-title">${title}</h4>${desc?`<p class="feature-desc">${desc}</p>`:''}</div>`).join('\n')}\n</div>`;
-      }
+  const smartIcons = ['check','insights','paid','savings','schedule','analytics','target','article'];
+  function normalizeInlineHeadings(md = '') {
+    return String(md)
+      .replace(/(^|\n)([A-ZÁÉÍÓÚÑ][A-Za-zÁÉÍÓÚÑáéíóúñ0-9, ]{10,72}?)(\s+(Para|Una vez|Al |Esto |Recuerda|Calcula|Identifica|Registra|Establece)\b)/g, '$1### $2\n\n$4')
+      .replace(/\n{3,}/g, '\n\n')
+      .trim();
+  }
+  function upgradeBlock(block) {
+    const lines = block.split('\n').filter(line => line.trim());
+    if (!lines.length || /^<[a-z]/i.test(lines[0].trim())) return block;
+    const boldBullet = /^[-*\u2022]\s+\*\*(.+?)\*\*(?:\s*[-:–—]\s*(.+))?$/;
+    const boldItems = [];
+    for (const line of lines) {
+      const match = line.trim().match(boldBullet);
+      if (match) boldItems.push({ title: match[1], desc: match[2] || '' });
     }
-    const numRe = /^(\d+)[.)]\s+\*\*(.+?)\*\*(?:\s*[—–\-:]\s*(.+))?$/;
-    const numBoldLines = lines.filter(l => numRe.test(l.trim()));
-    if (numBoldLines.length >= 2 && numBoldLines.length <= 8) {
-      const cards = []; let i = 0;
-      while (i < lines.length) {
-        const m = lines[i].trim().match(numRe);
-        if (m) { let desc = m[3]||''; if (!desc && i+1<lines.length && !/^\d+[.)]/.test(lines[i+1].trim())) { desc=lines[i+1].trim(); i++; } cards.push(`<div class="numbered-card"><div class="n">${m[1]}</div><div class="body"><h4>${m[2]}</h4>${desc?`<p>${desc}</p>`:''}</div></div>`); }
-        i++;
-      }
-      if (cards.length >= 2) return cards.join('\n');
+    if (boldItems.length >= 3) {
+      const cls = boldItems.length >= 5 ? 'feature-grid cols-3' : 'feature-grid';
+      return `<div class="${cls}">${boldItems.map((item, i) => `<div class="feature-item"><div class="feature-icon">${smartIcons[i % smartIcons.length]}</div><h4 class="feature-title">${item.title}</h4>${item.desc ? `<p class="feature-desc">${item.desc}</p>` : ''}</div>`).join('')}</div>`;
     }
-    const stepRe = /^(\d+)[.)]\s+(.+)$/;
-    const stepLines = lines.filter(l => stepRe.test(l.trim()));
-    if (stepLines.length >= 3 && stepLines.length === lines.length) return `<ol class="steps">\n${stepLines.map(l=>{const m=l.trim().match(stepRe);return `<li>${m[2]}</li>`;}).join('\n')}\n</ol>`;
-    if (lines.every(l => /^>\s?/.test(l))) {
-      const text = lines.map(l=>l.replace(/^>\s?/,'')).join(' ').trim();
-      const tl = text.toLowerCase();
-      let type='info', label='Dato clave';
-      if (/^(tip|💡)/.test(tl)){type='tip';label='Tip';}
-      else if (/^(cuidado|⚠|advertencia|atenci)/.test(tl)){type='warn';label='Cuidado';}
-      else if (/^(nota|importante)/.test(tl)){type='info';label='Nota';}
-      else if (/^["""«]/.test(text)){type='quote';label='';}
-      const body = text.replace(/^(tip|cuidado|nota|importante|advertencia|dato clave|💡|⚠️)[:\s]*/i,'').trim();
-      if (type==='quote') return `<div class="callout callout-quote"><p>${body}</p></div>`;
-      if (type==='warn') return `<div class="callout callout-warn" style="background:#fff5f0!important;border-color:#ea6d3a!important"><strong style="color:#d95a2a!important">${label}</strong><p style="color:#1a1a1a!important;margin:0">${body}</p></div>`;
-      return `<div class="callout callout-${type}"><strong>${label}</strong><p>${body}</p></div>`;
+    const simpleBullets = lines.filter(line => /^[-*\u2022]\s+/.test(line.trim())).map(line => line.trim().replace(/^[-*\u2022]\s+/, '').trim()).filter(Boolean);
+    if (simpleBullets.length >= 3 && simpleBullets.length <= 6 && simpleBullets.length === lines.length) {
+      const cls = simpleBullets.length >= 5 ? 'feature-grid cols-3' : 'feature-grid';
+      return `<div class="${cls}">${simpleBullets.map((text, i) => {
+        const parts = text.split(/\s+[-:–—]\s+/);
+        const title = parts[0] || text;
+        const desc = parts.slice(1).join(' - ') || text;
+        return `<div class="feature-item"><div class="feature-icon">${smartIcons[i % smartIcons.length]}</div><h4 class="feature-title">${escapeHtml(title)}</h4><p class="feature-desc">${escapeHtml(desc)}</p></div>`;
+      }).join('')}</div>`;
+    }
+    const numbered = lines.filter(line => /^\d+[.)]\s+/.test(line.trim()));
+    if (numbered.length >= 3 && numbered.length === lines.length) {
+      return `<ol class="steps">${numbered.map(line => `<li>${escapeHtml(line.trim().replace(/^\d+[.)]\s+/, ''))}</li>`).join('')}</ol>`;
+    }
+    if (lines.every(line => /^>\s?/.test(line.trim()))) {
+      const text = lines.map(line => line.replace(/^>\s?/, '')).join(' ').trim();
+      return `<div class="callout callout-info"><strong>Nota</strong><p>${escapeHtml(text)}</p></div>`;
     }
     return block;
-  }
-  function smartMd(md) {
-    if (!md) return '';
-    let cleaned = md
-      .replace(/P[ÁA]GINA\s+\d+\s*[–\-—]\s*[^\n]*?\btext\b/gi,'')
-      .replace(/P[ÁA]GINA\s+\d+\s*[–\-—]\s*[A-ZÁÉÍÓÚÑ][A-ZÁÉÍÓÚÑ ]{2,}$/gim,'')
-      .replace(/\bSlide\s+\d+\s*[:\-–—][^\n]*/gi,'')
-      .replace(/^\s*text\s*$/gim,'').replace(/\s+text\s*$/gim,'')
-      .replace(/\[Fecha\s+actual\]/gi,'').replace(/\n{3,}/g,'\n\n').trim();
-    let pre = cleaned.replace(/((?:^|\n)[-*•] \*\*[^\n]+\n?)(\n+)([-*•] \*\*)/gm,'$1\n$3');
-    return marked.parse(pre.split(/\n\n+/).map(_upgradeBlock).join('\n\n'));
   }
 
   async function loadEbook() {
@@ -327,11 +214,14 @@
   }
 
   function renderMarkdown(md) {
-    if (!md) return '';
-    // body_md is HTML when the builder's collectChapterBody ran before opening print view.
-    // Passing HTML through marked.parse() corrupts block structure; return it directly.
-    if (/^\s*</.test(md.trim())) return md;
-    return smartMd(md);
+    const cleaned = normalizeInlineHeadings(md || '')
+      .replace(/P[ÁA]GINA\s+\d+\s*[-–—]\s*[^\n]*?\btext\b/gi, '')
+      .replace(/^\s*text\s*$/gim, '')
+      .replace(/\[Fecha\s+actual\]/gi, '')
+      .replace(/\n{3,}/g, '\n\n')
+      .trim();
+    const upgraded = cleaned.split(/\n\n+/).map(upgradeBlock).join('\n\n');
+    return marked.parse(upgraded || '');
   }
 
   function inferTheme(row) {
@@ -345,10 +235,12 @@
   }
 
   function normalizeEbook(row) {
+    const storedTheme = row.cover?.theme || row.settings?.theme || row.theme || '';
+    const inferredTheme = inferTheme(row);
     return {
       id: row.id,
       title: row.title || 'Mi ebook',
-      theme: row.cover?.theme || row.settings?.theme || row.theme || inferTheme(row),
+      theme: (!storedTheme || storedTheme === 'light') && inferredTheme !== 'light' ? inferredTheme : (storedTheme || inferredTheme),
       cover: row.cover || {},
       chapters: Array.isArray(row.chapters) ? row.chapters : [],
     };
@@ -374,14 +266,12 @@
         </div>
       </section>`;
     const chaptersHtml = book.chapters.map((chapter, index) => `
-      <div class="chapter-page">
-        <section class="chapter">
-          <h2>${escapeHtml(stripLegacyTitle(chapter.title) || `Seccion ${index + 1}`)}</h2>
-          ${renderMarkdown(chapter.body_md || '')}
-        </section>
-      </div>
+      <section class="chapter">
+        <h2>${escapeHtml(stripLegacyTitle(chapter.title) || `Seccion ${index + 1}`)}</h2>
+        ${renderMarkdown(chapter.body_md || '')}
+      </section>
     `).join('');
-    root.innerHTML = coverHtml + chaptersHtml;
+    root.innerHTML = coverHtml + `<article class="document">${chaptersHtml}</article>`;
   }
 
   try {
@@ -397,9 +287,36 @@
   }
 
   document.getElementById('print-btn').addEventListener('click', () => window.print());
-  // "Descargar PDF final" also uses window.print() — the Puppeteer server
-  // endpoint times out on Vercel free tier; the browser dialog is reliable.
-  document.getElementById('server-pdf-btn')?.addEventListener('click', () => window.print());
+  document.getElementById('server-pdf-btn')?.addEventListener('click', async () => {
+    if (!currentBook) return;
+    const btn = document.getElementById('server-pdf-btn');
+    const original = btn.innerHTML;
+    btn.disabled = true;
+    btn.innerHTML = '<span class="material-symbols-outlined" style="font-size:16px">hourglass_empty</span>Generando...';
+    try {
+      const response = await fetch('/api/generate-ebook-pdf', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ebook: currentBook }),
+      });
+      if (!response.ok) throw new Error('No pude generar el PDF final en el servidor.');
+      const blob = await response.blob();
+      if (!blob || blob.size < 1024) throw new Error('El PDF llego vacio.');
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `${(currentBook.title || 'ebook').replace(/[\\/:*?"<>|]+/g, '').trim() || 'ebook'}.pdf`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      setTimeout(() => URL.revokeObjectURL(url), 2000);
+    } catch (error) {
+      alert(error.message || 'No pude generar el PDF final.');
+    } finally {
+      btn.disabled = false;
+      btn.innerHTML = original;
+    }
+  });
 })();
 </script>
 </body>

@@ -76,7 +76,7 @@
   </div>
 </main>
 
-<script src="./app.js"></script>
+<script src="./app.js?v=offer-demo-1"></script>
 <script src="./supabase-config.js"></script>
 <script src="./landing-templates.js"></script>
 <script>
@@ -145,12 +145,25 @@
       }
       emptyEl.classList.add('hidden');
 
-      gridEl.innerHTML = filtered.map(t => `
+      gridEl.innerHTML = filtered.map(t => {
+        const theme = window.getSuggestedOfferTheme
+          ? window.getSuggestedOfferTheme(`${t.category} ${t.form?.audience || ''}`, t.form?.product || t.name)
+          : null;
+        const brand = theme?.brandColor || '#2E5BFF';
+        const accent = theme?.accentColor || '#7c3aed';
+        const image = theme?.coverImage || '';
+        return `
         <div class="rounded-2xl border border-outline-variant/20 bg-surface-container overflow-hidden hover:border-primary/40 transition-all group flex flex-col">
-          <div class="h-32 primary-gradient flex items-center justify-center relative">
-            <span class="material-symbols-outlined text-white/90" style="font-size:56px;font-variation-settings:'FILL' 1">${t.icon}</span>
+          <div class="h-36 flex items-center justify-center relative overflow-hidden" style="background:linear-gradient(135deg,${brand},${accent})">
+            ${image ? `<img src="${image}" alt="" loading="lazy" class="absolute inset-0 w-full h-full object-cover opacity-45 group-hover:scale-105 transition-transform duration-700"/>` : ''}
+            <div class="absolute inset-0" style="background:linear-gradient(135deg,${brand}dd,rgba(0,0,0,.28));"></div>
+            <span class="material-symbols-outlined text-white/90 relative" style="font-size:56px;font-variation-settings:'FILL' 1">${t.icon}</span>
             <div class="absolute top-2 right-2">
               <span class="text-[9px] px-1.5 py-0.5 rounded-full bg-white/15 backdrop-blur text-white font-bold uppercase tracking-wider">${escapeHtml(t.category)}</span>
+            </div>
+            <div class="absolute bottom-2 left-2 flex items-center gap-1.5 rounded-full bg-black/30 backdrop-blur px-2.5 py-1">
+              <span class="w-2 h-2 rounded-full" style="background:${accent}"></span>
+              <span class="text-[9px] uppercase tracking-widest font-black text-white/80">${theme?.id || 'premium'}</span>
             </div>
           </div>
           <div class="p-5 flex-1 flex flex-col">
@@ -162,7 +175,8 @@
             </button>
           </div>
         </div>
-      `).join('');
+      `;
+      }).join('');
 
       gridEl.querySelectorAll('.use-btn').forEach(btn => {
         btn.onclick = () => {
