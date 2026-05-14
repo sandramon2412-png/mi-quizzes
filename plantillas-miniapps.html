@@ -565,7 +565,8 @@ function useTemplate(id) {
     return;
   }
   try {
-    localStorage.setItem('ls_miniapp_template_pending', JSON.stringify(tpl));
+    localStorage.removeItem('ls_miniapp_template_pending');
+    localStorage.setItem('ls_miniapp_template_pending_id', tpl.id);
     showToast('Creando mini-app desde la plantilla...');
     window.location.assign('./dashboard.html?miniapp_template=1&tab=miniapps');
   } catch (error) {
