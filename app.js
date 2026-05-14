@@ -21,7 +21,13 @@ const Store = {
     try { return JSON.parse(localStorage.getItem(key)); } catch { return null; }
   },
   set(key, value) {
-    localStorage.setItem(key, JSON.stringify(value));
+    try {
+      localStorage.setItem(key, JSON.stringify(value));
+      return true;
+    } catch (error) {
+      console.warn('[store] localStorage write skipped:', key, error?.message || error);
+      return false;
+    }
   },
 };
 
@@ -96,12 +102,43 @@ const Quizzes = {
 const MiniApps = {
   getAll() { return Store.get(KEYS.MINI_APPS) || []; },
   get(id) { return this.getAll().find(a => a.id === id) || null; },
+  compact(app) {
+    return {
+      id: app.id,
+      name: app.name,
+      description: app.description,
+      niche: app.niche,
+      type: app.type,
+      types: app.types,
+      icon: app.icon,
+      status: app.status,
+      created: app.created,
+      primaryColor: app.primaryColor,
+      secondaryColor: app.secondaryColor,
+      bgColor: app.bgColor,
+      headerGradient: app.headerGradient,
+      mode: app.mode,
+      bg: app.bg,
+      card: app.card,
+      text: app.text,
+      muted: app.muted,
+      font: app.font,
+      accent: app.accent,
+      accent2: app.accent2,
+      accessCodes: app.accessCodes || [],
+      _templateId: app._templateId,
+      _fromTemplate: app._fromTemplate,
+    };
+  },
   save(app) {
     const all = this.getAll();
     const idx = all.findIndex(a => a.id === app.id);
     if (idx >= 0) all[idx] = app;
     else all.unshift(app);
-    Store.set(KEYS.MINI_APPS, all);
+    if (!Store.set(KEYS.MINI_APPS, all)) {
+      const compact = [this.compact(app), ...all.filter(a => a.id !== app.id).slice(0, 12).map(a => this.compact(a))];
+      Store.set(KEYS.MINI_APPS, compact);
+    }
     return app;
   },
   create(data) {
@@ -115,7 +152,8 @@ const MiniApps = {
     return this.save(app);
   },
   delete(id) {
-    Store.set(KEYS.MINI_APPS, this.getAll().filter(a => a.id !== id));
+    const next = this.getAll().filter(a => a.id !== id);
+    if (!Store.set(KEYS.MINI_APPS, next)) Store.set(KEYS.MINI_APPS, next.slice(0, 12).map(a => this.compact(a)));
   },
   canCreate() {
     const plan = Settings.get().plan;
