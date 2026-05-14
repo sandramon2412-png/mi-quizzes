@@ -428,7 +428,19 @@ window.getSuggestedOfferTheme = function getSuggestedOfferTheme(niche = '', prod
 const Claude = {
   async _call(messages, maxTokens = 3000, opts = {}) {
     const model = opts.model || 'claude-haiku-4-5-20251001';
-    const body = { model, max_tokens: maxTokens, messages };
+    // Sanitize: drop empty/non-string content, enforce user→assistant alternation,
+    // cap to 40 messages to prevent Anthropic's auto prompt-caching from failing on empty blocks.
+    const cleaned = [];
+    for (const m of messages) {
+      const text = typeof m.content === 'string' ? m.content.trim() : '';
+      if (!text) continue;
+      if (cleaned.length > 0 && cleaned[cleaned.length - 1].role === m.role) continue;
+      cleaned.push({ role: m.role, content: m.content });
+    }
+    // First message must be from user; cap tail to 40 messages
+    const firstUser = cleaned.findIndex(m => m.role === 'user');
+    const safeMessages = (firstUser < 0 ? [] : cleaned.slice(firstUser)).slice(-40);
+    const body = { model, max_tokens: maxTokens, messages: safeMessages };
     if (opts.system) body.system = opts.system;
     const doRequest = async (token) => fetch(`${SUPABASE_URL}/functions/v1/claude-proxy`, {
       method: 'POST',
@@ -1387,7 +1399,7 @@ REGLAS GENERALES:
 
 // ── Groq API (vía proxy con master key de la plataforma) ───
 const Groq = {
-  async _call(messages, maxTokens = 3000) {
+  async _call(messages, maxTokens = 3000, model = 'llama-3.3-70b-versatile') {
     const doRequest = async (token) => fetch(`${SUPABASE_URL}/functions/v1/groq-proxy`, {
       method: 'POST',
       headers: {
@@ -1395,7 +1407,7 @@ const Groq = {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'llama-3.3-70b-versatile',
+        model,
         max_tokens: maxTokens,
         messages,
       }),
@@ -1406,9 +1418,17 @@ const Groq = {
 
     let res = await doRequest(token);
     if (res.status === 401) {
-      // Retry once with fresh token
       token = await Auth.getToken();
       if (token) res = await doRequest(token);
+    }
+    // Rate limit: Groq devuelve "try again in Xs" — esperamos ese tiempo y reintentamos
+    if (res.status === 429) {
+      const err = await res.json().catch(() => ({}));
+      const msg = err.error?.message || '';
+      const waitMatch = msg.match(/try again in ([\d.]+)s/i);
+      const waitMs = waitMatch ? Math.min(Math.ceil(parseFloat(waitMatch[1]) * 1000) + 500, 12000) : 4000;
+      await new Promise(r => setTimeout(r, waitMs));
+      res = await doRequest(token);
     }
     if (!res.ok) {
       const err = await res.json().catch(() => ({}));
@@ -1470,6 +1490,59 @@ const Groq = {
       niche, product
     );
   },
+
+  // Wraps _call para que el campo `system` de opts se inserte como primer mensaje
+  // (Groq/OpenAI-compatible: system va en el array de messages, no en campo separado)
+  _callWithSystem(messages, maxTokens = 3000, opts = {}) {
+    const fullMessages = opts.system
+      ? [{ role: 'system', content: opts.system }, ...messages]
+      : messages;
+    return this._call(fullMessages, maxTokens, opts.model);
+  },
+
+  // Igual que _callWithSystem pero usa llama-3.1-8b-instant (131K TPM) para ebooks
+  // llama-3.3-70b-versatile solo tiene 12K TPM — demasiado bajo para generación de capítulos
+  _callWithSystemEbook(messages, maxTokens = 3000, opts = {}) {
+    const fullMessages = opts.system
+      ? [{ role: 'system', content: opts.system }, ...messages]
+      : messages;
+    return this._call(fullMessages, maxTokens, 'llama-3.1-8b-instant');
+  },
+
+  async generateEbookOutline(brief, docType = 'ebook') {
+    const ctx = {
+      _call: this._callWithSystemEbook.bind(this),
+      _parseJSONLoose: Claude._parseJSONLoose.bind(Claude),
+      _docTypePrompt: Claude._docTypePrompt.bind(Claude),
+    };
+    return Claude.generateEbookOutline.call(ctx, brief, docType);
+  },
+
+  async generateEbookChapter(params) {
+    const ctx = {
+      _call: this._callWithSystemEbook.bind(this),
+      _parseJSONLoose: Claude._parseJSONLoose.bind(Claude),
+      _docTypePrompt: Claude._docTypePrompt.bind(Claude),
+      _docPatternRules: Claude._docPatternRules.bind(Claude),
+      _docBlocksReference: Claude._docBlocksReference.bind(Claude),
+    };
+    return Claude.generateEbookChapter.call(ctx, params);
+  },
+
+  async generateEbook(brief, history = [], onProgress, docType = 'ebook') {
+    const ctx = {
+      _call: this._callWithSystemEbook.bind(this),
+      _parseJSONLoose: Claude._parseJSONLoose.bind(Claude),
+      _extractFromBadJSON: Claude._extractFromBadJSON.bind(Claude),
+      _ebookChatSystemPrompt: Claude._ebookChatSystemPrompt.bind(Claude),
+      _docTypePrompt: Claude._docTypePrompt.bind(Claude),
+      _docPatternRules: Claude._docPatternRules.bind(Claude),
+      _docBlocksReference: Claude._docBlocksReference.bind(Claude),
+      generateEbookOutline: this.generateEbookOutline.bind(this),
+      generateEbookChapter: this.generateEbookChapter.bind(this),
+    };
+    return Claude.generateEbook.call(ctx, brief, history, onProgress, docType);
+  },
 };
 
 // ── AI helper: CREACIÓN paga por la plataforma ─────────────
@@ -1518,14 +1591,23 @@ const AI = {
   async generateLanding(brief, history = []) {
     return Claude.generateLanding(brief, history);
   },
-  // Complejo: ebook estructurado (JSON con capítulos en Markdown)
+  // Complejo: ebook estructurado — intenta Claude, cae a Groq si no hay créditos
   async generateEbook(brief, history = [], onProgress, docType = 'ebook') {
-    return Claude.generateEbook(brief, history, onProgress, docType);
+    try {
+      return await Claude.generateEbook(brief, history, onProgress, docType);
+    } catch (e) {
+      console.warn('[ebook] Claude falló, usando Groq como fallback:', e.message);
+      return Groq.generateEbook(brief, history, onProgress, docType);
+    }
   },
-  // Complejo: regenera UNA sola sección de un documento (usado por el botón
-  // "Expandir con IA" del builder para rellenar páginas cortas sin regenerar todo)
+  // Complejo: regenera UNA sola sección — intenta Claude, cae a Groq si no hay créditos
   async generateEbookChapter(params) {
-    return Claude.generateEbookChapter(params);
+    try {
+      return await Claude.generateEbookChapter(params);
+    } catch (e) {
+      console.warn('[ebook-chapter] Claude falló, usando Groq como fallback:', e.message);
+      return Groq.generateEbookChapter(params);
+    }
   },
 };
 
@@ -1598,8 +1680,8 @@ function getPlanBadge(plan) {
 const PlanLimits = {
   free:    { quizzes: 1,   responses: 500,      leads: false, ai: false, miniApps: 2,   customDomain: false, metaPixel: false, integrations: false, whiteLabel: false, subdomains: 0, nicheAssistant: false, botLab: false, landings: 0,   ebooks: 1   },
   starter: { quizzes: 5,   responses: 5000,     leads: true,  ai: false, miniApps: 5,   customDomain: false, metaPixel: true,  integrations: false, whiteLabel: false, subdomains: 0, nicheAssistant: false, botLab: true,  landings: 1,   ebooks: 3   },
-  pro:     { quizzes: 10,  responses: 50000,    leads: true,  ai: true,  miniApps: 10,  customDomain: true,  metaPixel: true,  integrations: true,  whiteLabel: false, subdomains: 0, nicheAssistant: false, botLab: true,  landings: 5,   ebooks: 5   },
-  growth:  { quizzes: 30,  responses: 150000,   leads: true,  ai: true,  miniApps: 30,  customDomain: true,  metaPixel: true,  integrations: true,  whiteLabel: false, subdomains: 0, nicheAssistant: true,  botLab: true,  landings: 20,  ebooks: 20  },
+  pro:     { quizzes: 10,  responses: 50000,    leads: true,  ai: true,  miniApps: 10,  customDomain: true,  metaPixel: true,  integrations: true,  whiteLabel: false, subdomains: 0, nicheAssistant: false, botLab: true,  landings: 5,   ebooks: 999 },
+  growth:  { quizzes: 30,  responses: 150000,   leads: true,  ai: true,  miniApps: 30,  customDomain: true,  metaPixel: true,  integrations: true,  whiteLabel: false, subdomains: 0, nicheAssistant: true,  botLab: true,  landings: 20,  ebooks: 999 },
   elite:   { quizzes: 999, responses: Infinity, leads: true,  ai: true,  miniApps: 999, customDomain: true,  metaPixel: true,  integrations: true,  whiteLabel: true,  subdomains: 5, nicheAssistant: true,  botLab: true,  landings: 999, ebooks: 999 },
 };
 

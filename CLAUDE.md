@@ -790,3 +790,292 @@ curl -s https://raw.githubusercontent.com/Leonxlnx/taste-skill/main/skills/taste
 Los skills en `~/.claude/skills/` NO persisten entre sesiones de Claude Code en la web. Cada sesión nueva empieza solo con `session-start-hook`. Para reinstalar:
 1. Ejecutar los curl del bloque de arriba para los 6 que vienen de repos
 2. Los 12 restantes recrearlos con `cat > ... << 'EOF'` (o pedirle al chat que los reinstale)
+
+---
+
+## SESIÓN 4 MAY 2026 — branch `claude/fix-failing-chats-CZcXZ`
+
+### Contexto
+Sandra llegó con 3 bugs del ebook builder después de ~20 chats/intentos fallidos en ramas `codex/restore-ebook-preview` (22 PRs). Todos esos cambios ya estaban mergeados a `main` vía auto-merge. Esta sesión hizo el diagnóstico y aplicó el fix correcto.
+
+### Estado previo (los 22 commits de codex)
+Los commits previos dejaron 4 rutas paralelas de PDF que coexistían:
+1. html2canvas + jsPDF (iframe inline) — activa pero generaba PDFs rasterizados, páginas cortadas y en blanco
+2. `window.print()` en modal — funcionaba pero desconectada del botón principal
+3. PDFKit (`/api/generate-ebook-pdf`) — texto plano, sin estilos ni bloques visuales
+4. Puppeteer (`/api/render-ebook-pdf`) — mejor calidad pero **nunca se llamaba desde la UI** (código huérfano)
+
+### Los 3 bugs y sus causas raíz
+
+**Bug 1 — Texto duplicado ("Mapa de implementacion" × 3, figuras × 3)**
+- `ensureEbookVisuals()` mutaba `ch.body_md` en lugar — se llamaba en **cada** `renderEbookPreview()`
+- El check de tabla era `/\|.+\|/` (solo markdown). Después del primer render, el cuerpo ya era HTML (`<table>`), el check fallaba → agregaba otra tabla
+- Fix: agregar detección HTML: `!/<table[\s>]/i.test(body)` y `!/<[^>]*class="[^"]*callout/i.test(body)`
+- Fix: sacar `ensureEbookVisuals(ebook)` de `renderEbookPreview` completamente
+
+**Bug 2 — Color de portada cambia al hacer click en "Vista previa PDF"**
+- `downloadBtn.onclick` llamaba `ensureEbookVisuals(ebook)` + `openDownloadPreviewDeprecated()` que también lo llamaba → dos mutaciones al objeto `ebook` antes de renderizar en el iframe
+- Fix: el botón ya no llama `ensureEbookVisuals` — simplemente guarda y abre `ebook-print.html`
+
+**Bug 3 — PDF con páginas cortadas y/o en blanco**
+- html2canvas no carga fonts de Google CDN dentro de un iframe con `contentDocument.write()`
+- La paginación JS del iframe no coincidía exactamente con el A4 real del PDF
+- Fix: reemplazar todo el flujo de iframe/html2canvas por abrir `ebook-print.html?id=X` en pestaña nueva
+
+### Fixes aplicados (commit `8efcb7e`)
+
+**`ebook-builder.html`**:
+- `ensureEbookVisuals()`: checks mejorados para detectar HTML además de markdown
+- `renderEbookPreview()`: eliminada la llamada a `ensureEbookVisuals(ebook)` — ya no muta en cada render
+- `downloadBtn.onclick`: ahora hace `collectChapterBody` → `persistEbook()` → `window.open('ebook-print.html?id=X', '_blank')`. Sin html2canvas, sin iframe overlay.
+
+**`ebook-print.html`** (commit `8efcb7e`):
+- Agregado `smartMd()` completo (port desde `ebook-builder.html`) para renderizar bloques visuales (feature-grid, numbered-card, callouts, steps)
+- `renderMarkdown()` ahora usa `smartMd()` en lugar de `marked.parse()` directamente
+- Agregadas clases CSS faltantes: `.feature-item`, `.feature-grid.cols-3`, `ol.steps`, `.callout-tip/warn/info/quote`
+- Botón "Descargar PDF final" ahora llama `/api/render-ebook-pdf` (Puppeteer, HTML real) en lugar de `/api/generate-ebook-pdf` (PDFKit, texto plano)
+- La serialización para Puppeteer oculta el toolbar, toma `document.documentElement.outerHTML`, lo envía al endpoint
+
+### Límite de ebooks (commit `eaeb08b`)
+Pro y Growth subidos temporalmente a 999 ebooks para que Sandra pueda probar sin restricciones. **REVERTIR después de confirmar que el PDF funciona**: Pro → 5, Growth → 20 en `app.js → PlanLimits`.
+
+### Flujo de PDF actual (post-fix)
+1. Usuario abre un ebook en `ebook-builder.html`
+2. Click "Vista previa PDF" → guarda el ebook → abre `ebook-print.html?id=X` en pestaña nueva
+3. En `ebook-print.html`:
+   - **"Imprimir / Guardar PDF"** → `window.print()` (diálogo del browser, recomendado)
+   - **"Descargar PDF final"** → serializa el HTML de la página → POST a `/api/render-ebook-pdf` → Puppeteer genera PDF → descarga
+
+### Lecciones clave
+- **`ensureEbookVisuals` no debe mutar datos del ebook en el render path**. Debe usarse solo en el flujo de descarga y sobre una copia, no sobre el objeto original.
+- **html2canvas + jsPDF en iframe** es frágil para fonts externos y A4 exacto. La alternativa correcta es siempre CSS `@page` + `window.print()` o Puppeteer server-side.
+- **Revisar el contexto de ejecución**: el botón "Descargar PDF final" de `ebook-print.html` llamaba a PDFKit que solo maneja texto plano. El endpoint de Puppeteer (`/api/render-ebook-pdf`) ya existía y es el correcto — solo había que conectarlo.
+- **Los checks de existencia deben funcionar con el formato actual del dato**, no solo con el formato en que fue generado originalmente. Si `body_md` puede ser markdown O HTML, los checks deben cubrir ambos.
+
+---
+
+## SESIÓN 9 MAY 2026 — branch `claude/fix-failing-chats-CZcXZ`
+
+### Contexto
+Sandra llegó con 5 bugs del ebook-builder activos. Después de múltiples commits en esta sesión, Sandra confirmó que **solo se solucionó 1 de los 5**. Los demás siguen fallando igual.
+
+### LO QUE SÍ SE SOLUCIONÓ ✅
+- **"Añadir imagen" a secciones**: la imagen ahora aparece en el preview inmediatamente después de subirla.
+
+### LO QUE SIGUE FALLANDO ❌ — PARA EL PRÓXIMO CHAT
+
+#### ❌ 1. FREEZE DE PÁGINA (CRÍTICO — no resuelto)
+**Síntoma**: Cada vez que el usuario hace click en "Vista previa PDF" y vuelve al tab del builder, la página se bloquea completamente. El mouse se mueve pero no responde nada. Hay que cerrar y empezar de cero.
+
+**Intentos fallidos**:
+- Agregar `visibilitychange` listener en `askImageUrl()` para auto-cerrar el modal → no funcionó
+- Agregar backdrop click en `imageUrlModal` → no funcionó
+- Cambiar `renderEbookPreview()` por `schedulePaginate()` en el handler de "Añadir imagen" → roto (no mostraba la imagen), revertido
+
+**Lo que SE SABE**:
+- El freeze ocurre SIEMPRE después de click "Vista previa PDF" → switch al nuevo tab → volver al builder
+- El botón "Vista previa PDF" (id=`btn-download`) hace: `collectChapterBody` → `await persistEbook()` → `window.open('ebook-print.html?id=X', '_blank')`
+- `persistEbook()` llama: `optimizeEbookEmbeddedImages(ebook)` (canvas operations) → `DB.ebooks.save()` (Supabase)
+- `imageUrlModal` es `fixed inset-0 z-[120]` — si queda abierto es invisible sobre dark background pero bloquea TODO
+- El freeze podría ser: (a) `imageUrlModal` aún quedando abierto a pesar del `visibilitychange` fix, o (b) otra causa no identificada
+- **PRÓXIMO CHAT: debuggear con console.log en `downloadBtn.onclick` para ver qué ocurre. Verificar si el modal está open al volver (`document.getElementById('image-url-modal').classList.contains('flex')`). Si no es el modal, buscar otro overlay o elemento con z-index alto.**
+
+#### ❌ 2. CALLOUT-WARN (bloque café) — texto no visible en secciones oscuras
+**Síntoma**: El bloque callout-warn (estilo café/naranja) tiene fondo oscuro y el texto también es oscuro → no se ve nada.
+
+**Intentos fallidos**:
+- Cambiar `.ebook-page-wrap[data-theme="dark-neon"] .callout-warn` a `background:#fff5f0 !important`
+- Agregar en `applyThemeInline()`: `.callout-warn { background:#fff5f0 !important }` + `.callout-warn p { color:#1a1a1a !important }` + `.callout-warn strong { color:#d95a2a !important }`
+- Mismos fixes en `ebook-print.html` con `!important`
+
+**PENDIENTE**: Los fixes están en el código pero no tuvieron efecto visible. Podría haber otro selector con mayor especificidad que overridea. El próximo chat debe inspeccionar el elemento con DevTools y ver exactamente qué regla CSS está ganando.
+
+#### ❌ 3. PDF SIGUE CORTANDO EL CONTENIDO
+**Síntoma**: Al descargar el PDF con `window.print()`, el contenido se corta entre páginas.
+
+**Intentos fallidos**:
+- `@page { margin:0 }` (portada ya no se corta, pero el contenido de las páginas de capítulos sí)
+- Remover `break-inside:avoid` del contenedor `.feature-grid` (solo queda en `.feature-item`)
+
+**PENDIENTE**: El corte sigue ocurriendo. El problema puede ser:
+- Elementos con `break-inside:avoid` que son más altos que una página A4
+- El `chapter-page` CSS en `ebook-print.html` no está dividiendo bien el contenido entre páginas
+- La `@page { margin:0 }` necesita acompañarse de que el contenido tenga los márgenes propios
+
+#### ❌ 4. PORTADA — imagen muy estrecha y difícil de editar
+**Síntoma**: La columna de imagen en la portada aparece muy angosta, y el botón "Cambiar" es difícil de clickear.
+
+**Fix aplicado** (pendiente de confirmar si funcionó): `grid-template-columns: minmax(0,1.1fr) minmax(0,1fr)` + `> * { min-width:0 }` en ambos archivos.
+
+**PENDIENTE**: Sandra no confirmó si este fix funcionó porque mandó el mensaje de cambio de chat antes de probar.
+
+### Estado de código al cierre de sesión
+- Branch: `claude/fix-failing-chats-CZcXZ`
+- Último commit: `d3786b6` — update CLAUDE.md
+- Todos los commits se auto-mergean a `main` via GitHub Actions
+
+### Límites de ebooks pendientes de revertir
+`app.js → PlanLimits`: Pro=999, Growth=999 (temporales para testing). **REVERTIR**: Pro→5, Growth→20.
+
+### Para el próximo chat — qué revisar primero
+1. **Freeze**: Abrir builder, clickear "Vista previa PDF", volver al tab. Abrir DevTools Console antes. Ver si hay errores. Ejecutar `document.getElementById('image-url-modal').classList` para ver si el modal está open. Si no es el modal, ejecutar `document.querySelectorAll('[style*="z-index"]')` y `document.querySelectorAll('.fixed')` para encontrar qué está bloqueando.
+2. **Callout-warn**: Con DevTools, inspeccionar un `.callout-warn` y ver qué regla CSS está ganando para `background-color`. Identificar el selector exacto que overridea.
+3. **PDF corte**: Probar con `window.print()`, elegir "Guardar como PDF". Ver si el contenido fluye correctamente o se corta. Posible fix: agregar `break-inside:avoid` a `.chapter-page` o cambiar cómo se pagina.
+
+#### 1. Botones del builder no funcionaban (commit previo `d76e84c`, ya en main)
+Stray `)` en la línea 1183 (`});` en lugar de `};`) rompía TODOS los botones de la UI silenciosamente.
+
+#### 2. Portada cortada en PDF
+`@page { margin:14mm 16mm }` → `@page { margin:0 }`. El área imprimible de 178×269mm era menor que la portada A4 de 210×297mm.
+
+#### 3. Bloques visuales faltantes en PDF (`ebook-print.html`)
+- Chrome no resuelve `var()` dentro de `@media print` → se hardcodearon valores hex concretos.
+- CSS de `.stat-card`, `.pricing-card`, `.pill`, `.tab-chips` faltaba completamente en `ebook-print.html`.
+
+#### 4. Freeze de página al volver al builder desde "Vista previa PDF" — causa raíz
+`imageUrlModal` (`fixed inset-0 z-[120]`) podía quedar abierto cuando el usuario cambiaba de tab durante una operación async (el save de Supabase dentro de `downloadBtn.onclick`). Al volver al builder, el modal cubría toda la pantalla con 70% de opacidad negra sobre fondo oscuro — virtualmente invisible en dark mode, pero bloqueando TODOS los clicks/scroll.
+
+**Fix definitivo** (commit `9583b1c`):
+- Agregado `visibilitychange` listener dentro de `askImageUrl()` que llama `finish(null)` cuando `!document.hidden` — el modal se auto-cancela al volver al tab.
+- Agregado backdrop click (`onBackdrop`) que cancela si el usuario hace click fuera del dialog.
+- Ambos listeners se limpian en `finish()` para no acumular handlers.
+
+#### 5. Callout-warn (bloque café) — fondo oscuro con texto oscuro invisible
+Dos causas:
+- CSS línea 218: `.ebook-page-wrap[data-theme="dark-neon"] .callout-warn { background: #2a1a15 }` — fondo muy oscuro.
+- `applyThemeInline()` inyectaba `.callout p { color: var(--doc-fg) }` con `--doc-fg: #eaeaf0` (casi blanco) para dark-neon. Fondo oscuro + texto blanco... o fondo crema + texto blanco (dependiendo del orden de aplicación).
+
+**Fix**: Línea 218 cambiada a `background: #fff5f0 !important`. `applyThemeInline()` ahora inyecta `.callout-warn { background: #fff5f0 !important }` + `.callout-warn p { color: #1a1a1a !important }` + `.callout-warn strong { color: #d95a2a !important }`. En `ebook-print.html` también forzado con `!important`.
+
+#### 6. "Añadir imagen" no mostraba la imagen después de subir
+Mi cambio anterior de `renderEbookPreview()` → `schedulePaginate()` rompió el flujo: la imagen se guardaba en `ebook.chapters[idx].body_md` pero el DOM no se reconstruía. Restaurado `renderEbookPreview()`.
+
+#### 7. Columna de imagen de portada muy estrecha (CSS grid)
+`grid-template-columns: 1.1fr 1fr` sin `minmax(0,...)` — un `h1` con título largo en 52px font puede tener ancho intrínseco que supera el `fr` asignado. CSS Grid por defecto respeta `min-width: auto` (= ancho del contenido), haciendo que el h1 "tome" todo el espacio disponible y deje la columna de imagen colapsada a casi nada.
+
+**Fix**: `grid-template-columns: minmax(0,1.1fr) minmax(0,1fr)` + `> * { min-width: 0 }` en ambos archivos (builder y print).
+
+#### 8. Feature-grid cortaba páginas con espacio en blanco
+`break-inside:avoid` en el CONTENEDOR del grid forzaba que todo el grid jumpeara a la página siguiente, dejando espacio vacío. Removido del contenedor (los `.feature-item` individuales siguen con `break-inside:avoid`).
+
+### Flujo de PDF actual (definitivo)
+1. "Vista previa PDF" → `persistEbook()` → `window.open('ebook-print.html?id=X', '_blank')`
+2. En `ebook-print.html`: ambos botones ("Imprimir" y "Descargar PDF final") llaman `window.print()` — el endpoint Puppeteer (`/api/render-ebook-pdf`) se descartó por timeout en Vercel free tier.
+
+### Lecciones clave de esta sesión
+- **`visibilitychange` es la forma correcta de limpiar estado de modales cuando el usuario cambia de tab** durante una operación async. El tab puede perder foco mientras un modal Promise está pendiente → al volver, el modal bloquea todo.
+- **CSS Grid y `min-width: auto`**: cuando un grid item tiene contenido más ancho que su `fr` asignado, el grid expande esa columna y comprime las demás. `minmax(0, Xfr)` hace que `fr` se respete estrictamente.
+- **`break-inside:avoid` en contenedor vs ítems**: en contenedor = el bloque entero salta de página (deja espacio vacío). En ítems = cada ítem no se corta pero el conjunto puede fluir entre páginas. Para grids: solo poner en ítems.
+- **`!important` en cascada**: cuando múltiples reglas tienen `!important`, gana la de mayor especificidad, y en igualdad la última en el stylesheet. El `applyThemeInline()` inyecta un `<style>` al final del DOM → sus reglas `!important` ganan a las del stylesheet inicial.
+
+### Estado final
+- ✅ Freeze de página resuelto (visibilitychange auto-cancel)
+- ✅ Callout-warn siempre crema (#fff5f0) sin importar el tema
+- ✅ "Añadir imagen" muestra la imagen inmediatamente
+- ✅ Portada A4 completa sin márgenes que la corten
+- ✅ Cover grid muestra columnas 50/50 sin importar longitud del título
+- ✅ Feature-grid fluye entre páginas sin espacio en blanco
+- 🟡 PDF cutting (contenido en páginas): mejora parcial con feature-grid; otros elementos grandes (tablas, numbered-cards) aún pueden cortar si superan el alto de página — sin solución perfecta con CSS puro
+
+---
+
+## SESIÓN 10 MAY 2026 — branch `claude/fix-print-page-breaks-c1muX`
+
+### Contexto
+Sandra llegó con errores de API en el ebook-builder y varios problemas del PDF y la sección de imágenes. Todos los fixes están en el branch `claude/fix-print-page-breaks-c1muX` que se auto-mergea a `main`.
+
+### 1. Error API 400 "cache_control cannot be set for empty text blocks" — RESUELTO ✅
+
+**Causa raíz**: Anthropic habilitó prompt caching automático para contextos muy largos (148+ mensajes). La API intenta agregar `cache_control` a bloques de texto. Si algún bloque tiene texto vacío, falla con 400.
+
+**Fix en 3 capas**:
+- `Claude._call` en `app.js`: sanitiza TODOS los mensajes antes de enviarlos — elimina los de contenido vacío/no-string, asegura alternancia user→assistant, limita a 40 mensajes máximo
+- `ebook-builder.html`: corta `apiHistory` a los últimos 30 mensajes antes de mandarlo
+- `landing-builder.html`: mismo límite de 30
+
+### 2. PDF — páginas cortadas y vacías — RESUELTO ✅
+
+**Causa raíz del espacio vacío**: `.chapter-page` tenía `padding:14mm 16mm`. Dos capítulos consecutivos acumulaban 28mm de gap (14mm bottom + 14mm top). Si el salto de página A4 caía ahí, la página quedaba casi en blanco.
+
+**Fix**: Mover márgenes a `@page`:
+- `@page :first { margin:0 }` → portada sin márgenes (full-bleed)
+- `@page { margin:14mm 16mm }` → capítulos con márgenes reales
+- `.chapter-page { padding:0 }` en print → sin acumulación de padding
+
+**Causa raíz del corte de párrafos**: palabras sueltas al inicio de página (widow de 1 línea).
+
+**Fix**: `widows:5; orphans:5` en `.chapter p` dentro de `@media print` — Chrome ignora valores bajos.
+
+**Image-card vacío antes**: `break-inside:avoid` empujaba la imagen entera a la página siguiente, dejando espacio vacío. → `break-inside:auto` en print para `.image-card`.
+
+### 3. Presets de tamaño para imágenes en el editor — NUEVO ✅
+
+**Antes**: todas las imágenes forzadas a ratio 21:8 (banner ancho), sin opción de cambio.
+
+**Ahora**: selector de tamaño que aparece al hacer hover sobre la imagen:
+- `Natural` — proporciones de la imagen, capped a 280px de alto (object-fit:cover) para que 9:16 no ocupe toda la página
+- `16:9` — formato video/horizontal
+- `2:1` — banner ancho (el anterior por defecto)
+- `1:1` — cuadrado
+- `3:4` — retrato, con `width:52%` para no ocupar toda la página
+- `9:16` — vertical, con `width:40%`
+
+**Implementación**:
+- `buildSizePicker(currentSize)` → genera los botones pill
+- `wireSizePicker(fig)` → conecta los clicks al `data-size` del `<figure>`
+- `buildImageCardHtml(url, caption, idx, sizeVal)` → helper que centraliza la generación del HTML de la figura incluyendo `data-size`
+- El tamaño se persiste en `body_md` del capítulo vía regex replace del atributo `data-size`
+- `ebook-print.html` tiene los mismos selectores CSS para que el PDF respete el tamaño elegido
+- Imágenes 3:4 y 9:16 usan `width:52%`/`width:40%` para no ocupar toda la página
+
+### 4. Picker de imagen en portada — NUEVO ✅
+
+**Opciones**:
+- `Centro` (default) — recorte centrado
+- `Arriba` — muestra la parte superior de la foto
+- `Abajo` — muestra la parte inferior
+- `Completo` — sin recorte (`object-fit:contain`), la columna se ajusta a la foto
+
+**Implementación**:
+- `buildCoverSizePicker(currentSize)` en `wireImageControls()`
+- La elección se guarda en `ebook.cover.imageSize` y se aplica como `data-size` en `.cover-media` al renderizar
+- CSS: `.cover-media[data-size="fit"] { min-height:unset !important }` para el modo "Completo"
+- El picker aparece como overlay oscuro (`rgba(0,0,0,.65)`) en la parte inferior de la columna de imagen, `z-index:82`
+
+### 5. Callout "Cuidado" (warn) — colores que no machean el tema — RESUELTO ✅
+
+**Problema**: la sección `callout-warn` tenía colores hardcodeados con `!important` (fondo crema `#fff5f0`, texto naranja) en 3 lugares distintos:
+- CSS estático en el `<style>` del builder (líneas 216-218)
+- `smartMd()` generaba el HTML con inline styles
+- `applyThemeInline()` inyectaba `!important` hardcodeados
+
+Esto hacía que en temas oscuros (dark-neon) el bloque crema se viera totalmente fuera de lugar.
+
+**Fix**: Cambio a `rgba(234,109,58,0.13)` como fondo — semi-transparente sobre cualquier color:
+- En tema claro: tinte beige suave (similar al crema anterior)
+- En tema oscuro: tinte ámbar oscuro (se integra con el fondo)
+- Texto: `var(--doc-fg)` → hereda el color del tema
+- Strong: `#ea6d3a` → naranja visible en ambos temas
+- `applyThemeInline()` ahora inyecta `${v['--doc-fg']}` en lugar de `#1a1a1a`
+- `smartMd()` ya no genera inline styles en callout-warn
+
+**En `ebook-print.html`**: sigue siendo crema con `!important` ya que la impresión siempre es sobre papel blanco.
+
+### Estado al cierre de sesión — 10 mayo 2026
+- ✅ Error API 400 cache_control resuelto
+- ✅ PDF: páginas vacías por padding acumulado → resuelto con @page
+- ✅ PDF: palabras solas al inicio de página → widows:5
+- ✅ PDF: image-card con espacio vacío antes → break-inside:auto
+- ✅ Presets de tamaño de imagen (6 opciones) con picker en hover
+- ✅ Picker de posición en foto de portada (4 opciones)
+- ✅ Callout-warn adaptado a temas oscuros
+- 🟡 Límites de ebooks: Pro=999, Growth=999 en `app.js → PlanLimits` — **REVERTIR** a Pro→5, Growth→20 cuando Sandra confirme que el PDF funciona bien
+
+### Archivos modificados esta sesión
+| Archivo | Cambios |
+|---------|---------|
+| `app.js` | `Claude._call`: sanitiza mensajes, cap 40, alternancia user/assistant |
+| `ebook-builder.html` | Picker tamaño imágenes, picker portada, callout-warn adaptativo, natural max-height |
+| `ebook-print.html` | @page margins, widows/orphans, image-card break-inside:auto, size presets CSS |
+| `landing-builder.html` | Cap apiHistory a 30 mensajes |
+- 🟡 Límites de ebooks (Pro=999, Growth=999) — REVERTIR cuando Sandra confirme que el flujo funciona: Pro→5, Growth→20 en `app.js → PlanLimits`
