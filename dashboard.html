@@ -1074,7 +1074,8 @@ async function applyPendingMiniAppTemplate() {
     let localApp = null;
     try {
       const saved = await DB.miniApps.save(appFromTemplate, _currentUser.id);
-      localApp = MiniApps.save({ id: saved.id, ...saved, ...appFromTemplate });
+      localApp = { id: saved.id, ...saved, ...appFromTemplate };
+      try { MiniApps.save(localApp); } catch (cacheErr) { console.warn('Template local cache skipped:', cacheErr.message); }
     } catch (dbErr) {
       console.warn('Template DB save failed:', dbErr.message);
       localApp = MiniApps.create(appFromTemplate);
@@ -2611,7 +2612,7 @@ function handleEditTypeChange(input) {
 function openEditContent(appId) {
   const app = findMiniApp(appId);
   if (!app) { alert('App no encontrada. Recarga la página.'); return; }
-  MiniApps.save(app);
+  try { MiniApps.save(app); } catch (cacheErr) { console.warn('edit local cache skipped:', cacheErr.message); }
   _editingAppId = appId;
 
   const types = (app.types?.length ? app.types : [app.type]).filter(Boolean);
@@ -2645,7 +2646,7 @@ async function saveEditContent() {
   });
 
   const updated = { ...app, type: types[0], types, ...updates };
-  MiniApps.save(updated);
+  try { MiniApps.save(updated); } catch (cacheErr) { console.warn('save edit local cache skipped:', cacheErr.message); }
   window._miniAppsCache = (window._miniAppsCache || []).map(item => item.id === updated.id ? updated : item);
   try { await DB.miniApps.save(updated, _currentUser.id); } catch(e) { console.warn('saveEditContent:', e); }
 
