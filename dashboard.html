@@ -1018,13 +1018,19 @@ document.addEventListener('DOMContentLoaded', async () => {
 // ── Apply mini-app template from gallery ─────────────────
 async function applyPendingMiniAppTemplate() {
   try {
+    const pendingId = localStorage.getItem('ls_miniapp_template_pending_id');
     const raw = localStorage.getItem('ls_miniapp_template_pending');
-    if (!raw) {
+    if (!pendingId && !raw) {
       switchDashTab('miniapps');
       return;
     }
+    localStorage.removeItem('ls_miniapp_template_pending_id');
     localStorage.removeItem('ls_miniapp_template_pending');
-    const tpl = JSON.parse(raw);
+    const templates = typeof getBuiltinMiniAppTemplates === 'function' ? getBuiltinMiniAppTemplates() : [];
+    const tpl = pendingId
+      ? templates.find(item => item.id === pendingId)
+      : JSON.parse(raw);
+    if (!tpl) throw new Error('Template not found');
 
     const {
       id: templateId,
