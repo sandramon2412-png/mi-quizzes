@@ -330,6 +330,7 @@
 
 <script src="./supabase-config.js"></script>
 <script src="./app.js"></script>
+<script src="./skinglow-demo-data.js"></script>
 <script src="./ai-assistant.js"></script>
 <script>
 const VIDEO_CATEGORIES = [
@@ -888,6 +889,10 @@ function renderVideoTemplates() {
         // Fallback: localStorage (en caso de que la landing no se haya sincronizado a Supabase)
         const local = Landings.get(editingId);
         if (local) row = { ...local, user_id: user.id };
+      }
+      if (!row && editingId === 'skinglow-landing' && typeof seedSkinGlowDemo === 'function') {
+        const seeded = seedSkinGlowDemo({ setAnswers: true });
+        if (seeded?.landing) row = { ...seeded.landing, user_id: user.id };
       }
       if (row && row.user_id === user.id) {
         landing = row;
