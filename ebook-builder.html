@@ -2501,6 +2501,7 @@
           const onProgress = (p) => {
             if (p.stage === 'outline') setStatus('Armando outline…');
             else if (p.stage === 'fallback-groq') setStatus('Claude no tiene saldo. Continuando con Groq…');
+            else if (p.stage === 'local-fallback') setStatus('IA saturada. Creando una base editable local…');
             else if (p.stage === 'chapter') setStatus(`Escribiendo capítulo ${p.current}/${p.total}…`);
           };
           data = await AI.generateEbook(brief, [], onProgress, docType);
@@ -2508,7 +2509,9 @@
         const chaptersCountMsg = data.chapters?.length || 0;
         const displayMsg = preserveMode
           ? `Listo — respeté tu texto y lo dividí en ${chaptersCountMsg} página${chaptersCountMsg === 1 ? '' : 's'}. Pedime cambios de formato o edítalo directo en la preview.`
-          : `Listo — ${chaptersCountMsg} capítulos escritos. Pedime cambios si querés.`;
+          : data.__localFallback
+            ? `Listo — las APIs de IA están limitadas, así que dejé una base editable con ${chaptersCountMsg} capítulos para que no pierdas el trabajo. Cuando vuelva la IA, podés pedir mejoras desde el chat.`
+            : `Listo — ${chaptersCountMsg} capítulos escritos. Pedime cambios si querés.`;
         history = [
           { role: 'user', content: brief },
           { role: 'assistant', content: JSON.stringify(data), display: displayMsg },

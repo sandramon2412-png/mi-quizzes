@@ -1619,6 +1619,125 @@ const Groq = {
 // Tareas complejas/críticas → Claude (mejor calidad).
 // Tareas simples/listas → Groq (rápido y económico).
 // Si Groq falla, fallback automático a Claude.
+const LocalEbook = {
+  _plain(text = '') {
+    return String(text || '').replace(/\s+/g, ' ').trim();
+  },
+
+  _pick(re, text, fallback = '') {
+    const m = String(text || '').match(re);
+    return this._plain(m?.[1] || fallback);
+  },
+
+  _titleFromBrief(brief = '') {
+    return this._pick(/sobre:\s*([^.]+)\./i, brief)
+      || this._pick(/material de base.*?:\s*---MATERIAL---\s*([\s\S]{12,160})/i, brief)
+      || 'Guia practica';
+  },
+
+  _audienceFromBrief(brief = '') {
+    return this._pick(/Audiencia:\s*([^.]+)\./i, brief, 'personas interesadas en este tema');
+  },
+
+  _sectionsFromBrief(brief = '', fallback = 6) {
+    const raw = this._pick(/Cantidad de secciones:\s*aproximadamente\s*(\d+)/i, brief)
+      || this._pick(/aproximadamente\s*(\d+)\s*secciones/i, brief);
+    return Math.max(4, Math.min(10, parseInt(raw || fallback, 10) || fallback));
+  },
+
+  _sourceFromBrief(brief = '') {
+    const m = String(brief || '').match(/---MATERIAL---\n([\s\S]*?)\n---FIN MATERIAL---/);
+    return (m?.[1] || '').trim();
+  },
+
+  _chapterTitles(topic, count, docType = 'ebook') {
+    const map = {
+      checklist: ['Punto de partida', 'Preparacion', 'Paso a paso', 'Errores comunes', 'Checklist final', 'Seguimiento'],
+      propuesta: ['Resumen ejecutivo', 'Problema y oportunidad', 'Solucion propuesta', 'Metodo de trabajo', 'Entregables', 'Inversion y siguiente paso'],
+      presentacion: ['Contexto', 'Oportunidad', 'Promesa central', 'Ruta de accion', 'Prueba y confianza', 'Cierre'],
+      documento: ['Contexto', 'Objetivo', 'Desarrollo', 'Aplicacion', 'Checklist', 'Cierre'],
+      ebook: ['Introduccion', 'Diagnostico inicial', 'Metodo simple', 'Errores que conviene evitar', 'Plan de accion', 'Cierre y siguiente paso'],
+    };
+    const base = map[docType] || map.ebook;
+    const out = [];
+    for (let i = 0; i < count; i++) out.push(base[i] || `Seccion ${i + 1}`);
+    if (topic && out[0] === 'Introduccion') out[0] = `Introduccion a ${topic}`;
+    return out;
+  },
+
+  _visualBlock(audience) {
+    return `<div class="feature-grid">
+<div class="feature-item"><div class="feature-icon">target</div><h4 class="feature-title">Claridad</h4><p class="feature-desc">Define que necesita entender ${audience} antes de avanzar.</p></div>
+<div class="feature-item"><div class="feature-icon">check_circle</div><h4 class="feature-title">Accion</h4><p class="feature-desc">Convierte la idea en pasos simples y faciles de seguir.</p></div>
+<div class="feature-item"><div class="feature-icon">insights</div><h4 class="feature-title">Criterio</h4><p class="feature-desc">Ayuda a tomar mejores decisiones sin saturacion.</p></div>
+</div>`;
+  },
+
+  _bodyFor(title, topic, audience, index, sourceExcerpt = '') {
+    const sourceNote = sourceExcerpt
+      ? `\n\n> Nota: esta seccion fue armada desde el material base disponible y queda lista para que la edites con tus palabras.`
+      : '';
+    const sourceText = sourceExcerpt ? `\n\n${sourceExcerpt.slice(0, 650)}` : '';
+    return `${index === 0 ? `Este documento es una primera version editable sobre **${topic}**, pensado para ${audience}. La meta es entregar claridad, ordenar ideas y convertir el tema en una guia que se pueda mejorar dentro del builder.` : `En esta seccion trabajamos **${title.toLowerCase()}** de forma practica. La idea es que la persona pueda entender el concepto y aplicarlo sin sentirse abrumada.`}
+
+${this._visualBlock(audience)}
+
+## Idea central
+
+${sourceText || `El punto clave es simplificar el camino: identificar el problema, explicar por que importa y ofrecer una accion concreta que acerque a la persona al resultado que busca.`}
+
+<div class="callout callout-tip"><strong>Enfoque</strong><p>Usa esta seccion como base. Puedes cambiar ejemplos, agregar tu experiencia y convertir cada bloque en algo mas especifico para tu oferta.</p></div>
+
+## Pasos recomendados
+
+1. Define el problema principal.
+2. Explica por que ese problema se repite.
+3. Da una accion sencilla para avanzar.
+
+| Elemento | Que debe aclarar | Resultado |
+|---|---|---|
+| Problema | Que esta pasando ahora | Mas conciencia |
+| Metodo | Que camino seguir | Menos confusion |
+| Accion | Que hacer hoy | Avance concreto |
+${sourceNote}`;
+  },
+
+  async generateEbook(brief, history = [], onProgress, docType = 'ebook') {
+    if (history.length > 0) {
+      return {
+        __conversational: true,
+        reply: 'Ahora mismo la IA externa esta limitada por saldo o rate limit. Intenta de nuevo en unos minutos para cambios inteligentes.',
+      };
+    }
+    onProgress?.({ stage: 'local-fallback' });
+    const topic = this._titleFromBrief(brief);
+    const audience = this._audienceFromBrief(brief);
+    const count = this._sectionsFromBrief(brief, 6);
+    const source = this._sourceFromBrief(brief);
+    const titles = this._chapterTitles(topic, count, docType);
+    const chunkSize = source ? Math.max(1, Math.ceil(source.length / titles.length)) : 0;
+    const chapters = titles.map((title, i) => ({
+      title,
+      body_md: this._bodyFor(title, topic, audience, i, source ? source.slice(i * chunkSize, (i + 1) * chunkSize).trim() : ''),
+    }));
+    return {
+      title: topic,
+      subtitle: `Primera version editable para ${audience}.`,
+      chapters,
+      __localFallback: true,
+    };
+  },
+
+  async generateEbookChapter(params = {}) {
+    const title = params.chapterTitle || 'Nueva seccion';
+    return {
+      title,
+      body_md: this._bodyFor(title, params.bookTitle || 'tu documento', params.audience || 'tu audiencia', params.chapterIndex || 0, params.sourceExcerpt || ''),
+      __localFallback: true,
+    };
+  },
+};
+
 const AI = {
   // Complejo: quiz completo con preguntas + perfiles + CTAs
   async generateQuiz(product, desc, niche, numQ, numOpts) {
@@ -1667,7 +1786,13 @@ const AI = {
       return await Claude.generateEbook(brief, history, onProgress, docType);
     } catch (e) {
       console.warn('[ebook] Claude falló, usando Groq como fallback:', e.message);
-      return Groq.generateEbook(brief, history, onProgress, docType);
+      onProgress?.({ stage: 'fallback-groq' });
+      try {
+        return await Groq.generateEbook(brief, history, onProgress, docType);
+      } catch (groqError) {
+        console.warn('[ebook] Groq failed, using local generator:', groqError.message);
+        return LocalEbook.generateEbook(brief, history, onProgress, docType);
+      }
     }
   },
   // Complejo: regenera UNA sola sección — intenta Claude, cae a Groq si no hay créditos
@@ -1676,7 +1801,12 @@ const AI = {
       return await Claude.generateEbookChapter(params);
     } catch (e) {
       console.warn('[ebook-chapter] Claude falló, usando Groq como fallback:', e.message);
-      return Groq.generateEbookChapter(params);
+      try {
+        return await Groq.generateEbookChapter(params);
+      } catch (groqError) {
+        console.warn('[ebook-chapter] Groq failed, using local generator:', groqError.message);
+        return LocalEbook.generateEbookChapter(params);
+      }
     }
   },
 };
