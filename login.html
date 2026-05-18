@@ -189,7 +189,14 @@
 
   // Redirect if already logged in
   if (window.Auth) {
-    withTimeout(Auth.redirectIfAuth('./dashboard.html'), 8000, 'No se pudo verificar la sesión automáticamente.')
+    withTimeout(Auth.redirectIfAuth((() => {
+      const raw = new URLSearchParams(location.search).get('next') || './dashboard.html';
+      try {
+        const url = new URL(raw, location.href);
+        if (url.origin === location.origin) return url.pathname + url.search + url.hash;
+      } catch {}
+      return './dashboard.html';
+    })()), 8000, 'No se pudo verificar la sesión automáticamente.')
       .catch(() => {});
   }
 

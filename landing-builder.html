@@ -562,8 +562,8 @@ function renderVideoTemplates() {
 <script>
   (async () => {
     // ── Auth gate ──
-    const user = await Auth.user();
-    if (!user) { window.location.href = './login.html'; return; }
+    const user = await Auth.requireAuth();
+    if (!user) return;
 
     const profile = await DB.profiles.get(user.id).catch(() => null);
     const plan = profile?.plan || 'free';
