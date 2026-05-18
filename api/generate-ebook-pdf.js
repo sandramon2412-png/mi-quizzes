@@ -16,6 +16,11 @@ const THEMES = {
     primary: '#0a2540', accent: '#059669',
     surface: '#ecfdf5', surface2: '#f0fdf4', border: '#d1fae5',
   },
+  beauty: {
+    bg: '#fff6f8', fg: '#3a2431', muted: '#8a6678',
+    primary: '#b85c8e', accent: '#6f9d92',
+    surface: '#fff0f4', surface2: '#f7ede6', border: '#ecd6de',
+  },
   'dark-neon': {
     bg: '#0a0a0f', fg: '#eaeaf0', muted: '#a3a3b5',
     primary: '#c084fc', accent: '#22d3ee',
@@ -275,10 +280,19 @@ function parseBlocks(input = '') {
 }
 
 async function drawCover(doc, ebook, theme) {
-  doc.rect(0, 0, doc.page.width, doc.page.height).fill(theme.primary);
-  doc.rect(0, 0, doc.page.width, doc.page.height).fill(theme.primary);
-  doc.roundedRect(340, 104, 178, 360, 24).fillOpacity(0.16).fill('#ffffff').fillOpacity(1);
-  doc.circle(525, 690, 220).fillOpacity(0.14).fill(theme.accent).fillOpacity(1);
+  const coverImage = await fetchImageBuffer(ebook.cover?.imageUrl);
+  if (coverImage) {
+    try {
+      doc.image(coverImage, 0, 0, { cover: [doc.page.width, doc.page.height], align: 'center', valign: 'center' });
+      doc.rect(0, 0, doc.page.width, doc.page.height).fillOpacity(0.48).fill('#000000').fillOpacity(1);
+    } catch {
+      doc.rect(0, 0, doc.page.width, doc.page.height).fill(theme.primary);
+    }
+  } else {
+    doc.rect(0, 0, doc.page.width, doc.page.height).fill(theme.primary);
+    doc.roundedRect(340, 104, 178, 360, 24).fillOpacity(0.16).fill('#ffffff').fillOpacity(1);
+    doc.circle(525, 690, 220).fillOpacity(0.14).fill(theme.accent).fillOpacity(1);
+  }
   doc.fillColor('#ffffff').font('Helvetica-Bold').fontSize(36)
     .text(ebook.title || 'Mi ebook', 58, 145, { width: 260, lineGap: 2 });
   const subtitle = ebook.cover?.subtitle || '';
@@ -286,20 +300,18 @@ async function drawCover(doc, ebook, theme) {
     doc.font('Times-Roman').fontSize(15).fillColor('#ffffff')
       .text(subtitle, 58, doc.y + 18, { width: 275, lineGap: 4 });
   }
-  const x = 360;
-  const y = 122;
-  const w = 168;
-  const h = 330;
-  const coverImage = await fetchImageBuffer(ebook.cover?.imageUrl);
-  doc.roundedRect(x, y, w, h, 18).fillOpacity(0.15).fill('#ffffff').fillOpacity(1);
-  if (coverImage) {
-    try {
-      doc.image(coverImage, x, y, { fit: [w, h], align: 'center', valign: 'center' });
-    } catch {}
+  if (!coverImage) {
+    const x = 360;
+    const y = 122;
+    const w = 168;
+    const h = 330;
+    doc.roundedRect(x + 14, y + 14, w - 28, h - 28, 14).strokeColor('#ffffff').opacity(0.35).stroke().opacity(1);
+    doc.fillColor('#ffffff').font('Helvetica-Bold').fontSize(9)
+      .text('LUMINOUS STUDIO', x + 26, y + h - 54, { width: w - 52, align: 'center' });
+  } else {
+    doc.fillColor('#ffffff').font('Helvetica-Bold').fontSize(9)
+      .text('LUMINOUS STUDIO', 58, 720, { width: 260 });
   }
-  doc.roundedRect(x + 14, y + 14, w - 28, h - 28, 14).strokeColor('#ffffff').opacity(0.35).stroke().opacity(1);
-  doc.fillColor('#ffffff').font('Helvetica-Bold').fontSize(9)
-    .text('LUMINOUS STUDIO', x + 26, y + h - 54, { width: w - 52, align: 'center' });
 }
 
 async function renderChapter(doc, chapter, index, theme) {

@@ -59,6 +59,15 @@
     display:grid; grid-template-columns:1.05fr .95fr; gap:12mm; align-items:center; padding:24mm 22mm;
     page-break-after:always; break-after:page;
   }
+  .cover.has-image {
+    position:relative; display:flex; align-items:flex-end; padding:24mm 22mm;
+    background:#111; isolation:isolate;
+  }
+  .cover.has-image::after {
+    content:''; position:absolute; inset:0; z-index:1;
+    background:linear-gradient(180deg,rgba(0,0,0,.12),rgba(0,0,0,.68)), linear-gradient(90deg,rgba(0,0,0,.58),rgba(0,0,0,.08));
+  }
+  .cover.has-image > div:first-child { position:relative; z-index:2; max-width:150mm; text-shadow:0 10px 34px rgba(0,0,0,.42); }
   .cover h1 {
     font-family:'Plus Jakarta Sans',sans-serif; font-size:52px; line-height:1.04; letter-spacing:0; margin:0 0 18px; font-weight:800;
   }
@@ -68,6 +77,13 @@
     border:1px solid rgba(255,255,255,.22); box-shadow:0 24px 70px rgba(0,0,0,.28);
   }
   .cover-media img { width:100%; height:145mm; object-fit:cover; display:block; }
+  .cover.has-image .cover-media {
+    position:absolute; inset:0; z-index:0; min-height:0; border-radius:0; border:0; box-shadow:none; background:#111;
+  }
+  .cover.has-image .cover-media img { width:100%; height:100%; min-height:0; object-fit:cover; object-position:center; opacity:.92; }
+  .cover.has-image .cover-media[data-size="top"] img { object-position:top; }
+  .cover.has-image .cover-media[data-size="bottom"] img { object-position:bottom; }
+  .cover.has-image .cover-media[data-size="fit"] img { object-fit:contain; opacity:1; background:linear-gradient(135deg,var(--doc-primary),var(--doc-accent)); }
   .cover-visual { height:145mm; display:flex; align-items:flex-end; padding:24px; position:relative; overflow:hidden; }
   .cover-visual::before { content:''; position:absolute; inset:0; background:linear-gradient(135deg,rgba(255,255,255,.28) 0 20%,transparent 20% 35%,rgba(255,255,255,.14) 35% 52%,transparent 52% 100%); }
   .cover-visual span { position:relative; z-index:1; font-family:'Plus Jakarta Sans',sans-serif; font-size:11px; font-weight:800; letter-spacing:.12em; text-transform:uppercase; }
@@ -153,10 +169,14 @@
     .toolbar { display:none !important; }
     .page-shell { background:#fff !important; padding:0 !important; }
     .cover { width:210mm; height:297mm; margin:0; box-shadow:none; }
-    .chapter-page { width:210mm !important; min-height:297mm !important; margin:0 !important; padding:14mm 16mm !important; box-shadow:none !important; break-after:page; page-break-after:always; }
+    .chapter-page {
+      width:210mm !important; min-height:calc(297mm - 0.8mm) !important;
+      margin:0 !important; padding:14mm 16mm !important; box-shadow:none !important;
+      overflow:visible !important; break-after:page; page-break-after:always;
+    }
     .chapter-page:last-child { break-after:auto; page-break-after:auto; }
     .chapter h2 { margin-top:0; }
-    .image-card { break-inside:auto !important; page-break-inside:auto !important; }
+    .image-card, .feature-grid, table { break-inside:auto !important; page-break-inside:auto !important; }
   }
 </style>
 </head>
@@ -327,12 +347,12 @@
     const coverImage = cover.imageUrl || '';
     const subtitle = cover.subtitle || '';
     const coverHtml = `
-      <section class="cover">
+      <section class="cover${coverImage ? ' has-image' : ''}">
         <div>
           <h1>${escapeHtml(book.title || 'Mi ebook')}</h1>
           ${subtitle ? `<p class="subtitle">${escapeHtml(subtitle)}</p>` : ''}
         </div>
-        <div class="cover-media">
+        <div class="cover-media"${cover.imageSize ? ` data-size="${escapeHtml(cover.imageSize)}"` : ''}>
           ${coverImage ? `<img src="${escapeHtml(coverImage)}" alt="${escapeHtml(book.title || 'Portada')}" crossorigin="anonymous" referrerpolicy="no-referrer">` : `<div class="cover-visual"><span>${escapeHtml(book.title || 'Visual editorial')}</span></div>`}
         </div>
       </section>`;
