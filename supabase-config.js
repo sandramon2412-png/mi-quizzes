@@ -80,8 +80,34 @@ const db = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, SUPABASE_CLIENT_OPTIONS
 
 const authSleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 const isUsableSession = (session) => !!(session?.access_token && session?.user);
+const SUPABASE_PROJECT_REF = (() => {
+  try { return new URL(SUPABASE_URL).hostname.split('.')[0]; } catch { return ''; }
+})();
+
+function readCachedSupabaseSession() {
+  if (!safeAuthStorage || !SUPABASE_PROJECT_REF) return null;
+  const keys = [
+    `sb-${SUPABASE_PROJECT_REF}-auth-token`,
+    ...Array.from({ length: safeAuthStorage.length }, (_, idx) => safeAuthStorage.key(idx))
+      .filter(key => key && key.startsWith('sb-') && key.endsWith('-auth-token')),
+  ];
+  for (const key of [...new Set(keys)]) {
+    try {
+      const raw = safeAuthStorage.getItem(key);
+      if (!raw) continue;
+      const parsed = JSON.parse(raw);
+      const session = parsed?.currentSession || parsed;
+      const expiresAt = Number(session?.expires_at || 0);
+      if (expiresAt && expiresAt < Math.floor(Date.now() / 1000) - 30) continue;
+      if (isUsableSession(session)) return session;
+    } catch {}
+  }
+  return null;
+}
 
 async function readCurrentSession() {
+  const cached = readCachedSupabaseSession();
+  if (cached) return cached;
   try {
     const { data: { session } } = await db.auth.getSession();
     if (isUsableSession(session)) return session;
