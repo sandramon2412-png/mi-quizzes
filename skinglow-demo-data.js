@@ -258,6 +258,86 @@
     tone: 'cálido, claro y premium',
     docType: 'ebook',
     theme: 'beauty',
+    cover: {
+      subtitle: 'Una guia practica para leer las senales de tu piel antes de comprar mas productos.',
+      theme: 'beauty',
+      imageUrl: 'https://images.unsplash.com/photo-1570172619644-dfd03ed5d881?auto=format&fit=crop&w=1200&q=80'
+    },
+    chapters: [
+      {
+        title: 'Dia 1: observa tus senales',
+        body_md: `Tu piel no necesita que la juzgues; necesita que la observes con calma.
+
+Antes de cambiar productos, registra lo que ves y sientes:
+
+- Tirantez despues de limpiar.
+- Brillo en zona T.
+- Rojeces o ardor.
+- Brotes nuevos.
+- Manchas o textura irregular.
+
+**Mini accion:** toma una foto con luz natural y escribe una frase: "Hoy mi senal principal es...".`
+      },
+      {
+        title: 'Dia 2: limpieza sin agresion',
+        body_md: `La limpieza debe dejar la piel comoda, no castigada. Si despues de lavar sientes tirantez fuerte, ardor o necesidad urgente de crema, puede que tu limpieza sea demasiado agresiva.
+
+## Checklist rapido
+
+1. Lava con movimientos suaves.
+2. Evita tallar.
+3. Observa como se siente la piel 10 minutos despues.
+
+**Senal positiva:** la piel se siente limpia, pero no estirada.`
+      },
+      {
+        title: 'Dia 3: hidratacion inteligente',
+        body_md: `No toda piel brillante esta hidratada. A veces hay grasa y falta de agua al mismo tiempo.
+
+Usa una textura coherente con tu senal principal:
+
+- Ligera si el brillo aparece rapido.
+- Reparadora si hay ardor, rojez o tirantez.
+- Simple si estas probando muchos productos a la vez.
+
+**Regla premium:** cambia una cosa por vez para saber que ayuda realmente.`
+      },
+      {
+        title: 'Dia 4: protector solar visible',
+        body_md: `Para manchas, textura y tono irregular, el protector solar no es un extra: es la base.
+
+Colocalo junto a algo que ya uses cada manana. El objetivo no es perfeccion, es repeticion.
+
+> La constancia sencilla suele ganar sobre la rutina perfecta que no se sostiene.
+
+**Mini accion:** deja tu protector donde lo veas antes de salir.`
+      },
+      {
+        title: 'Dia 5: activos sin mezclar todo',
+        body_md: `Exfoliantes, acidos, retinoides y tratamientos pueden ayudar, pero mezclarlos sin orden puede irritar y confundir.
+
+Si tu piel esta sensible:
+
+- Pausa activos fuertes 48 horas.
+- Vuelve a limpieza, hidratacion y SPF.
+- Revisa si baja el ardor o la rojez.
+
+**Pregunta guia:** estoy usando esto por necesidad real o por ansiedad de ver resultados rapido?`
+      },
+      {
+        title: 'Dia 6 y 7: mapa de patrones',
+        body_md: `Ahora conecta puntos. No busques una respuesta magica; busca patrones.
+
+| Senal | Cuando aparece | Posible pista |
+| --- | --- | --- |
+| Rojez | Despues de lavar | Limpieza fuerte |
+| Brillo | Mediodia | Textura pesada o clima |
+| Brotes | Producto nuevo | Formula o mezcla |
+| Tirantez | Noche | Falta de reparacion |
+
+**Cierre:** el mejor siguiente paso es el que responde a tu patron, no a una moda.`
+      }
+    ],
     publicUrl: './skinglow-ebook-demo.html?v=iconfix1',
     created_at: now,
     updated_at: now

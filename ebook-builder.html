@@ -580,6 +580,7 @@
 
 <script src="./app.js?v=gamma-plus-2"></script>
 <script src="./supabase-config.js?v=20260423n"></script>
+<script src="./skinglow-demo-data.js"></script>
 <script>console.log('[ebook-builder] v20260423n loaded');</script>
 <script src="./ai-assistant.js"></script>
 <script>
@@ -2035,7 +2036,19 @@
     // ── Load if editing ──
     if (editingId) {
       let row = null;
+      if (editingId === 'skinglow-ebook' && typeof seedSkinGlowDemo === 'function') {
+        const local = Ebooks.get(editingId);
+        if (local?.chapters?.length) row = { ...local, user_id: user.id };
+        if (!row) {
+          const seeded = seedSkinGlowDemo({ setAnswers: true });
+          if (seeded?.ebook) row = { ...seeded.ebook, user_id: user.id };
+        }
+      }
       try { row = await DB.ebooks.get(editingId); } catch (e) { console.warn('Supabase load falló:', e); }
+      if (editingId === 'skinglow-ebook' && (!row || row.user_id !== user.id || !row.chapters?.length)) {
+        const seeded = seedSkinGlowDemo({ setAnswers: true });
+        if (seeded?.ebook) row = { ...seeded.ebook, user_id: user.id };
+      }
       if (!row) {
         const local = Ebooks.get(editingId);
         if (local) row = { ...local, user_id: user.id };
