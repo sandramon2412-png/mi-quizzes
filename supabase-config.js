@@ -11,6 +11,29 @@
 const SUPABASE_URL      = 'https://euauqqamrkqwoytveljp.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV1YXVxcWFtcmtxd295dHZlbGpwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQxMjc5ODcsImV4cCI6MjA4OTcwMzk4N30.-047G98I5ecegiWBmkItSgYkhv37AAgTOOZoeB-iAIo';
 
+const AUTH_POLL_INTERVAL_MS = 180;
+
+function getSafeAuthStorage() {
+  try {
+    const key = '__luminous_auth_storage_test__';
+    window.localStorage.setItem(key, '1');
+    window.localStorage.removeItem(key);
+    return window.localStorage;
+  } catch {
+    return undefined;
+  }
+}
+
+const safeAuthStorage = getSafeAuthStorage();
+const SUPABASE_CLIENT_OPTIONS = {
+  auth: {
+    persistSession: true,
+    autoRefreshToken: true,
+    detectSessionInUrl: true,
+    ...(safeAuthStorage ? { storage: safeAuthStorage } : {}),
+  },
+};
+
 function createOfflineSupabaseClient() {
   const offlineError = { message: 'Supabase client unavailable', code: 'OFFLINE' };
   const result = (data = null, error = null) => Promise.resolve({ data, error });
@@ -53,19 +76,54 @@ if (!window.supabase?.createClient) {
 }
 
 const { createClient } = window.supabase;
-const db = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+const db = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, SUPABASE_CLIENT_OPTIONS);
+
+const authSleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+const isUsableSession = (session) => !!(session?.access_token && session?.user);
+
+async function readCurrentSession() {
+  try {
+    const { data: { session } } = await db.auth.getSession();
+    if (isUsableSession(session)) return session;
+  } catch {}
+  return null;
+}
+
+async function refreshCurrentSession() {
+  try {
+    const { data, error } = await db.auth.refreshSession();
+    if (!error && isUsableSession(data?.session)) return data.session;
+  } catch {}
+  return null;
+}
+
+async function waitForStoredSession(timeoutMs = 4000) {
+  const started = Date.now();
+  let session = await readCurrentSession();
+  if (session) return session;
+  while (Date.now() - started < timeoutMs) {
+    await authSleep(AUTH_POLL_INTERVAL_MS);
+    session = await readCurrentSession();
+    if (session) return session;
+  }
+  return refreshCurrentSession();
+}
 
 // ── Auth ──────────────────────────────────────────────────────
 const Auth = {
-  async session() {
-    const { data: { session } } = await db.auth.getSession();
+  async session(options = {}) {
+    const timeoutMs = typeof options === 'number' ? options : (options.timeoutMs || 0);
+    let session = await readCurrentSession();
     if (session) return session;
-    try {
-      const { data } = await db.auth.refreshSession();
-      return data?.session || null;
-    } catch {
-      return null;
+    if (timeoutMs > 0) {
+      session = await waitForStoredSession(timeoutMs);
+      if (session) return session;
     }
+    return refreshCurrentSession();
+  },
+
+  async waitForSession(timeoutMs = 4000) {
+    return waitForStoredSession(timeoutMs);
   },
 
   // Siempre devuelve un token válido, refrescándolo si es necesario
@@ -96,9 +154,10 @@ const Auth = {
   async signIn(email, password) {
     const { data, error } = await db.auth.signInWithPassword({ email, password });
     if (error) throw error;
+    const session = await waitForStoredSession(5000);
     // Apply any pending Hotmart upgrade for this email
     if (data?.user) _applyPendingUpgrade(data.user).catch(() => {});
-    return data;
+    return { ...data, session: session || data?.session || null };
   },
 
   async signUp(email, password, name) {
@@ -126,10 +185,10 @@ const Auth = {
 
   // Redirect to login if not authenticated (use on protected pages)
   async requireAuth() {
-    let s = await this.session();
+    let s = await this.session({ timeoutMs: 5000 });
     if (!s) {
-      await new Promise(resolve => setTimeout(resolve, 250));
-      s = await this.session();
+      await authSleep(650);
+      s = await this.session({ timeoutMs: 3000 });
     }
     if (!s) {
       const next = encodeURIComponent(location.pathname + location.search);
@@ -141,7 +200,7 @@ const Auth = {
 
   // Redirect to dashboard if already logged in (use on login/registro)
   async redirectIfAuth(dest = './dashboard.html') {
-    const s = await this.session();
+    const s = await this.session({ timeoutMs: 1200 });
     if (s) window.location.href = dest;
   },
 };

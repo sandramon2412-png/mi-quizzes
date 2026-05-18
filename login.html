@@ -217,7 +217,9 @@
         LOGIN_TIMEOUT_MS,
         'La conexión tardó demasiado. Revisa internet, recarga la página e inténtalo de nuevo.'
       );
-      const session = result?.session || await Auth.session();
+      const session = await Auth.waitForSession?.(6000)
+        || result?.session
+        || await Auth.session({ timeoutMs: 3000 });
       if (!session) throw new Error('La sesión no quedó activa. Inténtalo de nuevo.');
       window.location.assign(safeNextUrl(nextUrl));
     } catch (err) {
