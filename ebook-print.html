@@ -22,6 +22,10 @@
     --doc-bg:#fdf6f0; --doc-fg:#2a2233; --doc-muted:#6b5a6f;
     --doc-primary:#e0749c; --doc-accent:#f4a261; --doc-surface:#fbeadf; --doc-surface-2:#f7e1d4; --doc-border:#eed6c4;
   }
+  body.theme-beauty {
+    --doc-bg:#fff6f8; --doc-fg:#3a2431; --doc-muted:#8a6678;
+    --doc-primary:#b85c8e; --doc-accent:#6f9d92; --doc-surface:#fff0f4; --doc-surface-2:#f7ede6; --doc-border:#ecd6de;
+  }
   body.theme-corporate {
     --doc-bg:#ffffff; --doc-fg:#0f172a; --doc-muted:#475569;
     --doc-primary:#0a2540; --doc-accent:#059669; --doc-surface:#ecfdf5; --doc-surface-2:#f0fdf4; --doc-border:#d1fae5;
@@ -100,6 +104,14 @@
     background:var(--doc-surface); border-left:4px solid var(--doc-accent); border-radius:0 10px 10px 0;
     padding:10px 13px; margin:12px 0; break-inside:avoid; page-break-inside:avoid;
   }
+  .callout { color:var(--doc-fg); font-family:'Plus Jakarta Sans',sans-serif; font-size:12px; line-height:1.55; }
+  .callout > strong { display:block; font-size:10px; font-weight:800; text-transform:uppercase; letter-spacing:.08em; margin-bottom:4px; color:var(--doc-accent); }
+  .callout p { margin:0; color:var(--doc-fg); }
+  .callout p strong, .callout p em, .callout p b { display:inline; font-size:inherit; text-transform:none; letter-spacing:normal; color:inherit; }
+  .callout-tip { background:rgba(46,91,255,0.10); border-color:var(--doc-primary); }
+  .callout-tip > strong { color:var(--doc-primary); }
+  .callout-info { background:rgba(124,58,237,0.10); border-color:var(--doc-accent); }
+  .callout-quote { background:rgba(100,100,160,0.10); border-color:var(--doc-accent); font-style:italic; }
   table { width:100%; border-collapse:collapse; margin:12px 0; font-family:'Plus Jakarta Sans',sans-serif; font-size:11.5px; break-inside:avoid; page-break-inside:avoid; }
   th { background:var(--doc-primary); color:#fff; text-align:left; padding:8px 10px; }
   td { padding:8px 10px; border-top:1px solid var(--doc-border); }
@@ -126,13 +138,14 @@
   figcaption { padding:7px 10px 9px; font-family:'Plus Jakarta Sans',sans-serif; font-size:9.5px; line-height:1.35; color:var(--doc-muted); text-transform:uppercase; letter-spacing:.08em; }
   .empty { min-height:70vh; display:grid; place-items:center; color:#fff; font-family:'Plus Jakarta Sans',sans-serif; }
   .json-export { position: fixed; left: -9999px; top: 0; width: 1px; height: 1px; overflow: hidden; white-space: pre-wrap; }
-  @page { size:A4; margin:0; }
+  @page { size:A4; margin:14mm 16mm; }
+  @page:first { margin:0; }
   @media print {
-    html, body { background:var(--doc-bg) !important; }
+    html, body { background:#fff !important; }
     .toolbar { display:none !important; }
     .page-shell { background:#fff !important; padding:0 !important; }
     .cover { width:210mm; height:297mm; margin:0; box-shadow:none; }
-    .document { width:210mm; min-height:0; margin:0; padding:18mm 20mm; background:var(--doc-bg); }
+    .document { width:auto; min-height:0; margin:0; padding:0; background:var(--doc-bg); }
     .chapter { margin-bottom:10mm; }
   }
 </style>
@@ -146,7 +159,7 @@
   <div class="actions">
     <a id="back-link" class="btn ghost" href="./ebook-builder.html"><span class="material-symbols-outlined" style="font-size:16px">arrow_back</span>Volver al editor</a>
     <button id="server-pdf-btn" class="btn primary" type="button"><span class="material-symbols-outlined" style="font-size:16px">download</span>Descargar PDF final</button>
-    <button id="print-btn" class="btn primary" type="button"><span class="material-symbols-outlined" style="font-size:16px">print</span>Guardar como PDF</button>
+    <button id="print-btn" class="btn primary" type="button"><span class="material-symbols-outlined" style="font-size:16px">print</span>Imprimir / Guardar PDF</button>
   </div>
 </header>
 <main id="root" class="page-shell"><div class="empty">Cargando ebook...</div></main>
@@ -186,7 +199,7 @@
       return `<div class="${cls}">${boldItems.map((item, i) => `<div class="feature-item"><div class="feature-icon">${smartIcons[i % smartIcons.length]}</div><h4 class="feature-title">${item.title}</h4>${item.desc ? `<p class="feature-desc">${item.desc}</p>` : ''}</div>`).join('')}</div>`;
     }
     const simpleBullets = lines.filter(line => /^[-*\u2022]\s+/.test(line.trim())).map(line => line.trim().replace(/^[-*\u2022]\s+/, '').trim()).filter(Boolean);
-    if (simpleBullets.length >= 3 && simpleBullets.length <= 6 && simpleBullets.length === lines.length) {
+    if (false && simpleBullets.length >= 3 && simpleBullets.length <= 6 && simpleBullets.length === lines.length) {
       const cls = simpleBullets.length >= 5 ? 'feature-grid cols-3' : 'feature-grid';
       return `<div class="${cls}">${simpleBullets.map((text, i) => {
         const parts = text.split(/\s+[-:–—]\s+/);

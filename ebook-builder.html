@@ -96,6 +96,19 @@
     --doc-border: #eed6c4;
     --doc-code-bg: #f5ddc9;
   }
+  .ebook-page-wrap[data-theme="beauty"] {
+    --doc-bg: #fff6f8;
+    --doc-fg: #3a2431;
+    --doc-muted: #8a6678;
+    --doc-primary: #b85c8e;
+    --doc-accent: #6f9d92;
+    --doc-title-grad-from: #b85c8e;
+    --doc-title-grad-to: #6f9d92;
+    --doc-surface: #fff0f4;
+    --doc-surface-2: #f7ede6;
+    --doc-border: #ecd6de;
+    --doc-code-bg: #f5e5eb;
+  }
   .ebook-page-wrap[data-theme="corporate"] {
     --doc-bg: #ffffff;
     --doc-fg: #0f172a;
@@ -179,20 +192,24 @@
     font-family: 'Plus Jakarta Sans', sans-serif; font-size: 13px; line-height: 1.6;
     border-left: 4px solid; position: relative;
   }
-  .ebook-page .callout strong {
+  .ebook-page .callout > strong {
     display: block; font-size: 11px; font-weight: 800; text-transform: uppercase;
     letter-spacing: 0.1em; margin-bottom: 6px; color: inherit;
   }
   .ebook-page .callout p { margin: 0; font-size: 13px; color: var(--doc-fg); }
+  .ebook-page .callout p strong,
+  .ebook-page .callout p em,
+  .ebook-page .callout p b {
+    display: inline; font-size: inherit; text-transform: none; letter-spacing: normal; color: inherit;
+  }
   .ebook-page .callout cite { display: block; margin-top: 8px; font-size: 11px; color: var(--doc-muted); font-style: normal; }
-  .ebook-page .callout-tip    { background: var(--doc-surface); border-color: var(--doc-primary); }
-  .ebook-page .callout-tip strong    { color: var(--doc-primary); }
-  .ebook-page .callout-warn   { background: #fff5f0; border-color: #ea6d3a; }
-  .ebook-page .callout-warn strong   { color: #d95a2a; }
-  .ebook-page[style*="color:#fff"] ~ .callout-warn, .ebook-page-wrap[data-theme="dark-neon"] .callout-warn { background: #2a1a15; }
-  .ebook-page .callout-info   { background: var(--doc-surface); border-color: var(--doc-accent); }
-  .ebook-page .callout-info strong   { color: var(--doc-accent); }
-  .ebook-page .callout-quote  { background: linear-gradient(135deg, var(--doc-surface) 0%, var(--doc-surface-2) 100%); border-color: var(--doc-accent); font-style: italic; }
+  .ebook-page .callout-tip    { background: rgba(46,91,255,0.10); border-color: var(--doc-primary); color: var(--doc-fg); }
+  .ebook-page .callout-tip > strong    { color: var(--doc-primary); }
+  .ebook-page .callout-warn   { background: rgba(234,109,58,0.13); border-color: #ea6d3a; color: var(--doc-fg); }
+  .ebook-page .callout-warn > strong   { color: #d95a2a; }
+  .ebook-page .callout-info   { background: rgba(124,58,237,0.10); border-color: var(--doc-accent); color: var(--doc-fg); }
+  .ebook-page .callout-info > strong   { color: var(--doc-accent); }
+  .ebook-page .callout-quote  { background: rgba(100,100,160,0.10); border-color: var(--doc-accent); font-style: italic; color: var(--doc-fg); }
   .ebook-page .callout-quote p { font-size: 15px; color: var(--doc-fg); }
 
   .ebook-page .stat-card {
@@ -438,6 +455,7 @@
             <option value="light" selected>Claro clásico (blanco + azul/púrpura)</option>
             <option value="dark-neon">Oscuro neón (negro + violeta/cyan)</option>
             <option value="pastel">Pastel suave (crema + rosa/naranja)</option>
+            <option value="beauty">Belleza premium (rosa + verde salvia)</option>
             <option value="corporate">Corporativo (blanco + navy/teal)</option>
             <option value="finance">Finanzas premium (verde profundo + dorado)</option>
             <option value="spiritual">Espiritual cálido (marfil + terracota)</option>
@@ -907,7 +925,7 @@
         .filter(l => /^[-*â€¢]\s+/.test(l.trim()))
         .map(l => l.trim().replace(/^[-*â€¢]\s+/, '').trim())
         .filter(Boolean);
-      if (simpleBullets.length >= 3 && simpleBullets.length <= 6 && simpleBullets.length === lines.length) {
+      if (false && simpleBullets.length >= 3 && simpleBullets.length <= 6 && simpleBullets.length === lines.length) {
         const cls = simpleBullets.length >= 5 ? 'feature-grid cols-3' : 'feature-grid';
         const html = simpleBullets.map((text, i) => {
           const parts = text.split(/\s+[â€”â€“\-:]\s+/);
@@ -971,6 +989,7 @@
       'light':      ['#2E5BFF', '#7c3aed'],
       'dark-neon':  ['#c084fc', '#22d3ee'],
       'pastel':     ['#e0749c', '#f4a261'],
+      'beauty':     ['#b85c8e', '#6f9d92'],
       'corporate':  ['#0a2540', '#059669'],
       'finance':    ['#1F7A5A', '#C8A24A'],
       'spiritual':  ['#B96F5F', '#D8A06F'],
@@ -1056,21 +1075,7 @@
           </div>
         </div>`;
 
-      const chapterChunks = [];
-      let activeChunk = [];
-      let activeUnits = 0;
-      ebook.chapters.forEach((ch, i) => {
-        const plain = stripHtml(ch.body_md || '');
-        const units = 18 + Math.ceil(plain.length / 650) * 22 + (/<figure|image-card|<table|\|.+\|/i.test(ch.body_md || '') ? 20 : 0);
-        if (activeChunk.length && activeUnits + units > 54) {
-          chapterChunks.push(activeChunk);
-          activeChunk = [];
-          activeUnits = 0;
-        }
-        activeChunk.push({ ch, i });
-        activeUnits += units;
-      });
-      if (activeChunk.length) chapterChunks.push(activeChunk);
+      const chapterChunks = ebook.chapters.map((ch, i) => [{ ch, i }]);
 
       const chaptersHtml = chapterChunks.map((chunk, pageIndex) => `
         <div class="ebook-page-wrap" data-theme="${escapeHtml(theme)}">
@@ -1155,7 +1160,7 @@
     }
 
     // Hot-swap the theme on an already-generated doc without re-calling the AI.
-    const VIEWPORT_BG = { 'light': '#26262a', 'dark-neon': '#0a0a14', 'pastel': '#5a4a3a', 'corporate': '#1e293b', 'finance': '#10221a', 'spiritual': '#6a5145' };
+    const VIEWPORT_BG = { 'light': '#26262a', 'dark-neon': '#0a0a14', 'pastel': '#5a4a3a', 'beauty': '#6d4c5b', 'corporate': '#1e293b', 'finance': '#10221a', 'spiritual': '#6a5145' };
     // Inline CSS var definitions per theme — bypasses any CSS selector issue
     // by applying vars directly on each .ebook-page-wrap via element.style.
     const THEME_VARS = {
@@ -1179,6 +1184,13 @@
         '--doc-title-grad-from':'#e0749c','--doc-title-grad-to':'#f4a261',
         '--doc-surface':'#fbeadf','--doc-surface-2':'#f7e1d4',
         '--doc-border':'#eed6c4','--doc-code-bg':'#f5ddc9',
+      },
+      'beauty': {
+        '--doc-bg':'#fff6f8','--doc-fg':'#3a2431','--doc-muted':'#8a6678',
+        '--doc-primary':'#b85c8e','--doc-accent':'#6f9d92',
+        '--doc-title-grad-from':'#b85c8e','--doc-title-grad-to':'#6f9d92',
+        '--doc-surface':'#fff0f4','--doc-surface-2':'#f7ede6',
+        '--doc-border':'#ecd6de','--doc-code-bg':'#f5e5eb',
       },
       'corporate': {
         '--doc-bg':'#ffffff','--doc-fg':'#0f172a','--doc-muted':'#475569',
@@ -1236,10 +1248,13 @@
         .ebook-page:not(.cover) .feature-desc { color: ${v['--doc-muted']} !important; }
         .ebook-page:not(.cover) .numbered-card { background: ${v['--doc-surface-2']} !important; }
         .ebook-page:not(.cover) .numbered-card .n { background: linear-gradient(135deg, ${v['--doc-primary']}, ${v['--doc-accent']}) !important; }
-        .ebook-page:not(.cover) .callout-tip { background: ${v['--doc-surface']} !important; border-color: ${v['--doc-primary']} !important; }
-        .ebook-page:not(.cover) .callout-info,
-        .ebook-page:not(.cover) .callout-quote { background: ${v['--doc-surface']} !important; border-color: ${v['--doc-accent']} !important; color: ${v['--doc-fg']} !important; }
+        .ebook-page:not(.cover) .callout-tip { background: rgba(46,91,255,0.10) !important; border-color: ${v['--doc-primary']} !important; color: ${v['--doc-fg']} !important; }
+        .ebook-page:not(.cover) .callout-info { background: rgba(124,58,237,0.10) !important; border-color: ${v['--doc-accent']} !important; color: ${v['--doc-fg']} !important; }
+        .ebook-page:not(.cover) .callout-quote { background: rgba(100,100,160,0.10) !important; border-color: ${v['--doc-accent']} !important; color: ${v['--doc-fg']} !important; }
         .ebook-page:not(.cover) .callout p { color: ${v['--doc-fg']} !important; }
+        .ebook-page:not(.cover) .callout p strong,
+        .ebook-page:not(.cover) .callout p em,
+        .ebook-page:not(.cover) .callout p b { color: ${v['--doc-fg']} !important; display: inline !important; font-size: inherit !important; text-transform: none !important; }
         .ebook-page:not(.cover) .stat-card,
         .ebook-page:not(.cover) .pill.accent,
         .ebook-page:not(.cover) .tab-chips .chip.active,
