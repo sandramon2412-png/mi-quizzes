@@ -1014,7 +1014,6 @@
         coverImageBtn?.classList.add('hidden');
         return;
       }
-      ensureEbookVisuals(ebook);
       previewEmpty.classList.add('hidden');
       ebookPreview.classList.remove('hidden');
       downloadBtn.classList.remove('hidden');
@@ -2561,20 +2560,21 @@
 
     downloadBtn.onclick = async () => {
       if (!ebook || !ebook.chapters?.length) return;
-      ensureEbookVisuals(ebook);
       syncEbookTheme(ebook);
-      setStatus('Preparando vista previa PDF...');
+      setStatus('Guardando...');
       downloadBtn.disabled = true;
       const originalDownloadText = downloadBtn.innerHTML;
       downloadBtn.innerHTML = '<span class="thinking-dot"></span><span class="thinking-dot"></span><span class="thinking-dot"></span>';
 
       try {
-        await optimizeEbookEmbeddedImages(ebook);
+        ebook.chapters.forEach((_, i) => {
+          const body = collectChapterBody(i);
+          if (body) ebook.chapters[i].body_md = body;
+        });
         await persistEbook();
-        await openDownloadPreviewDeprecated();
+        window.open(`./ebook-print.html?id=${encodeURIComponent(ebook.id)}`, '_blank');
       } catch (err) {
-        console.warn('[pdf] preview unavailable', err);
-        toast('No pude abrir la vista previa PDF: ' + (err?.message || 'error'), 'err');
+        toast('Error al abrir vista PDF: ' + (err?.message || 'error'), 'err');
       } finally {
         setStatus('');
         downloadBtn.disabled = false;

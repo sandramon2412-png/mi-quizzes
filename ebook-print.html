@@ -292,26 +292,36 @@
     const btn = document.getElementById('server-pdf-btn');
     const original = btn.innerHTML;
     btn.disabled = true;
-    btn.innerHTML = '<span class="material-symbols-outlined" style="font-size:16px">hourglass_empty</span>Generando...';
+    btn.innerHTML = '<span class="material-symbols-outlined" style="font-size:16px">hourglass_empty</span>Generando PDF...';
     try {
-      const response = await fetch('/api/generate-ebook-pdf', {
+      const toolbar = document.querySelector('.toolbar');
+      if (toolbar) toolbar.style.display = 'none';
+      const html = '<!DOCTYPE html>' + document.documentElement.outerHTML;
+      if (toolbar) toolbar.style.display = '';
+      const filename = `${(currentBook.title || 'ebook').replace(/[\\/:*?"<>|]+/g, '').trim() || 'ebook'}.pdf`;
+      const response = await fetch('/api/render-ebook-pdf', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ebook: currentBook }),
+        body: JSON.stringify({ html, filename }),
       });
-      if (!response.ok) throw new Error('No pude generar el PDF final en el servidor.');
+      if (!response.ok) {
+        const err = await response.json().catch(() => ({}));
+        throw new Error(err.error || 'No pude generar el PDF en el servidor.');
+      }
       const blob = await response.blob();
       if (!blob || blob.size < 1024) throw new Error('El PDF llego vacio.');
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = `${(currentBook.title || 'ebook').replace(/[\\/:*?"<>|]+/g, '').trim() || 'ebook'}.pdf`;
+      a.download = filename;
       document.body.appendChild(a);
       a.click();
       a.remove();
       setTimeout(() => URL.revokeObjectURL(url), 2000);
     } catch (error) {
       alert(error.message || 'No pude generar el PDF final.');
+      const toolbar = document.querySelector('.toolbar');
+      if (toolbar) toolbar.style.display = '';
     } finally {
       btn.disabled = false;
       btn.innerHTML = original;
