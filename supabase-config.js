@@ -11,6 +11,47 @@
 const SUPABASE_URL      = 'https://euauqqamrkqwoytveljp.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV1YXVxcWFtcmtxd295dHZlbGpwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQxMjc5ODcsImV4cCI6MjA4OTcwMzk4N30.-047G98I5ecegiWBmkItSgYkhv37AAgTOOZoeB-iAIo';
 
+function createOfflineSupabaseClient() {
+  const offlineError = { message: 'Supabase client unavailable', code: 'OFFLINE' };
+  const result = (data = null, error = null) => Promise.resolve({ data, error });
+  const builder = () => {
+    const api = {
+      select: () => api,
+      eq: () => api,
+      neq: () => api,
+      order: () => api,
+      limit: () => api,
+      range: () => api,
+      update: () => api,
+      upsert: () => api,
+      delete: () => api,
+      insert: () => api,
+      single: () => result(null, offlineError),
+      maybeSingle: () => result(null, null),
+      then: (resolve, reject) => result(null, null).then(resolve, reject),
+      catch: (reject) => result(null, null).catch(reject),
+    };
+    return api;
+  };
+  return {
+    auth: {
+      getSession: () => result({ session: null }),
+      refreshSession: () => result({ session: null }),
+      getUser: () => result({ user: null }),
+      signInWithPassword: () => result(null, offlineError),
+      signUp: () => result(null, offlineError),
+      signOut: () => result(null),
+      resetPasswordForEmail: () => result(null, offlineError),
+    },
+    from: () => builder(),
+  };
+}
+
+if (!window.supabase?.createClient) {
+  console.warn('[Luminous] Supabase library not available; running with local demo fallback.');
+  window.supabase = { createClient: createOfflineSupabaseClient };
+}
+
 const { createClient } = window.supabase;
 const db = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
@@ -18,7 +59,13 @@ const db = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 const Auth = {
   async session() {
     const { data: { session } } = await db.auth.getSession();
-    return session;
+    if (session) return session;
+    try {
+      const { data } = await db.auth.refreshSession();
+      return data?.session || null;
+    } catch {
+      return null;
+    }
   },
 
   // Siempre devuelve un token válido, refrescándolo si es necesario
@@ -79,7 +126,11 @@ const Auth = {
 
   // Redirect to login if not authenticated (use on protected pages)
   async requireAuth() {
-    const s = await this.session();
+    let s = await this.session();
+    if (!s) {
+      await new Promise(resolve => setTimeout(resolve, 250));
+      s = await this.session();
+    }
     if (!s) {
       const next = encodeURIComponent(location.pathname + location.search);
       window.location.href = `./login.html?next=${next}`;
@@ -157,6 +208,11 @@ const DB = {
           productUrl:       quiz.productUrl        || '',
           paymentUrl:       quiz.paymentUrl        || '',
           landingUrl:       quiz.landingUrl        || '',
+          landingId:        quiz.landingId         || '',
+          landingSlug:      quiz.landingSlug       || '',
+          ebookId:          quiz.ebookId           || '',
+          ebookUrl:         quiz.ebookUrl          || '',
+          leadMagnetUrl:    quiz.leadMagnetUrl     || '',
           whatsappNumber:   quiz.whatsappNumber    || '',
           whatsappMessage:  quiz.whatsappMessage   || '',
           leadCapture:      quiz.leadCapture       !== false,
@@ -562,3 +618,8 @@ async function _applyPendingUpgrade(user) {
   // Delete pending entry
   await db.from('pending_upgrades').delete().eq('email', user.email);
 }
+
+// Expose helpers for pages that check readiness through window.*.
+window.db = db;
+window.Auth = Auth;
+window.DB = DB;

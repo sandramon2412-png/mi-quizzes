@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Landing Demo | Luminous</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&family=Lora:wght@700&family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,600,0,0" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    min-height: 100vh;
+    font-family: Inter, system-ui, sans-serif;
+    color: #142033;
+    background: linear-gradient(180deg, #f7fbff 0%, #ffffff 52%, #eef8f5 100%);
+  }
+  .page { min-height: 100vh; overflow: hidden; }
+  header {
+    height: 72px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    max-width: 1180px;
+    margin: 0 auto;
+    padding: 0 24px;
+  }
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: 950;
+    letter-spacing: .04em;
+  }
+  .brand-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 8px;
+    display: grid;
+    place-items: center;
+    color: #fff;
+    background: linear-gradient(135deg, #1457d9, #19b889);
+    box-shadow: 0 12px 28px rgba(20, 87, 217, .22);
+  }
+  nav {
+    display: flex;
+    align-items: center;
+    gap: 22px;
+    color: #667085;
+    font-size: 13px;
+    font-weight: 800;
+  }
+  .nav-cta {
+    border: 1px solid #dbe8f5;
+    border-radius: 999px;
+    padding: 10px 14px;
+    color: #1457d9;
+    background: #fff;
+    box-shadow: 0 10px 24px rgba(17, 42, 68, .06);
+  }
+  .hero {
+    max-width: 1180px;
+    margin: 0 auto;
+    padding: 28px 24px 18px;
+    display: grid;
+    grid-template-columns: 1fr 440px;
+    gap: 34px;
+    align-items: center;
+  }
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    border: 1px solid #dbe8f5;
+    background: #fff;
+    color: #1457d9;
+    border-radius: 999px;
+    padding: 9px 13px;
+    font-size: 12px;
+    font-weight: 900;
+    box-shadow: 0 12px 28px rgba(17, 42, 68, .06);
+    margin-bottom: 18px;
+  }
+  h1 {
+    font-family: Lora, Georgia, serif;
+    font-size: clamp(44px, 5.6vw, 72px);
+    line-height: .98;
+    letter-spacing: 0;
+    max-width: 760px;
+    margin-bottom: 18px;
+  }
+  .lead {
+    color: #667085;
+    font-size: 18px;
+    line-height: 1.68;
+    max-width: 690px;
+    margin-bottom: 24px;
+  }
+  .actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 26px;
+  }
+  .primary, .secondary {
+    border: 0;
+    border-radius: 8px;
+    padding: 15px 18px;
+    font: inherit;
+    font-size: 14px;
+    font-weight: 950;
+  }
+  .primary {
+    color: #fff;
+    background: linear-gradient(135deg, #1457d9, #19b889);
+    box-shadow: 0 18px 38px rgba(20, 87, 217, .22);
+  }
+  .secondary {
+    color: #142033;
+    background: #fff;
+    border: 1px solid #dbe8f5;
+  }
+  .proof {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+  .proof-card {
+    min-width: 138px;
+    border: 1px solid #dbe8f5;
+    background: rgba(255,255,255,.86);
+    border-radius: 8px;
+    padding: 13px 14px;
+    box-shadow: 0 12px 28px rgba(17, 42, 68, .06);
+  }
+  .proof-card strong {
+    display: block;
+    font-size: 22px;
+    line-height: 1;
+    color: #142033;
+  }
+  .proof-card span {
+    display: block;
+    margin-top: 5px;
+    color: #667085;
+    font-size: 11px;
+    font-weight: 900;
+    text-transform: uppercase;
+  }
+  .mock {
+    position: relative;
+    border-radius: 8px;
+    padding: 12px;
+    background: #132033;
+    box-shadow: 0 30px 70px rgba(19, 32, 51, .22);
+  }
+  .mock:before {
+    content: "";
+    position: absolute;
+    inset: -48px -52px auto auto;
+    width: 180px;
+    height: 180px;
+    border-radius: 50%;
+    background: rgba(25, 184, 137, .22);
+    z-index: -1;
+  }
+  .screen {
+    border-radius: 8px;
+    background: #f8fbff;
+    overflow: hidden;
+    min-height: 540px;
+  }
+  .screen-top {
+    padding: 16px;
+    color: #fff;
+    background: linear-gradient(135deg, #1457d9, #0fa7b0 60%, #19b889);
+  }
+  .screen-brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 22px;
+    font-size: 12px;
+    font-weight: 900;
+  }
+  .screen-icon {
+    width: 34px;
+    height: 34px;
+    border-radius: 8px;
+    background: rgba(255,255,255,.18);
+    display: grid;
+    place-items: center;
+  }
+  .screen h2 {
+    font-size: 25px;
+    line-height: 1.12;
+    margin-bottom: 8px;
+  }
+  .screen p {
+    color: rgba(255,255,255,.82);
+    font-size: 13px;
+    line-height: 1.55;
+  }
+  .screen-body { padding: 16px; }
+  .step {
+    display: grid;
+    grid-template-columns: 44px 1fr;
+    gap: 12px;
+    align-items: start;
+    border: 1px solid #dbe8f5;
+    background: #fff;
+    border-radius: 8px;
+    padding: 13px;
+    margin-bottom: 10px;
+  }
+  .step-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 8px;
+    color: #fff;
+    display: grid;
+    place-items: center;
+    background: #1457d9;
+  }
+  .step:nth-child(2) .step-icon { background: #0fa7b0; }
+  .step:nth-child(3) .step-icon { background: #f59e0b; }
+  .step:nth-child(4) .step-icon { background: #e94fa5; }
+  .step b {
+    display: block;
+    margin-bottom: 4px;
+    font-size: 14px;
+  }
+  .step small {
+    display: block;
+    color: #667085;
+    line-height: 1.4;
+  }
+  .band {
+    max-width: 1180px;
+    margin: 8px auto 0;
+    padding: 0 24px 24px;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+  }
+  .feature {
+    border: 1px solid #dbe8f5;
+    border-radius: 8px;
+    background: #fff;
+    padding: 16px;
+    box-shadow: 0 14px 34px rgba(17, 42, 68, .07);
+  }
+  .feature .material-symbols-outlined {
+    color: #1457d9;
+    margin-bottom: 9px;
+  }
+  .feature b {
+    display: block;
+    font-size: 14px;
+    margin-bottom: 5px;
+  }
+  .feature span {
+    color: #667085;
+    font-size: 12px;
+    line-height: 1.45;
+  }
+  .material-symbols-outlined { line-height: 1; }
+  @media (max-width: 920px) {
+    nav { display: none; }
+    .hero { grid-template-columns: 1fr; padding-top: 12px; }
+    .mock { display: none; }
+    .band { grid-template-columns: 1fr 1fr; }
+  }
+  @media (max-width: 560px) {
+    header { height: 64px; padding: 0 16px; }
+    .hero { padding: 12px 16px 18px; }
+    h1 { font-size: 40px; }
+    .lead { font-size: 15px; }
+    .band { grid-template-columns: 1fr; padding: 0 16px 20px; }
+  }
+</style>
+</head>
+<body>
+  <div class="page">
+    <header>
+      <div class="brand">
+        <span class="brand-icon material-symbols-outlined">auto_awesome</span>
+        Luminous Studio
+      </div>
+      <nav>
+        <span>Quizzes</span>
+        <span>Mini apps</span>
+        <span>IA</span>
+        <span>Facebook Ads</span>
+        <span class="nav-cta">Solicitar demo</span>
+      </nav>
+    </header>
+
+    <section class="hero">
+      <div>
+        <div class="badge">
+          <span class="material-symbols-outlined">rocket_launch</span>
+          Plataforma para negocios de infoproductos
+        </div>
+        <h1>Crea, valida y vende tu oferta digital en un solo lugar</h1>
+        <p class="lead">Luminous acompa&ntilde;a el proceso completo: investigaci&oacute;n, quizzes, mini apps, asistentes con IA, p&aacute;ginas, automatizaciones y campa&ntilde;as para convertir audiencia en clientes.</p>
+        <div class="actions">
+          <button class="primary">Ver plataforma</button>
+          <button class="secondary">Explorar ejemplo</button>
+        </div>
+        <div class="proof">
+          <div class="proof-card"><strong>360&deg;</strong><span>Proceso completo</span></div>
+          <div class="proof-card"><strong>IA</strong><span>Contenido guiado</span></div>
+          <div class="proof-card"><strong>Ads</strong><span>Oferta + tr&aacute;fico</span></div>
+        </div>
+      </div>
+
+      <div class="mock">
+        <div class="screen">
+          <div class="screen-top">
+            <div class="screen-brand">
+              <span class="screen-icon material-symbols-outlined">dashboard</span>
+              Panel de lanzamiento
+            </div>
+            <h2>De idea a sistema vendible</h2>
+            <p>Organiza tu oferta, crea experiencias interactivas y conecta cada pieza con una estrategia de venta.</p>
+          </div>
+          <div class="screen-body">
+            <div class="step">
+              <span class="step-icon material-symbols-outlined">travel_explore</span>
+              <div><b>Investigaci&oacute;n y espionaje</b><small>Ideas, mercado, competencia, ganchos y &aacute;ngulos de venta.</small></div>
+            </div>
+            <div class="step">
+              <span class="step-icon material-symbols-outlined">quiz</span>
+              <div><b>Quizzes y mini apps</b><small>Experiencias que segmentan, educan y generan leads.</small></div>
+            </div>
+            <div class="step">
+              <span class="step-icon material-symbols-outlined">smart_toy</span>
+              <div><b>Asistentes con IA</b><small>Soporte, diagn&oacute;stico, rutas y contenido personalizado.</small></div>
+            </div>
+            <div class="step">
+              <span class="step-icon material-symbols-outlined">ads_click</span>
+              <div><b>Publicidad y conversi&oacute;n</b><small>Mensajes, p&aacute;ginas y campa&ntilde;as listas para probar.</small></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="band">
+      <div class="feature">
+        <span class="material-symbols-outlined">psychology</span>
+        <b>Diagn&oacute;sticos</b>
+        <span>Quizzes que recomiendan el producto correcto seg&uacute;n cada usuario.</span>
+      </div>
+      <div class="feature">
+        <span class="material-symbols-outlined">app_shortcut</span>
+        <b>Mini apps</b>
+        <span>Herramientas interactivas para entregar valor antes y despu&eacute;s de la compra.</span>
+      </div>
+      <div class="feature">
+        <span class="material-symbols-outlined">auto_fix_high</span>
+        <b>Contenido IA</b>
+        <span>Ideas, copys, rutas, cards, gu&iacute;as y asistentes adaptados al nicho.</span>
+      </div>
+      <div class="feature">
+        <span class="material-symbols-outlined">monitoring</span>
+        <b>Ventas</b>
+        <span>Oferta, landing, automatizaci&oacute;n y anuncios trabajando juntos.</span>
+      </div>
+    </section>
+  </div>
+</body>
+</html>

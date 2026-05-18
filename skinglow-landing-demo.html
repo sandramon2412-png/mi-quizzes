@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>SkinGlow AI | Reto Piel Clara en 21 dias</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --ink: #21161b;
+      --muted: #735f68;
+      --rose: #c84f78;
+      --sage: #7faea0;
+      --clay: #b77b61;
+      --cream: #fbf6ef;
+      --paper: #fffdf9;
+      --line: rgba(33, 22, 27, .12);
+      --shadow: 0 28px 72px rgba(47, 30, 39, .14);
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      color: var(--ink);
+      font-family: "Plus Jakarta Sans", system-ui, sans-serif;
+      background: var(--paper);
+    }
+    a { color: inherit; text-decoration: none; }
+    .wrap { width: min(1160px, calc(100% - 34px)); margin: 0 auto; }
+    nav {
+      position: fixed;
+      inset: 14px 0 auto;
+      z-index: 20;
+      pointer-events: none;
+    }
+    nav .wrap {
+      min-height: 64px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      padding: 10px 12px;
+      border: 1px solid rgba(255,255,255,.62);
+      border-radius: 18px;
+      background: rgba(255, 253, 249, .82);
+      box-shadow: 0 18px 48px rgba(47, 30, 39, .11);
+      backdrop-filter: blur(18px);
+      pointer-events: auto;
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 900;
+    }
+    .brand span:first-child,
+    .icon {
+      display: inline-grid;
+      place-items: center;
+      width: 40px;
+      height: 40px;
+      border-radius: 12px;
+      color: white;
+      background: linear-gradient(135deg, var(--rose), var(--sage));
+      box-shadow: 0 14px 30px rgba(200, 79, 120, .20);
+    }
+    .btn {
+      min-height: 48px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 9px;
+      padding: 0 18px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: rgba(255,255,255,.88);
+      color: var(--ink);
+      font-size: 14px;
+      font-weight: 900;
+      box-shadow: 0 14px 34px rgba(47, 30, 39, .08);
+    }
+    .btn.primary {
+      border: 0;
+      color: white;
+      background: linear-gradient(135deg, var(--rose), #8d5fba);
+    }
+    .hero {
+      position: relative;
+      overflow: hidden;
+      min-height: 94dvh;
+      display: grid;
+      align-items: end;
+      padding: 128px 0 54px;
+      color: white;
+      background: #21161b url("https://assets.mixkit.co/videos/51179/51179-thumb-720-0.jpg") center / cover no-repeat;
+    }
+    .hero-video,
+    .hero-overlay {
+      position: absolute;
+      inset: 0;
+    }
+    .hero-video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center 42%;
+      opacity: .95;
+      filter: saturate(.88) contrast(1.04) brightness(.82);
+    }
+    .hero-overlay {
+      background:
+        linear-gradient(90deg, rgba(25, 15, 20, .90) 0%, rgba(48, 28, 38, .68) 38%, rgba(31, 20, 25, .24) 100%),
+        radial-gradient(circle at 82% 20%, rgba(200, 79, 120, .22), transparent 28%),
+        linear-gradient(180deg, rgba(20, 12, 17, .16) 0%, rgba(20, 12, 17, .42) 100%);
+    }
+    .hero-copy {
+      position: relative;
+      z-index: 1;
+      max-width: 780px;
+    }
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 11px;
+      border: 1px solid rgba(255,255,255,.28);
+      border-radius: 999px;
+      background: rgba(255,255,255,.13);
+      font-size: 12px;
+      font-weight: 900;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      backdrop-filter: blur(14px);
+    }
+    h1, h2 {
+      margin: 0;
+      font-family: "Instrument Serif", Georgia, serif;
+      font-weight: 400;
+      letter-spacing: 0;
+    }
+    h1 {
+      max-width: 820px;
+      margin-top: 20px;
+      font-size: clamp(58px, 10vw, 116px);
+      line-height: .87;
+    }
+    .hero p {
+      max-width: 650px;
+      margin: 22px 0 0;
+      color: rgba(255,255,255,.86);
+      font-size: clamp(17px, 2.2vw, 22px);
+      line-height: 1.55;
+    }
+    .hero-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 30px;
+    }
+    .metrics {
+      transform: translateY(-32px);
+    }
+    .metrics-inner {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      padding: 12px;
+      border: 1px solid rgba(255,255,255,.72);
+      border-radius: 8px;
+      background: rgba(255,255,255,.78);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(18px);
+    }
+    .metric {
+      padding: 18px;
+      border-right: 1px solid rgba(33,22,27,.10);
+    }
+    .metric:last-child { border-right: 0; }
+    .metric strong {
+      display: block;
+      font-size: 30px;
+      line-height: 1;
+      letter-spacing: 0;
+    }
+    .metric span {
+      display: block;
+      margin-top: 7px;
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 800;
+    }
+    section { padding: 74px 0; }
+    .section-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: end;
+      gap: 28px;
+      margin-bottom: 28px;
+    }
+    h2 {
+      max-width: 720px;
+      font-size: clamp(38px, 5.4vw, 66px);
+      line-height: .96;
+    }
+    .muted {
+      color: var(--muted);
+      line-height: 1.68;
+    }
+    .flow {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 14px;
+    }
+    .flow-step {
+      min-height: 230px;
+      padding: 20px;
+      border: 1px solid rgba(255,255,255,.72);
+      border-radius: 8px;
+      background:
+        linear-gradient(145deg, rgba(255,255,255,.82), rgba(255,255,255,.44));
+      box-shadow: 0 22px 58px rgba(47, 30, 39, .10);
+      backdrop-filter: blur(18px);
+    }
+    .flow-step small {
+      display: block;
+      color: var(--rose);
+      font-size: 12px;
+      font-weight: 900;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+    .flow-step h3 { margin: 34px 0 8px; font-size: 18px; }
+    .flow-step p { margin: 0; color: var(--muted); font-size: 14px; line-height: 1.55; }
+    .experience {
+      background:
+        radial-gradient(circle at 14% 0%, rgba(200,79,120,.14), transparent 26%),
+        radial-gradient(circle at 94% 12%, rgba(127,174,160,.16), transparent 28%),
+        linear-gradient(135deg, #fffaf6 0%, #f8eee8 48%, #eef8f5 100%);
+    }
+    .split {
+      display: grid;
+      grid-template-columns: .95fr 1.05fr;
+      gap: 34px;
+      align-items: center;
+    }
+    .visual {
+      min-height: 560px;
+      border-radius: 8px;
+      overflow: hidden;
+      background:
+        linear-gradient(180deg, rgba(33,22,27,.04), rgba(33,22,27,.28)),
+        url("https://images.unsplash.com/photo-1556228720-195a672e8a03?auto=format&fit=crop&w=1400&q=86") center / cover no-repeat;
+      box-shadow: var(--shadow);
+    }
+    .checklist {
+      display: grid;
+      gap: 12px;
+      margin-top: 24px;
+    }
+    .check {
+      display: grid;
+      grid-template-columns: 42px 1fr;
+      gap: 12px;
+      align-items: center;
+      padding: 14px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: white;
+      font-weight: 900;
+    }
+    .check span:last-child {
+      color: var(--muted);
+      font-size: 14px;
+      font-weight: 700;
+      line-height: 1.45;
+    }
+    .offer {
+      color: white;
+      background:
+        linear-gradient(135deg, rgba(33,22,27,.96), rgba(99,55,72,.92)),
+        #21161b;
+    }
+    .offer h2,
+    .offer .muted { color: white; }
+    .offer-box {
+      display: grid;
+      grid-template-columns: 1fr 380px;
+      gap: 24px;
+      align-items: stretch;
+    }
+    .price {
+      padding: 26px;
+      border: 1px solid rgba(255,255,255,.24);
+      border-radius: 8px;
+      background: rgba(255,255,255,.12);
+      box-shadow: 0 24px 62px rgba(0,0,0,.18);
+      backdrop-filter: blur(18px);
+    }
+    .price strong {
+      display: block;
+      margin: 12px 0 8px;
+      font-size: clamp(46px, 7vw, 70px);
+      letter-spacing: 0;
+      line-height: 1;
+    }
+    .price p { color: rgba(255,255,255,.78); line-height: 1.55; }
+    footer {
+      padding: 28px 0;
+      color: var(--muted);
+      text-align: center;
+      font-size: 13px;
+    }
+    .material-symbols-outlined {
+      font-family: "Material Symbols Outlined";
+      font-weight: normal;
+      font-style: normal;
+      line-height: 1;
+      font-variation-settings: "FILL" 1, "wght" 650, "GRAD" 0, "opsz" 24;
+    }
+    @media (max-width: 900px) {
+      nav .wrap { align-items: flex-start; flex-direction: column; }
+      .metrics-inner, .flow, .split, .offer-box { grid-template-columns: 1fr; }
+      .metric { border-right: 0; border-bottom: 1px solid rgba(33,22,27,.10); }
+      .metric:last-child { border-bottom: 0; }
+      .hero { min-height: 86dvh; padding-top: 150px; }
+      .hero-video { object-position: 58% center; }
+      .visual { min-height: 420px; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .hero-video { display: none; }
+    }
+    @media (max-width: 560px) {
+      .hero-actions .btn, nav .btn { width: 100%; }
+      h1 { font-size: clamp(54px, 18vw, 84px); }
+      section { padding: 56px 0; }
+    }
+  </style>
+</head>
+<body>
+  <nav>
+    <div class="wrap">
+      <div class="brand"><span class="material-symbols-outlined">spa</span> SkinGlow AI</div>
+      <a class="btn primary" href="./quiz.html?quiz=skinglow-skin-quiz"><span class="material-symbols-outlined">quiz</span> Hacer diagnostico</a>
+    </div>
+  </nav>
+
+  <header class="hero">
+    <video class="hero-video" autoplay muted loop playsinline poster="https://assets.mixkit.co/videos/51179/51179-thumb-720-0.jpg">
+      <source src="https://assets.mixkit.co/videos/51179/51179-720.mp4" type="video/mp4" />
+    </video>
+    <div class="hero-overlay" aria-hidden="true"></div>
+    <div class="wrap hero-copy">
+      <span class="eyebrow"><span class="material-symbols-outlined">face</span> Skincare guiado con IA</span>
+      <h1>Reto Piel Clara en 21 dias</h1>
+      <p>Una experiencia premium para entender las senales de la piel, ordenar la rutina AM/PM y convertir un diagnostico en una ruta diaria que la clienta quiere seguir.</p>
+      <div class="hero-actions">
+        <a class="btn primary" href="./quiz.html?quiz=skinglow-skin-quiz"><span class="material-symbols-outlined">arrow_forward</span> Descubrir mi rutina</a>
+        <a class="btn" href="./skinglow-ebook-demo.html"><span class="material-symbols-outlined">auto_stories</span> Ver guia gratuita</a>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <div class="wrap metrics" aria-label="Beneficios principales">
+      <div class="metrics-inner">
+        <div class="metric"><strong>6</strong><span>preguntas para perfilar la piel</span></div>
+        <div class="metric"><strong>21</strong><span>dias de seguimiento AM/PM</span></div>
+        <div class="metric"><strong>4</strong><span>rutas segun senales reales</span></div>
+      </div>
+    </div>
+
+    <section class="experience">
+      <div class="wrap">
+        <div class="section-head">
+          <h2>Del quiz a una experiencia que se siente acompanada.</h2>
+          <p class="muted">La demo muestra como Luminous puede unir diagnostico, educacion, mini app y venta en un solo recorrido.</p>
+        </div>
+        <div class="flow">
+          <article class="flow-step">
+            <small>Paso 01</small>
+            <h3>Diagnostico</h3>
+            <p>Identifica si la persona necesita calma, hidratacion, control de brillo o una ruta para manchas.</p>
+          </article>
+          <article class="flow-step">
+            <small>Paso 02</small>
+            <h3>Resultado</h3>
+            <p>Entrega una recomendacion clara y conecta la solucion con una guia, una mini app y una oferta.</p>
+          </article>
+          <article class="flow-step">
+            <small>Paso 03</small>
+            <h3>Seguimiento</h3>
+            <p>Checklist, diario, registro de senales y asistente educativo para crear constancia.</p>
+          </article>
+          <article class="flow-step">
+            <small>Paso 04</small>
+            <h3>Venta</h3>
+            <p>La pagina presenta el reto como una experiencia completa, no como otro producto mas.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="wrap split">
+        <div class="visual" aria-label="Productos de skincare"></div>
+        <div>
+          <span class="eyebrow"><span class="material-symbols-outlined">workspace_premium</span> Producto demostrable</span>
+          <h2>Orden, rutina y sensacion de acompanamiento.</h2>
+          <p class="muted">SkinGlow AI no promete diagnosticos medicos ni resultados milagrosos. Promete una ruta clara: observar, simplificar, proteger y registrar para tomar mejores decisiones diarias.</p>
+          <div class="checklist">
+            <div class="check"><span class="icon material-symbols-outlined">check_circle</span><span>Rutina AM/PM segun sensacion de piel.</span></div>
+            <div class="check"><span class="icon material-symbols-outlined">monitoring</span><span>Registro de rojez, brillo, brotes, manchas y textura.</span></div>
+            <div class="check"><span class="icon material-symbols-outlined">auto_stories</span><span>Guia educativa para evitar mezclar activos sin criterio.</span></div>
+            <div class="check"><span class="icon material-symbols-outlined">smart_toy</span><span>Asistente con contexto de skincare y recomendaciones responsables.</span></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="offer" id="precio">
+      <div class="wrap offer-box">
+        <div>
+          <span class="eyebrow"><span class="material-symbols-outlined">local_fire_department</span> Oferta demo</span>
+          <h2>Un reto vendible desde el primer contacto.</h2>
+          <p class="muted">Funciona como producto de entrada, bonus de un curso, lead magnet premium o experiencia de seguimiento para marcas, esteticistas y creadoras de contenido en belleza.</p>
+        </div>
+        <div class="price">
+          <span>Demo de oferta desde</span>
+          <strong>$47</strong>
+          <p>Incluye guia, mini app, resultado personalizado y ruta de 21 dias.</p>
+          <a class="btn primary" href="./skinglow-checkout-demo.html"><span class="material-symbols-outlined">lock_open</span> Comprar acceso demo</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>Demo creada con Luminous Studio para mostrar un embudo completo de infoproductos.</footer>
+</body>
+</html>

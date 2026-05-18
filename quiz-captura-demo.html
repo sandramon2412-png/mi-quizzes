@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Quiz Demo | Luminous</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&family=Lora:wght@700&family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,600,0,0" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    min-height: 100vh;
+    font-family: Inter, system-ui, sans-serif;
+    color: #132033;
+    background:
+      radial-gradient(circle at 16% 8%, rgba(255, 116, 87, .22), transparent 28%),
+      radial-gradient(circle at 82% 10%, rgba(20, 184, 166, .22), transparent 30%),
+      linear-gradient(145deg, #f7fbff 0%, #ffffff 44%, #eef8f5 100%);
+    display: grid;
+    place-items: center;
+    padding: 24px;
+  }
+  .shot {
+    width: min(1120px, 100%);
+    display: grid;
+    grid-template-columns: 1.05fr .95fr;
+    gap: 22px;
+    align-items: stretch;
+  }
+  .panel {
+    background: rgba(255,255,255,.84);
+    border: 1px solid #dbe8f5;
+    border-radius: 8px;
+    box-shadow: 0 24px 70px rgba(19, 32, 51, .13);
+    overflow: hidden;
+  }
+  .hero {
+    position: relative;
+    padding: 26px;
+    color: #fff;
+    background: linear-gradient(135deg, #1457d9 0%, #0fa7b0 55%, #19b889 100%);
+  }
+  .hero:after {
+    content: "";
+    position: absolute;
+    right: -48px;
+    top: -52px;
+    width: 190px;
+    height: 190px;
+    border-radius: 50%;
+    background: rgba(255,255,255,.16);
+  }
+  .brand {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 26px;
+  }
+  .logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 13px;
+    font-weight: 900;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+  }
+  .logo-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 8px;
+    background: rgba(255,255,255,.18);
+    display: grid;
+    place-items: center;
+  }
+  .tag {
+    border: 1px solid rgba(255,255,255,.28);
+    background: rgba(255,255,255,.16);
+    border-radius: 999px;
+    padding: 8px 12px;
+    font-size: 12px;
+    font-weight: 800;
+  }
+  h1 {
+    position: relative;
+    z-index: 1;
+    max-width: 620px;
+    font-family: Lora, Georgia, serif;
+    font-size: clamp(30px, 4vw, 50px);
+    line-height: 1.05;
+    letter-spacing: 0;
+    margin-bottom: 12px;
+  }
+  .hero p {
+    position: relative;
+    z-index: 1;
+    max-width: 600px;
+    color: rgba(255,255,255,.88);
+    font-size: 15px;
+    line-height: 1.6;
+  }
+  .quiz-body { padding: 24px; }
+  .progress-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 9px;
+    font-size: 13px;
+    font-weight: 900;
+    color: #667085;
+  }
+  .progress-top strong { color: #1457d9; }
+  .bar {
+    height: 10px;
+    border-radius: 999px;
+    overflow: hidden;
+    background: #e7eef8;
+    margin-bottom: 22px;
+  }
+  .bar span {
+    display: block;
+    width: 43%;
+    height: 100%;
+    border-radius: inherit;
+    background: linear-gradient(90deg, #1457d9, #19b889);
+  }
+  .question {
+    border: 1px solid #dbe8f5;
+    border-radius: 8px;
+    background: #fff;
+    padding: 22px;
+  }
+  .eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: #1457d9;
+    font-size: 11px;
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: .11em;
+    margin-bottom: 10px;
+  }
+  h2 {
+    font-size: 24px;
+    line-height: 1.18;
+    margin-bottom: 18px;
+  }
+  .options { display: grid; gap: 10px; }
+  .option {
+    border: 1px solid #dbe8f5;
+    border-radius: 8px;
+    background: #f9fbfe;
+    color: #132033;
+    padding: 14px;
+    display: grid;
+    grid-template-columns: 38px 1fr auto;
+    align-items: center;
+    gap: 12px;
+  }
+  .option.active {
+    border-color: #1457d9;
+    background: #eef6ff;
+    box-shadow: 0 12px 28px rgba(20, 87, 217, .12);
+  }
+  .letter {
+    width: 38px;
+    height: 38px;
+    border-radius: 8px;
+    display: grid;
+    place-items: center;
+    color: #fff;
+    background: #1457d9;
+    font-weight: 900;
+  }
+  .option:nth-child(2) .letter { background: #0fa7b0; }
+  .option:nth-child(3) .letter { background: #f59e0b; }
+  .option:nth-child(4) .letter { background: #e94fa5; }
+  .option b {
+    display: block;
+    font-size: 14px;
+    margin-bottom: 3px;
+  }
+  .option small {
+    display: block;
+    color: #667085;
+    line-height: 1.35;
+  }
+  .check {
+    color: #1457d9;
+    font-size: 24px;
+  }
+  .bottom {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 14px;
+    margin-top: 18px;
+  }
+  .ghost, .primary {
+    border: 0;
+    border-radius: 8px;
+    padding: 13px 16px;
+    font: inherit;
+    font-size: 13px;
+    font-weight: 900;
+  }
+  .ghost {
+    color: #667085;
+    background: #f2f6fb;
+  }
+  .primary {
+    color: #fff;
+    background: linear-gradient(135deg, #1457d9, #19b889);
+    min-width: 156px;
+  }
+  .side {
+    display: grid;
+    gap: 16px;
+  }
+  .mini {
+    padding: 20px;
+  }
+  .mini-head {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 14px;
+  }
+  .mini-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 8px;
+    display: grid;
+    place-items: center;
+    color: #fff;
+    background: linear-gradient(135deg, #ff7457, #e94fa5);
+  }
+  .mini h3 {
+    font-size: 17px;
+    line-height: 1.2;
+  }
+  .mini p {
+    color: #667085;
+    font-size: 13px;
+    line-height: 1.55;
+  }
+  .stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    margin-top: 16px;
+  }
+  .stat {
+    border: 1px solid #dbe8f5;
+    border-radius: 8px;
+    background: #fff;
+    padding: 13px 10px;
+  }
+  .stat strong {
+    display: block;
+    font-size: 22px;
+    color: #132033;
+  }
+  .stat span {
+    color: #667085;
+    font-size: 10px;
+    font-weight: 900;
+    text-transform: uppercase;
+  }
+  .result-preview {
+    padding: 20px;
+    background: #132033;
+    color: #fff;
+  }
+  .result-preview .mini-icon {
+    background: linear-gradient(135deg, #19b889, #0fa7b0);
+  }
+  .result-preview p { color: rgba(255,255,255,.72); }
+  .result-card {
+    margin-top: 16px;
+    border-radius: 8px;
+    background: rgba(255,255,255,.08);
+    border: 1px solid rgba(255,255,255,.12);
+    padding: 16px;
+  }
+  .result-card b {
+    display: block;
+    font-size: 15px;
+    margin-bottom: 6px;
+  }
+  .chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 14px;
+  }
+  .chip {
+    border-radius: 999px;
+    background: rgba(255,255,255,.12);
+    padding: 7px 10px;
+    color: rgba(255,255,255,.86);
+    font-size: 11px;
+    font-weight: 800;
+  }
+  .material-symbols-outlined { line-height: 1; }
+  @media (max-width: 820px) {
+    body { padding: 10px; align-items: start; }
+    .shot { grid-template-columns: 1fr; }
+    .side { display: none; }
+    .hero { padding: 22px; }
+    .quiz-body { padding: 18px; }
+  }
+</style>
+</head>
+<body>
+  <main class="shot">
+    <section class="panel">
+      <div class="hero">
+        <div class="brand">
+          <div class="logo">
+            <span class="logo-icon material-symbols-outlined">auto_awesome</span>
+            Luminous
+          </div>
+          <div class="tag">Quiz inteligente</div>
+        </div>
+        <h1>Descubre tu mejor infoproducto para vender</h1>
+        <p>Una experiencia interactiva que segmenta al cliente, entiende su momento y lo lleva a una recomendaci&oacute;n personalizada.</p>
+      </div>
+      <div class="quiz-body">
+        <div class="progress-top">
+          <span>Pregunta <strong>3</strong> de 7</span>
+          <span>43% completado</span>
+        </div>
+        <div class="bar"><span></span></div>
+        <div class="question">
+          <div class="eyebrow">
+            <span class="material-symbols-outlined">psychology</span>
+            Diagn&oacute;stico de oferta
+          </div>
+          <h2>&iquest;Qu&eacute; resultado principal quieres que consiga tu cliente?</h2>
+          <div class="options">
+            <div class="option active">
+              <span class="letter">A</span>
+              <span>
+                <b>Claridad para tomar una decisi&oacute;n</b>
+                <small>Ideal para quizzes, diagn&oacute;sticos y rutas personalizadas.</small>
+              </span>
+              <span class="material-symbols-outlined check">check_circle</span>
+            </div>
+            <div class="option">
+              <span class="letter">B</span>
+              <span>
+                <b>Aprender una habilidad paso a paso</b>
+                <small>Perfecto para cursos, retos, clases y pr&aacute;ctica guiada.</small>
+              </span>
+              <span class="material-symbols-outlined">arrow_forward_ios</span>
+            </div>
+            <div class="option">
+              <span class="letter">C</span>
+              <span>
+                <b>Resolver un problema urgente</b>
+                <small>Funciona bien con asistentes IA, checklists y recursos express.</small>
+              </span>
+              <span class="material-symbols-outlined">arrow_forward_ios</span>
+            </div>
+            <div class="option">
+              <span class="letter">D</span>
+              <span>
+                <b>Crear constancia y seguimiento</b>
+                <small>Recomendado para trackers, diarios, planes y progreso.</small>
+              </span>
+              <span class="material-symbols-outlined">arrow_forward_ios</span>
+            </div>
+          </div>
+        </div>
+        <div class="bottom">
+          <button class="ghost">Anterior</button>
+          <button class="primary">Continuar</button>
+        </div>
+      </div>
+    </section>
+
+    <aside class="side">
+      <section class="panel mini">
+        <div class="mini-head">
+          <span class="mini-icon material-symbols-outlined">hub</span>
+          <div>
+            <h3>Segmentaci&oacute;n autom&aacute;tica</h3>
+            <p>Cada respuesta puede alimentar etiquetas, recomendaciones y pr&oacute;ximas acciones.</p>
+          </div>
+        </div>
+        <div class="stats">
+          <div class="stat"><strong>7</strong><span>Preguntas</span></div>
+          <div class="stat"><strong>4</strong><span>Perfiles</span></div>
+          <div class="stat"><strong>IA</strong><span>Resultado</span></div>
+        </div>
+      </section>
+      <section class="panel result-preview">
+        <div class="mini-head">
+          <span class="mini-icon material-symbols-outlined">workspace_premium</span>
+          <div>
+            <h3>Resultado personalizado</h3>
+            <p>Al finalizar, el usuario recibe un diagn&oacute;stico y una recomendaci&oacute;n clara.</p>
+          </div>
+        </div>
+        <div class="result-card">
+          <b>Tu mejor formato: Mini app diagn&oacute;stica</b>
+          <p>Convierte curiosidad en lead, educa al usuario y presenta una oferta m&aacute;s relevante.</p>
+          <div class="chips">
+            <span class="chip">Oferta sugerida</span>
+            <span class="chip">Plan de acci&oacute;n</span>
+            <span class="chip">CTA final</span>
+          </div>
+        </div>
+      </section>
+    </aside>
+  </main>
+</body>
+</html>

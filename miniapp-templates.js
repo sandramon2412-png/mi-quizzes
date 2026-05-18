@@ -4,6 +4,109 @@
 function getBuiltinMiniAppTemplates() {
   return [
 
+{
+  id:'tpl-ingles-90-tutor',
+  name:'Inglés 90 Pro',
+  types:['simulador','roadmap','chatbot','reto','diario','flashcards','glosario','diagnostico','planificador','comparador','faq'],
+  niche:'inglés, idiomas, speaking, listening, vocabulario, aprendizaje',
+  category:'Educación',
+  subcategory:'Idiomas',
+  description:'Sistema guiado para aprender inglés con práctica diaria, role-play, audio, micrófono, flashcards, diagnóstico y plan de estudio.',
+  icon:'translate',
+  primaryColor:'#2563eb',
+  secondaryColor:'#7c3aed',
+  bgColor:'#f5f7ff',
+  headerGradient:'linear-gradient(135deg,#2563eb,#7c3aed)',
+  chatbotName:'Tutor Inglés 90 Pro',
+  chatbotGreeting:'Hi, soy tu tutor de Inglés 90 Pro. Puedo practicar contigo, corregirte con suavidad y explicarte en español cuando lo necesites. ¿Qué quieres practicar hoy?',
+  chatbotSuggestions:['Hazme una prueba de nivel','Practiquemos una entrevista de trabajo','Corrige mi frase en inglés','Dame 5 frases para viajar'],
+  inputLabel:'Crea tu escenario de práctica',
+  inputPlaceholder:'Ej: quiero practicar una entrevista, pedir café, aeropuerto, hotel o hablar con amigos...',
+  generatorPrompt:'Crea una escena de role-play para aprender inglés basada en: [input del usuario]. Incluye contexto, 8 frases útiles, una conversación corta y correcciones en español.',
+  languageLevels:[
+    {name:'Principiante',scenes:26,icon:'waving_hand',focus:'Saludos, presentaciones, compras y rutina diaria'},
+    {name:'Pre-Intermedio',scenes:27,icon:'menu_book',focus:'Viajes, opiniones simples, trabajo y conversación social'},
+    {name:'Intermedio',scenes:24,icon:'forum',focus:'Entrevistas, historias, problemas cotidianos y fluidez'}
+  ],
+  languageCollections:[
+    {title:'Daily Interactions',scenes:10,icon:'call',color:'#38bdf8',desc:'Teléfono, café, tienda, direcciones y small talk.'},
+    {title:'Social Dynamics',scenes:12,icon:'groups',color:'#f97316',desc:'Familia, amigos, pareja, acuerdos y opiniones.'},
+    {title:'School & Job',scenes:9,icon:'work',color:'#2563eb',desc:'Entrevista, reuniones, clases, emails y presentación profesional.'},
+    {title:'Travel & Shopping',scenes:11,icon:'flight_takeoff',color:'#14b8a6',desc:'Aeropuerto, hotel, transporte, compras y emergencias suaves.'}
+  ],
+  roleplayScenes:[
+    {title:'Job Interview',level:'Intermedio-alto',collection:'School & Job',objective:'Responder preguntas de entrevista con frases claras y seguras.',starter:'Let’s practice a job interview. Ask me one question at a time and correct my English gently.',prompt:'Practica una entrevista laboral. Haz una pregunta por turno, espera mi respuesta y corrige con una versión natural.'},
+    {title:'Coffee Shop Order',level:'Principiante',collection:'Daily Interactions',objective:'Pedir café, preguntar precio y responder con cortesía.',starter:'You are the barista. I want to order coffee in English.',prompt:'Haz de barista. Usa inglés simple, frases cortas y ayúdame a pedir un café.'},
+    {title:'Airport Check-in',level:'Pre-Intermedio',collection:'Travel & Shopping',objective:'Registrar equipaje, confirmar asiento y pedir ayuda en aeropuerto.',starter:'You work at the airport check-in desk. Help me check in for my flight.',prompt:'Simula check-in de aeropuerto. Pregunta pasaporte, destino, equipaje y asiento.'},
+    {title:'Meeting New People',level:'Principiante',collection:'Social Dynamics',objective:'Presentarte, hacer preguntas básicas y mantener una conversación breve.',starter:'Let’s meet for the first time. Ask me simple questions in English.',prompt:'Haz un role-play de conocer a alguien. Usa preguntas simples y corrige al final.'},
+    {title:'Daily Routine',level:'Principiante',collection:'Daily Interactions',objective:'Hablar de horarios, hábitos y presente simple.',starter:'Ask me about my daily routine using simple present.',prompt:'Practica presente simple y rutina diaria. Haz preguntas sobre hora, trabajo, comida y descanso.'},
+    {title:'Hotel Problem',level:'Pre-Intermedio',collection:'Travel & Shopping',objective:'Explicar un problema y pedir solución con educación.',starter:'You are the hotel receptionist. There is a problem with my room.',prompt:'Simula recepción de hotel. Ayúdame a explicar un problema y pedir una solución.'}
+  ],
+  roadmapSteps:[
+    {title:'Principiante: Greetings',description:'Saludos, despedidas, deletrear nombre y responder “How are you?”'},
+    {title:'Introductions I',description:'Nombre, país, trabajo, edad, familia y motivo para aprender inglés.'},
+    {title:'Introductions II',description:'Preguntas personales, respuestas cortas y small talk sin traducir todo.'},
+    {title:'Daily Routine',description:'Presente simple para hablar de hábitos, horarios y actividades.'},
+    {title:'Going Out',description:'Pedir comida, comprar, preguntar direcciones y moverte en ciudad.'},
+    {title:'School & Job',description:'Entrevista, reuniones, clases, emails y presentación profesional.'},
+    {title:'Travel Basics',description:'Aeropuerto, hotel, transporte y frases de ayuda.'},
+    {title:'Social Confidence',description:'Opiniones simples, invitaciones, acuerdos y desacuerdos con respeto.'}
+  ],
+  retoDays:90,
+  retoContent:[
+    {title:'Día 1: Preséntate en inglés', instructions:'Practica: “Hi, my name is ___. I am from ___. I am learning English because ___.” Repítelo 8 veces y luego dilo sin mirar.', reflectionPrompt:'¿Qué parte pudiste decir con más seguridad?'},
+    {title:'Día 2: Frases de supervivencia', instructions:'Aprende y repite: “Could you repeat?”, “I need help”, “How much is it?”, “I don’t understand yet”, “Can you speak slowly?”.', reflectionPrompt:'¿Cuál frase usarías primero en una situación real?'},
+    {title:'Día 3: Listening de 5 minutos', instructions:'Escucha un audio fácil. Primera vez sin leer, segunda con subtítulos, tercera repitiendo 3 frases en voz alta.', reflectionPrompt:'¿Qué palabras reconociste varias veces?'},
+    {title:'Día 4: Roleplay con IA', instructions:'Entra al chat y escribe: “Let’s practice: you are a waiter and I am ordering coffee.” Mantén 6 intercambios.', reflectionPrompt:'¿Dónde te bloqueaste?'},
+    {title:'Día 5: Vocabulario en chunks', instructions:'Aprende 5 chunks: “I would like”, “Let me think”, “As far as I know”, “It depends on”, “I’m looking for”. Crea una frase con cada uno.', reflectionPrompt:'¿Cuál chunk puedes usar hoy?'},
+    {title:'Día 6: Grábate 1 minuto', instructions:'Habla 1 minuto sobre tu rutina. No pares para corregirte. Luego escucha y anota 2 mejoras.', reflectionPrompt:'¿Qué repetiste mucho o qué te faltó?'},
+    {title:'Día 7: Mini evaluación', instructions:'Haz el diagnóstico, repasa 10 flashcards y escribe en diario tu prioridad: speaking, listening, vocabulario o gramática.', reflectionPrompt:'¿Qué habilidad necesita más práctica esta semana?'}
+  ],
+  journalPrompts:['¿Qué frase nueva pude decir o entender hoy?','¿Dónde me bloqueé al hablar, escuchar o escribir?','¿Qué voy a practicar mañana en voz alta?'],
+  initialTasks:['Practicar speaking 10 minutos','Repasar 10 flashcards','Escuchar 5 minutos de audio fácil','Escribir 5 frases sobre mi día','Hacer un roleplay con el asistente IA','Grabarme hablando 1 minuto','Anotar 3 errores repetidos para corregirlos'],
+  diagQuestions:[
+    {q:'¿Puedes presentarte en inglés sin leer?',opts:['Sí, con fluidez','Sí, pero lento','Solo con ayuda','Todavía no']},
+    {q:'¿Entiendes audios cortos de nivel principiante?',opts:['La mayoría','Algunas frases','Palabras sueltas','Casi nada']},
+    {q:'¿Puedes mantener una conversación simple de 2 minutos?',opts:['Sí','Con pausas','Me bloqueo mucho','No todavía']},
+    {q:'¿Qué habilidad te urge mejorar?',opts:['Speaking','Listening','Vocabulario','Gramática base']}
+  ],
+  compareOptions:[
+    {name:'Speaking',pros:['Construye fluidez real','Ayuda a perder miedo y pensar menos en español'],cons:['Da vergüenza al inicio','Necesita práctica frecuente']},
+    {name:'Listening',pros:['Entrena oído para entender nativos','Mejora pronunciación por imitación'],cons:['Frustra si el audio es muy avanzado','Necesita repetición']},
+    {name:'Vocabulario útil',pros:['Da palabras para hablar rápido','Funciona muy bien con flashcards'],cons:['Se olvida si no lo usas en frases','No reemplaza conversación']},
+    {name:'Gramática práctica',pros:['Ordena frases y reduce errores','Ayuda a escribir mejor'],cons:['Demasiada teoría bloquea','Debe practicarse en ejemplos reales']}
+  ],
+  cards:[
+    {front:'Can you repeat that, please?',back:'¿Puedes repetir eso, por favor?'},
+    {front:'How do you say ___ in English?',back:'¿Cómo se dice ___ en inglés?'},
+    {front:'I would like...',back:'Me gustaría... Forma educada para pedir algo.'},
+    {front:'Let me think for a second',back:'Déjame pensar un segundo. Sirve para ganar tiempo.'},
+    {front:'I agree / I disagree because...',back:'Estoy de acuerdo / no estoy de acuerdo porque...'},
+    {front:'Could you speak more slowly?',back:'¿Podrías hablar más despacio?'},
+    {front:'I’m looking for...',back:'Estoy buscando... Muy útil en tiendas, aeropuerto o ciudad.'},
+    {front:'Actually',back:'False friend: significa “en realidad”, no “actualmente”.'},
+    {front:'Figure out',back:'Phrasal verb: entender o resolver algo.'},
+    {front:'What do you mean?',back:'¿Qué quieres decir? Útil cuando entiendes palabras pero no el sentido.'}
+  ],
+  glossaryTerms:[
+    {term:'Chunk',def:'Grupo de palabras que se aprende junto: “let me think”, “as far as I know”.'},
+    {term:'Shadowing',def:'Escuchar y repetir imitando ritmo, acento y pausas.'},
+    {term:'Fluency',def:'Capacidad de hablar con continuidad, aunque haya errores.'},
+    {term:'Accuracy',def:'Precisión gramatical y de vocabulario.'},
+    {term:'Phrasal verb',def:'Verbo + partícula con significado propio: give up, look for, figure out.'},
+    {term:'False friend',def:'Palabra parecida al español con significado distinto, como actually.'},
+    {term:'Connected speech',def:'Cómo los nativos unen sonidos al hablar rápido.'},
+    {term:'Intonation',def:'Melodía de la frase. En inglés afecta intención y naturalidad.'}
+  ],
+  faqItems:[
+    {q:'¿Puedo aprender si empiezo desde cero?',a:'Sí. Empieza con frases útiles, escucha corta y speaking simple. No esperes dominar gramática para hablar.'},
+    {q:'¿Cuánto debo practicar al día?',a:'20 minutos diarios: 5 de vocabulario, 10 de speaking y 5 de listening.'},
+    {q:'¿Qué hago si me da vergüenza hablar?',a:'Primero habla solo, luego grábate, luego practica con IA. La fluidez nace de repetir sin esperar perfección.'},
+    {q:'¿Es mejor memorizar palabras o frases?',a:'Frases. Las palabras sueltas se olvidan; los chunks se usan directamente en conversación.'},
+    {q:'¿Cómo uso el asistente IA?',a:'Pídele roleplays, correcciones, frases alternativas y práctica por nivel: “Correct my English and explain simply”.'}
+  ]
+},
+
 // ═══════════════ BIENESTAR Y SALUD MENTAL ═══════════════
 
 {
@@ -1723,6 +1826,48 @@ function getBuiltinMiniAppTemplates() {
     {term:'Microchip',def:'Identificador electrónico implantado bajo la piel. Obligatorio en muchos países. Registra al dueño y permite recuperar al perro si se pierde.'},
     {term:'Leishmaniasis',def:'Enfermedad transmitida por mosquitos, grave en perros. Vacuna disponible en zonas de riesgo.'},
     {term:'Rescisión de contrato',def:'En muchos criaderos, derecho de devolver al cachorro si el vet detecta problema grave en 72h.'}
+  ]
+},
+
+  {
+  id:'tpl-gato-casa',
+  name:'Gato Feliz en Casa',
+  types:['checklist','tracker','faq','glosario'],
+  niche:'mascotas',
+  category:'Mascotas',
+  subcategory:'Gatos',
+  description:'Guia practica para cuidar a tu gato, entender su conducta y crear una rutina segura en casa.',
+  icon:'pets',
+  primaryColor:'#8b5cf6',
+  secondaryColor:'#06b6d4',
+  bgColor:'#0e0e0e',
+  headerGradient:'linear-gradient(135deg, #8b5cf6, #06b6d4)',
+  initialItems:[
+    'Arenero amplio y limpio en zona tranquila',
+    'Rascador estable y alto',
+    'Comedero y fuente o bebedero con agua fresca',
+    'Zona de descanso elevada o escondite seguro',
+    'Juguetes de caza: varita, pelotas suaves, ratoncitos',
+    'Transportin familiarizado antes de ir al veterinario',
+    'Cepillo adecuado segun tipo de pelo',
+    'Proteccion de ventanas y balcones'
+  ],
+  trackerHabit:'Juego interactivo 10 minutos al dia',
+  faqItems:[
+    {q:'Por que mi gato rasca muebles?',a:'Rascar es una necesidad natural: marca territorio, estira musculos y cuida sus unas. Dale rascadores firmes cerca de sus zonas favoritas.'},
+    {q:'Cuantos areneros necesito?',a:'Regla practica: numero de gatos + 1. Para un gato, idealmente dos si el espacio lo permite.'},
+    {q:'Por que se esconde?',a:'Puede necesitar seguridad, adaptacion o estar mostrando estres/dolor. Observa apetito, agua, arenero y energia.'},
+    {q:'Como introducir comida nueva?',a:'Hazlo gradual durante 7-10 dias mezclando poco a poco con su comida habitual.'},
+    {q:'Mi gato toma poca agua, que hago?',a:'Prueba fuente, cuencos amplios, agua lejos del alimento y comida humeda si tu veterinario lo permite.'},
+    {q:'Cuando debo consultar al veterinario?',a:'Si no come, no usa el arenero, vomita repetidamente, respira raro, esta decaido o cambia de conducta de forma marcada.'}
+  ],
+  glossaryTerms:[
+    {term:'Enriquecimiento ambiental',def:'Adaptar la casa para que el gato trepe, rasque, se esconda, juegue y explore de forma segura.'},
+    {term:'Marcaje',def:'Conductas como frotarse o rascar para dejar olor e informacion territorial.'},
+    {term:'Arenero',def:'Zona de eliminacion. Debe estar limpio, accesible y lejos de comida/agua.'},
+    {term:'Juego de caza',def:'Juego que imita perseguir y atrapar presa. Ayuda a reducir estres y aburrimiento.'},
+    {term:'Transportin positivo',def:'Transportin asociado a calma y premios, no solo a visitas veterinarias.'},
+    {term:'Bolas de pelo',def:'Acumulaciones de pelo ingerido al acicalarse. El cepillado y dieta adecuada ayudan a prevenirlas.'}
   ]
 },
 

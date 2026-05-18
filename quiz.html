@@ -7,10 +7,12 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="./supabase-config.js"></script>
 <script src="./app.js?v=offer-demo-1"></script>
+<script src="./skinglow-demo-data.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.2/dist/confetti.browser.min.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
 <script>
+  window.tailwind = window.tailwind || {};
   tailwind.config = {
     theme: {
       extend: {
@@ -639,6 +641,7 @@
       const localQuiz = Quizzes.get(quizId);
       if (localQuiz) QUIZ = { ...localQuiz, ...(QUIZ || {}) };
       if (!QUIZ) QUIZ = Quizzes.get(quizId);
+      if (!QUIZ && typeof getSkinGlowQuiz === 'function') QUIZ = getSkinGlowQuiz(quizId);
     }
     if (!QUIZ) QUIZ = DEMO_QUIZ;
 

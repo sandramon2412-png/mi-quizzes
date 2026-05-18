@@ -1,0 +1,1339 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Luminous Spy Lab | Investigacion de mercado</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #090911;
+      --panel: #151522;
+      --panel2: #1d1c2b;
+      --field: #242335;
+      --line: rgba(255,255,255,.08);
+      --text: #f7f7fb;
+      --muted: #9a98aa;
+      --soft: #6c6a80;
+      --primary: #7b61ff;
+      --primary2: #31c7b6;
+      --rose: #df4f88;
+      --good: #45d483;
+      --warn: #f6b44b;
+      --shadow: 0 24px 80px rgba(0,0,0,.35);
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      min-height: 100dvh;
+      font-family: "Plus Jakarta Sans", system-ui, sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at 14% -8%, rgba(123,97,255,.24), transparent 32%),
+        radial-gradient(circle at 90% 6%, rgba(49,199,182,.14), transparent 28%),
+        linear-gradient(180deg, #11101c 0%, #090911 42%, #07070d 100%);
+    }
+    a { color: inherit; text-decoration: none; }
+    .material-symbols-outlined {
+      font-family: "Material Symbols Outlined";
+      font-variation-settings: "FILL" 1, "wght" 650, "GRAD" 0, "opsz" 24;
+      line-height: 1;
+    }
+    .shell { width: min(1180px, calc(100% - 32px)); margin: 0 auto; padding: 22px 0 44px; }
+    nav {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      padding: 14px 0;
+      background: linear-gradient(180deg, rgba(9,9,17,.96), rgba(9,9,17,.72));
+      backdrop-filter: blur(18px);
+    }
+    .nav-inner {
+      width: min(1180px, calc(100% - 32px));
+      min-height: 60px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      padding: 10px 12px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: rgba(21,21,34,.78);
+      box-shadow: 0 18px 50px rgba(0,0,0,.28);
+    }
+    .brand { display: flex; align-items: center; gap: 11px; font-weight: 900; }
+    .brand-icon,
+    .mini-icon {
+      width: 40px;
+      height: 40px;
+      display: grid;
+      place-items: center;
+      border-radius: 8px;
+      color: white;
+      background: linear-gradient(135deg, var(--primary), var(--primary2));
+      box-shadow: 0 14px 30px rgba(123,97,255,.22);
+      flex: 0 0 auto;
+      font-size: 24px;
+      line-height: 1;
+      margin: 0;
+      text-align: center;
+    }
+    .brand small {
+      display: block;
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: .10em;
+      margin-top: 2px;
+    }
+    .nav-actions { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+    .btn {
+      min-height: 42px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 0 14px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: rgba(255,255,255,.04);
+      color: var(--text);
+      font: inherit;
+      font-size: 13px;
+      font-weight: 900;
+      cursor: pointer;
+      transition: transform .18s ease, border-color .18s ease, background .18s ease;
+    }
+    .btn:hover { transform: translateY(-1px); border-color: rgba(123,97,255,.42); background: rgba(123,97,255,.11); }
+    .btn.primary { border: 0; background: linear-gradient(135deg, var(--primary), #8f4dff); color: white; }
+    .btn.danger {
+      border-color: rgba(223,79,136,.34);
+      background: rgba(223,79,136,.08);
+      color: #ff9fbe;
+    }
+    .btn.danger:hover { border-color: rgba(223,79,136,.68); background: rgba(223,79,136,.14); }
+    .btn:disabled { opacity: .52; cursor: not-allowed; transform: none; }
+    .hero {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 340px;
+      gap: 18px;
+      align-items: stretch;
+      margin: 18px 0;
+    }
+    .hero-main,
+    .side-panel,
+    .search-panel,
+    .result-card {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: rgba(21,21,34,.78);
+      box-shadow: var(--shadow);
+    }
+    .hero-main {
+      min-height: 240px;
+      padding: 30px;
+      display: grid;
+      align-content: end;
+      position: relative;
+      overflow: hidden;
+    }
+    .hero-main::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background:
+        linear-gradient(90deg, rgba(9,9,17,.92), rgba(21,21,34,.70)),
+        url("https://images.unsplash.com/photo-1559136555-9303baea8ebd?auto=format&fit=crop&w=1500&q=80") center / cover;
+      opacity: .82;
+    }
+    .hero-main > * { position: relative; z-index: 1; }
+    .eyebrow {
+      width: fit-content;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 7px 10px;
+      border: 1px solid rgba(123,97,255,.30);
+      border-radius: 999px;
+      background: rgba(123,97,255,.12);
+      color: #cabfff;
+      font-size: 11px;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: .10em;
+    }
+    h1 {
+      max-width: 760px;
+      margin: 16px 0 10px;
+      font-size: clamp(34px, 6vw, 64px);
+      line-height: .94;
+      letter-spacing: -0.02em;
+    }
+    .lead {
+      max-width: 760px;
+      margin: 0;
+      color: rgba(247,247,251,.76);
+      font-size: 16px;
+      line-height: 1.65;
+    }
+    .side-panel { padding: 18px; display: grid; gap: 12px; }
+    .metric {
+      display: grid;
+      grid-template-columns: 42px 1fr;
+      gap: 11px;
+      align-items: center;
+      padding: 12px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: rgba(255,255,255,.035);
+    }
+    .metric strong { display: block; font-size: 21px; line-height: 1; }
+    .metric > span:not(.mini-icon) { display: block; color: var(--muted); font-size: 12px; line-height: 1.35; }
+    .metric > span:not(.mini-icon) > span { display: block; margin-top: 4px; }
+    .metric .mini-icon {
+      display: grid;
+      place-items: center;
+      color: white;
+      font-size: 24px;
+      line-height: 1;
+      margin: 0;
+    }
+    .layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 360px;
+      gap: 18px;
+      align-items: start;
+    }
+    .search-panel { padding: 20px; }
+    .panel-head {
+      display: flex;
+      align-items: start;
+      justify-content: space-between;
+      gap: 14px;
+      margin-bottom: 18px;
+    }
+    .panel-head h2 { margin: 0; font-size: 24px; }
+    .panel-head p { margin: 5px 0 0; color: var(--muted); font-size: 13px; line-height: 1.5; }
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1.6fr .82fr .82fr .82fr;
+      gap: 10px;
+    }
+    .field { display: grid; gap: 7px; }
+    label {
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 900;
+      letter-spacing: .02em;
+    }
+    input,
+    select {
+      width: 100%;
+      min-height: 42px;
+      border: 1px solid rgba(255,255,255,.08);
+      border-radius: 8px;
+      outline: none;
+      background: var(--field);
+      color: var(--text);
+      padding: 0 12px;
+      font: inherit;
+      font-size: 13px;
+      font-weight: 750;
+    }
+    input:focus,
+    select:focus { border-color: rgba(123,97,255,.78); box-shadow: 0 0 0 3px rgba(123,97,255,.18); }
+    .filter-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+      margin-top: 12px;
+    }
+    .chip-section { margin-top: 18px; }
+    .chip-title {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 900;
+      margin-bottom: 8px;
+    }
+    .chips { display: flex; flex-wrap: wrap; gap: 7px; }
+    .chip {
+      min-height: 30px;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 0 10px;
+      border: 1px solid rgba(255,255,255,.08);
+      border-radius: 7px;
+      background: rgba(255,255,255,.055);
+      color: rgba(247,247,251,.72);
+      font: inherit;
+      font-size: 12px;
+      font-weight: 850;
+      cursor: pointer;
+    }
+    .chip.active { color: white; border-color: rgba(123,97,255,.56); background: rgba(123,97,255,.22); }
+    .search-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 9px;
+      margin-top: 20px;
+      padding-top: 16px;
+      border-top: 1px solid var(--line);
+    }
+    .scanner-panel {
+      display: none;
+      margin-top: 18px;
+      padding: 28px 20px;
+      border: 1px solid rgba(123,97,255,.20);
+      border-radius: 8px;
+      background:
+        radial-gradient(circle at 50% 18%, rgba(123,97,255,.20), transparent 32%),
+        rgba(21,21,34,.74);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.04), 0 24px 70px rgba(0,0,0,.24);
+      text-align: center;
+    }
+    .scanner-panel.show { display: block; }
+    .scan-main {
+      display: inline-grid;
+      grid-template-columns: 52px minmax(0, 1fr);
+      gap: 14px;
+      align-items: center;
+      text-align: left;
+    }
+    .scan-spinner {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      border: 6px solid rgba(255,255,255,.08);
+      border-top-color: var(--primary);
+      border-right-color: var(--primary2);
+      animation: spin .85s linear infinite;
+      box-shadow: 0 0 34px rgba(123,97,255,.18);
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .scan-main strong { display: block; font-size: 15px; }
+    .scan-main span { display: block; color: var(--muted); font-size: 12px; margin-top: 4px; }
+    .scan-progress {
+      width: min(480px, 100%);
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 8px;
+      align-items: start;
+      margin: 22px auto 16px;
+      position: relative;
+    }
+    .scan-progress::before {
+      content: "";
+      position: absolute;
+      top: 11px;
+      left: 10%;
+      right: 10%;
+      height: 2px;
+      background: rgba(255,255,255,.12);
+    }
+    .scan-step {
+      position: relative;
+      z-index: 1;
+      display: grid;
+      justify-items: center;
+      gap: 7px;
+      color: var(--soft);
+      font-size: 10px;
+      font-weight: 900;
+    }
+    .scan-step i {
+      width: 22px;
+      height: 22px;
+      border: 4px solid var(--panel);
+      border-radius: 999px;
+      background: rgba(255,255,255,.14);
+      box-shadow: 0 0 0 1px rgba(255,255,255,.08);
+    }
+    .scan-step.done,
+    .scan-step.active { color: #bfb7ff; }
+    .scan-step.done i,
+    .scan-step.active i {
+      background: linear-gradient(135deg, var(--primary), var(--primary2));
+      box-shadow: 0 0 0 1px rgba(123,97,255,.32), 0 0 22px rgba(123,97,255,.30);
+    }
+    .scan-step.active i { animation: pulseDot 1s ease-in-out infinite; }
+    @keyframes pulseDot {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.16); }
+    }
+    .scan-tip {
+      margin: 14px auto 0;
+      max-width: 620px;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.55;
+      font-style: italic;
+    }
+    .results {
+      display: grid;
+      gap: 12px;
+      margin-top: 18px;
+    }
+    .result-card { padding: 16px; box-shadow: none; }
+    .result-top {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: start;
+    }
+    .result-card h3 { margin: 0 0 6px; font-size: 17px; line-height: 1.25; }
+    .result-card p { margin: 0; color: var(--muted); font-size: 13px; line-height: 1.55; }
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      min-height: 24px;
+      padding: 0 8px;
+      border-radius: 999px;
+      background: rgba(49,199,182,.12);
+      color: #8ff4e9;
+      font-size: 11px;
+      font-weight: 900;
+      white-space: nowrap;
+    }
+    .ad-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 8px;
+      margin-top: 13px;
+    }
+    .ad-stat {
+      padding: 9px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: rgba(255,255,255,.035);
+    }
+    .ad-stat strong { display: block; font-size: 14px; }
+    .ad-stat span { display: block; color: var(--muted); font-size: 10px; margin-top: 4px; font-weight: 800; text-transform: uppercase; letter-spacing: .06em; }
+    .ad-insight {
+      margin-top: 12px;
+      padding: 12px;
+      border: 1px solid rgba(246,180,75,.18);
+      border-radius: 8px;
+      background: rgba(246,180,75,.08);
+      color: rgba(247,247,251,.82);
+      font-size: 12px;
+      line-height: 1.55;
+    }
+    .panel-badges {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+      gap: 8px;
+      min-width: 220px;
+    }
+    .badge.source-live { background: rgba(69,212,131,.12); color: #92f5bd; }
+    .badge.source-demo { background: rgba(246,180,75,.12); color: #ffd490; }
+    .insight-panel {
+      position: sticky;
+      top: 98px;
+      display: grid;
+      gap: 12px;
+    }
+    .side-card {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: rgba(21,21,34,.82);
+      box-shadow: var(--shadow);
+      padding: 16px;
+    }
+    .side-card h2,
+    .side-card h3 { margin: 0 0 8px; }
+    .side-card p,
+    .side-card li { color: var(--muted); font-size: 13px; line-height: 1.55; }
+    .side-card ul { margin: 10px 0 0; padding-left: 18px; }
+    .angle {
+      padding: 11px;
+      border: 1px solid rgba(255,255,255,.08);
+      border-radius: 8px;
+      background: rgba(255,255,255,.04);
+      margin-top: 8px;
+    }
+    .angle strong { display: block; font-size: 13px; margin-bottom: 4px; }
+    .angle span { color: var(--muted); font-size: 12px; line-height: 1.45; }
+    .conversion-lab {
+      margin-top: 18px;
+      border: 1px solid rgba(123,97,255,.18);
+      border-radius: 8px;
+      background:
+        radial-gradient(circle at 12% 0%, rgba(123,97,255,.16), transparent 38%),
+        radial-gradient(circle at 94% 12%, rgba(49,199,182,.12), transparent 32%),
+        rgba(21,21,34,.82);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+    .conversion-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 14px;
+      padding: 20px;
+      border-bottom: 1px solid var(--line);
+    }
+    .conversion-head h2 { margin: 8px 0 6px; font-size: 24px; }
+    .conversion-head p { margin: 0; color: var(--muted); font-size: 13px; line-height: 1.55; }
+    .asset-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+      padding: 14px;
+    }
+    .asset-card {
+      min-height: 220px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      padding: 16px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: rgba(255,255,255,.045);
+    }
+    .asset-card.wide { grid-column: 1 / -1; }
+    .asset-title {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+    .asset-title h3 { margin: 0; font-size: 16px; }
+    .asset-title .material-symbols-outlined { color: #bdb5ff; }
+    .asset-body {
+      flex: 1;
+      display: grid;
+      gap: 8px;
+      color: rgba(247,247,251,.82);
+      font-size: 13px;
+      line-height: 1.55;
+    }
+    .asset-body p { margin: 0; }
+    .asset-body ul,
+    .asset-body ol { margin: 0; padding-left: 19px; color: rgba(247,247,251,.78); }
+    .asset-body li { margin: 5px 0; }
+    .asset-pill {
+      display: inline-flex;
+      width: fit-content;
+      min-height: 26px;
+      align-items: center;
+      padding: 0 9px;
+      border-radius: 999px;
+      background: rgba(49,199,182,.10);
+      color: #8ff4e9;
+      font-size: 11px;
+      font-weight: 900;
+    }
+    .copy-mini {
+      min-height: 32px;
+      padding: 0 10px;
+      border-radius: 7px;
+      font-size: 11px;
+    }
+    .handoff-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 9px;
+      padding: 0 14px 16px;
+    }
+    .demo-note {
+      margin-top: 18px;
+      color: var(--soft);
+      font-size: 12px;
+      line-height: 1.55;
+    }
+    @media (max-width: 1040px) {
+      .hero,
+      .layout { grid-template-columns: 1fr; }
+      .insight-panel { position: static; }
+      .form-grid { grid-template-columns: 1fr 1fr; }
+      .asset-grid { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 680px) {
+      .shell,
+      .nav-inner { width: min(100% - 22px, 1180px); }
+      .nav-inner { align-items: flex-start; flex-direction: column; }
+      .form-grid,
+      .filter-grid,
+      .ad-grid { grid-template-columns: 1fr; }
+      .scan-progress { grid-template-columns: 1fr; gap: 12px; }
+      .scan-progress::before { display: none; }
+      .scan-step { grid-template-columns: 24px 1fr; justify-items: start; text-align: left; }
+      .hero-main { padding: 22px; }
+      h1 { font-size: 38px; }
+      .btn { width: 100%; }
+      .nav-actions { width: 100%; }
+    }
+  </style>
+</head>
+<body>
+  <nav>
+    <div class="nav-inner">
+      <a class="brand" href="./market-research-demo.html">
+        <span class="brand-icon material-symbols-outlined">travel_explore</span>
+        <span>Luminous Spy Lab <small>Investigacion de mercado y Ads</small></span>
+      </a>
+      <div class="nav-actions">
+        <a class="btn" href="./skinglow-creator-workspace.html?v=marketspy1"><span class="material-symbols-outlined">dashboard_customize</span> Workspace</a>
+        <a class="btn" href="./skinglow-demo.html?v=marketspy1"><span class="material-symbols-outlined">schema</span> Demo madre</a>
+        <button class="btn primary" type="button" onclick="generateAngles()"><span class="material-symbols-outlined">auto_awesome</span> Generar ideas</button>
+      </div>
+    </div>
+  </nav>
+
+  <div class="shell">
+    <section class="hero">
+      <div class="hero-main">
+        <span class="eyebrow"><span class="material-symbols-outlined">radar</span> Area de espionaje etico</span>
+        <h1>Buscar anuncios, detectar angulos y convertirlos en oferta</h1>
+        <p class="lead">Esta demo muestra como podria sentirse el modulo de investigacion de Luminous: buscar anuncios de la competencia, filtrar por plataforma, destino y categoria, y transformar hallazgos en quiz, landing y creatives para Facebook Ads.</p>
+      </div>
+      <aside class="side-panel">
+        <div class="metric">
+          <span class="mini-icon material-symbols-outlined">filter_alt</span>
+          <span><strong>18</strong><span>filtros para encontrar patrones de mercado</span></span>
+        </div>
+        <div class="metric">
+          <span class="mini-icon material-symbols-outlined">campaign</span>
+          <span><strong>6</strong><span>anuncios demo listos para analizar</span></span>
+        </div>
+        <div class="metric">
+          <span class="mini-icon material-symbols-outlined">psychology</span>
+          <span><strong>1</strong><span>brief de oferta generado desde los insights</span></span>
+        </div>
+      </aside>
+    </section>
+
+    <section class="layout">
+      <main>
+        <section class="search-panel" aria-label="Buscar anuncios">
+          <div class="panel-head">
+            <div>
+              <h2>Buscar anuncios</h2>
+              <p>Busca y analiza anuncios de referencia para descubrir promesas, objeciones, formatos y plataformas que ya estan funcionando.</p>
+            </div>
+            <div class="panel-badges">
+              <span class="badge source-demo" id="source-state">Fuente: demo local</span>
+              <span class="badge" id="result-count">6 resultados</span>
+            </div>
+          </div>
+
+          <div class="form-grid">
+            <div class="field">
+              <label for="search-text">Buscar en textos</label>
+              <input id="search-text" value="piel rutina quiz constancia skincare" oninput="runSearch()" />
+            </div>
+            <div class="field">
+              <label for="search-type">Tipo de busqueda</label>
+              <select id="search-type" onchange="runSearch()">
+                <option>Texto completo</option>
+                <option>Gancho principal</option>
+                <option>Landing destino</option>
+                <option>Anunciante</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="sort-by">Ordenar por</label>
+              <select id="sort-by" onchange="runSearch()">
+                <option value="impressions">Impresiones mayor a menor</option>
+                <option value="activeDays">Dias activos mayor a menor</option>
+                <option value="freshness">Mas recientes</option>
+                <option value="score">Potencial de oferta</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="url-filter">En enlace</label>
+              <input id="url-filter" placeholder="hotmart, shopify, quiz..." oninput="runSearch()" />
+            </div>
+          </div>
+
+          <div class="filter-grid">
+            <div class="field">
+              <label for="country">Pais</label>
+              <select id="country" onchange="runSearch()">
+                <option>Todos los paises</option>
+                <option>Estados Unidos</option>
+                <option>Colombia</option>
+                <option>Mexico</option>
+                <option>Espana</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="language">Idioma</label>
+              <select id="language" onchange="runSearch()">
+                <option>Cualquier idioma</option>
+                <option>Espanol</option>
+                <option>Ingles</option>
+                <option>Portugues</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="media">Tipo de media</label>
+              <select id="media" onchange="runSearch()">
+                <option>Todos los medios</option>
+                <option>Video</option>
+                <option>Imagen</option>
+                <option>Carousel</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="filter-grid">
+            <div class="field">
+              <label for="advertiser-filter">Anunciante</label>
+              <input id="advertiser-filter" placeholder="Todos los anunciantes" oninput="runSearch()" />
+            </div>
+            <div class="field">
+              <label for="domain-filter">Zona de dominio</label>
+              <input id="domain-filter" placeholder=".com, hotmart, shopify..." oninput="runSearch()" />
+            </div>
+            <div class="field">
+              <label for="quick-preset">Preset de investigacion</label>
+              <select id="quick-preset" onchange="applyPreset(this.value)">
+                <option value="">Manual</option>
+                <option value="skincare">Skincare / Belleza</option>
+                <option value="infoproduct">Infoproductos</option>
+                <option value="course">Cursos y coaches</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="chip-section">
+            <div class="chip-title"><span class="material-symbols-outlined" style="font-size:14px">hub</span> Plataformas de publicacion</div>
+            <div class="chips" data-group="platform">
+              <button class="chip active" data-value="Facebook" onclick="toggleChip(this)">Facebook</button>
+              <button class="chip active" data-value="Instagram" onclick="toggleChip(this)">Instagram</button>
+              <button class="chip" data-value="Audience Network" onclick="toggleChip(this)">Audience Network</button>
+              <button class="chip" data-value="Messenger" onclick="toggleChip(this)">Messenger</button>
+              <button class="chip" data-value="TikTok" onclick="toggleChip(this)">TikTok</button>
+              <button class="chip" data-value="YouTube" onclick="toggleChip(this)">YouTube</button>
+            </div>
+          </div>
+
+          <div class="chip-section">
+            <div class="chip-title"><span class="material-symbols-outlined" style="font-size:14px">link</span> Plataforma de destino</div>
+            <div class="chips" data-group="destination">
+              <button class="chip active" data-value="Hotmart" onclick="toggleChip(this)">Hotmart</button>
+              <button class="chip" data-value="Kiwify" onclick="toggleChip(this)">Kiwify</button>
+              <button class="chip" data-value="Eduzz" onclick="toggleChip(this)">Eduzz</button>
+              <button class="chip" data-value="Monetizze" onclick="toggleChip(this)">Monetizze</button>
+              <button class="chip" data-value="Braip" onclick="toggleChip(this)">Braip</button>
+              <button class="chip" data-value="Digistore24" onclick="toggleChip(this)">Digistore24</button>
+              <button class="chip" data-value="ClickBank" onclick="toggleChip(this)">ClickBank</button>
+              <button class="chip active" data-value="Shopify" onclick="toggleChip(this)">Shopify</button>
+              <button class="chip active" data-value="WhatsApp" onclick="toggleChip(this)">WhatsApp</button>
+              <button class="chip active" data-value="Leadpages" onclick="toggleChip(this)">Leadpages</button>
+              <button class="chip active" data-value="ClickFunnels" onclick="toggleChip(this)">ClickFunnels</button>
+              <button class="chip" data-value="GoHighLevel" onclick="toggleChip(this)">GoHighLevel</button>
+            </div>
+          </div>
+
+          <div class="chip-section">
+            <div class="chip-title"><span class="material-symbols-outlined" style="font-size:14px">category</span> Categoria de pagina</div>
+            <div class="chips" data-group="category">
+              <button class="chip active" data-value="Health/Beauty" onclick="toggleChip(this)">Health/Beauty</button>
+              <button class="chip" data-value="Education" onclick="toggleChip(this)">Education</button>
+              <button class="chip active" data-value="Personal Coach" onclick="toggleChip(this)">Personal Coach</button>
+              <button class="chip" data-value="E-commerce Website" onclick="toggleChip(this)">E-commerce Website</button>
+              <button class="chip active" data-value="Course" onclick="toggleChip(this)">Course</button>
+              <button class="chip" data-value="Marketing Agency" onclick="toggleChip(this)">Marketing Agency</button>
+              <button class="chip active" data-value="Product/Service" onclick="toggleChip(this)">Product/Service</button>
+              <button class="chip" data-value="Brand" onclick="toggleChip(this)">Brand</button>
+              <button class="chip active" data-value="App Page" onclick="toggleChip(this)">App Page</button>
+            </div>
+          </div>
+
+          <div class="filter-grid">
+            <div class="field">
+              <label for="date-from">Creado desde</label>
+              <input id="date-from" type="date" onchange="runSearch()" />
+            </div>
+            <div class="field">
+              <label for="date-to">Creado hasta</label>
+              <input id="date-to" type="date" onchange="runSearch()" />
+            </div>
+            <div class="field">
+              <label for="active-days">Dias activos desde</label>
+              <input id="active-days" type="number" min="0" value="7" oninput="runSearch()" />
+            </div>
+            <div class="field">
+              <label for="active-days-to">Dias activos hasta</label>
+              <input id="active-days-to" type="number" min="0" placeholder="Sin limite" oninput="runSearch()" />
+            </div>
+            <div class="field">
+              <label for="reach-min">Alcance desde</label>
+              <input id="reach-min" type="number" min="0" value="10000" oninput="runSearch()" />
+            </div>
+            <div class="field">
+              <label for="reach-max">Alcance hasta</label>
+              <input id="reach-max" type="number" min="0" placeholder="Sin limite" oninput="runSearch()" />
+            </div>
+          </div>
+
+          <div class="search-actions">
+            <button class="btn" type="button" onclick="clearFilters()"><span class="material-symbols-outlined">mop</span> Limpiar</button>
+            <button class="btn primary" id="search-btn" type="button" onclick="startSearch()"><span class="material-symbols-outlined">search</span> Buscar anuncios</button>
+            <button class="btn danger" id="stop-btn" type="button" onclick="stopSearch()" hidden><span class="material-symbols-outlined">stop_circle</span> Detener busqueda</button>
+            <button class="btn" type="button" onclick="saveSearch()"><span class="material-symbols-outlined">bookmark_add</span> Guardar busqueda</button>
+            <button class="btn" type="button" onclick="generateAngles()"><span class="material-symbols-outlined">auto_awesome</span> Convertir en oferta y Ads</button>
+          </div>
+        </section>
+
+        <section class="scanner-panel" id="scanner-panel" aria-live="polite">
+          <div class="scan-main">
+            <span class="scan-spinner" aria-hidden="true"></span>
+            <div>
+              <strong id="scan-title">Escaneando anuncios que coinciden con tus criterios...</strong>
+              <span id="scan-time">Buscando por 0:00</span>
+            </div>
+          </div>
+          <div class="scan-progress" id="scan-progress">
+            <span class="scan-step active"><i></i>Enviar</span>
+            <span class="scan-step"><i></i>Conectar</span>
+            <span class="scan-step"><i></i>Escanear</span>
+            <span class="scan-step"><i></i>Recopilar</span>
+            <span class="scan-step"><i></i>Finalizar</span>
+          </div>
+          <button class="btn danger" type="button" onclick="stopSearch()"><span class="material-symbols-outlined">stop_circle</span> Detener busqueda</button>
+          <p class="scan-tip" id="scan-tip">Consejo: ordena por relevancia para detectar mejores promesas antes de copiar estructura.</p>
+        </section>
+
+        <section class="results" id="results"></section>
+
+        <section class="conversion-lab" id="market-output">
+          <div class="conversion-head">
+            <div>
+              <span class="eyebrow"><span class="material-symbols-outlined">auto_awesome</span> Motor de decision</span>
+              <h2>De investigacion a producto vendible</h2>
+              <p>La busqueda alimenta esta salida: patrones de mercado, oferta, quiz, landing y anuncios listos para pasar al builder.</p>
+            </div>
+            <button class="btn primary" type="button" onclick="generateAngles()"><span class="material-symbols-outlined">bolt</span> Actualizar salida</button>
+          </div>
+
+          <div class="asset-grid">
+            <article class="asset-card">
+              <div class="asset-title">
+                <h3>Patrones detectados</h3>
+                <span class="material-symbols-outlined">query_stats</span>
+              </div>
+              <div class="asset-body" id="patterns-output"></div>
+              <button class="btn copy-mini" type="button" onclick="copyAsset('patterns-output')"><span class="material-symbols-outlined">content_copy</span> Copiar</button>
+            </article>
+
+            <article class="asset-card">
+              <div class="asset-title">
+                <h3>Oferta sugerida</h3>
+                <span class="material-symbols-outlined">deployed_code</span>
+              </div>
+              <div class="asset-body" id="offer-output"></div>
+              <button class="btn copy-mini" type="button" onclick="copyAsset('offer-output')"><span class="material-symbols-outlined">content_copy</span> Copiar</button>
+            </article>
+
+            <article class="asset-card">
+              <div class="asset-title">
+                <h3>Quiz que deberia crear</h3>
+                <span class="material-symbols-outlined">quiz</span>
+              </div>
+              <div class="asset-body" id="quiz-output"></div>
+              <button class="btn copy-mini" type="button" onclick="copyAsset('quiz-output')"><span class="material-symbols-outlined">content_copy</span> Copiar</button>
+            </article>
+
+            <article class="asset-card">
+              <div class="asset-title">
+                <h3>Hooks para Facebook Ads</h3>
+                <span class="material-symbols-outlined">campaign</span>
+              </div>
+              <div class="asset-body" id="ads-output"></div>
+              <button class="btn copy-mini" type="button" onclick="copyAsset('ads-output')"><span class="material-symbols-outlined">content_copy</span> Copiar</button>
+            </article>
+
+            <article class="asset-card wide">
+              <div class="asset-title">
+                <h3>Landing y siguiente paso</h3>
+                <span class="material-symbols-outlined">web</span>
+              </div>
+              <div class="asset-body" id="landing-output"></div>
+              <button class="btn copy-mini" type="button" onclick="copyAsset('landing-output')"><span class="material-symbols-outlined">content_copy</span> Copiar</button>
+            </article>
+          </div>
+          <div class="handoff-row">
+            <button class="btn primary" type="button" onclick="copyMasterBrief()"><span class="material-symbols-outlined">assignment</span> Copiar brief completo</button>
+            <button class="btn" type="button" onclick="saveSearch()"><span class="material-symbols-outlined">bookmark_add</span> Guardar proyecto de investigacion</button>
+            <a class="btn" href="./skinglow-creator-workspace.html?v=spyhandoff1"><span class="material-symbols-outlined">dashboard_customize</span> Volver al workspace</a>
+          </div>
+        </section>
+      </main>
+
+      <aside class="insight-panel" id="angles">
+        <section class="side-card">
+          <span class="eyebrow"><span class="material-symbols-outlined">psychology</span> Insight de mercado</span>
+          <h2 style="margin-top:12px">Lo que Luminous deberia sacar de aqui</h2>
+          <p>El modulo no solo debe mostrar anuncios. Debe convertir patrones en decisiones: promesa, objecion, quiz, landing, oferta y creativos para testear.</p>
+          <ul>
+            <li>Que dolor se repite mas en los anuncios.</li>
+            <li>Que mecanismo usan para prometer resultado.</li>
+            <li>Que destino usan: WhatsApp, checkout, quiz o landing.</li>
+            <li>Que formato parece sostener mas dias activo.</li>
+          </ul>
+        </section>
+
+        <section class="side-card">
+          <h3>Angulos sugeridos para SkinGlow</h3>
+          <div id="angle-list">
+            <div class="angle"><strong>No compres otra crema todavia</strong><span>Hook para llevar al quiz: primero descubre que necesita tu piel.</span></div>
+            <div class="angle"><strong>Rutina simple para piel confundida</strong><span>Promesa para mujeres con exceso de productos y poca claridad.</span></div>
+            <div class="angle"><strong>Tu piel no necesita mas pasos, necesita direccion</strong><span>Perfecto para landing y video corto.</span></div>
+          </div>
+        </section>
+
+        <section class="side-card">
+          <h3>Salida para el creador</h3>
+          <p>Despues de investigar, Luminous puede crear automaticamente:</p>
+          <ul>
+            <li>Brief mejorado de oferta.</li>
+            <li>Preguntas del quiz basadas en objeciones reales.</li>
+            <li>Secciones de landing y prueba social.</li>
+            <li>Creativos para Facebook/Instagram Ads.</li>
+          </ul>
+          <button class="btn primary" type="button" onclick="copyBrief()" style="width:100%;margin-top:12px"><span class="material-symbols-outlined">content_copy</span> Copiar brief demo</button>
+        </section>
+      </aside>
+    </section>
+
+    <p class="demo-note">Nota: esta es una maqueta funcional con datos simulados para mostrar el area de investigacion. La version real podria conectarse a fuentes permitidas, bases de anuncios, scraping autorizado, uploads manuales o integraciones con APIs disponibles.</p>
+  </div>
+
+  <script>
+    const ads = [
+      { title:"No compres otra crema sin saber que necesita tu piel", advertiser:"Glow Method", platform:"Facebook", destination:"Hotmart", category:"Health/Beauty", media:"Video", country:"Colombia", language:"Espanol", impressions:184000, activeDays:42, score:94, created:"2026-04-02", url:"hotmart", hook:"Diagnostico antes de rutina", insight:"El anuncio usa curiosidad y evita prometer milagro: invita a diagnosticar antes de comprar." },
+      { title:"3 errores que empeoran manchas aunque uses protector", advertiser:"Dermal Class", platform:"Instagram", destination:"WhatsApp", category:"Course", media:"Carousel", country:"Mexico", language:"Espanol", impressions:132000, activeDays:31, score:88, created:"2026-04-11", url:"whatsapp", hook:"Errores ocultos", insight:"Buen angulo educativo: muestra fallo actual y abre espacio para guia o quiz." },
+      { title:"Piel sensible: rutina de 4 pasos para calmar rojez", advertiser:"Skin Reset", platform:"Facebook", destination:"Shopify", category:"Product/Service", media:"Imagen", country:"Estados Unidos", language:"Espanol", impressions:98000, activeDays:26, score:82, created:"2026-04-16", url:"shopify", hook:"Simplificar rutina", insight:"El mensaje vende alivio y orden. Perfecto para mini app de seguimiento." },
+      { title:"Tu piel no necesita 10 productos, necesita un mapa", advertiser:"Beauty Lab Coach", platform:"Instagram", destination:"Leadpages", category:"Personal Coach", media:"Video", country:"Espana", language:"Espanol", impressions:76000, activeDays:19, score:86, created:"2026-04-23", url:"leadpages", hook:"Mapa personalizado", insight:"La palabra mapa conecta con quiz + resultado + mini app. Gran estructura de oferta." },
+      { title:"Quiz gratis: descubre si tu barrera esta irritada", advertiser:"Barrera Sana", platform:"Facebook", destination:"ClickFunnels", category:"Health/Beauty", media:"Video", country:"Mexico", language:"Espanol", impressions:153000, activeDays:36, score:91, created:"2026-04-07", url:"quiz", hook:"Quiz de barrera", insight:"Demuestra que quiz como entrada puede precalificar antes de vender reto o asesoramiento." },
+      { title:"El antes y despues real empieza con constancia", advertiser:"Luminous Demo", platform:"Instagram", destination:"Hotmart", category:"App Page", media:"Video", country:"Colombia", language:"Espanol", impressions:64000, activeDays:14, score:78, created:"2026-04-29", url:"hotmart", hook:"Constancia guiada", insight:"Este angulo refuerza la mini app como valor premium post-compra." }
+    ];
+
+    const scanSteps = ["Enviar", "Conectar", "Escanear", "Recopilar", "Finalizar"];
+    const scanTips = [
+      "Consejo: ordena por relevancia para detectar mejores promesas antes de copiar estructura.",
+      "Consejo: mira los anuncios activos por mas dias; suelen revelar ofertas que el mercado sostiene.",
+      "Consejo: compara destino, hook y objecion. Ahi aparece el angulo de tu quiz.",
+      "Consejo: si muchos anuncios mandan a WhatsApp, la objecion puede necesitar conversacion antes de venta."
+    ];
+    let scanTimer = null;
+    let scanFinishTimer = null;
+    let scanSeconds = 0;
+    let scanIndex = 0;
+    let activeAds = [...ads];
+    let currentResults = [];
+
+    function activeValues(group) {
+      return [...document.querySelectorAll(`[data-group="${group}"] .chip.active`)].map(btn => btn.dataset.value);
+    }
+
+    function toggleChip(btn) {
+      btn.classList.toggle("active");
+      runSearch();
+    }
+
+    function formatNumber(n) {
+      return new Intl.NumberFormat("es-ES").format(n);
+    }
+
+    function updateScanUi() {
+      document.getElementById("scan-time").textContent = `Buscando por 0:${String(scanSeconds).padStart(2, "0")}`;
+      document.querySelectorAll(".scan-step").forEach((step, index) => {
+        step.classList.toggle("done", index < scanIndex);
+        step.classList.toggle("active", index === scanIndex);
+      });
+      document.getElementById("scan-tip").textContent = scanTips[scanSeconds % scanTips.length];
+    }
+
+    function setSearchState(isSearching) {
+      document.getElementById("search-btn").disabled = isSearching;
+      document.getElementById("stop-btn").hidden = !isSearching;
+    }
+
+    function startSearch() {
+      clearTimeout(scanFinishTimer);
+      clearInterval(scanTimer);
+      scanSeconds = 0;
+      scanIndex = 0;
+      setSearchState(true);
+      document.getElementById("scanner-panel").classList.add("show");
+      document.getElementById("scan-title").textContent = "Escaneando anuncios que coinciden con tus criterios...";
+      document.getElementById("results").innerHTML = "";
+      updateScanUi();
+      document.getElementById("scanner-panel").scrollIntoView({ behavior: "smooth", block: "center" });
+
+      scanTimer = setInterval(() => {
+        scanSeconds += 1;
+        scanIndex = Math.min(scanSteps.length - 1, Math.floor(scanSeconds / 1.1));
+        updateScanUi();
+      }, 760);
+
+      scanFinishTimer = setTimeout(finishSearch, 3800);
+    }
+
+    async function finishSearch() {
+      clearTimeout(scanFinishTimer);
+      clearInterval(scanTimer);
+      scanIndex = scanSteps.length - 1;
+      updateScanUi();
+      document.getElementById("scan-title").textContent = "Conectando con fuente real/autorizada y recopilando patrones...";
+      setSearchState(false);
+      await fetchMarketResults();
+      runSearch();
+      setTimeout(() => {
+        document.getElementById("scanner-panel").classList.remove("show");
+        document.getElementById("results").scrollIntoView({ behavior: "smooth", block: "start" });
+      }, 650);
+    }
+
+    function stopSearch() {
+      clearTimeout(scanFinishTimer);
+      clearInterval(scanTimer);
+      setSearchState(false);
+      document.getElementById("scan-title").textContent = "Busqueda detenida por el usuario.";
+      document.getElementById("scan-tip").textContent = "Puedes ajustar filtros, limpiar criterios o lanzar una busqueda nueva.";
+      document.querySelectorAll(".scan-step").forEach((step, index) => {
+        step.classList.toggle("done", index < scanIndex);
+        step.classList.remove("active");
+      });
+    }
+
+    function collectSearchPayload() {
+      return {
+        query: document.getElementById("search-text").value,
+        searchType: document.getElementById("search-type").value === "Texto completo" ? "unordered" : "exact",
+        sortBy: document.getElementById("sort-by").value,
+        urlTerm: document.getElementById("url-filter").value,
+        country: document.getElementById("country").value,
+        language: document.getElementById("language").value,
+        media: document.getElementById("media").value,
+        advertiser: document.getElementById("advertiser-filter").value,
+        domain: document.getElementById("domain-filter").value,
+        dateFrom: document.getElementById("date-from").value,
+        dateTo: document.getElementById("date-to").value,
+        activeDaysFrom: document.getElementById("active-days").value,
+        activeDaysTo: document.getElementById("active-days-to").value,
+        reachFrom: document.getElementById("reach-min").value,
+        reachTo: document.getElementById("reach-max").value,
+        platforms: activeValues("platform"),
+        destinations: activeValues("destination"),
+        categories: activeValues("category"),
+        limit: 25
+      };
+    }
+
+    function setSourceState(mode, label) {
+      const badge = document.getElementById("source-state");
+      badge.textContent = label;
+      badge.classList.toggle("source-live", mode === "live");
+      badge.classList.toggle("source-demo", mode !== "live");
+    }
+
+    function topValue(list, key, fallback = "sin datos") {
+      const counts = list.reduce((acc, item) => {
+        const value = item[key] || fallback;
+        acc[value] = (acc[value] || 0) + 1;
+        return acc;
+      }, {});
+      return Object.entries(counts).sort((a, b) => b[1] - a[1])[0]?.[0] || fallback;
+    }
+
+    function keywordSignals(list) {
+      const text = list.map(ad => `${ad.title} ${ad.hook} ${ad.insight}`).join(" ").toLowerCase();
+      const signals = [];
+      if (/quiz|diagnost|test|descubre/.test(text)) signals.push("diagnostico antes de vender");
+      if (/rutina|pasos|constancia|reto/.test(text)) signals.push("sistema simple de seguimiento");
+      if (/error|empeora|sin saber|todavia/.test(text)) signals.push("alerta sobre errores ocultos");
+      if (/mapa|direccion|claridad/.test(text)) signals.push("claridad personalizada");
+      if (/gratis|guia|ebook/.test(text)) signals.push("lead magnet educativo");
+      return signals.length ? signals : ["curiosidad", "promesa especifica", "siguiente paso guiado"];
+    }
+
+    function buildMarketAssets(list = currentResults) {
+      const source = list.length ? list : ads;
+      const topDestination = topValue(source, "destination", "Landing");
+      const topPlatform = topValue(source, "platform", "Facebook");
+      const topMedia = topValue(source, "media", "Video");
+      const signals = keywordSignals(source);
+      const best = [...source].sort((a, b) => (b.score || 0) - (a.score || 0))[0] || ads[0];
+      const avgDays = Math.round(source.reduce((sum, ad) => sum + Number(ad.activeDays || 0), 0) / Math.max(source.length, 1));
+      return {
+        patterns: `
+          <span class="asset-pill">${source.length} anuncios analizados</span>
+          <ul>
+            <li>Destino dominante: <strong>${topDestination}</strong>.</li>
+            <li>Formato que conviene modelar: <strong>${topMedia}</strong> en ${topPlatform}.</li>
+            <li>Promesa repetida: <strong>${signals[0]}</strong>.</li>
+            <li>Duracion promedio activa: <strong>${avgDays} dias</strong>, buena senal para validar interes.</li>
+          </ul>`,
+        offer: `
+          <p><strong>Producto recomendado:</strong> reto guiado con diagnostico inicial, ebook y mini app privada.</p>
+          <ul>
+            <li>Promesa: ordenar la rutina sin comprar productos al azar.</li>
+            <li>Mecanismo: quiz + mapa personalizado + seguimiento diario.</li>
+            <li>Bonus premium: escaneo visual educativo y asistente IA.</li>
+            <li>CTA principal: "Descubre que necesita tu piel antes de gastar mas".</li>
+          </ul>`,
+        quiz: `
+          <ol>
+            <li>Que problema notas mas: rojez, manchas, textura, grasa o resequedad?</li>
+            <li>Cuantos productos usas actualmente en tu rutina?</li>
+            <li>Que te frustra mas: no ver cambios, irritacion o no saber que comprar?</li>
+            <li>Que tan constante eres durante 7 dias seguidos?</li>
+            <li>Prefieres una guia simple, una rutina diaria o acompanamiento con IA?</li>
+          </ol>`,
+        ads: `
+          <ul>
+            <li>${best.title}</li>
+            <li>No compres otra crema antes de saber que necesita tu piel.</li>
+            <li>Tu piel no necesita mas pasos, necesita direccion.</li>
+            <li>Responde 6 preguntas y recibe tu mapa de rutina en 2 minutos.</li>
+          </ul>`,
+        landing: `
+          <p><strong>Estructura recomendada:</strong> hero con video/foto premium, dolor principal, quiz como primer paso, resultado personalizado, prueba visual, oferta del reto, bonus ebook + mini app y checkout.</p>
+          <p><strong>Siguiente accion:</strong> enviar estos hallazgos al builder para crear el quiz diagnostico y la landing del reto SkinGlow.</p>`
+      };
+    }
+
+    function updateMarketOutput(list = currentResults) {
+      const assets = buildMarketAssets(list);
+      document.getElementById("patterns-output").innerHTML = assets.patterns;
+      document.getElementById("offer-output").innerHTML = assets.offer;
+      document.getElementById("quiz-output").innerHTML = assets.quiz;
+      document.getElementById("ads-output").innerHTML = assets.ads;
+      document.getElementById("landing-output").innerHTML = assets.landing;
+    }
+
+    function stripHtml(html) {
+      const div = document.createElement("div");
+      div.innerHTML = html;
+      return div.innerText.replace(/\n{3,}/g, "\n\n").trim();
+    }
+
+    function buildMasterBrief(list = currentResults) {
+      const source = list.length ? list : activeAds;
+      const assets = buildMarketAssets(source);
+      const payload = collectSearchPayload();
+      const topAds = source.slice(0, 5).map((ad, index) => `${index + 1}. ${ad.title} | ${ad.advertiser} | ${ad.platform} | ${ad.destination} | score ${ad.score}%`).join("\n");
+      return `LUMINOUS SPY LAB - BRIEF DE INVESTIGACION
+
+Busqueda:
+- Nicho / palabras: ${payload.query || "Sin definir"}
+- Pais: ${payload.country}
+- Idioma: ${payload.language}
+- Plataformas: ${payload.platforms.join(", ") || "Todas"}
+- Destinos revisados: ${payload.destinations.join(", ") || "Todos"}
+- Fuente: ${document.getElementById("source-state").textContent}
+
+Anuncios analizados:
+${topAds}
+
+Patrones:
+${stripHtml(assets.patterns)}
+
+Oferta sugerida:
+${stripHtml(assets.offer)}
+
+Quiz recomendado:
+${stripHtml(assets.quiz)}
+
+Hooks para Ads:
+${stripHtml(assets.ads)}
+
+Landing y siguiente paso:
+${stripHtml(assets.landing)}
+
+Uso recomendado:
+1. Modelar la oferta con este brief.
+2. Crear quiz diagnostico con las preguntas sugeridas.
+3. Crear ebook/guia como lead magnet o bonus.
+4. Crear landing con la promesa principal.
+5. Crear creativos y copies para Facebook/Instagram Ads.`;
+    }
+
+    function copyAsset(id) {
+      const text = document.getElementById(id).innerText.trim();
+      navigator.clipboard?.writeText(text).then(() => alert("Contenido copiado."), () => alert(text));
+    }
+
+    function copyMasterBrief() {
+      const brief = buildMasterBrief();
+      navigator.clipboard?.writeText(brief).then(() => alert("Brief completo copiado."), () => alert(brief));
+    }
+
+    async function fetchMarketResults() {
+      try {
+        const response = await fetch("/api/market-search", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(collectSearchPayload())
+        });
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        const payload = await response.json();
+        if (Array.isArray(payload.results) && payload.results.length) {
+          activeAds = payload.results;
+          setSourceState(payload.mode === "live" ? "live" : "demo", payload.mode === "live" ? "Fuente: Meta Ad Library" : "Fuente: demo/API");
+          return;
+        }
+        activeAds = [...ads];
+        setSourceState("demo", "Fuente: demo local");
+      } catch (error) {
+        activeAds = [...ads];
+        setSourceState("demo", "Fuente: demo local");
+      }
+    }
+
+    function applyPreset(value) {
+      if (!value) {
+        runSearch();
+        return;
+      }
+      const presets = {
+        skincare: { term: "piel sensible manchas skincare", category: "Health/Beauty", destination: "Hotmart" },
+        infoproduct: { term: "reto guia diagnostico", category: "Course", destination: "Hotmart" },
+        course: { term: "coach curso resultado", category: "Personal Coach", destination: "Leadpages" }
+      };
+      const preset = presets[value];
+      document.getElementById("search-text").value = preset.term;
+      document.querySelectorAll('[data-group="category"] .chip').forEach(btn => btn.classList.toggle("active", btn.dataset.value === preset.category));
+      document.querySelectorAll('[data-group="destination"] .chip').forEach(btn => btn.classList.toggle("active", btn.dataset.value === preset.destination || btn.dataset.value === "WhatsApp"));
+      runSearch();
+    }
+
+    function clearFilters() {
+      clearTimeout(scanFinishTimer);
+      clearInterval(scanTimer);
+      setSearchState(false);
+      document.getElementById("scanner-panel").classList.remove("show");
+      document.getElementById("search-text").value = "piel rutina quiz constancia skincare";
+      document.getElementById("search-type").value = "Texto completo";
+      document.getElementById("sort-by").value = "impressions";
+      document.getElementById("url-filter").value = "";
+      document.getElementById("country").value = "Todos los paises";
+      document.getElementById("language").value = "Cualquier idioma";
+      document.getElementById("media").value = "Todos los medios";
+      document.getElementById("advertiser-filter").value = "";
+      document.getElementById("domain-filter").value = "";
+      document.getElementById("quick-preset").value = "";
+      document.getElementById("date-from").value = "";
+      document.getElementById("date-to").value = "";
+      document.getElementById("active-days").value = "7";
+      document.getElementById("active-days-to").value = "";
+      document.getElementById("reach-min").value = "10000";
+      document.getElementById("reach-max").value = "";
+      activeAds = [...ads];
+      setSourceState("demo", "Fuente: demo local");
+      document.querySelectorAll('[data-group="platform"] .chip').forEach(btn => btn.classList.toggle("active", ["Facebook", "Instagram"].includes(btn.dataset.value)));
+      document.querySelectorAll('[data-group="destination"] .chip').forEach(btn => btn.classList.toggle("active", ["Hotmart", "Shopify", "WhatsApp", "Leadpages", "ClickFunnels"].includes(btn.dataset.value)));
+      document.querySelectorAll('[data-group="category"] .chip').forEach(btn => btn.classList.toggle("active", ["Health/Beauty", "Personal Coach", "Course", "Product/Service", "App Page"].includes(btn.dataset.value)));
+      runSearch();
+    }
+
+    function runSearch() {
+      const term = document.getElementById("search-text").value.toLowerCase().trim();
+      const urlTerm = document.getElementById("url-filter").value.toLowerCase().trim();
+      const advertiserTerm = document.getElementById("advertiser-filter").value.toLowerCase().trim();
+      const domainTerm = document.getElementById("domain-filter").value.toLowerCase().trim();
+      const minDays = Number(document.getElementById("active-days").value || 0);
+      const maxDays = Number(document.getElementById("active-days-to").value || 0);
+      const minReach = Number(document.getElementById("reach-min").value || 0);
+      const maxReach = Number(document.getElementById("reach-max").value || 0);
+      const dateFrom = document.getElementById("date-from").value;
+      const dateTo = document.getElementById("date-to").value;
+      const media = document.getElementById("media").value;
+      const country = document.getElementById("country").value;
+      const language = document.getElementById("language").value;
+      const platforms = activeValues("platform");
+      const destinations = activeValues("destination");
+      const categories = activeValues("category");
+      let list = activeAds.filter(ad => {
+        const haystack = `${ad.title} ${ad.advertiser} ${ad.hook} ${ad.insight}`.toLowerCase();
+        const termOk = !term || term.split(/\s+/).some(word => haystack.includes(word));
+        const urlOk = !urlTerm || ad.url.toLowerCase().includes(urlTerm) || ad.destination.toLowerCase().includes(urlTerm);
+        const advertiserOk = !advertiserTerm || ad.advertiser.toLowerCase().includes(advertiserTerm);
+        const domainOk = !domainTerm || ad.url.toLowerCase().includes(domainTerm) || ad.destination.toLowerCase().includes(domainTerm);
+        const mediaOk = media === "Todos los medios" || ad.media === media;
+        const countryOk = country === "Todos los paises" || ad.country === country;
+        const langOk = language === "Cualquier idioma" || ad.language === language;
+        const platformOk = !platforms.length || platforms.includes(ad.platform);
+        const destinationOk = !destinations.length || destinations.includes(ad.destination);
+        const categoryOk = !categories.length || categories.includes(ad.category);
+        const activeOk = ad.activeDays >= minDays && (!maxDays || ad.activeDays <= maxDays);
+        const reachOk = ad.impressions >= minReach && (!maxReach || ad.impressions <= maxReach);
+        const dateOk = (!dateFrom || ad.created >= dateFrom) && (!dateTo || ad.created <= dateTo);
+        return termOk && urlOk && advertiserOk && domainOk && mediaOk && countryOk && langOk && platformOk && destinationOk && categoryOk && activeOk && reachOk && dateOk;
+      });
+      const sortBy = document.getElementById("sort-by").value;
+      list.sort((a,b) => (b[sortBy] || 0) - (a[sortBy] || 0));
+      currentResults = list;
+      document.getElementById("result-count").textContent = `${list.length} resultado${list.length === 1 ? "" : "s"}`;
+      document.getElementById("results").innerHTML = list.length ? list.map(renderAd).join("") : `<div class="result-card"><h3>No hay resultados con esos filtros</h3><p>Prueba bajar el alcance minimo o activar mas plataformas de destino.</p></div>`;
+      updateMarketOutput(list);
+    }
+
+    function renderAd(ad) {
+      return `<article class="result-card">
+        <div class="result-top">
+          <div>
+            <h3>${ad.title}</h3>
+            <p>${ad.advertiser} - ${ad.platform} - ${ad.media} - Destino: ${ad.destination}</p>
+          </div>
+          <span class="badge">${ad.score}% potencial</span>
+        </div>
+        <div class="ad-grid">
+          <div class="ad-stat"><strong>${formatNumber(ad.impressions)}</strong><span>impresiones</span></div>
+          <div class="ad-stat"><strong>${ad.activeDays}</strong><span>dias activos</span></div>
+          <div class="ad-stat"><strong>${ad.category}</strong><span>categoria</span></div>
+          <div class="ad-stat"><strong>${ad.hook}</strong><span>angulo</span></div>
+        </div>
+        <div class="ad-insight"><strong>Lectura para Luminous:</strong> ${ad.insight}</div>
+      </article>`;
+    }
+
+    function generateAngles() {
+      const terms = document.getElementById("search-text").value || "skincare";
+      updateMarketOutput(currentResults.length ? currentResults : activeAds);
+      document.getElementById("angle-list").innerHTML = `
+        <div class="angle"><strong>Antes de comprar, diagnostica</strong><span>Creativo para ${terms}: "Responde 6 preguntas y descubre que necesita tu rutina".</span></div>
+        <div class="angle"><strong>Menos productos, mas claridad</strong><span>Promesa para landing: ordenar la rutina y evitar gastar en productos al azar.</span></div>
+        <div class="angle"><strong>Del resultado al reto</strong><span>CTA: mira tu perfil, recibe una guia y entra al reto con mini app privada.</span></div>
+        <div class="angle"><strong>Escaneo como bonus premium</strong><span>Usar la foto como valor agregado dentro de la oferta, no como diagnostico medico.</span></div>`;
+      document.getElementById("market-output").scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+
+    function saveSearch() {
+      const saved = {
+        query: document.getElementById("search-text").value,
+        date: new Date().toISOString(),
+        filters: collectSearchPayload(),
+        source: document.getElementById("source-state").textContent,
+        results: currentResults,
+        brief: buildMasterBrief()
+      };
+      localStorage.setItem("luminous_market_search_demo", JSON.stringify(saved));
+      localStorage.setItem("luminous_market_brief_latest", saved.brief);
+      alert("Proyecto de investigacion guardado con brief completo.");
+    }
+
+    function copyBrief() {
+      const brief = buildMasterBrief();
+      navigator.clipboard?.writeText(brief).then(() => alert("Brief copiado."), () => alert(brief));
+    }
+
+    runSearch();
+  </script>
+</body>
+</html>

@@ -8,6 +8,7 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="./supabase-config.js"></script>
 <script src="./app.js?v=offer-demo-1"></script>
+<script src="./skinglow-demo-data.js"></script>
 <script src="./ai-assistant.js" defer></script>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
@@ -447,6 +448,15 @@
                 class="w-full bg-surface-container-high border border-outline-variant/20 rounded-lg px-3 py-2.5 text-xs text-on-surface outline-none focus:ring-1 focus:ring-secondary transition-colors">
                 <option value="">Sin mini-app vinculada</option>
               </select>
+            </div>
+            <div>
+              <label class="text-xs font-bold text-on-surface-variant uppercase tracking-widest block mb-1">Ebook / PDF recomendado</label>
+              <p class="text-[10px] text-on-surface-variant/60 mb-2">Pega el enlace del ebook, PDF o recurso gratuito que se mostrará en el resultado.</p>
+              <div class="relative">
+                <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant/40 text-sm">auto_stories</span>
+                <input id="quiz-ebook-url" type="url" placeholder="https://tu-dominio.com/ebook.pdf"
+                  class="w-full bg-surface-container-high border border-outline-variant/20 rounded-lg pl-9 pr-4 py-2.5 text-xs text-on-surface outline-none focus:ring-1 focus:ring-secondary transition-colors"/>
+              </div>
             </div>
           </div>
 
@@ -974,6 +984,7 @@ function loadQuizIntoEditor(quiz) {
   document.getElementById('quiz-whatsapp-message').value = quiz.whatsappMessage || '';
   document.getElementById('quiz-payment-url').value      = quiz.paymentUrl      || '';
   document.getElementById('quiz-landing-url').value      = quiz.landingUrl      || '';
+  document.getElementById('quiz-ebook-url').value        = quiz.ebookUrl || quiz.leadMagnetUrl || '';
 
   // Meta Pixel
   const hasPixel = !!(quiz.metaPixelId);
@@ -1217,6 +1228,8 @@ async function saveQuiz() {
   currentQuiz.whatsappMessage = document.getElementById('quiz-whatsapp-message').value.trim() || '';
   currentQuiz.paymentUrl      = document.getElementById('quiz-payment-url').value.trim()   || '';
   currentQuiz.landingUrl      = document.getElementById('quiz-landing-url').value.trim()   || '';
+  currentQuiz.ebookUrl        = document.getElementById('quiz-ebook-url').value.trim()     || '';
+  currentQuiz.leadMagnetUrl   = currentQuiz.ebookUrl;
   currentQuiz.leadCapture     = action === 'result_page'
     ? document.getElementById('quiz-lead-capture').checked
     : action === 'whatsapp'

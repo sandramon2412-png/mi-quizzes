@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Acceso SkinGlow | Demo</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --ink: #21161b;
+      --muted: #75616a;
+      --rose: #c84f78;
+      --plum: #70405d;
+      --sage: #6f9d92;
+      --cream: #fff8f2;
+      --paper: #fffaf6;
+      --line: rgba(33, 22, 27, .13);
+      --shadow: 0 34px 90px rgba(42, 25, 38, .20);
+    }
+    * { box-sizing: border-box; }
+    body {
+      min-height: 100dvh;
+      margin: 0;
+      color: var(--ink);
+      font-family: "Plus Jakarta Sans", system-ui, sans-serif;
+      background:
+        radial-gradient(circle at 10% 10%, rgba(200,79,120,.24), transparent 30%),
+        radial-gradient(circle at 88% 12%, rgba(111,157,146,.25), transparent 30%),
+        linear-gradient(135deg, #21161b 0%, #f1ddd7 42%, #fffaf6 100%);
+    }
+    a { color: inherit; text-decoration: none; }
+    .material-symbols-outlined {
+      font-family: "Material Symbols Outlined";
+      font-weight: normal;
+      font-style: normal;
+      line-height: 1;
+      font-variation-settings: "FILL" 1, "wght" 650, "GRAD" 0, "opsz" 24;
+    }
+    .page {
+      width: min(1180px, calc(100% - 32px));
+      min-height: 100dvh;
+      margin: 0 auto;
+      display: grid;
+      align-items: center;
+      padding: 28px 0;
+    }
+    .shell {
+      display: grid;
+      grid-template-columns: minmax(0, 1.02fr) minmax(420px, .98fr);
+      gap: 18px;
+      align-items: stretch;
+    }
+    .story,
+    .portal {
+      overflow: hidden;
+      border: 1px solid rgba(255,255,255,.62);
+      border-radius: 8px;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(20px);
+    }
+    .story {
+      position: relative;
+      min-height: 720px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 28px;
+      color: white;
+      background: #21161b url("https://assets.mixkit.co/videos/51179/51179-thumb-720-0.jpg") center / cover no-repeat;
+    }
+    .story video,
+    .story::before {
+      position: absolute;
+      inset: 0;
+    }
+    .story video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      filter: saturate(.88) contrast(1.04) brightness(.68);
+    }
+    .story::before {
+      content: "";
+      z-index: 1;
+      background:
+        linear-gradient(180deg, rgba(22,14,19,.18), rgba(22,14,19,.90)),
+        linear-gradient(90deg, rgba(22,14,19,.88), rgba(22,14,19,.16)),
+        radial-gradient(circle at 85% 16%, rgba(200,79,120,.24), transparent 28%);
+    }
+    .story > :not(video) {
+      position: relative;
+      z-index: 2;
+    }
+    .brand,
+    .tag,
+    .eyebrow,
+    .btn,
+    .secure-pill {
+      display: inline-flex;
+      align-items: center;
+    }
+    .brand {
+      gap: 10px;
+      font-weight: 900;
+    }
+    .brand-icon,
+    .portal-icon,
+    .asset-icon,
+    .step-number,
+    .mini-glyph {
+      display: inline-grid;
+      place-items: center;
+      flex: 0 0 auto;
+    }
+    .brand-icon,
+    .portal-icon,
+    .asset-icon {
+      width: 42px;
+      height: 42px;
+      border-radius: 8px;
+      color: white;
+      background: linear-gradient(135deg, var(--rose), var(--sage));
+      box-shadow: 0 16px 34px rgba(200,79,120,.24);
+      font-size: 11px;
+      font-weight: 900;
+      letter-spacing: 0;
+      text-transform: uppercase;
+    }
+    .asset-icon {
+      width: 46px;
+      height: 46px;
+      font-size: 9px;
+      line-height: 1;
+    }
+    .story-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+    }
+    .tag,
+    .eyebrow,
+    .secure-pill {
+      gap: 8px;
+      padding: 8px 11px;
+      border: 1px solid rgba(255,255,255,.22);
+      border-radius: 999px;
+      background: rgba(255,255,255,.13);
+      font-size: 12px;
+      font-weight: 900;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+    .mini-glyph {
+      min-width: 18px;
+      height: 18px;
+      color: rgba(255,255,255,.92);
+      font-size: 10px;
+      line-height: 1;
+    }
+    .secure-pill .mini-glyph {
+      color: var(--sage);
+    }
+    h1,
+    h2 {
+      margin: 0;
+      font-family: "Instrument Serif", Georgia, serif;
+      font-weight: 400;
+      letter-spacing: 0;
+    }
+    h1 {
+      max-width: 640px;
+      margin-top: 28px;
+      font-size: clamp(54px, 6.8vw, 88px);
+      line-height: .92;
+      overflow-wrap: break-word;
+    }
+    .story p {
+      max-width: 580px;
+      margin: 20px 0 0;
+      color: rgba(255,255,255,.84);
+      font-size: 17px;
+      line-height: 1.62;
+    }
+    .story-metrics {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+      margin-top: 28px;
+      max-width: 610px;
+    }
+    .metric {
+      min-height: 94px;
+      padding: 15px;
+      border: 1px solid rgba(255,255,255,.18);
+      border-radius: 8px;
+      background: rgba(255,255,255,.12);
+    }
+    .metric strong {
+      display: block;
+      font-size: 28px;
+      line-height: 1;
+    }
+    .metric span {
+      display: block;
+      margin-top: 8px;
+      color: rgba(255,255,255,.72);
+      font-size: 11px;
+      font-weight: 900;
+      line-height: 1.35;
+      text-transform: uppercase;
+      letter-spacing: .06em;
+    }
+    .portal {
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+      padding: 26px;
+      background:
+        radial-gradient(circle at 96% 0%, rgba(111,157,146,.18), transparent 30%),
+        radial-gradient(circle at 6% 22%, rgba(200,79,120,.12), transparent 30%),
+        linear-gradient(145deg, rgba(255,255,255,.94), rgba(255,248,244,.76));
+    }
+    .secure-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+    .secure-pill {
+      border-color: var(--line);
+      color: var(--muted);
+      background: rgba(255,255,255,.76);
+    }
+    h2 {
+      margin-top: 8px;
+      font-size: clamp(40px, 5vw, 58px);
+      line-height: .94;
+    }
+    .muted {
+      color: var(--muted);
+      line-height: 1.65;
+    }
+    .unlock-card {
+      padding: 18px;
+      border: 1px solid rgba(33,22,27,.10);
+      border-radius: 8px;
+      background:
+        linear-gradient(135deg, rgba(255,255,255,.78), rgba(255,247,241,.84)),
+        var(--paper);
+    }
+    .unlock-title {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+    .unlock-title strong {
+      font-size: 16px;
+    }
+    .status {
+      color: var(--sage);
+      font-size: 12px;
+      font-weight: 900;
+    }
+    .steps {
+      display: grid;
+      gap: 10px;
+    }
+    .step {
+      display: grid;
+      grid-template-columns: 34px 1fr;
+      gap: 10px;
+      align-items: start;
+    }
+    .step-number {
+      width: 34px;
+      height: 34px;
+      border-radius: 999px;
+      color: white;
+      background: linear-gradient(135deg, var(--rose), var(--plum));
+      font-size: 12px;
+      font-weight: 900;
+    }
+    .step strong {
+      display: block;
+      font-size: 13px;
+    }
+    .step-body {
+      display: block;
+    }
+    .step-body span {
+      display: block;
+      margin-top: 3px;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.45;
+    }
+    .asset-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+    .asset-card {
+      display: grid;
+      grid-template-columns: 46px 1fr;
+      gap: 12px;
+      align-items: center;
+      min-height: 104px;
+      padding: 13px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: rgba(255,255,255,.76);
+      transition: transform .18s ease, border-color .18s ease, box-shadow .18s ease;
+    }
+    .asset-card:hover {
+      transform: translateY(-2px);
+      border-color: rgba(200,79,120,.35);
+      box-shadow: 0 18px 40px rgba(42,25,38,.10);
+    }
+    .asset-card strong {
+      display: block;
+      font-size: 14px;
+      line-height: 1.25;
+    }
+    .asset-card span.copyline {
+      display: block;
+      margin-top: 4px;
+      color: var(--muted);
+      font-size: 11px;
+      line-height: 1.45;
+    }
+    .btn-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+    .btn {
+      min-height: 54px;
+      justify-content: center;
+      gap: 9px;
+      border-radius: 999px;
+      font-size: 14px;
+      font-weight: 900;
+      text-align: center;
+    }
+    .btn-glyph {
+      font-size: 16px;
+      line-height: 1;
+      font-weight: 900;
+    }
+    .btn.primary {
+      color: white;
+      border: 0;
+      background: linear-gradient(135deg, var(--rose), var(--plum));
+      box-shadow: 0 18px 40px rgba(200,79,120,.22);
+    }
+    .btn.secondary {
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,.76);
+    }
+    .notice {
+      padding: 14px;
+      border: 1px solid rgba(111,157,146,.25);
+      border-radius: 8px;
+      background:
+        radial-gradient(circle at 98% 0%, rgba(111,157,146,.14), transparent 38%),
+        rgba(255,255,255,.70);
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.6;
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .story video { display: none; }
+    }
+    @media (max-width: 980px) {
+      .shell { grid-template-columns: 1fr; }
+      .story { min-height: 600px; }
+    }
+    @media (max-width: 620px) {
+      .page { width: min(100% - 24px, 1180px); padding: 16px 0; }
+      .story,
+      .portal { padding: 20px; }
+      .story-top,
+      .secure-row { align-items: flex-start; flex-direction: column; }
+      h1 { font-size: clamp(46px, 13vw, 66px); }
+      .story-metrics,
+      .asset-grid,
+      .btn-row { grid-template-columns: 1fr; }
+      .story { min-height: 560px; }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <div class="shell">
+      <section class="story">
+        <video autoplay muted loop playsinline poster="https://assets.mixkit.co/videos/51179/51179-thumb-720-0.jpg">
+          <source src="https://assets.mixkit.co/videos/51179/51179-720.mp4" type="video/mp4" />
+        </video>
+        <div class="story-top">
+          <div class="brand"><span class="brand-icon">SG</span> SkinGlow AI</div>
+          <span class="tag"><span class="mini-glyph">OK</span> Acceso aprobado</span>
+        </div>
+        <div class="story-copy">
+          <span class="eyebrow"><span class="mini-glyph">VIP</span> Portal privado demo</span>
+          <h1>Tu acceso SkinGlow ya esta listo</h1>
+          <p>Esta es la pantalla que recibe la clienta despues de pagar: una entrada clara al producto, materiales ordenados y un primer paso facil de seguir.</p>
+          <div class="story-metrics" aria-label="Resumen del acceso">
+            <div class="metric"><strong>21</strong><span>Dias de acompanamiento</span></div>
+            <div class="metric"><strong>4</strong><span>Materiales entregados</span></div>
+            <div class="metric"><strong>1</strong><span>Ruta simple de inicio</span></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="portal">
+        <div class="secure-row">
+          <span class="portal-icon">VIP</span>
+          <span class="secure-pill"><span class="mini-glyph">OK</span> Compra demo segura</span>
+        </div>
+
+        <div>
+          <h2>Empieza por aqui</h2>
+          <p class="muted">La experiencia post-compra junta guia, mini app, resultado, foto inicial y seguimiento para que la compradora no se quede perdida despues de comprar.</p>
+        </div>
+
+        <div class="unlock-card">
+          <div class="unlock-title">
+            <strong>Orden recomendado del Dia 1</strong>
+            <span class="status">Listo para usar</span>
+          </div>
+          <div class="steps">
+            <div class="step"><span class="step-number">1</span><span class="step-body"><strong>Abre la guia rapida</strong><span>Lee los pasos base antes de cambiar productos o mezclar activos.</span></span></div>
+            <div class="step"><span class="step-number">2</span><span class="step-body"><strong>Toma tu foto inicial</strong><span>Guarda una referencia visual para comparar rojez, brillo, textura y constancia.</span></span></div>
+            <div class="step"><span class="step-number">3</span><span class="step-body"><strong>Completa el checklist</strong><span>Marca rutina AM/PM, agua, protector solar y senales del dia.</span></span></div>
+            <div class="step"><span class="step-number">4</span><span class="step-body"><strong>Escribe una nota corta</strong><span>Registra que sentiste hoy para que el asistente pueda guiar mejor.</span></span></div>
+          </div>
+        </div>
+
+        <div class="asset-grid" aria-label="Materiales incluidos">
+          <a class="asset-card" href="./skinglow-ebook-demo.html?v=iconfix1">
+            <span class="asset-icon">Guia</span>
+            <span><strong>Guia SkinGlow</strong><span class="copyline">Lead magnet educativo y checklist de rutina base.</span></span>
+          </a>
+          <a class="asset-card" href="./mini-app-player.html?id=skinglow-miniapp&open=1&tool=foto&v=privateaccess1">
+            <span class="asset-icon">Foto</span>
+            <span><strong>Foto inicial</strong><span class="copyline">Escaneo visual responsable, sin diagnostico medico.</span></span>
+          </a>
+          <a class="asset-card" href="./resultado-quiz.html?quiz=skinglow-skin-quiz&v=resultpremium1">
+            <span class="asset-icon">Test</span>
+            <span><strong>Tu resultado</strong><span class="copyline">Perfil de piel, prioridad y recomendacion conectada.</span></span>
+          </a>
+          <a class="asset-card" href="./mini-app-player.html?id=skinglow-miniapp&open=1&v=privateaccess1">
+            <span class="asset-icon">App</span>
+            <span><strong>Mini app privada</strong><span class="copyline">Reto, diario, registros, FAQ y asistente SkinGlow.</span></span>
+          </a>
+        </div>
+
+        <div class="btn-row">
+          <a class="btn primary" href="./mini-app-player.html?id=skinglow-miniapp&open=1&v=privateaccess1"><span class="btn-glyph">&rarr;</span> Entrar al reto</a>
+          <a class="btn secondary" href="./skinglow-checkout-demo.html?v=checkoutpremium4"><span class="btn-glyph">&larr;</span> Volver al checkout</a>
+        </div>
+
+        <div class="notice">
+          <strong>Nota demo:</strong> en una version real este acceso se libera automaticamente despues del pago por Hotmart, Stripe, PayPal o la pasarela de la creadora. El contenido es educativo y no reemplaza dermatologia.
+        </div>
+      </section>
+    </div>
+  </main>
+</body>
+</html>

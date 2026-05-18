@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>SkinGlow AI | Escaneo visual</title>
+  <script src="./app.js?v=skinglow-scan-1"></script>
+  <script src="./skinglow-demo-data.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --ink: #23151c;
+      --muted: #725d67;
+      --rose: #c84f78;
+      --green: #6f9d92;
+      --plum: #70405d;
+      --paper: #fff8f4;
+      --line: rgba(35, 21, 28, .12);
+      --shadow: 0 28px 84px rgba(78, 47, 65, .16);
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "Plus Jakarta Sans", system-ui, sans-serif;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at 10% 12%, rgba(200,79,120,.16), transparent 30%),
+        radial-gradient(circle at 90% 8%, rgba(111,157,146,.18), transparent 30%),
+        linear-gradient(180deg, #fff8f4 0%, #f8eee7 56%, #eef7f4 100%);
+    }
+    a { color: inherit; text-decoration: none; }
+    .wrap { width: min(1120px, calc(100% - 34px)); margin: 0 auto; }
+    .material-symbols-outlined {
+      font-family: "Material Symbols Outlined";
+      font-weight: normal;
+      font-style: normal;
+      line-height: 1;
+      font-variation-settings: "FILL" 1, "wght" 650, "GRAD" 0, "opsz" 24;
+    }
+    nav {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      padding: 14px 0;
+      background: linear-gradient(180deg, rgba(255,248,244,.92), rgba(255,248,244,.70));
+      backdrop-filter: blur(18px);
+      border-bottom: 1px solid rgba(35,21,28,.08);
+    }
+    nav .wrap {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 11px;
+      font-weight: 900;
+    }
+    .brand-icon {
+      width: 42px;
+      height: 42px;
+      display: grid;
+      place-items: center;
+      flex: 0 0 auto;
+      border-radius: 13px;
+      color: #fff;
+      background: linear-gradient(135deg, var(--rose), var(--green));
+      box-shadow: 0 14px 32px rgba(200,79,120,.20);
+    }
+    .brand small {
+      display: block;
+      margin-top: 2px;
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+    }
+    .btn {
+      min-height: 46px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 0 16px;
+      border-radius: 999px;
+      border: 1px solid rgba(35,21,28,.12);
+      background: rgba(255,255,255,.86);
+      color: var(--ink);
+      font: inherit;
+      font-size: 14px;
+      font-weight: 900;
+      box-shadow: 0 14px 34px rgba(78,47,65,.08);
+      cursor: pointer;
+    }
+    .btn.primary {
+      border: 0;
+      color: #fff;
+      background: linear-gradient(135deg, var(--rose), var(--plum));
+    }
+    .hero {
+      padding: 48px 0 74px;
+      display: grid;
+      grid-template-columns: minmax(0, .9fr) minmax(320px, 1.1fr);
+      gap: clamp(22px, 5vw, 58px);
+      align-items: center;
+    }
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 11px;
+      border: 1px solid rgba(200,79,120,.22);
+      border-radius: 999px;
+      background: rgba(255,255,255,.66);
+      color: #9a3158;
+      font-size: 12px;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+    }
+    h1 {
+      margin: 20px 0 18px;
+      font-family: "Instrument Serif", Georgia, serif;
+      font-size: clamp(54px, 8vw, 96px);
+      line-height: .9;
+      font-weight: 400;
+    }
+    .lead {
+      max-width: 660px;
+      margin: 0;
+      color: var(--muted);
+      font-size: clamp(17px, 2vw, 21px);
+      line-height: 1.6;
+    }
+    .note {
+      margin-top: 22px;
+      padding: 14px 15px;
+      border: 1px solid rgba(35,21,28,.08);
+      border-radius: 8px;
+      background: rgba(255,255,255,.58);
+      color: #604a55;
+      font-size: 13px;
+      line-height: 1.55;
+      font-weight: 700;
+    }
+    .scanner {
+      overflow: hidden;
+      border: 1px solid rgba(255,255,255,.72);
+      border-radius: 8px;
+      background: rgba(255,255,255,.54);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(20px);
+    }
+    .scanner-media {
+      position: relative;
+      min-height: 430px;
+      display: grid;
+      place-items: center;
+      overflow: hidden;
+      background:
+        linear-gradient(135deg, rgba(35,21,28,.58), rgba(112,64,93,.28)),
+        url("https://images.unsplash.com/photo-1570172619644-dfd03ed5d881?auto=format&fit=crop&w=1200&q=80") center / cover;
+    }
+    .scanner-media img,
+    .scanner-media video {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    .scan-frame {
+      position: relative;
+      z-index: 2;
+      width: min(76%, 340px);
+      aspect-ratio: 3 / 4;
+      border: 2px solid rgba(255,255,255,.92);
+      border-radius: 42% 42% 38% 38% / 34% 34% 44% 44%;
+      box-shadow:
+        0 0 0 999px rgba(20, 12, 16, .24),
+        inset 0 0 36px rgba(255,255,255,.22);
+    }
+    .scan-line {
+      position: absolute;
+      left: 8%;
+      right: 8%;
+      top: 28%;
+      height: 3px;
+      border-radius: 999px;
+      background: linear-gradient(90deg, transparent, #fff, transparent);
+      box-shadow: 0 0 22px rgba(255,255,255,.90);
+      animation: scan 2.4s ease-in-out infinite;
+    }
+    @keyframes scan {
+      0%, 100% { transform: translateY(-78px); opacity: .35; }
+      50% { transform: translateY(128px); opacity: .96; }
+    }
+    .scanner-body {
+      padding: 18px;
+      display: grid;
+      gap: 14px;
+    }
+    .controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    .status {
+      min-height: 42px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 11px 13px;
+      border-radius: 8px;
+      background: rgba(248,238,231,.78);
+      color: #604a55;
+      font-size: 13px;
+      font-weight: 800;
+      line-height: 1.4;
+    }
+    .result {
+      display: none;
+      margin-top: 18px;
+      padding: 24px 0 78px;
+    }
+    .result.show { display: block; }
+    .result-grid {
+      display: grid;
+      grid-template-columns: minmax(0, .8fr) minmax(0, 1.2fr);
+      gap: 18px;
+      align-items: start;
+    }
+    .profile-card,
+    .metrics {
+      border: 1px solid rgba(255,255,255,.72);
+      border-radius: 8px;
+      background: rgba(255,255,255,.58);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(20px);
+    }
+    .profile-card {
+      overflow: hidden;
+    }
+    .profile-card img {
+      width: 100%;
+      height: 260px;
+      display: block;
+      object-fit: cover;
+      background: #ead9cf;
+    }
+    .profile-card .body {
+      padding: 20px;
+    }
+    .profile-card h2,
+    .metrics h2 {
+      margin: 0 0 8px;
+      font-size: 28px;
+      line-height: 1.05;
+    }
+    .profile-card p,
+    .metrics p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.58;
+    }
+    .metrics {
+      padding: 20px;
+      display: grid;
+      gap: 14px;
+    }
+    .metric {
+      padding: 15px;
+      border: 1px solid rgba(35,21,28,.08);
+      border-radius: 8px;
+      background: rgba(255,255,255,.62);
+    }
+    .metric-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: baseline;
+      margin-bottom: 10px;
+      font-weight: 900;
+    }
+    .bar {
+      height: 10px;
+      border-radius: 999px;
+      overflow: hidden;
+      background: rgba(35,21,28,.08);
+    }
+    .bar span {
+      display: block;
+      height: 100%;
+      border-radius: inherit;
+      background: linear-gradient(90deg, var(--rose), var(--green));
+    }
+    .next-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 18px;
+    }
+    canvas { display: none; }
+    @media (max-width: 900px) {
+      .hero,
+      .result-grid {
+        grid-template-columns: 1fr;
+      }
+      .scanner-media { min-height: 380px; }
+    }
+    @media (max-width: 620px) {
+      .wrap { width: min(100% - 28px, 1120px); }
+      nav .btn {
+        min-height: 42px;
+        padding: 0 12px;
+        font-size: 0;
+      }
+      nav .btn .material-symbols-outlined { font-size: 22px; }
+      .hero { padding-top: 30px; }
+      h1 { font-size: clamp(52px, 17vw, 78px); }
+      .scanner-media { min-height: 330px; }
+      .controls .btn,
+      .next-actions .btn { width: 100%; }
+    }
+  </style>
+</head>
+<body>
+  <nav>
+    <div class="wrap">
+      <a class="brand" href="./skinglow-client-demo.html">
+        <span class="brand-icon material-symbols-outlined">photo_camera</span>
+        <span>SkinGlow AI <small>Escaneo visual</small></span>
+      </a>
+      <a class="btn" href="./skinglow-client-demo.html?v=client1"><span class="material-symbols-outlined">route</span> Recorrido</a>
+    </div>
+  </nav>
+
+  <main class="wrap">
+    <section class="hero">
+      <div>
+        <span class="eyebrow"><span class="material-symbols-outlined">face_retouching_natural</span> Analisis educativo</span>
+        <h1>Escaneo visual de piel</h1>
+        <p class="lead">La clienta sube una foto o activa la camara para recibir una lectura inicial de senales visibles y luego continuar con el quiz diagnostico.</p>
+        <div class="note">Esta demo aumenta el valor percibido, pero no reemplaza dermatologia ni diagnostica enfermedades. Sirve como orientacion educativa dentro del reto SkinGlow.</div>
+      </div>
+
+      <section class="scanner" aria-label="Escaner SkinGlow">
+        <div class="scanner-media">
+          <img id="preview-image" alt="" />
+          <video id="camera-video" autoplay muted playsinline></video>
+          <div class="scan-frame"><span class="scan-line"></span></div>
+        </div>
+        <div class="scanner-body">
+          <div class="controls">
+            <label class="btn primary" for="skin-photo"><span class="material-symbols-outlined">upload</span> Subir foto</label>
+            <input id="skin-photo" type="file" accept="image/*" capture="user" hidden />
+            <button class="btn" type="button" id="camera-btn"><span class="material-symbols-outlined">photo_camera</span> Usar camara</button>
+            <button class="btn" type="button" id="capture-btn"><span class="material-symbols-outlined">center_focus_strong</span> Capturar</button>
+          </div>
+          <div id="scan-status" class="status"><span class="material-symbols-outlined">info</span> Sube una foto clara del rostro o activa la camara para simular el escaneo.</div>
+        </div>
+      </section>
+    </section>
+
+    <section id="scan-result" class="result" aria-live="polite">
+      <div class="result-grid">
+        <article class="profile-card">
+          <img id="result-photo" src="https://images.unsplash.com/photo-1570172619644-dfd03ed5d881?auto=format&fit=crop&w=900&q=80" alt="Foto analizada" />
+          <div class="body">
+            <h2>Perfil sugerido: piel sensible con tendencia a deshidratacion</h2>
+            <p>El sistema detecta senales que conviene validar con el quiz: posible tirantez, rojez leve y necesidad de simplificar productos.</p>
+            <div class="next-actions">
+              <a class="btn primary" href="./quiz.html?quiz=skinglow-skin-quiz"><span class="material-symbols-outlined">quiz</span> Continuar al quiz</a>
+              <a class="btn" href="./resultado-quiz.html?quiz=skinglow-skin-quiz&v=resultpremium1"><span class="material-symbols-outlined">analytics</span> Ver resultado demo</a>
+            </div>
+          </div>
+        </article>
+        <div class="metrics">
+          <div>
+            <h2>Lectura preliminar</h2>
+            <p>Estos indicadores son simulados para la demo y muestran como se podria presentar el analisis visual.</p>
+          </div>
+          <div class="metric">
+            <div class="metric-head"><span>Hidratacion aparente</span><span>62%</span></div>
+            <div class="bar"><span style="width:62%"></span></div>
+          </div>
+          <div class="metric">
+            <div class="metric-head"><span>Rojeces / sensibilidad</span><span>71%</span></div>
+            <div class="bar"><span style="width:71%"></span></div>
+          </div>
+          <div class="metric">
+            <div class="metric-head"><span>Textura irregular</span><span>48%</span></div>
+            <div class="bar"><span style="width:48%"></span></div>
+          </div>
+          <div class="metric">
+            <div class="metric-head"><span>Brillo zona T</span><span>39%</span></div>
+            <div class="bar"><span style="width:39%"></span></div>
+          </div>
+          <div class="note">Siguiente paso recomendado: responder el quiz para cruzar la foto con habitos, rutina actual y objetivo principal.</div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <canvas id="capture-canvas"></canvas>
+  <script>
+    try {
+      if (typeof seedSkinGlowDemo === "function") seedSkinGlowDemo({ setAnswers: true });
+    } catch (error) {
+      console.warn("No se pudo preparar SkinGlow demo", error);
+    }
+
+    const fileInput = document.getElementById("skin-photo");
+    const preview = document.getElementById("preview-image");
+    const resultPhoto = document.getElementById("result-photo");
+    const video = document.getElementById("camera-video");
+    const cameraBtn = document.getElementById("camera-btn");
+    const captureBtn = document.getElementById("capture-btn");
+    const canvas = document.getElementById("capture-canvas");
+    const statusEl = document.getElementById("scan-status");
+    const resultEl = document.getElementById("scan-result");
+    let stream = null;
+
+    function setStatus(icon, text) {
+      statusEl.innerHTML = `<span class="material-symbols-outlined">${icon}</span> ${text}`;
+    }
+
+    function showResult(src) {
+      preview.src = src;
+      resultPhoto.src = src;
+      video.style.display = "none";
+      preview.style.display = "block";
+      setStatus("auto_awesome", "Escaneo listo. Abajo tienes una lectura preliminar para continuar con el quiz.");
+      resultEl.classList.add("show");
+      resultEl.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+
+    fileInput.addEventListener("change", () => {
+      const file = fileInput.files && fileInput.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = () => showResult(String(reader.result || ""));
+      reader.readAsDataURL(file);
+      setStatus("progress_activity", "Analizando foto...");
+    });
+
+    cameraBtn.addEventListener("click", async () => {
+      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+        setStatus("warning", "La camara no esta disponible en este navegador. Usa la opcion de subir foto.");
+        return;
+      }
+      try {
+        stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" }, audio: false });
+        video.srcObject = stream;
+        video.style.display = "block";
+        preview.style.display = "none";
+        setStatus("photo_camera", "Camara activa. Centra el rostro dentro del marco y toca Capturar.");
+      } catch (error) {
+        setStatus("lock", "No pude activar la camara. Revisa permisos o usa Subir foto.");
+      }
+    });
+
+    captureBtn.addEventListener("click", () => {
+      if (!stream || !video.videoWidth) {
+        setStatus("info", "Primero activa la camara o sube una foto desde tu dispositivo.");
+        return;
+      }
+      canvas.width = video.videoWidth;
+      canvas.height = video.videoHeight;
+      canvas.getContext("2d").drawImage(video, 0, 0, canvas.width, canvas.height);
+      const dataUrl = canvas.toDataURL("image/jpeg", 0.88);
+      stream.getTracks().forEach(track => track.stop());
+      stream = null;
+      showResult(dataUrl);
+    });
+  </script>
+</body>
+</html>

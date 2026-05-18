@@ -1,0 +1,733 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>SkinGlow Lead Desk | Luminous Studio</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --ink: #21151b;
+      --muted: #75636b;
+      --rose: #c84f78;
+      --plum: #70405d;
+      --sage: #6f9d92;
+      --cream: #fff8f4;
+      --paper: #fffdf9;
+      --line: rgba(33,21,27,.12);
+      --shadow: 0 28px 80px rgba(78,47,65,.14);
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      min-height: 100dvh;
+      color: var(--ink);
+      font-family: "Plus Jakarta Sans", system-ui, sans-serif;
+      background:
+        radial-gradient(circle at 8% 10%, rgba(200,79,120,.15), transparent 28%),
+        radial-gradient(circle at 90% 6%, rgba(111,157,146,.18), transparent 30%),
+        linear-gradient(135deg, #fff8f4 0%, #f6ece7 46%, #eef7f4 100%);
+    }
+    a { color: inherit; text-decoration: none; }
+    .material-symbols-outlined {
+      font-family: "Material Symbols Outlined";
+      font-variation-settings: "FILL" 1, "wght" 650, "GRAD" 0, "opsz" 24;
+      line-height: 1;
+    }
+    .wrap {
+      width: min(1180px, calc(100% - 34px));
+      margin: 0 auto;
+    }
+    nav {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      padding: 14px 0;
+      background: linear-gradient(180deg, rgba(255,248,244,.94), rgba(255,248,244,.62));
+      backdrop-filter: blur(18px);
+    }
+    .nav-inner {
+      min-height: 64px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      padding: 10px 12px;
+      border: 1px solid rgba(255,255,255,.72);
+      border-radius: 8px;
+      background: rgba(255,255,255,.66);
+      box-shadow: 0 18px 50px rgba(78,47,65,.10);
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 11px;
+      font-weight: 900;
+    }
+    .brand-icon,
+    .metric-icon,
+    .avatar {
+      display: grid;
+      place-items: center;
+      flex: 0 0 auto;
+      color: #fff;
+      background: linear-gradient(135deg, var(--rose), var(--sage));
+      box-shadow: 0 14px 30px rgba(78,47,65,.16);
+    }
+    .brand-icon { width: 42px; height: 42px; border-radius: 8px; }
+    .brand small {
+      display: block;
+      margin-top: 2px;
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 900;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 9px;
+    }
+    .btn {
+      min-height: 44px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 0 15px;
+      border: 1px solid rgba(33,21,27,.12);
+      border-radius: 999px;
+      background: rgba(255,255,255,.84);
+      color: var(--ink);
+      font: inherit;
+      font-size: 13px;
+      font-weight: 900;
+      cursor: pointer;
+      box-shadow: 0 12px 30px rgba(78,47,65,.08);
+    }
+    .btn.primary {
+      border: 0;
+      color: #fff;
+      background: linear-gradient(135deg, var(--rose), var(--plum));
+    }
+    .hero {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 360px;
+      gap: 18px;
+      align-items: stretch;
+      margin: 16px auto 18px;
+    }
+    .hero-card,
+    .metric-card,
+    .panel,
+    .lead-card,
+    .follow-card {
+      border: 1px solid rgba(255,255,255,.72);
+      border-radius: 8px;
+      background: rgba(255,255,255,.60);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(22px);
+    }
+    .hero-card {
+      overflow: hidden;
+      position: relative;
+      min-height: 340px;
+      display: grid;
+      align-content: end;
+      padding: clamp(24px, 5vw, 46px);
+      color: #fff;
+      background:
+        linear-gradient(90deg, rgba(33,21,27,.86), rgba(33,21,27,.30)),
+        url("https://images.unsplash.com/photo-1551836022-d5d88e9218df?auto=format&fit=crop&w=1400&q=82") center / cover;
+    }
+    .hero-card::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(circle at 86% 18%, rgba(255,255,255,.18), transparent 26%),
+        linear-gradient(180deg, transparent 0%, rgba(33,21,27,.40) 100%);
+      pointer-events: none;
+    }
+    .hero-card > * { position: relative; z-index: 1; }
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      width: fit-content;
+      padding: 8px 11px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,.25);
+      background: rgba(255,255,255,.14);
+      color: #fff;
+      font-size: 12px;
+      font-weight: 900;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+    h1 {
+      max-width: 820px;
+      margin: 18px 0 14px;
+      font-family: "Instrument Serif", Georgia, serif;
+      font-size: clamp(52px, 8vw, 92px);
+      line-height: .88;
+      font-weight: 400;
+    }
+    .lead {
+      max-width: 760px;
+      margin: 0;
+      color: rgba(255,255,255,.82);
+      font-size: 17px;
+      line-height: 1.6;
+    }
+    .metrics {
+      display: grid;
+      gap: 12px;
+    }
+    .metric-card {
+      min-height: 104px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 15px;
+      background:
+        radial-gradient(circle at 100% 0%, rgba(111,157,146,.14), transparent 35%),
+        rgba(255,255,255,.62);
+    }
+    .metric-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 8px;
+    }
+    .metric-card strong {
+      display: block;
+      font-size: 24px;
+      line-height: 1;
+    }
+    .metric-card span:last-child {
+      display: block;
+      margin-top: 5px;
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 900;
+      letter-spacing: .06em;
+      text-transform: uppercase;
+    }
+    .desk-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.08fr) minmax(340px, .92fr);
+      gap: 18px;
+      margin-bottom: 42px;
+    }
+    .panel {
+      padding: 18px;
+    }
+    .panel-head {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+    .panel-head h2 {
+      margin: 0;
+      font-size: 24px;
+      line-height: 1.08;
+    }
+    .panel-head p {
+      margin: 5px 0 0;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.45;
+    }
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      min-height: 32px;
+      width: fit-content;
+      padding: 0 11px;
+      border-radius: 999px;
+      border: 1px solid rgba(33,21,27,.10);
+      background: rgba(255,255,255,.62);
+      color: #8d365c;
+      font-size: 11px;
+      font-weight: 900;
+      white-space: nowrap;
+    }
+    .funnel {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+    .stage {
+      min-height: 114px;
+      padding: 12px;
+      border: 1px solid rgba(33,21,27,.08);
+      border-radius: 8px;
+      background: rgba(255,255,255,.62);
+    }
+    .stage strong {
+      display: block;
+      font-size: 20px;
+      line-height: 1;
+    }
+    .stage span {
+      display: block;
+      margin-top: 7px;
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: .05em;
+    }
+    .stage small {
+      display: block;
+      margin-top: 8px;
+      color: var(--muted);
+      font-size: 11px;
+      line-height: 1.35;
+    }
+    .lead-list {
+      display: grid;
+      gap: 10px;
+    }
+    .lead-card {
+      display: grid;
+      grid-template-columns: 48px minmax(0, 1fr) auto;
+      gap: 12px;
+      align-items: center;
+      padding: 12px;
+      background:
+        radial-gradient(circle at 100% 0%, rgba(200,79,120,.09), transparent 34%),
+        rgba(255,255,255,.68);
+      box-shadow: 0 16px 42px rgba(78,47,65,.08);
+      cursor: pointer;
+      transition: .18s ease;
+    }
+    .lead-card:hover,
+    .lead-card.active {
+      transform: translateY(-1px);
+      border-color: rgba(200,79,120,.26);
+    }
+    .avatar {
+      width: 48px;
+      height: 48px;
+      border-radius: 8px;
+      font-size: 18px;
+      font-weight: 900;
+    }
+    .lead-card strong {
+      display: block;
+      font-size: 14px;
+    }
+    .lead-card small {
+      display: block;
+      margin-top: 3px;
+      color: var(--muted);
+      font-size: 11px;
+      line-height: 1.4;
+    }
+    .lead-status {
+      padding: 7px 9px;
+      border-radius: 999px;
+      color: #356f63;
+      background: rgba(111,157,146,.15);
+      font-size: 10px;
+      font-weight: 900;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+    .follow-card {
+      padding: 16px;
+      background:
+        radial-gradient(circle at 100% 0%, rgba(111,157,146,.14), transparent 34%),
+        rgba(255,255,255,.66);
+    }
+    .profile-head {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+    .profile-head h3 {
+      margin: 0;
+      font-size: 23px;
+    }
+    .profile-head p {
+      margin: 3px 0 0;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.4;
+    }
+    .detail-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 9px;
+      margin-bottom: 14px;
+    }
+    .detail {
+      padding: 11px;
+      border: 1px solid rgba(33,21,27,.08);
+      border-radius: 8px;
+      background: rgba(255,255,255,.62);
+    }
+    .detail strong {
+      display: block;
+      font-size: 11px;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: .06em;
+    }
+    .detail span {
+      display: block;
+      margin-top: 5px;
+      font-size: 13px;
+      font-weight: 800;
+      line-height: 1.35;
+    }
+    .message-box {
+      padding: 13px;
+      border: 1px solid rgba(33,21,27,.10);
+      border-radius: 8px;
+      background: rgba(255,255,255,.70);
+      color: #4d3c45;
+      font-size: 13px;
+      line-height: 1.6;
+      white-space: pre-wrap;
+    }
+    .timeline {
+      display: grid;
+      gap: 8px;
+      margin-top: 14px;
+    }
+    .timeline div {
+      display: flex;
+      gap: 9px;
+      align-items: flex-start;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.45;
+    }
+    .timeline .material-symbols-outlined {
+      color: var(--sage);
+      font-size: 18px;
+      margin-top: 1px;
+    }
+    .toast {
+      position: fixed;
+      right: 18px;
+      bottom: 18px;
+      z-index: 40;
+      transform: translateY(18px);
+      opacity: 0;
+      pointer-events: none;
+      padding: 13px 15px;
+      border-radius: 999px;
+      color: #fff;
+      background: linear-gradient(135deg, var(--rose), var(--plum));
+      box-shadow: 0 20px 50px rgba(78,47,65,.22);
+      font-size: 12px;
+      font-weight: 900;
+      transition: .22s ease;
+    }
+    .toast.show {
+      transform: translateY(0);
+      opacity: 1;
+    }
+    @media (max-width: 980px) {
+      .hero,
+      .desk-grid { grid-template-columns: 1fr; }
+      .funnel,
+      .detail-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .nav-inner { align-items: flex-start; flex-direction: column; }
+      .lead-card { grid-template-columns: 48px minmax(0, 1fr); }
+      .lead-status { grid-column: 2; width: fit-content; }
+    }
+    @media (max-width: 620px) {
+      .funnel,
+      .detail-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <nav>
+    <div class="wrap nav-inner">
+      <a class="brand" href="./skinglow-creator-workspace.html?v=launchpanel1">
+        <span class="brand-icon material-symbols-outlined">contacts</span>
+        <span>Lead Desk <small>Seguimiento de venta</small></span>
+      </a>
+      <div class="actions">
+        <a class="btn" href="./skinglow-ads-lab.html?v=adslab1"><span class="material-symbols-outlined">campaign</span> Ads Lab</a>
+        <a class="btn" href="./quiz.html?quiz=skinglow-skin-quiz"><span class="material-symbols-outlined">quiz</span> Quiz</a>
+        <a class="btn primary" href="./skinglow-creator-workspace.html?v=leaddesk1"><span class="material-symbols-outlined">arrow_back</span> Workspace</a>
+      </div>
+    </div>
+  </nav>
+
+  <header class="wrap hero">
+    <section class="hero-card">
+      <span class="eyebrow"><span class="material-symbols-outlined">moving</span> Despues del anuncio</span>
+      <h1>Leads, seguimiento y cierre en un solo tablero.</h1>
+      <p class="lead">Esta demo muestra que el ecosistema no termina en el quiz: captura datos, entiende la etapa de cada persona y entrega mensajes para WhatsApp, email o cierre por checkout.</p>
+    </section>
+
+    <aside class="metrics">
+      <div class="metric-card"><span class="metric-icon material-symbols-outlined">group</span><div><strong id="metric-leads">4</strong><span>leads demo</span></div></div>
+      <div class="metric-card"><span class="metric-icon material-symbols-outlined">quiz</span><div><strong>71%</strong><span>terminan quiz</span></div></div>
+      <div class="metric-card"><span class="metric-icon material-symbols-outlined">payments</span><div><strong>$97</strong><span>oferta objetivo</span></div></div>
+    </aside>
+  </header>
+
+  <main class="wrap desk-grid">
+    <section class="panel">
+      <div class="panel-head">
+        <div>
+          <h2>Pipeline SkinGlow</h2>
+          <p>La creadora puede ver de donde viene cada persona y cual es el siguiente paso.</p>
+        </div>
+        <button class="btn primary" type="button" onclick="addDemoLead()"><span class="material-symbols-outlined">person_add</span> Simular lead</button>
+      </div>
+
+      <div class="funnel">
+        <div class="stage"><strong id="stage-quiz">2</strong><span>Quiz</span><small>Personas que respondieron diagnostico.</small></div>
+        <div class="stage"><strong id="stage-result">1</strong><span>Resultado</span><small>Vieron recomendacion personalizada.</small></div>
+        <div class="stage"><strong id="stage-whatsapp">1</strong><span>WhatsApp</span><small>Pidieron ayuda antes de comprar.</small></div>
+        <div class="stage"><strong id="stage-checkout">1</strong><span>Checkout</span><small>Llegaron a compra o abandono.</small></div>
+      </div>
+
+      <div class="lead-list" id="lead-list"></div>
+    </section>
+
+    <aside class="follow-card">
+      <div class="panel-head">
+        <div>
+          <span class="pill"><span class="material-symbols-outlined">auto_awesome</span> Siguiente accion</span>
+          <h2 style="margin:10px 0 0">Ficha del lead</h2>
+        </div>
+      </div>
+
+      <div class="profile-head">
+        <span class="avatar" id="profile-avatar">M</span>
+        <div>
+          <h3 id="profile-name">Mariana</h3>
+          <p id="profile-subtitle">Quiz - Piel reactiva que necesita calma</p>
+        </div>
+      </div>
+
+      <div class="detail-grid">
+        <div class="detail"><strong>Email</strong><span id="profile-email">mariana@email.com</span></div>
+        <div class="detail"><strong>Telefono</strong><span id="profile-phone">+1 469 000 0000</span></div>
+        <div class="detail"><strong>Origen</strong><span id="profile-source">Facebook Ad - Quiz</span></div>
+        <div class="detail"><strong>Estado</strong><span id="profile-stage">Resultado visto</span></div>
+      </div>
+
+      <div class="message-box" id="follow-message"></div>
+
+      <div class="actions" style="margin-top:14px">
+        <button class="btn primary" type="button" onclick="copyFollowMessage()"><span class="material-symbols-outlined">content_copy</span> Copiar mensaje</button>
+        <button class="btn" type="button" onclick="moveSelectedLead()"><span class="material-symbols-outlined">arrow_forward</span> Avanzar etapa</button>
+        <a class="btn" href="./skinglow-checkout-demo.html"><span class="material-symbols-outlined">payments</span> Checkout</a>
+      </div>
+
+      <div class="timeline" id="timeline"></div>
+    </aside>
+  </main>
+
+  <div id="toast" class="toast" role="status" aria-live="polite">Guardado</div>
+
+  <script>
+    const LEADS_KEY = "skinglow_demo_leads";
+    const STAGES = ["Quiz iniciado", "Resultado visto", "WhatsApp", "Checkout", "Cliente"];
+    const BASE_LEADS = [
+      {
+        name: "Mariana",
+        email: "mariana@email.com",
+        phone: "+1 469 000 0000",
+        source: "Facebook Ad - Quiz",
+        profile: "Piel reactiva que necesita calma",
+        stage: "Resultado visto",
+        note: "Tiene rojez y compro varios productos sin orden."
+      },
+      {
+        name: "Camila",
+        email: "camila@email.com",
+        phone: "+57 300 000 0000",
+        source: "Landing premium",
+        profile: "Piel apagada con falta de hidratacion",
+        stage: "Checkout",
+        note: "Quiere una rutina simple y pregunto por acceso a la mini app."
+      },
+      {
+        name: "Laura",
+        email: "laura@email.com",
+        phone: "+52 55 0000 0000",
+        source: "Instagram DM",
+        profile: "Piel grasa que necesita equilibrio",
+        stage: "WhatsApp",
+        note: "Quiere saber si el reto sirve para brotes."
+      },
+      {
+        name: "Sofia",
+        email: "sofia@email.com",
+        phone: "+1 786 000 0000",
+        source: "Facebook Ad - Quiz",
+        profile: "Piel con manchas y textura irregular",
+        stage: "Quiz iniciado",
+        note: "No termino el quiz; conviene recordatorio suave."
+      }
+    ];
+    let selectedIndex = 0;
+
+    function $(id) {
+      return document.getElementById(id);
+    }
+
+    function getLeads() {
+      try {
+        const saved = JSON.parse(localStorage.getItem(LEADS_KEY) || "null");
+        return Array.isArray(saved) && saved.length ? saved : BASE_LEADS;
+      } catch {
+        return BASE_LEADS;
+      }
+    }
+
+    function saveLeads(leads) {
+      localStorage.setItem(LEADS_KEY, JSON.stringify(leads));
+    }
+
+    function showToast(message) {
+      const toast = $("toast");
+      toast.textContent = message;
+      toast.classList.add("show");
+      window.clearTimeout(window.__leadToast);
+      window.__leadToast = window.setTimeout(() => toast.classList.remove("show"), 2200);
+    }
+
+    function initials(name) {
+      return String(name || "L").split(" ").map(part => part[0]).join("").slice(0, 2).toUpperCase();
+    }
+
+    function stageSummary(stage) {
+      if (stage === "Quiz iniciado") return "Debe terminar el diagnostico.";
+      if (stage === "Resultado visto") return "Enviar recomendacion y CTA.";
+      if (stage === "WhatsApp") return "Conversacion abierta.";
+      if (stage === "Checkout") return "Resolver duda de compra.";
+      return "Cliente con acceso.";
+    }
+
+    function followMessage(lead) {
+      if (lead.stage === "Quiz iniciado") {
+        return `Hola ${lead.name}, vi que empezaste el diagnostico SkinGlow. Si quieres, puedes terminarlo y te muestra una ruta segun las senales de tu piel.`;
+      }
+      if (lead.stage === "Resultado visto") {
+        return `Hola ${lead.name}, tu resultado fue "${lead.profile}". Te recomiendo empezar por una rutina simple de calma y registro. Si quieres, puedo pasarte el acceso al Reto Piel Clara en 21 dias.`;
+      }
+      if (lead.stage === "WhatsApp") {
+        return `Hola ${lead.name}, por lo que me cuentas, lo mas importante es no sumar mas productos sin saber que esta reaccionando. El reto incluye guia, mini app y seguimiento para hacerlo paso a paso.`;
+      }
+      if (lead.stage === "Checkout") {
+        return `Hola ${lead.name}, si estabas por entrar al reto, te recuerdo que incluye quiz, ebook, mini app privada y ruta de 21 dias. Te dejo el acceso al checkout para completar cuando estes lista.`;
+      }
+      return `Hola ${lead.name}, bienvenida a SkinGlow. Aqui tienes tu guia, mini app y checklist para empezar el dia 1.`;
+    }
+
+    function renderMetrics(leads) {
+      $("metric-leads").textContent = String(leads.length);
+      $("stage-quiz").textContent = String(leads.filter(lead => lead.stage === "Quiz iniciado").length);
+      $("stage-result").textContent = String(leads.filter(lead => lead.stage === "Resultado visto").length);
+      $("stage-whatsapp").textContent = String(leads.filter(lead => lead.stage === "WhatsApp").length);
+      $("stage-checkout").textContent = String(leads.filter(lead => lead.stage === "Checkout" || lead.stage === "Cliente").length);
+    }
+
+    function renderLeadList() {
+      const leads = getLeads();
+      renderMetrics(leads);
+      $("lead-list").innerHTML = leads.map((lead, index) => `
+        <article class="lead-card ${index === selectedIndex ? "active" : ""}" onclick="selectLead(${index})">
+          <span class="avatar">${initials(lead.name)}</span>
+          <div>
+            <strong>${lead.name}</strong>
+            <small>${lead.profile}<br>${lead.source} - ${stageSummary(lead.stage)}</small>
+          </div>
+          <span class="lead-status">${lead.stage}</span>
+        </article>
+      `).join("");
+      if (selectedIndex >= leads.length) selectedIndex = 0;
+      renderProfile(leads[selectedIndex]);
+    }
+
+    function renderProfile(lead) {
+      $("profile-avatar").textContent = initials(lead.name);
+      $("profile-name").textContent = lead.name;
+      $("profile-subtitle").textContent = `${lead.stage} - ${lead.profile}`;
+      $("profile-email").textContent = lead.email;
+      $("profile-phone").textContent = lead.phone;
+      $("profile-source").textContent = lead.source;
+      $("profile-stage").textContent = lead.stage;
+      $("follow-message").textContent = followMessage(lead);
+      $("timeline").innerHTML = [
+        `Origen: ${lead.source}`,
+        `Perfil detectado: ${lead.profile}`,
+        `Nota: ${lead.note}`,
+        `Proxima accion: ${stageSummary(lead.stage)}`
+      ].map(item => `<div><span class="material-symbols-outlined">task_alt</span><span>${item}</span></div>`).join("");
+    }
+
+    function selectLead(index) {
+      selectedIndex = index;
+      renderLeadList();
+    }
+
+    function addDemoLead() {
+      const leads = getLeads();
+      const next = {
+        name: `Lead ${leads.length + 1}`,
+        email: `lead${leads.length + 1}@email.com`,
+        phone: "+1 000 000 0000",
+        source: "Facebook Ad - Quiz",
+        profile: "Piel que necesita diagnostico inicial",
+        stage: "Quiz iniciado",
+        note: "Lead simulado desde anuncio para probar seguimiento."
+      };
+      leads.unshift(next);
+      selectedIndex = 0;
+      saveLeads(leads);
+      renderLeadList();
+      showToast("Lead demo agregado");
+    }
+
+    function moveSelectedLead() {
+      const leads = getLeads();
+      const lead = leads[selectedIndex];
+      const current = STAGES.indexOf(lead.stage);
+      lead.stage = STAGES[Math.min(current + 1, STAGES.length - 1)];
+      saveLeads(leads);
+      renderLeadList();
+      showToast("Lead avanzado de etapa");
+    }
+
+    async function copyFollowMessage() {
+      const lead = getLeads()[selectedIndex];
+      const text = followMessage(lead);
+      try {
+        await navigator.clipboard.writeText(text);
+        showToast("Mensaje copiado");
+      } catch {
+        window.prompt("Copia este mensaje:", text);
+      }
+    }
+
+    try {
+      renderLeadList();
+    } catch (error) {
+      console.warn("No se pudo preparar Lead Desk", error);
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,822 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>SkinGlow Offer Lab | Luminous Studio</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <script src="./skinglow-strategy-frameworks.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --ink: #21151b;
+      --muted: #75636b;
+      --rose: #c84f78;
+      --plum: #70405d;
+      --sage: #6f9d92;
+      --cream: #fff8f4;
+      --paper: #fffdf9;
+      --line: rgba(33,21,27,.12);
+      --shadow: 0 28px 80px rgba(78,47,65,.14);
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      min-height: 100dvh;
+      color: var(--ink);
+      font-family: "Plus Jakarta Sans", system-ui, sans-serif;
+      background:
+        radial-gradient(circle at 8% 10%, rgba(200,79,120,.15), transparent 28%),
+        radial-gradient(circle at 90% 6%, rgba(111,157,146,.17), transparent 30%),
+        linear-gradient(135deg, #fff8f4 0%, #f6ece7 46%, #eef7f4 100%);
+    }
+    a { color: inherit; text-decoration: none; }
+    .material-symbols-outlined {
+      font-family: "Material Symbols Outlined";
+      font-variation-settings: "FILL" 1, "wght" 650, "GRAD" 0, "opsz" 24;
+      line-height: 1;
+    }
+    .wrap {
+      width: min(1180px, calc(100% - 34px));
+      margin: 0 auto;
+    }
+    nav {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      padding: 14px 0;
+      background: linear-gradient(180deg, rgba(255,248,244,.94), rgba(255,248,244,.62));
+      backdrop-filter: blur(18px);
+    }
+    .nav-inner {
+      min-height: 64px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      padding: 10px 12px;
+      border: 1px solid rgba(255,255,255,.72);
+      border-radius: 8px;
+      background: rgba(255,255,255,.66);
+      box-shadow: 0 18px 50px rgba(78,47,65,.10);
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 11px;
+      font-weight: 900;
+    }
+    .brand-icon,
+    .icon {
+      display: grid;
+      place-items: center;
+      width: 42px;
+      height: 42px;
+      flex: 0 0 auto;
+      border-radius: 8px;
+      color: #fff;
+      background: linear-gradient(135deg, var(--rose), var(--sage));
+      box-shadow: 0 14px 30px rgba(78,47,65,.16);
+    }
+    .brand small {
+      display: block;
+      margin-top: 2px;
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 900;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+    .btn {
+      min-height: 44px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 0 15px;
+      border: 1px solid rgba(33,21,27,.12);
+      border-radius: 999px;
+      background: rgba(255,255,255,.84);
+      color: var(--ink);
+      font: inherit;
+      font-size: 13px;
+      font-weight: 900;
+      cursor: pointer;
+      box-shadow: 0 12px 30px rgba(78,47,65,.08);
+    }
+    .btn.primary {
+      border: 0;
+      color: #fff;
+      background: linear-gradient(135deg, var(--rose), var(--plum));
+    }
+    .btn.dark {
+      border: 0;
+      color: #fff;
+      background: #271923;
+    }
+    .hero {
+      display: grid;
+      grid-template-columns: minmax(0, 1.05fr) 360px;
+      gap: 18px;
+      align-items: stretch;
+      margin: 16px auto 18px;
+    }
+    .hero-card,
+    .intel-card,
+    .chat-panel,
+    .offer-panel,
+    .summary-card {
+      border: 1px solid rgba(255,255,255,.72);
+      border-radius: 8px;
+      background: rgba(255,255,255,.60);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(22px);
+    }
+    .hero-card {
+      min-height: 360px;
+      overflow: hidden;
+      position: relative;
+      display: grid;
+      align-content: end;
+      padding: clamp(24px, 5vw, 46px);
+      color: #fff;
+      background:
+        linear-gradient(90deg, rgba(33,21,27,.84), rgba(33,21,27,.28)),
+        url("https://images.unsplash.com/photo-1570554886111-e80fcca6a029?auto=format&fit=crop&w=1400&q=82") center / cover;
+    }
+    .hero-card::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(circle at 82% 18%, rgba(255,255,255,.18), transparent 25%),
+        linear-gradient(180deg, transparent 0%, rgba(33,21,27,.38) 100%);
+      pointer-events: none;
+    }
+    .hero-card > * { position: relative; z-index: 1; }
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      width: fit-content;
+      padding: 8px 11px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,.25);
+      background: rgba(255,255,255,.14);
+      color: #fff;
+      font-size: 12px;
+      font-weight: 900;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+    h1 {
+      max-width: 820px;
+      margin: 18px 0 14px;
+      font-family: "Instrument Serif", Georgia, serif;
+      font-size: clamp(52px, 8vw, 94px);
+      line-height: .88;
+      font-weight: 400;
+    }
+    .lead {
+      max-width: 760px;
+      margin: 0;
+      color: rgba(255,255,255,.82);
+      font-size: 17px;
+      line-height: 1.6;
+    }
+    .intel-card {
+      padding: 18px;
+      display: grid;
+      align-content: space-between;
+      gap: 16px;
+      background:
+        radial-gradient(circle at 100% 0%, rgba(111,157,146,.16), transparent 34%),
+        rgba(255,255,255,.62);
+    }
+    .intel-card h2 {
+      margin: 10px 0 8px;
+      font-size: 22px;
+      line-height: 1.12;
+    }
+    .intel-card p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.55;
+    }
+    .intel-stack {
+      display: grid;
+      gap: 9px;
+    }
+    .intel-row {
+      padding: 11px;
+      border: 1px solid rgba(33,21,27,.08);
+      border-radius: 8px;
+      background: rgba(255,255,255,.62);
+    }
+    .intel-row strong {
+      display: block;
+      font-size: 13px;
+    }
+    .intel-row small {
+      display: block;
+      margin-top: 3px;
+      color: var(--muted);
+      font-size: 11px;
+      line-height: 1.4;
+    }
+    .workspace {
+      display: grid;
+      grid-template-columns: minmax(320px, .78fr) minmax(0, 1.22fr);
+      gap: 18px;
+      margin-bottom: 40px;
+    }
+    .chat-panel,
+    .offer-panel {
+      padding: 18px;
+    }
+    .panel-head {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+    .panel-head h2 {
+      margin: 0;
+      font-size: 24px;
+      line-height: 1.08;
+    }
+    .panel-head p {
+      margin: 5px 0 0;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.45;
+    }
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      min-height: 32px;
+      padding: 0 11px;
+      border-radius: 999px;
+      border: 1px solid rgba(33,21,27,.10);
+      background: rgba(255,255,255,.62);
+      color: #8d365c;
+      font-size: 11px;
+      font-weight: 900;
+      white-space: nowrap;
+    }
+    .messages {
+      display: grid;
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+    .message {
+      max-width: 92%;
+      padding: 13px;
+      border-radius: 8px;
+      font-size: 13px;
+      line-height: 1.55;
+      box-shadow: 0 12px 30px rgba(78,47,65,.07);
+    }
+    .message.ai {
+      border: 1px solid rgba(33,21,27,.08);
+      background: rgba(255,255,255,.78);
+    }
+    .message.user {
+      justify-self: end;
+      color: #fff;
+      background: linear-gradient(135deg, var(--rose), var(--plum));
+    }
+    .prompt-box {
+      display: grid;
+      gap: 10px;
+      padding: 12px;
+      border: 1px solid rgba(33,21,27,.10);
+      border-radius: 8px;
+      background: rgba(255,255,255,.64);
+    }
+    textarea {
+      width: 100%;
+      min-height: 112px;
+      resize: vertical;
+      border: 1px solid rgba(33,21,27,.10);
+      border-radius: 8px;
+      outline: 0;
+      padding: 12px;
+      color: var(--ink);
+      background: rgba(255,255,255,.88);
+      font: inherit;
+      font-size: 13px;
+      line-height: 1.5;
+    }
+    .prompt-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 9px;
+    }
+    .expert-mode {
+      display: grid;
+      grid-template-columns: 42px minmax(0, 1fr);
+      gap: 12px;
+      margin: 14px 0;
+      padding: 13px;
+      border: 1px solid rgba(134,91,108,.15);
+      border-radius: 8px;
+      background:
+        radial-gradient(circle at 100% 0%, rgba(200,79,120,.12), transparent 34%),
+        linear-gradient(145deg, rgba(255,251,248,.92), rgba(239,246,243,.84));
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.84);
+    }
+    .expert-mode .expert-icon {
+      width: 42px;
+      height: 42px;
+      display: grid;
+      place-items: center;
+      border-radius: 8px;
+      color: #fff;
+      background: linear-gradient(135deg, var(--rose), var(--sage));
+      font-size: 21px;
+    }
+    .expert-mode strong {
+      display: block;
+      font-size: 14px;
+      line-height: 1.25;
+    }
+    .expert-mode p {
+      margin: 4px 0 0;
+      color: var(--muted);
+      font-size: 11px;
+      line-height: 1.45;
+    }
+    .expert-mode ul {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin: 10px 0 0;
+      padding: 0;
+      list-style: none;
+    }
+    .expert-mode li {
+      padding: 5px 7px;
+      border-radius: 999px;
+      background: rgba(200,79,120,.10);
+      color: #8d365c;
+      font-size: 10px;
+      font-weight: 900;
+    }
+    .offer-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+    .offer-card {
+      min-height: 156px;
+      padding: 16px;
+      border: 1px solid rgba(134,91,108,.15);
+      border-radius: 8px;
+      background:
+        radial-gradient(circle at 100% 0%, rgba(200,79,120,.10), transparent 34%),
+        linear-gradient(145deg, rgba(255,251,248,.90), rgba(246,241,236,.82));
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.82), 0 16px 42px rgba(78,47,65,.08);
+    }
+    .offer-card:nth-child(even) {
+      background:
+        radial-gradient(circle at 100% 0%, rgba(111,157,146,.13), transparent 34%),
+        linear-gradient(145deg, rgba(255,251,248,.90), rgba(239,246,243,.84));
+    }
+    .offer-card strong {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 9px;
+      font-size: 14px;
+    }
+    .offer-card .material-symbols-outlined {
+      width: 32px;
+      height: 32px;
+      display: grid;
+      place-items: center;
+      border-radius: 8px;
+      color: #fff;
+      background: linear-gradient(135deg, var(--rose), var(--sage));
+      font-size: 18px;
+    }
+    .offer-card p,
+    .offer-card li {
+      margin: 0;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.5;
+    }
+    .offer-card ul {
+      margin: 0;
+      padding-left: 18px;
+    }
+    .summary-card {
+      grid-column: 1 / -1;
+      padding: 18px;
+      background:
+        linear-gradient(135deg, rgba(49,35,45,.94), rgba(139,61,96,.88)),
+        radial-gradient(circle at 86% 2%, rgba(111,157,146,.26), transparent 34%);
+      color: #fff;
+      overflow: hidden;
+      position: relative;
+    }
+    .summary-card::before {
+      content: "";
+      position: absolute;
+      width: 260px;
+      height: 260px;
+      right: -120px;
+      top: -140px;
+      border-radius: 50%;
+      background: rgba(255,255,255,.12);
+    }
+    .summary-card > * { position: relative; z-index: 1; }
+    .summary-card h3 {
+      margin: 0 0 8px;
+      font-size: 25px;
+      line-height: 1.08;
+    }
+    .summary-card p {
+      max-width: 760px;
+      margin: 0;
+      color: rgba(255,255,255,.76);
+      font-size: 13px;
+      line-height: 1.55;
+    }
+    .summary-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 16px;
+    }
+    .summary-card .btn {
+      color: #fff;
+      background: rgba(255,255,255,.12);
+      border-color: rgba(255,255,255,.18);
+    }
+    .summary-card .btn.primary {
+      color: #3a2430;
+      background: #fff;
+      border: 0;
+    }
+    .toast {
+      position: fixed;
+      right: 18px;
+      bottom: 18px;
+      z-index: 40;
+      transform: translateY(18px);
+      opacity: 0;
+      pointer-events: none;
+      padding: 13px 15px;
+      border-radius: 999px;
+      color: #fff;
+      background: linear-gradient(135deg, var(--rose), var(--plum));
+      box-shadow: 0 20px 50px rgba(78,47,65,.22);
+      font-size: 12px;
+      font-weight: 900;
+      transition: .22s ease;
+    }
+    .toast.show {
+      transform: translateY(0);
+      opacity: 1;
+    }
+    @media (max-width: 980px) {
+      .hero,
+      .workspace { grid-template-columns: 1fr; }
+      .offer-grid { grid-template-columns: 1fr; }
+      .nav-inner { align-items: flex-start; flex-direction: column; }
+    }
+  </style>
+</head>
+<body>
+  <nav>
+    <div class="wrap nav-inner">
+      <a class="brand" href="./skinglow-creator-workspace.html?v=launchpanel1">
+        <span class="brand-icon material-symbols-outlined">psychology_alt</span>
+        <span>Offer Lab <small>Modelador de producto</small></span>
+      </a>
+      <div class="prompt-actions">
+        <a class="btn" href="./market-research-demo.html?v=brief1"><span class="material-symbols-outlined">travel_explore</span> Spy Lab</a>
+        <a class="btn" href="./skinglow-creator-workspace.html?v=offerlab1"><span class="material-symbols-outlined">arrow_back</span> Workspace</a>
+        <a class="btn primary" href="./skinglow-client-demo.html?v=gridfix2"><span class="material-symbols-outlined">visibility</span> Vista cliente</a>
+      </div>
+    </div>
+  </nav>
+
+  <header class="wrap hero">
+    <section class="hero-card">
+      <span class="eyebrow"><span class="material-symbols-outlined">auto_awesome</span> Paso 2 del hilo creador</span>
+      <h1>Convertir investigacion en una oferta que se pueda vender.</h1>
+      <p class="lead">Esta pantalla muestra como la plataforma toma senales del mercado, ordena la promesa, define el mecanismo del reto y prepara el paquete que luego alimenta mini app, ebook, quiz, landing y anuncios.</p>
+    </section>
+
+    <aside class="intel-card">
+      <div>
+        <span class="icon material-symbols-outlined">query_stats</span>
+        <h2>Entrada del sistema</h2>
+        <p>El estratega puede partir del Spy Lab o de una idea ya decidida por la creadora.</p>
+      </div>
+      <div class="intel-stack">
+        <div class="intel-row"><strong id="intel-market">Investigacion pendiente</strong><small id="intel-market-copy">Guarda una busqueda en Spy Lab para ver contexto real aqui.</small></div>
+        <div class="intel-row"><strong id="intel-framework">Marco estrategico</strong><small id="intel-framework-copy">La IA puede trabajar con enfoque de oferta, VSL, landing, quiz o Ads.</small></div>
+        <div class="intel-row"><strong>Producto demo</strong><small>SkinGlow AI: Reto Piel Clara en 21 dias.</small></div>
+        <div class="intel-row"><strong>Salida esperada</strong><small>Oferta empaquetada, objeciones, bonos, precio y CTA.</small></div>
+      </div>
+    </aside>
+  </header>
+
+  <main class="wrap workspace">
+    <section class="chat-panel">
+      <div class="panel-head">
+        <div>
+          <h2>Estratega IA</h2>
+          <p>Simula la conversacion que tendria una creadora para mejorar su producto antes de construir los activos.</p>
+        </div>
+        <span class="pill"><span class="material-symbols-outlined">smart_toy</span> Demo guiada</span>
+      </div>
+
+      <div class="messages" id="messages">
+        <div class="message ai">Primero voy a revisar la senal del mercado: deseo principal, objecion, lenguaje de la compradora y promesas repetidas.</div>
+        <div class="message user">Quiero vender un reto de cuidado de piel, pero que no se sienta como otro curso basico.</div>
+        <div class="message ai">Perfecto. Lo vamos a convertir en un sistema premium: diagnostico, guia, rutina, seguimiento y acceso privado.</div>
+      </div>
+
+      <div class="expert-mode" id="expert-mode">
+        <span class="expert-icon material-symbols-outlined" id="expert-icon">deployed_code</span>
+        <div>
+          <strong id="expert-title">Modo experto activo</strong>
+          <p id="expert-copy">El bot usa un marco de oferta para organizar promesa, mecanismo, objeciones, precio y CTA.</p>
+          <ul id="expert-outputs"></ul>
+        </div>
+      </div>
+
+      <div class="prompt-box">
+        <textarea id="creator-prompt">Tengo una audiencia de mujeres que compran productos para la piel pero no saben que necesita su piel. Quiero crear una oferta premium con quiz, ebook, mini app y seguimiento.</textarea>
+        <div class="prompt-actions">
+          <button class="btn primary" type="button" onclick="generateOffer()"><span class="material-symbols-outlined">auto_fix_high</span> Generar oferta</button>
+          <button class="btn" type="button" onclick="useMarketBrief()"><span class="material-symbols-outlined">input</span> Usar Spy Lab</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="offer-panel">
+      <div class="panel-head">
+        <div>
+          <h2>Oferta modelada</h2>
+          <p>Este es el resumen que puede alimentar el resto de la plataforma.</p>
+        </div>
+        <span class="pill" id="offer-status"><span class="material-symbols-outlined">verified</span> Lista</span>
+      </div>
+
+      <div class="offer-grid">
+        <article class="offer-card">
+          <strong><span class="material-symbols-outlined">favorite</span> Promesa</strong>
+          <p id="offer-promise">Entender que necesita tu piel y seguir una rutina simple de 21 dias sin comprar productos al azar.</p>
+        </article>
+        <article class="offer-card">
+          <strong><span class="material-symbols-outlined">schema</span> Mecanismo</strong>
+          <p id="offer-mechanism">Metodo Piel Clara: diagnostico, senales visibles, rutina minima, seguimiento diario y ajustes por respuesta de la piel.</p>
+        </article>
+        <article class="offer-card">
+          <strong><span class="material-symbols-outlined">inventory_2</span> Paquete</strong>
+          <ul id="offer-stack">
+            <li>Quiz diagnostico de perfil de piel</li>
+            <li>Ebook guia de rutina y errores comunes</li>
+            <li>Mini app privada con escaneo, diario y checklist</li>
+            <li>Plan de 21 dias con seguimiento</li>
+          </ul>
+        </article>
+        <article class="offer-card">
+          <strong><span class="material-symbols-outlined">psychology_alt</span> Objeciones</strong>
+          <ul id="offer-objections">
+            <li>No se que productos usar</li>
+            <li>Mi piel reacciona facil</li>
+            <li>Ya probe varias rutinas</li>
+            <li>No tengo tiempo para algo complicado</li>
+          </ul>
+        </article>
+        <article class="offer-card">
+          <strong><span class="material-symbols-outlined">payments</span> Precio sugerido</strong>
+          <p id="offer-price">$47 para validar rapido. $97 si incluye seguimiento, mini app privada y bonos de rutina.</p>
+        </article>
+        <article class="offer-card">
+          <strong><span class="material-symbols-outlined">campaign</span> Angulos de venta</strong>
+          <ul id="offer-angles">
+            <li>Deja de comprar productos sin saber si son para tu piel</li>
+            <li>Tu piel necesita orden, no una rutina de 12 pasos</li>
+            <li>Descubre que te esta irritando antes de gastar mas</li>
+          </ul>
+        </article>
+
+        <article class="summary-card">
+          <h3 id="offer-headline">Reto Piel Clara en 21 dias</h3>
+          <p id="offer-summary">Una oferta para mujeres que quieren claridad, calma y una rutina simple. El valor premium no esta solo en el contenido: esta en el diagnostico, la personalizacion, el acompanamiento y la mini app posterior a la compra.</p>
+          <div class="summary-actions">
+            <button class="btn primary" type="button" onclick="saveOfferToWorkspace()"><span class="material-symbols-outlined">save</span> Guardar en workspace</button>
+            <button class="btn" type="button" onclick="copyOfferSummary()"><span class="material-symbols-outlined">content_copy</span> Copiar oferta</button>
+            <a class="btn" href="./skinglow-creator-workspace.html?v=offerlab1"><span class="material-symbols-outlined">arrow_forward</span> Volver al hilo</a>
+          </div>
+        </article>
+      </div>
+    </section>
+  </main>
+
+  <div id="toast" class="toast" role="status" aria-live="polite">Guardado</div>
+
+  <script>
+    const MARKET_SEARCH_KEY = "luminous_market_search_demo";
+    const MARKET_BRIEF_KEY = "luminous_market_brief_latest";
+    const OFFER_KEY = "skinglow_offer_model";
+    const CREATOR_BRIEF_KEY = "skinglow_creator_brief";
+
+    function $(id) {
+      return document.getElementById(id);
+    }
+
+    function getMarketResearch() {
+      try {
+        const saved = JSON.parse(localStorage.getItem(MARKET_SEARCH_KEY) || "{}") || {};
+        const fallbackBrief = localStorage.getItem(MARKET_BRIEF_KEY) || "";
+        return {
+          ...saved,
+          brief: saved.brief || fallbackBrief,
+          results: Array.isArray(saved.results) ? saved.results : []
+        };
+      } catch {
+        return { brief: localStorage.getItem(MARKET_BRIEF_KEY) || "", results: [] };
+      }
+    }
+
+    function showToast(message) {
+      const toast = $("toast");
+      toast.textContent = message;
+      toast.classList.add("show");
+      window.clearTimeout(window.__offerToast);
+      window.__offerToast = window.setTimeout(() => toast.classList.remove("show"), 2200);
+    }
+
+    function getStrategyFramework() {
+      return window.SKINGLOW_STRATEGY?.getStrategyFor?.("offer") || window.SKINGLOW_STRATEGY?.getSavedFramework?.() || null;
+    }
+
+    function renderMarketStatus() {
+      const market = getMarketResearch();
+      const hasBrief = Boolean(market.brief && market.brief.trim());
+      $("intel-market").textContent = hasBrief ? "Brief de Spy Lab conectado" : "Investigacion pendiente";
+      $("intel-market-copy").textContent = hasBrief
+        ? `${market.results?.length || 0} senales guardadas para usar en la oferta.`
+        : "Guarda una busqueda en Spy Lab para ver contexto real aqui.";
+    }
+
+    function renderFrameworkStatus() {
+      const framework = getStrategyFramework();
+      if (!$("intel-framework")) return;
+      $("intel-framework").textContent = framework ? framework.title : "Marco estrategico base";
+      $("intel-framework-copy").textContent = framework
+        ? `Bot de oferta: ${framework.use} Inspirado en frameworks publicos de: ${framework.inspiredBy}.`
+        : "Selecciona un marco desde el workspace para dirigir este chatbot.";
+    }
+
+    function renderExpertMode() {
+      const framework = getStrategyFramework();
+      if (!framework || !$("expert-title")) return;
+      $("expert-icon").textContent = framework.icon;
+      $("expert-title").textContent = `Modo experto: ${framework.title}`;
+      $("expert-copy").textContent = `Inspirado en frameworks publicos de: ${framework.inspiredBy}. Este bot debe entregar ${framework.outputs.join(", ")}.`;
+      $("expert-outputs").innerHTML = framework.outputs.map(item => `<li>${item}</li>`).join("");
+    }
+
+    function setList(id, items) {
+      $(id).innerHTML = items.map(item => `<li>${item}</li>`).join("");
+    }
+
+    function setOffer(model) {
+      $("offer-promise").textContent = model.promise;
+      $("offer-mechanism").textContent = model.mechanism;
+      setList("offer-stack", model.stack);
+      setList("offer-objections", model.objections);
+      $("offer-price").textContent = model.price;
+      setList("offer-angles", model.angles);
+      $("offer-headline").textContent = model.headline;
+      $("offer-summary").textContent = model.summary;
+      $("offer-status").innerHTML = '<span class="material-symbols-outlined">verified</span> Lista';
+    }
+
+    function buildOfferModel(source) {
+      const prompt = $("creator-prompt").value.trim();
+      const hasMarket = source && source.brief;
+      const framework = getStrategyFramework();
+      const frameworkNote = framework
+        ? ` Marco aplicado: ${framework.title}. ${framework.botInstruction}`
+        : "";
+      return {
+        headline: "Reto Piel Clara en 21 dias",
+        promise: hasMarket
+          ? "Ordenar la rutina de piel con base en senales reales: rojez, textura, manchas, brotes y compras impulsivas."
+          : "Entender que necesita tu piel y seguir una rutina simple de 21 dias sin comprar productos al azar.",
+        mechanism: "Metodo Piel Clara: escaneo visual, quiz diagnostico, rutina minima, diario de reaccion y ajustes semanales.",
+        stack: [
+          "Quiz diagnostico para segmentar perfil y objecion principal",
+          "Ebook guia con rutina base, errores y lista de ingredientes",
+          "Mini app privada con escaneo, checklist, diario, FAQ y asistente IA",
+          "Plan de 21 dias con recordatorios y seguimiento posterior"
+        ],
+        objections: [
+          "Ya probe muchas rutinas y nada me funciono",
+          "Mi piel se irrita facil y me da miedo empeorar",
+          "No se si necesito hidratacion, calma, acne o manchas",
+          "No quiero comprar mas productos innecesarios"
+        ],
+        price: "$47 para validar. $97 como oferta completa con mini app, ebook, seguimiento y acceso privado.",
+        angles: [
+          "Tu piel no necesita mas productos: necesita una lectura clara",
+          "Deja de armar rutinas por TikTok y empieza por tu diagnostico",
+          "21 dias para ordenar tu piel sin una rutina imposible"
+        ],
+        summary: `Producto basado en: ${prompt || "reto de cuidado de piel"}. La oferta se vende como claridad y acompanamiento, no como informacion suelta. El sistema aumenta valor percibido porque une diagnostico, contenido, herramienta interactiva y seguimiento.${frameworkNote}`
+      };
+    }
+
+    function generateOffer() {
+      const model = buildOfferModel(null);
+      setOffer(model);
+      localStorage.setItem(OFFER_KEY, JSON.stringify(model));
+      $("messages").insertAdjacentHTML("beforeend", '<div class="message ai">Listo. Converti la idea en una oferta empaquetada con promesa, mecanismo, objeciones, precio y angulos de anuncios.</div>');
+      showToast("Oferta generada");
+    }
+
+    function useMarketBrief() {
+      const market = getMarketResearch();
+      if (!market.brief) {
+        showToast("Primero guarda una investigacion en Spy Lab");
+        return;
+      }
+      const framework = getStrategyFramework();
+      const frameworkPrompt = framework && window.SKINGLOW_STRATEGY
+        ? `\n\nUsa tambien este marco estrategico:\n${window.SKINGLOW_STRATEGY.buildPromptForTask("offer", { name: "SkinGlow AI", promise: "Reto Piel Clara en 21 dias" })}`
+        : "";
+      $("creator-prompt").value = `Usa este brief de mercado para modelar la oferta SkinGlow:\n\n${market.brief.slice(0, 1200)}${frameworkPrompt}`;
+      const model = buildOfferModel(market);
+      setOffer(model);
+      localStorage.setItem(OFFER_KEY, JSON.stringify(model));
+      $("messages").insertAdjacentHTML("beforeend", '<div class="message ai">Ya conecte el brief de Spy Lab. La oferta ahora parte de senales de mercado y no solo de una idea.</div>');
+      showToast("Spy Lab aplicado a la oferta");
+    }
+
+    function saveOfferToWorkspace() {
+      const model = JSON.parse(localStorage.getItem(OFFER_KEY) || "null") || buildOfferModel(getMarketResearch());
+      localStorage.setItem(OFFER_KEY, JSON.stringify(model));
+      localStorage.setItem(CREATOR_BRIEF_KEY, JSON.stringify({
+        name: "SkinGlow AI: Reto Piel Clara en 21 dias",
+        price: "$47 - $97",
+        promise: model.promise,
+        audience: "Mujeres con piel sensible, manchas, brotes, rojez o exceso de productos sin claridad",
+        nextStep: "Responder el quiz diagnostico y entrar al reto con ebook, mini app y seguimiento"
+      }));
+      showToast("Oferta guardada en workspace");
+    }
+
+    async function copyOfferSummary() {
+      const model = JSON.parse(localStorage.getItem(OFFER_KEY) || "null") || buildOfferModel(getMarketResearch());
+      const text = `Oferta: ${model.headline}
+
+Promesa: ${model.promise}
+Mecanismo: ${model.mechanism}
+Precio: ${model.price}
+
+Paquete:
+- ${model.stack.join("\n- ")}
+
+Objeciones:
+- ${model.objections.join("\n- ")}
+
+Angulos:
+- ${model.angles.join("\n- ")}
+
+Resumen: ${model.summary}`;
+      try {
+        await navigator.clipboard.writeText(text);
+        showToast("Oferta copiada");
+      } catch {
+        window.prompt("Copia esta oferta:", text);
+      }
+    }
+
+    try {
+      renderMarketStatus();
+      renderFrameworkStatus();
+      renderExpertMode();
+      const savedOffer = JSON.parse(localStorage.getItem(OFFER_KEY) || "null");
+      setOffer(savedOffer || buildOfferModel(getMarketResearch()));
+    } catch (error) {
+      console.warn("No se pudo preparar Offer Lab", error);
+    }
+  </script>
+</body>
+</html>

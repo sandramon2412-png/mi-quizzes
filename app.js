@@ -10,6 +10,7 @@ const KEYS = {
   MINI_APPS: 'ls_mini_apps',
   LANDINGS: 'ls_landings',
   EBOOKS:   'ls_ebooks',
+  PROJECTS: 'ls_projects',
   CURRENT_QUIZ_ID: 'ls_current_quiz_id',
   CURRENT_ANSWERS: 'ls_current_answers',
   ANALYTICS: 'ls_analytics',
@@ -261,6 +262,37 @@ const Ebooks = {
 };
 
 // ── Analytics ──────────────────────────────────────────────
+// Complete creator projects: connected funnels/products made from multiple assets.
+const Projects = {
+  getAll() { return Store.get(KEYS.PROJECTS) || []; },
+  get(id) { return this.getAll().find(p => p.id === id) || null; },
+  save(project) {
+    const all = this.getAll();
+    const idx = all.findIndex(p => p.id === project.id);
+    const next = {
+      created_at: project.created_at || new Date().toISOString(),
+      ...project,
+      updated_at: new Date().toISOString(),
+    };
+    if (idx >= 0) all[idx] = { ...all[idx], ...next };
+    else all.unshift(next);
+    Store.set(KEYS.PROJECTS, all);
+    return next;
+  },
+  create(data) {
+    return this.save({
+      id: crypto.randomUUID(),
+      status: 'draft',
+      assets: [],
+      ...data,
+    });
+  },
+  delete(id) {
+    Store.set(KEYS.PROJECTS, this.getAll().filter(p => p.id !== id));
+  },
+};
+
+// Analytics
 const Analytics = {
   getAll() { return Store.get(KEYS.ANALYTICS) || {}; },
   _save(data) { Store.set(KEYS.ANALYTICS, data); },

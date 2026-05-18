@@ -7,10 +7,12 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="./supabase-config.js"></script>
 <script src="./app.js?v=offer-demo-1"></script>
+<script src="./skinglow-demo-data.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.2/dist/confetti.browser.min.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
 <script>
+  window.tailwind = window.tailwind || {};
   tailwind.config = {
     theme: {
       extend: {
@@ -31,6 +33,17 @@
   }
 </script>
 <style>
+  .material-symbols-outlined {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    max-width: 1em;
+    overflow: hidden;
+    line-height: 1;
+    letter-spacing: 0;
+    text-transform: none;
+    vertical-align: middle;
+  }
   :root {
     --brand:#8B6AA0;
     --brand-light:#C4A7D7;
@@ -176,6 +189,83 @@
     position: relative;
     z-index: 1;
   }
+  .ecosystem-panel {
+    position: relative;
+    overflow: hidden;
+    border-radius: 30px;
+    border: 1px solid rgba(255,255,255,0.16);
+    background:
+      radial-gradient(circle at 14% 18%, color-mix(in srgb, var(--brand-light) 28%, transparent), transparent 22rem),
+      radial-gradient(circle at 90% 96%, color-mix(in srgb, var(--brand) 26%, transparent), transparent 24rem),
+      linear-gradient(180deg, rgba(255,255,255,0.11), rgba(255,255,255,0.055)),
+      rgba(20,20,27,0.82);
+    box-shadow: 0 24px 80px rgba(0,0,0,0.26), inset 0 1px 0 rgba(255,255,255,0.14);
+    backdrop-filter: blur(22px) saturate(1.2);
+  }
+  .ecosystem-panel::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background:
+      linear-gradient(90deg, rgba(255,255,255,0.07) 1px, transparent 1px),
+      linear-gradient(rgba(255,255,255,0.06) 1px, transparent 1px);
+    background-size: 38px 38px;
+    mask-image: linear-gradient(180deg, rgba(0,0,0,0.75), transparent 82%);
+    pointer-events: none;
+  }
+  .ecosystem-card {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    min-height: 172px;
+    border-radius: 22px;
+    border: 1px solid rgba(255,255,255,0.13);
+    background: rgba(255,255,255,0.065);
+    padding: 18px;
+    color: #fff;
+    transition: transform 0.22s ease, border-color 0.22s ease, background 0.22s ease;
+  }
+  .ecosystem-card.is-active:hover {
+    transform: translateY(-3px);
+    border-color: color-mix(in srgb, var(--brand-light) 72%, rgba(255,255,255,0.3));
+    background: rgba(255,255,255,0.095);
+  }
+  .ecosystem-card.is-pending {
+    opacity: 0.78;
+  }
+  .ecosystem-icon {
+    width: 42px;
+    height: 42px;
+    border-radius: 16px;
+    display: grid;
+    place-items: center;
+    color: #fff;
+    background: linear-gradient(135deg, var(--brand), var(--brand-light));
+    box-shadow: 0 14px 36px color-mix(in srgb, var(--brand) 28%, transparent);
+  }
+  .ecosystem-status {
+    width: max-content;
+    border-radius: 999px;
+    padding: 6px 10px;
+    font-size: 10px;
+    font-weight: 900;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: #fff;
+    background: rgba(255,255,255,0.12);
+    border: 1px solid rgba(255,255,255,0.13);
+  }
+  .ecosystem-card.is-active .ecosystem-status {
+    background: color-mix(in srgb, var(--brand) 46%, rgba(255,255,255,0.16));
+    border-color: color-mix(in srgb, var(--brand-light) 58%, rgba(255,255,255,0.18));
+  }
+  .ecosystem-card h3,
+  .ecosystem-card p,
+  .ecosystem-card span {
+    color: #fff !important;
+  }
   .next-action-card h3,
   .next-action-card p,
   .next-action-card span {
@@ -275,6 +365,96 @@
   :root[data-quiz-mode="dark"] .text-gray-600 {
     color: var(--brand-muted) !important;
   }
+  .result-skinglow-video {
+    display: none;
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    filter: saturate(.86) contrast(1.05) brightness(.72);
+  }
+  :root[data-quiz-theme="skinglow"] body {
+    background:
+      radial-gradient(circle at 14% 10%, rgba(200,79,120,.18), transparent 28rem),
+      radial-gradient(circle at 88% 18%, rgba(111,157,146,.18), transparent 30rem),
+      linear-gradient(135deg,#21161b 0%,#f4e7df 36%,#fffaf6 100%) !important;
+    color:#21161b;
+  }
+  :root[data-quiz-theme="skinglow"] header {
+    background:rgba(255,250,246,.82) !important;
+    border-color:rgba(33,22,27,.10) !important;
+  }
+  :root[data-quiz-theme="skinglow"] #header-brand,
+  :root[data-quiz-theme="skinglow"] #creator-link {
+    color:#70405d !important;
+  }
+  :root[data-quiz-theme="skinglow"] .report-card {
+    background:linear-gradient(145deg,rgba(255,255,255,.92),rgba(255,248,244,.72)) !important;
+    border-color:rgba(255,255,255,.58);
+    box-shadow:0 34px 90px rgba(42,25,38,.18), inset 0 1px 0 rgba(255,255,255,.40);
+  }
+  :root[data-quiz-theme="skinglow"] .report-card > .relative:first-child {
+    min-height:360px;
+    background:#21161b url("https://assets.mixkit.co/videos/51179/51179-thumb-720-0.jpg") center / cover no-repeat !important;
+  }
+  :root[data-quiz-theme="skinglow"] .report-card > .relative:first-child::before {
+    background:
+      linear-gradient(180deg,rgba(25,15,20,.14),rgba(25,15,20,.84)),
+      radial-gradient(circle at 82% 18%,rgba(200,79,120,.26),transparent 32%);
+  }
+  :root[data-quiz-theme="skinglow"] .result-skinglow-video { display:block; }
+  :root[data-quiz-theme="skinglow"] .report-card > .bg-white,
+  :root[data-quiz-theme="skinglow"] #solution-block .bg-white {
+    background:linear-gradient(180deg,#fffdf9,#fff6f0) !important;
+    color:#21161b;
+  }
+  :root[data-quiz-theme="skinglow"] .report-card .text-gray-900,
+  :root[data-quiz-theme="skinglow"] .report-card .text-gray-800,
+  :root[data-quiz-theme="skinglow"] .report-card .text-gray-700,
+  :root[data-quiz-theme="skinglow"] main > .fade-up .text-gray-800,
+  :root[data-quiz-theme="skinglow"] main > .fade-up-3 .text-gray-800,
+  :root[data-quiz-theme="skinglow"] #solution-block .text-brand {
+    color:#21161b !important;
+  }
+  :root[data-quiz-theme="skinglow"] .report-card .text-gray-600,
+  :root[data-quiz-theme="skinglow"] .report-card .text-gray-500,
+  :root[data-quiz-theme="skinglow"] .report-card .text-gray-400,
+  :root[data-quiz-theme="skinglow"] main > .fade-up .text-gray-500,
+  :root[data-quiz-theme="skinglow"] main > .fade-up-3 .text-gray-500,
+  :root[data-quiz-theme="skinglow"] main > .fade-up-3 .text-gray-400 {
+    color:#75616a !important;
+  }
+  :root[data-quiz-theme="skinglow"] #result-brand-card,
+  :root[data-quiz-theme="skinglow"] .fade-up > span,
+  :root[data-quiz-theme="skinglow"] .report-card .bg-brand-bg\/40,
+  :root[data-quiz-theme="skinglow"] #solution-block {
+    background:rgba(255,253,249,.78) !important;
+    border-color:rgba(33,22,27,.10) !important;
+    color:#21161b !important;
+  }
+  :root[data-quiz-theme="skinglow"] .insight-card {
+    background:rgba(255,253,249,.76);
+    border-color:rgba(33,22,27,.10);
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.58), 0 16px 44px -32px rgba(42,25,38,.50);
+  }
+  :root[data-quiz-theme="skinglow"] .next-action-card {
+    background:
+      radial-gradient(circle at 88% 12%,rgba(111,157,146,.18),transparent 34%),
+      linear-gradient(145deg,#fffdf9,#fff6f0) !important;
+    border-color:rgba(33,22,27,.10);
+    color:#21161b;
+  }
+  :root[data-quiz-theme="skinglow"] .next-action-card h3,
+  :root[data-quiz-theme="skinglow"] .next-action-card p,
+  :root[data-quiz-theme="skinglow"] .next-action-card span {
+    color:#21161b !important;
+  }
+  :root[data-quiz-theme="skinglow"] .next-action-card p { color:#75616a !important; }
+  :root[data-quiz-theme="skinglow"] #all-profiles-grid > div {
+    background:rgba(255,253,249,.76) !important;
+    border-color:rgba(33,22,27,.10) !important;
+  }
 </style>
 </head>
 <body class="min-h-screen">
@@ -325,6 +505,9 @@
 
     <!-- Profile visual strip -->
     <div class="relative px-8 pt-12 pb-8 text-center" style="background:linear-gradient(160deg,var(--brand-bg) 0%,var(--brand-surface) 80%)">
+      <video class="result-skinglow-video" autoplay muted loop playsinline poster="https://assets.mixkit.co/videos/51179/51179-thumb-720-0.jpg">
+        <source src="https://assets.mixkit.co/videos/51179/51179-720.mp4" type="video/mp4" />
+      </video>
       <!-- Decorative petals -->
       <div class="absolute top-5 left-7 w-2 h-2 rounded-full bg-brand/25 select-none pointer-events-none"></div>
       <div class="absolute top-7 right-9 w-10 h-px bg-brand/20 rotate-45 select-none pointer-events-none"></div>
@@ -414,7 +597,21 @@
         <span class="material-symbols-outlined align-middle mr-1" style="font-size:16px">calendar_month</span> Agendar una llamada
       </a>
 
-      <div id="result-action-cards" class="grid grid-cols-1 md:grid-cols-3 gap-4 pt-2"></div>
+      <div id="result-action-cards" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 pt-2"></div>
+
+      <section id="result-ecosystem" class="ecosystem-panel hidden p-5 md:p-6">
+        <div class="relative z-[1] flex flex-col md:flex-row md:items-end md:justify-between gap-3 mb-5">
+          <div>
+            <p class="text-[10px] font-black tracking-[0.2em] uppercase text-white/60 mb-2">Sistema completo</p>
+            <h3 class="font-serif text-2xl font-semibold text-white">Tu experiencia personalizada</h3>
+            <p id="ecosystem-copy" class="text-sm text-white/65 leading-relaxed mt-2 max-w-2xl">
+              Este resultado puede activar el siguiente paso de venta: guía, mini app, página y seguimiento.
+            </p>
+          </div>
+          <span id="ecosystem-count" class="ecosystem-status">0 activos</span>
+        </div>
+        <div id="ecosystem-cards" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3"></div>
+      </section>
 
       <p id="result-trust-note" class="text-xs text-gray-300 text-center flex items-center justify-center gap-1.5">
         <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
@@ -447,7 +644,7 @@
       <h3 class="font-serif text-xl font-semibold text-gray-800">Otros caminos posibles</h3>
       <p class="text-gray-400 text-sm mt-1">Cada perfil muestra una ruta distinta según las respuestas.</p>
     </div>
-    <div id="all-profiles-grid" class="grid grid-cols-1 md:grid-cols-3 gap-4"></div>
+    <div id="all-profiles-grid" class="grid grid-cols-1 sm:grid-cols-2 gap-4"></div>
   </div>
 
   <!-- ── FOOTER CTA (hide when white-label) ── -->
@@ -493,8 +690,15 @@
       const localQuiz = Quizzes.get(quizId);
       if (localQuiz) quiz = { ...localQuiz, ...(quiz || {}) };
       if (!quiz) quiz = Quizzes.get(quizId);
+      if (!quiz && typeof getSkinGlowQuiz === 'function') quiz = getSkinGlowQuiz(quizId);
     }
     if (!quiz) quiz = DEMO_QUIZ;
+
+    const isSkinGlowResult = !!(quiz && /skinglow|piel clara|skincare/i.test(`${quiz.id || ''} ${quiz.brandName || ''} ${quiz.product || ''}`));
+    if (isSkinGlowResult) {
+      quiz.showAllProfiles = false;
+      quiz.showLuminousCta = false;
+    }
 
     // Track response (único por visitante, por mes) y verificar límite del plan
     const ownerId = quiz.user_id || quiz.owner_id || quiz.userId;
@@ -656,9 +860,10 @@
       btnCta.href = ctaDest;
       if (/^https?:\/\//.test(ctaDest)) { btnCta.target = '_blank'; btnCta.rel = 'noopener noreferrer'; }
     } else {
-      btnCta.textContent = 'Destino pendiente';
-      btnCta.removeAttribute('href');
-      btnCta.classList.add('opacity-60', 'cursor-not-allowed');
+      btnCta.textContent = 'Ver mi plan recomendado →';
+      btnCta.href = '#result-ecosystem';
+      btnCta.removeAttribute('target');
+      btnCta.removeAttribute('rel');
     }
 
     // Meta Pixel
@@ -688,7 +893,12 @@
     // Mini-App bonus
     let linkedMiniApp = null;
     if (quiz.miniAppId) {
-      const miniApp = MiniApps.get(quiz.miniAppId);
+      let miniApp = typeof getSkinGlowMiniApp === 'function' ? getSkinGlowMiniApp(quiz.miniAppId) : null;
+      if (!miniApp) miniApp = MiniApps.get(quiz.miniAppId);
+      if (!miniApp && typeof DB !== 'undefined' && DB.miniApps?.get) {
+        try { miniApp = await DB.miniApps.get(quiz.miniAppId); } catch (_) {}
+      }
+      if (!miniApp && typeof getSkinGlowMiniApp === 'function') miniApp = getSkinGlowMiniApp(quiz.miniAppId);
       if (miniApp) {
         linkedMiniApp = miniApp;
         document.getElementById('bonus-icon').innerHTML = "<span class=\"material-symbols-outlined\" style=\"font-size:26px;font-variation-settings:'FILL' 1\">deployed_code</span>";
@@ -699,7 +909,15 @@
       }
     }
 
-    renderResultActionCards({ quiz, profile, ctaDest, ctaText, calendlyUrl, miniApp: linkedMiniApp });
+    const linkedEbook = await resolveEbookResource(quiz, profile);
+    const landingHref = buildLandingHref(quiz);
+    if (isSkinGlowResult) {
+      document.getElementById('result-action-cards')?.classList.add('hidden');
+      document.getElementById('result-ecosystem')?.classList.add('hidden');
+    } else {
+      renderResultActionCards({ quiz, profile, ctaDest, ctaText, calendlyUrl, miniApp: linkedMiniApp, ebook: linkedEbook, landingHref });
+      renderResultEcosystem({ quiz, profile, ctaDest, ctaText, calendlyUrl, miniApp: linkedMiniApp, ebook: linkedEbook, landingHref });
+    }
 
     // All profiles
     if (quiz.showAllProfiles === true && quiz.profiles && quiz.profiles.length > 1) {
@@ -729,38 +947,102 @@
     cards.push({ title, description, href, icon, label });
   }
 
-  function renderResultActionCards({ quiz, profile, ctaDest, ctaText, calendlyUrl, miniApp }) {
+  function getFirstValue(...values) {
+    return values.find(value => value !== undefined && value !== null && String(value).trim() !== '') || '';
+  }
+
+  function normalizeInternalHref(value) {
+    const href = String(value || '').trim();
+    if (!href) return '';
+    return href;
+  }
+
+  function buildLandingHref(quiz) {
+    const slug = getFirstValue(quiz.landingSlug, quiz.settings?.landingSlug);
+    if (slug) return `./landing-view.html?slug=${encodeURIComponent(slug)}`;
+    const landingId = getFirstValue(quiz.landingId, quiz.settings?.landingId);
+    if (landingId) return `./landing-builder.html?id=${encodeURIComponent(landingId)}`;
+    return normalizeInternalHref(getFirstValue(quiz.landingUrl, quiz.productUrl));
+  }
+
+  async function resolveEbookResource(quiz, profile) {
+    const directUrl = getFirstValue(profile?.ebookUrl, quiz.ebookUrl, quiz.leadMagnetUrl, quiz.settings?.ebookUrl, quiz.settings?.leadMagnetUrl);
+    const ebookTitle = getFirstValue(profile?.ebookTitle, quiz.ebookTitle, quiz.settings?.ebookTitle, quiz.product, 'Ebook recomendado');
+    const ebookDescription = getFirstValue(profile?.ebookDescription, quiz.ebookDescription, quiz.settings?.ebookDescription, 'Abre el recurso recomendado para tu resultado.');
+    const ebookId = getFirstValue(profile?.ebookId, quiz.ebookId, quiz.settings?.ebookId);
+    if (directUrl) {
+      return {
+        id: ebookId,
+        title: ebookTitle,
+        description: ebookDescription,
+        href: directUrl,
+        source: 'url'
+      };
+    }
+    let ebook = ebookId ? Ebooks.get(ebookId) : null;
+    if (!ebook && ebookId && typeof DB !== 'undefined' && DB.ebooks?.get) {
+      try { ebook = await DB.ebooks.get(ebookId); } catch (_) {}
+    }
+    if (ebook) {
+      return {
+        id: ebook.id || ebookId,
+        title: ebook.title || quiz.product || 'Ebook recomendado',
+        description: ebook.brief || ebook.cover?.subtitle || 'Recurso listo para profundizar después del diagnóstico.',
+        href: ebook.publicUrl || ebook.downloadUrl || `./ebook-builder.html?id=${encodeURIComponent(ebook.id || ebookId)}`,
+        source: 'ebook'
+      };
+    }
+    if (/ebook|guia|guía|pdf|manual|lead magnet/i.test(`${quiz.product || ''} ${quiz.title || ''}`)) {
+      return {
+        id: '',
+        title: quiz.product || 'Ebook recomendado',
+        description: 'Conecta aquí el PDF o ebook generado para convertir este resultado en lead magnet.',
+        href: '',
+        source: 'suggested'
+      };
+    }
+    return null;
+  }
+
+  function renderResultActionCards({ quiz, profile, ctaDest, ctaText, calendlyUrl, miniApp, ebook, landingHref }) {
     const grid = document.getElementById('result-action-cards');
     if (!grid) return;
     const cards = [];
     addActionCard(cards, {
-      title: ctaText || 'Ver la solucion',
-      description: quiz.product ? `Continua con ${quiz.product}.` : 'Abre la pagina recomendada para tu resultado.',
+      title: ctaText || 'Ver la solución',
+      description: quiz.product ? `Continúa con ${quiz.product}.` : 'Abre la página recomendada para tu resultado.',
       href: ctaDest,
       icon: 'north_east',
       label: 'Siguiente paso'
     });
     if (quiz.whatsappNumber) {
       const number = String(quiz.whatsappNumber || '').replace(/\D/g, '');
-      const msg = quiz.whatsappMessage || `Hola! Complete el quiz "${quiz.title || ''}" y mi perfil es "${profile?.name || ''}". Me gustaria mas informacion.`;
+      const msg = quiz.whatsappMessage || `Hola! Completé el quiz "${quiz.title || ''}" y mi perfil es "${profile?.name || ''}". Me gustaría más información.`;
       addActionCard(cards, {
         title: 'Hablar por WhatsApp',
-        description: 'Pregunta por tu resultado y recibe orientacion directa.',
+        description: 'Pregunta por tu resultado y recibe orientación directa.',
         href: number ? `https://wa.me/${number}?text=${encodeURIComponent(msg)}` : '',
         icon: 'chat',
         label: 'Contacto'
       });
     }
     addActionCard(cards, {
-      title: 'Ver la pagina de venta',
+      title: 'Ver la página de venta',
       description: 'Conoce la oferta completa y los detalles antes de decidir.',
-      href: quiz.landingUrl || quiz.productUrl,
+      href: landingHref,
       icon: 'web',
       label: 'Oferta'
     });
     addActionCard(cards, {
+      title: ebook?.title || 'Abrir ebook',
+      description: ebook?.description || 'Profundiza con el recurso recomendado para tu perfil.',
+      href: ebook?.href,
+      icon: 'auto_stories',
+      label: 'Ebook'
+    });
+    addActionCard(cards, {
       title: 'Ir al checkout',
-      description: 'Entra directo a la pagina de pago configurada.',
+      description: 'Entra directo a la página de pago configurada.',
       href: quiz.paymentUrl,
       icon: 'local_fire_department',
       label: 'Acceso'
@@ -776,13 +1058,13 @@
       addActionCard(cards, {
         title: miniApp.name || 'Abrir bonus',
         description: miniApp.description || 'Accede a la herramienta incluida para este resultado.',
-        href: `./mini-app-player.html?id=${miniApp.id}`,
+        href: `./mini-app-player.html?id=${miniApp.id}&open=1`,
         icon: 'deployed_code',
         label: 'Bonus'
       });
     }
 
-    grid.innerHTML = cards.slice(0, 3).map(card => `
+    grid.innerHTML = cards.slice(0, 4).map(card => `
       <a class="next-action-card block" href="${escHtml(card.href)}" ${/^https?:\/\//.test(card.href) ? 'target="_blank" rel="noopener noreferrer"' : ''}>
         <span class="action-card-icon inline-flex h-10 w-10 items-center justify-center rounded-xl text-white mb-8">
           <span class="material-symbols-outlined" style="font-size:20px">${escHtml(card.icon)}</span>
@@ -796,17 +1078,85 @@
     grid.classList.toggle('hidden', cards.length === 0);
   }
 
+  function renderResultEcosystem({ quiz, profile, ctaDest, ctaText, calendlyUrl, miniApp, ebook, landingHref }) {
+    const panel = document.getElementById('result-ecosystem');
+    const grid = document.getElementById('ecosystem-cards');
+    const countEl = document.getElementById('ecosystem-count');
+    const copyEl = document.getElementById('ecosystem-copy');
+    if (!panel || !grid) return;
+
+    const items = [
+      {
+        key: 'ebook',
+        title: ebook?.title || quiz.product || 'Ebook o guía',
+        desc: ebook?.description || 'Entrega un recurso de valor después del diagnóstico.',
+        href: ebook?.href || '',
+        icon: 'auto_stories',
+        status: ebook?.href ? 'Listo' : 'Por conectar'
+      },
+      {
+        key: 'miniapp',
+        title: miniApp?.name || 'Mini app de acompañamiento',
+        desc: miniApp?.description || 'Convierte el resultado en una herramienta que el cliente usa varios días.',
+        href: miniApp?.id ? `./mini-app-player.html?id=${encodeURIComponent(miniApp.id)}&open=1` : '',
+        icon: 'deployed_code',
+        status: miniApp?.id ? 'Listo' : 'Por conectar'
+      },
+      {
+        key: 'landing',
+        title: 'Página de venta',
+        desc: landingHref ? 'La oferta queda conectada al siguiente paso.' : 'Conecta una landing para cerrar la venta después del quiz.',
+        href: landingHref || '',
+        icon: 'web',
+        status: landingHref ? 'Listo' : 'Por conectar'
+      },
+      {
+        key: 'venta',
+        title: ctaText || 'CTA final',
+        desc: ctaDest ? 'El usuario tiene un camino claro para avanzar.' : 'Configura checkout, WhatsApp o agenda para cerrar el flujo.',
+        href: ctaDest || calendlyUrl || '',
+        icon: ctaDest ? 'north_east' : 'tune',
+        status: (ctaDest || calendlyUrl) ? 'Listo' : 'Por conectar'
+      }
+    ];
+
+    const active = items.filter(item => item.href).length;
+    if (countEl) countEl.textContent = `${active}/${items.length} activos`;
+    if (copyEl) {
+      const product = quiz.product || 'tu oferta';
+      const profileName = profile?.name || 'este perfil';
+      copyEl.textContent = `Después de identificar a "${profileName}", el sistema puede llevar a ${product}: ebook, mini app, landing y acción final en una sola experiencia.`;
+    }
+
+    grid.innerHTML = items.map((item, index) => {
+      const content = `
+        <span class="ecosystem-status">${escHtml(item.status)}</span>
+        <span class="ecosystem-icon"><span class="material-symbols-outlined" style="font-size:22px">${escHtml(item.icon)}</span></span>
+        <span class="text-[10px] font-black tracking-[0.18em] uppercase text-white/50">Paso ${index + 1}</span>
+        <div class="mt-auto">
+          <h3 class="text-sm font-extrabold leading-tight mb-2">${escHtml(item.title)}</h3>
+          <p class="text-xs text-white/62 leading-relaxed">${escHtml(item.desc)}</p>
+        </div>
+      `;
+      return item.href
+        ? `<a class="ecosystem-card is-active" href="${escHtml(item.href)}" ${/^https?:\/\//.test(item.href) ? 'target="_blank" rel="noopener noreferrer"' : ''}>${content}</a>`
+        : `<div class="ecosystem-card is-pending">${content}</div>`;
+    }).join('');
+    panel.classList.remove('hidden');
+  }
+
   function applyResultTheme(quizOrColor) {
     const quiz = typeof quizOrColor === 'object' && quizOrColor ? quizOrColor : null;
     const nicheTheme = quiz && window.getPremiumNicheTheme
       ? window.getPremiumNicheTheme(quiz.niche || quiz.product || quiz.title || '', quiz.product || quiz.title || '')
       : {};
-    const brandColor = (quiz && (quiz.brandColor || quiz.themeColor)) || quizOrColor || nicheTheme.accent || '#8B6AA0';
-    const accent2 = (quiz && quiz.accentColor) || nicheTheme.accent2 || brandColor + '99';
-    const bg = nicheTheme.bg || brandColor + '12';
-    const surface = nicheTheme.card || brandColor + '08';
-    const text = nicheTheme.text || '#26212b';
-    const muted = nicheTheme.muted || '#6f6677';
+    const isSkinGlow = !!(quiz && /skinglow|piel clara|skincare/i.test(`${quiz.id || ''} ${quiz.brandName || ''} ${quiz.product || ''}`));
+    const brandColor = isSkinGlow ? '#c84f78' : ((quiz && (quiz.brandColor || quiz.themeColor)) || quizOrColor || nicheTheme.accent || '#8B6AA0');
+    const accent2 = isSkinGlow ? '#6f9d92' : ((quiz && quiz.accentColor) || nicheTheme.accent2 || brandColor + '99');
+    const bg = isSkinGlow ? '#f8eee7' : (nicheTheme.bg || brandColor + '12');
+    const surface = isSkinGlow ? '#fffaf6' : (nicheTheme.card || brandColor + '08');
+    const text = isSkinGlow ? '#21161b' : (nicheTheme.text || '#26212b');
+    const muted = isSkinGlow ? '#75616a' : (nicheTheme.muted || '#6f6677');
 
     document.documentElement.style.setProperty('--brand', brandColor);
     document.documentElement.style.setProperty('--brand-light', accent2);
@@ -816,12 +1166,12 @@
     document.documentElement.style.setProperty('--brand-muted', muted);
     document.documentElement.style.setProperty('--brand-border', nicheTheme.mode === 'dark' ? 'rgba(255,255,255,0.12)' : brandColor + '2e');
     document.documentElement.style.setProperty('--brand-shadow', nicheTheme.mode === 'dark' ? 'rgba(0,0,0,0.36)' : brandColor + '1f');
-    const heroImage = (quiz && quiz.coverImage) || nicheTheme.coverImage || '';
+    const heroImage = isSkinGlow ? 'https://assets.mixkit.co/videos/51179/51179-thumb-720-0.jpg' : ((quiz && quiz.coverImage) || nicheTheme.coverImage || '');
     if (heroImage) {
       document.documentElement.style.setProperty('--quiz-hero-image', `url("${String(heroImage).replace(/"/g, '%22')}")`);
     }
-    document.documentElement.dataset.quizTheme = nicheTheme.id || 'custom';
-    document.documentElement.dataset.quizMode = nicheTheme.mode || 'light';
+    document.documentElement.dataset.quizTheme = isSkinGlow ? 'skinglow' : (nicheTheme.id || 'custom');
+    document.documentElement.dataset.quizMode = isSkinGlow ? 'light' : (nicheTheme.mode || 'light');
   }
 
   function retakeQuiz() {

@@ -1,0 +1,2483 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Workspace SkinGlow | Luminous Studio</title>
+  <script src="./app.js?v=skinglow-workspace-1"></script>
+  <script src="./skinglow-demo-data.js"></script>
+  <script src="./skinglow-strategy-frameworks.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --ink: #21151b;
+      --muted: #75636b;
+      --rose: #c84f78;
+      --green: #6f9d92;
+      --plum: #70405d;
+      --cream: #fff8f4;
+      --line: rgba(33, 21, 27, .12);
+      --shadow: 0 28px 80px rgba(78, 47, 65, .14);
+    }
+    * { box-sizing: border-box; }
+    html {
+      max-width: 100%;
+      overflow-x: hidden;
+    }
+    body {
+      margin: 0;
+      max-width: 100%;
+      overflow-x: hidden;
+      font-family: "Plus Jakarta Sans", system-ui, sans-serif;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at 8% 8%, rgba(200, 79, 120, .16), transparent 30%),
+        radial-gradient(circle at 90% 6%, rgba(111, 157, 146, .18), transparent 30%),
+        linear-gradient(135deg, #fff8f4 0%, #f8eee7 48%, #eef7f4 100%);
+    }
+    a { color: inherit; text-decoration: none; }
+    .material-symbols-outlined {
+      font-family: "Material Symbols Outlined";
+      font-weight: normal;
+      font-style: normal;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      max-width: 1em;
+      overflow: hidden;
+      line-height: 1;
+      letter-spacing: 0;
+      text-transform: none;
+      font-variation-settings: "FILL" 1, "wght" 650, "GRAD" 0, "opsz" 24;
+    }
+    .shell {
+      min-height: 100dvh;
+      width: 100%;
+      min-width: 0;
+      max-width: 100%;
+      display: grid;
+      grid-template-columns: 280px minmax(0, 1fr);
+    }
+    aside {
+      min-width: 0;
+      max-width: 100%;
+      position: sticky;
+      top: 0;
+      height: 100dvh;
+      padding: 22px;
+      color: #fff;
+      background:
+        linear-gradient(180deg, rgba(33,21,27,.94), rgba(112,64,93,.88)),
+        url("https://images.unsplash.com/photo-1570172619644-dfd03ed5d881?auto=format&fit=crop&w=900&q=80") center / cover;
+      overflow-y: auto;
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 11px;
+      font-weight: 900;
+      margin-bottom: 28px;
+    }
+    .brand-icon,
+    .asset-icon,
+    .step-num {
+      display: grid;
+      place-items: center;
+      flex: 0 0 auto;
+      color: #fff;
+      background: linear-gradient(135deg, var(--rose), var(--green));
+      box-shadow: 0 14px 32px rgba(20, 12, 16, .18);
+    }
+    .brand-icon { width: 42px; height: 42px; border-radius: 13px; }
+    .brand small {
+      display: block;
+      margin-top: 2px;
+      color: rgba(255,255,255,.66);
+      font-size: 11px;
+      font-weight: 900;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+    .side-label {
+      margin: 0 0 10px;
+      color: rgba(255,255,255,.54);
+      font-size: 11px;
+      font-weight: 900;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+    }
+    .side-step {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px;
+      border-radius: 8px;
+      background: rgba(255,255,255,.08);
+      border: 1px solid rgba(255,255,255,.10);
+      margin-bottom: 8px;
+    }
+    .side-step span:first-child {
+      width: 30px;
+      height: 30px;
+      display: grid;
+      place-items: center;
+      border-radius: 10px;
+      color: #21151b;
+      background: rgba(255,255,255,.86);
+      font-size: 12px;
+      font-weight: 900;
+    }
+    .side-step strong {
+      display: block;
+      font-size: 13px;
+    }
+    .side-step small {
+      display: block;
+      margin-top: 1px;
+      color: rgba(255,255,255,.58);
+      font-size: 11px;
+      line-height: 1.35;
+    }
+    main {
+      min-width: 0;
+      max-width: 100%;
+      padding: 26px clamp(18px, 4vw, 46px) 46px;
+    }
+    .topbar {
+      min-height: 64px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      margin-bottom: 12px;
+    }
+    .status-strip {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 10px;
+      margin-bottom: 18px;
+    }
+    .status-chip {
+      min-height: 68px;
+      display: flex;
+      align-items: center;
+      gap: 11px;
+      padding: 12px;
+      border: 1px solid rgba(255,255,255,.68);
+      border-radius: 8px;
+      background: rgba(255,255,255,.48);
+      box-shadow: 0 18px 50px rgba(78,47,65,.09);
+      backdrop-filter: blur(18px);
+    }
+    .status-chip .material-symbols-outlined {
+      width: 38px;
+      height: 38px;
+      display: grid;
+      place-items: center;
+      flex: 0 0 auto;
+      border-radius: 8px;
+      color: #fff;
+      background: linear-gradient(135deg, var(--rose), var(--green));
+      font-size: 20px;
+    }
+    .status-chip strong {
+      display: block;
+      font-size: 13px;
+      line-height: 1.2;
+    }
+    .status-chip small {
+      display: block;
+      margin-top: 3px;
+      color: var(--muted);
+      font-size: 11px;
+      line-height: 1.35;
+    }
+    .btn {
+      min-height: 44px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 0 15px;
+      border-radius: 999px;
+      border: 1px solid rgba(33,21,27,.12);
+      background: rgba(255,255,255,.84);
+      color: var(--ink);
+      font-size: 13px;
+      font-weight: 900;
+      box-shadow: 0 12px 30px rgba(78,47,65,.08);
+    }
+    .btn.primary {
+      border: 0;
+      color: #fff;
+      background: linear-gradient(135deg, var(--rose), var(--plum));
+    }
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      min-height: 32px;
+      padding: 0 11px;
+      border-radius: 999px;
+      border: 1px solid rgba(33,21,27,.10);
+      background: rgba(255,255,255,.62);
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 900;
+    }
+    .builder-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.1fr) minmax(320px, .9fr);
+      gap: 18px;
+      margin-bottom: 18px;
+    }
+    .form-panel,
+    .launch-panel,
+    .market-brief-panel {
+      border: 1px solid rgba(255,255,255,.70);
+      border-radius: 8px;
+      background: rgba(255,255,255,.58);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(22px);
+      padding: 20px;
+    }
+    .market-brief-panel {
+      grid-column: 1 / -1;
+      background:
+        radial-gradient(circle at 2% 0%, rgba(193,83,126,.12), transparent 34%),
+        radial-gradient(circle at 94% 10%, rgba(111,157,146,.13), transparent 34%),
+        rgba(255,255,255,.60);
+    }
+    .panel-head {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 14px;
+      margin-bottom: 16px;
+    }
+    .panel-head h2 {
+      margin: 0;
+      font-size: 24px;
+      line-height: 1.1;
+    }
+    .panel-head p {
+      margin: 5px 0 0;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.5;
+    }
+    .brief-form {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+    .field {
+      display: grid;
+      gap: 6px;
+    }
+    .field.full { grid-column: 1 / -1; }
+    .field label {
+      color: #624b56;
+      font-size: 11px;
+      font-weight: 900;
+      letter-spacing: .07em;
+      text-transform: uppercase;
+    }
+    .field input,
+    .field textarea {
+      width: 100%;
+      border: 1px solid rgba(33,21,27,.12);
+      border-radius: 8px;
+      outline: 0;
+      background: rgba(255,255,255,.82);
+      color: var(--ink);
+      font: inherit;
+      font-size: 13px;
+      line-height: 1.5;
+      padding: 12px;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.8);
+    }
+    .field textarea {
+      min-height: 86px;
+      resize: vertical;
+    }
+    .brief-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 14px;
+    }
+    .market-brief-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 320px;
+      gap: 14px;
+      align-items: start;
+    }
+    .market-brief-copy {
+      min-height: 132px;
+      padding: 14px;
+      border: 1px solid rgba(33,21,27,.10);
+      border-radius: 8px;
+      background: rgba(255,255,255,.66);
+      color: #4d3c45;
+      font-size: 13px;
+      line-height: 1.6;
+      white-space: pre-wrap;
+    }
+    .market-brief-copy strong { color: var(--ink); }
+    .market-brief-side {
+      display: grid;
+      gap: 9px;
+    }
+    .market-stat {
+      padding: 12px;
+      border: 1px solid rgba(33,21,27,.08);
+      border-radius: 8px;
+      background: rgba(255,255,255,.62);
+    }
+    .market-stat strong {
+      display: block;
+      font-size: 18px;
+      line-height: 1;
+    }
+    .market-stat span {
+      display: block;
+      margin-top: 5px;
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: .05em;
+    }
+    .launch-list {
+      display: grid;
+      gap: 9px;
+    }
+    .launch-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 12px;
+      border: 1px solid rgba(33,21,27,.08);
+      border-radius: 8px;
+      background: rgba(255,255,255,.62);
+    }
+    .launch-item strong {
+      display: block;
+      font-size: 13px;
+    }
+    .launch-item small {
+      display: block;
+      margin-top: 3px;
+      color: var(--muted);
+      font-size: 11px;
+      line-height: 1.4;
+    }
+    .launch-state {
+      flex: 0 0 auto;
+      padding: 7px 9px;
+      border-radius: 999px;
+      background: rgba(111,157,146,.14);
+      color: #336e63;
+      font-size: 10px;
+      font-weight: 900;
+      text-transform: uppercase;
+    }
+    .toast {
+      position: fixed;
+      right: 18px;
+      bottom: 18px;
+      z-index: 20;
+      transform: translateY(18px);
+      opacity: 0;
+      pointer-events: none;
+      padding: 13px 15px;
+      border-radius: 999px;
+      color: #fff;
+      background: linear-gradient(135deg, var(--rose), var(--plum));
+      box-shadow: 0 20px 50px rgba(78,47,65,.22);
+      font-size: 12px;
+      font-weight: 900;
+      transition: .22s ease;
+    }
+    .toast.show {
+      transform: translateY(0);
+      opacity: 1;
+    }
+    .hero {
+      display: grid;
+      grid-template-columns: minmax(0, 1.05fr) minmax(320px, .95fr);
+      gap: 18px;
+      align-items: stretch;
+      margin-bottom: 18px;
+    }
+    .hero-card,
+    .preview-card,
+    .board,
+    .route-card {
+      border: 1px solid rgba(255,255,255,.70);
+      border-radius: 8px;
+      background: rgba(255,255,255,.54);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(22px);
+    }
+    .hero-card {
+      padding: clamp(24px, 4vw, 38px);
+      overflow: hidden;
+      position: relative;
+    }
+    .hero-card::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(circle at 90% 8%, rgba(111,157,146,.20), transparent 30%),
+        radial-gradient(circle at 12% 80%, rgba(200,79,120,.16), transparent 32%);
+      pointer-events: none;
+    }
+    .hero-card > * { position: relative; z-index: 1; }
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 11px;
+      border-radius: 999px;
+      border: 1px solid rgba(200,79,120,.22);
+      background: rgba(255,255,255,.70);
+      color: #9a3158;
+      font-size: 12px;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+    }
+    h1 {
+      max-width: 760px;
+      margin: 18px 0 16px;
+      font-family: "Instrument Serif", Georgia, serif;
+      font-size: clamp(48px, 7vw, 88px);
+      line-height: .9;
+      font-weight: 400;
+    }
+    .lead {
+      max-width: 720px;
+      margin: 0;
+      color: var(--muted);
+      font-size: 17px;
+      line-height: 1.65;
+    }
+    .hero-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 26px;
+    }
+    .summary {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+      margin-top: 26px;
+    }
+    .summary div {
+      padding: 14px;
+      border: 1px solid rgba(33,21,27,.08);
+      border-radius: 8px;
+      background: rgba(255,255,255,.56);
+    }
+    .summary strong {
+      display: block;
+      font-size: 24px;
+      line-height: 1;
+    }
+    .summary span {
+      display: block;
+      margin-top: 6px;
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: .06em;
+    }
+    .preview-card {
+      padding: 16px;
+      display: grid;
+      gap: 12px;
+    }
+    .phone {
+      overflow: hidden;
+      min-height: 470px;
+      border-radius: 28px;
+      border: 1px solid rgba(33,21,27,.12);
+      background:
+        linear-gradient(180deg, rgba(35,21,28,.46), rgba(35,21,28,.12)),
+        url("https://images.unsplash.com/photo-1556228724-4c3b0b4c68b4?auto=format&fit=crop&w=900&q=80") center / cover;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.58);
+      position: relative;
+      display: flex;
+      align-items: end;
+      padding: 18px;
+    }
+    .phone-panel {
+      width: 100%;
+      padding: 16px;
+      border-radius: 18px;
+      border: 1px solid rgba(255,255,255,.58);
+      background: rgba(255,250,246,.92);
+      box-shadow: 0 20px 50px rgba(20,12,16,.20);
+      overflow: hidden;
+    }
+    .phone-panel strong { display: block; font-size: 18px; }
+    .phone-panel p {
+      margin: 6px 0 14px;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.45;
+    }
+    .phone-steps {
+      display: grid;
+      gap: 7px;
+    }
+    .phone-steps span {
+      display: grid;
+      grid-template-columns: 28px minmax(0, 1fr);
+      align-items: center;
+      gap: 8px;
+      min-width: 0;
+      padding: 10px 11px;
+      border: 1px solid rgba(200,79,120,.12);
+      border-radius: 14px;
+      background: linear-gradient(135deg, #f1ded4, #f8ece5);
+      color: #2f2028;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.48);
+      font-size: 11px;
+      line-height: 1.22;
+      font-weight: 900;
+      overflow-wrap: anywhere;
+    }
+    .phone-steps span .material-symbols-outlined {
+      width: 28px;
+      height: 28px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 10px;
+      background: rgba(255,255,255,.52);
+      color: #8d3d60;
+      font-size: 16px;
+      line-height: 1;
+      text-align: center;
+      flex: 0 0 auto;
+    }
+    .next-focus {
+      padding: 15px;
+      border: 1px solid rgba(33,21,27,.08);
+      border-radius: 8px;
+      background: rgba(255,255,255,.64);
+    }
+    .next-focus strong {
+      display: block;
+      font-size: 14px;
+    }
+    .next-focus p {
+      margin: 5px 0 0;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.5;
+    }
+    .route-card {
+      padding: 20px;
+      margin-bottom: 18px;
+    }
+    .review-guide {
+      padding: 20px;
+      margin-bottom: 18px;
+      border: 1px solid rgba(255,255,255,.70);
+      border-radius: 8px;
+      background:
+        linear-gradient(135deg, rgba(61,39,50,.88), rgba(151,82,115,.78)),
+        radial-gradient(circle at 100% 0%, rgba(111,157,146,.34), transparent 38%);
+      color: #fff;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+    .review-guide-head {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 14px;
+    }
+    .review-guide h2 {
+      margin: 0;
+      font-size: 24px;
+    }
+    .review-guide p {
+      margin: 5px 0 0;
+      color: rgba(255,255,255,.78);
+      font-size: 13px;
+      line-height: 1.5;
+    }
+    .review-guide-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 10px;
+    }
+    .review-step {
+      display: grid;
+      grid-template-columns: 34px minmax(0, 1fr);
+      gap: 10px;
+      align-items: start;
+      min-height: 116px;
+      padding: 12px;
+      border: 1px solid rgba(255,255,255,.18);
+      border-radius: 8px;
+      color: #fff;
+      text-decoration: none;
+      background: rgba(255,255,255,.10);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.12);
+    }
+    .review-step:hover {
+      transform: translateY(-1px);
+      background: rgba(255,255,255,.15);
+    }
+    .review-step-num {
+      width: 34px;
+      height: 34px;
+      display: grid;
+      place-items: center;
+      border-radius: 12px;
+      background: linear-gradient(135deg, var(--rose), var(--green));
+      color: #fff;
+      font-weight: 900;
+      box-shadow: 0 14px 28px rgba(33,21,27,.24);
+    }
+    .review-step strong {
+      display: block;
+      font-size: 13px;
+      line-height: 1.3;
+    }
+    .review-step small {
+      display: block;
+      margin-top: 5px;
+      color: rgba(255,255,255,.72);
+      font-size: 11px;
+      line-height: 1.4;
+    }
+    .review-guide .btn {
+      color: #fff;
+      border-color: rgba(255,255,255,.34);
+      background: rgba(255,255,255,.10);
+    }
+    .review-guide .btn.primary {
+      color: #3a2430;
+      border: 0;
+      background: #fff;
+    }
+    .reality-board {
+      padding: 20px;
+      margin-bottom: 18px;
+      border: 1px solid rgba(134,91,108,.16);
+      border-radius: 8px;
+      background:
+        radial-gradient(circle at 0% 0%, rgba(111,157,146,.14), transparent 32%),
+        radial-gradient(circle at 100% 0%, rgba(200,79,120,.12), transparent 32%),
+        linear-gradient(145deg, rgba(255,250,247,.94), rgba(241,235,231,.82));
+      box-shadow: var(--shadow);
+    }
+    .reality-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+      margin-top: 14px;
+    }
+    .reality-card {
+      padding: 15px;
+      border: 1px solid rgba(134,91,108,.14);
+      border-radius: 8px;
+      background: rgba(255,255,255,.58);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.62);
+    }
+    .reality-card strong {
+      display: grid;
+      grid-template-columns: 34px minmax(0, 1fr);
+      gap: 10px;
+      align-items: center;
+      margin-bottom: 10px;
+      font-size: 15px;
+    }
+    .reality-card .material-symbols-outlined {
+      width: 34px;
+      height: 34px;
+      display: grid;
+      place-items: center;
+      border-radius: 8px;
+      color: #fff;
+      background: linear-gradient(135deg, var(--rose), var(--green));
+      font-size: 18px;
+    }
+    .reality-card ul {
+      display: grid;
+      gap: 8px;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+    .reality-card li {
+      position: relative;
+      padding-left: 16px;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.45;
+    }
+    .reality-card li::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      top: .62em;
+      width: 6px;
+      height: 6px;
+      border-radius: 999px;
+      background: var(--green);
+    }
+    .publish-strip {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 12px;
+      align-items: center;
+      margin-top: 14px;
+      padding: 14px;
+      border: 1px solid rgba(33,21,27,.10);
+      border-radius: 8px;
+      background: rgba(255,255,255,.62);
+    }
+    .publish-strip p {
+      margin: 4px 0 0;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.45;
+    }
+    .sales-script {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 360px;
+      gap: 14px;
+      padding: 20px;
+      margin-bottom: 18px;
+      border: 1px solid rgba(134,91,108,.16);
+      border-radius: 8px;
+      background:
+        radial-gradient(circle at 0% 0%, rgba(200,79,120,.12), transparent 34%),
+        linear-gradient(145deg, rgba(255,250,247,.92), rgba(244,237,232,.78));
+      box-shadow: var(--shadow);
+    }
+    .sales-script h2 {
+      margin: 0;
+      font-size: 24px;
+    }
+    .sales-script p {
+      margin: 6px 0 0;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.55;
+    }
+    .script-lines {
+      display: grid;
+      gap: 9px;
+      margin-top: 14px;
+    }
+    .script-line {
+      display: grid;
+      grid-template-columns: 34px minmax(0, 1fr);
+      gap: 10px;
+      padding: 12px;
+      border: 1px solid rgba(134,91,108,.14);
+      border-radius: 8px;
+      background: rgba(255,255,255,.62);
+    }
+    .script-line .material-symbols-outlined {
+      width: 34px;
+      height: 34px;
+      display: grid;
+      place-items: center;
+      border-radius: 8px;
+      color: #fff;
+      background: linear-gradient(135deg, var(--rose), var(--green));
+      font-size: 18px;
+    }
+    .script-line strong {
+      display: block;
+      font-size: 13px;
+      line-height: 1.3;
+    }
+    .script-line small {
+      display: block;
+      margin-top: 4px;
+      color: var(--muted);
+      font-size: 11px;
+      line-height: 1.45;
+    }
+    .script-copy-card {
+      display: grid;
+      align-content: space-between;
+      gap: 14px;
+      padding: 16px;
+      border: 1px solid rgba(255,255,255,.55);
+      border-radius: 8px;
+      background:
+        linear-gradient(135deg, rgba(61,39,50,.90), rgba(151,82,115,.82)),
+        radial-gradient(circle at 100% 0%, rgba(111,157,146,.30), transparent 36%);
+      color: #fff;
+    }
+    .script-copy-card strong {
+      display: block;
+      font-size: 18px;
+      line-height: 1.2;
+    }
+    .script-copy-card p {
+      color: rgba(255,255,255,.78);
+    }
+    .script-copy-card .btn {
+      color: #3a2430;
+      border: 0;
+      background: #fff;
+    }
+    .route-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      margin-bottom: 14px;
+    }
+    .route-head h2,
+    .board-head h2 {
+      margin: 0;
+      font-size: 24px;
+    }
+    .route-line {
+      display: grid;
+      grid-template-columns: repeat(8, minmax(0, 1fr));
+      gap: 8px;
+    }
+    .route-step {
+      min-height: 104px;
+      padding: 12px;
+      border-radius: 8px;
+      border: 1px solid rgba(33,21,27,.08);
+      background: rgba(255,255,255,.60);
+    }
+    .route-step.done {
+      border-color: rgba(111,157,146,.24);
+      background: linear-gradient(145deg, rgba(255,255,255,.76), rgba(238,247,244,.78));
+    }
+    .step-num {
+      width: 28px;
+      height: 28px;
+      border-radius: 10px;
+      font-size: 12px;
+      font-weight: 900;
+      margin-bottom: 10px;
+    }
+    .route-step strong {
+      display: block;
+      font-size: 12px;
+      line-height: 1.3;
+    }
+    .route-step small {
+      display: block;
+      margin-top: 5px;
+      color: var(--muted);
+      font-size: 10px;
+      line-height: 1.35;
+    }
+    .board {
+      padding: 20px;
+    }
+    .strategy-panel {
+      padding: 20px;
+      margin-bottom: 18px;
+      border: 1px solid rgba(255,255,255,.70);
+      border-radius: 8px;
+      background:
+        radial-gradient(circle at 0% 8%, rgba(200,79,120,.14), transparent 32%),
+        radial-gradient(circle at 100% 0%, rgba(111,157,146,.14), transparent 32%),
+        rgba(255,255,255,.58);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(22px);
+    }
+    .strategy-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+    }
+    .strategy-card {
+      min-height: 205px;
+      display: grid;
+      grid-template-rows: auto auto auto auto 1fr auto;
+      gap: 9px;
+      padding: 15px;
+      border: 1px solid rgba(134,91,108,.15);
+      border-radius: 8px;
+      background:
+        radial-gradient(circle at 100% 0%, rgba(200,79,120,.10), transparent 36%),
+        linear-gradient(145deg, rgba(255,251,248,.90), rgba(246,241,236,.82));
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.82), 0 16px 42px rgba(78,47,65,.08);
+    }
+    .strategy-card:nth-child(even) {
+      background:
+        radial-gradient(circle at 100% 0%, rgba(111,157,146,.13), transparent 36%),
+        linear-gradient(145deg, rgba(255,251,248,.90), rgba(239,246,243,.84));
+    }
+    .strategy-card.selected {
+      border-color: rgba(200,79,120,.42);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.86), 0 20px 46px rgba(200,79,120,.16);
+    }
+    .strategy-card-head {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+    }
+    .strategy-icon {
+      width: 38px;
+      height: 38px;
+      display: grid;
+      place-items: center;
+      flex: 0 0 auto;
+      border-radius: 8px;
+      color: #fff;
+      background: linear-gradient(135deg, var(--rose), var(--green));
+      box-shadow: 0 14px 30px rgba(78,47,65,.12);
+      font-size: 19px;
+    }
+    .strategy-card h3 {
+      margin: 0;
+      font-size: 14px;
+      line-height: 1.25;
+    }
+    .strategy-card .asset-tag {
+      margin: 0;
+    }
+    .strategy-card p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 11px;
+      line-height: 1.45;
+    }
+    .strategy-card small {
+      color: #6f5963;
+      font-size: 10px;
+      line-height: 1.4;
+    }
+    .strategy-reference {
+      padding-top: 8px;
+      border-top: 1px solid rgba(134,91,108,.12);
+    }
+    .strategy-reference b {
+      color: #8c3d60;
+    }
+    .strategy-best {
+      display: inline-flex;
+      width: fit-content;
+      align-items: center;
+      gap: 5px;
+      padding: 6px 8px;
+      border-radius: 999px;
+      background: rgba(200,79,120,.10);
+      color: #8c3d60;
+      font-size: 10px;
+      font-weight: 900;
+      text-transform: uppercase;
+    }
+    .strategy-outputs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 5px;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+    .strategy-outputs li {
+      padding: 5px 7px;
+      border-radius: 999px;
+      background: rgba(111,157,146,.12);
+      color: #4c786f;
+      font-size: 10px;
+      font-weight: 800;
+    }
+    .strategy-map {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 10px;
+      margin-top: 14px;
+    }
+    .strategy-map-card {
+      display: grid;
+      grid-template-columns: 34px minmax(0, 1fr);
+      gap: 10px;
+      align-items: center;
+      padding: 11px;
+      border: 1px solid rgba(134,91,108,.16);
+      border-radius: 8px;
+      background: linear-gradient(145deg, rgba(255,250,247,.86), rgba(244,237,232,.78));
+    }
+    .strategy-map-card .material-symbols-outlined {
+      width: 34px;
+      height: 34px;
+      display: grid;
+      place-items: center;
+      border-radius: 8px;
+      color: #fff;
+      background: linear-gradient(135deg, var(--rose), var(--green));
+      font-size: 18px;
+    }
+    .strategy-map-card strong {
+      display: block;
+      font-size: 12px;
+      line-height: 1.25;
+    }
+    .strategy-map-card small {
+      display: block;
+      margin-top: 3px;
+      color: var(--muted);
+      font-size: 10px;
+      line-height: 1.35;
+    }
+    .strategy-map-card em {
+      display: block;
+      margin-top: 5px;
+      color: #8c3d60;
+      font-size: 10px;
+      font-style: normal;
+      font-weight: 800;
+      line-height: 1.35;
+    }
+    .strategy-playbook {
+      display: grid;
+      grid-template-columns: 1.2fr .8fr;
+      gap: 12px;
+      align-items: stretch;
+      margin-top: 14px;
+    }
+    .playbook-copy,
+    .playbook-proof {
+      padding: 15px;
+      border: 1px solid rgba(134,91,108,.16);
+      border-radius: 8px;
+      background:
+        radial-gradient(circle at 100% 0%, rgba(111,157,146,.12), transparent 35%),
+        rgba(255,250,247,.72);
+    }
+    .playbook-copy h3,
+    .playbook-proof h3 {
+      margin: 0;
+      font-size: 17px;
+    }
+    .playbook-copy p,
+    .playbook-proof p {
+      margin: 8px 0 0;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.55;
+    }
+    .playbook-proof ul {
+      display: grid;
+      gap: 8px;
+      margin: 12px 0 0;
+      padding: 0;
+      list-style: none;
+    }
+    .playbook-proof li {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      color: #3a2430;
+      font-size: 12px;
+      font-weight: 800;
+    }
+    .playbook-proof li .material-symbols-outlined {
+      width: 26px;
+      height: 26px;
+      display: grid;
+      place-items: center;
+      border-radius: 8px;
+      color: #fff;
+      background: linear-gradient(135deg, var(--rose), var(--green));
+      font-size: 16px;
+      flex: 0 0 auto;
+    }
+    .strategy-current {
+      display: grid;
+      grid-template-columns: 44px minmax(0, 1fr) auto;
+      gap: 12px;
+      align-items: center;
+      margin-top: 14px;
+      padding: 14px;
+      border: 1px solid rgba(33,21,27,.10);
+      border-radius: 8px;
+      background: rgba(255,255,255,.66);
+    }
+    .strategy-current strong {
+      display: block;
+      font-size: 14px;
+    }
+    .strategy-current p {
+      margin: 4px 0 0;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.45;
+    }
+    .expert-pitch {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 14px;
+      align-items: center;
+      margin-top: 14px;
+      padding: 16px;
+      border: 1px solid rgba(200,79,120,.18);
+      border-radius: 8px;
+      background:
+        radial-gradient(circle at 0% 0%, rgba(200,79,120,.13), transparent 35%),
+        linear-gradient(135deg, rgba(255,247,244,.92), rgba(240,248,245,.82));
+    }
+    .expert-pitch strong {
+      display: block;
+      margin-bottom: 4px;
+      font-size: 15px;
+    }
+    .expert-pitch p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.5;
+    }
+    .board-head {
+      display: flex;
+      align-items: end;
+      justify-content: space-between;
+      gap: 14px;
+      margin-bottom: 16px;
+    }
+    .board-head p {
+      margin: 5px 0 0;
+      color: var(--muted);
+      font-size: 13px;
+    }
+    .assets {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+    }
+    .asset {
+      position: relative;
+      overflow: hidden;
+      min-height: 234px;
+      display: flex;
+      flex-direction: column;
+      padding: 16px;
+      border: 1px solid rgba(134,91,108,.15);
+      border-radius: 8px;
+      background:
+        radial-gradient(circle at 100% 0%, rgba(193,83,126,.10), transparent 36%),
+        linear-gradient(145deg, rgba(255,251,248,.88), rgba(246,241,236,.78));
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.82), 0 18px 44px rgba(78,47,65,.08);
+    }
+    .asset::after {
+      content: "";
+      position: absolute;
+      inset: auto 0 0;
+      height: 4px;
+      background: linear-gradient(90deg, rgba(193,83,126,.75), rgba(111,157,146,.72));
+      opacity: .68;
+    }
+    .asset:nth-child(3n+2) {
+      background:
+        radial-gradient(circle at 100% 0%, rgba(111,157,146,.14), transparent 36%),
+        linear-gradient(145deg, rgba(252,250,246,.92), rgba(239,246,243,.82));
+    }
+    .asset:nth-child(3n) {
+      background:
+        radial-gradient(circle at 100% 0%, rgba(141,89,125,.13), transparent 36%),
+        linear-gradient(145deg, rgba(255,250,251,.92), rgba(246,238,243,.82));
+    }
+    .asset-tag {
+      width: fit-content;
+      margin: -3px 0 14px;
+      padding: 6px 9px;
+      border-radius: 999px;
+      background: rgba(248,238,231,.82);
+      color: #8d365c;
+      font-size: 10px;
+      font-weight: 900;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+    .asset-icon {
+      width: 46px;
+      height: 46px;
+      border-radius: 8px;
+      margin-bottom: 18px;
+    }
+    .asset h3 {
+      margin: 0 0 7px;
+      font-size: 15px;
+      line-height: 1.25;
+    }
+    .asset p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.5;
+    }
+    .asset-flow {
+      display: grid;
+      gap: 6px;
+      margin-top: 12px;
+      padding: 10px;
+      border: 1px solid rgba(134,91,108,.12);
+      border-radius: 8px;
+      background: rgba(255,255,255,.58);
+      color: #6f5963;
+      font-size: 11px;
+      line-height: 1.4;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.70);
+    }
+    .asset-flow b {
+      color: var(--ink);
+      font-weight: 900;
+    }
+    .asset-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 7px;
+      margin-top: auto;
+      padding-top: 14px;
+    }
+    .mini-btn {
+      min-height: 34px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+      padding: 0 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(33,21,27,.10);
+      background: #fff;
+      font-size: 11px;
+      font-weight: 900;
+    }
+    .mini-btn.primary {
+      border: 0;
+      color: #fff;
+      background: linear-gradient(135deg, var(--rose), var(--plum));
+    }
+    .launch-command {
+      margin-top: 18px;
+      padding: 22px;
+      border: 1px solid rgba(255,255,255,.72);
+      border-radius: 8px;
+      background:
+        linear-gradient(135deg, rgba(49,35,45,.92), rgba(139,61,96,.86)),
+        radial-gradient(circle at 85% 10%, rgba(111,157,146,.26), transparent 35%);
+      color: #fff;
+      box-shadow: 0 26px 70px rgba(78,47,65,.22);
+      overflow: hidden;
+      position: relative;
+    }
+    .launch-command::before {
+      content: "";
+      position: absolute;
+      width: 280px;
+      height: 280px;
+      right: -110px;
+      top: -140px;
+      border-radius: 50%;
+      background: rgba(255,255,255,.12);
+    }
+    .launch-command > * { position: relative; z-index: 1; }
+    .launch-command-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 16px;
+      margin-bottom: 16px;
+    }
+    .launch-command h2 {
+      margin: 8px 0 6px;
+      font-size: 30px;
+      line-height: 1.05;
+    }
+    .launch-command p {
+      margin: 0;
+      color: rgba(255,255,255,.72);
+      font-size: 13px;
+      line-height: 1.55;
+    }
+    .launch-ready-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      min-height: 34px;
+      padding: 0 12px;
+      border-radius: 999px;
+      background: rgba(255,255,255,.14);
+      color: #fff;
+      font-size: 11px;
+      font-weight: 900;
+      white-space: nowrap;
+    }
+    .launch-status-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+      margin-top: 16px;
+    }
+    .launch-status-card {
+      display: grid;
+      grid-template-rows: auto 1fr;
+      gap: 9px;
+      min-height: 118px;
+      padding: 15px;
+      border: 1px solid rgba(255,255,255,.20);
+      border-radius: 18px;
+      background: linear-gradient(145deg, rgba(255,255,255,.14), rgba(255,255,255,.07));
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,.14),
+        0 16px 34px rgba(25,15,20,.10);
+      backdrop-filter: blur(10px);
+    }
+    .launch-status-card strong {
+      display: grid;
+      grid-template-columns: 34px minmax(0, 1fr);
+      align-items: center;
+      gap: 10px;
+      font-size: 14px;
+      line-height: 1.25;
+    }
+    .launch-status-card small {
+      color: rgba(255,255,255,.70);
+      font-size: 12px;
+      line-height: 1.45;
+    }
+    .launch-status-card .material-symbols-outlined {
+      width: 34px;
+      height: 34px;
+      display: grid;
+      place-items: center;
+      border-radius: 12px;
+      color: #c8efe5;
+      background: rgba(255,255,255,.12);
+      font-size: 20px;
+    }
+    .launch-status-card.pending {
+      border-color: rgba(255,255,255,.28);
+      background: rgba(255,255,255,.07);
+    }
+    .launch-status-card.pending .material-symbols-outlined {
+      color: #f6d7df;
+    }
+    .launch-status-card.pending small {
+      color: rgba(255,255,255,.78);
+    }
+    .launch-ready-pill.pending {
+      background: rgba(246,215,223,.16);
+      color: #fff4f7;
+    }
+    .launch-command-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 18px;
+    }
+    .launch-command .btn {
+      background: rgba(255,255,255,.12);
+      border-color: rgba(255,255,255,.18);
+      color: #fff;
+    }
+    .launch-command .btn.primary {
+      color: #3a2430;
+      background: #fff;
+      border: 0;
+    }
+    @media (max-width: 1180px) {
+      .shell { grid-template-columns: 1fr; }
+      aside {
+        position: relative;
+        height: auto;
+      }
+      .side-list {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 8px;
+      }
+      .side-step { margin-bottom: 0; }
+      .route-line,
+      .status-strip,
+      .assets { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .review-guide-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .launch-status-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    }
+    @media (max-width: 800px) {
+      .hero,
+      .builder-grid,
+      .sales-script { grid-template-columns: 1fr; }
+      .summary { grid-template-columns: 1fr; }
+      .topbar { align-items: flex-start; flex-direction: column; }
+      .side-list,
+      .route-line,
+      .status-strip,
+      .assets { grid-template-columns: 1fr; }
+      .brief-form { grid-template-columns: 1fr; }
+      .market-brief-grid { grid-template-columns: 1fr; }
+      .review-guide-head { align-items: flex-start; flex-direction: column; }
+      .review-guide-grid { grid-template-columns: 1fr; }
+      .reality-grid { grid-template-columns: 1fr; }
+      .publish-strip { grid-template-columns: 1fr; }
+      .launch-command-head { flex-direction: column; }
+      .launch-status-grid { grid-template-columns: 1fr; }
+      .strategy-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .strategy-map { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .strategy-playbook { grid-template-columns: 1fr; }
+      .strategy-current { grid-template-columns: 44px minmax(0, 1fr); }
+      .strategy-current .brief-actions { grid-column: 1 / -1; }
+      .expert-pitch { grid-template-columns: 1fr; }
+      .phone { min-height: 380px; }
+    }
+    @media (max-width: 560px) {
+      .strategy-grid { grid-template-columns: 1fr; }
+      .strategy-map { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <aside>
+      <a class="brand" href="./skinglow-creator-workspace.html">
+        <span class="brand-icon material-symbols-outlined">auto_awesome</span>
+        <span>Luminous Studio <small>Workspace creadora</small></span>
+      </a>
+      <p class="side-label">Hilo recomendado</p>
+      <div class="side-list">
+        <div class="side-step"><span>1</span><div><strong>Mercado</strong><small>Ads y competencia</small></div></div>
+        <div class="side-step"><span>2</span><div><strong>Oferta</strong><small>Chatbot experto</small></div></div>
+        <div class="side-step"><span>3</span><div><strong>Mini app</strong><small>Valor premium</small></div></div>
+        <div class="side-step"><span>4</span><div><strong>Ebook</strong><small>Paquete y entrega</small></div></div>
+        <div class="side-step"><span>5</span><div><strong>Quiz</strong><small>Captacion</small></div></div>
+        <div class="side-step"><span>6</span><div><strong>Landing</strong><small>Venta o datos</small></div></div>
+        <div class="side-step"><span>7</span><div><strong>Ads</strong><small>Creativos y copies</small></div></div>
+        <div class="side-step"><span>8</span><div><strong>Leads</strong><small>Seguimiento</small></div></div>
+      </div>
+    </aside>
+
+    <main>
+      <div class="topbar">
+        <div>
+          <strong id="workspace-project-name">Proyecto SkinGlow AI</strong>
+          <div id="workspace-project-subtitle" style="color:var(--muted);font-size:13px;margin-top:3px">Demo de ecosistema listo para vender</div>
+        </div>
+        <div class="hero-actions" style="margin:0">
+          <a class="btn" href="./dashboard.html?tab=all&v=projectregistry1"><span class="material-symbols-outlined">arrow_back</span> Dashboard</a>
+          <a class="btn" href="./skinglow-demo.html?v=routeimage1"><span class="material-symbols-outlined">schema</span> Demo madre</a>
+          <a class="btn primary" href="./skinglow-client-demo.html?v=clientflow2"><span class="material-symbols-outlined">visibility</span> Ver cliente final</a>
+        </div>
+      </div>
+
+      <section class="status-strip" aria-label="Estado del proyecto">
+        <div class="status-chip"><span class="material-symbols-outlined">task_alt</span><div><strong>Proyecto listo</strong><small>Demo sembrada y conectada</small></div></div>
+        <div class="status-chip"><span class="material-symbols-outlined">route</span><div><strong>Ruta principal</strong><small>Un recorrido recomendado</small></div></div>
+        <div class="status-chip"><span class="material-symbols-outlined">edit_square</span><div><strong>8 etapas</strong><small>Del producto al seguimiento</small></div></div>
+        <div class="status-chip"><span class="material-symbols-outlined">visibility</span><div><strong>Preview final</strong><small>Separado del builder</small></div></div>
+      </section>
+
+      <section class="builder-grid" aria-label="Brief editable del proyecto">
+        <div class="form-panel">
+          <div class="panel-head">
+            <div>
+              <h2>Brief editable del producto</h2>
+              <p>Esta es la parte que deberia cambiar una creadora antes de generar o publicar sus activos.</p>
+            </div>
+            <span class="pill"><span class="material-symbols-outlined" style="font-size:16px">edit_note</span> Modo creadora</span>
+          </div>
+          <div class="brief-form">
+            <div class="field">
+              <label for="brief-name">Nombre del producto</label>
+              <input id="brief-name" type="text" value="SkinGlow AI: Reto Piel Clara en 21 dias">
+            </div>
+            <div class="field">
+              <label for="brief-price">Precio demo</label>
+              <input id="brief-price" type="text" value="$47 - $97">
+            </div>
+            <div class="field full">
+              <label for="brief-promise">Promesa principal</label>
+              <textarea id="brief-promise">Ayudar a una mujer a entender que necesita su piel y seguir una rutina simple durante 21 dias sin comprar productos al azar.</textarea>
+            </div>
+            <div class="field">
+              <label for="brief-audience">Cliente ideal</label>
+              <input id="brief-audience" type="text" value="Mujeres con piel sensible, manchas, brotes o rutina desordenada">
+            </div>
+            <div class="field">
+              <label for="brief-next-step">Siguiente paso de venta</label>
+              <input id="brief-next-step" type="text" value="Comprar el reto SkinGlow y entrar a la mini app privada">
+            </div>
+          </div>
+          <div class="brief-actions">
+            <button class="btn primary" type="button" onclick="saveCreatorBrief()"><span class="material-symbols-outlined">save</span> Guardar brief</button>
+            <button class="btn" type="button" onclick="copyCreatorPitch()"><span class="material-symbols-outlined">content_copy</span> Copiar pitch</button>
+            <button class="btn" type="button" onclick="resetCreatorBrief()"><span class="material-symbols-outlined">restart_alt</span> Restaurar demo</button>
+          </div>
+        </div>
+
+        <div class="launch-panel">
+          <div class="panel-head">
+            <div>
+              <h2>Checklist para vender</h2>
+              <p>Lo que una creadora necesita revisar antes de mostrar la oferta o lanzar anuncios.</p>
+            </div>
+            <span class="pill"><span class="material-symbols-outlined" style="font-size:16px">verified</span> 8/8 listo</span>
+          </div>
+          <div class="launch-list">
+            <div class="launch-item"><div><strong>Promesa y nicho definidos</strong><small>El producto tiene nombre, cliente ideal y siguiente paso.</small></div><span class="launch-state">listo</span></div>
+            <div class="launch-item"><div><strong>Oferta modelada</strong><small>Promesa, mecanismo, bonos, precio y objeciones tienen direccion.</small></div><span class="launch-state">listo</span></div>
+            <div class="launch-item"><div><strong>Activos conectados</strong><small>Mini app, ebook, quiz, landing, checkout, acceso y ads.</small></div><span class="launch-state">listo</span></div>
+            <div class="launch-item"><div><strong>Ruta de compradora preparada</strong><small>Anuncio, quiz, resultado, landing o contacto, compra y entrega.</small></div><span class="launch-state">listo</span></div>
+          </div>
+        </div>
+
+        <div class="market-brief-panel">
+          <div class="panel-head">
+            <div>
+              <h2>Insumo conectado desde Spy Lab</h2>
+              <p>Este bloque toma la investigacion guardada y la usa como base para modelar oferta, quiz, landing y Ads.</p>
+            </div>
+            <span class="pill" id="market-brief-status"><span class="material-symbols-outlined" style="font-size:16px">sync</span> Revisando</span>
+          </div>
+          <div class="market-brief-grid">
+            <div class="market-brief-copy" id="market-brief-preview">Aun no hay investigacion guardada. Abre el Spy Lab, busca anuncios y guarda el proyecto de investigacion.</div>
+            <div class="market-brief-side">
+              <div class="market-stat"><strong id="market-brief-count">0</strong><span>anuncios base</span></div>
+              <div class="market-stat"><strong id="market-brief-query">Sin busqueda</strong><span>palabras clave</span></div>
+              <div class="brief-actions" style="margin-top:0">
+                <a class="btn primary" href="./market-research-demo.html?v=brief1"><span class="material-symbols-outlined">travel_explore</span> Abrir Spy Lab</a>
+                <button class="btn" type="button" onclick="applyMarketBriefToProduct()"><span class="material-symbols-outlined">bolt</span> Aplicar al brief</button>
+                <button class="btn" type="button" onclick="copyMarketBrief()"><span class="material-symbols-outlined">content_copy</span> Copiar</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="review-guide" aria-label="Guia rapida de revision">
+        <div class="review-guide-head">
+          <div>
+            <span class="eyebrow"><span class="material-symbols-outlined">route</span> Como revisarlo sin perderse</span>
+            <h2>Ruta de revision para mostrar la demo</h2>
+            <p>Primero se ensena el sistema para la creadora. Luego se abre la experiencia que vera la compradora final.</p>
+          </div>
+          <div class="hero-actions" style="margin:0">
+            <button class="btn" type="button" onclick="copyReviewSteps()"><span class="material-symbols-outlined">content_copy</span> Copiar pasos</button>
+            <a class="btn primary" href="./skinglow-client-demo.html?v=clientflow2"><span class="material-symbols-outlined">play_arrow</span> Ver como clienta</a>
+          </div>
+        </div>
+        <div class="review-guide-grid">
+          <a class="review-step" href="./market-research-demo.html?v=brief1">
+            <span class="review-step-num">1</span>
+            <span><strong>Mercado / Ads</strong><small>Investiga anuncios, angulos, promesas, lenguaje y competidores.</small></span>
+          </a>
+          <a class="review-step" href="./skinglow-offer-lab.html?v=framework1">
+            <span class="review-step-num">2</span>
+            <span><strong>Oferta</strong><small>Ordena promesa, mecanismo, bonos, precio, objeciones y CTA.</small></span>
+          </a>
+          <a class="review-step" href="./mini-app-player.html?id=skinglow-miniapp&open=1&v=privateaccess6">
+            <span class="review-step-num">3</span>
+            <span><strong>Mini app</strong><small>Muestra analisis con foto, diario, checklist, ruta y asistente privado.</small></span>
+          </a>
+          <a class="review-step" href="./skinglow-ebook-demo.html?v=iconfix1">
+            <span class="review-step-num">4</span>
+            <span><strong>Ebook / guia</strong><small>Ensena el material que educa y aumenta confianza antes de vender.</small></span>
+          </a>
+          <a class="review-step" href="./quiz.html?quiz=skinglow-skin-quiz">
+            <span class="review-step-num">5</span>
+            <span><strong>Quiz</strong><small>Segmenta perfil, objecion y siguiente recomendacion personalizada.</small></span>
+          </a>
+          <a class="review-step" href="./skinglow-landing-demo.html?v=video1">
+            <span class="review-step-num">6</span>
+            <span><strong>Landing</strong><small>Presenta promesa, prueba, CTA y ruta hacia compra o datos.</small></span>
+          </a>
+          <a class="review-step" href="./skinglow-ads-lab.html?v=framework1">
+            <span class="review-step-num">7</span>
+            <span><strong>Ads / Leads</strong><small>Genera hooks, copies, guiones, test y seguimiento de leads.</small></span>
+          </a>
+          <a class="review-step" href="./skinglow-client-demo.html?v=clientflow2">
+            <span class="review-step-num">8</span>
+            <span><strong>Vista clienta</strong><small>Cierra mostrando anuncio, quiz, resultado, venta, acceso y seguimiento.</small></span>
+          </a>
+        </div>
+      </section>
+
+      <section class="reality-board" aria-label="Estado demo versus plataforma real">
+        <div class="board-head">
+          <div>
+            <span class="eyebrow"><span class="material-symbols-outlined">fact_check</span> Demo vs plataforma real</span>
+            <h2>Que ya puedes mostrar y que falta para venderlo como producto real</h2>
+            <p>Esta es la separacion importante: una cosa es la demo premium SkinGlow, y otra es que cada creadora pueda editar, publicar y cobrar su propio producto desde Luminous.</p>
+          </div>
+          <div class="hero-actions" style="margin:0">
+            <button class="btn" type="button" onclick="copyRealityStatus()"><span class="material-symbols-outlined">content_copy</span> Copiar estado</button>
+            <button class="btn primary" type="button" onclick="copyPublicDemoLinks()"><span class="material-symbols-outlined">link</span> Copiar links</button>
+          </div>
+        </div>
+        <div class="reality-grid">
+          <article class="reality-card">
+            <strong><span class="material-symbols-outlined">verified</span> Listo para demo</strong>
+            <ul>
+              <li>Demo madre separada de la experiencia de clienta final.</li>
+              <li>Workspace creadora con mercado, oferta, activos, bots, Ads y leads.</li>
+              <li>Quiz, resultado, landing, checkout, acceso, ebook y mini app conectados.</li>
+              <li>Bots expertos con inspiracion visible por framework.</li>
+            </ul>
+          </article>
+          <article class="reality-card">
+            <strong><span class="material-symbols-outlined">science</span> Demo local / simulado</strong>
+            <ul>
+              <li>El escaneo de foto tiene lectura local educativa; vision profunda real requiere API en Vercel.</li>
+              <li>Spy Lab puede simular busqueda; busqueda real necesita token de Meta Ad Library.</li>
+              <li>Checkout, leads y Ads son demo funcional, no pago/campana real todavia.</li>
+              <li>Los builders reales requieren usuario logueado y datos guardados.</li>
+            </ul>
+          </article>
+          <article class="reality-card">
+            <strong><span class="material-symbols-outlined">rocket_launch</span> Para publicar</strong>
+            <ul>
+              <li>Subir estos archivos al proyecto conectado con Vercel.</li>
+              <li>Configurar `OPENAI_API_KEY` para analisis de foto con vision real.</li>
+              <li>Configurar `META_AD_LIBRARY_ACCESS_TOKEN` si se quiere espionaje real de anuncios.</li>
+              <li>Probar los links publicos despues del deploy, no `127.0.0.1`.</li>
+            </ul>
+          </article>
+        </div>
+        <div class="publish-strip">
+          <div>
+            <strong>Link publico recomendado despues del deploy</strong>
+            <p>Cuando este en Vercel, comparte la demo madre o la vista de clienta final. El link local solo sirve para pantalla compartida.</p>
+          </div>
+          <div class="hero-actions" style="margin:0">
+            <a class="btn" href="./skinglow-demo.html?v=routeimage1"><span class="material-symbols-outlined">schema</span> Demo madre</a>
+            <a class="btn primary" href="./skinglow-client-demo.html?v=clientflow2"><span class="material-symbols-outlined">visibility</span> Vista clienta</a>
+          </div>
+        </div>
+      </section>
+
+      <section class="sales-script" aria-label="Guion para presentar la demo">
+        <div>
+          <span class="eyebrow"><span class="material-symbols-outlined">record_voice_over</span> Guion para venderlo</span>
+          <h2>Mensaje simple para explicar Luminous</h2>
+          <p>Usalo cuando presentes la plataforma a una creadora, mentor o posible socio. La idea es que entiendan que no es solo un quiz, sino un sistema para crear y vender un producto completo.</p>
+          <div class="script-lines">
+            <div class="script-line">
+              <span class="material-symbols-outlined">auto_awesome</span>
+              <div><strong>1. Abre con el problema</strong><small>Muchas personas tienen ideas, cursos o infoproductos, pero no saben como convertirlos en una oferta vendible.</small></div>
+            </div>
+            <div class="script-line">
+              <span class="material-symbols-outlined">hub</span>
+              <div><strong>2. Muestra el sistema</strong><small>Luminous conecta investigacion, oferta, mini app, ebook, quiz, landing, anuncios, leads y entrega.</small></div>
+            </div>
+            <div class="script-line">
+              <span class="material-symbols-outlined">psychology_alt</span>
+              <div><strong>3. Explica los bots expertos</strong><small>Cada bot usa frameworks publicos de especialistas para pensar con estructura, no responder de forma generica.</small></div>
+            </div>
+            <div class="script-line">
+              <span class="material-symbols-outlined">visibility</span>
+              <div><strong>4. Cierra con la demo</strong><small>Primero muestra el workspace de la creadora y despues la vista que viviria la clienta final.</small></div>
+            </div>
+          </div>
+        </div>
+        <aside class="script-copy-card">
+          <div>
+            <strong>Pitch listo para copiar</strong>
+            <p>Incluye el valor principal, los bots expertos y los links de la demo creadora/clienta.</p>
+          </div>
+          <button class="btn" type="button" onclick="copyDemoSalesScript()"><span class="material-symbols-outlined">content_copy</span> Copiar guion</button>
+        </aside>
+      </section>
+
+      <section class="hero">
+        <div class="hero-card">
+          <span class="eyebrow"><span class="material-symbols-outlined">dashboard_customize</span> Vista para la creadora</span>
+          <h1 id="hero-title">Un solo proyecto, todas las piezas conectadas</h1>
+          <p class="lead" id="hero-lead">Esta pantalla muestra como deberia sentirse Luminous para quien compra la plataforma: no una pagina suelta, sino un centro de control para modelar la oferta, crear activos, publicar y preparar Facebook Ads.</p>
+          <div class="hero-actions">
+            <a class="btn primary" href="#assets"><span class="material-symbols-outlined">edit_square</span> Revisar piezas</a>
+            <a class="btn" href="./skinglow-client-demo.html?v=clientflow2"><span class="material-symbols-outlined">visibility</span> Ver como clienta</a>
+          </div>
+          <div class="summary">
+            <div><strong>8</strong><span>etapas</span></div>
+            <div><strong>1</strong><span>ruta principal</span></div>
+            <div><strong>21</strong><span>dias de reto</span></div>
+          </div>
+        </div>
+
+        <div class="preview-card">
+          <div class="phone">
+            <div class="phone-panel">
+              <strong>Vista clienta final</strong>
+            <p>La compradora no ve el builder. Ella ve un anuncio, responde el quiz, recibe resultado y luego decide si compra o deja sus datos.</p>
+              <div class="phone-steps">
+                <span><span class="material-symbols-outlined">campaign</span> Anuncio</span>
+                <span><span class="material-symbols-outlined">quiz</span> Quiz diagnostico</span>
+                <span><span class="material-symbols-outlined">payments</span> Compra o datos</span>
+              </div>
+            </div>
+          </div>
+          <div class="next-focus">
+            <strong>Proximo paso recomendado</strong>
+            <p>Revisar el preview como clienta final y luego ajustar solo la pieza que no convenza.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="route-card" aria-label="Ruta principal">
+        <div class="route-head">
+          <div>
+            <h2>Ruta principal que debe seguir la creadora</h2>
+            <p style="margin:5px 0 0;color:var(--muted);font-size:13px">Primero se construye el negocio; despues se revisa como lo vivira la compradora final.</p>
+          </div>
+          <a class="btn primary" href="./skinglow-client-demo.html?v=clientflow2"><span class="material-symbols-outlined">play_arrow</span> Probar ruta</a>
+        </div>
+        <div class="route-line">
+          <div class="route-step done"><span class="step-num">1</span><strong>Mercado</strong><small>Ads y competencia</small></div>
+          <div class="route-step done"><span class="step-num">2</span><strong>Oferta</strong><small>Promesa y paquete</small></div>
+          <div class="route-step done"><span class="step-num">3</span><strong>Mini app</strong><small>Valor premium</small></div>
+          <div class="route-step done"><span class="step-num">4</span><strong>Ebook</strong><small>Empaque</small></div>
+          <div class="route-step done"><span class="step-num">5</span><strong>Quiz</strong><small>Captacion</small></div>
+          <div class="route-step done"><span class="step-num">6</span><strong>Landing</strong><small>Venta o datos</small></div>
+          <div class="route-step done"><span class="step-num">7</span><strong>Ads</strong><small>Creativos y copy</small></div>
+          <div class="route-step done"><span class="step-num">8</span><strong>Leads</strong><small>Seguimiento</small></div>
+        </div>
+      </section>
+
+      <section class="strategy-panel" aria-label="Biblioteca estrategica para IA">
+        <div class="board-head">
+          <div>
+            <h2>Biblioteca estrategica para IA</h2>
+            <p>Cada bot queda inspirado en frameworks publicos de especialistas reconocidos. No copia su voz ni promete ser esas personas; usa sus principios para trabajar con estructura de mercado, oferta, VSL, landing, quiz, Ads y seguimiento.</p>
+          </div>
+          <div class="hero-actions" style="margin:0">
+            <a class="btn" href="./skinglow-ai-bots-demo.html?v=bots1"><span class="material-symbols-outlined">hub</span> Panel de bots</a>
+            <a class="btn" href="./skinglow-offer-lab.html?v=framework1"><span class="material-symbols-outlined">psychology_alt</span> Offer Lab</a>
+            <a class="btn" href="./skinglow-copy-lab.html?v=copylab1"><span class="material-symbols-outlined">movie</span> Copy/VSL Lab</a>
+            <a class="btn primary" href="./skinglow-ads-lab.html?v=framework1"><span class="material-symbols-outlined">campaign</span> Ads Lab</a>
+          </div>
+        </div>
+        <div class="strategy-grid" id="strategy-grid"></div>
+        <div class="strategy-map" id="strategy-map"></div>
+        <div class="strategy-current">
+          <span class="strategy-icon material-symbols-outlined" id="strategy-current-icon">deployed_code</span>
+          <div>
+            <strong id="strategy-current-title">Marco seleccionado</strong>
+            <p id="strategy-current-copy">Elige un marco para que los bots trabajen con una estructura mas clara.</p>
+          </div>
+          <div class="brief-actions" style="margin-top:0">
+            <button class="btn" type="button" onclick="copyStrategyPrompt()"><span class="material-symbols-outlined">content_copy</span> Copiar prompt maestro</button>
+            <button class="btn" type="button" onclick="copyExpertBotsPitch()"><span class="material-symbols-outlined">smart_toy</span> Copiar explicacion</button>
+            <button class="btn" type="button" onclick="applyRecommendedStrategyMap()"><span class="material-symbols-outlined">account_tree</span> Aplicar ruta experta</button>
+            <button class="btn primary" type="button" onclick="sendStrategyToOfferLab()"><span class="material-symbols-outlined">bolt</span> Abrir bot</button>
+          </div>
+        </div>
+        <div class="expert-pitch">
+          <div>
+            <strong>Como explicarlo al comprador</strong>
+            <p>No son bots sueltos. Cada asistente trabaja con un rol distinto y con frameworks publicos de especialistas reconocidos en investigacion, oferta, VSL, landing, quiz, publicidad, ecommerce y seguimiento.</p>
+          </div>
+          <button class="btn primary" type="button" onclick="copyExpertPitch()"><span class="material-symbols-outlined">content_copy</span> Copiar explicacion</button>
+        </div>
+      </section>
+
+      <section id="assets" class="board">
+        <div class="board-head">
+          <div>
+            <h2>Piezas editables del proyecto</h2>
+            <p>Editar vive aqui. La vista de clienta final solo muestra el recorrido publicado.</p>
+          </div>
+          <a class="btn" href="./skinglow-client-demo.html?v=clientflow2"><span class="material-symbols-outlined">visibility</span> Preview completo</a>
+        </div>
+        <div class="assets">
+          <article class="asset">
+            <span class="asset-icon material-symbols-outlined">query_stats</span>
+            <span class="asset-tag">Investigacion</span>
+            <h3>Mercado y Facebook Ads</h3>
+            <p>Analiza angulos, promesas, competidores y creativos. En esta demo queda marcado como decidido.</p>
+            <div class="asset-flow"><span><b>Produce:</b> brief de mercado.</span><span><b>Sigue:</b> oferta, quiz y Ads.</span></div>
+            <div class="asset-actions">
+              <a class="mini-btn primary" href="./market-research-demo.html"><span class="material-symbols-outlined">travel_explore</span> Market Spy</a>
+            </div>
+          </article>
+          <article class="asset">
+            <span class="asset-icon material-symbols-outlined">forum</span>
+            <span class="asset-tag">Oferta</span>
+            <h3>Chatbot de producto</h3>
+            <p>Mejora promesa, mecanismo, bonos, objeciones, precio y estructura del paquete.</p>
+            <div class="asset-flow"><span><b>Viene de:</b> patrones del Spy Lab.</span><span><b>Entrega:</b> oferta lista para empaquetar.</span></div>
+            <div class="asset-actions">
+              <a class="mini-btn primary" href="./skinglow-offer-lab.html?v=offerlab1"><span class="material-symbols-outlined">chat</span> Abrir bot</a>
+            </div>
+          </article>
+          <article class="asset">
+            <span class="asset-icon material-symbols-outlined">web</span>
+            <span class="asset-tag">Captacion</span>
+            <h3>Landing premium</h3>
+            <p>Hero con video, promesa, beneficios y CTA principal.</p>
+            <div class="asset-flow"><span><b>Viene de:</b> promesa y objeciones.</span><span><b>CTA:</b> quiz, WhatsApp o checkout.</span></div>
+            <div class="asset-actions">
+              <a class="mini-btn primary" href="./landing-builder.html?id=skinglow-landing"><span class="material-symbols-outlined">edit</span> Editar</a>
+              <a class="mini-btn" href="./skinglow-copy-lab.html?v=copylab1"><span class="material-symbols-outlined">movie</span> Copy/VSL</a>
+              <a class="mini-btn" href="./skinglow-landing-demo.html"><span class="material-symbols-outlined">visibility</span> Vista</a>
+            </div>
+          </article>
+          <article class="asset">
+            <span class="asset-icon material-symbols-outlined">photo_camera</span>
+            <span class="asset-tag">Diagnostico</span>
+            <h3>Escaneo visual</h3>
+            <p>Subida de foto, marco de escaneo y analisis educativo simulado.</p>
+            <div class="asset-actions">
+              <a class="mini-btn" href="./skinglow-scan-demo.html"><span class="material-symbols-outlined">visibility</span> Vista</a>
+            </div>
+          </article>
+          <article class="asset">
+            <span class="asset-icon material-symbols-outlined">quiz</span>
+            <span class="asset-tag">Diagnostico</span>
+            <h3>Quiz diagnostico</h3>
+            <p>Preguntas, perfiles, marca, resultado y conexion al siguiente paso.</p>
+            <div class="asset-flow"><span><b>Viene de:</b> objeciones detectadas.</span><span><b>Entrega:</b> perfil y recomendacion.</span></div>
+            <div class="asset-actions">
+              <a class="mini-btn primary" href="./generador-ia.html?id=skinglow-skin-quiz"><span class="material-symbols-outlined">edit</span> Editar</a>
+              <a class="mini-btn" href="./quiz.html?quiz=skinglow-skin-quiz"><span class="material-symbols-outlined">visibility</span> Vista</a>
+            </div>
+          </article>
+          <article class="asset">
+            <span class="asset-icon material-symbols-outlined">analytics</span>
+            <span class="asset-tag">Personalizacion</span>
+            <h3>Resultado</h3>
+            <p>Pagina limpia con recomendacion personalizada y un CTA principal.</p>
+            <div class="asset-actions">
+              <a class="mini-btn" href="./resultado-quiz.html?quiz=skinglow-skin-quiz&v=cleanpath2"><span class="material-symbols-outlined">visibility</span> Vista</a>
+            </div>
+          </article>
+          <article class="asset">
+            <span class="asset-icon material-symbols-outlined">auto_stories</span>
+            <span class="asset-tag">Confianza</span>
+            <h3>Ebook / guia</h3>
+            <p>Lead magnet visual para educar y elevar valor antes de vender.</p>
+            <div class="asset-flow"><span><b>Viene de:</b> preguntas frecuentes.</span><span><b>Uso:</b> bonus o pre-venta.</span></div>
+            <div class="asset-actions">
+              <a class="mini-btn primary" href="./ebook-builder.html?id=skinglow-ebook"><span class="material-symbols-outlined">edit</span> Editar</a>
+              <a class="mini-btn" href="./skinglow-ebook-demo.html"><span class="material-symbols-outlined">visibility</span> Vista</a>
+            </div>
+          </article>
+          <article class="asset">
+            <span class="asset-icon material-symbols-outlined">payments</span>
+            <span class="asset-tag">Venta</span>
+            <h3>Checkout</h3>
+            <p>Compra demo con resumen de acceso completo al reto SkinGlow.</p>
+            <div class="asset-actions">
+              <a class="mini-btn" href="./skinglow-checkout-demo.html"><span class="material-symbols-outlined">visibility</span> Vista</a>
+            </div>
+          </article>
+          <article class="asset">
+            <span class="asset-icon material-symbols-outlined">lock_open</span>
+            <span class="asset-tag">Entrega</span>
+            <h3>Acceso posterior</h3>
+            <p>Pantalla de entrega despues de la compra con links al producto.</p>
+            <div class="asset-actions">
+              <a class="mini-btn" href="./skinglow-thankyou-demo.html"><span class="material-symbols-outlined">visibility</span> Vista</a>
+            </div>
+          </article>
+          <article class="asset">
+            <span class="asset-icon material-symbols-outlined">deployed_code</span>
+            <span class="asset-tag">Premium</span>
+            <h3>Mini app</h3>
+            <p>Escaneo, checklist, ruta visual, diario, FAQ y asistente para subir el valor percibido.</p>
+            <div class="asset-flow"><span><b>Viene de:</b> oferta premium.</span><span><b>Entrega:</b> seguimiento post-compra.</span></div>
+            <div class="asset-actions">
+              <a class="mini-btn primary" href="./dashboard.html?tab=miniapps"><span class="material-symbols-outlined">dashboard</span> Panel</a>
+              <a class="mini-btn" href="./mini-app-player.html?id=skinglow-miniapp&open=1&tool=foto"><span class="material-symbols-outlined">visibility</span> Vista</a>
+            </div>
+          </article>
+          <article class="asset">
+            <span class="asset-icon material-symbols-outlined">campaign</span>
+            <span class="asset-tag">Publicidad</span>
+            <h3>Chatbot Facebook Ads</h3>
+            <p>Genera creativos, textos primarios, titulares, guiones cortos, hooks y variaciones para test.</p>
+            <div class="asset-flow"><span><b>Viene de:</b> hooks ganadores.</span><span><b>Entrega:</b> creativos para test.</span></div>
+            <div class="asset-actions">
+              <a class="mini-btn primary" href="./skinglow-ads-lab.html?v=adslab1"><span class="material-symbols-outlined">campaign</span> Abrir</a>
+            </div>
+          </article>
+          <article class="asset">
+            <span class="asset-icon material-symbols-outlined">contacts</span>
+            <span class="asset-tag">Seguimiento</span>
+            <h3>Lead Desk</h3>
+            <p>Panel para ver leads del quiz, WhatsApp, landing y checkout con mensajes de seguimiento.</p>
+            <div class="asset-flow"><span><b>Viene de:</b> anuncios, quiz y landing.</span><span><b>Entrega:</b> proxima accion de venta.</span></div>
+            <div class="asset-actions">
+              <a class="mini-btn primary" href="./skinglow-leads-demo.html?v=leaddesk1"><span class="material-symbols-outlined">contacts</span> Abrir</a>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section class="launch-command" aria-label="Panel de lanzamiento">
+        <div class="launch-command-head">
+          <div>
+            <span class="eyebrow"><span class="material-symbols-outlined">rocket_launch</span> Panel de lanzamiento</span>
+            <h2>Todo listo para preparar la venta</h2>
+            <p>Este resumen muestra si la creadora ya tiene el sistema minimo para salir a validar: investigacion, oferta, captacion, entrega y anuncios.</p>
+          </div>
+          <span class="launch-ready-pill" id="launch-ready-pill"><span class="material-symbols-outlined">verified</span> 9/9 listo</span>
+        </div>
+
+        <div class="launch-status-grid">
+          <div class="launch-status-card" id="launch-market-card">
+            <strong><span class="material-symbols-outlined">travel_explore</span> Investigacion</strong>
+            <small id="launch-market-state">Spy Lab conectado con brief de mercado.</small>
+          </div>
+          <div class="launch-status-card">
+            <strong><span class="material-symbols-outlined">deployed_code</span> Oferta</strong>
+            <small>Promesa, cliente ideal y siguiente paso definidos.</small>
+          </div>
+          <div class="launch-status-card">
+            <strong><span class="material-symbols-outlined">deployed_code_account</span> Mini app</strong>
+            <small>Escaneo visual, checklist, diario, ruta y asistente como bonus premium.</small>
+          </div>
+          <div class="launch-status-card">
+            <strong><span class="material-symbols-outlined">auto_stories</span> Ebook</strong>
+            <small>Guia lista para elevar confianza antes y despues de la venta.</small>
+          </div>
+          <div class="launch-status-card">
+            <strong><span class="material-symbols-outlined">quiz</span> Quiz</strong>
+            <small>Diagnostico conectado al resultado y a la recomendacion.</small>
+          </div>
+          <div class="launch-status-card">
+            <strong><span class="material-symbols-outlined">web</span> Landing</strong>
+            <small>Pagina de venta con hero premium, CTA y recorrido claro.</small>
+          </div>
+          <div class="launch-status-card">
+            <strong><span class="material-symbols-outlined">campaign</span> Ads</strong>
+            <small>Hooks y creativos salen del mismo brief de mercado.</small>
+          </div>
+          <div class="launch-status-card">
+            <strong><span class="material-symbols-outlined">contacts</span> Leads</strong>
+            <small>Seguimiento para quiz, WhatsApp, checkout y abandono.</small>
+          </div>
+          <div class="launch-status-card">
+            <strong><span class="material-symbols-outlined">payments</span> Venta y entrega</strong>
+            <small>Checkout demo, resultado, acceso posterior y vista cliente conectados.</small>
+          </div>
+        </div>
+
+        <div class="launch-command-actions">
+          <a class="btn primary" href="./skinglow-client-demo.html?v=clientflow2"><span class="material-symbols-outlined">play_arrow</span> Probar como cliente final</a>
+          <a class="btn" href="./market-research-demo.html?v=brief1"><span class="material-symbols-outlined">travel_explore</span> Revisar investigacion</a>
+          <button class="btn" type="button" onclick="copyLaunchSummary()"><span class="material-symbols-outlined">content_copy</span> Copiar resumen</button>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <div id="workspace-toast" class="toast" role="status" aria-live="polite">Guardado</div>
+
+  <script>
+    const BRIEF_KEY = "skinglow_creator_brief";
+    const MARKET_SEARCH_KEY = "luminous_market_search_demo";
+    const MARKET_BRIEF_KEY = "luminous_market_brief_latest";
+    const DEFAULT_BRIEF = {
+      name: "SkinGlow AI: Reto Piel Clara en 21 dias",
+      price: "$47 - $97",
+      promise: "Ayudar a una mujer a entender que necesita su piel y seguir una rutina simple durante 21 dias sin comprar productos al azar.",
+      audience: "Mujeres con piel sensible, manchas, brotes o rutina desordenada",
+      nextStep: "Comprar el reto SkinGlow y entrar a la mini app privada"
+    };
+
+    function $(id) {
+      return document.getElementById(id);
+    }
+
+    function getCreatorBrief() {
+      try {
+        return { ...DEFAULT_BRIEF, ...(JSON.parse(localStorage.getItem(BRIEF_KEY) || "{}") || {}) };
+      } catch {
+        return { ...DEFAULT_BRIEF };
+      }
+    }
+
+    function getMarketResearch() {
+      try {
+        const saved = JSON.parse(localStorage.getItem(MARKET_SEARCH_KEY) || "{}") || {};
+        const fallbackBrief = localStorage.getItem(MARKET_BRIEF_KEY) || "";
+        return {
+          ...saved,
+          brief: saved.brief || fallbackBrief,
+          results: Array.isArray(saved.results) ? saved.results : []
+        };
+      } catch {
+        return { brief: localStorage.getItem(MARKET_BRIEF_KEY) || "", results: [] };
+      }
+    }
+
+    function setBriefFields(brief) {
+      $("brief-name").value = brief.name || "";
+      $("brief-price").value = brief.price || "";
+      $("brief-promise").value = brief.promise || "";
+      $("brief-audience").value = brief.audience || "";
+      $("brief-next-step").value = brief.nextStep || "";
+      applyCreatorBrief(brief);
+    }
+
+    function readBriefFields() {
+      return {
+        name: $("brief-name").value.trim() || DEFAULT_BRIEF.name,
+        price: $("brief-price").value.trim() || DEFAULT_BRIEF.price,
+        promise: $("brief-promise").value.trim() || DEFAULT_BRIEF.promise,
+        audience: $("brief-audience").value.trim() || DEFAULT_BRIEF.audience,
+        nextStep: $("brief-next-step").value.trim() || DEFAULT_BRIEF.nextStep
+      };
+    }
+
+    function applyCreatorBrief(brief) {
+      $("workspace-project-name").textContent = brief.name;
+      $("workspace-project-subtitle").textContent = `${brief.price} - ${brief.audience}`;
+      $("hero-title").textContent = brief.name;
+      $("hero-lead").textContent = brief.promise;
+    }
+
+    function renderMarketResearch() {
+      const saved = getMarketResearch();
+      const hasBrief = Boolean(saved.brief && saved.brief.trim());
+      const query = saved.filters?.query || saved.query || "Sin busqueda";
+      const count = saved.results?.length || 0;
+      $("market-brief-count").textContent = String(count);
+      $("market-brief-query").textContent = query.length > 24 ? `${query.slice(0, 24)}...` : query;
+      $("market-brief-status").innerHTML = hasBrief
+        ? '<span class="material-symbols-outlined" style="font-size:16px">task_alt</span> Conectado'
+        : '<span class="material-symbols-outlined" style="font-size:16px">info</span> Pendiente';
+
+      if (!hasBrief) {
+        $("market-brief-preview").textContent = "Aun no hay investigacion guardada. Abre el Spy Lab, busca anuncios y guarda el proyecto de investigacion.";
+        return;
+      }
+
+      const topAds = saved.results?.slice(0, 3).map(ad => `- ${ad.title}`).join("\n") || "- Sin listado de anuncios guardado";
+      $("market-brief-preview").innerHTML = `<strong>Brief de mercado listo para usar</strong>
+
+Busqueda: ${query}
+Fuente: ${saved.source || "Spy Lab"}
+
+Primeras senales:
+${topAds}
+
+Este contexto puede alimentar el brief editable, el chatbot de oferta, el quiz, la landing y los hooks de Ads.`;
+    }
+
+    function renderLaunchReadiness() {
+      const saved = getMarketResearch();
+      const hasMarketBrief = Boolean(saved.brief && saved.brief.trim());
+      const readyCount = hasMarketBrief ? 9 : 8;
+      const pill = $("launch-ready-pill");
+      const marketCard = $("launch-market-card");
+      const marketState = $("launch-market-state");
+
+      pill.innerHTML = `<span class="material-symbols-outlined">${hasMarketBrief ? "verified" : "pending_actions"}</span> ${readyCount}/9 ${hasMarketBrief ? "listo" : "listos"}`;
+      pill.classList.toggle("pending", !hasMarketBrief);
+      marketCard.classList.toggle("pending", !hasMarketBrief);
+      marketState.textContent = hasMarketBrief
+        ? "Spy Lab conectado con brief de mercado guardado."
+        : "Pendiente: guarda una investigacion en Spy Lab para alimentar oferta, quiz, landing y Ads.";
+    }
+
+    function showWorkspaceToast(message) {
+      const toast = $("workspace-toast");
+      toast.textContent = message;
+      toast.classList.add("show");
+      window.clearTimeout(window.__skinGlowToastTimer);
+      window.__skinGlowToastTimer = window.setTimeout(() => toast.classList.remove("show"), 2200);
+    }
+
+    function getStrategyApi() {
+      return window.SKINGLOW_STRATEGY || null;
+    }
+
+    function updateStrategyCurrent(framework) {
+      if (!$("strategy-current-title")) return;
+      $("strategy-current-icon").textContent = framework.icon;
+      $("strategy-current-title").textContent = `${framework.title} aplicado al hilo`;
+      $("strategy-current-copy").textContent = `${framework.focus} Bot recomendado: ${framework.bestFor}. Inspirado en: ${framework.inspiredBy}.`;
+      document.querySelectorAll(".strategy-card").forEach(card => {
+        card.classList.toggle("selected", card.dataset.strategyId === framework.id);
+      });
+    }
+
+    function renderStrategyMap() {
+      const api = getStrategyApi();
+      if (!api || !$("strategy-map")) return;
+      const map = api.getSavedStrategyMap();
+      $("strategy-map").innerHTML = api.tasks.map(task => {
+        const framework = api.findFramework(map[task.id] || api.recommendedMap[task.id]);
+        return `
+          <article class="strategy-map-card">
+            <span class="material-symbols-outlined">${task.icon}</span>
+            <div>
+              <strong>${task.title} -> ${framework.label}</strong>
+              <small>${task.note}</small>
+              <em>Inspirado en: ${framework.inspiredBy}</em>
+            </div>
+          </article>
+        `;
+      }).join("");
+    }
+
+    function renderStrategyLibrary() {
+      const api = getStrategyApi();
+      if (!api || !$("strategy-grid")) return;
+      const selected = api.getSavedFramework();
+      $("strategy-grid").innerHTML = api.frameworks.map(framework => `
+        <article class="strategy-card ${framework.id === selected.id ? "selected" : ""}" data-strategy-id="${framework.id}">
+          <div class="strategy-card-head">
+            <span class="strategy-icon material-symbols-outlined">${framework.icon}</span>
+            <h3>${framework.title}</h3>
+          </div>
+          <span class="asset-tag">${framework.label}</span>
+          <span class="strategy-best">Para ${framework.bestFor}</span>
+          <p>${framework.focus}</p>
+          <ul class="strategy-outputs">
+            ${framework.outputs.slice(0, 4).map(item => `<li>${item}</li>`).join("")}
+          </ul>
+          <small class="strategy-reference"><b>Inspirado en frameworks publicos de:</b> ${framework.inspiredBy}</small>
+          <button class="mini-btn primary" type="button" onclick="selectStrategyFramework('${framework.id}')"><span class="material-symbols-outlined">done</span> Aplicar</button>
+        </article>
+      `).join("");
+      updateStrategyCurrent(selected);
+      renderStrategyMap();
+    }
+
+    function selectStrategyFramework(id) {
+      const api = getStrategyApi();
+      if (!api) return;
+      const framework = api.saveFramework(id);
+      updateStrategyCurrent(framework);
+      showWorkspaceToast(`Marco aplicado: ${framework.title}`);
+    }
+
+    function applyRecommendedStrategyMap() {
+      const api = getStrategyApi();
+      if (!api) return;
+      api.saveRecommendedMap();
+      renderStrategyMap();
+      showWorkspaceToast("Ruta experta aplicada a los bots");
+    }
+
+    async function copyStrategyPrompt() {
+      const api = getStrategyApi();
+      if (!api) return;
+      const framework = api.getSavedFramework();
+      const text = api.buildPrompt(framework, readBriefFields(), "offer");
+      try {
+        await navigator.clipboard.writeText(text);
+        showWorkspaceToast("Prompt estrategico copiado");
+      } catch {
+        window.prompt("Copia este prompt:", text);
+      }
+    }
+
+    async function copyExpertPitch() {
+      const api = getStrategyApi();
+      const frameworks = api?.frameworks || [];
+      const names = frameworks
+        .map(item => item.inspiredBy)
+        .join(", ")
+        .split(",")
+        .map(name => name.trim())
+        .filter(Boolean);
+      const uniqueNames = [...new Set(names)].slice(0, 18).join(", ");
+      const text = `Los bots expertos de Luminous no son chatbots genericos. Cada bot tiene un rol dentro del negocio: investigacion de mercado, modelacion de oferta, mini app premium, ebook, quiz, landing, Facebook Ads, ecommerce y seguimiento de leads.
+
+La idea es que cada asistente trabaje con estructura, no improvisando: analiza dolor, deseo, objeciones, promesa, mecanismo, copy, creativos, CTA y ruta de venta.
+
+La inspiracion viene de frameworks publicos de referentes como ${uniqueNames}. No busca copiar su voz ni su marca; usa principios estrategicos para ayudar a crear y vender infoproductos de forma mas profesional.`;
+      try {
+        await navigator.clipboard.writeText(text);
+        showWorkspaceToast("Explicacion copiada");
+      } catch {
+        window.prompt("Copia esta explicacion:", text);
+      }
+    }
+
+    async function copyExpertBotsPitch() {
+      const api = getStrategyApi();
+      if (!api) return;
+      const map = api.getSavedStrategyMap();
+      const rows = api.tasks.map(task => {
+        const framework = api.findFramework(map[task.id] || api.recommendedMap[task.id]);
+        return `- ${task.title}: ${framework.title} (${framework.inspiredBy})`;
+      }).join("\n");
+      const text = `La plataforma no usa un solo chatbot generico. Trabaja con bots expertos por etapa del negocio: investigacion, oferta, mini app, ebook, quiz, landing, publicidad y seguimiento.
+
+Cada bot esta inspirado en frameworks publicos de especialistas reconocidos, sin copiar su voz ni hacerse pasar por ellos. La idea es usar principios probados de copywriting, ventas, lanzamientos, ecommerce y Facebook Ads para que cada pieza salga con estructura.
+
+Mapa de bots:
+${rows}
+
+Esto permite que una creadora no solo genere una pagina o un quiz, sino un ecosistema completo para investigar, empaquetar, vender, entregar y dar seguimiento a su infoproducto.`;
+      try {
+        await navigator.clipboard.writeText(text);
+        showWorkspaceToast("Explicacion de bots copiada");
+      } catch {
+        window.prompt("Copia esta explicacion:", text);
+      }
+    }
+
+    function sendStrategyToOfferLab() {
+      const api = getStrategyApi();
+      if (api) {
+        api.saveFramework(api.getSavedFramework().id);
+        api.saveRecommendedMap();
+      }
+      showWorkspaceToast("Marco listo para los bots");
+      window.setTimeout(() => {
+        window.location.href = "./skinglow-offer-lab.html?v=framework1";
+      }, 450);
+    }
+
+    function saveCreatorBrief() {
+      const brief = readBriefFields();
+      localStorage.setItem(BRIEF_KEY, JSON.stringify(brief));
+      applyCreatorBrief(brief);
+      showWorkspaceToast("Brief guardado en este navegador");
+    }
+
+    function applyMarketBriefToProduct() {
+      const saved = getMarketResearch();
+      if (!saved.brief) {
+        showWorkspaceToast("Primero guarda una investigacion en Spy Lab");
+        return;
+      }
+      const nextBrief = {
+        ...readBriefFields(),
+        name: "SkinGlow AI: Reto Piel Clara en 21 dias",
+        promise: "Ayudar a una mujer a entender que necesita su piel, ordenar su rutina y seguir un plan simple sin comprar productos al azar.",
+        audience: "Mujeres con piel sensible, manchas, brotes, rojez o exceso de productos sin claridad",
+        nextStep: "Responder el quiz diagnostico y entrar al reto con ebook, mini app y seguimiento"
+      };
+      setBriefFields(nextBrief);
+      localStorage.setItem(BRIEF_KEY, JSON.stringify(nextBrief));
+      showWorkspaceToast("Investigacion aplicada al brief");
+    }
+
+    async function copyMarketBrief() {
+      const saved = getMarketResearch();
+      const text = saved.brief || "No hay brief de mercado guardado todavia.";
+      try {
+        await navigator.clipboard.writeText(text);
+        showWorkspaceToast("Brief de mercado copiado");
+      } catch {
+        window.prompt("Copia este brief:", text);
+      }
+    }
+
+    function resetCreatorBrief() {
+      localStorage.removeItem(BRIEF_KEY);
+      setBriefFields({ ...DEFAULT_BRIEF });
+      showWorkspaceToast("Demo restaurada");
+    }
+
+    async function copyCreatorPitch() {
+      const brief = readBriefFields();
+      const api = getStrategyApi();
+      const expertLine = api
+        ? "La plataforma no solo crea piezas sueltas: guia investigacion, oferta, mini app, ebook, quiz, landing, Ads y seguimiento con bots especializados inspirados en frameworks publicos de referentes de copywriting, VSL, oferta, lanzamientos y publicidad."
+        : "La plataforma guia investigacion, oferta, mini app, ebook, quiz, landing, Ads y seguimiento.";
+      const pitch = `Estoy creando ${brief.name}. Promesa: ${brief.promise} Cliente ideal: ${brief.audience}. Oferta demo: ${brief.price}. Siguiente paso: ${brief.nextStep}. ${expertLine}`;
+      try {
+        await navigator.clipboard.writeText(pitch);
+        showWorkspaceToast("Pitch copiado");
+      } catch {
+        window.prompt("Copia este pitch:", pitch);
+      }
+    }
+
+    async function copyRealityStatus() {
+      const text = `Estado real de la demo Luminous / SkinGlow
+
+Listo para mostrar:
+- Demo madre separada de la vista de clienta final.
+- Workspace de creadora con mercado, oferta, activos, bots, Ads y leads.
+- Quiz, resultado, landing, checkout, acceso, ebook y mini app conectados.
+- Bots expertos con inspiracion visible por frameworks publicos.
+
+Demo local o simulado:
+- Analisis de foto: lectura local educativa; vision profunda real requiere OPENAI_API_KEY en Vercel.
+- Spy Lab: puede simular busqueda; busqueda real necesita META_AD_LIBRARY_ACCESS_TOKEN.
+- Checkout, leads y Ads: demo funcional, no pago/campana real todavia.
+- Builders: requieren usuario logueado y datos guardados.
+
+Para publicar:
+- Subir/deployar cambios en Vercel.
+- Configurar variables de entorno si se quiere IA/vision y busqueda real.
+- Probar links publicos, no 127.0.0.1.`;
+      try {
+        await navigator.clipboard.writeText(text);
+        showWorkspaceToast("Estado demo vs real copiado");
+      } catch {
+        window.prompt("Copia este estado:", text);
+      }
+    }
+
+    async function copyPublicDemoLinks() {
+      const origin = location.origin;
+      const localNote = origin.includes("127.0.0.1") || origin.includes("localhost")
+        ? "\nNota: estos links son locales. Despues del deploy, usa el mismo path con el dominio de Vercel."
+        : "";
+      const text = `Links recomendados de la demo Luminous / SkinGlow:
+
+Demo madre:
+${origin}/skinglow-demo.html?v=routeimage1
+
+Workspace creadora:
+${origin}/skinglow-creator-workspace.html?v=frameworkrefs1
+
+Vista clienta final:
+${origin}/skinglow-client-demo.html?v=clientflow2
+
+Landing de venta:
+${origin}/skinglow-landing-demo.html?v=video1
+
+Quiz diagnostico:
+${origin}/quiz.html?quiz=skinglow-skin-quiz${localNote}`;
+      try {
+        await navigator.clipboard.writeText(text);
+        showWorkspaceToast("Links de demo copiados");
+      } catch {
+        window.prompt("Copia estos links:", text);
+      }
+    }
+
+    async function copyDemoSalesScript() {
+      const brief = readBriefFields();
+      const api = getStrategyApi();
+      const strategyMap = api?.getSavedStrategyMap?.() || {};
+      const expertLine = api
+        ? api.tasks.map(task => {
+            const framework = api.findFramework(strategyMap[task.id] || api.recommendedMap[task.id]);
+            return `${task.title}: ${framework.title}`;
+          }).join("; ")
+        : "bots expertos por etapa";
+      const text = `Te quiero mostrar Luminous, una plataforma para crear y vender infoproductos de forma completa.
+
+La idea no es solo hacer un quiz o una pagina. El sistema ayuda a construir todo el hilo del negocio: investigacion de mercado, modelacion de oferta, mini app premium, ebook, quiz diagnostico, landing, anuncios, seguimiento de leads y entrega posterior a la compra.
+
+En esta demo usamos ${brief.name}. Sirve para mostrar como una creadora podria vender una oferta de skincare con quiz, resultado personalizado, pagina de venta, checkout, ebook y una mini app privada con seguimiento.
+
+La parte diferencial es que cada bot trabaja con un enfoque distinto inspirado en frameworks publicos de especialistas reconocidos: ${expertLine}.
+
+Demo creadora:
+${location.origin}/skinglow-creator-workspace.html?v=frameworkrefs1
+
+Vista cliente final:
+${location.origin}/skinglow-client-demo.html?v=clientflow2`;
+      try {
+        await navigator.clipboard.writeText(text);
+        showWorkspaceToast("Guion de venta copiado");
+      } catch {
+        window.prompt("Copia este guion:", text);
+      }
+    }
+
+    async function copyReviewSteps() {
+      const text = `Ruta para revisar la demo Luminous:
+
+1. Empieza en el workspace de la creadora.
+Explica que esta pantalla no es para la compradora final; es el centro donde la creadora prepara su negocio.
+
+2. Revisa Mercado / Spy Lab.
+Muestra que primero se investigan anuncios, angulos, promesas, lenguaje y competidores.
+
+3. Revisa Offer Lab.
+Muestra como el bot ayuda a convertir una idea en oferta: promesa, mecanismo, bonos, objeciones, precio y CTA.
+
+4. Revisa la mini app premium.
+Muestra el acceso privado, analisis con foto, checklist, diario, FAQ y asistente IA como parte del valor post-compra.
+
+5. Revisa el ebook / guia.
+Explica que el ebook educa, aumenta confianza y hace que la oferta se sienta mas completa.
+
+6. Revisa el quiz.
+Muestra que segmenta perfil, objecion y siguiente recomendacion personalizada.
+
+7. Revisa la landing.
+Muestra que presenta promesa, beneficios, prueba, CTA y ruta hacia compra o captura de datos.
+
+8. Revisa Ads Lab y Lead Desk.
+Muestra que el sistema genera hooks, textos, guiones, plan de test y seguimiento de leads.
+
+9. Cierra con vista clienta final.
+Abre la demo de clienta para mostrar el recorrido: anuncio, quiz, resultado, venta, acceso y seguimiento.`;
+      try {
+        await navigator.clipboard.writeText(text);
+        showWorkspaceToast("Pasos de revision copiados");
+      } catch {
+        window.prompt("Copia estos pasos:", text);
+      }
+    }
+
+    async function copyLaunchSummary() {
+      const brief = readBriefFields();
+      const market = getMarketResearch();
+      const api = getStrategyApi();
+      const strategy = api?.getSavedFramework?.();
+      const botMap = api?.tasks?.map(task => {
+        const framework = api.getStrategyFor(task.id);
+        return `- ${task.title}: ${framework.title} | inspirado en ${framework.inspiredBy}`;
+      }).join("\n") || "- Sin mapa de bots cargado";
+      const hasMarketBrief = Boolean(market.brief && market.brief.trim());
+      const summary = `Checklist de lanzamiento - ${brief.name}
+
+Cliente ideal: ${brief.audience}
+Promesa: ${brief.promise}
+Oferta: ${brief.price}
+Siguiente paso: ${brief.nextStep}
+Marco IA: ${strategy ? `${strategy.title} (${strategy.inspiredBy})` : "sin seleccionar"}
+
+Bots expertos:
+${botMap}
+
+Estado:
+- Investigacion: ${hasMarketBrief ? "lista con brief de Spy Lab" : "pendiente de guardar en Spy Lab"}
+- Oferta: lista
+- Mini app: lista
+- Ebook: listo
+- Quiz diagnostico: listo
+- Landing: lista
+- Ads: listos
+- Leads y seguimiento: listos
+- Venta y entrega: checkout demo, resultado y acceso conectados
+
+Link demo creadora: ${location.origin}/skinglow-creator-workspace.html
+Link vista cliente: ${location.origin}/skinglow-client-demo.html?v=clientflow2`;
+
+      try {
+        await navigator.clipboard.writeText(summary);
+        showWorkspaceToast("Resumen de lanzamiento copiado");
+      } catch {
+        window.prompt("Copia este resumen:", summary);
+      }
+    }
+
+    try {
+      if (typeof seedSkinGlowDemo === "function") seedSkinGlowDemo({ setAnswers: true });
+      setBriefFields(getCreatorBrief());
+      renderMarketResearch();
+      renderLaunchReadiness();
+      renderStrategyLibrary();
+    } catch (error) {
+      console.warn("No se pudo preparar SkinGlow workspace", error);
+    }
+  </script>
+</body>
+</html>

@@ -4,6 +4,11 @@
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
 <title>Iniciar sesión | Luminous Studio</title>
+<script>
+  if (location.protocol === 'file:') {
+    location.replace('http://127.0.0.1:5180/login.html' + location.search + location.hash);
+  }
+</script>
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="./supabase-config.js"></script>
@@ -172,11 +177,32 @@
 </div>
 
 <script>
+  const LOGIN_TIMEOUT_MS = 18000;
+
+  function withTimeout(promise, ms, message) {
+    let timeoutId;
+    const timeout = new Promise((_, reject) => {
+      timeoutId = setTimeout(() => reject(new Error(message)), ms);
+    });
+    return Promise.race([promise, timeout]).finally(() => clearTimeout(timeoutId));
+  }
+
   // Redirect if already logged in
-  Auth.redirectIfAuth('./dashboard.html');
+  if (window.Auth) {
+    withTimeout(Auth.redirectIfAuth('./dashboard.html'), 8000, 'No se pudo verificar la sesión automáticamente.')
+      .catch(() => {});
+  }
 
   // Handle next param after login
   const nextUrl = new URLSearchParams(location.search).get('next') || './dashboard.html';
+
+  function safeNextUrl(raw) {
+    try {
+      const url = new URL(raw, location.href);
+      if (url.origin === location.origin) return url.pathname + url.search + url.hash;
+    } catch {}
+    return './dashboard.html';
+  }
 
   async function handleLogin(e) {
     e.preventDefault();
@@ -185,10 +211,17 @@
     setLoading(true);
     hideError();
     try {
-      await Auth.signIn(email, password);
-      window.location.href = nextUrl;
+      if (!window.Auth) throw new Error('No se cargó el servicio de autenticación. Revisa tu conexión y recarga la página.');
+      const result = await withTimeout(
+        Auth.signIn(email, password),
+        LOGIN_TIMEOUT_MS,
+        'La conexión tardó demasiado. Revisa internet, recarga la página e inténtalo de nuevo.'
+      );
+      const session = result?.session || await Auth.session();
+      if (!session) throw new Error('La sesión no quedó activa. Inténtalo de nuevo.');
+      window.location.assign(safeNextUrl(nextUrl));
     } catch (err) {
-      showError(friendlyError(err.message));
+      showError(friendlyLoginError(err.message));
     } finally {
       setLoading(false);
     }
@@ -215,6 +248,12 @@
     const ico = document.getElementById('eye-icon');
     if (inp.type === 'password') { inp.type = 'text'; ico.textContent = 'visibility_off'; }
     else { inp.type = 'password'; ico.textContent = 'visibility'; }
+  }
+
+  function friendlyLoginError(msg) {
+    if (msg.includes('tardó demasiado') || msg.includes('Failed to fetch') || msg.includes('NetworkError')) return 'No pude conectar con el servidor. Revisa internet, desactiva VPN/bloqueadores si usas alguno y vuelve a intentar.';
+    if (msg.includes('autenticación')) return msg;
+    return friendlyError(msg);
   }
 
   function friendlyError(msg) {

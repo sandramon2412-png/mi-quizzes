@@ -1,0 +1,749 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Panel de Bots Expertos | Luminous Studio</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700;900&family=Playfair+Display:wght@700&family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,600,0,0" rel="stylesheet">
+  <script src="./skinglow-strategy-frameworks.js"></script>
+  <style>
+    :root {
+      --ink: #271821;
+      --muted: #77616b;
+      --rose: #c84f78;
+      --deep: #573344;
+      --green: #6f9d92;
+      --cream: #fff8f2;
+      --line: rgba(98, 69, 82, .16);
+      --shadow: 0 22px 70px rgba(52, 35, 44, .14);
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      color: var(--ink);
+      font-family: "DM Sans", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background:
+        linear-gradient(115deg, rgba(246,231,224,.84), rgba(231,241,238,.82)),
+        url("https://images.unsplash.com/photo-1598440947619-2c35fc9aa908?auto=format&fit=crop&w=1800&q=80") center / cover fixed;
+    }
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background: radial-gradient(circle at 8% 0%, rgba(200,79,120,.22), transparent 34%),
+        radial-gradient(circle at 100% 16%, rgba(111,157,146,.20), transparent 32%);
+      z-index: -1;
+    }
+    a { color: inherit; text-decoration: none; }
+    .wrap {
+      width: min(1220px, calc(100% - 32px));
+      margin: 0 auto;
+    }
+    nav {
+      position: sticky;
+      top: 0;
+      z-index: 5;
+      border-bottom: 1px solid rgba(255,255,255,.54);
+      background: rgba(255,250,247,.78);
+      backdrop-filter: blur(20px);
+    }
+    .nav-inner {
+      min-height: 74px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-weight: 900;
+    }
+    .brand-icon,
+    .bot-icon,
+    .mini-icon {
+      display: grid;
+      place-items: center;
+      color: #fff;
+      background: linear-gradient(135deg, var(--rose), var(--green));
+      box-shadow: 0 18px 45px rgba(86,48,64,.18);
+    }
+    .brand-icon {
+      width: 42px;
+      height: 42px;
+      border-radius: 10px;
+      font-size: 23px;
+    }
+    .brand small {
+      display: block;
+      color: var(--rose);
+      font-size: 12px;
+      font-weight: 800;
+    }
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    .btn {
+      min-height: 42px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 0 16px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      color: var(--ink);
+      background: rgba(255,255,255,.78);
+      font-weight: 900;
+      cursor: pointer;
+      box-shadow: 0 12px 32px rgba(46,30,38,.08);
+    }
+    .btn.primary {
+      color: #fff;
+      border: 0;
+      background: linear-gradient(135deg, var(--rose), #7c3df0);
+    }
+    .btn.light {
+      color: #fff;
+      border-color: rgba(255,255,255,.30);
+      background: rgba(255,255,255,.12);
+    }
+    .btn .material-symbols-outlined { font-size: 19px; }
+    header {
+      display: grid;
+      grid-template-columns: minmax(0, 1.05fr) minmax(340px, .95fr);
+      gap: 18px;
+      align-items: stretch;
+      padding: 34px 0 18px;
+    }
+    .hero-card,
+    .summary-card,
+    .bot-card,
+    .map-card,
+    .chat-card {
+      border: 1px solid rgba(255,255,255,.64);
+      border-radius: 8px;
+      background: rgba(255,250,247,.74);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(22px);
+    }
+    .hero-card {
+      min-height: 360px;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      overflow: hidden;
+      padding: 28px;
+      background:
+        linear-gradient(120deg, rgba(39,24,33,.68), rgba(94,57,73,.38)),
+        url("https://images.unsplash.com/photo-1512290923902-8a9f81dc236c?auto=format&fit=crop&w=1500&q=80") center / cover;
+      color: #fff;
+    }
+    .eyebrow {
+      display: inline-flex;
+      width: fit-content;
+      align-items: center;
+      gap: 8px;
+      padding: 9px 13px;
+      border: 1px solid rgba(255,255,255,.38);
+      border-radius: 999px;
+      background: rgba(255,255,255,.18);
+      font-size: 12px;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: .04em;
+    }
+    h1 {
+      max-width: 780px;
+      margin: 18px 0 0;
+      font-family: "Playfair Display", Georgia, serif;
+      font-size: clamp(38px, 6vw, 74px);
+      line-height: .92;
+      letter-spacing: 0;
+    }
+    .lead {
+      max-width: 710px;
+      margin: 18px 0 0;
+      color: rgba(255,255,255,.86);
+      font-size: 17px;
+      line-height: 1.55;
+    }
+    .summary-card {
+      padding: 22px;
+      background:
+        radial-gradient(circle at 95% 0%, rgba(111,157,146,.22), transparent 36%),
+        rgba(255,250,247,.82);
+    }
+    .summary-card h2,
+    .section-head h2,
+    .chat-card h2 {
+      margin: 0;
+      font-size: 24px;
+      line-height: 1.1;
+    }
+    .summary-card p,
+    .section-head p,
+    .chat-card p {
+      margin: 8px 0 0;
+      color: var(--muted);
+      line-height: 1.55;
+    }
+    .expert-list {
+      display: grid;
+      gap: 9px;
+      margin-top: 18px;
+    }
+    .expert-item {
+      display: grid;
+      grid-template-columns: 38px minmax(0, 1fr);
+      gap: 11px;
+      align-items: center;
+      padding: 11px;
+      border: 1px solid rgba(134,91,108,.14);
+      border-radius: 8px;
+      background: linear-gradient(135deg, rgba(255,255,255,.78), rgba(250,240,235,.70));
+    }
+    .mini-icon {
+      width: 38px;
+      height: 38px;
+      border-radius: 8px;
+      font-size: 19px;
+    }
+    .expert-item strong {
+      display: block;
+      font-size: 13px;
+    }
+    .expert-item small {
+      display: block;
+      margin-top: 3px;
+      color: var(--muted);
+      font-size: 11px;
+      line-height: 1.35;
+    }
+    main { padding: 18px 0 44px; }
+    .section-head {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 14px;
+    }
+    .bot-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+    }
+    .bot-card {
+      min-height: 292px;
+      display: grid;
+      grid-template-rows: auto auto auto 1fr auto;
+      gap: 10px;
+      padding: 16px;
+      background:
+        radial-gradient(circle at 100% 0%, rgba(200,79,120,.13), transparent 36%),
+        linear-gradient(145deg, rgba(255,251,248,.90), rgba(246,240,235,.82));
+    }
+    .bot-card:nth-child(even) {
+      background:
+        radial-gradient(circle at 100% 0%, rgba(111,157,146,.16), transparent 36%),
+        linear-gradient(145deg, rgba(255,251,248,.90), rgba(239,246,243,.84));
+    }
+    .bot-head {
+      display: grid;
+      grid-template-columns: 42px minmax(0, 1fr);
+      gap: 11px;
+      align-items: center;
+    }
+    .bot-icon {
+      width: 42px;
+      height: 42px;
+      border-radius: 9px;
+      font-size: 21px;
+    }
+    .bot-card h3 {
+      margin: 0;
+      font-size: 17px;
+      line-height: 1.2;
+    }
+    .bot-card p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.45;
+    }
+    .tag {
+      display: inline-flex;
+      width: fit-content;
+      padding: 6px 9px;
+      border-radius: 999px;
+      background: rgba(200,79,120,.10);
+      color: #9b3f63;
+      font-size: 11px;
+      font-weight: 900;
+      text-transform: uppercase;
+    }
+    .outputs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+    .outputs li {
+      padding: 6px 8px;
+      border-radius: 999px;
+      color: #4d746c;
+      background: rgba(111,157,146,.12);
+      font-size: 11px;
+      font-weight: 900;
+    }
+    .inspiration {
+      padding-top: 10px;
+      border-top: 1px solid rgba(134,91,108,.14);
+      color: #6f5963;
+      font-size: 11px;
+      line-height: 1.45;
+    }
+    .inspiration b { color: #8c3d60; }
+    .bot-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .bot-actions .btn {
+      min-height: 36px;
+      padding: 0 12px;
+      font-size: 12px;
+      box-shadow: none;
+    }
+    .experience {
+      display: grid;
+      grid-template-columns: minmax(0, .9fr) minmax(0, 1.1fr);
+      gap: 16px;
+      margin-top: 18px;
+    }
+    .map-card,
+    .chat-card {
+      padding: 20px;
+      background:
+        radial-gradient(circle at 0% 0%, rgba(200,79,120,.13), transparent 34%),
+        rgba(255,250,247,.82);
+    }
+    .route-map {
+      display: grid;
+      gap: 9px;
+      margin-top: 16px;
+    }
+    .route-row {
+      display: grid;
+      grid-template-columns: 34px minmax(0, 1fr);
+      gap: 10px;
+      align-items: center;
+      padding: 11px;
+      border: 1px solid rgba(134,91,108,.14);
+      border-radius: 8px;
+      background: rgba(255,255,255,.58);
+    }
+    .route-row span {
+      width: 34px;
+      height: 34px;
+      display: grid;
+      place-items: center;
+      border-radius: 9px;
+      color: #fff;
+      background: linear-gradient(135deg, var(--rose), var(--green));
+      font-size: 18px;
+    }
+    .route-row strong { display: block; font-size: 13px; }
+    .route-row small {
+      display: block;
+      margin-top: 3px;
+      color: var(--muted);
+      font-size: 11px;
+      line-height: 1.35;
+    }
+    .chat-window {
+      display: grid;
+      gap: 10px;
+      margin-top: 16px;
+      padding: 16px;
+      border-radius: 8px;
+      background: linear-gradient(145deg, rgba(255,255,255,.66), rgba(250,241,236,.66));
+      border: 1px solid rgba(134,91,108,.14);
+    }
+    .message {
+      max-width: 86%;
+      padding: 12px 14px;
+      border-radius: 8px;
+      font-size: 13px;
+      line-height: 1.45;
+    }
+    .message.ai {
+      background: #fff;
+      border: 1px solid rgba(134,91,108,.14);
+    }
+    .message.user {
+      justify-self: end;
+      color: #fff;
+      background: linear-gradient(135deg, var(--rose), #7c3df0);
+    }
+    .selected-bot {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-top: 14px;
+      padding: 12px;
+      border-radius: 8px;
+      color: #fff;
+      background: linear-gradient(135deg, var(--deep), #8c4b68);
+    }
+    .selected-bot strong { display: block; }
+    .selected-bot small { color: rgba(255,255,255,.76); }
+    .toast {
+      position: fixed;
+      left: 50%;
+      bottom: 22px;
+      transform: translate(-50%, 18px);
+      opacity: 0;
+      pointer-events: none;
+      padding: 12px 16px;
+      border-radius: 999px;
+      color: #fff;
+      background: rgba(39,24,33,.92);
+      box-shadow: 0 18px 50px rgba(39,24,33,.22);
+      font-weight: 900;
+      transition: .2s ease;
+      z-index: 20;
+    }
+    .toast.show {
+      opacity: 1;
+      transform: translate(-50%, 0);
+    }
+    @media (max-width: 1040px) {
+      header,
+      .experience { grid-template-columns: 1fr; }
+      .bot-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+    @media (max-width: 680px) {
+      .wrap { width: min(100% - 22px, 1220px); }
+      .nav-inner,
+      .section-head {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+      .hero-card { min-height: 420px; padding: 22px; }
+      .bot-grid { grid-template-columns: 1fr; }
+      .actions { width: 100%; }
+      .actions .btn { flex: 1 1 auto; }
+      .message { max-width: 100%; }
+    }
+  </style>
+</head>
+<body>
+  <nav>
+    <div class="wrap nav-inner">
+      <a class="brand" href="./skinglow-creator-workspace.html?v=frameworkrefs1">
+        <span class="brand-icon material-symbols-outlined">psychology_alt</span>
+        <span>Bots Expertos <small>Luminous Studio</small></span>
+      </a>
+      <div class="actions">
+        <a class="btn" href="./skinglow-creator-workspace.html?v=frameworkrefs1"><span class="material-symbols-outlined">arrow_back</span> Workspace</a>
+        <a class="btn" href="./skinglow-offer-lab.html?v=frameworkrefs1"><span class="material-symbols-outlined">deployed_code</span> Offer Lab</a>
+        <a class="btn primary" href="./skinglow-ads-lab.html?v=frameworkrefs1"><span class="material-symbols-outlined">campaign</span> Ads Lab</a>
+      </div>
+    </div>
+  </nav>
+
+  <header class="wrap">
+    <section class="hero-card">
+      <span class="eyebrow"><span class="material-symbols-outlined">hub</span> Capa inteligente del negocio</span>
+      <h1>Un bot experto para cada etapa del infoproducto.</h1>
+      <p class="lead">La demo muestra como Luminous puede guiar investigacion, oferta, producto, ebook, quiz, landing, anuncios y seguimiento con frameworks publicos de especialistas reconocidos.</p>
+      <div class="actions" style="margin-top:22px">
+        <button class="btn primary" type="button" onclick="applyExpertRoute()"><span class="material-symbols-outlined">account_tree</span> Aplicar ruta experta</button>
+        <button class="btn light" type="button" onclick="copyExpertSummary()"><span class="material-symbols-outlined">content_copy</span> Copiar resumen</button>
+      </div>
+    </section>
+
+    <aside class="summary-card">
+      <h2>Como se explica al comprador</h2>
+      <p>No es un chat suelto. Es una mesa de especialistas: cada asistente tiene un rol, un marco de pensamiento y una salida clara para construir el negocio completo.</p>
+      <div class="expert-list" id="expert-list"></div>
+    </aside>
+  </header>
+
+  <main class="wrap">
+    <div class="section-head">
+      <div>
+        <h2>Biblioteca de bots por etapa</h2>
+        <p>Las referencias son inspiraciones de frameworks publicos. La plataforma no imita personas ni usa su identidad como promesa.</p>
+      </div>
+      <div class="actions">
+        <button class="btn" type="button" onclick="selectBot('offer')"><span class="material-symbols-outlined">play_arrow</span> Ver ejemplo</button>
+      </div>
+    </div>
+
+    <section class="bot-grid" id="bot-grid"></section>
+
+    <section class="experience">
+      <article class="map-card">
+        <h2>Ruta de especialistas</h2>
+        <p>Asi se entiende el hilo: el resultado de un bot alimenta el siguiente.</p>
+        <div class="route-map" id="route-map"></div>
+      </article>
+
+      <article class="chat-card">
+        <h2>Preview del chat experto</h2>
+        <p id="chat-intro">Selecciona un bot para ver como se veria su enfoque.</p>
+        <div class="selected-bot">
+          <div>
+            <strong id="selected-title">Oferta irresistible</strong>
+            <small id="selected-reference">Inspirado en frameworks publicos de expertos de oferta.</small>
+          </div>
+          <span class="material-symbols-outlined" id="selected-icon">deployed_code</span>
+        </div>
+        <div class="chat-window" id="chat-window"></div>
+        <div class="actions" style="margin-top:14px">
+          <button class="btn primary" type="button" onclick="copySelectedPrompt()"><span class="material-symbols-outlined">content_copy</span> Copiar prompt del bot</button>
+          <a class="btn" id="selected-link" href="./skinglow-offer-lab.html?v=frameworkrefs1"><span class="material-symbols-outlined">open_in_new</span> Abrir herramienta</a>
+        </div>
+      </article>
+    </section>
+  </main>
+
+  <div id="toast" class="toast" role="status" aria-live="polite">Guardado</div>
+
+  <script>
+    const TASK_LINKS = {
+      spy: "./market-research-demo.html?v=brief1",
+      offer: "./skinglow-offer-lab.html?v=frameworkrefs1",
+      miniapp: "./mini-app-player.html?id=skinglow-miniapp&open=1&v=privateaccess6",
+      ebook: "./skinglow-ebook-demo.html?v=premiumebook1",
+      quiz: "./quiz.html?quiz=skinglow-skin-quiz",
+      landing: "./skinglow-landing-demo.html?v=video1",
+      ads: "./skinglow-ads-lab.html?v=frameworkrefs1",
+      leads: "./skinglow-leads-demo.html?v=leaddesk1"
+    };
+    const CHAT_EXAMPLES = {
+      research: [
+        ["ai", "Voy a buscar patrones: que promesas se repiten, que objeciones aparecen y que palabras usa la audiencia."],
+        ["user", "Quiero validar un producto de skincare antes de venderlo."],
+        ["ai", "Entonces primero separo deseo, dolor, competidores y huecos. Despues entrego angulos para oferta, quiz y ads."]
+      ],
+      offer: [
+        ["ai", "Voy a convertir esta idea en una oferta con promesa, mecanismo, bonos, riesgo y CTA."],
+        ["user", "No quiero que parezca otro curso basico de skincare."],
+        ["ai", "La posiciono como sistema premium: diagnostico, rutina, mini app, seguimiento y acceso privado."]
+      ],
+      product: [
+        ["ai", "Voy a transformar el contenido en experiencia diaria para que se sienta premium."],
+        ["user", "La compradora debe sentir que recibio algo mas que un PDF."],
+        ["ai", "Creamos escaneo, checklist, diario, mapa de senales, FAQ y asistente educativo."]
+      ],
+      education: [
+        ["ai", "Voy a ordenar el ebook para educar, aumentar confianza y preparar el siguiente paso."],
+        ["user", "No quiero regalar toda la solucion antes de vender."],
+        ["ai", "Damos claridad y victorias rapidas, pero el seguimiento completo vive dentro del reto."]
+      ],
+      vsl: [
+        ["ai", "Voy a estructurar la venta como historia: problema, enemigo, nuevo mecanismo, prueba y cierre."],
+        ["user", "Necesito un video que no suene agresivo."],
+        ["ai", "Usamos una narrativa educativa: deja de comprar al azar, entiende tu piel y sigue una ruta simple."]
+      ],
+      landing: [
+        ["ai", "Voy a aclarar el mensaje: para quien es, que logra, como funciona y que debe hacer ahora."],
+        ["user", "La pagina se ve bonita pero no vende."],
+        ["ai", "Entonces reducimos ruido, subimos prueba y dejamos un CTA principal: hacer quiz o comprar."]
+      ],
+      quiz: [
+        ["ai", "Voy a segmentar por senal visible, urgencia, objecion y siguiente accion."],
+        ["user", "Quiero que el resultado recomiende algo personalizado."],
+        ["ai", "Cada perfil tendra lectura, causa probable, primer paso y CTA coherente."]
+      ],
+      ads: [
+        ["ai", "Voy a crear angulos por dolor, deseo, prueba, objecion y curiosidad."],
+        ["user", "Necesito ideas para Facebook Ads."],
+        ["ai", "Te entrego hooks, textos primarios, titulares, guiones UGC y plan de test."]
+      ],
+      launch: [
+        ["ai", "Voy a ordenar el calendario: expectativa, contenido, prueba, oferta, cierre y seguimiento."],
+        ["user", "Quiero lanzar el reto en pocos dias."],
+        ["ai", "Creamos una ruta simple con activacion, quiz, venta y recuperacion de leads tibios."]
+      ],
+      followup: [
+        ["ai", "Voy a escribir seguimiento humano por WhatsApp/email sin sonar desesperado."],
+        ["user", "Muchas personas hacen el quiz pero no compran."],
+        ["ai", "Segmentamos por objecion y enviamos mensajes con pregunta, prueba y siguiente paso suave."]
+      ],
+      dtc: [
+        ["ai", "Voy a pensar la oferta como ecommerce: bundle, checkout simple, prueba visual y recompra."],
+        ["user", "Y si vendo un kit junto con el reto?"],
+        ["ai", "Creamos bundle fisico + guia + mini app, con upsell y seguimiento post-compra."]
+      ]
+    };
+
+    let selectedTask = "offer";
+
+    function $(id) {
+      return document.getElementById(id);
+    }
+
+    function api() {
+      return window.SKINGLOW_STRATEGY;
+    }
+
+    function showToast(message) {
+      const toast = $("toast");
+      toast.textContent = message;
+      toast.classList.add("show");
+      window.clearTimeout(window.__botToast);
+      window.__botToast = window.setTimeout(() => toast.classList.remove("show"), 2200);
+    }
+
+    function getTaskForFramework(frameworkId) {
+      const strategy = api();
+      return strategy.tasks.find(task => strategy.getStrategyFor(task.id).id === frameworkId) || strategy.tasks.find(task => task.id === "offer");
+    }
+
+    function renderExpertList() {
+      const strategy = api();
+      const visibleTasks = strategy.tasks.slice(0, 5);
+      $("expert-list").innerHTML = visibleTasks.map(task => {
+        const framework = strategy.getStrategyFor(task.id);
+        return `
+          <div class="expert-item">
+            <span class="mini-icon material-symbols-outlined">${task.icon}</span>
+            <div>
+              <strong>${task.title}</strong>
+              <small>${framework.title} - ${framework.bestFor}</small>
+            </div>
+          </div>
+        `;
+      }).join("");
+    }
+
+    function renderBotGrid() {
+      const strategy = api();
+      $("bot-grid").innerHTML = strategy.frameworks.map(framework => {
+        const task = getTaskForFramework(framework.id);
+        return `
+          <article class="bot-card">
+            <div class="bot-head">
+              <span class="bot-icon material-symbols-outlined">${framework.icon}</span>
+              <div>
+                <h3>${framework.title}</h3>
+                <span class="tag">${framework.bestFor}</span>
+              </div>
+            </div>
+            <p>${framework.focus}</p>
+            <ul class="outputs">
+              ${framework.outputs.slice(0, 5).map(item => `<li>${item}</li>`).join("")}
+            </ul>
+            <div class="inspiration"><b>Inspirado en frameworks publicos de:</b> ${framework.inspiredBy}</div>
+            <div class="bot-actions">
+              <button class="btn primary" type="button" onclick="selectBot('${task.id}')"><span class="material-symbols-outlined">visibility</span> Ver bot</button>
+              <button class="btn" type="button" onclick="copyBotPrompt('${task.id}')"><span class="material-symbols-outlined">content_copy</span> Prompt</button>
+            </div>
+          </article>
+        `;
+      }).join("");
+    }
+
+    function renderRouteMap() {
+      const strategy = api();
+      $("route-map").innerHTML = strategy.tasks.map(task => {
+        const framework = strategy.getStrategyFor(task.id);
+        return `
+          <div class="route-row">
+            <span class="material-symbols-outlined">${task.icon}</span>
+            <div>
+              <strong>${task.title} -> ${framework.title}</strong>
+              <small>Entrega: ${framework.outputs.slice(0, 3).join(", ")}</small>
+            </div>
+          </div>
+        `;
+      }).join("");
+    }
+
+    function selectBot(taskId) {
+      selectedTask = taskId;
+      const strategy = api();
+      const framework = strategy.getStrategyFor(taskId);
+      const task = strategy.tasks.find(item => item.id === taskId) || strategy.tasks[0];
+      $("selected-title").textContent = `${task.title}: ${framework.title}`;
+      $("selected-reference").textContent = `Inspirado en frameworks publicos de: ${framework.inspiredBy}`;
+      $("selected-icon").textContent = framework.icon;
+      $("chat-intro").textContent = framework.use;
+      $("selected-link").href = TASK_LINKS[taskId] || "./skinglow-creator-workspace.html?v=frameworkrefs1";
+      const messages = CHAT_EXAMPLES[framework.id] || CHAT_EXAMPLES.offer;
+      $("chat-window").innerHTML = messages.map(([type, text]) => `<div class="message ${type}">${text}</div>`).join("");
+      document.querySelector(".chat-card").scrollIntoView({ behavior: "smooth", block: "nearest" });
+    }
+
+    function applyExpertRoute() {
+      api().saveRecommendedMap();
+      renderExpertList();
+      renderRouteMap();
+      showToast("Ruta experta aplicada");
+    }
+
+    function buildBrief() {
+      return {
+        name: "SkinGlow AI: Reto Piel Clara en 21 dias",
+        promise: "Ayudar a una mujer a entender que necesita su piel y seguir una rutina simple sin comprar productos al azar.",
+        audience: "Mujeres con piel sensible, manchas, brotes o rutina desordenada",
+        nextStep: "Responder el quiz y entrar al reto"
+      };
+    }
+
+    async function copyBotPrompt(taskId) {
+      const text = api().buildPromptForTask(taskId, buildBrief());
+      try {
+        await navigator.clipboard.writeText(text);
+        showToast("Prompt del bot copiado");
+      } catch {
+        window.prompt("Copia este prompt:", text);
+      }
+    }
+
+    function copySelectedPrompt() {
+      copyBotPrompt(selectedTask);
+    }
+
+    async function copyExpertSummary() {
+      const strategy = api();
+      const text = `Bots expertos Luminous - Demo SkinGlow
+
+La plataforma no usa un chat generico. Organiza asistentes por etapa del negocio:
+${strategy.tasks.map(task => {
+  const framework = strategy.getStrategyFor(task.id);
+  return `- ${task.title}: ${framework.title}. Inspirado en frameworks publicos de ${framework.inspiredBy}. Entrega: ${framework.outputs.join(", ")}.`;
+}).join("\n")}
+
+Nota: las referencias son inspiracion metodologica. No se imita la identidad, voz ni marca de ninguna persona.`;
+      try {
+        await navigator.clipboard.writeText(text);
+        showToast("Resumen copiado");
+      } catch {
+        window.prompt("Copia este resumen:", text);
+      }
+    }
+
+    try {
+      applyExpertRoute();
+      renderBotGrid();
+      selectBot("offer");
+    } catch (error) {
+      console.warn("No se pudo preparar panel de bots", error);
+    }
+  </script>
+</body>
+</html>

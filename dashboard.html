@@ -8,11 +8,17 @@
 <meta property="og:title" content="Dashboard | Luminous Studio"/>
 <meta property="og:description" content="Crea quizzes de alta conversión y mini-apps interactivas con inteligencia artificial."/>
 <meta name="theme-color" content="#2E5BFF"/>
+<script>
+  if (location.protocol === 'file:') {
+    location.replace('http://127.0.0.1:5180/dashboard.html' + location.search + location.hash);
+  }
+</script>
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="./supabase-config.js"></script>
 <script src="./app.js"></script>
 <script src="./miniapp-templates.js"></script>
+<script src="./skinglow-demo-data.js"></script>
 <script src="./ai-assistant.js" defer></script>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
@@ -204,6 +210,7 @@
     <a class="text-on-surface-variant hover:text-primary transition-colors" href="./dashboard.html?create_miniapp=1">Mini-Apps</a>
     <a class="text-on-surface-variant hover:text-primary transition-colors" href="./plantillas.html">Plantillas</a>
     <a class="text-on-surface-variant hover:text-primary transition-colors" href="./leads.html">Leads</a>
+    <a class="text-on-surface-variant hover:text-primary transition-colors" href="./market-research-demo.html">Spy Lab</a>
     <a class="text-on-surface-variant hover:text-primary transition-colors" href="./bots.html">Bot Lab</a>
     <a class="text-on-surface-variant hover:text-primary transition-colors" href="./precios.html">Plan</a>
     <a class="text-on-surface-variant hover:text-primary transition-colors" href="./settings.html">Ajustes</a>
@@ -236,6 +243,85 @@
       <a href="./generador-ia.html" onclick="guardAiNav(event,'./generador-ia.html')" class="flex items-center gap-2 px-5 py-2.5 text-white text-sm font-bold rounded-xl hover:brightness-110 transition-all" style="background:linear-gradient(135deg,#2E5BFF,#7c3aed);box-shadow:0 4px 16px rgba(46,91,255,0.35);">
         <span class="material-symbols-outlined text-base" style="font-variation-settings:'FILL' 1">add_circle</span>Nuevo Quiz
       </a>
+    </div>
+  </div>
+
+  <!-- Demo proyecto completo -->
+  <div id="skinglow-project-card" class="mb-6 rounded-2xl overflow-hidden relative border border-pink-400/20 bg-surface-container">
+    <div class="absolute inset-0 pointer-events-none" style="background:radial-gradient(circle at 10% 0%,rgba(219,39,119,.22),transparent 34%),radial-gradient(circle at 96% 20%,rgba(15,159,147,.18),transparent 30%),linear-gradient(135deg,rgba(255,255,255,.035),transparent);"></div>
+    <div class="relative z-10 p-5 md:p-6 space-y-5">
+      <div class="flex flex-col lg:flex-row lg:items-start justify-between gap-5">
+        <div class="flex items-start gap-4">
+          <div class="w-12 h-12 rounded-2xl flex items-center justify-center shrink-0" style="background:linear-gradient(135deg,#c84f78,#6f9d92);box-shadow:0 16px 34px rgba(200,79,120,.22);">
+            <span class="material-symbols-outlined text-white" style="font-size:25px;font-variation-settings:'FILL' 1">auto_awesome</span>
+          </div>
+          <div>
+            <p class="text-[11px] font-black uppercase tracking-[.16em] text-pink-300/80 mb-1">Proyecto demo completo</p>
+            <h2 class="text-xl md:text-2xl font-black tracking-tight text-on-surface">SkinGlow AI: workspace + vista cliente final</h2>
+            <p class="text-sm text-on-surface-variant/70 mt-1 max-w-3xl">Usalo para mostrar la promesa completa de Luminous: una creadora puede modelar oferta, crear mini app premium, ebook, quiz, landing y preparar creativos para Facebook Ads.</p>
+          </div>
+        </div>
+        <div class="flex flex-wrap gap-2">
+          <a href="./skinglow-creator-workspace.html?v=workspace2" class="px-4 py-2.5 rounded-xl text-white text-xs font-black flex items-center gap-1.5 hover:brightness-110 transition" style="background:linear-gradient(135deg,#c84f78,#70405d);">
+            <span class="material-symbols-outlined" style="font-size:15px">dashboard_customize</span>Abrir workspace
+          </a>
+          <a href="./skinglow-client-demo.html?v=gridfix2" class="px-4 py-2.5 rounded-xl bg-white text-[#20151b] text-xs font-black flex items-center gap-1.5 hover:opacity-90 transition">
+            <span class="material-symbols-outlined" style="font-size:15px">visibility</span>Ver cliente final
+          </a>
+        </div>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+        <a href="./skinglow-creator-workspace.html?v=workspace2" class="rounded-2xl border border-white/10 bg-white/[.035] hover:bg-white/[.06] transition p-4 flex items-start gap-3">
+          <span class="material-symbols-outlined text-pink-300" style="font-size:24px;font-variation-settings:'FILL' 1">edit_square</span>
+          <span><strong class="block text-sm text-on-surface">1. Workspace creadora</strong><small class="block text-xs text-on-surface-variant/65 mt-1 leading-relaxed">Centro de control del negocio: oferta, activos, landing y Ads.</small></span>
+        </a>
+        <a href="./skinglow-client-demo.html?v=gridfix2" class="rounded-2xl border border-white/10 bg-white/[.035] hover:bg-white/[.06] transition p-4 flex items-start gap-3">
+          <span class="material-symbols-outlined text-secondary" style="font-size:24px;font-variation-settings:'FILL' 1">person_search</span>
+          <span><strong class="block text-sm text-on-surface">2. Vista compradora final</strong><small class="block text-xs text-on-surface-variant/65 mt-1 leading-relaxed">Anuncio, quiz, resultado, landing/contacto, compra y entrega.</small></span>
+        </a>
+        <button type="button" onclick="installSkinGlowDemo()" class="text-left rounded-2xl border border-white/10 bg-white/[.035] hover:bg-white/[.06] transition p-4 flex items-start gap-3">
+          <span class="material-symbols-outlined text-primary" style="font-size:24px;font-variation-settings:'FILL' 1">add_circle</span>
+          <span><strong class="block text-sm text-on-surface">3. Instalar activos</strong><small class="block text-xs text-on-surface-variant/65 mt-1 leading-relaxed">Agrega quiz, landing, ebook, mini app y proyecto demo al panel.</small></span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <section id="installed-projects-section" class="hidden mb-8">
+    <div class="flex items-end justify-between gap-4 mb-4">
+      <div class="section-head border-secondary">
+        <h2 class="text-lg font-black text-on-surface tracking-tight">Proyectos completos</h2>
+        <p class="text-xs text-on-surface-variant/55 mt-0.5">Negocio conectado: oferta, mini app, ebook, quiz, landing, venta, entrega y Ads.</p>
+      </div>
+      <a href="./skinglow-creator-workspace.html?v=workspace2" class="hidden sm:inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-secondary/10 border border-secondary/25 text-secondary text-xs font-bold hover:bg-secondary/15 transition-colors">
+        <span class="material-symbols-outlined text-sm">dashboard_customize</span>Ver demo madre
+      </a>
+    </div>
+    <div id="installed-projects-grid" class="grid grid-cols-1 lg:grid-cols-2 gap-4"></div>
+  </section>
+
+  <!-- Demo madre -->
+  <div id="skinglow-showcase-card" class="hidden mb-6 rounded-2xl overflow-hidden relative border border-pink-400/20 bg-surface-container">
+    <div class="absolute inset-0 pointer-events-none" style="background:radial-gradient(circle at 10% 0%,rgba(219,39,119,.22),transparent 34%),radial-gradient(circle at 96% 20%,rgba(15,159,147,.18),transparent 30%);"></div>
+    <div class="relative z-10 p-5 md:p-6 flex flex-col md:flex-row md:items-center justify-between gap-5">
+      <div class="flex items-start gap-4">
+        <div class="w-12 h-12 rounded-2xl flex items-center justify-center shrink-0" style="background:linear-gradient(135deg,#db2777,#0f9f93);box-shadow:0 16px 34px rgba(219,39,119,.22);">
+          <span class="material-symbols-outlined text-white" style="font-size:25px;font-variation-settings:'FILL' 1">spa</span>
+        </div>
+        <div>
+          <p class="text-[11px] font-black uppercase tracking-[.16em] text-pink-300/80 mb-1">Demo madre lista para vender</p>
+          <h2 class="text-xl md:text-2xl font-black tracking-tight text-on-surface">SkinGlow AI: oferta + mini app + ebook + quiz + Ads</h2>
+          <p class="text-sm text-on-surface-variant/70 mt-1 max-w-2xl">Usala como ejemplo para mostrar que Luminous no solo crea quizzes: ayuda a modelar el producto, empaquetar la oferta, publicar y preparar publicidad.</p>
+        </div>
+      </div>
+      <div class="flex flex-wrap md:flex-nowrap gap-2">
+        <a href="./skinglow-demo.html" class="px-4 py-2.5 rounded-xl bg-white text-[#20151b] text-xs font-black flex items-center gap-1.5 hover:opacity-90 transition">
+          <span class="material-symbols-outlined" style="font-size:15px">open_in_new</span>Ver demo
+        </a>
+        <button type="button" onclick="installSkinGlowDemo()" class="px-4 py-2.5 rounded-xl text-white text-xs font-black flex items-center gap-1.5 hover:brightness-110 transition" style="background:linear-gradient(135deg,#db2777,#7c3aed);">
+          <span class="material-symbols-outlined" style="font-size:15px">add_circle</span>Instalar en mi panel
+        </button>
+      </div>
     </div>
   </div>
 
@@ -994,7 +1080,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   if (!_currentUser) return;
   // Load profile first so plan is synced to Settings before renders gate by it.
   await loadUserInfo();
-  await Promise.all([renderMiniApps(), renderQuizzes(), renderLandings(), renderEbooks()]);
+  await Promise.all([renderMiniApps(), renderQuizzes(), renderLandings(), renderEbooks(), renderProjects()]);
   loadLeadsCount();
   loadUsageWidget();
   const pageParams = new URLSearchParams(window.location.search);
@@ -1094,7 +1180,96 @@ async function applyPendingMiniAppTemplate() {
   }
 }
 
+async function installSkinGlowDemo() {
+  try {
+    if (typeof seedSkinGlowDemo !== 'function') {
+      showToast('No pude cargar la demo SkinGlow.', 'error');
+      return;
+    }
+    seedSkinGlowDemo({ setAnswers: true });
+    await Promise.all([
+      renderMiniApps(),
+      renderQuizzes(),
+      renderLandings().catch(() => {}),
+      renderEbooks().catch(() => {}),
+      renderProjects()
+    ]);
+    switchDashTab('all');
+    showToast('Proyecto SkinGlow instalado: workspace, landing, quiz, ebook y mini app.');
+  } catch (error) {
+    console.warn('installSkinGlowDemo:', error);
+    showToast('No pude instalar la demo. Recarga e intenta otra vez.', 'error');
+  }
+}
+
 // ── User info ────────────────────────────────────────────
+async function renderProjects() {
+  const section = document.getElementById('installed-projects-section');
+  const grid = document.getElementById('installed-projects-grid');
+  if (!section || !grid) return;
+  const projects = typeof Projects !== 'undefined' ? Projects.getAll() : [];
+  if (!projects.length) {
+    section.classList.add('hidden');
+    grid.innerHTML = '';
+    return;
+  }
+
+  section.classList.remove('hidden');
+  grid.innerHTML = projects.map(project => {
+    const assets = Array.isArray(project.assets) ? project.assets : [];
+    const readyAssets = assets.filter(asset => (asset.status || 'ready') === 'ready').length;
+    const totalAssets = assets.length || 1;
+    const progress = Math.round((readyAssets / totalAssets) * 100);
+    const workspaceUrl = project.workspaceUrl || project.creatorWorkspaceUrl || project.primaryCtaUrl || '#';
+    const clientUrl = project.clientPreviewUrl || project.previewUrl || '#';
+    const updated = project.updated_at || project.created_at;
+    const chipHtml = assets.slice(0, 5).map(asset => `
+      <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-white/[.055] border border-white/10 text-[10px] font-bold text-on-surface-variant">
+        <span class="w-1.5 h-1.5 rounded-full" style="background:linear-gradient(135deg,${esc(project.accent || '#c84f78')},${esc(project.accent2 || '#6f9d92')})"></span>${esc(asset.label || asset.type)}
+      </span>`).join('');
+
+    return `
+      <article class="rounded-2xl border border-white/10 bg-surface-container overflow-hidden">
+        <div class="relative p-5">
+          <div class="absolute inset-0 pointer-events-none" style="background:radial-gradient(circle at 0% 0%,rgba(200,79,120,.18),transparent 38%),radial-gradient(circle at 100% 30%,rgba(111,157,146,.15),transparent 34%);"></div>
+          <div class="relative z-10">
+            <div class="flex items-start justify-between gap-4">
+              <div class="flex items-start gap-3 min-w-0">
+                <div class="w-11 h-11 rounded-2xl flex items-center justify-center shrink-0" style="background:linear-gradient(135deg,${esc(project.accent || '#c84f78')},${esc(project.accent2 || '#6f9d92')});box-shadow:0 16px 34px rgba(200,79,120,.18);">
+                  <span class="material-symbols-outlined text-white" style="font-size:23px;font-variation-settings:'FILL' 1">hub</span>
+                </div>
+                <div class="min-w-0">
+                  <p class="text-[10px] font-black uppercase tracking-[.14em] text-secondary/80 mb-1">${esc(project.niche || 'Proyecto completo')}</p>
+                  <h3 class="text-base md:text-lg font-black text-on-surface tracking-tight truncate">${esc(project.title || project.name || 'Proyecto')}</h3>
+                  <p class="text-xs text-on-surface-variant/65 mt-1 leading-relaxed">${esc(project.summary || 'Proyecto conectado listo para presentar.')}</p>
+                </div>
+              </div>
+              <span class="shrink-0 px-2.5 py-1 rounded-full text-[10px] font-black uppercase bg-secondary/10 text-secondary border border-secondary/20">${progress}% listo</span>
+            </div>
+
+            <div class="mt-4 h-2 rounded-full bg-white/[.07] overflow-hidden">
+              <div class="h-full rounded-full" style="width:${progress}%;background:linear-gradient(90deg,${esc(project.accent || '#c84f78')},${esc(project.accent2 || '#6f9d92')});"></div>
+            </div>
+
+            <div class="mt-4 flex flex-wrap gap-2">${chipHtml}</div>
+
+            <div class="mt-5 flex flex-wrap items-center justify-between gap-3">
+              <p class="text-[11px] text-on-surface-variant/55">${readyAssets}/${totalAssets} activos conectados${updated ? ` - Actualizado ${formatDate(updated)}` : ''}</p>
+              <div class="flex flex-wrap gap-2">
+                <a href="${esc(workspaceUrl)}" class="px-3.5 py-2 rounded-xl text-white text-xs font-black flex items-center gap-1.5 hover:brightness-110 transition" style="background:linear-gradient(135deg,${esc(project.accent || '#c84f78')},#70405d);">
+                  <span class="material-symbols-outlined" style="font-size:14px">dashboard_customize</span>Workspace
+                </a>
+                <a href="${esc(clientUrl)}" class="px-3.5 py-2 rounded-xl bg-white text-[#20151b] text-xs font-black flex items-center gap-1.5 hover:opacity-90 transition">
+                  <span class="material-symbols-outlined" style="font-size:14px">visibility</span>Cliente final
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </article>`;
+  }).join('');
+}
+
 async function loadUserInfo() {
   try {
     const profile = await _dbWithTimeout(DB.profiles.get(_currentUser.id));
@@ -1205,9 +1380,12 @@ async function renderMiniApps() {
   let apps = [];
   try {
     apps = await _dbWithTimeout(DB.miniApps.getAll(_currentUser.id));
-    // Merge localStorage mini-apps not yet synced to Supabase
-    const local = MiniApps.getAll().filter(la => !apps.find(a => a.id === la.id));
-    apps = [...apps, ...local];
+    // Merge localStorage edits over Supabase rows so recent local saves are visible immediately.
+    const local = MiniApps.getAll();
+    const localById = new Map(local.map(app => [app.id, app]));
+    apps = apps.map(app => localById.has(app.id) ? { ...app, ...localById.get(app.id) } : app);
+    const localOnly = local.filter(la => !apps.find(a => a.id === la.id));
+    apps = [...apps, ...localOnly];
   } catch (err) {
     // Supabase unreachable — fall back entirely to localStorage
     apps = MiniApps.getAll();
@@ -1589,7 +1767,12 @@ function buildAppCard(app) {
     ? `${types.length} secciones`
     : (TYPE_NAMES[types[0]] || types[0] || '—');
   const typeIcon = getTemplateMaterialIcon(app, types);
-  const appUrl = `./mini-app-player.html?id=${app.id}`;
+  const appUrl = `./mini-app-player.html?id=${app.id}&open=1`;
+  const rawAppName = String(app.name || 'Mini-App');
+  const normalizedAppName = rawAppName.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+  const displayName = /learna/i.test(rawAppName) || /aprende.*hablar.*ingles.*90/.test(normalizedAppName)
+    ? 'Inglés 90 Pro'
+    : rawAppName;
   const hasEditableContent = true;
   const palette = (app._fromTemplate || app.category) ? getTemplatePalette(app) : {};
   const accent = app.primaryColor || app.accent || palette.accent || '#2E5BFF';
@@ -1606,7 +1789,7 @@ function buildAppCard(app) {
         <span class="text-[10px] font-extrabold uppercase px-2 py-0.5 rounded-full bg-secondary/10 text-secondary">${esc(typeLabel)}</span>
       </div>
       <div>
-        <h4 class="font-extrabold text-sm text-on-surface truncate">${esc(app.name)}</h4>
+        <h4 class="font-extrabold text-sm text-on-surface truncate">${esc(displayName)}</h4>
         <p class="text-xs text-on-surface-variant mt-0.5 line-clamp-2">${esc(app.description || app.niche || '')}</p>
       </div>
       <div class="flex gap-2 mt-auto">
@@ -2511,6 +2694,15 @@ function parseContentValue(type, rawValue) {
   return null;
 }
 
+function parseEditContentValue(type, rawValue) {
+  const cfg = CONTENT_CFG[type];
+  if (!cfg) return null;
+  if (rawValue?.trim()) return parseContentValue(type, rawValue);
+  if (cfg.parse === 'single') return '';
+  if (cfg.parse === 'lines' || cfg.parse === 'pipes') return [];
+  return null;
+}
+
 function getCreatorContent() {
   const result = {};
   document.querySelectorAll('[id^="cc-"]').forEach(el => {
@@ -2627,12 +2819,20 @@ window.openEditContent = openEditContent;
 
 async function saveEditContent() {
   const app = findMiniApp(_editingAppId);
-  if (!app) return;
+  if (!app) {
+    showToast('App no encontrada. Recarga la página.', 'error');
+    return;
+  }
 
   const types = getEditSelectedTypes();
   if (!types.length) {
     showToast('Selecciona al menos una herramienta.', 'error');
     return;
+  }
+  const saveBtn = document.getElementById('edit-content-save-btn');
+  if (saveBtn) {
+    saveBtn.disabled = true;
+    saveBtn.textContent = 'Guardando...';
   }
   const supported = types.filter(t => SUPPORTED_CONTENT_TYPES.has(t));
 
@@ -2641,20 +2841,33 @@ async function saveEditContent() {
     const cfg = CONTENT_CFG[type];
     const el = document.getElementById(`ec-${type}`);
     if (!el) return;
-    const parsed = parseContentValue(type, el.value);
+    const parsed = parseEditContentValue(type, el.value);
     if (parsed !== null) updates[cfg.key] = parsed;
   });
 
   const updated = { ...app, type: types[0], types, ...updates };
   try { MiniApps.save(updated); } catch (cacheErr) { console.warn('save edit local cache skipped:', cacheErr.message); }
-  window._miniAppsCache = (window._miniAppsCache || []).map(item => item.id === updated.id ? updated : item);
-  try { await DB.miniApps.save(updated, _currentUser.id); } catch(e) { console.warn('saveEditContent:', e); }
+  const cache = window._miniAppsCache || [];
+  window._miniAppsCache = cache.some(item => item.id === updated.id)
+    ? cache.map(item => item.id === updated.id ? updated : item)
+    : [updated, ...cache];
 
   document.getElementById('modal-edit-content').classList.add('hidden');
   renderMiniApps();
   const btn = document.getElementById(`edit-btn-${_editingAppId}`);
   if (btn) btn.title = 'Guardado';
   showToast('Contenido guardado.');
+  _dbWithTimeout(DB.miniApps.save(updated, _currentUser.id), 8000)
+    .catch(e => {
+      console.warn('saveEditContent remote sync:', e);
+      showToast('Guardado localmente. Se sincronizará cuando la conexión responda.', 'info');
+    })
+    .finally(() => {
+      if (saveBtn) {
+        saveBtn.disabled = false;
+        saveBtn.textContent = 'Guardar cambios';
+      }
+    });
 }
 
 window.saveEditContent = saveEditContent;
@@ -2683,7 +2896,7 @@ document.addEventListener('click', (event) => {
     <div id="edit-content-body" class="overflow-y-auto p-5 space-y-4 flex-1"></div>
     <div class="p-5 border-t border-white/10 flex gap-3 flex-shrink-0">
       <button onclick="document.getElementById('modal-edit-content').classList.add('hidden')" class="flex-1 py-2.5 bg-surface-container text-on-surface text-sm font-bold rounded-xl border border-outline-variant/20 hover:opacity-80 transition-opacity">Cancelar</button>
-      <button onclick="saveEditContent()" class="flex-1 py-2.5 bg-primary text-white text-sm font-extrabold rounded-xl hover:opacity-90 transition-opacity">Guardar cambios</button>
+      <button id="edit-content-save-btn" type="button" onclick="saveEditContent()" class="flex-1 py-2.5 bg-primary text-white text-sm font-extrabold rounded-xl hover:opacity-90 transition-opacity disabled:opacity-60">Guardar cambios</button>
     </div>
   </div>
 </div>

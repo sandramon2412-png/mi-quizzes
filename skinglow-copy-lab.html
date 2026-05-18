@@ -1,0 +1,661 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>SkinGlow Copy/VSL Lab | Luminous Studio</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <script src="./skinglow-strategy-frameworks.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --ink: #21151b;
+      --muted: #74616b;
+      --rose: #c84f78;
+      --plum: #70405d;
+      --sage: #6f9d92;
+      --cream: #fff8f4;
+      --paper: #fffdf9;
+      --line: rgba(33,21,27,.12);
+      --shadow: 0 28px 80px rgba(78,47,65,.14);
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      min-height: 100dvh;
+      color: var(--ink);
+      font-family: "Plus Jakarta Sans", system-ui, sans-serif;
+      background:
+        radial-gradient(circle at 10% 0%, rgba(200,79,120,.16), transparent 28%),
+        radial-gradient(circle at 90% 8%, rgba(111,157,146,.18), transparent 31%),
+        linear-gradient(135deg, #fff8f4 0%, #f5ebe7 46%, #edf6f3 100%);
+    }
+    a { color: inherit; text-decoration: none; }
+    .material-symbols-outlined {
+      font-family: "Material Symbols Outlined";
+      font-variation-settings: "FILL" 1, "wght" 650, "GRAD" 0, "opsz" 24;
+      line-height: 1;
+    }
+    .wrap {
+      width: min(1180px, calc(100% - 34px));
+      margin: 0 auto;
+    }
+    nav {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      padding: 14px 0;
+      background: linear-gradient(180deg, rgba(255,248,244,.94), rgba(255,248,244,.62));
+      backdrop-filter: blur(18px);
+    }
+    .nav-inner {
+      min-height: 64px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      padding: 10px 12px;
+      border: 1px solid rgba(255,255,255,.72);
+      border-radius: 8px;
+      background: rgba(255,255,255,.68);
+      box-shadow: 0 18px 50px rgba(78,47,65,.10);
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 11px;
+      font-weight: 900;
+    }
+    .brand-icon,
+    .icon {
+      width: 42px;
+      height: 42px;
+      display: grid;
+      place-items: center;
+      flex: 0 0 auto;
+      border-radius: 8px;
+      color: #fff;
+      background: linear-gradient(135deg, var(--rose), var(--sage));
+      box-shadow: 0 14px 30px rgba(78,47,65,.16);
+    }
+    .brand small {
+      display: block;
+      margin-top: 2px;
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 900;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 9px;
+    }
+    .btn {
+      min-height: 44px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 0 15px;
+      border: 1px solid rgba(33,21,27,.12);
+      border-radius: 999px;
+      background: rgba(255,255,255,.84);
+      color: var(--ink);
+      font: inherit;
+      font-size: 13px;
+      font-weight: 900;
+      cursor: pointer;
+      box-shadow: 0 12px 30px rgba(78,47,65,.08);
+    }
+    .btn.primary {
+      border: 0;
+      color: #fff;
+      background: linear-gradient(135deg, var(--rose), var(--plum));
+    }
+    .hero {
+      display: grid;
+      grid-template-columns: minmax(0, 1.06fr) 390px;
+      gap: 18px;
+      align-items: stretch;
+      margin: 16px auto 18px;
+    }
+    .hero-card,
+    .source-card,
+    .lab-card,
+    .output-card,
+    .script-card,
+    .structure-card {
+      border: 1px solid rgba(255,255,255,.74);
+      border-radius: 8px;
+      background: rgba(255,255,255,.62);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(22px);
+    }
+    .hero-card {
+      min-height: 360px;
+      overflow: hidden;
+      position: relative;
+      display: grid;
+      align-content: end;
+      padding: clamp(24px, 5vw, 46px);
+      background:
+        linear-gradient(90deg, rgba(33,21,27,.80), rgba(33,21,27,.24)),
+        url("https://images.unsplash.com/photo-1512496015851-a90fb38ba796?auto=format&fit=crop&w=1400&q=82") center / cover;
+      color: #fff;
+    }
+    .hero-card::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(circle at 84% 18%, rgba(200,79,120,.24), transparent 28%),
+        linear-gradient(180deg, transparent 0%, rgba(33,21,27,.48) 100%);
+      pointer-events: none;
+    }
+    .hero-card > * { position: relative; z-index: 1; }
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      width: fit-content;
+      padding: 8px 11px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,.20);
+      background: rgba(255,255,255,.12);
+      color: #fff4f8;
+      font-size: 12px;
+      font-weight: 900;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+    h1,
+    h2,
+    h3,
+    p { margin-top: 0; }
+    h1 {
+      max-width: 760px;
+      margin: 18px 0 12px;
+      font-family: "Instrument Serif", Georgia, serif;
+      font-size: clamp(43px, 7vw, 76px);
+      font-weight: 400;
+      line-height: .9;
+      letter-spacing: 0;
+    }
+    h2 {
+      margin-bottom: 8px;
+      font-size: 22px;
+      line-height: 1.1;
+    }
+    h3 {
+      margin-bottom: 8px;
+      font-size: 17px;
+      line-height: 1.2;
+    }
+    .lead {
+      max-width: 760px;
+      margin: 0;
+      color: rgba(255,255,255,.86);
+      font-size: 17px;
+      line-height: 1.65;
+    }
+    .source-card {
+      padding: 22px;
+    }
+    .source-card p,
+    .lab-card p,
+    .output-card p,
+    .script-card p {
+      color: var(--muted);
+      line-height: 1.55;
+    }
+    .source-stack {
+      display: grid;
+      gap: 10px;
+      margin-top: 18px;
+    }
+    .source-row {
+      padding: 12px;
+      border: 1px solid rgba(33,21,27,.10);
+      border-radius: 8px;
+      background: rgba(255,248,244,.68);
+    }
+    .source-row strong {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+    }
+    .source-row small {
+      display: block;
+      margin-top: 5px;
+      color: var(--muted);
+      line-height: 1.45;
+    }
+    .lab-grid {
+      display: grid;
+      grid-template-columns: 390px minmax(0, 1fr);
+      gap: 18px;
+      align-items: start;
+      margin-bottom: 34px;
+    }
+    .lab-card,
+    .script-card,
+    .structure-card {
+      padding: 22px;
+    }
+    .field {
+      display: grid;
+      gap: 7px;
+      margin-top: 14px;
+    }
+    label {
+      color: #7a5666;
+      font-size: 12px;
+      font-weight: 900;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+    input,
+    textarea {
+      width: 100%;
+      border: 1px solid rgba(33,21,27,.12);
+      border-radius: 8px;
+      background: rgba(255,255,255,.78);
+      color: var(--ink);
+      font: inherit;
+      font-size: 14px;
+      line-height: 1.45;
+      outline: none;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.86);
+    }
+    input { min-height: 46px; padding: 0 13px; }
+    textarea {
+      min-height: 140px;
+      resize: vertical;
+      padding: 12px 13px;
+    }
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      width: fit-content;
+      padding: 8px 10px;
+      border-radius: 999px;
+      background: rgba(200,79,120,.10);
+      color: #914563;
+      font-size: 12px;
+      font-weight: 900;
+    }
+    .output-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+    .output-card {
+      min-height: 190px;
+      padding: 18px;
+      background:
+        radial-gradient(circle at 100% 0%, rgba(111,157,146,.14), transparent 34%),
+        rgba(255,255,255,.64);
+    }
+    .output-card:nth-child(odd) {
+      background:
+        radial-gradient(circle at 100% 0%, rgba(200,79,120,.12), transparent 34%),
+        rgba(255,255,255,.64);
+    }
+    .output-card strong,
+    .script-card strong,
+    .structure-card strong {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 9px;
+      font-size: 14px;
+    }
+    .output-card ul,
+    .structure-card ul {
+      margin: 0;
+      padding-left: 18px;
+      color: var(--muted);
+      line-height: 1.55;
+      font-size: 13px;
+    }
+    .script-card {
+      margin-top: 12px;
+      background:
+        linear-gradient(135deg, rgba(112,64,93,.92), rgba(200,79,120,.72)),
+        url("https://images.unsplash.com/photo-1522338242992-e1a54906a8da?auto=format&fit=crop&w=1200&q=82") center / cover;
+      color: #fff;
+    }
+    .script-card p,
+    .script-card ul { color: rgba(255,255,255,.88); }
+    .script-card textarea {
+      min-height: 260px;
+      margin-top: 12px;
+      border-color: rgba(255,255,255,.28);
+      background: rgba(255,255,255,.90);
+      color: #281822;
+    }
+    .structure-card {
+      margin-top: 12px;
+    }
+    .timeline {
+      display: grid;
+      gap: 10px;
+      margin-top: 14px;
+    }
+    .timeline-item {
+      display: grid;
+      grid-template-columns: 34px minmax(0, 1fr);
+      gap: 10px;
+      align-items: center;
+      padding: 12px;
+      border: 1px solid rgba(33,21,27,.10);
+      border-radius: 8px;
+      background: rgba(255,248,244,.72);
+    }
+    .timeline-item span {
+      width: 34px;
+      height: 34px;
+      display: grid;
+      place-items: center;
+      border-radius: 8px;
+      color: #fff;
+      background: linear-gradient(135deg, var(--rose), var(--sage));
+      font-size: 18px;
+      font-weight: 900;
+    }
+    .timeline-item strong {
+      margin: 0;
+    }
+    .timeline-item small {
+      display: block;
+      margin-top: 3px;
+      color: var(--muted);
+      line-height: 1.45;
+    }
+    .toast {
+      position: fixed;
+      left: 50%;
+      bottom: 20px;
+      z-index: 50;
+      transform: translate(-50%, 18px);
+      padding: 12px 15px;
+      border-radius: 999px;
+      background: #21151b;
+      color: #fff;
+      font-size: 13px;
+      font-weight: 900;
+      box-shadow: 0 18px 50px rgba(33,21,27,.26);
+      opacity: 0;
+      pointer-events: none;
+      transition: .2s ease;
+    }
+    .toast.show {
+      transform: translate(-50%, 0);
+      opacity: 1;
+    }
+    @media (max-width: 980px) {
+      .hero,
+      .lab-grid { grid-template-columns: 1fr; }
+      .nav-inner { align-items: flex-start; flex-direction: column; }
+    }
+    @media (max-width: 680px) {
+      .wrap { width: min(100% - 24px, 1180px); }
+      .hero-card { min-height: 420px; }
+      .output-grid { grid-template-columns: 1fr; }
+      .actions { width: 100%; }
+      .btn { width: 100%; }
+    }
+  </style>
+</head>
+<body>
+  <nav>
+    <div class="wrap nav-inner">
+      <a class="brand" href="./skinglow-creator-workspace.html?v=frameworkrefs1">
+        <span class="brand-icon material-symbols-outlined">movie</span>
+        <span>Copy/VSL Lab <small>Bot de venta</small></span>
+      </a>
+      <div class="actions">
+        <a class="btn" href="./skinglow-offer-lab.html?v=framework1"><span class="material-symbols-outlined">psychology_alt</span> Offer Lab</a>
+        <a class="btn" href="./skinglow-landing-demo.html?v=video1"><span class="material-symbols-outlined">web</span> Landing</a>
+        <a class="btn primary" href="./skinglow-creator-workspace.html?v=copylab1"><span class="material-symbols-outlined">arrow_back</span> Workspace</a>
+      </div>
+    </div>
+  </nav>
+
+  <header class="wrap hero">
+    <section class="hero-card">
+      <span class="eyebrow"><span class="material-symbols-outlined">auto_awesome</span> Bot especialista de venta</span>
+      <h1>Convertir la oferta en carta, VSL y landing.</h1>
+      <p class="lead">Esta pantalla muestra como Luminous puede tomar el brief y producir una estructura de venta completa: gancho, historia, mecanismo, prueba, objeciones y cierre.</p>
+    </section>
+
+    <aside class="source-card">
+      <div>
+        <span class="icon material-symbols-outlined">hub</span>
+        <h2>Motor estrategico</h2>
+        <p>El bot no escribe textos sueltos. Usa el contexto del producto y un marco de copy para ordenar el mensaje.</p>
+      </div>
+      <div class="source-stack">
+        <div class="source-row"><strong><span class="material-symbols-outlined">deployed_code</span> Oferta</strong><small id="source-offer">Oferta SkinGlow lista para convertir en guion.</small></div>
+        <div class="source-row"><strong><span class="material-symbols-outlined">movie</span> Marco VSL</strong><small id="source-vsl">Inspirado en frameworks publicos de venta.</small></div>
+        <div class="source-row"><strong><span class="material-symbols-outlined">web</span> Marco landing</strong><small id="source-landing">Claridad, beneficios, prueba y CTA.</small></div>
+      </div>
+    </aside>
+  </header>
+
+  <main class="wrap lab-grid">
+    <section class="lab-card">
+      <span class="pill"><span class="material-symbols-outlined">edit_note</span> Brief para el bot</span>
+      <h2>Entrada del Copy/VSL Lab</h2>
+      <p>Este bloque simula el chat especializado que prepara la pieza de venta antes de publicar.</p>
+
+      <div class="field">
+        <label for="copy-goal">Objetivo</label>
+        <input id="copy-goal" value="Vender el Reto Piel Clara despues del quiz diagnostico" />
+      </div>
+      <div class="field">
+        <label for="copy-audience">Cliente ideal</label>
+        <input id="copy-audience" value="Mujeres que han comprado productos virales pero siguen confundidas con su piel" />
+      </div>
+      <div class="field">
+        <label for="copy-context">Contexto de venta</label>
+        <textarea id="copy-context">Producto: SkinGlow AI. Promesa: entender que necesita tu piel y seguir una rutina simple de 21 dias sin comprar productos al azar. El valor premium viene del quiz, resultado, ebook, mini app privada, escaneo visual, diario y seguimiento.</textarea>
+      </div>
+      <div class="actions" style="margin-top:14px">
+        <button class="btn primary" type="button" onclick="generateCopyPack()"><span class="material-symbols-outlined">auto_fix_high</span> Generar venta</button>
+        <button class="btn" type="button" onclick="useOfferData()"><span class="material-symbols-outlined">input</span> Usar oferta</button>
+      </div>
+    </section>
+
+    <section>
+      <div class="output-grid">
+        <article class="output-card">
+          <strong><span class="material-symbols-outlined">bolt</span> Hook principal</strong>
+          <p id="hook-output">Tu piel no necesita otra rutina viral. Necesita una lectura clara antes de comprar mas productos.</p>
+        </article>
+        <article class="output-card">
+          <strong><span class="material-symbols-outlined">psychology_alt</span> Problema que abre la venta</strong>
+          <p id="problem-output">La compradora no sabe si su piel pide calma, hidratacion, control de brillo o pausa de activos; por eso gasta sin saber que corregir.</p>
+        </article>
+        <article class="output-card">
+          <strong><span class="material-symbols-outlined">schema</span> Nuevo mecanismo</strong>
+          <p id="mechanism-output">Metodo Piel Clara: quiz diagnostico, escaneo visual, rutina minima, diario de senales y ajustes de 21 dias.</p>
+        </article>
+        <article class="output-card">
+          <strong><span class="material-symbols-outlined">verified</span> Prueba y confianza</strong>
+          <ul id="proof-output">
+            <li>Diagnostico personalizado por perfil.</li>
+            <li>Rutina simple con seguimiento diario.</li>
+            <li>Acceso privado con herramientas y asistente.</li>
+          </ul>
+        </article>
+      </div>
+
+      <article class="script-card">
+        <strong><span class="material-symbols-outlined">movie</span> Guion VSL / carta de venta</strong>
+        <p>Guion inicial para video, pagina larga o presentacion de oferta.</p>
+        <textarea id="script-output">1. Hook: Si tu piel sigue igual aunque compres productos nuevos, el problema puede no ser el producto.
+2. Problema: Estas intentando resolver manchas, brotes o rojez sin saber que senal necesita atencion primero.
+3. Mecanismo: SkinGlow empieza con diagnostico, no con una lista infinita de pasos.
+4. Oferta: Entras al reto de 21 dias con guia, mini app privada, escaneo visual, diario y seguimiento.
+5. Cierre: Haz el quiz, recibe tu ruta y decide si quieres entrar al reto completo.</textarea>
+        <div class="actions" style="margin-top:14px">
+          <button class="btn primary" type="button" onclick="copyScript()"><span class="material-symbols-outlined">content_copy</span> Copiar guion</button>
+          <button class="btn" type="button" onclick="saveCopyPack()"><span class="material-symbols-outlined">save</span> Guardar pack</button>
+        </div>
+      </article>
+
+      <article class="structure-card">
+        <strong><span class="material-symbols-outlined">account_tree</span> Estructura recomendada</strong>
+        <div class="timeline" id="timeline">
+          <div class="timeline-item"><span>1</span><div><strong>Atencion</strong><small>Gancho con dolor o deseo reconocible.</small></div></div>
+          <div class="timeline-item"><span>2</span><div><strong>Problema</strong><small>Explica por que lo que ya intento no resolvio el fondo.</small></div></div>
+          <div class="timeline-item"><span>3</span><div><strong>Mecanismo</strong><small>Presenta el metodo nuevo y simple.</small></div></div>
+          <div class="timeline-item"><span>4</span><div><strong>Oferta</strong><small>Paquete, bonos, acceso y valor premium.</small></div></div>
+          <div class="timeline-item"><span>5</span><div><strong>Cierre</strong><small>CTA claro al quiz, checkout o WhatsApp.</small></div></div>
+        </div>
+      </article>
+    </section>
+  </main>
+
+  <div id="toast" class="toast" role="status" aria-live="polite">Guardado</div>
+
+  <script>
+    const OFFER_KEY = "skinglow_offer_model";
+    const COPY_KEY = "skinglow_copy_vsl_pack";
+
+    function $(id) {
+      return document.getElementById(id);
+    }
+
+    function getOffer() {
+      try {
+        return JSON.parse(localStorage.getItem(OFFER_KEY) || "null");
+      } catch {
+        return null;
+      }
+    }
+
+    function getStrategy(task) {
+      return window.SKINGLOW_STRATEGY?.getStrategyFor?.(task) || window.SKINGLOW_STRATEGY?.getSavedFramework?.();
+    }
+
+    function showToast(message) {
+      const toast = $("toast");
+      toast.textContent = message;
+      toast.classList.add("show");
+      window.clearTimeout(window.__copyToast);
+      window.__copyToast = window.setTimeout(() => toast.classList.remove("show"), 2200);
+    }
+
+    function setList(id, items) {
+      $(id).innerHTML = items.map(item => `<li>${item}</li>`).join("");
+    }
+
+    function buildCopyPack() {
+      const goal = $("copy-goal").value.trim();
+      const audience = $("copy-audience").value.trim();
+      const context = $("copy-context").value.trim();
+      return {
+        hook: "Tu piel no necesita otra rutina viral. Necesita una lectura clara antes de comprar mas productos.",
+        problem: `${audience} suelen comprar por recomendacion o tendencia, pero no saben si su piel necesita calma, hidratacion, control de brillo o una pausa de activos.`,
+        mechanism: "Metodo Piel Clara: quiz diagnostico, escaneo visual, rutina minima, diario de senales y ajustes de 21 dias.",
+        proof: [
+          "Diagnostico personalizado por perfil y objecion principal.",
+          "Rutina simple que reduce decisiones y evita compras al azar.",
+          "Mini app privada con escaneo, checklist, diario, FAQ y asistente educativo."
+        ],
+        script: `1. Hook: Si tu piel sigue igual aunque compres productos nuevos, el problema puede no ser el producto.
+2. Problema: Muchas mujeres intentan resolver manchas, brotes, brillo o rojez sin saber que senal necesita atencion primero.
+3. Giro: Una rutina no deberia empezar con mas pasos, sino con una lectura clara.
+4. Mecanismo: SkinGlow usa quiz, escaneo visual, diario y rutina minima para ordenar los primeros 21 dias.
+5. Oferta: Entras al reto con guia, mini app privada, seguimiento y una ruta simple para dejar de improvisar.
+6. CTA: ${goal}. Haz el quiz y recibe tu ruta SkinGlow personalizada.
+
+Contexto usado por el bot:
+${context.slice(0, 520)}`
+      };
+    }
+
+    function setCopyPack(pack) {
+      $("hook-output").textContent = pack.hook;
+      $("problem-output").textContent = pack.problem;
+      $("mechanism-output").textContent = pack.mechanism;
+      setList("proof-output", pack.proof);
+      $("script-output").value = pack.script;
+    }
+
+    function generateCopyPack() {
+      const pack = buildCopyPack();
+      setCopyPack(pack);
+      localStorage.setItem(COPY_KEY, JSON.stringify(pack));
+      showToast("Copy/VSL generado");
+    }
+
+    function useOfferData() {
+      const offer = getOffer();
+      const vsl = getStrategy("vsl");
+      const landing = getStrategy("landing");
+      const parts = [];
+      if (offer) {
+        parts.push(`Oferta: ${offer.headline || "SkinGlow AI"}`);
+        parts.push(`Promesa: ${offer.promise || ""}`);
+        parts.push(`Mecanismo: ${offer.mechanism || ""}`);
+        parts.push(`Precio: ${offer.price || ""}`);
+      }
+      if (window.SKINGLOW_STRATEGY) {
+        parts.push(`Marco VSL:\n${window.SKINGLOW_STRATEGY.buildPromptForTask("vsl", {
+          name: offer?.headline || "SkinGlow AI",
+          promise: offer?.promise || "Reto Piel Clara en 21 dias",
+          audience: $("copy-audience").value.trim(),
+          nextStep: "Responder el quiz o abrir la landing"
+        })}`);
+      }
+      $("copy-context").value = parts.join("\n\n") || $("copy-context").value;
+      $("source-offer").textContent = offer ? `${offer.headline || "Oferta"} conectada desde Offer Lab.` : "No hay oferta guardada todavia. Se usa la oferta demo.";
+      $("source-vsl").textContent = `${vsl.title}: Inspirado en frameworks publicos de ${vsl.inspiredBy}.`;
+      $("source-landing").textContent = `${landing.title}: Inspirado en frameworks publicos de ${landing.inspiredBy}.`;
+      generateCopyPack();
+      showToast("Oferta aplicada al Copy/VSL Lab");
+    }
+
+    function saveCopyPack() {
+      localStorage.setItem(COPY_KEY, JSON.stringify({
+        hook: $("hook-output").textContent,
+        problem: $("problem-output").textContent,
+        mechanism: $("mechanism-output").textContent,
+        proof: [...$("proof-output").querySelectorAll("li")].map(li => li.textContent),
+        script: $("script-output").value
+      }));
+      showToast("Pack guardado");
+    }
+
+    async function copyScript() {
+      const text = $("script-output").value;
+      try {
+        await navigator.clipboard.writeText(text);
+        showToast("Guion copiado");
+      } catch {
+        window.prompt("Copia este guion:", text);
+      }
+    }
+
+    try {
+      const saved = JSON.parse(localStorage.getItem(COPY_KEY) || "null");
+      if (saved) setCopyPack(saved);
+      const vsl = getStrategy("vsl");
+      const landing = getStrategy("landing");
+      if (vsl) $("source-vsl").textContent = `${vsl.title}: Inspirado en frameworks publicos de ${vsl.inspiredBy}.`;
+      if (landing) $("source-landing").textContent = `${landing.title}: Inspirado en frameworks publicos de ${landing.inspiredBy}.`;
+    } catch (error) {
+      console.warn("No se pudo preparar Copy/VSL Lab", error);
+    }
+  </script>
+</body>
+</html>
