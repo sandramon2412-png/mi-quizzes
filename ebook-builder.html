@@ -302,8 +302,8 @@
   .ebook-page .image-card[data-size="square"] img { aspect-ratio: 1 / 1; object-fit: cover; width: 58%; margin: 0 auto; }
   .ebook-page .image-card[data-size="tall"] img { aspect-ratio: 3 / 4; object-fit: cover; width: 52%; margin: 0 auto; }
   .ebook-page .image-card[data-size="portrait"] img { aspect-ratio: 9 / 16; object-fit: cover; width: 40%; margin: 0 auto; }
-  .image-size-picker { display: flex; align-items: center; gap: 5px; padding: 5px 10px; background: var(--doc-surface); border-top: 1px solid var(--doc-border); opacity: 0; transition: opacity .15s; pointer-events: none; }
-  .image-card:hover .image-size-picker { opacity: 1; pointer-events: auto; }
+  .image-size-picker { display: flex; align-items: center; flex-wrap: wrap; gap: 5px; padding: 7px 10px; background: var(--doc-surface); border-top: 1px solid var(--doc-border); opacity: 1; pointer-events: auto; }
+  .image-card .image-size-picker { position: relative; z-index: 3; }
   .image-size-picker .size-label { font-size: 9px; font-weight: 700; color: var(--doc-muted); text-transform: uppercase; letter-spacing: .05em; margin-right: 2px; }
   .image-size-btn { font-size: 9px; font-weight: 800; letter-spacing: .04em; padding: 2px 7px; border-radius: 4px; background: var(--doc-surface-2); color: var(--doc-muted); border: 1px solid var(--doc-border); cursor: pointer; font-family: 'Plus Jakarta Sans', sans-serif; transition: all .12s; }
   .image-size-btn.active { background: linear-gradient(135deg, var(--doc-primary), var(--doc-accent)); color: #fff; border-color: transparent; }
@@ -328,7 +328,6 @@
   .ebook-page.cover.hero-split .cover-media[data-size="fit"] { min-height: unset !important; }
   .ebook-page.cover.hero-split .cover-media[data-size="fit"] img { height: auto !important; min-height: unset !important; object-fit: contain; }
   .cover-media .image-size-picker { position: absolute; bottom: 0; left: 0; right: 0; z-index: 82; background: rgba(0,0,0,.65); backdrop-filter: blur(6px); border-radius: 0 0 28px 28px; border-top: none; }
-  .cover-media:hover .image-size-picker { opacity: 1; pointer-events: auto; }
   .ebook-page.cover.hero-split .cover-visual { position: relative; width: 100%; height: 100%; min-height: 145mm; background: rgba(255,255,255,0.12); overflow: hidden; display: flex; align-items: flex-end; padding: 24px; }
   .ebook-page.cover.hero-split .cover-visual::before { content: ''; position: absolute; inset: 0; background: linear-gradient(135deg, rgba(255,255,255,0.28) 0 19%, transparent 19% 34%, rgba(255,255,255,0.16) 34% 52%, transparent 52% 100%); }
   .ebook-page.cover.hero-split .cover-visual::after { content: ''; position: absolute; inset: 18px; border: 1px solid rgba(255,255,255,0.28); border-radius: 18px; }
@@ -842,7 +841,7 @@
       return imagePrompt(base);
     };
     const imageFigure = (prompt, caption = 'Visual editorial listo para generar', chapterIdx = '') =>
-      `<figure class="image-card" data-image-prompt="${escapeHtml(imagePrompt(prompt))}"${chapterIdx !== '' ? ` data-chapter-idx="${chapterIdx}"` : ''}><div class="image-visual"><span>${escapeHtml(caption)}</span></div><figcaption>${escapeHtml(caption)}</figcaption></figure>`;
+      `<figure class="image-card" data-image-prompt="${escapeHtml(imagePrompt(prompt))}"${chapterIdx !== '' ? ` data-chapter-idx="${chapterIdx}"` : ''} data-size="natural"><div class="image-visual"><span>${escapeHtml(caption)}</span></div><figcaption>${escapeHtml(caption)}</figcaption></figure>`;
     const premiumTable = (title = 'Plan de accion') => `
 | Area clave | Enfoque recomendado | Resultado esperado |
 |---|---|---|
@@ -1367,8 +1366,14 @@
         const body = collectChapterBody(i);
         if (body) ebook.chapters[i].body_md = body;
       });
+      await optimizeEbookEmbeddedImages(ebook);
+      try {
+        localStorage.setItem(`ls_ebook_print_snapshot_${ebook.id}`, JSON.stringify({ ...ebook, _printSnapshotAt: Date.now() }));
+      } catch (snapshotErr) {
+        console.warn('[ebook] print snapshot skipped', snapshotErr);
+      }
       await persistEbook();
-      window.open(`./ebook-print.html?id=${encodeURIComponent(ebook.id)}&v=${Date.now()}`, '_blank', 'noopener');
+      window.open(`./ebook-print.html?id=${encodeURIComponent(ebook.id)}&draft=1&v=${Date.now()}`, '_blank', 'noopener');
     }
 
     async function saveReadyPdf() {
@@ -1666,15 +1671,16 @@
             await changeFigureImage(fig);
           });
         });
-        if (fig.querySelector('img') && !fig.querySelector('.image-size-picker')) {
+        if (!fig.dataset.size) fig.dataset.size = 'natural';
+        if (!fig.querySelector('.image-size-picker')) {
           const pickerEl = document.createElement('div');
           pickerEl.innerHTML = buildSizePicker(fig.dataset.size || 'natural');
           const picker = pickerEl.firstElementChild;
           const cap = fig.querySelector('figcaption');
           if (cap) fig.insertBefore(picker, cap);
           else fig.appendChild(picker);
-          wireSizePicker(fig);
         }
+        wireSizePicker(fig);
       });
 
       ebookPages.querySelectorAll('.chapter-section-body').forEach(sectionBody => {
@@ -2167,6 +2173,8 @@
     };
 
     // ── Persistence ──
+    const isSupabaseUuid = (value) =>
+      /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(String(value || ''));
     const persistEbook = async () => {
       if (!ebook) return;
       ebook.title = titleEl.value.trim() || ebook.title;
@@ -2175,10 +2183,18 @@
       try {
         setStatus('Guardando…');
         await optimizeEbookEmbeddedImages(ebook);
-        const saved = await DB.ebooks.save(ebook, user.id);
-        ebook = { ...ebook, ...saved };
         try { Ebooks.save(ebook); }
         catch (localErr) { console.warn('[ebook] local cache skipped', localErr); }
+        if (isSupabaseUuid(ebook.id)) {
+          try {
+            const saved = await DB.ebooks.save(ebook, user.id);
+            ebook = { ...ebook, ...saved };
+            try { Ebooks.save(ebook); }
+            catch (localErr) { console.warn('[ebook] local cache skipped', localErr); }
+          } catch (cloudErr) {
+            console.warn('[ebook] cloud save skipped; local copy is current', cloudErr);
+          }
+        }
         setStatus('Guardado');
         setTimeout(() => setStatus(''), 1200);
       } catch (e) {
@@ -2199,7 +2215,9 @@
           if (seeded?.ebook) row = { ...seeded.ebook, user_id: user.id };
         }
       }
-      try { row = await DB.ebooks.get(editingId); } catch (e) { console.warn('Supabase load falló:', e); }
+      if (!row && isSupabaseUuid(editingId)) {
+        try { row = await DB.ebooks.get(editingId); } catch (e) { console.warn('Supabase load falló:', e); }
+      }
       if (editingId === 'skinglow-ebook' && (!row || row.user_id !== user.id || !row.chapters?.length)) {
         const seeded = seedSkinGlowDemo({ setAnswers: true });
         if (seeded?.ebook) row = { ...seeded.ebook, user_id: user.id };

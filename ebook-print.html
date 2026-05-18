@@ -181,12 +181,15 @@
 (async () => {
   const params = new URLSearchParams(location.search);
   const id = params.get('id');
+  const useDraftSnapshot = params.get('draft') === '1';
   const root = document.getElementById('root');
   const back = document.getElementById('back-link');
   let currentBook = null;
   if (id) back.href = './ebook-builder.html?id=' + encodeURIComponent(id);
 
   const escapeHtml = (s) => (s || '').toString().replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  const isSupabaseUuid = (value) =>
+    /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(String(value || ''));
   const stripLegacyTitle = (title) => (title || '').replace(/^cap[ií]tulo\s+\d+\s*[:\\-–—]?\\s*/i, '').trim();
   if (window.marked?.setOptions) marked.setOptions({ gfm:true, breaks:false });
   const smartIcons = ['check','insights','paid','savings','schedule','analytics','target','article'];
@@ -260,10 +263,22 @@
 
   async function loadEbook() {
     let row = null;
-    if (id === 'skinglow-ebook' && typeof seedSkinGlowDemo === 'function') {
-      try { seedSkinGlowDemo({ setAnswers: true }); } catch {}
+    if (id && useDraftSnapshot) {
+      try {
+        const snapshot = JSON.parse(localStorage.getItem(`ls_ebook_print_snapshot_${id}`) || 'null');
+        if (snapshot?.id === id && Array.isArray(snapshot.chapters)) row = snapshot;
+      } catch {}
     }
-    try { row = id ? await DB.ebooks.get(id) : null; } catch {}
+    if (!row && id) row = Ebooks.get(id);
+    if (!row && id === 'skinglow-ebook' && typeof seedSkinGlowDemo === 'function') {
+      try {
+        const seeded = seedSkinGlowDemo({ setAnswers: true });
+        if (seeded?.ebook) row = seeded.ebook;
+      } catch {}
+    }
+    if (!row && id && isSupabaseUuid(id)) {
+      try { row = await DB.ebooks.get(id); } catch {}
+    }
     if (!row && id) row = Ebooks.get(id);
     if (!row && id === 'skinglow-ebook' && window.SKINGLOW_EBOOK) row = window.SKINGLOW_EBOOK;
     return row;
