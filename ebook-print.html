@@ -71,10 +71,13 @@
   .cover-visual { height:145mm; display:flex; align-items:flex-end; padding:24px; position:relative; overflow:hidden; }
   .cover-visual::before { content:''; position:absolute; inset:0; background:linear-gradient(135deg,rgba(255,255,255,.28) 0 20%,transparent 20% 35%,rgba(255,255,255,.14) 35% 52%,transparent 52% 100%); }
   .cover-visual span { position:relative; z-index:1; font-family:'Plus Jakarta Sans',sans-serif; font-size:11px; font-weight:800; letter-spacing:.12em; text-transform:uppercase; }
-  .document {
-    width:178mm; min-height:260mm; margin:0 auto; background:var(--doc-bg); color:var(--doc-fg); padding:0;
+  .chapter-page {
+    width:210mm; min-height:297mm; margin:16px auto; padding:14mm 16mm;
+    background:var(--doc-bg); color:var(--doc-fg);
+    box-shadow:0 2px 20px rgba(0,0,0,.18);
+    -webkit-print-color-adjust:exact; print-color-adjust:exact;
   }
-  .chapter { margin:0 0 15mm; }
+  .chapter { margin:0; }
   .chapter h2 {
     font-family:'Plus Jakarta Sans',sans-serif; color:var(--doc-primary); font-size:23px; line-height:1.15;
     margin:0 0 13px; letter-spacing:0; break-after:avoid; page-break-after:avoid;
@@ -123,14 +126,20 @@
   .feature-icon::before { content:'✓'; font-size:15px; font-weight:800; line-height:1; }
   .feature-title { font-family:'Plus Jakarta Sans',sans-serif; font-size:13px; font-weight:800; margin:5px 0 2px; }
   .feature-desc { font-size:11.5px; line-height:1.45; color:var(--doc-muted); margin:0; }
-  .steps { list-style:none; counter-reset:step; padding:0; margin:10px 0; }
-  .steps li { counter-increment:step; position:relative; padding-left:38px; background:var(--doc-surface-2); }
-  .steps li::before { content:counter(step); position:absolute; left:9px; top:8px; width:21px; height:21px; border-radius:999px; background:var(--doc-primary); color:#fff; font-family:'Plus Jakarta Sans',sans-serif; font-size:10px; font-weight:800; display:flex; align-items:center; justify-content:center; }
+  .steps { list-style:none; counter-reset:step; padding:0; margin:10px 0 12px; }
+  .steps li { list-style:none; counter-increment:step; position:relative; display:block; padding:8px 10px 8px 38px; margin:5px 0; border-radius:9px; background:var(--doc-surface-2); font-size:12.6px; line-height:1.46; color:var(--doc-fg); min-height:34px; }
+  .steps li::before { content:counter(step); position:absolute; left:9px; top:50%; transform:translateY(-50%); width:21px; height:21px; border-radius:999px; background:var(--doc-primary); color:#fff; font-family:'Plus Jakarta Sans',sans-serif; font-size:10px; font-weight:800; display:flex; align-items:center; justify-content:center; }
   .numbered-card { display:flex; margin:9px 0; border-radius:10px; overflow:hidden; background:var(--doc-surface-2); break-inside:avoid; page-break-inside:avoid; }
   .numbered-card .n { flex:0 0 46px; background:var(--doc-primary); color:#fff; font-family:'Plus Jakarta Sans',sans-serif; font-size:20px; font-weight:800; display:flex; align-items:center; justify-content:center; }
   .numbered-card .body { padding:10px 12px; }
   .image-card { margin:10px 0 12px; border-radius:12px; overflow:hidden; background:var(--doc-surface-2); border:1px solid var(--doc-border); break-inside:avoid; page-break-inside:avoid; }
   .image-card img { display:block; width:100%; aspect-ratio:21/7; object-fit:cover; }
+  .image-card[data-size="natural"] img { aspect-ratio:auto; height:auto; max-height:280px; object-fit:contain; }
+  .image-card[data-size="wide"] img { aspect-ratio:16/9; object-fit:cover; }
+  .image-card[data-size="banner"] img { aspect-ratio:2/1; object-fit:cover; }
+  .image-card[data-size="square"] img { aspect-ratio:1/1; width:58%; margin:0 auto; }
+  .image-card[data-size="tall"] img { aspect-ratio:3/4; width:52%; margin:0 auto; }
+  .image-card[data-size="portrait"] img { aspect-ratio:9/16; width:40%; margin:0 auto; }
   .chapter button, .chapter .image-edit-btn, .chapter .eb-regen-btn { display:none !important; }
   .image-visual { position:relative; width:100%; aspect-ratio:21/7; background:linear-gradient(135deg,var(--doc-primary),var(--doc-accent)); display:flex; align-items:flex-end; padding:16px; color:#fff; overflow:hidden; }
   .image-visual::before { content:''; position:absolute; inset:0; background:linear-gradient(120deg,rgba(255,255,255,.20) 0 18%,transparent 18% 31%,rgba(255,255,255,.13) 31% 44%,transparent 44% 100%); }
@@ -138,15 +147,16 @@
   figcaption { padding:7px 10px 9px; font-family:'Plus Jakarta Sans',sans-serif; font-size:9.5px; line-height:1.35; color:var(--doc-muted); text-transform:uppercase; letter-spacing:.08em; }
   .empty { min-height:70vh; display:grid; place-items:center; color:#fff; font-family:'Plus Jakarta Sans',sans-serif; }
   .json-export { position: fixed; left: -9999px; top: 0; width: 1px; height: 1px; overflow: hidden; white-space: pre-wrap; }
-  @page { size:A4; margin:14mm 16mm; }
-  @page:first { margin:0; }
+  @page { size:A4; margin:0; }
   @media print {
     html, body { background:#fff !important; }
     .toolbar { display:none !important; }
     .page-shell { background:#fff !important; padding:0 !important; }
     .cover { width:210mm; height:297mm; margin:0; box-shadow:none; }
-    .document { width:auto; min-height:0; margin:0; padding:0; background:var(--doc-bg); }
-    .chapter { margin-bottom:10mm; }
+    .chapter-page { width:210mm !important; min-height:297mm !important; margin:0 !important; padding:14mm 16mm !important; box-shadow:none !important; break-after:page; page-break-after:always; }
+    .chapter-page:last-child { break-after:auto; page-break-after:auto; }
+    .chapter h2 { margin-top:0; }
+    .image-card { break-inside:auto !important; page-break-inside:auto !important; }
   }
 </style>
 </head>
@@ -158,7 +168,7 @@
   </div>
   <div class="actions">
     <a id="back-link" class="btn ghost" href="./ebook-builder.html"><span class="material-symbols-outlined" style="font-size:16px">arrow_back</span>Volver al editor</a>
-    <button id="server-pdf-btn" class="btn primary" type="button"><span class="material-symbols-outlined" style="font-size:16px">download</span>Descargar PDF final</button>
+    <button id="server-pdf-btn" class="btn primary" type="button"><span class="material-symbols-outlined" style="font-size:16px">picture_as_pdf</span>Guardar como PDF</button>
     <button id="print-btn" class="btn primary" type="button"><span class="material-symbols-outlined" style="font-size:16px">print</span>Imprimir / Guardar PDF</button>
   </div>
 </header>
@@ -166,6 +176,7 @@
 <pre id="ebook-json" class="json-export"></pre>
 <script src="./app.js?v=gamma-plus-2"></script>
 <script src="./supabase-config.js?v=20260423n"></script>
+<script src="./skinglow-demo-data.js?v=20260518"></script>
 <script>
 (async () => {
   const params = new URLSearchParams(location.search);
@@ -219,10 +230,42 @@
     return block;
   }
 
+  function inlineMarkdown(text) {
+    return escapeHtml(text)
+      .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+      .replace(/\*(.+?)\*/g, '<em>$1</em>');
+  }
+
+  function fallbackMarkdown(md = '') {
+    return String(md).split(/\n\n+/).map(block => {
+      const trimmed = block.trim();
+      if (!trimmed) return '';
+      if (/^<[a-z]/i.test(trimmed)) return trimmed;
+      if (/^###\s+/.test(trimmed)) return `<h3>${inlineMarkdown(trimmed.replace(/^###\s+/, ''))}</h3>`;
+      if (/^##\s+/.test(trimmed)) return `<h2>${inlineMarkdown(trimmed.replace(/^##\s+/, ''))}</h2>`;
+      if (/^[-*\u2022]\s+/m.test(trimmed)) {
+        const items = trimmed.split('\n').filter(Boolean).map(line => `<li>${inlineMarkdown(line.replace(/^[-*\u2022]\s+/, '').trim())}</li>`).join('');
+        return `<ul>${items}</ul>`;
+      }
+      if (/^\|.+\|$/m.test(trimmed)) {
+        const rows = trimmed.split('\n').filter(line => /^\|.+\|$/.test(line.trim())).map(line => line.trim().replace(/^\||\|$/g, '').split('|').map(cell => cell.trim()));
+        const [head, sep, ...body] = rows;
+        const header = head ? `<thead><tr>${head.map(cell => `<th>${inlineMarkdown(cell)}</th>`).join('')}</tr></thead>` : '';
+        const bodyRows = (sep && /^-+$/.test((sep[0] || '').replace(/:/g, ''))) ? body : rows.slice(1);
+        return `<table>${header}<tbody>${bodyRows.map(row => `<tr>${row.map(cell => `<td>${inlineMarkdown(cell)}</td>`).join('')}</tr>`).join('')}</tbody></table>`;
+      }
+      return `<p>${inlineMarkdown(trimmed).replace(/\n/g, '<br>')}</p>`;
+    }).join('\n');
+  }
+
   async function loadEbook() {
     let row = null;
+    if (id === 'skinglow-ebook' && typeof seedSkinGlowDemo === 'function') {
+      try { seedSkinGlowDemo({ setAnswers: true }); } catch {}
+    }
     try { row = id ? await DB.ebooks.get(id) : null; } catch {}
     if (!row && id) row = Ebooks.get(id);
+    if (!row && id === 'skinglow-ebook' && window.SKINGLOW_EBOOK) row = window.SKINGLOW_EBOOK;
     return row;
   }
 
@@ -234,7 +277,7 @@
       .replace(/\n{3,}/g, '\n\n')
       .trim();
     const upgraded = cleaned.split(/\n\n+/).map(upgradeBlock).join('\n\n');
-    return marked.parse(upgraded || '');
+    return window.marked?.parse ? marked.parse(upgraded || '') : fallbackMarkdown(upgraded || '');
   }
 
   function inferTheme(row) {
@@ -279,12 +322,14 @@
         </div>
       </section>`;
     const chaptersHtml = book.chapters.map((chapter, index) => `
-      <section class="chapter">
-        <h2>${escapeHtml(stripLegacyTitle(chapter.title) || `Seccion ${index + 1}`)}</h2>
-        ${renderMarkdown(chapter.body_md || '')}
-      </section>
+      <div class="chapter-page">
+        <section class="chapter">
+          <h2>${escapeHtml(stripLegacyTitle(chapter.title) || `Seccion ${index + 1}`)}</h2>
+          ${renderMarkdown(chapter.body_md || '')}
+        </section>
+      </div>
     `).join('');
-    root.innerHTML = coverHtml + `<article class="document">${chaptersHtml}</article>`;
+    root.innerHTML = coverHtml + chaptersHtml;
   }
 
   try {
@@ -300,46 +345,7 @@
   }
 
   document.getElementById('print-btn').addEventListener('click', () => window.print());
-  document.getElementById('server-pdf-btn')?.addEventListener('click', async () => {
-    if (!currentBook) return;
-    const btn = document.getElementById('server-pdf-btn');
-    const original = btn.innerHTML;
-    btn.disabled = true;
-    btn.innerHTML = '<span class="material-symbols-outlined" style="font-size:16px">hourglass_empty</span>Generando PDF...';
-    try {
-      const toolbar = document.querySelector('.toolbar');
-      if (toolbar) toolbar.style.display = 'none';
-      const html = '<!DOCTYPE html>' + document.documentElement.outerHTML;
-      if (toolbar) toolbar.style.display = '';
-      const filename = `${(currentBook.title || 'ebook').replace(/[\\/:*?"<>|]+/g, '').trim() || 'ebook'}.pdf`;
-      const response = await fetch('/api/render-ebook-pdf', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ html, filename }),
-      });
-      if (!response.ok) {
-        const err = await response.json().catch(() => ({}));
-        throw new Error(err.error || 'No pude generar el PDF en el servidor.');
-      }
-      const blob = await response.blob();
-      if (!blob || blob.size < 1024) throw new Error('El PDF llego vacio.');
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = filename;
-      document.body.appendChild(a);
-      a.click();
-      a.remove();
-      setTimeout(() => URL.revokeObjectURL(url), 2000);
-    } catch (error) {
-      alert(error.message || 'No pude generar el PDF final.');
-      const toolbar = document.querySelector('.toolbar');
-      if (toolbar) toolbar.style.display = '';
-    } finally {
-      btn.disabled = false;
-      btn.innerHTML = original;
-    }
-  });
+  document.getElementById('server-pdf-btn')?.addEventListener('click', () => window.print());
 })();
 </script>
 </body>

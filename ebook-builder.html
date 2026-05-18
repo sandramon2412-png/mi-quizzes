@@ -138,6 +138,16 @@
   .ebook-page-wrap:hover .eb-regen-btn { opacity: 0.95; }
   .ebook-page-wrap .eb-regen-btn:hover { opacity: 1 !important; transform: translateY(-1px); }
   .ebook-page-wrap .eb-regen-btn:disabled { opacity: 0.5 !important; cursor: wait; }
+  .chapter-doc-wrap .eb-regen-btn { top: 10px; bottom: auto; opacity: 0.75 !important; pointer-events: auto !important; }
+  .chapter-doc-wrap:hover .eb-regen-btn { opacity: 1 !important; }
+  .ebook-page-wrap.chapter-doc-wrap { aspect-ratio: auto; overflow: visible; min-height: 280px; }
+  .ebook-page-wrap.chapter-doc-wrap .ebook-page {
+    position: relative !important; width: 100% !important; height: auto !important;
+    min-height: 260px; overflow: visible !important; transform: none !important;
+    padding: 32px 36px !important;
+  }
+  .ebook-page-wrap.chapter-doc-wrap .chapter-body-scroll { overflow: visible !important; flex: none !important; }
+  .ebook-page-wrap.chapter-doc-wrap .chapter-section-body { min-height: 32px; }
   .ebook-page h1, .ebook-page h2, .ebook-page h3 { font-family: 'Plus Jakarta Sans', sans-serif; letter-spacing: -0.02em; }
   .ebook-page h2 { font-size: 22px; font-weight: 800; margin: 28px 0 14px; background: linear-gradient(135deg, var(--doc-primary), var(--doc-accent)); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; color: var(--doc-primary); }
   .ebook-page h3 { font-size: 17px; font-weight: 700; margin: 22px 0 10px; color: var(--doc-fg); }
@@ -227,13 +237,13 @@
 
   .ebook-page ol.steps { list-style: none; counter-reset: step; margin: 20px 0; padding: 0; }
   .ebook-page ol.steps li {
-    counter-increment: step; position: relative; padding: 12px 16px 12px 52px;
-    margin-bottom: 10px; border-radius: 10px; background: var(--doc-surface-2);
+    counter-increment: step; position: relative; display: block; padding: 12px 16px 12px 52px;
+    margin: 0 0 10px; border-radius: 10px; background: var(--doc-surface-2);
     font-family: 'Plus Jakarta Sans', sans-serif; font-size: 13px; line-height: 1.6;
-    color: var(--doc-fg);
+    color: var(--doc-fg); min-height: 44px;
   }
   .ebook-page ol.steps li::before {
-    content: counter(step); position: absolute; left: 14px; top: 12px;
+    content: counter(step); position: absolute; left: 14px; top: 50%; transform: translateY(-50%);
     width: 26px; height: 26px; border-radius: 50%;
     background: linear-gradient(135deg, var(--doc-primary), var(--doc-accent));
     color: #fff; font-weight: 800; font-size: 13px;
@@ -286,11 +296,25 @@
      with saved prompts, ready to connect to a controlled image API later. */
   .ebook-page .image-card { margin: 12px 0 16px; border-radius: 14px; overflow: hidden; background: var(--doc-surface-2); border: 1px solid var(--doc-border); box-shadow: 0 10px 24px rgba(15,23,42,0.10); font-family: 'Plus Jakarta Sans', sans-serif; }
   .ebook-page .image-card img { display: block; width: 100%; aspect-ratio: 21 / 8; object-fit: cover; background: var(--doc-surface); }
+  .ebook-page .image-card[data-size="natural"] img { aspect-ratio: auto; height: auto; max-height: 280px; object-fit: contain; }
+  .ebook-page .image-card[data-size="wide"] img { aspect-ratio: 16 / 9; object-fit: cover; }
+  .ebook-page .image-card[data-size="banner"] img { aspect-ratio: 2 / 1; object-fit: cover; }
+  .ebook-page .image-card[data-size="square"] img { aspect-ratio: 1 / 1; object-fit: cover; width: 58%; margin: 0 auto; }
+  .ebook-page .image-card[data-size="tall"] img { aspect-ratio: 3 / 4; object-fit: cover; width: 52%; margin: 0 auto; }
+  .ebook-page .image-card[data-size="portrait"] img { aspect-ratio: 9 / 16; object-fit: cover; width: 40%; margin: 0 auto; }
+  .image-size-picker { display: flex; align-items: center; gap: 5px; padding: 5px 10px; background: var(--doc-surface); border-top: 1px solid var(--doc-border); opacity: 0; transition: opacity .15s; pointer-events: none; }
+  .image-card:hover .image-size-picker { opacity: 1; pointer-events: auto; }
+  .image-size-picker .size-label { font-size: 9px; font-weight: 700; color: var(--doc-muted); text-transform: uppercase; letter-spacing: .05em; margin-right: 2px; }
+  .image-size-btn { font-size: 9px; font-weight: 800; letter-spacing: .04em; padding: 2px 7px; border-radius: 4px; background: var(--doc-surface-2); color: var(--doc-muted); border: 1px solid var(--doc-border); cursor: pointer; font-family: 'Plus Jakarta Sans', sans-serif; transition: all .12s; }
+  .image-size-btn.active { background: linear-gradient(135deg, var(--doc-primary), var(--doc-accent)); color: #fff; border-color: transparent; }
   .ebook-page .image-card, .ebook-page .cover-media { position: relative; }
   .image-edit-btn { position: absolute; right: 12px; top: 12px; z-index: 80; border: 0; border-radius: 999px; background: rgba(15,23,42,0.88); color: #fff; display: inline-flex; align-items: center; gap: 6px; padding: 9px 13px; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 11px; font-weight: 800; letter-spacing: 0.04em; text-transform: uppercase; cursor: pointer; box-shadow: 0 10px 24px rgba(0,0,0,0.28); opacity: 1; pointer-events: auto; }
   .image-edit-btn .material-symbols-outlined { font-size: 16px; }
   .image-inline-action { width: 100%; border: 0; border-top: 1px solid var(--doc-border); background: var(--doc-surface); color: var(--doc-primary); display: flex; align-items: center; justify-content: center; gap: 6px; padding: 9px 12px; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 11px; font-weight: 800; cursor: pointer; }
   .image-inline-action .material-symbols-outlined { font-size: 16px; }
+  .add-section-image-btn { display: flex; align-items: center; gap: 6px; border: 1.5px dashed var(--doc-border); border-radius: 10px; background: transparent; color: var(--doc-muted); padding: 8px 14px; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 11px; font-weight: 700; cursor: pointer; margin: 14px 0 0; width: 100%; justify-content: center; transition: border-color .15s, color .15s; }
+  .add-section-image-btn:hover { border-color: var(--doc-primary); color: var(--doc-primary); }
+  .add-section-image-btn .material-symbols-outlined { font-size: 16px; }
   .image-card:hover .image-edit-btn, .cover-media:hover .image-edit-btn { transform: translateY(-1px); }
   .ebook-page .image-visual { position: relative; width: 100%; aspect-ratio: 21 / 8; overflow: hidden; background: linear-gradient(135deg, var(--doc-primary), var(--doc-accent)); display: flex; align-items: flex-end; padding: 20px; color: #fff; }
   .ebook-page .image-visual::before { content: ''; position: absolute; inset: 0; background: linear-gradient(120deg, rgba(255,255,255,0.20) 0 18%, transparent 18% 31%, rgba(255,255,255,0.13) 31% 44%, transparent 44% 100%); }
@@ -298,7 +322,13 @@
   .ebook-page .image-visual span { position: relative; z-index: 1; font-size: 12px; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; max-width: 72%; line-height: 1.45; }
   .ebook-page .image-card figcaption { padding: 9px 14px 11px; font-size: 10.5px; line-height: 1.45; color: var(--doc-muted); text-transform: uppercase; letter-spacing: 0.08em; font-weight: 700; }
   .ebook-page.cover.hero-split .cover-media { width: 100%; min-height: 145mm; border-radius: 28px; overflow: hidden; background: rgba(255,255,255,0.12); box-shadow: 0 24px 70px rgba(0,0,0,0.32); border: 1px solid rgba(255,255,255,0.20); }
-  .ebook-page.cover.hero-split .cover-media img { width: 100%; height: 100%; min-height: 145mm; object-fit: cover; display: block; }
+  .ebook-page.cover.hero-split .cover-media img { width: 100%; height: 100%; min-height: 145mm; object-fit: cover; object-position: center; display: block; }
+  .ebook-page.cover.hero-split .cover-media[data-size="top"] img { object-position: top; }
+  .ebook-page.cover.hero-split .cover-media[data-size="bottom"] img { object-position: bottom; }
+  .ebook-page.cover.hero-split .cover-media[data-size="fit"] { min-height: unset !important; }
+  .ebook-page.cover.hero-split .cover-media[data-size="fit"] img { height: auto !important; min-height: unset !important; object-fit: contain; }
+  .cover-media .image-size-picker { position: absolute; bottom: 0; left: 0; right: 0; z-index: 82; background: rgba(0,0,0,.65); backdrop-filter: blur(6px); border-radius: 0 0 28px 28px; border-top: none; }
+  .cover-media:hover .image-size-picker { opacity: 1; pointer-events: auto; }
   .ebook-page.cover.hero-split .cover-visual { position: relative; width: 100%; height: 100%; min-height: 145mm; background: rgba(255,255,255,0.12); overflow: hidden; display: flex; align-items: flex-end; padding: 24px; }
   .ebook-page.cover.hero-split .cover-visual::before { content: ''; position: absolute; inset: 0; background: linear-gradient(135deg, rgba(255,255,255,0.28) 0 19%, transparent 19% 34%, rgba(255,255,255,0.16) 34% 52%, transparent 52% 100%); }
   .ebook-page.cover.hero-split .cover-visual::after { content: ''; position: absolute; inset: 18px; border: 1px solid rgba(255,255,255,0.28); border-radius: 18px; }
@@ -330,7 +360,7 @@
   </button>
   <button id="btn-download" class="hidden h-9 px-4 rounded-lg primary-gradient text-white text-xs font-bold flex items-center gap-1.5 hover:opacity-90 transition">
     <span class="material-symbols-outlined" style="font-size:16px">download</span>
-    Vista previa PDF
+    Vista / guardar PDF
   </button>
 </header>
 
@@ -1065,7 +1095,7 @@
                 <h1 data-edit="cover-title" style="font-family:'Plus Jakarta Sans',sans-serif;font-size:52px;font-weight:800;line-height:1.05;letter-spacing:-0.03em;margin:0 0 20px;color:#fff">${escapeHtml(ebook.title || 'Mi ebook')}</h1>
                 <p class="subtitle" data-edit="cover-subtitle" style="font-family:'Lora',serif;font-size:22px;opacity:0.92;max-width:88%;line-height:1.45;min-height:1em;color:#fff">${escapeHtml(subtitle)}</p>
               </div>
-              <div class="cover-media" data-image-prompt="${escapeHtml(imagePrompt(coverPrompt))}">
+              <div class="cover-media" data-image-prompt="${escapeHtml(imagePrompt(coverPrompt))}"${cover.imageSize ? ` data-size="${escapeHtml(cover.imageSize)}"` : ''}>
                 ${coverImage
                   ? `<img src="${escapeHtml(coverImage)}" alt="${escapeHtml(ebook.title || 'Portada')}" crossorigin="anonymous" referrerpolicy="no-referrer"/>`
                   : `<div class="cover-visual"><span>${escapeHtml(ebook.title || 'Visual editorial')}</span></div>`}
@@ -1075,20 +1105,16 @@
           </div>
         </div>`;
 
-      const chapterChunks = ebook.chapters.map((ch, i) => [{ ch, i }]);
-
-      const chaptersHtml = chapterChunks.map((chunk, pageIndex) => `
-        <div class="ebook-page-wrap" data-theme="${escapeHtml(theme)}">
+      const chaptersHtml = ebook.chapters.map((ch, pageIndex) => `
+        <div class="ebook-page-wrap chapter-doc-wrap" data-theme="${escapeHtml(theme)}" data-chapter-doc="${pageIndex}">
           <div class="ebook-page chapter-page" data-chapter-idx="${pageIndex}">
             <div class="chapter-body-scroll" data-page-idx="${pageIndex}">
-              ${chunk.map(({ ch, i }) => `
-                <section class="chapter-section" data-chapter-idx="${i}">
-                  <h2 class="flow-title" data-edit="chapter-title" data-idx="${i}">${escapeHtml(ch.title || `Seccion ${i + 1}`)}</h2>
-                  <div class="chapter-section-body" data-edit="chapter-section-body" data-idx="${i}">${smartMd(ch.body_md || '')}</div>
-                </section>
-              `).join('')}
+              <section class="chapter-section" data-chapter-idx="${pageIndex}">
+                <h2 class="flow-title" data-edit="chapter-title" data-idx="${pageIndex}">${escapeHtml(ch.title || `Seccion ${pageIndex + 1}`)}</h2>
+                <div class="chapter-section-body" data-edit="chapter-section-body" data-idx="${pageIndex}">${smartMd(ch.body_md || '')}</div>
+              </section>
             </div>
-            <div class="ebook-page-label">Pagina ${pageIndex + 1} · A4</div>
+            <div class="ebook-page-label">Seccion ${pageIndex + 1}</div>
           </div>
         </div>`).join('');
 
@@ -1334,19 +1360,35 @@
       _saveTimer = setTimeout(() => { if (ebook) persistEbook(); }, 800);
     }
 
+    async function openPrintablePage() {
+      if (!ebook || !ebook.chapters?.length) return;
+      syncEbookTheme(ebook);
+      ebook.chapters.forEach((_, i) => {
+        const body = collectChapterBody(i);
+        if (body) ebook.chapters[i].body_md = body;
+      });
+      await persistEbook();
+      window.open(`./ebook-print.html?id=${encodeURIComponent(ebook.id)}&v=${Date.now()}`, '_blank', 'noopener');
+    }
+
     async function saveReadyPdf() {
-      openPrintPreview();
+      try {
+        await openPrintablePage();
+      } catch (err) {
+        toast('Error al abrir vista PDF: ' + (err?.message || 'error'), 'err');
+      }
     }
 
     downloadReadyBtn?.addEventListener('click', saveReadyPdf);
-    pdfDownloadLink?.addEventListener('click', () => {
-      const win = pdfPreviewFrame?.contentWindow;
-      if (!win) {
-        toast('No pude abrir la vista imprimible.', 'err');
-        return;
+    pdfDownloadLink?.addEventListener('click', async () => {
+      pdfPreviewModal?.classList.add('hidden');
+      pdfPreviewModal?.classList.remove('flex');
+      if (pdfPreviewFrame) pdfPreviewFrame.srcdoc = '';
+      try {
+        await openPrintablePage();
+      } catch (err) {
+        toast('Error al abrir vista PDF: ' + (err?.message || 'error'), 'err');
       }
-      win.focus();
-      win.print();
     });
     pdfPreviewClose?.addEventListener('click', () => {
       pdfPreviewModal?.classList.add('hidden');
@@ -1410,6 +1452,9 @@
   .print-chapter ol:not(.steps) { counter-reset: li-ctr; }
   .print-chapter ol:not(.steps) li { list-style: none; counter-increment: li-ctr; position: relative; padding: 8px 10px 8px 38px; margin: 5px 0; background: var(--doc-surface-2); border-radius: 9px; font-size: 12.6px; line-height: 1.46; }
   .print-chapter ol:not(.steps) li::before { content: counter(li-ctr); position: absolute; left: 9px; top: 8px; width: 20px; height: 20px; border-radius: 6px; background: var(--doc-primary); color: #fff; text-align: center; line-height: 20px; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 10px; font-weight: 800; }
+  .print-chapter ol.steps { list-style: none; counter-reset: step; padding: 0; margin: 10px 0 12px; }
+  .print-chapter ol.steps li { list-style: none; counter-increment: step; position: relative; display: block; padding: 8px 10px 8px 38px; margin: 5px 0; border-radius: 9px; background: var(--doc-surface-2); font-size: 12.6px; line-height: 1.46; color: var(--doc-fg); min-height: 34px; }
+  .print-chapter ol.steps li::before { content: counter(step); position: absolute; left: 9px; top: 50%; transform: translateY(-50%); width: 21px; height: 21px; border-radius: 999px; background: var(--doc-primary); color: #fff; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 10px; font-weight: 800; display: flex; align-items: center; justify-content: center; }
   .print-chapter blockquote, .print-chapter .callout { break-inside: avoid; page-break-inside: avoid; background: var(--doc-surface); border-left: 4px solid var(--doc-accent); border-radius: 0 10px 10px 0; padding: 10px 13px; margin: 12px 0; }
   .print-chapter table { width: 100%; border-collapse: collapse; margin: 12px 0; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 11.5px; break-inside: avoid; page-break-inside: avoid; }
   .print-chapter th { background: var(--doc-primary); color: #fff; padding: 8px 10px; text-align: left; }
@@ -1440,17 +1485,9 @@
 
     function openPrintPreview() {
       if (!ebook || !ebook.chapters?.length) return;
-      renderEbookPreview();
-      applyThemeInline(document.getElementById('eb-theme')?.value || ebook.theme || ebook.cover?.theme || 'light');
-      applyPageScales();
-      if (!pdfPreviewModal || !pdfPreviewFrame) {
-        toast('No pude abrir la vista imprimible.', 'err');
-        return;
-      }
-      pdfPreviewFrame.srcdoc = buildPrintableHtml();
-      pdfPreviewModal.classList.remove('hidden');
-      pdfPreviewModal.classList.add('flex');
-      toast('Vista imprimible lista. Usa Imprimir / Guardar PDF.', 'ok');
+      openPrintablePage().catch(err => {
+        toast('Error al abrir vista PDF: ' + (err?.message || 'error'), 'err');
+      });
     }
 
     function wireInlineEditing() {
@@ -1494,10 +1531,51 @@
         el.addEventListener('input', () => {
           const idx = parseInt(el.dataset.idx, 10);
           if (ebook.chapters[idx]) {
-            ebook.chapters[idx].body_md = el.innerHTML;
+            ebook.chapters[idx].body_md = collectChapterBody(idx);
             scheduleSave();
             schedulePaginate();
           }
+        });
+      });
+    }
+
+    function buildSizePicker(currentSize) {
+      const sizes = [
+        { val: 'natural', label: 'Natural' },
+        { val: 'wide', label: '16:9' },
+        { val: 'banner', label: '2:1' },
+        { val: 'square', label: '1:1' },
+        { val: 'tall', label: '3:4' },
+        { val: 'portrait', label: '9:16' },
+      ];
+      return `<div class="image-size-picker" contenteditable="false"><span class="size-label">Tamaño</span>${sizes.map(s => `<button type="button" class="image-size-btn${(currentSize || 'natural') === s.val ? ' active' : ''}" data-size-val="${s.val}">${s.label}</button>`).join('')}</div>`;
+    }
+
+    function buildCoverSizePicker(currentSize) {
+      const sizes = [
+        { val: 'center', label: 'Centro' },
+        { val: 'top', label: 'Arriba' },
+        { val: 'bottom', label: 'Abajo' },
+        { val: 'fit', label: 'Completo' },
+      ];
+      return `<div class="image-size-picker" contenteditable="false"><span class="size-label" style="color:rgba(255,255,255,.7)">Posición</span>${sizes.map(s => `<button type="button" class="image-size-btn${(currentSize || 'center') === s.val ? ' active' : ''}" data-size-val="${s.val}">${s.label}</button>`).join('')}</div>`;
+    }
+
+    function wireSizePicker(fig) {
+      fig.querySelectorAll('.image-size-btn').forEach(btn => {
+        if (btn.dataset.boundSize) return;
+        btn.dataset.boundSize = '1';
+        btn.addEventListener('click', (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          const sizeVal = btn.dataset.sizeVal || 'natural';
+          fig.dataset.size = sizeVal;
+          fig.querySelectorAll('.image-size-btn').forEach(b => b.classList.toggle('active', b.dataset.sizeVal === sizeVal));
+          const chapterIdx = fig.dataset.chapterIdx || fig.closest('[data-chapter-idx]')?.dataset.chapterIdx;
+          if (chapterIdx != null && ebook?.chapters?.[chapterIdx]) {
+            ebook.chapters[chapterIdx].body_md = collectChapterBody(chapterIdx);
+          }
+          scheduleSave();
         });
       });
     }
@@ -1507,9 +1585,11 @@
       if (!safeUrl) return;
       const caption = fig.querySelector('figcaption')?.textContent?.trim() || 'Imagen editorial';
       const prompt = fig.dataset.imagePrompt || caption;
+      const currentSize = fig.dataset.size || 'natural';
       fig.dataset.imageUrl = safeUrl;
-      fig.innerHTML = `<button type="button" class="image-edit-btn" contenteditable="false"><span class="material-symbols-outlined">image</span>Cambiar</button><img src="${escapeHtml(safeUrl)}" alt="${escapeHtml(caption)}" crossorigin="anonymous" referrerpolicy="no-referrer"><figcaption>${escapeHtml(caption)}</figcaption><button type="button" class="image-inline-action" contenteditable="false"><span class="material-symbols-outlined">upload_file</span>Cambiar imagen o subir archivo</button>`;
+      fig.innerHTML = `<button type="button" class="image-edit-btn" contenteditable="false"><span class="material-symbols-outlined">image</span>Cambiar</button><img src="${escapeHtml(safeUrl)}" alt="${escapeHtml(caption)}" crossorigin="anonymous" referrerpolicy="no-referrer">${buildSizePicker(currentSize)}<figcaption>${escapeHtml(caption)}</figcaption><button type="button" class="image-inline-action" contenteditable="false"><span class="material-symbols-outlined">upload_file</span>Cambiar imagen o subir archivo</button>`;
       fig.dataset.imagePrompt = prompt;
+      wireSizePicker(fig);
     }
 
     function wireImageControls() {
@@ -1529,6 +1609,24 @@
           scheduleSave();
         });
         coverMedia.appendChild(btn);
+      }
+      if (coverMedia && !coverMedia.querySelector('.image-size-picker')) {
+        const currentCoverSize = ebook.cover?.imageSize || 'center';
+        coverMedia.dataset.size = currentCoverSize;
+        const pickerEl = document.createElement('div');
+        pickerEl.innerHTML = buildCoverSizePicker(currentCoverSize);
+        coverMedia.appendChild(pickerEl.firstElementChild);
+        coverMedia.querySelectorAll('.image-size-btn').forEach(btn => {
+          btn.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            const sizeVal = btn.dataset.sizeVal || 'center';
+            coverMedia.dataset.size = sizeVal;
+            coverMedia.querySelectorAll('.image-size-btn').forEach(b => b.classList.toggle('active', b.dataset.sizeVal === sizeVal));
+            ebook.cover = { ...(ebook.cover || {}), imageSize: sizeVal };
+            scheduleSave();
+          });
+        });
       }
 
       ebookPages.querySelectorAll('figure.image-card').forEach(fig => {
@@ -1568,7 +1666,45 @@
             await changeFigureImage(fig);
           });
         });
+        if (fig.querySelector('img') && !fig.querySelector('.image-size-picker')) {
+          const pickerEl = document.createElement('div');
+          pickerEl.innerHTML = buildSizePicker(fig.dataset.size || 'natural');
+          const picker = pickerEl.firstElementChild;
+          const cap = fig.querySelector('figcaption');
+          if (cap) fig.insertBefore(picker, cap);
+          else fig.appendChild(picker);
+          wireSizePicker(fig);
+        }
       });
+
+      ebookPages.querySelectorAll('.chapter-section-body').forEach(sectionBody => {
+        if (sectionBody.querySelector('figure.image-card')) return;
+        if (sectionBody.querySelector('.add-section-image-btn')) return;
+        const idx = parseInt(sectionBody.dataset.idx, 10);
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'add-section-image-btn';
+        btn.contentEditable = 'false';
+        btn.innerHTML = '<span class="material-symbols-outlined">add_photo_alternate</span>Añadir imagen a esta sección';
+        btn.addEventListener('click', async (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          const url = await askImageUrl('Imagen para esta sección', '');
+          if (!url) return;
+          const caption = ebook.chapters[idx]?.title || 'Imagen editorial';
+          const imageHtml = buildImageCardHtml(url, caption, idx, 'natural');
+          if (ebook.chapters[idx]) {
+            ebook.chapters[idx].body_md = `${collectChapterBody(idx) || ebook.chapters[idx].body_md || ''}\n\n${imageHtml}`;
+          }
+          scheduleSave();
+          renderEbookPreview();
+        });
+        sectionBody.appendChild(btn);
+      });
+    }
+
+    function buildImageCardHtml(url, caption, chapterIdx, sizeVal = 'natural') {
+      return `<figure class="image-card" data-image-prompt="${escapeHtml(caption)}" data-chapter-idx="${chapterIdx}" data-image-url="${escapeHtml(url.trim())}" data-size="${escapeHtml(sizeVal)}"><img src="${escapeHtml(url.trim())}" alt="${escapeHtml(caption)}" crossorigin="anonymous" referrerpolicy="no-referrer"><figcaption>${escapeHtml(caption)}</figcaption></figure>`;
     }
 
     async function changeFigureImage(fig) {
@@ -1577,9 +1713,10 @@
       const chapterIdx = fig.dataset.chapterIdx || fig.closest('.chapter-section')?.dataset.chapterIdx;
       const caption = fig.querySelector('figcaption')?.textContent?.trim() || 'Imagen editorial';
       const promptText = fig.dataset.imagePrompt || caption;
+      const currentSize = fig.dataset.size || 'natural';
       setFigureImage(fig, url);
       if (chapterIdx != null && ebook.chapters[chapterIdx]) {
-        const replacement = `<figure class="image-card" data-image-prompt="${escapeHtml(promptText)}" data-chapter-idx="${chapterIdx}" data-image-url="${escapeHtml(url.trim())}"><img src="${escapeHtml(url.trim())}" alt="${escapeHtml(caption)}" crossorigin="anonymous" referrerpolicy="no-referrer"><figcaption>${escapeHtml(caption)}</figcaption></figure>`;
+        const replacement = buildImageCardHtml(url, promptText || caption, chapterIdx, currentSize);
         const existingFigure = /<figure class="image-card"[\s\S]*?<\/figure>/;
         ebook.chapters[chapterIdx].body_md = existingFigure.test(ebook.chapters[chapterIdx].body_md || '')
           ? ebook.chapters[chapterIdx].body_md.replace(existingFigure, replacement)
@@ -1591,7 +1728,11 @@
     // Merge body content from all split pages of a single chapter
     function collectChapterBody(idx) {
       const sectionBody = ebookPages.querySelector('[data-edit="chapter-section-body"][data-idx="' + idx + '"]');
-      if (sectionBody) return sectionBody.innerHTML;
+      if (sectionBody) {
+        const clone = sectionBody.cloneNode(true);
+        clone.querySelectorAll('.add-section-image-btn,.image-edit-btn,.image-inline-action,.image-size-picker,.eb-regen-btn').forEach(el => el.remove());
+        return clone.innerHTML;
+      }
       const parts = ebookPages.querySelectorAll('[data-edit^="chapter-body"][data-idx="' + idx + '"]');
       return Array.from(parts).map(p => p.innerHTML).join('\n');
     }
@@ -2582,12 +2723,7 @@
       downloadBtn.innerHTML = '<span class="thinking-dot"></span><span class="thinking-dot"></span><span class="thinking-dot"></span>';
 
       try {
-        ebook.chapters.forEach((_, i) => {
-          const body = collectChapterBody(i);
-          if (body) ebook.chapters[i].body_md = body;
-        });
-        await persistEbook();
-        window.open(`./ebook-print.html?id=${encodeURIComponent(ebook.id)}`, '_blank');
+        await openPrintablePage();
       } catch (err) {
         toast('Error al abrir vista PDF: ' + (err?.message || 'error'), 'err');
       } finally {
@@ -3291,7 +3427,10 @@
 
   /* Callouts */
   .chapter-body .callout { display: block; margin: 20px 0; padding: 16px 18px; border-radius: 12px; border-left: 4px solid; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 13px; line-height: 1.6; page-break-inside: avoid; break-inside: avoid; }
-  .chapter-body .callout strong { display: block; font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 6px; }
+  .chapter-body .callout > strong { display: block; font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 6px; }
+  .chapter-body .callout p strong,
+  .chapter-body .callout p em,
+  .chapter-body .callout p b { display: inline; font-size: inherit; text-transform: none; letter-spacing: normal; color: inherit; }
   .chapter-body .callout p { font-size: 13px; color: var(--doc-fg); margin: 0; }
   .chapter-body .callout cite { display: block; margin-top: 8px; font-size: 11px; color: var(--doc-muted); font-style: normal; }
   .chapter-body .callout-tip { background: var(--doc-surface); border-color: var(--doc-primary); }
@@ -3311,8 +3450,8 @@
 
   /* Step lists */
   .chapter-body ol.steps { list-style: none; counter-reset: step; margin: 20px 0; padding: 0; page-break-inside: auto; break-inside: auto; }
-  .chapter-body ol.steps li { counter-increment: step; position: relative; padding: 12px 16px 12px 52px; margin: 0 0 10px; border-radius: 10px; background: var(--doc-surface-2); color: var(--doc-fg); font-family: 'Plus Jakarta Sans', sans-serif; font-size: 13px; line-height: 1.6; page-break-inside: avoid; break-inside: avoid; }
-  .chapter-body ol.steps li::before { content: counter(step); position: absolute; left: 14px; top: 12px; width: 26px; height: 26px; border-radius: 50%; background: linear-gradient(135deg, var(--doc-primary), var(--doc-accent)); color: #fff; font-weight: 800; font-size: 13px; display: flex; align-items: center; justify-content: center; }
+  .chapter-body ol.steps li { list-style: none; counter-increment: step; position: relative; display: block; padding: 12px 16px 12px 52px; margin: 0 0 10px; border-radius: 10px; background: var(--doc-surface-2); color: var(--doc-fg); font-family: 'Plus Jakarta Sans', sans-serif; font-size: 13px; line-height: 1.6; min-height: 44px; page-break-inside: avoid; break-inside: avoid; }
+  .chapter-body ol.steps li::before { content: counter(step); position: absolute; left: 14px; top: 50%; transform: translateY(-50%); width: 26px; height: 26px; border-radius: 50%; background: linear-gradient(135deg, var(--doc-primary), var(--doc-accent)); color: #fff; font-weight: 800; font-size: 13px; display: flex; align-items: center; justify-content: center; }
 
   /* Feature grid */
   .chapter-body .feature-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 22px; margin: 20px 0; font-family: 'Plus Jakarta Sans', sans-serif; }
