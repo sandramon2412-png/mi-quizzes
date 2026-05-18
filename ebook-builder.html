@@ -282,6 +282,12 @@
   .ebook-page.cover.hero-split .cover-inner .hero-text h1 { text-align: left; }
   .ebook-page.cover.hero-split .cover-inner .hero-text p.subtitle { text-align: left; max-width: none; }
   .ebook-page.cover.hero-split .cover-inner .hero-visual { display: flex; align-items: center; justify-content: center; font-size: 120px; color: rgba(255,255,255,0.85); }
+  .ebook-page.cover.hero-split.has-image { position: relative; isolation: isolate; background: #111 !important; overflow: hidden; }
+  .ebook-page.cover.hero-split.has-image::after { content: ''; position: absolute; inset: 0; z-index: 1; background: linear-gradient(180deg, rgba(0,0,0,.08), rgba(0,0,0,.66)), linear-gradient(90deg, rgba(0,0,0,.58), rgba(0,0,0,.08)); pointer-events: none; }
+  .ebook-page.cover.hero-split.has-image .cover-inner { position: relative; z-index: 2; display: flex; align-items: flex-end; justify-content: flex-start; text-align: left; padding: 24mm 22mm; }
+  .ebook-page.cover.hero-split.has-image .hero-text { position: relative; z-index: 3; max-width: 150mm; text-shadow: 0 10px 34px rgba(0,0,0,.42); }
+  .ebook-page.cover.hero-split.has-image .hero-text h1,
+  .ebook-page.cover.hero-split.has-image .hero-text p.subtitle { text-align: left; max-width: 150mm; }
 
   /* Pricing card */
   .ebook-page .pricing-card { display: inline-flex; flex-direction: column; padding: 20px 22px; margin: 10px 10px 10px 0; border-radius: 14px; background: var(--doc-surface); border: 1px solid var(--doc-border); min-width: 200px; font-family: 'Plus Jakarta Sans', sans-serif; vertical-align: top; }
@@ -323,6 +329,11 @@
   .ebook-page .image-card figcaption { padding: 9px 14px 11px; font-size: 10.5px; line-height: 1.45; color: var(--doc-muted); text-transform: uppercase; letter-spacing: 0.08em; font-weight: 700; }
   .ebook-page.cover.hero-split .cover-media { width: 100%; min-height: 145mm; border-radius: 28px; overflow: hidden; background: rgba(255,255,255,0.12); box-shadow: 0 24px 70px rgba(0,0,0,0.32); border: 1px solid rgba(255,255,255,0.20); }
   .ebook-page.cover.hero-split .cover-media img { width: 100%; height: 100%; min-height: 145mm; object-fit: cover; object-position: center; display: block; }
+  .ebook-page.cover.hero-split.has-image .cover-media { position: absolute; inset: 0; min-height: 0; border-radius: 0; border: 0; box-shadow: none; background: #111; }
+  .ebook-page.cover.hero-split.has-image .cover-media img { width: 100%; height: 100%; min-height: 0; object-fit: cover; object-position: center; opacity: .58; }
+  .ebook-page.cover.hero-split.has-image .cover-media[data-size="fit"] img { object-fit: contain; opacity: 1; background: linear-gradient(135deg, var(--doc-primary), var(--doc-accent)); }
+  .ebook-page.cover.hero-split.has-image .cover-media .image-edit-btn,
+  .ebook-page.cover.hero-split.has-image .cover-media .image-size-picker { z-index: 5; }
   .ebook-page.cover.hero-split .cover-media[data-size="top"] img { object-position: top; }
   .ebook-page.cover.hero-split .cover-media[data-size="bottom"] img { object-position: bottom; }
   .ebook-page.cover.hero-split .cover-media[data-size="fit"] { min-height: unset !important; }
@@ -1088,7 +1099,7 @@
       const coverPrompt = cover.imagePrompt || buildVisualPrompt(ebook, 'cover image');
       const coverHtml = `
         <div class="ebook-page-wrap" data-theme="${escapeHtml(theme)}">
-          <div class="ebook-page cover hero-split" style="background:linear-gradient(135deg, ${gradFrom} 0%, ${gradTo} 100%)">
+          <div class="ebook-page cover hero-split${coverImage ? ' has-image' : ''}" style="background:linear-gradient(135deg, ${gradFrom} 0%, ${gradTo} 100%)">
             <div class="cover-inner">
               <div class="hero-text">
                 <h1 data-edit="cover-title" style="font-family:'Plus Jakarta Sans',sans-serif;font-size:52px;font-weight:800;line-height:1.05;letter-spacing:-0.03em;margin:0 0 20px;color:#fff">${escapeHtml(ebook.title || 'Mi ebook')}</h1>
@@ -3294,14 +3305,16 @@
             </div>
           </div>
         </section>
-      ` + ebook.chapters.map((ch, i) => `
-        <section class="page chapter" data-chapter-index="${i}">
+      ` + `
+        <section class="page chapter">
           <div class="chapter-body">
-            <h2 class="flow-title">${escapeHtml(ch.title || `Seccion ${i + 1}`)}</h2>
-            ${smartMd(ch.body_md || '')}
+            ${ebook.chapters.map((ch, i) => `
+              <h2 class="flow-title">${escapeHtml(ch.title || `Seccion ${i + 1}`)}</h2>
+              ${smartMd(ch.body_md || '')}
+            `).join('')}
           </div>
         </section>
-      `).join('');
+      `;
 
       const hint = `<div class="hint">Hacé clic en <strong>"Descargar PDF"</strong> para guardar tu ebook. El PDF generado va a verse exactamente como esta vista previa.</div>`;
 
@@ -3597,6 +3610,20 @@ ${pagesHtml}
     return isNaN(v) ? 0 : v;
   }
 
+  async function waitForPrintAssets() {
+    try { if (document.fonts && document.fonts.ready) await document.fonts.ready; } catch(e) {}
+    const images = Array.from(document.images || []);
+    await Promise.all(images.map(img => {
+      if (img.complete && img.naturalWidth) return Promise.resolve();
+      return new Promise(resolve => {
+        img.addEventListener('load', resolve, { once: true });
+        img.addEventListener('error', resolve, { once: true });
+        setTimeout(resolve, 2500);
+      });
+    }));
+    await new Promise(r => setTimeout(r, 120));
+  }
+
   function splitTextElementToFit(chapter, el) {
     if (!el || !['P','BLOCKQUOTE','LI'].includes(el.tagName)) return null;
     const words = (el.textContent || '').split(/\s+/).filter(Boolean);
@@ -3679,8 +3706,7 @@ ${pagesHtml}
   }
 
   async function paginateAllChapters() {
-    try { if (document.fonts && document.fonts.ready) await document.fonts.ready; } catch(e) {}
-    await new Promise(r => setTimeout(r, 80));
+    await waitForPrintAssets();
     Array.from(document.querySelectorAll('.page.chapter')).forEach(paginateChapter);
   }
 
@@ -3841,7 +3867,9 @@ ${pagesHtml}
     hoverBar.style.display = 'none';
     document.querySelector('.edit-indicator')?.style.setProperty('display', 'none', 'important');
     try {
-      // Do NOT re-paginate here — respect any manual edits the user made.
+      // Recalculate after images/fonts are loaded. This prevents cut pages caused by
+      // measuring image cards before the browser knows their final height.
+      await paginateAllChapters();
 
       const pages = Array.from(document.querySelectorAll('.page'));
       const pdf = new jsPDF({ unit: 'mm', format: 'a4', orientation: 'portrait' });
