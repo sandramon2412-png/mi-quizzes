@@ -83,6 +83,9 @@
     <span>Subir</span>
     <input id="top-media-upload" type="file" accept="image/*,video/*" class="hidden"/>
   </label>
+  <span id="media-selected-label" class="hidden max-w-[210px] truncate rounded-lg border border-outline-variant/30 bg-surface-container-high px-3 py-2 text-[11px] font-semibold text-on-surface-variant">
+    Sin media seleccionada
+  </span>
   <button id="btn-open" class="hidden h-9 px-3 rounded-lg bg-surface-container-high hover:bg-surface-container-highest text-xs font-semibold flex items-center gap-1.5 transition-colors" title="Abrir en nueva pestaña">
     <span class="material-symbols-outlined" style="font-size:16px">open_in_new</span>
     <span class="hidden md:inline">Abrir</span>
@@ -670,9 +673,11 @@ function renderVideoTemplates() {
     // ── Visual edit mode ──
     let _isEditing = false;
     let _selectedEl = null;
+    let _selectedMediaEl = null;
     const EDITABLE_SELECTORS = 'h1,h2,h3,h4,h5,h6,p,span,a,li,button,strong,em,td,th,label,small,figcaption,blockquote,summary';
     const SECTION_SELECTORS = 'section,header,footer,article,aside,div[class*="section"],div[class*="hero"]';
     const MEDIA_EDIT_BTN_CLASS = 'lloyd-media-edit-btn';
+    const MEDIA_SELECTED_ATTR = 'data-lloyd-media-selected';
 
     const parseCssUrl = (value) => {
       const m = String(value || '').match(/url\((['"]?)(.*?)\1\)/);
@@ -695,6 +700,52 @@ function renderVideoTemplates() {
       if (kind === 'video') return el.currentSrc || el.querySelector('source')?.src || el.poster || '';
       if (kind === 'background') return parseCssUrl(previewFrame.contentWindow.getComputedStyle(el).backgroundImage);
       return '';
+    };
+
+    const getMediaLabel = (el) => {
+      const kind = getMediaKind(el);
+      const section = el?.closest?.('section,header,footer,article');
+      const title = section?.querySelector?.('h1,h2,h3,[class*="eyebrow"],[class*="badge"]')?.textContent?.trim();
+      const base = kind === 'video' ? 'Video' : kind === 'image' ? 'Imagen' : 'Fondo';
+      return title ? `${base}: ${title.slice(0, 42)}` : base;
+    };
+
+    const setMediaSelectedLabel = (text, active = false) => {
+      const label = document.getElementById('media-selected-label');
+      if (!label) return;
+      label.textContent = text;
+      label.classList.toggle('hidden', !landing?.html);
+      label.classList.toggle('text-green-300', active);
+      label.classList.toggle('text-on-surface-variant', !active);
+    };
+
+    const clearSelectedMedia = () => {
+      const doc = previewFrame.contentDocument;
+      doc?.querySelectorAll(`[${MEDIA_SELECTED_ATTR}]`).forEach(el => {
+        el.removeAttribute(MEDIA_SELECTED_ATTR);
+        el.style.boxShadow = el.dataset.lloydPrevBoxShadow || '';
+        el.style.outline = el.dataset.lloydPrevOutline || '';
+        el.style.outlineOffset = el.dataset.lloydPrevOutlineOffset || '';
+        delete el.dataset.lloydPrevBoxShadow;
+        delete el.dataset.lloydPrevOutline;
+        delete el.dataset.lloydPrevOutlineOffset;
+      });
+      _selectedMediaEl = null;
+      setMediaSelectedLabel('Selecciona una media', false);
+    };
+
+    const selectMediaElement = (el) => {
+      if (!el || !getMediaKind(el)) return;
+      clearSelectedMedia();
+      _selectedMediaEl = el;
+      el.setAttribute(MEDIA_SELECTED_ATTR, 'true');
+      el.dataset.lloydPrevBoxShadow = el.style.boxShadow || '';
+      el.dataset.lloydPrevOutline = el.style.outline || '';
+      el.dataset.lloydPrevOutlineOffset = el.style.outlineOffset || '';
+      el.style.outline = '3px solid #22c55e';
+      el.style.outlineOffset = '-3px';
+      el.style.boxShadow = '0 0 0 6px rgba(34,197,94,.28), 0 18px 40px rgba(15,23,42,.24)';
+      setMediaSelectedLabel(`Seleccionada: ${getMediaLabel(el)}`, true);
     };
 
     const setMediaUrl = (el, url) => {
@@ -761,6 +812,7 @@ function renderVideoTemplates() {
       btn.addEventListener('click', (e) => {
         e.preventDefault();
         e.stopPropagation();
+        selectMediaElement(target);
         showSelectionToolbar(target);
       });
       host.appendChild(btn);
@@ -795,6 +847,7 @@ function renderVideoTemplates() {
         img.style.cursor = 'pointer';
         img.addEventListener('click', (e) => {
           e.preventDefault(); e.stopPropagation();
+          selectMediaElement(img);
           showSelectionToolbar(img);
         });
         addMediaEditButton(img, 'Imagen');
@@ -802,6 +855,12 @@ function renderVideoTemplates() {
       doc.querySelectorAll('video').forEach(video => {
         video.style.outline = '1px dashed rgba(45,91,255,.45)';
         video.style.outlineOffset = '2px';
+        video.style.cursor = 'pointer';
+        video.addEventListener('click', (e) => {
+          e.preventDefault(); e.stopPropagation();
+          selectMediaElement(video);
+          showSelectionToolbar(video);
+        });
         addMediaEditButton(video, 'Video');
       });
       // Section elements: hoverable with delete button
@@ -820,13 +879,15 @@ function renderVideoTemplates() {
       editVisualBtn.innerHTML = `<span class="material-symbols-outlined" style="font-size:16px">check</span><span>Terminar</span>`;
       editVisualBtn.classList.remove('bg-surface-container-high', 'hover:bg-surface-container-highest');
       editVisualBtn.classList.add('bg-green-500/15', 'text-green-400', 'border', 'border-green-500/30');
-      toast('Click en texto para editar · Click en imágenes para reemplazar');
+      setMediaSelectedLabel('Selecciona una media', false);
+      toast('Click en texto para editar - click en Video/Fondo/Imagen para elegir media');
     };
 
     const exitEditMode = async () => {
       const doc = previewFrame.contentDocument;
       if (!doc) return;
       hideSelectionToolbar();
+      clearSelectedMedia();
       doc.querySelectorAll('[contenteditable]').forEach(el => {
         el.removeAttribute('contenteditable');
         el.style.outline = '';
@@ -952,12 +1013,15 @@ function renderVideoTemplates() {
         editMediaBtn.classList.remove('hidden');
         uploadMediaBtn.classList.remove('hidden');
         uploadMediaBtn.classList.add('flex');
+        setMediaSelectedLabel(_selectedMediaEl ? `Seleccionada: ${getMediaLabel(_selectedMediaEl)}` : 'Selecciona una media', !!_selectedMediaEl);
       } else {
         editHtmlBtn.classList.add('hidden');
         editVisualBtn.classList.add('hidden');
         editMediaBtn.classList.add('hidden');
         uploadMediaBtn.classList.add('hidden');
         uploadMediaBtn.classList.remove('flex');
+        setMediaSelectedLabel('Sin media seleccionada', false);
+        document.getElementById('media-selected-label')?.classList.add('hidden');
       }
       if (landing?.slug) slugPreview.value = landing.slug;
     };
@@ -983,10 +1047,9 @@ function renderVideoTemplates() {
     const getPrimaryMediaTarget = () => {
       const doc = previewFrame.contentDocument;
       if (!doc) return null;
-      if (_selectedEl && getMediaKind(_selectedEl)) return _selectedEl;
-      return doc.querySelector('.hero-video, video, img') ||
-        [...doc.querySelectorAll('section,header,footer,article,div')].find(el => getMediaKind(el)) ||
-        null;
+      if (_selectedMediaEl && doc.contains(_selectedMediaEl) && getMediaKind(_selectedMediaEl)) return _selectedMediaEl;
+      if (_selectedEl && doc.contains(_selectedEl) && getMediaKind(_selectedEl)) return _selectedEl;
+      return null;
     };
 
     const persistPreviewMediaChange = async () => {
@@ -998,11 +1061,12 @@ function renderVideoTemplates() {
       landing.html = cleaned;
       renderPreview(cleaned);
       await persistLanding();
+      clearSelectedMedia();
     };
 
     editMediaBtn.onclick = async () => {
       const target = getPrimaryMediaTarget();
-      if (!target) { toast('No encontré imagen, fondo o video para cambiar', 'err'); return; }
+      if (!target) { toast('Primero presiona Editar y selecciona una media dentro de la vista', 'err'); return; }
       const kind = getMediaKind(target);
       const url = prompt(kind === 'video' ? 'URL del nuevo video o imagen poster:' : 'URL de la nueva imagen o fondo:', getMediaUrl(target));
       if (!url) return;
@@ -1014,7 +1078,8 @@ function renderVideoTemplates() {
     topMediaUpload.addEventListener('change', (e) => {
       const file = e.target.files?.[0];
       const target = getPrimaryMediaTarget();
-      if (!file || !target) return;
+      if (!target) { toast('Primero presiona Editar y selecciona una media dentro de la vista', 'err'); e.target.value = ''; return; }
+      if (!file) return;
       const reader = new FileReader();
       reader.onload = async (ev) => {
         setMediaUrl(target, ev.target.result);
