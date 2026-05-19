@@ -173,10 +173,13 @@
     .chapter-page {
       width:auto !important; min-height:0 !important;
       margin:0 !important; padding:0 !important; box-shadow:none !important;
-      overflow:visible !important; break-after:auto !important; page-break-after:auto !important;
+      overflow:visible !important;
+      break-before:page !important; page-break-before:always !important;
+      break-after:auto !important; page-break-after:auto !important;
       background:transparent !important;
     }
-    .chapter-page + .chapter-page { margin-top:7mm !important; }
+    .cover + .chapter-page { break-before:auto !important; page-break-before:auto !important; }
+    .chapter-page + .chapter-page { margin-top:0 !important; }
     .chapter-page:last-child { break-after:auto !important; page-break-after:auto !important; }
     .chapter h2 { margin-top:0; }
     .image-card img { max-height:64mm; object-fit:contain; background:var(--doc-surface); }
