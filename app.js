@@ -1485,14 +1485,15 @@ REGLAS GENERALES:
 // ── Groq API (vía proxy con master key de la plataforma) ───
 const Groq = {
   async _call(messages, maxTokens = 3000, model = 'llama-3.3-70b-versatile') {
-    const doRequest = async (token) => fetch(`${SUPABASE_URL}/functions/v1/groq-proxy`, {
+    const highTpmModel = 'llama-3.1-8b-instant';
+    const doRequest = async (token, modelName = model) => fetch(`${SUPABASE_URL}/functions/v1/groq-proxy`, {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${token}`,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model,
+        model: modelName,
         max_tokens: maxTokens,
         messages,
       }),
@@ -1517,7 +1518,17 @@ const Groq = {
     }
     if (!res.ok) {
       const err = await res.json().catch(() => ({}));
-      throw new Error(err.error?.message || `Error ${res.status}`);
+      const msg = err.error?.message || `Error ${res.status}`;
+      if (/request too large|tokens per minute|TPM/i.test(msg) && model !== highTpmModel) {
+        const fallbackRes = await doRequest(token, highTpmModel);
+        if (fallbackRes.ok) {
+          const data = await fallbackRes.json();
+          return data.choices?.[0]?.message?.content || '';
+        }
+        const fallbackErr = await fallbackRes.json().catch(() => ({}));
+        throw new Error(fallbackErr.error?.message || `Error ${fallbackRes.status}`);
+      }
+      throw new Error(msg);
     }
     const data = await res.json();
     return data.choices?.[0]?.message?.content || '';
@@ -1582,7 +1593,7 @@ const Groq = {
     const fullMessages = opts.system
       ? [{ role: 'system', content: opts.system }, ...messages]
       : messages;
-    const groqModel = opts.model && !String(opts.model).startsWith('claude-') ? opts.model : undefined;
+    const groqModel = opts.model && !String(opts.model).startsWith('claude-') ? opts.model : 'llama-3.1-8b-instant';
     return this._call(fullMessages, maxTokens, groqModel);
   },
 
