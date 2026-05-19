@@ -117,7 +117,7 @@
         <span class="material-symbols-outlined icon-gradient" style="font-size:20px">auto_awesome</span>
         <h2 class="text-base font-extrabold tracking-tight">Describí tu landing</h2>
       </div>
-      <p class="text-[11px] text-on-surface-variant mb-4">Claude Sonnet diseña tu página en ~15 segundos. Podés iterar por chat después.</p>
+      <p class="text-[11px] text-on-surface-variant mb-4">La IA diseña tu página en segundos. Podés iterar por chat después.</p>
 
       <div class="space-y-3">
         <div>
@@ -153,7 +153,7 @@
           <label class="text-[11px] font-semibold text-on-surface-variant block mb-1">URL de referencia (opcional)</label>
           <input id="fld-refurl" type="text" placeholder="Ej: https://apple.com o https://framer.com/templates"
                  class="w-full bg-surface-container border border-outline-variant/40 rounded-lg px-3 py-2 text-sm focus:border-primary focus:ring-0 outline-none"/>
-          <p class="text-[10px] text-on-surface-variant/60 mt-1">Claude usará el estilo visual del sitio como inspiración.</p>
+          <p class="text-[10px] text-on-surface-variant/60 mt-1">La IA usará el estilo visual del sitio como inspiración.</p>
         </div>
 
         <div id="section-pdf" class="rounded-xl border border-outline-variant/25 bg-surface-container-low/60 p-3">
@@ -186,7 +186,7 @@
           </label>
           <textarea id="fld-bonuses" rows="3" placeholder="Bono 1: Plantilla de Email ($97)&#10;Bono 2: Checklist de inicio rápido ($47)&#10;Bono 3: Sesión grupal en vivo ($197)"
                     class="w-full bg-surface-container border border-outline-variant/40 rounded-lg px-3 py-2 text-sm focus:border-primary focus:ring-0 outline-none resize-none"></textarea>
-          <p class="text-[10px] text-on-surface-variant/60 mt-1">Uno por línea. Si no ponés nada, Claude inventa bonos coherentes con tu producto.</p>
+          <p class="text-[10px] text-on-surface-variant/60 mt-1">Uno por línea. Si no ponés nada, la IA inventa bonos coherentes con tu producto.</p>
         </div>
 
         <!-- Images -->
@@ -268,7 +268,7 @@
         <div class="hidden" inert>
           <label class="text-[11px] font-semibold text-on-surface-variant block mb-1">
             Instrucción exacta a la IA
-            <span class="ml-1 text-[10px] font-normal text-on-surface-variant/60">(Claude la sigue al pie de la letra)</span>
+            <span class="ml-1 text-[10px] font-normal text-on-surface-variant/60">(la IA la sigue al pie de la letra)</span>
           </label>
           <textarea id="fld-custom" rows="3" placeholder="Ej: el hero debe tener un countdown de 48 horas, sección antes/después con dos columnas, paleta de color violeta oscuro, sin sección de métricas…"
                     class="w-full bg-surface-container border border-outline-variant/40 rounded-lg px-3 py-2 text-sm focus:border-primary focus:ring-0 outline-none resize-none"></textarea>
@@ -282,7 +282,7 @@
       </button>
 
       <p class="mt-3 text-[10px] text-on-surface-variant/70 leading-relaxed">
-        Claude genera hero, beneficios, bonos, testimonios, FAQ, garantía y CTA — optimizada para conversión. Después iterás por chat.
+        La IA genera hero, beneficios, bonos, testimonios, FAQ, garantía y CTA — optimizada para conversión. Después iterás por chat.
       </p>
     </div>
 
@@ -292,7 +292,7 @@
     <!-- Chat input (hidden until first generation) -->
     <div id="chat-input-wrap" class="hidden border-t border-outline-variant/20 p-3 bg-surface-container-low">
       <div class="flex items-end gap-2">
-        <textarea id="chat-input" rows="1" placeholder="Pedile a Claude un cambio — 'cambiá el color', 'agregá una sección de bonos'..."
+        <textarea id="chat-input" rows="1" placeholder="Pedile a la IA un cambio — 'cambiá el color', 'agregá una sección de bonos'..."
                   class="flex-1 bg-surface-container border border-outline-variant/40 rounded-lg px-3 py-2 text-sm outline-none focus:border-primary resize-none max-h-32"></textarea>
         <button id="btn-send" class="w-10 h-10 shrink-0 rounded-lg primary-gradient flex items-center justify-center hover:opacity-90 disabled:opacity-40 disabled:cursor-not-allowed transition">
           <span class="material-symbols-outlined text-white" style="font-size:18px">arrow_upward</span>
@@ -317,7 +317,7 @@
         <span class="material-symbols-outlined text-white" style="font-size:32px">web</span>
       </div>
       <h3 class="text-lg font-bold mb-1">Tu landing va a aparecer acá</h3>
-      <p class="text-sm max-w-md">Completá el formulario de la izquierda y Claude Sonnet te genera la landing completa en ~15 segundos. Vas a poder iterarla por chat hasta que quede como querés.</p>
+      <p class="text-sm max-w-md">Completá el formulario de la izquierda y la IA te genera la landing completa. Vas a poder iterarla por chat hasta que quede como querés.</p>
     </div>
     <iframe id="preview-frame" class="hidden flex-1 w-full bg-white" sandbox="allow-same-origin allow-scripts allow-popups allow-forms" title="Preview"></iframe>
   </section>
@@ -378,7 +378,7 @@
 </div>
 
 <script src="./supabase-config.js"></script>
-<script src="./app.js?v=landing-groqfix1"></script>
+<script src="./app.js?v=landing-compactfix1"></script>
 <script src="./skinglow-demo-data.js"></script>
 <script src="./ai-assistant.js"></script>
 <script>
@@ -695,7 +695,7 @@ function renderVideoTemplates() {
             <span class="material-symbols-outlined text-white" style="font-size:40px">lock</span>
           </div>
           <h1 class="text-2xl font-extrabold tracking-tight mb-2">Landing Builder requiere plan Pro</h1>
-          <p class="text-on-surface-variant max-w-md mb-6">Generá landings completas con IA (Claude Sonnet) desde el plan Pro. Incluye hero, beneficios, testimonios, FAQ, garantía y CTA — listas para publicar.</p>
+          <p class="text-on-surface-variant max-w-md mb-6">Generá landings completas con IA desde el plan Pro. Incluye hero, beneficios, testimonios, FAQ, garantía y CTA — listas para publicar.</p>
           <div class="flex gap-3">
             <a href="./precios.html" class="h-11 px-6 rounded-lg primary-gradient text-white font-bold text-sm flex items-center gap-2">Ver planes</a>
             <a href="./dashboard.html" class="h-11 px-6 rounded-lg bg-surface-container-highest text-sm font-semibold flex items-center gap-2">Volver</a>
@@ -709,7 +709,7 @@ function renderVideoTemplates() {
     const editingId = params.get('id');
     const templateId = params.get('template');
     let landing = null;      // full row (with id once saved)
-    let history = [];        // chat history for Claude (user+assistant messages)
+    let history = [];        // chat history for the AI (user+assistant messages)
 
     // Pre-fill form if a template was selected in plantillas-landings.html
     if (templateId && !editingId) {
@@ -1341,7 +1341,7 @@ function renderVideoTemplates() {
 
       genBtn.disabled = true;
       genBtn.innerHTML = `<span class="thinking-dot"></span><span class="thinking-dot"></span><span class="thinking-dot"></span>`;
-      setStatus('Generando con Claude Sonnet…');
+      setStatus('Generando con IA…');
 
       try {
         const html = await AI.generateLanding(brief, []);
@@ -1391,7 +1391,7 @@ function renderVideoTemplates() {
       setStatus('Actualizando…');
 
       try {
-        // Only send role+content to Claude (strip display, drop empty content blocks)
+        // Only send role+content to the AI (strip display, drop empty content blocks)
         const apiHistory = history
           .filter(m => typeof m.content === 'string' && m.content.trim())
           .map(m => ({ role: m.role, content: m.content }))

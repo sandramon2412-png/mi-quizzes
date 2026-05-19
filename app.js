@@ -1598,11 +1598,28 @@ const Groq = {
   },
 
   async generateLanding(brief, history = []) {
-    return Claude.generateLanding.call(
-      { _call: this._callWithSystem.bind(this), _landingSystemPrompt: Claude._landingSystemPrompt.bind(Claude) },
-      brief,
-      history
-    );
+    const compactSystem = `Eres un copywriter y diseñador web senior. Devuelve SOLO un documento HTML completo, sin markdown.
+Usa Tailwind CDN y Material Symbols si hace falta. Crea una landing premium, responsive y lista para vender.
+Secciones obligatorias: hero con CTA, dolor/problema, para quien es, beneficios, que incluye, bonos, testimonios, precio/valor, garantia, FAQ y CTA final.
+Reglas: copy especifico basado en el brief, nada de lorem ipsum, botones con href="#", sin rutas internas, sin formularios reales, sin window.location.`;
+    const trimContent = (content, limit = 3600) => {
+      const text = String(content || '').trim();
+      return text.length > limit ? `${text.slice(0, limit)}\n\n[Contenido resumido por limite de tokens]` : text;
+    };
+    const compactHistory = (history || [])
+      .filter(m => typeof m.content === 'string' && m.content.trim())
+      .slice(-4)
+      .map(m => ({ role: m.role, content: trimContent(m.content, 2200) }));
+    const messages = [...compactHistory, { role: 'user', content: trimContent(brief, 4200) }];
+    const text = await this._callWithSystem(messages, 2600, {
+      model: 'llama-3.1-8b-instant',
+      system: compactSystem,
+    });
+    let html = text.trim();
+    html = html.replace(/^```html\s*/i, '').replace(/^```\s*/i, '').replace(/```\s*$/i, '').trim();
+    const docStart = html.search(/<!DOCTYPE\s+html/i);
+    if (docStart > 0) html = html.slice(docStart);
+    return html;
   },
 
   // Igual que _callWithSystem pero usa llama-3.1-8b-instant (131K TPM) para ebooks
