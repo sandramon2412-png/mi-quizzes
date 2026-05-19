@@ -678,6 +678,7 @@ function renderVideoTemplates() {
     const SECTION_SELECTORS = 'section,header,footer,article,aside,div[class*="section"],div[class*="hero"]';
     const MEDIA_EDIT_BTN_CLASS = 'lloyd-media-edit-btn';
     const MEDIA_SELECTED_ATTR = 'data-lloyd-media-selected';
+    const BACKGROUND_MEDIA_SELECTORS = 'section,header,footer,article,aside,div,figure';
 
     const parseCssUrl = (value) => {
       const m = String(value || '').match(/url\((['"]?)(.*?)\1\)/);
@@ -818,6 +819,21 @@ function renderVideoTemplates() {
       host.appendChild(btn);
     };
 
+    const armMediaBackground = (el) => {
+      if (!getMediaKind(el)) return;
+      el.style.position = el.style.position || 'relative';
+      el.style.outline = '1px dashed rgba(45,91,255,.45)';
+      el.style.outlineOffset = '-2px';
+      el.style.cursor = 'pointer';
+      el.addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        selectMediaElement(el);
+        showSelectionToolbar(el);
+      });
+      addMediaEditButton(el, 'Fondo');
+    };
+
     const rgbToHex = (rgb) => {
       if (!rgb || rgb === 'transparent' || rgb.includes('rgba(0, 0, 0, 0)')) return '';
       const m = rgb.match(/rgb\((\d+),\s*(\d+),\s*(\d+)\)/);
@@ -863,10 +879,10 @@ function renderVideoTemplates() {
         });
         addMediaEditButton(video, 'Video');
       });
+      doc.querySelectorAll(BACKGROUND_MEDIA_SELECTORS).forEach(armMediaBackground);
       // Section elements: hoverable with delete button
       doc.querySelectorAll('section,header,footer').forEach(sec => {
         sec.style.position = sec.style.position || 'relative';
-        if (getMediaKind(sec)) addMediaEditButton(sec, 'Fondo');
         sec.addEventListener('mouseenter', () => {
           sec.style.outline = '2px solid rgba(239,68,68,.35)';
           sec.style.outlineOffset = '-2px';
