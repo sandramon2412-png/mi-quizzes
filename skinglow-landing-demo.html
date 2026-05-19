@@ -283,18 +283,28 @@
       position: relative;
       overflow: hidden;
       background:
-        radial-gradient(circle at 8% 14%, rgba(200,79,120,.42), transparent 30%),
-        radial-gradient(circle at 86% 10%, rgba(127,174,160,.38), transparent 34%),
-        radial-gradient(circle at 72% 82%, rgba(112,64,93,.24), transparent 36%),
-        linear-gradient(135deg, #2b1a23 0%, #b9837b 36%, #e7c6bd 58%, #d9eee8 100%);
+        linear-gradient(118deg, rgba(33,22,27,.92) 0%, rgba(112,64,93,.68) 18%, rgba(200,79,120,.34) 34%, rgba(244,219,209,.54) 51%, rgba(127,174,160,.36) 72%, rgba(233,248,243,.86) 100%),
+        radial-gradient(ellipse at 8% 12%, rgba(200,79,120,.48) 0%, rgba(200,79,120,.18) 26%, transparent 54%),
+        radial-gradient(ellipse at 88% 16%, rgba(127,174,160,.52) 0%, rgba(127,174,160,.20) 30%, transparent 58%),
+        linear-gradient(145deg, #2b1a23 0%, #8b566c 28%, #e2a6a2 52%, #f4dfd6 68%, #d9eee8 100%);
     }
     .product-section::before {
       content: "";
       position: absolute;
       inset: 0;
       background:
-        linear-gradient(90deg, rgba(33,22,27,.38), rgba(33,22,27,.06) 46%, rgba(255,255,255,.04)),
-        linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.22));
+        linear-gradient(132deg, rgba(255,255,255,.18) 0 16%, transparent 16% 32%, rgba(255,255,255,.12) 32% 46%, transparent 46% 100%),
+        linear-gradient(74deg, rgba(33,22,27,.38) 0%, rgba(33,22,27,.10) 42%, rgba(255,255,255,.06) 100%);
+      pointer-events: none;
+    }
+    .product-section::after {
+      content: "";
+      position: absolute;
+      inset: auto -10% -34% 18%;
+      height: 58%;
+      background: linear-gradient(95deg, transparent 0%, rgba(255,255,255,.26) 36%, rgba(127,174,160,.18) 68%, transparent 100%);
+      transform: rotate(-6deg);
+      filter: blur(2px);
       pointer-events: none;
     }
     .product-section .wrap {
