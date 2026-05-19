@@ -4,6 +4,7 @@
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
 <title>Landing Builder · Luminous Studio</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%232E5BFF'/%3E%3Cpath d='M18 34h28M22 22h20M22 46h14' stroke='white' stroke-width='6' stroke-linecap='round'/%3E%3C/svg%3E">
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.min.js"></script>
@@ -377,7 +378,7 @@
 </div>
 
 <script src="./supabase-config.js"></script>
-<script src="./app.js?v=landing-fallback1"></script>
+<script src="./app.js?v=landing-promptfix1"></script>
 <script src="./skinglow-demo-data.js"></script>
 <script src="./ai-assistant.js"></script>
 <script>
@@ -1286,8 +1287,14 @@ function renderVideoTemplates() {
       const bgValue  = document.getElementById('fld-bg-value').value.trim();
       const interactive = document.getElementById('fld-interactive').checked;
       const customColor = document.getElementById('fld-custom-color').value.trim();
+      const productForBrief = product || (
+        custom ? 'producto descrito en el prompt' :
+        sourceText ? 'producto descrito en el PDF o texto base' :
+        refurl ? 'producto inspirado en la URL de referencia' :
+        ''
+      );
 
-      if (!product) { toast('Contanos qué vendés', 'err'); return; }
+      if (!productForBrief) { toast('Escribe que vendes o completa el prompt/PDF/link de referencia', 'err'); return; }
 
       if (!(await canCreate())) {
         toast(`Llegaste al límite de ${caps.landings} landings de tu plan`, 'err');
@@ -1313,7 +1320,7 @@ function renderVideoTemplates() {
           : '';
 
       const brief = [
-        `Necesito una landing page para: ${product}.`,
+        `Necesito una landing page para: ${productForBrief}.`,
         audience ? `Audiencia: ${audience}.` : '',
         price    ? `Precio/oferta: ${price}.` : '',
         extras   ? `Detalles adicionales: ${extras}` : '',
@@ -1330,7 +1337,7 @@ function renderVideoTemplates() {
         refurl ? `INSPIRACIÓN VISUAL: tomá como referencia el estilo del sitio ${refurl} — paleta, tipografía, espaciado, tono visual.` : '',
       ].filter(Boolean).join('\n');
 
-      if (!titleEl.value.trim()) titleEl.value = product.slice(0, 60);
+      if (!titleEl.value.trim()) titleEl.value = (product || custom || 'Nueva landing').slice(0, 60);
 
       genBtn.disabled = true;
       genBtn.innerHTML = `<span class="thinking-dot"></span><span class="thinking-dot"></span><span class="thinking-dot"></span>`;
@@ -1345,7 +1352,7 @@ function renderVideoTemplates() {
 
         if (!landing) {
           landing = Landings.create({
-            title: titleEl.value.trim() || product.slice(0, 60),
+            title: titleEl.value.trim() || (product || custom || 'Nueva landing').slice(0, 60),
             brief,
             html,
             messages: history,
