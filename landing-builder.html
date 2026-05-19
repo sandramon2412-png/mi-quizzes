@@ -663,6 +663,53 @@ function renderVideoTemplates() {
     let _selectedEl = null;
     const EDITABLE_SELECTORS = 'h1,h2,h3,h4,h5,h6,p,span,a,li,button,strong,em,td,th,label,small,figcaption,blockquote,summary';
     const SECTION_SELECTORS = 'section,header,footer,article,aside,div[class*="section"],div[class*="hero"]';
+    const MEDIA_EDIT_BTN_CLASS = 'lloyd-media-edit-btn';
+
+    const parseCssUrl = (value) => {
+      const m = String(value || '').match(/url\((['"]?)(.*?)\1\)/);
+      return m?.[2] || '';
+    };
+
+    const isImageUrl = (url) => /\.(png|jpe?g|webp|gif|avif|svg)(\?|#|$)/i.test(url) || String(url || '').startsWith('data:image/');
+
+    const getMediaKind = (el) => {
+      if (!el) return '';
+      if (el.tagName === 'IMG') return 'image';
+      if (el.tagName === 'VIDEO') return 'video';
+      const bg = previewFrame.contentWindow?.getComputedStyle(el).backgroundImage;
+      return bg && bg !== 'none' && parseCssUrl(bg) ? 'background' : '';
+    };
+
+    const getMediaUrl = (el) => {
+      const kind = getMediaKind(el);
+      if (kind === 'image') return el.currentSrc || el.src || '';
+      if (kind === 'video') return el.currentSrc || el.querySelector('source')?.src || el.poster || '';
+      if (kind === 'background') return parseCssUrl(previewFrame.contentWindow.getComputedStyle(el).backgroundImage);
+      return '';
+    };
+
+    const setMediaUrl = (el, url) => {
+      const kind = getMediaKind(el);
+      if (!kind || !url) return;
+      if (kind === 'image') {
+        el.src = url;
+      } else if (kind === 'video') {
+        if (isImageUrl(url)) {
+          el.poster = url;
+        } else {
+          let source = el.querySelector('source');
+          if (!source) {
+            source = el.ownerDocument.createElement('source');
+            el.appendChild(source);
+          }
+          source.src = url;
+          source.type = /\.(webm)(\?|#|$)/i.test(url) ? 'video/webm' : 'video/mp4';
+          el.load?.();
+        }
+      } else {
+        el.style.backgroundImage = `url("${url}")`;
+      }
+    };
 
     const showSelectionToolbar = (el) => {
       const toolbar = document.getElementById('edit-toolbar');
@@ -677,14 +724,37 @@ function renderVideoTemplates() {
       const computed = previewFrame.contentWindow.getComputedStyle(el);
       document.getElementById('tb-text-color').value = rgbToHex(computed.color);
       document.getElementById('tb-bg-color').value = rgbToHex(computed.backgroundColor) || '#ffffff';
-      const isImg = el.tagName === 'IMG';
-      document.getElementById('tb-image-section').classList.toggle('hidden', !isImg);
+      const hasMedia = !!getMediaKind(el);
+      document.getElementById('tb-image-section').classList.toggle('hidden', !hasMedia);
     };
 
     const hideSelectionToolbar = () => {
       const toolbar = document.getElementById('edit-toolbar');
       toolbar?.classList.add('hidden');
       _selectedEl = null;
+    };
+
+    const clearMediaEditButtons = (doc) => {
+      doc?.querySelectorAll(`.${MEDIA_EDIT_BTN_CLASS}`).forEach(btn => btn.remove());
+    };
+
+    const addMediaEditButton = (target, label = 'Imagen') => {
+      const doc = target.ownerDocument;
+      const host = target.tagName === 'VIDEO' || target.tagName === 'IMG' ? target.parentElement : target;
+      if (!host || host.querySelector?.(`:scope > .${MEDIA_EDIT_BTN_CLASS}`)) return;
+      const previousPosition = host.style.position;
+      if (!previousPosition || previousPosition === 'static') host.style.position = 'relative';
+      const btn = doc.createElement('button');
+      btn.type = 'button';
+      btn.className = MEDIA_EDIT_BTN_CLASS;
+      btn.textContent = label;
+      btn.style.cssText = 'position:absolute;right:14px;top:14px;z-index:9999;border:0;border-radius:999px;background:linear-gradient(135deg,#be4f83,#7f5be8);color:#fff;font:800 11px/1 Plus Jakarta Sans,Arial,sans-serif;padding:9px 12px;box-shadow:0 10px 28px rgba(27,18,22,.26);cursor:pointer;';
+      btn.addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        showSelectionToolbar(target);
+      });
+      host.appendChild(btn);
     };
 
     const rgbToHex = (rgb) => {
@@ -718,10 +788,17 @@ function renderVideoTemplates() {
           e.preventDefault(); e.stopPropagation();
           showSelectionToolbar(img);
         });
+        addMediaEditButton(img, 'Imagen');
+      });
+      doc.querySelectorAll('video').forEach(video => {
+        video.style.outline = '1px dashed rgba(45,91,255,.45)';
+        video.style.outlineOffset = '2px';
+        addMediaEditButton(video, 'Video');
       });
       // Section elements: hoverable with delete button
       doc.querySelectorAll('section,header,footer').forEach(sec => {
         sec.style.position = sec.style.position || 'relative';
+        if (getMediaKind(sec)) addMediaEditButton(sec, 'Fondo');
         sec.addEventListener('mouseenter', () => {
           sec.style.outline = '2px solid rgba(239,68,68,.35)';
           sec.style.outlineOffset = '-2px';
@@ -755,6 +832,7 @@ function renderVideoTemplates() {
       doc.querySelectorAll('section,header,footer').forEach(sec => {
         sec.style.outline = '';
       });
+      clearMediaEditButtons(doc);
       const full = '<!DOCTYPE html>\n' + doc.documentElement.outerHTML;
       const cleaned = full.replace(PREVIEW_INJECTION_RE, '');
       landing.html = cleaned;
@@ -1139,16 +1217,20 @@ function renderVideoTemplates() {
       try { doc.execCommand('italic'); } catch {}
     };
     document.getElementById('tb-image-url').onclick = () => {
-      if (!_selectedEl || _selectedEl.tagName !== 'IMG') return;
-      const url = prompt('URL de la nueva imagen:', _selectedEl.src);
-      if (url) _selectedEl.src = url;
+      const kind = getMediaKind(_selectedEl);
+      if (!kind) return;
+      const url = prompt(kind === 'video' ? 'URL del nuevo video o poster:' : 'URL de la nueva imagen:', getMediaUrl(_selectedEl));
+      if (url) {
+        setMediaUrl(_selectedEl, url);
+        toast('Imagen/fondo actualizado - hace clic en "Terminar" para guardar');
+      }
     };
     document.getElementById('tb-image-upload').addEventListener('change', (e) => {
       const file = e.target.files?.[0];
-      if (!file || !_selectedEl || _selectedEl.tagName !== 'IMG') return;
+      if (!file || !getMediaKind(_selectedEl)) return;
       const reader = new FileReader();
       reader.onload = (ev) => {
-        _selectedEl.src = ev.target.result;
+        setMediaUrl(_selectedEl, ev.target.result);
         toast('Imagen cargada — hacé clic en "Terminar" para guardar');
       };
       reader.readAsDataURL(file);
