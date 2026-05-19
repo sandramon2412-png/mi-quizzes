@@ -68,10 +68,11 @@
   <span id="ld-status" class="text-[11px] text-on-surface-variant/70 hidden sm:inline"></span>
   <button id="btn-edit-visual" class="hidden h-9 px-3 rounded-lg bg-surface-container-high hover:bg-surface-container-highest text-xs font-semibold flex items-center gap-1.5 transition-colors" title="Editar textos haciendo click sobre ellos (sin IA)">
     <span class="material-symbols-outlined" style="font-size:16px">edit</span>
-    <span class="hidden md:inline">Editar</span>
+    <span>Editar</span>
   </button>
-  <button id="btn-edit-html" class="hidden h-9 w-9 rounded-lg bg-surface-container-high hover:bg-surface-container-highest flex items-center justify-center transition-colors" title="Editar código HTML (avanzado)">
+  <button id="btn-edit-html" class="hidden h-9 px-3 rounded-lg bg-surface-container-high hover:bg-surface-container-highest text-xs font-semibold flex items-center gap-1.5 transition-colors" title="Editar codigo HTML (avanzado)">
     <span class="material-symbols-outlined" style="font-size:16px">code</span>
+    <span>HTML</span>
   </button>
   <button id="btn-open" class="hidden h-9 px-3 rounded-lg bg-surface-container-high hover:bg-surface-container-highest text-xs font-semibold flex items-center gap-1.5 transition-colors" title="Abrir en nueva pestaña">
     <span class="material-symbols-outlined" style="font-size:16px">open_in_new</span>
@@ -262,6 +263,7 @@
         <span class="w-2 h-2 rounded-full bg-green-500"></span>
         Preview en vivo
       </span>
+      <span class="hidden lg:inline text-[10px] text-on-surface-variant/60">Scroll dentro de la vista para revisar todas las secciones</span>
     </div>
     <div id="preview-empty" class="flex-1 flex flex-col items-center justify-center text-center p-8 text-on-surface-variant">
       <div class="w-16 h-16 rounded-2xl primary-gradient flex items-center justify-center mb-4 opacity-50">
@@ -729,7 +731,7 @@ function renderVideoTemplates() {
         });
       });
       _isEditing = true;
-      editVisualBtn.innerHTML = `<span class="material-symbols-outlined" style="font-size:16px">check</span><span class="hidden md:inline">Terminar</span>`;
+      editVisualBtn.innerHTML = `<span class="material-symbols-outlined" style="font-size:16px">check</span><span>Terminar</span>`;
       editVisualBtn.classList.remove('bg-surface-container-high', 'hover:bg-surface-container-highest');
       editVisualBtn.classList.add('bg-green-500/15', 'text-green-400', 'border', 'border-green-500/30');
       toast('Click en texto para editar · Click en imágenes para reemplazar');
@@ -757,7 +759,7 @@ function renderVideoTemplates() {
       const cleaned = full.replace(PREVIEW_INJECTION_RE, '');
       landing.html = cleaned;
       _isEditing = false;
-      editVisualBtn.innerHTML = `<span class="material-symbols-outlined" style="font-size:16px">edit</span><span class="hidden md:inline">Editar</span>`;
+      editVisualBtn.innerHTML = `<span class="material-symbols-outlined" style="font-size:16px">edit</span><span>Editar</span>`;
       editVisualBtn.classList.add('bg-surface-container-high', 'hover:bg-surface-container-highest');
       editVisualBtn.classList.remove('bg-green-500/15', 'text-green-400', 'border', 'border-green-500/30');
       await persistLanding();
@@ -885,15 +887,28 @@ function renderVideoTemplates() {
     if (editingId) {
       let row = null;
       const isSkinGlowDemoLanding = editingId === 'skinglow-landing';
-      const loadSeededSkinGlowLanding = () => {
+      const loadSeededSkinGlowLanding = async () => {
         if (!isSkinGlowDemoLanding || typeof seedSkinGlowDemo !== 'function') return null;
         const seeded = seedSkinGlowDemo({ setAnswers: true });
-        return seeded?.landing ? { ...seeded.landing, user_id: user.id } : null;
+        if (!seeded?.landing) return null;
+        let fullDemoHtml = '';
+        try {
+          const response = await fetch('./skinglow-landing-demo.html?v=builderseed');
+          if (response.ok) fullDemoHtml = await response.text();
+        } catch (err) {
+          console.warn('[landing-builder] No pude cargar la landing demo completa:', err);
+        }
+        return {
+          ...seeded.landing,
+          html: fullDemoHtml || seeded.landing.html,
+          user_id: user.id
+        };
       };
       if (isSkinGlowDemoLanding) {
         const local = Landings.get(editingId);
-        if (local?.html && local?.title) row = { ...local, user_id: user.id };
-        if (!row) row = loadSeededSkinGlowLanding();
+        const localLooksComplete = local?.html && /included-card|product-section|hero-video|price-actions/.test(local.html);
+        if (local?.html && local?.title && localLooksComplete) row = { ...local, user_id: user.id };
+        if (!row) row = await loadSeededSkinGlowLanding();
       } else {
         try { row = await DB.landings.get(editingId); } catch (e) { console.warn('Supabase load falló:', e); }
         if (!row) {
