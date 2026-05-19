@@ -6,6 +6,7 @@
 <title>Landing Builder · Luminous Studio</title>
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.min.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
 <link href="https://fonts.googleapis.com/icon?family=Material+Symbols+Outlined" rel="stylesheet"/>
 <script>
@@ -47,6 +48,10 @@
 
   .toast { animation: toast-in .25s ease both; }
   @keyframes toast-in { from { opacity:0; transform: translateY(-6px);} to { opacity:1; transform:translateY(0);} }
+  .mode-card { border: 1px solid rgba(72,72,71,.55); background: linear-gradient(145deg, rgba(38,38,38,.95), rgba(19,19,19,.92)); }
+  .mode-card:hover { border-color: rgba(46,91,255,.7); transform: translateY(-1px); }
+  .section-pulse { animation: section-pulse 1.2s ease; }
+  @keyframes section-pulse { 0%,100% { box-shadow: 0 0 0 rgba(46,91,255,0); } 35% { box-shadow: 0 0 0 3px rgba(46,91,255,.28); } }
 </style>
 </head>
 <body class="bg-background text-on-background" data-lloyd-default-mode="landing">
@@ -113,6 +118,44 @@
       </div>
       <p class="text-[11px] text-on-surface-variant mb-4">Claude Sonnet diseña tu página en ~15 segundos. Podés iterar por chat después.</p>
 
+      <div class="grid grid-cols-2 gap-2 mb-4">
+        <button type="button" class="mode-card rounded-xl p-3 text-left transition" data-jump-section="section-prompt" onclick="jumpBuilderSection('section-prompt')">
+          <span class="material-symbols-outlined text-primary" style="font-size:18px">edit_note</span>
+          <p class="mt-1 text-xs font-extrabold">Con prompt</p>
+          <p class="text-[10px] text-on-surface-variant/70 leading-snug">Describe exactamente lo que quieres.</p>
+        </button>
+        <button type="button" class="mode-card rounded-xl p-3 text-left transition" data-jump-section="section-reference" onclick="jumpBuilderSection('section-reference')">
+          <span class="material-symbols-outlined text-primary" style="font-size:18px">link</span>
+          <p class="mt-1 text-xs font-extrabold">Copiar link</p>
+          <p class="text-[10px] text-on-surface-variant/70 leading-snug">Usa una web como referencia visual.</p>
+        </button>
+        <button type="button" class="mode-card rounded-xl p-3 text-left transition" data-jump-section="section-pdf" onclick="jumpBuilderSection('section-pdf')">
+          <span class="material-symbols-outlined text-primary" style="font-size:18px">picture_as_pdf</span>
+          <p class="mt-1 text-xs font-extrabold">Subir PDF</p>
+          <p class="text-[10px] text-on-surface-variant/70 leading-snug">Convierte un material en landing.</p>
+        </button>
+        <button type="button" class="mode-card rounded-xl p-3 text-left transition" data-jump-section="section-hero-video" onclick="jumpBuilderSection('section-hero-video')">
+          <span class="material-symbols-outlined text-primary" style="font-size:18px">movie</span>
+          <p class="mt-1 text-xs font-extrabold">Video de fondo</p>
+          <p class="text-[10px] text-on-surface-variant/70 leading-snug">Elige tu video para el hero.</p>
+        </button>
+      </div>
+
+      <div id="section-pdf" class="rounded-xl border border-outline-variant/25 bg-surface-container-low/60 p-3 mb-3">
+        <label class="text-[11px] font-semibold text-on-surface-variant block mb-1">Subir PDF o texto base</label>
+        <label class="flex items-center justify-between gap-3 rounded-lg border border-dashed border-outline-variant/50 bg-surface-container px-3 py-3 cursor-pointer hover:border-primary/70 transition">
+          <span class="min-w-0">
+            <span class="block text-xs font-bold">Elegir archivo</span>
+            <span id="source-file-label" class="block text-[10px] text-on-surface-variant/65 truncate">PDF, TXT o MD con tu oferta, clase, guia o material.</span>
+          </span>
+          <span class="material-symbols-outlined text-primary" style="font-size:20px">upload_file</span>
+          <input id="fld-source-file" type="file" accept=".pdf,.txt,.md,text/plain,application/pdf" class="hidden"/>
+        </label>
+        <textarea id="fld-source-text" rows="4" placeholder="Aqui aparecera el texto extraido del PDF. Tambien puedes pegar contenido manualmente."
+                  class="mt-2 w-full bg-surface-container border border-outline-variant/40 rounded-lg px-3 py-2 text-sm focus:border-primary focus:ring-0 outline-none resize-none"></textarea>
+        <p class="text-[10px] text-on-surface-variant/60 mt-1">Este contenido se suma al prompt para crear una landing mas fiel al producto.</p>
+      </div>
+
       <div class="space-y-3">
         <div>
           <label class="text-[11px] font-semibold text-on-surface-variant block mb-1">¿Qué vendés?</label>
@@ -134,7 +177,7 @@
           <textarea id="fld-extras" rows="2" placeholder="Ej: testimonios específicos, colores de marca, módulos del curso, garantía personalizada…"
                     class="w-full bg-surface-container border border-outline-variant/40 rounded-lg px-3 py-2 text-sm focus:border-primary focus:ring-0 outline-none resize-none"></textarea>
         </div>
-        <div>
+        <div id="section-reference" class="rounded-xl border border-outline-variant/25 bg-surface-container-low/60 p-3">
           <label class="text-[11px] font-semibold text-on-surface-variant block mb-1">URL de referencia (opcional)</label>
           <input id="fld-refurl" type="text" placeholder="Ej: https://apple.com o https://framer.com/templates"
                  class="w-full bg-surface-container border border-outline-variant/40 rounded-lg px-3 py-2 text-sm focus:border-primary focus:ring-0 outline-none"/>
@@ -200,8 +243,9 @@
         </div>
 
         <!-- Background -->
-        <div>
+        <div id="section-hero-video" class="rounded-xl border border-primary/30 bg-primary/5 p-3">
           <label class="text-[11px] font-semibold text-on-surface-variant block mb-1">Fondo del hero</label>
+          <p class="text-[10px] text-on-surface-variant/65 mb-2">Para una landing premium, elige <strong class="text-on-surface">Video de fondo (loop)</strong> y selecciona uno de tus videos de la galeria.</p>
           <div class="flex gap-2">
             <select id="fld-bg-type" onchange="toggleBgValue()" class="flex-1 bg-surface-container border border-outline-variant/40 rounded-lg px-3 py-2 text-sm focus:border-primary focus:ring-0 outline-none">
               <option value="dark">Oscuro con gradiente (default)</option>
@@ -234,7 +278,7 @@
         </div>
 
         <!-- Custom prompt (exact instructions) -->
-        <div>
+        <div id="section-prompt" class="rounded-xl border border-outline-variant/25 bg-surface-container-low/60 p-3">
           <label class="text-[11px] font-semibold text-on-surface-variant block mb-1">
             Instrucción exacta a la IA
             <span class="ml-1 text-[10px] font-normal text-on-surface-variant/60">(Claude la sigue al pie de la letra)</span>
@@ -482,6 +526,73 @@ function renderPalettes() {
   });
 }
 document.addEventListener('DOMContentLoaded', renderPalettes);
+
+function jumpBuilderSection(sectionId) {
+  const target = document.getElementById(sectionId);
+  if (!target) return;
+  const scroller = document.getElementById('starter');
+  if (scroller) {
+    scroller.scrollTo({ top: Math.max(0, target.offsetTop - scroller.offsetTop - 18), behavior: 'smooth' });
+  } else {
+    target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
+  target.classList.remove('section-pulse');
+  void target.offsetWidth;
+  target.classList.add('section-pulse');
+  if (sectionId === 'section-hero-video') {
+    const bgType = document.getElementById('fld-bg-type');
+    if (bgType) {
+      bgType.value = 'video';
+      toggleBgValue();
+    }
+  }
+}
+
+async function extractLandingSourceFile(file) {
+  if (!file) return '';
+  const name = (file.name || '').toLowerCase();
+  if (name.endsWith('.pdf') || file.type === 'application/pdf') {
+    if (!window.pdfjsLib) throw new Error('No se pudo cargar el lector PDF.');
+    window.pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.worker.min.js';
+    const data = await file.arrayBuffer();
+    const pdf = await window.pdfjsLib.getDocument({ data }).promise;
+    const maxPages = Math.min(pdf.numPages, 18);
+    const chunks = [];
+    for (let pageNum = 1; pageNum <= maxPages; pageNum++) {
+      const page = await pdf.getPage(pageNum);
+      const text = await page.getTextContent();
+      chunks.push(text.items.map(item => item.str || '').join(' '));
+    }
+    return chunks.join('\n\n').replace(/\s{2,}/g, ' ').slice(0, 14000);
+  }
+  return (await file.text()).slice(0, 14000);
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  document.querySelectorAll('[data-jump-section]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      jumpBuilderSection(btn.dataset.jumpSection);
+    });
+  });
+
+  const sourceFile = document.getElementById('fld-source-file');
+  const sourceText = document.getElementById('fld-source-text');
+  const sourceLabel = document.getElementById('source-file-label');
+  if (sourceFile && sourceText && sourceLabel) {
+    sourceFile.addEventListener('change', async (e) => {
+      const file = e.target.files?.[0];
+      if (!file) return;
+      sourceLabel.textContent = `Leyendo ${file.name}...`;
+      try {
+        sourceText.value = await extractLandingSourceFile(file);
+        sourceLabel.textContent = `${file.name} listo (${sourceText.value.length.toLocaleString('es')} caracteres)`;
+      } catch (err) {
+        console.error(err);
+        sourceLabel.textContent = `${file.name} no se pudo leer. Puedes pegar el texto manualmente.`;
+      }
+    });
+  }
+});
 
 function toggleBgValue() {
   const type = document.getElementById('fld-bg-type').value;
@@ -1179,6 +1290,7 @@ function renderVideoTemplates() {
       const price    = document.getElementById('fld-price').value.trim();
       const extras   = document.getElementById('fld-extras').value.trim();
       const custom   = document.getElementById('fld-custom').value.trim();
+      const sourceText = document.getElementById('fld-source-text')?.value.trim() || '';
       const refurl   = document.getElementById('fld-refurl').value.trim();
       const bonuses  = document.getElementById('fld-bonuses').value.trim();
       const imgType  = document.getElementById('fld-img-type').value;
@@ -1226,6 +1338,7 @@ function renderVideoTemplates() {
         imgInstr,
         video ? `VIDEO: embebí este video en sección dedicada después del hero: ${video}` : '',
         bgInstr,
+        sourceText ? `MATERIAL BASE SUBIDO POR LA CREADORA (usa esto para extraer promesa, estructura, beneficios, objeciones, modulos y tono; no lo copies palabra por palabra):\n${sourceText.slice(0, 14000)}` : '',
         interactive ? 'INTERACTIVIDAD: agrega animaciones CSS y JavaScript inline: contadores animados con IntersectionObserver, FAQ con smooth expand (max-height transition), tabs en módulos/beneficios, parallax leve en hero.' : '',
         custom ? `INSTRUCCIÓN EXACTA DEL CREADOR (máxima prioridad, seguí esto al pie de la letra): ${custom}` : '',
         refurl ? `INSPIRACIÓN VISUAL: tomá como referencia el estilo del sitio ${refurl} — paleta, tipografía, espaciado, tono visual.` : '',
