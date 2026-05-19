@@ -497,7 +497,8 @@ window.getSuggestedOfferTheme = function getSuggestedOfferTheme(niche = '', prod
 // ── Claude API ─────────────────────────────────────────────
 const Claude = {
   async _call(messages, maxTokens = 3000, opts = {}) {
-    const model = opts.model || 'claude-haiku-4-5-20251001';
+    const fallbackModel = 'claude-haiku-4-5-20251001';
+    const model = opts.model || fallbackModel;
     // Sanitize: drop empty/non-string content, enforce user→assistant alternation,
     // cap to 40 messages to prevent Anthropic's auto prompt-caching from failing on empty blocks.
     const cleaned = [];
@@ -510,12 +511,15 @@ const Claude = {
     // First message must be from user; cap tail to 40 messages
     const firstUser = cleaned.findIndex(m => m.role === 'user');
     const safeMessages = (firstUser < 0 ? [] : cleaned.slice(firstUser)).slice(-40);
-    const body = { model, max_tokens: maxTokens, messages: safeMessages };
-    if (opts.system) body.system = opts.system;
-    const doRequest = async (token) => fetch(`${SUPABASE_URL}/functions/v1/claude-proxy`, {
+    const buildBody = (modelName) => {
+      const body = { model: modelName, max_tokens: maxTokens, messages: safeMessages };
+      if (opts.system) body.system = opts.system;
+      return body;
+    };
+    const doRequest = async (token, payload = buildBody(model)) => fetch(`${SUPABASE_URL}/functions/v1/claude-proxy`, {
       method: 'POST',
       headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
-      body: JSON.stringify(body),
+      body: JSON.stringify(payload),
     });
 
     // Always get a fresh token via forced refresh
@@ -546,6 +550,17 @@ const Claude = {
     if (!res.ok) {
       const err = await res.json().catch(() => ({}));
       const msg = err.error?.message || `Error ${res.status}`;
+      const modelAccessError = /model .*does not exist|do not have access|not have access|invalid model/i.test(msg);
+      if (modelAccessError && model !== fallbackModel) {
+        const fallbackRes = await doRequest(token, buildBody(fallbackModel));
+        if (fallbackRes.ok) {
+          const data = await fallbackRes.json();
+          return data.content?.[0]?.text || '';
+        }
+        const fallbackErr = await fallbackRes.json().catch(() => ({}));
+        const fallbackMsg = fallbackErr.error?.message || `Error ${fallbackRes.status}`;
+        throw new Error(fallbackMsg);
+      }
       if (res.status === 429) throw new Error('Límite de peticiones alcanzado. Espera un momento e intenta de nuevo.');
       if (res.status === 504 || res.status === 502 || res.status === 524 || res.status === 546) {
         throw new Error('La IA excedió el tiempo permitido. Reducí los capítulos (probá 6) o acortá el material de entrada.');
@@ -1098,7 +1113,7 @@ Si encontrás que BONOS no está en el HTML generado, insertá la sección compl
   async generateLanding(brief, history = []) {
     const messages = [...history, { role: 'user', content: brief }];
     const text = await this._call(messages, 8000, {
-      model: 'claude-sonnet-4-6',
+      model: 'claude-haiku-4-5-20251001',
       system: this._landingSystemPrompt(),
     });
     // Extract pure HTML: strip any markdown fences or preamble
@@ -1334,7 +1349,7 @@ REGLAS:
 
 ${this._docTypePrompt(docType)}`;
     const text = await this._call([{ role: 'user', content: brief }], 1200, {
-      model: 'claude-sonnet-4-6', system,
+      model: 'claude-haiku-4-5-20251001', system,
     });
     try { return this._parseJSONLoose(text); }
     catch { throw new Error('No pude generar el outline. Intentá de nuevo.'); }
@@ -1378,7 +1393,7 @@ REGLAS GENERALES:
       `\nEscribí el contenido completo de la sección ahora (solo el cuerpo, sin título, sin JSON, sin el prefijo "Capítulo N"). DEBE llenar la página: mínimo 180 palabras + 2 bloques visuales.`,
     ].filter(Boolean).join(' ');
     const text = await this._call([{ role: 'user', content: userMsg }], 3000, {
-      model: 'claude-sonnet-4-6', system,
+      model: 'claude-haiku-4-5-20251001', system,
     });
     // Strip any accidental JSON wrapping or code fences
     let body = text.trim();
@@ -1406,7 +1421,7 @@ REGLAS GENERALES:
     if (history.length > 0) {
       const messages = [...history, { role: 'user', content: brief }];
       const text = await this._call(messages, 3000, {
-        model: 'claude-sonnet-4-6',
+        model: 'claude-haiku-4-5-20251001',
         system: this._ebookChatSystemPrompt(docType),
       });
       try {
@@ -1567,7 +1582,8 @@ const Groq = {
     const fullMessages = opts.system
       ? [{ role: 'system', content: opts.system }, ...messages]
       : messages;
-    return this._call(fullMessages, maxTokens, opts.model);
+    const groqModel = opts.model && !String(opts.model).startsWith('claude-') ? opts.model : undefined;
+    return this._call(fullMessages, maxTokens, groqModel);
   },
 
   async generateLanding(brief, history = []) {
