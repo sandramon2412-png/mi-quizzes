@@ -1,10 +1,36 @@
 const chromium = require('@sparticuz/chromium');
 const puppeteer = require('puppeteer-core');
+const fs = require('fs');
 
 const filenameFor = (title = 'ebook') => {
   const clean = String(title).replace(/[\\/:*?"<>|]+/g, '').trim() || 'ebook';
   return `${clean}.pdf`;
 };
+
+async function resolveExecutablePath() {
+  const localCandidates = process.platform === 'win32'
+    ? [
+        'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe',
+        'C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe',
+        'C:\\Program Files\\Microsoft\\Edge\\Application\\msedge.exe',
+        'C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe',
+      ]
+    : [
+        '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome',
+        '/usr/bin/google-chrome-stable',
+        '/usr/bin/google-chrome',
+        '/usr/bin/chromium-browser',
+        '/usr/bin/chromium',
+      ];
+  const local = localCandidates.find(candidate => fs.existsSync(candidate));
+  if (local) return { executablePath: local, args: ['--no-sandbox', '--disable-setuid-sandbox'], headless: true };
+
+  const executablePath = await chromium.executablePath();
+  if (executablePath && fs.existsSync(executablePath)) {
+    return { executablePath, args: chromium.args, headless: chromium.headless };
+  }
+  throw new Error('No Chromium executable found for PDF rendering');
+}
 
 module.exports = async function handler(req, res) {
   if (req.method !== 'POST') {
@@ -19,12 +45,12 @@ module.exports = async function handler(req, res) {
 
   let browser;
   try {
-    const executablePath = await chromium.executablePath();
+    const launchOptions = await resolveExecutablePath();
     browser = await puppeteer.launch({
-      args: chromium.args,
+      args: launchOptions.args,
       defaultViewport: { width: 1240, height: 1754 },
-      executablePath,
-      headless: chromium.headless,
+      executablePath: launchOptions.executablePath,
+      headless: launchOptions.headless,
     });
     const page = await browser.newPage();
     await page.setJavaScriptEnabled(false);

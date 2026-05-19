@@ -192,11 +192,11 @@
 <header class="toolbar">
   <div>
     <strong id="toolbar-title">Vista PDF</strong>
-    <div class="hint">Usa <strong>Descargar PDF directo</strong> para evitar que Chrome reorganice las paginas. La impresion del navegador queda solo como respaldo.</div>
+    <div class="hint">Esta es la vista previa. Usa <strong>Descargar PDF de esta vista</strong> para conservar tablas, imagenes y colores lo mas parecido posible.</div>
   </div>
   <div class="actions">
     <a id="back-link" class="btn ghost" href="./ebook-builder.html"><span class="material-symbols-outlined" style="font-size:16px">arrow_back</span>Volver al editor</a>
-    <button id="server-pdf-btn" class="btn primary" type="button"><span class="material-symbols-outlined" style="font-size:16px">picture_as_pdf</span>Descargar PDF directo</button>
+    <button id="server-pdf-btn" class="btn primary" type="button"><span class="material-symbols-outlined" style="font-size:16px">picture_as_pdf</span>Descargar PDF de esta vista</button>
     <button id="print-btn" class="btn primary" type="button"><span class="material-symbols-outlined" style="font-size:16px">print</span>Imprimir navegador (respaldo)</button>
   </div>
 </header>
@@ -406,18 +406,26 @@
 
   async function downloadServerPdf() {
     if (!currentBook) throw new Error('El ebook todavia no esta cargado.');
-    const response = await fetch('/api/generate-ebook-pdf', {
+    const html = '<!doctype html>\n' + document.documentElement.outerHTML;
+    let response = await fetch('/api/render-ebook-pdf', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ ebook: currentBook }),
+      body: JSON.stringify({ html, filename: pdfFileName(currentBook.title) }),
     });
+    if (!response.ok) {
+      response = await fetch('/api/generate-ebook-pdf', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ebook: currentBook }),
+      });
+    }
     if (!response.ok) {
       let detail = '';
       try {
         const data = await response.json();
         detail = data?.error || data?.message || '';
       } catch {}
-      throw new Error(detail || 'No pude generar el PDF directo.');
+      throw new Error(detail || 'No pude generar el PDF.');
     }
     const blob = await response.blob();
     if (!blob || blob.size < 1024) throw new Error('El PDF llego vacio.');
@@ -434,7 +442,7 @@
       await downloadServerPdf();
     } catch (err) {
       console.warn('[ebook-print] server PDF failed, opening browser print fallback', err);
-      alert('No pude generar el PDF directo. Se abrira la impresion del navegador como respaldo.');
+      alert('No pude generar el PDF desde la vista. Se abrira la impresion del navegador como respaldo.');
       window.print();
     } finally {
       button.disabled = false;

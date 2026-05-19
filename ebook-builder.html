@@ -2712,16 +2712,16 @@
       applyThemeInline(document.getElementById('eb-theme')?.value || ebook.theme || ebook.cover?.theme || 'light');
       applyPageScales();
       const filename = `${(ebook.title || 'ebook').replace(/[\\/:*?"<>|]+/g, '').trim() || 'ebook'}.pdf`;
-      let response = await fetch('/api/generate-ebook-pdf', {
+      let response = await fetch('/api/render-ebook-pdf', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ebook }),
+        body: JSON.stringify({ html: buildPrintableHtml(), filename }),
       });
       if (!response.ok) {
-        response = await fetch('/api/render-ebook-pdf', {
+        response = await fetch('/api/generate-ebook-pdf', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ html: buildPrintableHtml(), filename }),
+          body: JSON.stringify({ ebook }),
         });
       }
       if (!response.ok) {
@@ -2755,16 +2755,9 @@
       downloadBtn.innerHTML = '<span class="thinking-dot"></span><span class="thinking-dot"></span><span class="thinking-dot"></span>';
 
       try {
-        await downloadServerPdf();
-        toast('PDF descargado.', 'ok');
+        await openPrintablePage();
       } catch (err) {
-        console.warn('[ebook] PDF directo fallo; abriendo vista imprimible.', err);
-        try {
-          await openPrintablePage();
-          toast('No pude descargar directo; abri la vista PDF para guardar.', 'ok');
-        } catch (fallbackErr) {
-          toast('Error al abrir vista PDF: ' + (fallbackErr?.message || err?.message || 'error'), 'err');
-        }
+        toast('Error al abrir vista PDF: ' + (err?.message || 'error'), 'err');
       } finally {
         setStatus('');
         downloadBtn.disabled = false;
