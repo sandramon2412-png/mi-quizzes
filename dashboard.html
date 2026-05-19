@@ -1419,12 +1419,14 @@ async function renderLandings() {
 
   const caps = getPlanCaps(Settings.get().plan || 'free');
   const maxLandings = caps.landings || 0;
+  const isLocalDev = ['127.0.0.1', 'localhost', '::1'].includes(location.hostname);
 
   // Hide the section entirely for plans with zero landings allowed
-  if (maxLandings < 1) {
+  if (maxLandings < 1 && !isLocalDev) {
     if (section) section.style.display = 'none';
     return;
   }
+  if (section) section.style.display = '';
 
   container.innerHTML = '<p class="text-xs text-on-surface-variant py-6 col-span-full text-center animate-pulse">Cargando landings...</p>';
 
@@ -1442,7 +1444,7 @@ async function renderLandings() {
     catch { summaries[l.id] = { views: 0, uniqueViews: 0, ctaClicks: 0 }; }
   }));
 
-  const atLimit = landings.length >= maxLandings;
+  const atLimit = !isLocalDev && landings.length >= maxLandings;
   if (newBtn) {
     if (atLimit) {
       newBtn.classList.add('opacity-40', 'cursor-not-allowed', 'pointer-events-none');
