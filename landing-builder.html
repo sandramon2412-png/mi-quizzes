@@ -118,44 +118,6 @@
       </div>
       <p class="text-[11px] text-on-surface-variant mb-4">Claude Sonnet diseña tu página en ~15 segundos. Podés iterar por chat después.</p>
 
-      <div class="grid grid-cols-2 gap-2 mb-4">
-        <button type="button" class="mode-card rounded-xl p-3 text-left transition" data-jump-section="section-prompt" onclick="jumpBuilderSection('section-prompt')">
-          <span class="material-symbols-outlined text-primary" style="font-size:18px">edit_note</span>
-          <p class="mt-1 text-xs font-extrabold">Con prompt</p>
-          <p class="text-[10px] text-on-surface-variant/70 leading-snug">Describe exactamente lo que quieres.</p>
-        </button>
-        <button type="button" class="mode-card rounded-xl p-3 text-left transition" data-jump-section="section-reference" onclick="jumpBuilderSection('section-reference')">
-          <span class="material-symbols-outlined text-primary" style="font-size:18px">link</span>
-          <p class="mt-1 text-xs font-extrabold">Copiar link</p>
-          <p class="text-[10px] text-on-surface-variant/70 leading-snug">Usa una web como referencia visual.</p>
-        </button>
-        <button type="button" class="mode-card rounded-xl p-3 text-left transition" data-jump-section="section-pdf" onclick="jumpBuilderSection('section-pdf')">
-          <span class="material-symbols-outlined text-primary" style="font-size:18px">picture_as_pdf</span>
-          <p class="mt-1 text-xs font-extrabold">Subir PDF</p>
-          <p class="text-[10px] text-on-surface-variant/70 leading-snug">Convierte un material en landing.</p>
-        </button>
-        <button type="button" class="mode-card rounded-xl p-3 text-left transition" data-jump-section="section-hero-video" onclick="jumpBuilderSection('section-hero-video')">
-          <span class="material-symbols-outlined text-primary" style="font-size:18px">movie</span>
-          <p class="mt-1 text-xs font-extrabold">Video de fondo</p>
-          <p class="text-[10px] text-on-surface-variant/70 leading-snug">Elige tu video para el hero.</p>
-        </button>
-      </div>
-
-      <div id="section-pdf" class="rounded-xl border border-outline-variant/25 bg-surface-container-low/60 p-3 mb-3">
-        <label class="text-[11px] font-semibold text-on-surface-variant block mb-1">Subir PDF o texto base</label>
-        <label class="flex items-center justify-between gap-3 rounded-lg border border-dashed border-outline-variant/50 bg-surface-container px-3 py-3 cursor-pointer hover:border-primary/70 transition">
-          <span class="min-w-0">
-            <span class="block text-xs font-bold">Elegir archivo</span>
-            <span id="source-file-label" class="block text-[10px] text-on-surface-variant/65 truncate">PDF, TXT o MD con tu oferta, clase, guia o material.</span>
-          </span>
-          <span class="material-symbols-outlined text-primary" style="font-size:20px">upload_file</span>
-          <input id="fld-source-file" type="file" accept=".pdf,.txt,.md,text/plain,application/pdf" class="hidden"/>
-        </label>
-        <textarea id="fld-source-text" rows="4" placeholder="Aqui aparecera el texto extraido del PDF. Tambien puedes pegar contenido manualmente."
-                  class="mt-2 w-full bg-surface-container border border-outline-variant/40 rounded-lg px-3 py-2 text-sm focus:border-primary focus:ring-0 outline-none resize-none"></textarea>
-        <p class="text-[10px] text-on-surface-variant/60 mt-1">Este contenido se suma al prompt para crear una landing mas fiel al producto.</p>
-      </div>
-
       <div class="space-y-3">
         <div>
           <label class="text-[11px] font-semibold text-on-surface-variant block mb-1">¿Qué vendés?</label>
@@ -177,11 +139,35 @@
           <textarea id="fld-extras" rows="2" placeholder="Ej: testimonios específicos, colores de marca, módulos del curso, garantía personalizada…"
                     class="w-full bg-surface-container border border-outline-variant/40 rounded-lg px-3 py-2 text-sm focus:border-primary focus:ring-0 outline-none resize-none"></textarea>
         </div>
+        <div id="section-prompt" class="rounded-xl border border-outline-variant/25 bg-surface-container-low/60 p-3">
+          <label class="text-[11px] font-semibold text-on-surface-variant block mb-1">
+            Prompt o instruccion exacta
+            <span class="ml-1 text-[10px] font-normal text-on-surface-variant/60">(maxima prioridad para la IA)</span>
+          </label>
+          <textarea id="fld-custom" rows="3" placeholder="Ej: quiero una landing premium para vender un reto de 21 dias, con hero con video de fondo, seccion antes/despues, bonos, garantia y CTA a WhatsApp..."
+                    class="w-full bg-surface-container border border-outline-variant/40 rounded-lg px-3 py-2 text-sm focus:border-primary focus:ring-0 outline-none resize-none"></textarea>
+          <p class="text-[10px] text-on-surface-variant/60 mt-1">Aqui puedes pedir estructura, estilo visual, secciones obligatorias o cosas que no quieres que aparezcan.</p>
+        </div>
         <div id="section-reference" class="rounded-xl border border-outline-variant/25 bg-surface-container-low/60 p-3">
           <label class="text-[11px] font-semibold text-on-surface-variant block mb-1">URL de referencia (opcional)</label>
           <input id="fld-refurl" type="text" placeholder="Ej: https://apple.com o https://framer.com/templates"
                  class="w-full bg-surface-container border border-outline-variant/40 rounded-lg px-3 py-2 text-sm focus:border-primary focus:ring-0 outline-none"/>
           <p class="text-[10px] text-on-surface-variant/60 mt-1">Claude usará el estilo visual del sitio como inspiración.</p>
+        </div>
+
+        <div id="section-pdf" class="rounded-xl border border-outline-variant/25 bg-surface-container-low/60 p-3">
+          <label class="text-[11px] font-semibold text-on-surface-variant block mb-1">Subir PDF o texto base</label>
+          <label class="flex items-center justify-between gap-3 rounded-lg border border-dashed border-outline-variant/50 bg-surface-container px-3 py-3 cursor-pointer hover:border-primary/70 transition">
+            <span class="min-w-0">
+              <span class="block text-xs font-bold">Elegir archivo</span>
+              <span id="source-file-label" class="block text-[10px] text-on-surface-variant/65 truncate">PDF, TXT o MD con tu oferta, clase, guia o material.</span>
+            </span>
+            <span class="material-symbols-outlined text-primary" style="font-size:20px">upload_file</span>
+            <input id="fld-source-file" type="file" accept=".pdf,.txt,.md,text/plain,application/pdf" class="hidden"/>
+          </label>
+          <textarea id="fld-source-text" rows="3" placeholder="Aqui aparecera el texto extraido del PDF. Tambien puedes pegar contenido manualmente."
+                    class="mt-2 w-full bg-surface-container border border-outline-variant/40 rounded-lg px-3 py-2 text-sm focus:border-primary focus:ring-0 outline-none resize-none"></textarea>
+          <p class="text-[10px] text-on-surface-variant/60 mt-1">Este contenido se suma al prompt para crear una landing mas fiel al producto.</p>
         </div>
 
         <!-- Divider -->
@@ -277,8 +263,8 @@
           </label>
         </div>
 
-        <!-- Custom prompt (exact instructions) -->
-        <div id="section-prompt" class="rounded-xl border border-outline-variant/25 bg-surface-container-low/60 p-3">
+        <!-- Legacy custom prompt moved above -->
+        <div class="hidden" inert>
           <label class="text-[11px] font-semibold text-on-surface-variant block mb-1">
             Instrucción exacta a la IA
             <span class="ml-1 text-[10px] font-normal text-on-surface-variant/60">(Claude la sigue al pie de la letra)</span>
