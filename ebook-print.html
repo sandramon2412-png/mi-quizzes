@@ -174,7 +174,7 @@
       width:auto !important; min-height:0 !important;
       margin:0 !important; padding:0 !important; box-shadow:none !important;
       overflow:visible !important;
-      break-before:page !important; page-break-before:always !important;
+      break-before:auto !important; page-break-before:auto !important;
       break-after:auto !important; page-break-after:auto !important;
       background:transparent !important;
     }
@@ -387,8 +387,60 @@
     root.innerHTML = '<div class="empty">No pude cargar el ebook.</div>';
   }
 
+  function pdfFileName(title) {
+    const clean = (title || 'ebook').replace(/[\\/:*?"<>|]+/g, '').trim() || 'ebook';
+    return `${clean}.pdf`;
+  }
+
+  function downloadBlob(blob, filename) {
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    a.style.display = 'none';
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 2500);
+  }
+
+  async function downloadServerPdf() {
+    if (!currentBook) throw new Error('El ebook todavia no esta cargado.');
+    const response = await fetch('/api/generate-ebook-pdf', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ ebook: currentBook }),
+    });
+    if (!response.ok) {
+      let detail = '';
+      try {
+        const data = await response.json();
+        detail = data?.error || data?.message || '';
+      } catch {}
+      throw new Error(detail || 'No pude generar el PDF directo.');
+    }
+    const blob = await response.blob();
+    if (!blob || blob.size < 1024) throw new Error('El PDF llego vacio.');
+    downloadBlob(blob, pdfFileName(currentBook.title));
+  }
+
   document.getElementById('print-btn').addEventListener('click', () => window.print());
-  document.getElementById('server-pdf-btn')?.addEventListener('click', () => window.print());
+  document.getElementById('server-pdf-btn')?.addEventListener('click', async (event) => {
+    const button = event.currentTarget;
+    const original = button.innerHTML;
+    button.disabled = true;
+    button.innerHTML = '<span class="material-symbols-outlined" style="font-size:16px">hourglass_empty</span>Generando...';
+    try {
+      await downloadServerPdf();
+    } catch (err) {
+      console.warn('[ebook-print] server PDF failed, opening browser print fallback', err);
+      alert('No pude generar el PDF directo. Se abrira la impresion del navegador como respaldo.');
+      window.print();
+    } finally {
+      button.disabled = false;
+      button.innerHTML = original;
+    }
+  });
 })();
 </script>
 </body>

@@ -241,12 +241,13 @@ function drawTable(doc, rows, theme) {
 function parseBlocks(input = '') {
   let body = safeText(input);
   const blocks = [];
+  const mediaBlocks = [];
 
   body = body.replace(/<figure([^>]*)[\s\S]*?(?:<img[^>]+src=["']([^"']+)["'][^>]*>)?[\s\S]*?(?:<figcaption[^>]*>([\s\S]*?)<\/figcaption>)?[\s\S]*?<\/figure>/gi, (match, attrs = '', src = '', caption = '') => {
     const attrUrl = String(attrs).match(/data-image-url=["']([^"']+)["']/i)?.[1] || '';
     const imgUrl = src || String(match).match(/<img[^>]+src=["']([^"']+)["']/i)?.[1] || '';
-    blocks.push({ type: imgUrl || attrUrl ? 'image' : 'visual', url: imgUrl || attrUrl, text: stripTags(caption) });
-    return '\n\n';
+    const index = mediaBlocks.push({ type: imgUrl || attrUrl ? 'image' : 'visual', url: imgUrl || attrUrl, text: stripTags(caption) }) - 1;
+    return `\n\n@@LUMINOUS_MEDIA_BLOCK_${index}@@\n\n`;
   });
   body = body
     .replace(/<h2[^>]*>([\s\S]*?)<\/h2>/gi, '\n## $1\n')
@@ -270,7 +271,11 @@ function parseBlocks(input = '') {
       blocks.push({ type: 'table', rows: table });
       table = [];
     }
-    if (/^#{2,3}\s+/.test(line)) blocks.push({ type: line.startsWith('###') ? 'h3' : 'h2', text: line.replace(/^#{2,3}\s+/, '') });
+    const mediaMatch = line.match(/^@@LUMINOUS_MEDIA_BLOCK_(\d+)@@$/);
+    if (mediaMatch) {
+      const media = mediaBlocks[Number(mediaMatch[1])];
+      if (media) blocks.push(media);
+    } else if (/^#{2,3}\s+/.test(line)) blocks.push({ type: line.startsWith('###') ? 'h3' : 'h2', text: line.replace(/^#{2,3}\s+/, '') });
     else if (/^[-*•]\s+/.test(line)) blocks.push({ type: 'bullet', text: line.replace(/^[-*•]\s+/, '') });
     else if (/^>\s+/.test(line)) blocks.push({ type: 'quote', text: line.replace(/^>\s+/, '') });
     else blocks.push({ type: 'p', text: line });
