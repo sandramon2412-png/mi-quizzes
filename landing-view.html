@@ -32,6 +32,7 @@
 <script>
   (async () => {
     const params = new URLSearchParams(window.location.search);
+    const draftId = params.get('draft');
     // Slug priority: ?slug= (from Vercel rewrite) > /l/<slug> > /<slug>
     let slug = params.get('slug');
     if (!slug) {
@@ -43,10 +44,29 @@
     const errorEl = document.getElementById('error');
     const showError = () => { loading.style.display = 'none'; errorEl.style.display = 'flex'; };
 
-    if (!slug) { showError(); return; }
+    if (!slug && !draftId) { showError(); return; }
 
     try {
-      const row = await DB.landings.getBySlug(slug);
+      let row = null;
+      if (draftId) {
+        const session = await Auth.session({ timeoutMs: 3000 }).catch(() => null);
+        row = await DB.landings.get(draftId).catch(() => null);
+        if (!row) {
+          try {
+            const cached = JSON.parse(sessionStorage.getItem('ls_landing_preview') || 'null');
+            if (cached?.id === draftId) row = cached;
+          } catch {}
+        }
+        if (!row || !row.html) { showError(); return; }
+        if (row.user_id && session?.user?.id && row.user_id !== session.user.id) { showError(); return; }
+        document.title = (row.title || 'Vista de landing') + ' · Vista';
+        document.open();
+        document.write(row.html);
+        document.close();
+        return;
+      }
+
+      row = await DB.landings.getBySlug(slug);
       if (!row || !row.published || !row.html) { showError(); return; }
 
       // Inject analytics tracker before rendering

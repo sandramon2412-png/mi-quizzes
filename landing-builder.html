@@ -88,7 +88,7 @@
   </span>
   <button id="btn-open" class="hidden h-9 px-3 rounded-lg bg-surface-container-high hover:bg-surface-container-highest text-xs font-semibold flex items-center gap-1.5 transition-colors" title="Abrir en nueva pestaña">
     <span class="material-symbols-outlined" style="font-size:16px">open_in_new</span>
-    <span class="hidden md:inline">Abrir</span>
+    <span>Vista</span>
   </button>
   <button id="btn-publish" class="h-9 px-4 rounded-lg primary-gradient text-white text-xs font-bold flex items-center gap-1.5 hover:opacity-90 transition">
     <span class="material-symbols-outlined" style="font-size:16px">rocket_launch</span>
@@ -1029,6 +1029,7 @@ function renderVideoTemplates() {
         editMediaBtn.classList.remove('hidden');
         uploadMediaBtn.classList.remove('hidden');
         uploadMediaBtn.classList.add('flex');
+        openBtn.classList.remove('hidden');
         setMediaSelectedLabel(_selectedMediaEl ? `Seleccionada: ${getMediaLabel(_selectedMediaEl)}` : 'Selecciona una media', !!_selectedMediaEl);
       } else {
         editHtmlBtn.classList.add('hidden');
@@ -1036,6 +1037,7 @@ function renderVideoTemplates() {
         editMediaBtn.classList.add('hidden');
         uploadMediaBtn.classList.add('hidden');
         uploadMediaBtn.classList.remove('flex');
+        openBtn.classList.add('hidden');
         setMediaSelectedLabel('Sin media seleccionada', false);
         document.getElementById('media-selected-label')?.classList.add('hidden');
       }
@@ -1325,7 +1327,9 @@ function renderVideoTemplates() {
     };
 
     openBtn.onclick = () => {
-      if (landing?.slug) window.open(`/${landing.slug}`, '_blank');
+      if (!landing?.html) return;
+      try { sessionStorage.setItem('ls_landing_preview', JSON.stringify(landing)); } catch {}
+      window.open(`./landing-view.html?draft=${encodeURIComponent(landing.id)}&v=builder-preview`, '_blank');
     };
 
     // ── Title autosave ──
