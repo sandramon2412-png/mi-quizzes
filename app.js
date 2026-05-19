@@ -1570,6 +1570,14 @@ const Groq = {
     return this._call(fullMessages, maxTokens, opts.model);
   },
 
+  async generateLanding(brief, history = []) {
+    return Claude.generateLanding.call(
+      { _call: this._callWithSystem.bind(this), _landingSystemPrompt: Claude._landingSystemPrompt.bind(Claude) },
+      brief,
+      history
+    );
+  },
+
   // Igual que _callWithSystem pero usa llama-3.1-8b-instant (131K TPM) para ebooks
   // llama-3.3-70b-versatile solo tiene 12K TPM — demasiado bajo para generación de capítulos
   _callWithSystemEbook(messages, maxTokens = 3000, opts = {}) {
@@ -1778,7 +1786,12 @@ const AI = {
   },
   // Complejo: landing completa en HTML+Tailwind con Sonnet 4.6
   async generateLanding(brief, history = []) {
-    return Claude.generateLanding(brief, history);
+    try {
+      return await Claude.generateLanding(brief, history);
+    } catch (e) {
+      console.warn('[landing] Claude falló, usando Groq como fallback:', e.message);
+      return Groq.generateLanding(brief, history);
+    }
   },
   // Complejo: ebook estructurado — intenta Claude, cae a Groq si no hay créditos
   async generateEbook(brief, history = [], onProgress, docType = 'ebook') {
