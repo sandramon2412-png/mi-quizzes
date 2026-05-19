@@ -74,6 +74,15 @@
     <span class="material-symbols-outlined" style="font-size:16px">code</span>
     <span>HTML</span>
   </button>
+  <button id="btn-edit-media" class="hidden h-9 px-3 rounded-lg bg-surface-container-high hover:bg-surface-container-highest text-xs font-semibold flex items-center gap-1.5 transition-colors" title="Cambiar imagen, fondo o video principal">
+    <span class="material-symbols-outlined" style="font-size:16px">image</span>
+    <span>Media</span>
+  </button>
+  <label id="btn-upload-media" class="hidden h-9 px-3 rounded-lg bg-surface-container-high hover:bg-surface-container-highest text-xs font-semibold items-center gap-1.5 transition-colors cursor-pointer" title="Subir imagen o video principal">
+    <span class="material-symbols-outlined" style="font-size:16px">upload</span>
+    <span>Subir</span>
+    <input id="top-media-upload" type="file" accept="image/*,video/*" class="hidden"/>
+  </label>
   <button id="btn-open" class="hidden h-9 px-3 rounded-lg bg-surface-container-high hover:bg-surface-container-highest text-xs font-semibold flex items-center gap-1.5 transition-colors" title="Abrir en nueva pestaña">
     <span class="material-symbols-outlined" style="font-size:16px">open_in_new</span>
     <span class="hidden md:inline">Abrir</span>
@@ -912,6 +921,9 @@ function renderVideoTemplates() {
 
     const editVisualBtn = document.getElementById('btn-edit-visual');
     const editHtmlBtn = document.getElementById('btn-edit-html');
+    const editMediaBtn = document.getElementById('btn-edit-media');
+    const uploadMediaBtn = document.getElementById('btn-upload-media');
+    const topMediaUpload = document.getElementById('top-media-upload');
     const htmlEditor = document.getElementById('html-editor');
     const htmlTextarea = document.getElementById('html-editor-textarea');
     const cancelHtmlBtn = document.getElementById('btn-cancel-html');
@@ -937,9 +949,15 @@ function renderVideoTemplates() {
       if (landing?.html) {
         editHtmlBtn.classList.remove('hidden');
         editVisualBtn.classList.remove('hidden');
+        editMediaBtn.classList.remove('hidden');
+        uploadMediaBtn.classList.remove('hidden');
+        uploadMediaBtn.classList.add('flex');
       } else {
         editHtmlBtn.classList.add('hidden');
         editVisualBtn.classList.add('hidden');
+        editMediaBtn.classList.add('hidden');
+        uploadMediaBtn.classList.add('hidden');
+        uploadMediaBtn.classList.remove('flex');
       }
       if (landing?.slug) slugPreview.value = landing.slug;
     };
@@ -962,6 +980,51 @@ function renderVideoTemplates() {
     };
 
     // ── Load existing landing if editing ──
+    const getPrimaryMediaTarget = () => {
+      const doc = previewFrame.contentDocument;
+      if (!doc) return null;
+      if (_selectedEl && getMediaKind(_selectedEl)) return _selectedEl;
+      return doc.querySelector('.hero-video, video, img') ||
+        [...doc.querySelectorAll('section,header,footer,article,div')].find(el => getMediaKind(el)) ||
+        null;
+    };
+
+    const persistPreviewMediaChange = async () => {
+      const doc = previewFrame.contentDocument;
+      if (!doc || !landing) return;
+      clearMediaEditButtons(doc);
+      const full = '<!DOCTYPE html>\n' + doc.documentElement.outerHTML;
+      const cleaned = full.replace(PREVIEW_INJECTION_RE, '');
+      landing.html = cleaned;
+      renderPreview(cleaned);
+      await persistLanding();
+    };
+
+    editMediaBtn.onclick = async () => {
+      const target = getPrimaryMediaTarget();
+      if (!target) { toast('No encontré imagen, fondo o video para cambiar', 'err'); return; }
+      const kind = getMediaKind(target);
+      const url = prompt(kind === 'video' ? 'URL del nuevo video o imagen poster:' : 'URL de la nueva imagen o fondo:', getMediaUrl(target));
+      if (!url) return;
+      setMediaUrl(target, url);
+      await persistPreviewMediaChange();
+      toast('Media actualizado');
+    };
+
+    topMediaUpload.addEventListener('change', (e) => {
+      const file = e.target.files?.[0];
+      const target = getPrimaryMediaTarget();
+      if (!file || !target) return;
+      const reader = new FileReader();
+      reader.onload = async (ev) => {
+        setMediaUrl(target, ev.target.result);
+        await persistPreviewMediaChange();
+        toast('Media subido y guardado');
+      };
+      reader.readAsDataURL(file);
+      e.target.value = '';
+    });
+
     if (editingId) {
       let row = null;
       const isSkinGlowDemoLanding = editingId === 'skinglow-landing';
