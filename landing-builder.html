@@ -378,7 +378,7 @@
 </div>
 
 <script src="./supabase-config.js"></script>
-<script src="./app.js?v=landing-authfix1"></script>
+<script src="./app.js?v=landing-chatfix1"></script>
 <script src="./skinglow-demo-data.js"></script>
 <script src="./ai-assistant.js"></script>
 <script>
@@ -772,6 +772,82 @@ function renderVideoTemplates() {
       previewFrame.srcdoc = withInjection || html || '';
     };
 
+    const normalizeHtmlForCompare = (html) => String(html || '')
+      .replace(/\s+/g, ' ')
+      .replace(/data-lloyd-[^=]+="[^"]*"/g, '')
+      .trim();
+
+    const wantsImages = (text) => /imagen|im[aá]genes|foto|fotos|placeholder|placehold|placebo|pollinations|visual/i.test(String(text || ''));
+    const wantsInteractive = (text) => /interactiv|animaci[oó]n|animaciones|faq|acorde[oó]n|tabs|contador|parallax|click/i.test(String(text || ''));
+
+    const pollinationUrl = (seed, idx = 1, width = 900, height = 620) => {
+      const prompt = encodeURIComponent(`${seed || 'premium digital product'} editorial premium landing page visual ${idx}`);
+      return `https://image.pollinations.ai/prompt/${prompt}?width=${width}&height=${height}&nologo=true`;
+    };
+
+    const imageTag = (seed, idx = 1, cls = 'w-full rounded-3xl object-cover shadow-2xl') =>
+      `<img src="${pollinationUrl(seed, idx)}" alt="Imagen visual ${idx}" class="${cls}" loading="lazy">`;
+
+    const ensureRequestedImages = (html, instruction = '') => {
+      if (!wantsImages(instruction)) return html;
+      let output = String(html || '');
+      const seed = (titleEl.value || document.getElementById('fld-product')?.value || instruction || 'premium product').slice(0, 140);
+      let n = 1;
+      output = output.replace(/<div\b([^>]*data-upload-slot=["']true["'][^>]*)>[\s\S]*?<\/div>/gi, () => imageTag(seed, n++));
+      const imgCount = (output.match(/<img\b/gi) || []).length;
+      if (imgCount >= 2) return output;
+      const feature = `
+<section class="relative overflow-hidden py-20 px-6 bg-gradient-to-br from-zinc-950 via-zinc-900 to-rose-950 text-white">
+  <div class="max-w-6xl mx-auto grid md:grid-cols-2 gap-10 items-center">
+    <div>
+      <p class="text-sm font-bold uppercase tracking-[0.22em] text-rose-300">Visual del producto</p>
+      <h2 class="mt-4 text-4xl md:text-5xl font-black tracking-tight">Una experiencia que se siente premium desde la primera mirada.</h2>
+      <p class="mt-5 text-zinc-300 text-lg leading-relaxed">Estas imagenes son placeholders reales generados para mostrar el producto con mas confianza, detalle y deseo visual.</p>
+    </div>
+    <div class="grid gap-4">
+      ${imageTag(seed, 1)}
+      <div class="grid grid-cols-2 gap-4">
+        ${imageTag(seed, 2, 'w-full aspect-square rounded-2xl object-cover shadow-xl')}
+        ${imageTag(seed, 3, 'w-full aspect-square rounded-2xl object-cover shadow-xl')}
+      </div>
+    </div>
+  </div>
+</section>`;
+      if (/<\/main>/i.test(output)) return output.replace(/<\/main>/i, feature + '\n</main>');
+      if (/<\/body>/i.test(output)) return output.replace(/<\/body>/i, feature + '\n</body>');
+      return output + feature;
+    };
+
+    const ensureInteractiveLanding = (html, instruction = '') => {
+      if (!wantsInteractive(instruction)) return html;
+      let output = String(html || '');
+      if (/data-luminous-interactive=["']true["']/i.test(output)) return output;
+      const addon = `
+<style data-luminous-interactive="true">
+  [data-luminous-reveal]{opacity:0;transform:translateY(22px);transition:opacity .7s ease,transform .7s ease}
+  [data-luminous-reveal].is-visible{opacity:1;transform:translateY(0)}
+  .luminous-faq-answer{max-height:0;overflow:hidden;transition:max-height .35s ease}
+  .luminous-faq-open .luminous-faq-answer{max-height:260px}
+</style>
+<script data-luminous-interactive="true">
+  (function(){
+    var blocks=[].slice.call(document.querySelectorAll('section, header, .card, [class*="card"], [class*="benefit"], [class*="bonus"]'));
+    blocks.forEach(function(el){ if(!el.dataset.luminousReveal) el.dataset.luminousReveal='true'; });
+    var io=new IntersectionObserver(function(entries){ entries.forEach(function(e){ if(e.isIntersecting) e.target.classList.add('is-visible'); }); },{threshold:.12});
+    document.querySelectorAll('[data-luminous-reveal]').forEach(function(el){ io.observe(el); });
+    document.querySelectorAll('details, .faq-item, [data-faq]').forEach(function(el){
+      el.addEventListener('click',function(){ el.classList.toggle('luminous-faq-open'); });
+      var p=el.querySelector('p,div'); if(p) p.classList.add('luminous-faq-answer');
+    });
+  })();
+<\/script>`;
+      if (/<\/body>/i.test(output)) return output.replace(/<\/body>/i, addon + '\n</body>');
+      return output + addon;
+    };
+
+    const postProcessLandingHtml = (html, instruction = '') =>
+      ensureInteractiveLanding(ensureRequestedImages(html, instruction), instruction);
+
     // ── Visual edit mode ──
     let _isEditing = false;
     let _selectedEl = null;
@@ -793,6 +869,7 @@ function renderVideoTemplates() {
       if (!el) return '';
       if (el.tagName === 'IMG') return 'image';
       if (el.tagName === 'VIDEO') return 'video';
+      if (el.matches?.('[data-upload-slot="true"]')) return 'slot';
       const bg = previewFrame.contentWindow?.getComputedStyle(el).backgroundImage;
       return bg && bg !== 'none' && parseCssUrl(bg) ? 'background' : '';
     };
@@ -801,6 +878,7 @@ function renderVideoTemplates() {
       const kind = getMediaKind(el);
       if (kind === 'image') return el.currentSrc || el.src || '';
       if (kind === 'video') return el.currentSrc || el.querySelector('source')?.src || el.poster || '';
+      if (kind === 'slot') return '';
       if (kind === 'background') return parseCssUrl(previewFrame.contentWindow.getComputedStyle(el).backgroundImage);
       return '';
     };
@@ -809,7 +887,7 @@ function renderVideoTemplates() {
       const kind = getMediaKind(el);
       const section = el?.closest?.('section,header,footer,article');
       const title = section?.querySelector?.('h1,h2,h3,[class*="eyebrow"],[class*="badge"]')?.textContent?.trim();
-      const base = kind === 'video' ? 'Video' : kind === 'image' ? 'Imagen' : 'Fondo';
+      const base = kind === 'video' ? 'Video' : kind === 'image' ? 'Imagen' : kind === 'slot' ? 'Espacio de imagen' : 'Fondo';
       return title ? `${base}: ${title.slice(0, 42)}` : base;
     };
 
@@ -856,6 +934,16 @@ function renderVideoTemplates() {
       if (!kind || !url) return;
       if (kind === 'image') {
         el.src = url;
+      } else if (kind === 'slot') {
+        const img = el.ownerDocument.createElement('img');
+        img.src = url;
+        img.alt = el.textContent?.trim()?.slice(0, 80) || 'Imagen de la landing';
+        img.loading = 'lazy';
+        img.className = el.getAttribute('data-image-class') || 'w-full rounded-3xl object-cover shadow-2xl';
+        img.style.cssText = el.getAttribute('data-image-style') || 'width:100%;height:auto;object-fit:cover;';
+        el.replaceWith(img);
+        _selectedMediaEl = img;
+        _selectedEl = img;
       } else if (kind === 'video') {
         if (isImageUrl(url)) {
           el.poster = url;
@@ -959,7 +1047,7 @@ function renderVideoTemplates() {
         }
       });
       // Image elements: clickable for replacement
-      doc.querySelectorAll('img').forEach(img => {
+      doc.querySelectorAll('img,[data-upload-slot="true"]').forEach(img => {
         img.style.outline = '1px dashed rgba(45,91,255,.45)';
         img.style.outlineOffset = '2px';
         img.style.cursor = 'pointer';
@@ -968,7 +1056,7 @@ function renderVideoTemplates() {
           selectMediaElement(img);
           showSelectionToolbar(img);
         });
-        addMediaEditButton(img, 'Imagen');
+        addMediaEditButton(img, getMediaKind(img) === 'slot' ? 'Agregar imagen' : 'Imagen');
       });
       doc.querySelectorAll('video').forEach(video => {
         video.style.outline = '1px dashed rgba(45,91,255,.45)';
@@ -1344,7 +1432,7 @@ function renderVideoTemplates() {
       setStatus('Generando con IA…');
 
       try {
-        const html = await AI.generateLanding(brief, []);
+        const html = postProcessLandingHtml(await AI.generateLanding(brief, []), brief);
         history = [
           { role: 'user', content: brief },
           { role: 'assistant', content: html, display: 'Acá tenés la primera versión. Pedime cambios si querés.' },
@@ -1391,14 +1479,23 @@ function renderVideoTemplates() {
       setStatus('Actualizando…');
 
       try {
-        // Only send role+content to the AI (strip display, drop empty content blocks)
-        const apiHistory = history
-          .filter(m => typeof m.content === 'string' && m.content.trim())
-          .map(m => ({ role: m.role, content: m.content }))
-          .slice(-30); // cap to last 30 messages to avoid Anthropic auto-caching errors on long history
-        const html = await AI.generateLanding(msg, apiHistory.slice(0, -1));
+        const currentHtml = landing.html || '';
+        const revisionBrief = [
+          'EDITA ESTA LANDING EXISTENTE. No contestes con explicaciones.',
+          'Debes devolver SOLO el HTML completo actualizado, empezando por <!DOCTYPE html> o <html>.',
+          'No digas "aplique los cambios" dentro del HTML. Si el usuario pide imagenes placeholder/placebo/fotos, coloca <img> reales de Pollinations.ai, no dejes espacios vacios.',
+          'Si el usuario pide que sea interactiva, agrega CSS/JS inline para FAQ, animaciones o tabs segun corresponda.',
+          `INSTRUCCION DEL USUARIO: ${msg}`,
+          'HTML ACTUAL:',
+          currentHtml.slice(0, 65000)
+        ].join('\n\n');
+        const html = postProcessLandingHtml(await AI.generateLanding(revisionBrief, []), msg);
+        if (normalizeHtmlForCompare(html) === normalizeHtmlForCompare(currentHtml)) {
+          throw new Error('La IA devolvio el mismo HTML sin cambios. Prueba una instruccion mas especifica o edita visualmente la seccion.');
+        }
         removeThinking();
         history.push({ role: 'assistant', content: html, display: 'Listo, apliqué los cambios.' });
+        history[history.length - 1].display = 'Listo, actualice la landing y refresque la vista previa.';
         landing.html = html;
         renderPreview(html);
         renderMessages();
@@ -1440,7 +1537,8 @@ function renderVideoTemplates() {
     openBtn.onclick = () => {
       if (!landing?.html) return;
       try { sessionStorage.setItem('ls_landing_preview', JSON.stringify(landing)); } catch {}
-      window.open(`./landing-view.html?draft=${encodeURIComponent(landing.id)}&v=builder-preview`, '_blank');
+      const returnTo = encodeURIComponent(`./landing-builder.html?id=${encodeURIComponent(landing.id)}&v=from-preview`);
+      window.open(`./landing-view.html?draft=${encodeURIComponent(landing.id)}&returnTo=${returnTo}&v=builder-preview`, '_blank');
     };
 
     // ── Title autosave ──
