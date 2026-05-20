@@ -522,15 +522,14 @@ const Claude = {
       body: JSON.stringify(payload),
     });
 
-    // Always get a fresh token via forced refresh
+    // Use the shared auth helper so Claude reads the same cached/refreshed session as Groq.
     let token = null;
-    try {
-      const { data, error } = await db.auth.refreshSession();
-      if (!error && data.session?.access_token) token = data.session.access_token;
-    } catch {}
+    try { token = await Auth.getToken(); } catch {}
     if (!token) {
-      const { data: { session } } = await db.auth.getSession();
-      token = session?.access_token || null;
+      try {
+        const session = await Auth.waitForSession?.(4000);
+        token = session?.access_token || null;
+      } catch {}
     }
     if (!token) throw new Error('Sesión no válida. Por favor recarga la página e inicia sesión de nuevo.');
 
