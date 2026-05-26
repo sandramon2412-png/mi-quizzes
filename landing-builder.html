@@ -812,17 +812,23 @@ function renderVideoTemplates() {
       return `https://image.pollinations.ai/prompt/${prompt}?width=${width}&height=${height}&nologo=true`;
     };
 
-    const fallbackImageUrl = (idx = 1) => `https://placehold.co/900x620/2b1720/f7d7e6?text=Visual+premium+${idx}`;
+    const fallbackImageUrl = (idx = 1) => {
+      const palette = activePalette?.() || {};
+      const bg = encodeURIComponent((palette.accent || '#7c3aed').replace('#', ''));
+      return `https://placehold.co/900x620/${bg}/ffffff?text=Visual+premium+${idx}`;
+    };
 
     const imageTag = (seed, idx = 1, cls = 'w-full rounded-3xl object-cover shadow-2xl') =>
       `<img src="${pollinationUrl(seed, idx)}" onerror="this.onerror=null;this.src='${fallbackImageUrl(idx)}';" alt="Imagen visual ${idx}" class="${cls}" loading="lazy">`;
 
     const sanitizeGeneratedLanding = (html) => {
       let output = String(html || '');
+      output = output.replace(/\[data-luminous-reveal\]\{[\s\S]{0,900}?max-height:260px\}\s*/gi, '');
       output = output.replace(/\s(?:href|formaction)=["'](?:\.\/|\/)?(?:landing-builder|dashboard|quiz|ebook-builder|generador-ia|login)[^"']*["']/gi, ' href="#"');
       output = output.replace(/\saction=["'][^"']*["']/gi, '');
       output = output.replace(/\s(?:onclick)=["'][^"']*(?:window\.location|location\.href|location\.assign)[^"']*["']/gi, '');
       output = output.replace(/window\.location(?:\.href|\.assign)?\s*=?\s*[^;]+;?/gi, '');
+      output = output.replace(/https:\/\/image\.pollinations\.ai\/prompt\/[^"'\s)]+/gi, (_m) => fallbackImageUrl(1));
       output = output.replace(/<img\b(?![^>]*\bonerror=)([^>]*?)>/gi, (m, attrs) => `<img${attrs} onerror="this.onerror=null;this.src='${fallbackImageUrl(1)}';">`);
       return output;
     };
@@ -865,27 +871,42 @@ function renderVideoTemplates() {
       if (!wantsInteractive(instruction)) return html;
       let output = sanitizeGeneratedLanding(html);
       if (/data-luminous-interactive=["']true["']/i.test(output)) return output;
-      const addon = `
-<style data-luminous-interactive="true">
-  [data-luminous-reveal]{opacity:0;transform:translateY(22px);transition:opacity .7s ease,transform .7s ease}
-  [data-luminous-reveal].is-visible{opacity:1;transform:translateY(0)}
-  .luminous-faq-answer{max-height:0;overflow:hidden;transition:max-height .35s ease}
-  .luminous-faq-open .luminous-faq-answer{max-height:260px}
-</style>
-<script data-luminous-interactive="true">
-  (function(){
-    var blocks=[].slice.call(document.querySelectorAll('section, header, .card, [class*="card"], [class*="benefit"], [class*="bonus"]'));
-    blocks.forEach(function(el){ if(!el.dataset.luminousReveal) el.dataset.luminousReveal='true'; });
-    var io=new IntersectionObserver(function(entries){ entries.forEach(function(e){ if(e.isIntersecting) e.target.classList.add('is-visible'); }); },{threshold:.12});
-    document.querySelectorAll('[data-luminous-reveal]').forEach(function(el){ io.observe(el); });
-    document.querySelectorAll('details, .faq-item, [data-faq]').forEach(function(el){
-      el.addEventListener('click',function(){ el.classList.toggle('luminous-faq-open'); });
-      var p=el.querySelector('p,div'); if(p) p.classList.add('luminous-faq-answer');
-    });
-  })();
-<\/script>`;
-      if (/<\/body>/i.test(output)) return output.replace(/<\/body>/i, addon + '\n</body>');
-      return output + addon;
+      const css = `<style data-luminous-interactive="true">[data-luminous-reveal]{opacity:0;transform:translateY(22px);transition:opacity .7s ease,transform .7s ease}[data-luminous-reveal].is-visible{opacity:1;transform:translateY(0)}.luminous-faq-answer{max-height:0;overflow:hidden;transition:max-height .35s ease}.luminous-faq-open .luminous-faq-answer{max-height:260px}</style>`;
+      const js = `<script data-luminous-interactive="true">(function(){var blocks=[].slice.call(document.querySelectorAll('section,header,.card,[class*="card"],[class*="benefit"],[class*="bonus"]'));blocks.forEach(function(el){if(!el.dataset.luminousReveal)el.dataset.luminousReveal='true';});var reveal=function(el){el.classList.add('is-visible')};if('IntersectionObserver'in window){var io=new IntersectionObserver(function(entries){entries.forEach(function(e){if(e.isIntersecting)reveal(e.target);});},{threshold:.12});document.querySelectorAll('[data-luminous-reveal]').forEach(function(el){io.observe(el);});}else{document.querySelectorAll('[data-luminous-reveal]').forEach(reveal);}document.querySelectorAll('details,.faq-item,[data-faq]').forEach(function(el){el.addEventListener('click',function(){el.classList.toggle('luminous-faq-open');});var p=el.querySelector('p,div');if(p)p.classList.add('luminous-faq-answer');});})();<\/script>`;
+      output = output.replace(/<style\s+data-luminous-interactive=["']true["'][\s\S]*?<\/style>/gi, '');
+      output = output.replace(/<script\s+data-luminous-interactive=["']true["'][\s\S]*?<\/script>/gi, '');
+      if (/<\/head>/i.test(output)) output = output.replace(/<\/head>/i, css + '\n</head>');
+      else output = css + output;
+      if (/<\/body>/i.test(output)) return output.replace(/<\/body>/i, js + '\n</body>');
+      return output + js;
+    };
+
+    const distributeGeneratedImages = (html) => {
+      try {
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(String(html || ''), 'text/html');
+        const generated = doc.querySelector('section[data-luminous-generated-images="true"]');
+        if (!generated) return html;
+        const imgs = Array.from(generated.querySelectorAll('img')).slice(0, 5);
+        if (!imgs.length) return html;
+        const targets = Array.from(doc.querySelectorAll('main > section, body > section'))
+          .filter(sec => sec !== generated && !sec.contains(generated))
+          .filter(sec => !sec.querySelector('img, video, iframe, [data-upload-slot="true"]'))
+          .slice(0, imgs.length);
+        if (targets.length < 2) return html;
+        imgs.forEach((img, idx) => {
+          const target = targets[idx % targets.length];
+          const clone = img.cloneNode(true);
+          clone.className = 'mt-8 w-full max-h-[420px] rounded-3xl object-cover shadow-2xl border border-white/10';
+          const h = target.querySelector('h2,h3,p');
+          if (h?.parentNode) h.parentNode.insertBefore(clone, h.nextSibling);
+          else target.appendChild(clone);
+        });
+        generated.remove();
+        return '<!DOCTYPE html>\n' + doc.documentElement.outerHTML;
+      } catch {
+        return html;
+      }
     };
 
     const reduceVideoDarkness = (html) => {
@@ -902,7 +923,7 @@ function renderVideoTemplates() {
     };
 
     const postProcessLandingHtml = (html, instruction = '') =>
-      applyBuilderQuality(ensureInteractiveLanding(reduceVideoDarkness(ensureRequestedImages(sanitizeGeneratedLanding(html), instruction)), instruction), instruction);
+      applyBuilderQuality(distributeGeneratedImages(ensureInteractiveLanding(reduceVideoDarkness(ensureRequestedImages(sanitizeGeneratedLanding(html), instruction)), instruction)), instruction);
 
     const activePalette = () => {
       const custom = document.getElementById('fld-custom-color')?.value?.trim() || '';
@@ -1107,7 +1128,7 @@ function renderVideoTemplates() {
       if (!landing?.html) return false;
       let next = landing.html;
       const before = normalizeHtmlForCompare(next);
-      if (wantsImages(instruction)) next = ensureRequestedImages(next, instruction, true);
+      if (wantsImages(instruction)) next = distributeGeneratedImages(ensureRequestedImages(next, instruction, true));
       if (wantsInteractive(instruction)) next = ensureInteractiveLanding(next, instruction);
       if (/color|paleta|theme|tema|marca|degrad|gradiente/i.test(instruction)) next = applyPaletteToHtml(next);
       if (/incomplet|completa|faltan|beneficios|contenido|precio|bonos|garant/i.test(instruction)) next = ensureMinimumLandingSections(next);
