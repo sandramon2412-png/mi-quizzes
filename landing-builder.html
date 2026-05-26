@@ -378,7 +378,7 @@
 </div>
 
 <script src="./supabase-config.js"></script>
-<script src="./app.js?v=landing-chatfix2"></script>
+<script src="./app.js?v=landing-chatfix3"></script>
 <script src="./skinglow-demo-data.js"></script>
 <script src="./ai-assistant.js"></script>
 <script>
@@ -800,16 +800,16 @@ function renderVideoTemplates() {
       return output;
     };
 
-    const ensureRequestedImages = (html, instruction = '') => {
+    const ensureRequestedImages = (html, instruction = '', forceVisibleSection = false) => {
       if (!wantsImages(instruction)) return html;
       let output = sanitizeGeneratedLanding(html);
       const seed = (titleEl.value || document.getElementById('fld-product')?.value || instruction || 'premium product').slice(0, 140);
       let n = 1;
       output = output.replace(/<div\b([^>]*data-upload-slot=["']true["'][^>]*)>[\s\S]*?<\/div>/gi, () => imageTag(seed, n++));
       const imgCount = (output.match(/<img\b/gi) || []).length;
-      if (imgCount >= 2) return output;
+      if (imgCount >= 2 && !forceVisibleSection) return output;
       const feature = `
-<section class="relative overflow-hidden py-20 px-6 bg-gradient-to-br from-zinc-950 via-zinc-900 to-rose-950 text-white">
+<section data-luminous-generated-images="true" class="relative overflow-hidden py-20 px-6 bg-gradient-to-br from-zinc-950 via-zinc-900 to-rose-950 text-white">
   <div class="max-w-6xl mx-auto grid md:grid-cols-2 gap-10 items-center">
     <div>
       <p class="text-sm font-bold uppercase tracking-[0.22em] text-rose-300">Visual del producto</p>
@@ -825,6 +825,9 @@ function renderVideoTemplates() {
     </div>
   </div>
 </section>`;
+      if (/<section\b[^>]*data-luminous-generated-images=["']true["'][\s\S]*?<\/section>/i.test(output)) {
+        return output.replace(/<section\b[^>]*data-luminous-generated-images=["']true["'][\s\S]*?<\/section>/i, feature);
+      }
       if (/<\/main>/i.test(output)) return output.replace(/<\/main>/i, feature + '\n</main>');
       if (/<\/body>/i.test(output)) return output.replace(/<\/body>/i, feature + '\n</body>');
       return output + feature;
@@ -875,7 +878,7 @@ function renderVideoTemplates() {
       if (!landing?.html) return false;
       let next = landing.html;
       const before = normalizeHtmlForCompare(next);
-      if (wantsImages(instruction)) next = ensureRequestedImages(next, instruction);
+      if (wantsImages(instruction)) next = ensureRequestedImages(next, instruction, true);
       if (wantsInteractive(instruction)) next = ensureInteractiveLanding(next, instruction);
       if (/video|hero|fondo/i.test(instruction) && /claro|aclara|no se ve|muy oscuro|menos oscuro|quita.*oscuro|baja.*oscuro/i.test(instruction)) {
         next = reduceVideoDarkness(next);
@@ -1194,6 +1197,15 @@ function renderVideoTemplates() {
 
     const escapeHtml = (s) => (s || '').toString().replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 
+    const compactMessages = (messages = []) => messages
+      .filter(m => m && typeof m.role === 'string')
+      .slice(-16)
+      .map(m => ({
+        role: m.role,
+        content: m.role === 'assistant' ? '' : String(m.content || '').slice(0, 3500),
+        display: m.display || (m.role === 'assistant' ? 'Landing actualizada' : '')
+      }));
+
     const switchToChatMode = () => {
       starter.classList.add('hidden');
       chatLog.classList.remove('hidden');
@@ -1210,6 +1222,7 @@ function renderVideoTemplates() {
       landing.title = titleEl.value.trim() || landing.title;
       const typedSlug = sanitizeSlug(slugPreview.value);
       if (typedSlug) landing.slug = typedSlug;
+      history = compactMessages(history);
       landing.messages = history;
       try {
         setStatus('Guardando…');
@@ -1372,7 +1385,7 @@ function renderVideoTemplates() {
       }
       if (row && row.user_id === user.id) {
         landing = row;
-        history = Array.isArray(row.messages) ? row.messages : [];
+        history = compactMessages(Array.isArray(row.messages) ? row.messages : []);
         titleEl.value = row.title || '';
         slugPreview.value = row.slug || '';
         if (row.html) {
