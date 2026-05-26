@@ -1136,11 +1136,23 @@ Si encontrás que BONOS no está en el HTML generado, insertá la sección compl
 
   async generateLanding(brief, history = []) {
     const messages = [...history, { role: 'user', content: brief }];
-    const text = await this._call(messages, 8000, {
-      model: 'claude-haiku-4-5-20251001',
-      system: this._landingSystemPrompt(),
-      publicBuilderProxy: true,
-    });
+    let text = '';
+    try {
+      text = await this._call(messages, 12000, {
+        model: 'claude-sonnet-4-5-20250929',
+        system: this._landingSystemPrompt(),
+        publicBuilderProxy: true,
+        temperature: 0.35,
+      });
+    } catch (sonnetError) {
+      console.warn('[landing] Sonnet no disponible, usando Haiku:', sonnetError?.message || sonnetError);
+      text = await this._call(messages, 8000, {
+        model: 'claude-haiku-4-5-20251001',
+        system: this._landingSystemPrompt(),
+        publicBuilderProxy: true,
+        temperature: 0.35,
+      });
+    }
     // Extract pure HTML: strip any markdown fences or preamble
     let html = text.trim();
     html = html.replace(/^```html\s*/i, '').replace(/^```\s*/i, '').replace(/```\s*$/i, '').trim();

@@ -378,7 +378,7 @@
 </div>
 
 <script src="./supabase-config.js?v=authhandoff1"></script>
-<script src="./app.js?v=landing-publicproxy1"></script>
+<script src="./app.js?v=landing-expert1"></script>
 <script src="./skinglow-demo-data.js"></script>
 <script src="./ai-assistant.js"></script>
 <script>
@@ -804,6 +804,23 @@ function renderVideoTemplates() {
       .replace(/data-lloyd-[^=]+="[^"]*"/g, '')
       .trim();
 
+    const visibleFingerprint = (html) => {
+      try {
+        const doc = new DOMParser().parseFromString(String(html || ''), 'text/html');
+        doc.querySelectorAll('script,style,base,.lloyd-media-edit-btn').forEach(el => el.remove());
+        const text = (doc.body?.innerText || doc.body?.textContent || '').replace(/\s+/g, ' ').trim();
+        const media = Array.from(doc.querySelectorAll('img,video,[data-upload-slot="true"]'))
+          .map(el => el.getAttribute('src') || el.getAttribute('poster') || el.querySelector?.('source')?.getAttribute('src') || el.getAttribute('data-upload-slot') || '')
+          .join('|');
+        const ctas = Array.from(doc.querySelectorAll('a,button,summary'))
+          .map(el => `${el.textContent || ''}:${el.getAttribute('href') || ''}`.replace(/\s+/g, ' ').trim())
+          .join('|');
+        return `${text}|${media}|${ctas}`.slice(0, 60000);
+      } catch {
+        return normalizeHtmlForCompare(html);
+      }
+    };
+
     const wantsImages = (text) => /imagen|im[aá]genes|foto|fotos|placeholder|placehold|placebo|pollinations|visual/i.test(String(text || ''));
     const wantsInteractive = (text) => /interactiv|animaci[oó]n|animaciones|faq|acorde[oó]n|tabs|contador|parallax|click/i.test(String(text || ''));
 
@@ -820,6 +837,35 @@ function renderVideoTemplates() {
 
     const imageTag = (seed, idx = 1, cls = 'w-full rounded-3xl object-cover shadow-2xl') =>
       `<img src="${pollinationUrl(seed, idx)}" onerror="this.onerror=null;this.src='${fallbackImageUrl(idx)}';" alt="Imagen visual ${idx}" class="${cls}" loading="lazy">`;
+
+    const fileToOptimizedDataUrl = (file) => new Promise((resolve, reject) => {
+      if (!file) return reject(new Error('No file'));
+      if (!file.type?.startsWith('image/')) {
+        const reader = new FileReader();
+        reader.onload = (ev) => resolve(ev.target.result);
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+        return;
+      }
+      const reader = new FileReader();
+      reader.onload = () => {
+        const img = new Image();
+        img.onload = () => {
+          const max = 1600;
+          const scale = Math.min(1, max / Math.max(img.width, img.height));
+          const canvas = document.createElement('canvas');
+          canvas.width = Math.max(1, Math.round(img.width * scale));
+          canvas.height = Math.max(1, Math.round(img.height * scale));
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+          resolve(canvas.toDataURL('image/jpeg', 0.86));
+        };
+        img.onerror = reject;
+        img.src = reader.result;
+      };
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
+    });
 
     const sanitizeGeneratedLanding = (html) => {
       let output = String(html || '');
@@ -1023,11 +1069,28 @@ function renderVideoTemplates() {
       return output;
     };
 
+    const hasLandingSection = (html, ids = [], terms = []) => {
+      try {
+        const doc = new DOMParser().parseFromString(String(html || ''), 'text/html');
+        const idSet = ids.map(x => String(x || '').toLowerCase());
+        const termList = terms.map(x => String(x || '').toLowerCase());
+        return Array.from(doc.querySelectorAll('section,header,footer,main > div')).some(sec => {
+          const id = (sec.id || '').toLowerCase();
+          if (idSet.includes(id)) return true;
+          const heading = (sec.querySelector('h1,h2,h3,p')?.textContent || '').toLowerCase();
+          return termList.some(term => heading.includes(term));
+        });
+      } catch {
+        const lower = String(html || '').toLowerCase();
+        return ids.some(id => lower.includes(`id="${id}"`) || lower.includes(`id='${id}'`)) || terms.some(term => lower.includes(term));
+      }
+    };
+
     const ensureMinimumLandingSections = (html) => {
       let output = String(html || '');
       const lower = output.toLowerCase();
       const missing = [];
-      if (!/id=["']beneficios["']|beneficios/.test(lower)) missing.push(`
+      if (!hasLandingSection(output, ['beneficios'], ['beneficios', 'lo que cambia'])) missing.push(`
 <section id="beneficios" class="py-24 px-6 bg-zinc-950 text-white">
   <div class="max-w-6xl mx-auto">
     <p class="text-sm font-black uppercase tracking-[0.22em] text-pink-300">Beneficios</p>
@@ -1104,8 +1167,42 @@ function renderVideoTemplates() {
       return output + addon;
     };
 
+    const appendBeforeDocumentEnd = (html, addon) => {
+      if (!addon) return html;
+      if (/<\/main>/i.test(html)) return html.replace(/<\/main>/i, addon + '\n</main>');
+      if (/<\/body>/i.test(html)) return html.replace(/<\/body>/i, addon + '\n</body>');
+      return html + addon;
+    };
+
+    const ensureConversionLandingSections = (html) => {
+      let output = ensureMinimumLandingSections(html);
+      const missing = [];
+      if (!hasLandingSection(output, ['testimonios'], ['testimonios', 'prueba social', 'historias que hacen'])) missing.push(`
+<section id="testimonios" class="py-24 px-6 bg-[#fff7f8] text-[#2d1720]">
+  <div class="max-w-6xl mx-auto">
+    <p class="text-sm font-black uppercase tracking-[0.22em] text-pink-700">Prueba social</p>
+    <h2 class="mt-4 text-4xl md:text-5xl font-black">Testimonios que hacen la decision mas facil.</h2>
+    <div class="mt-10 grid md:grid-cols-3 gap-5">
+      <article class="rounded-3xl bg-white border border-pink-100 p-6 shadow-sm"><p class="text-[#6f4a58]">"Antes dudaba demasiado. Ahora tengo una ruta clara y se exactamente que hacer primero."</p><b class="mt-5 block">Camila R.</b><small class="text-pink-700 font-bold">Mas claridad</small></article>
+      <article class="rounded-3xl bg-white border border-pink-100 p-6 shadow-sm"><p class="text-[#6f4a58]">"Me gusto sentir que no estaba comprando solo informacion, sino acompanamiento y pasos."</p><b class="mt-5 block">Andrea M.</b><small class="text-pink-700 font-bold">Mejor experiencia</small></article>
+      <article class="rounded-3xl bg-white border border-pink-100 p-6 shadow-sm"><p class="text-[#6f4a58]">"Los bonos fueron lo que me ayudo a decidir porque vi mas valor y menos riesgo."</p><b class="mt-5 block">Laura P.</b><small class="text-pink-700 font-bold">Decision de compra</small></article>
+    </div>
+  </div>
+</section>`);
+      if (!hasLandingSection(output, ['cta-final'], ['quiero empezar ahora', 'ultimo paso', 'acceso inmediato'])) missing.push(`
+<section id="cta-final" class="py-24 px-6 bg-gradient-to-br from-zinc-950 via-rose-950 to-zinc-900 text-white">
+  <div class="max-w-4xl mx-auto text-center rounded-[2rem] border border-white/10 bg-white/8 p-10 shadow-2xl">
+    <p class="text-sm font-black uppercase tracking-[0.22em] text-pink-300">Ultimo paso</p>
+    <h2 class="mt-4 text-4xl md:text-5xl font-black">Convierte la decision en accion ahora.</h2>
+    <p class="mt-5 text-white/70">La oferta ya esta explicada, los bonos aumentan el valor y las preguntas principales estan resueltas.</p>
+    <a href="#" class="mt-8 inline-flex min-h-[54px] items-center justify-center rounded-xl px-9 py-4 bg-gradient-to-r from-pink-500 to-rose-600 font-black transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]">Quiero empezar ahora</a>
+  </div>
+</section>`);
+      return appendBeforeDocumentEnd(output, missing.join('\n'));
+    };
+
     const applyBuilderQuality = (html, instruction = '') => {
-      let output = applyPaletteToHtml(ensureMinimumLandingSections(html));
+      let output = applyPaletteToHtml(ensureConversionLandingSections(html));
       if (wantsInteractive(instruction)) output = ensureInteractiveLanding(output, instruction);
       return output;
     };
@@ -1218,16 +1315,16 @@ function renderVideoTemplates() {
     const applyLocalChatCommand = (instruction) => {
       if (!landing?.html) return false;
       let next = landing.html;
-      const before = normalizeHtmlForCompare(next);
+      const before = visibleFingerprint(next);
       if (wantsImages(instruction)) next = distributeMediaAcrossSections(distributeGeneratedImages(ensureRequestedImages(next, instruction, true)));
       if (wantsInteractive(instruction)) next = ensureInteractiveLanding(next, instruction);
       if (/color|paleta|theme|tema|marca|degrad|gradiente/i.test(instruction)) next = applyPaletteToHtml(next);
-      if (/incomplet|completa|faltan|beneficios|contenido|precio|bonos|garant|testimonio|faq|preguntas|cta|bot[oó]n/i.test(instruction)) next = ensureMinimumLandingSections(next);
+      if (/incomplet|completa|faltan|beneficios|contenido|precio|bonos|garant|testimonio|faq|preguntas|cta|bot[oó]n/i.test(instruction)) next = ensureConversionLandingSections(next);
       if (/video|hero|fondo/i.test(instruction) && /claro|aclara|no se ve|muy oscuro|menos oscuro|quita.*oscuro|baja.*oscuro/i.test(instruction)) {
         next = reduceVideoDarkness(next);
       }
       next = distributeMediaAcrossSections(sanitizeGeneratedLanding(next));
-      if (normalizeHtmlForCompare(next) === before) return false;
+      if (visibleFingerprint(next) === before) return false;
       landing.html = next;
       renderPreview(next);
       return true;
@@ -1684,13 +1781,14 @@ function renderVideoTemplates() {
       const target = getPrimaryMediaTarget();
       if (!target) { toast('Primero presiona Editar y selecciona una media dentro de la vista', 'err'); e.target.value = ''; return; }
       if (!file) return;
-      const reader = new FileReader();
-      reader.onload = async (ev) => {
-        setMediaUrl(target, ev.target.result);
+      fileToOptimizedDataUrl(file).then(async (dataUrl) => {
+        setMediaUrl(target, dataUrl);
         await persistPreviewMediaChange();
         toast('Media subido y guardado');
-      };
-      reader.readAsDataURL(file);
+      }).catch((err) => {
+        console.error(err);
+        toast('No pude cargar esa imagen', 'err');
+      });
       e.target.value = '';
     });
 
@@ -1902,8 +2000,8 @@ function renderVideoTemplates() {
         ].join('\n\n');
         const revisedHtml = await AI.generateLanding(revisionBrief, []);
         const html = postProcessLandingHtml(revisedHtml, msg);
-        if (normalizeHtmlForCompare(html) === normalizeHtmlForCompare(currentHtml)) {
-          throw new Error('La IA devolvio el mismo HTML sin cambios. Prueba una instruccion mas especifica o edita visualmente la seccion.');
+        if (visibleFingerprint(html) === visibleFingerprint(currentHtml)) {
+          throw new Error('La IA no hizo un cambio visible. No guardé una respuesta falsa; intenta con una orden más concreta o usa edición visual.');
         }
         removeThinking();
         history.push({ role: 'assistant', content: '', display: 'Listo, apliqué los cambios.' });
@@ -1960,6 +2058,7 @@ function renderVideoTemplates() {
         }
       }
       try { sessionStorage.setItem('ls_landing_preview', JSON.stringify(landing)); } catch {}
+      try { localStorage.setItem(`ls_landing_preview_${landing.id}`, JSON.stringify(landing)); } catch {}
       const returnTo = encodeURIComponent(`./landing-builder.html?id=${encodeURIComponent(landing.id)}&v=from-preview`);
       window.open(`./landing-view.html?draft=${encodeURIComponent(landing.id)}&returnTo=${returnTo}&v=builder-preview`, '_blank');
     };
@@ -2008,6 +2107,15 @@ function renderVideoTemplates() {
     document.getElementById('tb-image-upload').addEventListener('change', (e) => {
       const file = e.target.files?.[0];
       if (!file || !getMediaKind(_selectedEl)) return;
+      fileToOptimizedDataUrl(file).then((dataUrl) => {
+        setMediaUrl(_selectedEl, dataUrl);
+        toast('Imagen cargada - hace clic en "Terminar" para guardar');
+      }).catch((err) => {
+        console.error(err);
+        toast('No pude cargar esa imagen', 'err');
+      });
+      e.target.value = '';
+      return;
       const reader = new FileReader();
       reader.onload = (ev) => {
         setMediaUrl(_selectedEl, ev.target.result);

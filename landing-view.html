@@ -55,6 +55,19 @@
           const cached = JSON.parse(sessionStorage.getItem('ls_landing_preview') || 'null');
           if (cached?.id === draftId && cached?.html) row = cached;
         } catch {}
+        if (!row) {
+          try {
+            const cached = JSON.parse(localStorage.getItem('ls_landing_preview_' + draftId) || 'null');
+            if (cached?.id === draftId && cached?.html) row = cached;
+          } catch {}
+        }
+        if (!row) {
+          try {
+            const all = JSON.parse(localStorage.getItem('ls_landings') || '[]');
+            const cached = Array.isArray(all) ? all.find(l => l?.id === draftId && l?.html) : null;
+            if (cached) row = cached;
+          } catch {}
+        }
         if (!row) row = await DB.landings.get(draftId).catch(() => null);
         if (!row || !row.html) { showError(); return; }
         if (row.user_id && session?.user?.id && row.user_id !== session.user.id) { showError(); return; }
