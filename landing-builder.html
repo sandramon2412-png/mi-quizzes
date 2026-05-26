@@ -378,7 +378,7 @@
 </div>
 
 <script src="./supabase-config.js"></script>
-<script src="./app.js?v=landing-localauth1"></script>
+<script src="./app.js?v=landing-localgen1"></script>
 <script src="./skinglow-demo-data.js"></script>
 <script src="./ai-assistant.js"></script>
 <script>
@@ -681,6 +681,7 @@ function renderVideoTemplates() {
     // ── Auth gate ──
     const isLocalBuilder = ['127.0.0.1', 'localhost', '::1'].includes(location.hostname);
     const session = await Auth.session({ timeoutMs: isLocalBuilder ? 1200 : 5000 }).catch(() => null);
+    const hasRealSession = !!session?.access_token;
     const user = session?.user || (isLocalBuilder ? { id: 'local-dev-user', email: 'local@luminous.test' } : await Auth.requireAuth());
     if (!user) return;
 
@@ -875,6 +876,111 @@ function renderVideoTemplates() {
 
     const postProcessLandingHtml = (html, instruction = '') =>
       ensureInteractiveLanding(ensureRequestedImages(sanitizeGeneratedLanding(html), instruction), instruction);
+
+    const localLandingHtml = (brief = '') => {
+      const product = document.getElementById('fld-product')?.value?.trim() || titleEl.value.trim() || 'Oferta premium';
+      const audience = document.getElementById('fld-audience')?.value?.trim() || 'personas que quieren una solucion clara y guiada';
+      const price = document.getElementById('fld-price')?.value?.trim() || 'Oferta especial';
+      const cta = document.getElementById('fld-cta')?.value?.trim() || 'Quiero empezar';
+      const bonuses = document.getElementById('fld-bonuses')?.value?.trim()
+        || 'Bono 1: Guia de implementacion rapida\nBono 2: Checklist de seguimiento\nBono 3: Acceso a recursos de apoyo';
+      const extra = document.getElementById('fld-extras')?.value?.trim() || '';
+      const seed = `${product} ${audience}`.slice(0, 120);
+      const bonusItems = bonuses.split(/\n+/).map(x => x.trim()).filter(Boolean).slice(0, 5);
+      const img1 = pollinationUrl(seed, 1, 1100, 720);
+      const img2 = pollinationUrl(seed, 2, 900, 620);
+      const img3 = pollinationUrl(seed, 3, 900, 620);
+      return `<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="https://cdn.tailwindcss.com"><\/script>
+  <link href="https://fonts.googleapis.com/icon?family=Material+Symbols+Outlined" rel="stylesheet">
+  <title>${product}</title>
+</head>
+<body class="bg-[#110b10] text-white antialiased">
+  <main>
+    <section class="relative overflow-hidden min-h-screen px-6 py-20 flex items-center bg-[radial-gradient(circle_at_20%_10%,rgba(236,72,153,.35),transparent_35%),radial-gradient(circle_at_90%_20%,rgba(20,184,166,.24),transparent_32%),linear-gradient(135deg,#120b11,#23121b_45%,#0f1817)]">
+      <div class="absolute inset-0 opacity-25 bg-[linear-gradient(120deg,transparent,rgba(255,255,255,.12),transparent)]"></div>
+      <div class="relative max-w-7xl mx-auto grid lg:grid-cols-[1.05fr_.95fr] gap-12 items-center">
+        <div>
+          <p class="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-4 py-2 text-sm font-bold uppercase tracking-[.18em] text-rose-100">
+            <span class="material-symbols-outlined text-base">workspace_premium</span> Oferta demostrable
+          </p>
+          <h1 class="mt-7 text-5xl md:text-7xl font-black leading-[.92] tracking-tight">${product}</h1>
+          <p class="mt-7 max-w-2xl text-xl leading-relaxed text-white/78">Una pagina lista para presentar una promesa clara, elevar el valor percibido y convertir a ${audience} con una experiencia premium.</p>
+          <div class="mt-8 flex flex-wrap gap-3">
+            <a href="#comprar" class="rounded-full bg-gradient-to-r from-pink-500 to-violet-600 px-7 py-4 font-black shadow-2xl shadow-pink-950/40">${cta}</a>
+            <a href="#bonos" class="rounded-full border border-white/20 bg-white/10 px-7 py-4 font-bold">Ver bonos</a>
+          </div>
+          <div class="mt-9 grid sm:grid-cols-3 gap-3 text-sm text-white/75">
+            <div class="rounded-2xl bg-white/10 border border-white/10 p-4"><b class="block text-white text-2xl">21</b>dias de ruta</div>
+            <div class="rounded-2xl bg-white/10 border border-white/10 p-4"><b class="block text-white text-2xl">3+</b>bonos incluidos</div>
+            <div class="rounded-2xl bg-white/10 border border-white/10 p-4"><b class="block text-white text-2xl">${price}</b>precio demo</div>
+          </div>
+        </div>
+        <div class="relative">
+          <div class="absolute -inset-5 rounded-[2.5rem] bg-gradient-to-br from-pink-500/35 to-teal-400/20 blur-2xl"></div>
+          <img src="${img1}" onerror="this.onerror=null;this.src='${fallbackImageUrl(1)}';" class="relative w-full rounded-[2rem] object-cover aspect-[4/5] shadow-2xl border border-white/15" alt="Visual premium del producto">
+        </div>
+      </div>
+    </section>
+
+    <section class="px-6 py-20 bg-[#fff7f8] text-[#2d1720]">
+      <div class="max-w-6xl mx-auto grid lg:grid-cols-2 gap-10 items-center">
+        <div>
+          <p class="font-black uppercase tracking-[.2em] text-pink-700 text-sm">El problema</p>
+          <h2 class="mt-4 text-4xl md:text-5xl font-black">Tu cliente no necesita mas informacion. Necesita una ruta que le diga que hacer primero.</h2>
+          <p class="mt-5 text-lg text-[#6f4a58] leading-relaxed">${extra || 'Esta landing organiza la promesa, el metodo, los bonos, la prueba y el siguiente paso para que la decision se sienta mas facil.'}</p>
+        </div>
+        <div class="grid gap-4">
+          <img src="${img2}" onerror="this.onerror=null;this.src='${fallbackImageUrl(2)}';" class="rounded-3xl aspect-video object-cover shadow-xl" alt="Imagen de apoyo">
+          <div class="grid grid-cols-2 gap-4">
+            <div class="rounded-3xl bg-white p-6 shadow-sm border border-pink-100"><b>Claridad</b><p class="mt-2 text-sm text-[#7b5b65]">Promesa simple y accionable.</p></div>
+            <div class="rounded-3xl bg-white p-6 shadow-sm border border-pink-100"><b>Confianza</b><p class="mt-2 text-sm text-[#7b5b65]">Bonos y prueba antes de vender.</p></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="bonos" class="px-6 py-20 bg-[#1a1017]">
+      <div class="max-w-6xl mx-auto">
+        <p class="font-black uppercase tracking-[.2em] text-teal-200 text-sm">Bonos</p>
+        <h2 class="mt-4 text-4xl md:text-5xl font-black">Todo lo que aumenta el valor percibido.</h2>
+        <div class="mt-10 grid md:grid-cols-3 gap-5">
+          ${bonusItems.map((b, i) => `<article class="rounded-3xl bg-white/8 border border-white/10 p-6"><span class="material-symbols-outlined text-teal-200">redeem</span><h3 class="mt-4 text-xl font-black">${b}</h3><p class="mt-3 text-white/65">Diseñado para que el comprador avance con menos dudas y mas acompañamiento.</p></article>`).join('')}
+        </div>
+      </div>
+    </section>
+
+    <section class="px-6 py-20 bg-[#fff7f8] text-[#2d1720]">
+      <div class="max-w-6xl mx-auto grid lg:grid-cols-2 gap-10 items-center">
+        <img src="${img3}" onerror="this.onerror=null;this.src='${fallbackImageUrl(3)}';" class="rounded-[2rem] aspect-[5/4] object-cover shadow-xl" alt="Resultado esperado">
+        <div>
+          <p class="font-black uppercase tracking-[.2em] text-pink-700 text-sm">Resultado</p>
+          <h2 class="mt-4 text-4xl md:text-5xl font-black">Una oferta que se entiende rapido y se siente completa.</h2>
+          <ul class="mt-7 space-y-4 text-[#5f3d48]">
+            <li class="rounded-2xl bg-white border border-pink-100 p-5"><b>Metodo:</b> pasos claros, no promesas vacias.</li>
+            <li class="rounded-2xl bg-white border border-pink-100 p-5"><b>Prueba:</b> secciones visuales, testimonios y garantia.</li>
+            <li class="rounded-2xl bg-white border border-pink-100 p-5"><b>Conversion:</b> CTA visible y ruta hacia compra o contacto.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section id="comprar" class="px-6 py-20 bg-[#120b11] text-center">
+      <div class="max-w-3xl mx-auto rounded-[2rem] border border-white/10 bg-white/8 p-10 shadow-2xl">
+        <p class="text-teal-200 font-black uppercase tracking-[.2em] text-sm">Oferta</p>
+        <h2 class="mt-4 text-4xl md:text-5xl font-black">${product}</h2>
+        <p class="mt-5 text-white/70">Precio demo: <b class="text-white">${price}</b></p>
+        <a href="#" class="mt-8 inline-flex rounded-full bg-gradient-to-r from-pink-500 to-violet-600 px-8 py-4 font-black">${cta}</a>
+      </div>
+    </section>
+  </main>
+</body>
+</html>`;
+    };
 
     const applyLocalChatCommand = (instruction) => {
       if (!landing?.html) return false;
@@ -1492,7 +1598,18 @@ function renderVideoTemplates() {
       setStatus('Generando con IA…');
 
       try {
-        const html = postProcessLandingHtml(await AI.generateLanding(brief, []), brief);
+        let generatedHtml = '';
+        try {
+          generatedHtml = (!hasRealSession && isLocalBuilder)
+            ? localLandingHtml(brief)
+            : await AI.generateLanding(brief, []);
+        } catch (aiError) {
+          const sessionProblem = /sesi[oó]n|session|inicia sesi[oó]n|invalid/i.test(aiError?.message || '');
+          if (!isLocalBuilder || !sessionProblem) throw aiError;
+          generatedHtml = localLandingHtml(brief);
+          toast('Sin sesion real: genere una landing local de prueba.', 'ok');
+        }
+        const html = postProcessLandingHtml(generatedHtml, brief);
         history = [
           { role: 'user', content: brief },
           { role: 'assistant', content: '', display: 'Acá tenés la primera versión. Pedime cambios si querés.' },
@@ -1557,7 +1674,17 @@ function renderVideoTemplates() {
           'HTML ACTUAL:',
           currentHtml.slice(0, 28000)
         ].join('\n\n');
-        const html = postProcessLandingHtml(await AI.generateLanding(revisionBrief, []), msg);
+        let revisedHtml = '';
+        try {
+          revisedHtml = (!hasRealSession && isLocalBuilder)
+            ? localLandingHtml(revisionBrief)
+            : await AI.generateLanding(revisionBrief, []);
+        } catch (aiError) {
+          const sessionProblem = /sesi[oó]n|session|inicia sesi[oó]n|invalid/i.test(aiError?.message || '');
+          if (!isLocalBuilder || !sessionProblem) throw aiError;
+          revisedHtml = localLandingHtml(revisionBrief);
+        }
+        const html = postProcessLandingHtml(revisedHtml, msg);
         if (normalizeHtmlForCompare(html) === normalizeHtmlForCompare(currentHtml)) {
           throw new Error('La IA devolvio el mismo HTML sin cambios. Prueba una instruccion mas especifica o edita visualmente la seccion.');
         }
