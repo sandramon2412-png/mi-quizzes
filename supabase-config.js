@@ -105,6 +105,16 @@ function readCachedSupabaseSession() {
   return null;
 }
 
+function persistCachedSupabaseSession(session) {
+  if (!safeAuthStorage || !SUPABASE_PROJECT_REF || !isUsableSession(session)) return;
+  try {
+    safeAuthStorage.setItem(`sb-${SUPABASE_PROJECT_REF}-auth-token`, JSON.stringify({
+      currentSession: session,
+      expiresAt: session.expires_at || null,
+    }));
+  } catch {}
+}
+
 async function readCurrentSession() {
   const cached = readCachedSupabaseSession();
   if (cached) return cached;
@@ -188,7 +198,9 @@ const Auth = {
   async signIn(email, password) {
     const { data, error } = await db.auth.signInWithPassword({ email, password });
     if (error) throw error;
+    if (data?.session) persistCachedSupabaseSession(data.session);
     const session = await waitForStoredSession(5000);
+    if (session) persistCachedSupabaseSession(session);
     // Apply any pending Hotmart upgrade for this email
     if (data?.user) _applyPendingUpgrade(data.user).catch(() => {});
     return { ...data, session: session || data?.session || null };
