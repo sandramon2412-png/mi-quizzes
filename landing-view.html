@@ -72,10 +72,11 @@
         if (!row || !row.html) { showError(); return; }
         if (row.user_id && session?.user?.id && row.user_id !== session.user.id) { showError(); return; }
         document.title = (row.title || 'Vista de landing') + ' · Vista';
-        const backToBuilder = returnTo ? `<style>
+        const builderUrl = returnTo || (draftId ? `${location.origin}/landing-builder.html?id=${encodeURIComponent(draftId)}&v=from-preview` : '');
+        const backToBuilder = builderUrl ? `<style>
           .luminous-preview-back{position:fixed;left:18px;top:18px;z-index:2147483647;display:inline-flex;align-items:center;gap:8px;border:1px solid rgba(255,255,255,.26);border-radius:999px;background:rgba(20,15,18,.82);backdrop-filter:blur(14px);color:#fff;font:800 13px/1 system-ui,sans-serif;padding:12px 16px;box-shadow:0 18px 45px rgba(0,0,0,.28);text-decoration:none}
           .luminous-preview-back:hover{background:rgba(190,79,131,.95)}
-        </style><a class="luminous-preview-back" href="${returnTo.replace(/"/g, '&quot;')}" target="_self">← Volver al builder</a>` : '';
+        </style><a class="luminous-preview-back" href="${builderUrl.replace(/"/g, '&quot;')}" target="_self">← Volver al builder</a>` : '';
         const htmlWithBack = backToBuilder ? row.html.replace(/<body[^>]*>/i, (m) => m + backToBuilder) : row.html;
         document.open();
         document.write(htmlWithBack);

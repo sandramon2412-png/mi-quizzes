@@ -363,6 +363,9 @@
       <span class="material-symbols-outlined" style="font-size:13px;vertical-align:middle">upload</span> Subir
       <input id="tb-image-upload" type="file" accept="image/*" class="hidden"/>
     </label>
+    <button id="tb-media-small" class="px-2 py-0.5 hover:bg-surface-container-high rounded text-[10px] font-semibold" title="Imagen pequeña">S</button>
+    <button id="tb-media-medium" class="px-2 py-0.5 hover:bg-surface-container-high rounded text-[10px] font-semibold" title="Imagen mediana">M</button>
+    <button id="tb-media-large" class="px-2 py-0.5 hover:bg-surface-container-high rounded text-[10px] font-semibold" title="Imagen grande">L</button>
   </div>
   <div class="border-l border-outline-variant/30 pl-1.5 ml-1 flex items-center gap-0.5">
     <button id="tb-move-up" class="px-1.5 py-0.5 hover:bg-surface-container-high rounded" title="Mover sección arriba">
@@ -1174,6 +1177,67 @@ function renderVideoTemplates() {
       return html + addon;
     };
 
+    const removeSectionById = (html, ids = []) => {
+      try {
+        const doc = new DOMParser().parseFromString(String(html || ''), 'text/html');
+        ids.forEach(id => doc.getElementById(id)?.remove());
+        return '<!DOCTYPE html>\n' + doc.documentElement.outerHTML;
+      } catch {
+        return html;
+      }
+    };
+
+    const testimonialSectionHtml = () => `
+<section id="testimonios" class="py-24 px-6 bg-[#fff7f8] text-[#2d1720]">
+  <div class="max-w-6xl mx-auto">
+    <p class="text-sm font-black uppercase tracking-[0.22em] text-pink-700">Prueba social</p>
+    <h2 class="mt-4 text-4xl md:text-5xl font-black">Testimonios que reducen dudas antes de comprar.</h2>
+    <div class="mt-10 grid md:grid-cols-3 gap-5">
+      <article class="rounded-3xl bg-white border border-pink-100 p-6 shadow-sm"><p class="text-[#6f4a58]">"Me ayudo a entender que necesitaba hacer primero y deje de comprar soluciones al azar."</p><b class="mt-5 block">Camila R.</b><small class="text-pink-700 font-bold">Mas claridad</small></article>
+      <article class="rounded-3xl bg-white border border-pink-100 p-6 shadow-sm"><p class="text-[#6f4a58]">"La experiencia se siente premium porque no es solo una pagina, tiene ruta y acompanamiento."</p><b class="mt-5 block">Andrea M.</b><small class="text-pink-700 font-bold">Mejor experiencia</small></article>
+      <article class="rounded-3xl bg-white border border-pink-100 p-6 shadow-sm"><p class="text-[#6f4a58]">"Los bonos y las respuestas a mis dudas fueron lo que me hizo decidir."</p><b class="mt-5 block">Laura P.</b><small class="text-pink-700 font-bold">Decision de compra</small></article>
+    </div>
+  </div>
+</section>`;
+
+    const ctaSectionHtml = () => `
+<section id="cta-final" class="py-24 px-6 bg-gradient-to-br from-zinc-950 via-rose-950 to-zinc-900 text-white">
+  <div class="max-w-4xl mx-auto text-center rounded-[2rem] border border-white/10 bg-white/8 p-10 shadow-2xl">
+    <p class="text-sm font-black uppercase tracking-[0.22em] text-pink-300">Ultimo paso</p>
+    <h2 class="mt-4 text-4xl md:text-5xl font-black">Empieza hoy con la ruta completa.</h2>
+    <p class="mt-5 text-white/70">Tienes la promesa, los bonos, la prueba social y las respuestas clave. Ahora el siguiente paso debe sentirse obvio.</p>
+    <a href="#" class="mt-8 inline-flex min-h-[54px] items-center justify-center rounded-xl px-9 py-4 bg-gradient-to-r from-pink-500 to-rose-600 font-black transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]">Quiero empezar ahora</a>
+  </div>
+</section>`;
+
+    const forceSection = (html, kind) => {
+      if (kind === 'testimonios') return appendBeforeDocumentEnd(removeSectionById(html, ['testimonios']), testimonialSectionHtml());
+      if (kind === 'cta') return appendBeforeDocumentEnd(removeSectionById(html, ['cta-final']), ctaSectionHtml());
+      return html;
+    };
+
+    const resizeLandingMedia = (html, size = 'medium') => {
+      try {
+        const doc = new DOMParser().parseFromString(String(html || ''), 'text/html');
+        const map = {
+          small: { img: 'mt-6 w-full max-h-[260px] rounded-2xl object-cover shadow-xl border border-white/10', slot: 'mt-6 flex min-h-[150px] w-full items-center justify-center rounded-2xl border-2 border-dashed border-white/25 bg-white/10 p-5 text-center text-xs font-bold text-white/75' },
+          medium: { img: 'mt-8 w-full max-h-[360px] rounded-3xl object-cover shadow-2xl border border-white/10', slot: 'mt-8 flex min-h-[220px] w-full items-center justify-center rounded-3xl border-2 border-dashed border-white/25 bg-white/10 p-6 text-center text-sm font-bold text-white/75' },
+          large: { img: 'mt-10 w-full max-h-[520px] rounded-[2rem] object-cover shadow-2xl border border-white/10', slot: 'mt-10 flex min-h-[360px] w-full items-center justify-center rounded-[2rem] border-2 border-dashed border-white/25 bg-white/10 p-8 text-center text-sm font-bold text-white/75' },
+        };
+        const selected = map[size] || map.medium;
+        doc.querySelectorAll('img').forEach(img => {
+          if (!img.closest('header')) img.className = selected.img;
+        });
+        doc.querySelectorAll('[data-upload-slot="true"]').forEach(slot => {
+          slot.className = selected.slot;
+          slot.setAttribute('data-image-class', selected.img);
+        });
+        return '<!DOCTYPE html>\n' + doc.documentElement.outerHTML;
+      } catch {
+        return html;
+      }
+    };
+
     const ensureConversionLandingSections = (html) => {
       let output = ensureMinimumLandingSections(html);
       const missing = [];
@@ -1189,15 +1253,7 @@ function renderVideoTemplates() {
     </div>
   </div>
 </section>`);
-      if (!hasLandingSection(output, ['cta-final'], ['quiero empezar ahora', 'ultimo paso', 'acceso inmediato'])) missing.push(`
-<section id="cta-final" class="py-24 px-6 bg-gradient-to-br from-zinc-950 via-rose-950 to-zinc-900 text-white">
-  <div class="max-w-4xl mx-auto text-center rounded-[2rem] border border-white/10 bg-white/8 p-10 shadow-2xl">
-    <p class="text-sm font-black uppercase tracking-[0.22em] text-pink-300">Ultimo paso</p>
-    <h2 class="mt-4 text-4xl md:text-5xl font-black">Convierte la decision en accion ahora.</h2>
-    <p class="mt-5 text-white/70">La oferta ya esta explicada, los bonos aumentan el valor y las preguntas principales estan resueltas.</p>
-    <a href="#" class="mt-8 inline-flex min-h-[54px] items-center justify-center rounded-xl px-9 py-4 bg-gradient-to-r from-pink-500 to-rose-600 font-black transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]">Quiero empezar ahora</a>
-  </div>
-</section>`);
+      if (!hasLandingSection(output, ['cta-final'], ['ultimo paso'])) missing.push(ctaSectionHtml());
       return appendBeforeDocumentEnd(output, missing.join('\n'));
     };
 
@@ -1316,6 +1372,11 @@ function renderVideoTemplates() {
       if (!landing?.html) return false;
       let next = landing.html;
       const before = visibleFingerprint(next);
+      if (/testimonio|testimonios|prueba social|rese[ñn]a/i.test(instruction)) next = forceSection(next, 'testimonios');
+      if (/\bcta\b|bot[oó]n final|llamad[ao] a la acci[oó]n|compra ahora|quiero empezar|secci[oó]n final/i.test(instruction)) next = forceSection(next, 'cta');
+      if (/imagen|foto|media|espacio/i.test(instruction) && /pequeñ|pequen|menos grande|muy grande|achica|reduce|baja/i.test(instruction)) next = resizeLandingMedia(next, 'small');
+      if (/imagen|foto|media|espacio/i.test(instruction) && /median|normal/i.test(instruction)) next = resizeLandingMedia(next, 'medium');
+      if (/imagen|foto|media|espacio/i.test(instruction) && /grande|agranda|amplia/i.test(instruction) && !/menos grande|muy grande/i.test(instruction)) next = resizeLandingMedia(next, 'large');
       if (wantsImages(instruction)) next = distributeMediaAcrossSections(distributeGeneratedImages(ensureRequestedImages(next, instruction, true)));
       if (wantsInteractive(instruction)) next = ensureInteractiveLanding(next, instruction);
       if (/color|paleta|theme|tema|marca|degrad|gradiente/i.test(instruction)) next = applyPaletteToHtml(next);
@@ -1441,6 +1502,27 @@ function renderVideoTemplates() {
         }
       } else {
         el.style.backgroundImage = `url("${url}")`;
+      }
+    };
+
+    const applyMediaSizeToElement = (el, size = 'medium') => {
+      if (!el) return;
+      const map = {
+        small: { img: 'width:100%;max-height:260px;object-fit:cover;', slot: 'min-height:150px;padding:20px;' },
+        medium: { img: 'width:100%;max-height:360px;object-fit:cover;', slot: 'min-height:220px;padding:24px;' },
+        large: { img: 'width:100%;max-height:520px;object-fit:cover;', slot: 'min-height:360px;padding:32px;' },
+      };
+      const selected = map[size] || map.medium;
+      const kind = getMediaKind(el);
+      if (kind === 'slot') {
+        el.style.cssText += selected.slot;
+        el.setAttribute('data-image-style', selected.img);
+      } else if (kind === 'background') {
+        el.style.minHeight = size === 'small' ? '280px' : size === 'large' ? '640px' : '440px';
+        el.style.backgroundSize = 'cover';
+        el.style.backgroundPosition = 'center';
+      } else {
+        el.style.cssText += selected.img;
       }
     };
 
@@ -2059,7 +2141,7 @@ function renderVideoTemplates() {
       }
       try { sessionStorage.setItem('ls_landing_preview', JSON.stringify(landing)); } catch {}
       try { localStorage.setItem(`ls_landing_preview_${landing.id}`, JSON.stringify(landing)); } catch {}
-      const returnTo = encodeURIComponent(`./landing-builder.html?id=${encodeURIComponent(landing.id)}&v=from-preview`);
+      const returnTo = encodeURIComponent(`${window.location.origin}/landing-builder.html?id=${encodeURIComponent(landing.id)}&v=from-preview`);
       window.open(`./landing-view.html?draft=${encodeURIComponent(landing.id)}&returnTo=${returnTo}&v=builder-preview`, '_blank');
     };
 
@@ -2124,6 +2206,9 @@ function renderVideoTemplates() {
       reader.readAsDataURL(file);
       e.target.value = '';
     });
+    document.getElementById('tb-media-small').onclick = () => { applyMediaSizeToElement(_selectedEl, 'small'); toast('Media pequeña - haz clic en Terminar para guardar'); };
+    document.getElementById('tb-media-medium').onclick = () => { applyMediaSizeToElement(_selectedEl, 'medium'); toast('Media mediana - haz clic en Terminar para guardar'); };
+    document.getElementById('tb-media-large').onclick = () => { applyMediaSizeToElement(_selectedEl, 'large'); toast('Media grande - haz clic en Terminar para guardar'); };
     document.getElementById('tb-move-up').onclick = () => {
       const section = _selectedEl?.closest('section,header,footer,article,aside');
       if (section?.previousElementSibling) {
