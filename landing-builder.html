@@ -378,7 +378,7 @@
 </div>
 
 <script src="./supabase-config.js"></script>
-<script src="./app.js?v=landing-chatfix1"></script>
+<script src="./app.js?v=landing-chatfix2"></script>
 <script src="./skinglow-demo-data.js"></script>
 <script src="./ai-assistant.js"></script>
 <script>
@@ -762,7 +762,7 @@ function renderVideoTemplates() {
 
     const setStatus = (s) => { statusEl.textContent = s; };
 
-    const PREVIEW_INJECTION = `<base target="_blank"><script>document.addEventListener('click',function(e){var a=e.target.closest('a,button');if(a&&(!a.href||a.getAttribute('href')==='#'||a.tagName==='BUTTON')){e.preventDefault();}},true);<\/script>`;
+    const PREVIEW_INJECTION = `<base target="_blank"><script>document.addEventListener('click',function(e){var a=e.target.closest('a');if(!a)return;var href=a.getAttribute('href')||'';if(!href||href==='#'||href.indexOf('landing-builder.html')>-1||href.indexOf('dashboard.html')>-1||href.indexOf('quiz.html')>-1||href.indexOf('ebook-builder.html')>-1){e.preventDefault();}},true);document.addEventListener('submit',function(e){e.preventDefault();},true);<\/script>`;
     const PREVIEW_INJECTION_RE = /<base target="_blank">\s*<script>[^<]*<\/script>\s*/;
 
     const renderPreview = (html) => {
@@ -785,12 +785,24 @@ function renderVideoTemplates() {
       return `https://image.pollinations.ai/prompt/${prompt}?width=${width}&height=${height}&nologo=true`;
     };
 
+    const fallbackImageUrl = (idx = 1) => `https://placehold.co/900x620/2b1720/f7d7e6?text=Visual+premium+${idx}`;
+
     const imageTag = (seed, idx = 1, cls = 'w-full rounded-3xl object-cover shadow-2xl') =>
-      `<img src="${pollinationUrl(seed, idx)}" alt="Imagen visual ${idx}" class="${cls}" loading="lazy">`;
+      `<img src="${pollinationUrl(seed, idx)}" onerror="this.onerror=null;this.src='${fallbackImageUrl(idx)}';" alt="Imagen visual ${idx}" class="${cls}" loading="lazy">`;
+
+    const sanitizeGeneratedLanding = (html) => {
+      let output = String(html || '');
+      output = output.replace(/\s(?:href|formaction)=["'](?:\.\/|\/)?(?:landing-builder|dashboard|quiz|ebook-builder|generador-ia|login)[^"']*["']/gi, ' href="#"');
+      output = output.replace(/\saction=["'][^"']*["']/gi, '');
+      output = output.replace(/\s(?:onclick)=["'][^"']*(?:window\.location|location\.href|location\.assign)[^"']*["']/gi, '');
+      output = output.replace(/window\.location(?:\.href|\.assign)?\s*=?\s*[^;]+;?/gi, '');
+      output = output.replace(/<img\b(?![^>]*\bonerror=)([^>]*?)>/gi, (m, attrs) => `<img${attrs} onerror="this.onerror=null;this.src='${fallbackImageUrl(1)}';">`);
+      return output;
+    };
 
     const ensureRequestedImages = (html, instruction = '') => {
       if (!wantsImages(instruction)) return html;
-      let output = String(html || '');
+      let output = sanitizeGeneratedLanding(html);
       const seed = (titleEl.value || document.getElementById('fld-product')?.value || instruction || 'premium product').slice(0, 140);
       let n = 1;
       output = output.replace(/<div\b([^>]*data-upload-slot=["']true["'][^>]*)>[\s\S]*?<\/div>/gi, () => imageTag(seed, n++));
@@ -820,7 +832,7 @@ function renderVideoTemplates() {
 
     const ensureInteractiveLanding = (html, instruction = '') => {
       if (!wantsInteractive(instruction)) return html;
-      let output = String(html || '');
+      let output = sanitizeGeneratedLanding(html);
       if (/data-luminous-interactive=["']true["']/i.test(output)) return output;
       const addon = `
 <style data-luminous-interactive="true">
@@ -845,8 +857,35 @@ function renderVideoTemplates() {
       return output + addon;
     };
 
+    const reduceVideoDarkness = (html) => {
+      let output = String(html || '');
+      output = output.replace(/bg-black\/(?:[7-9]\d|100)/g, 'bg-black/35');
+      output = output.replace(/from-black\/(?:[7-9]\d|100)/g, 'from-black/40');
+      output = output.replace(/via-black\/(?:[7-9]\d|100)/g, 'via-black/25');
+      output = output.replace(/to-black\/(?:[7-9]\d|100)/g, 'to-black/35');
+      output = output.replace(/rgba\(\s*0\s*,\s*0\s*,\s*0\s*,\s*0\.(?:[7-9]\d?|9)\s*\)/gi, 'rgba(0,0,0,.35)');
+      output = output.replace(/opacity:\s*0\.(?:[7-9]\d?|9)\s*;?/gi, 'opacity:.35;');
+      return output;
+    };
+
     const postProcessLandingHtml = (html, instruction = '') =>
-      ensureInteractiveLanding(ensureRequestedImages(html, instruction), instruction);
+      ensureInteractiveLanding(ensureRequestedImages(sanitizeGeneratedLanding(html), instruction), instruction);
+
+    const applyLocalChatCommand = (instruction) => {
+      if (!landing?.html) return false;
+      let next = landing.html;
+      const before = normalizeHtmlForCompare(next);
+      if (wantsImages(instruction)) next = ensureRequestedImages(next, instruction);
+      if (wantsInteractive(instruction)) next = ensureInteractiveLanding(next, instruction);
+      if (/video|hero|fondo/i.test(instruction) && /claro|aclara|no se ve|muy oscuro|menos oscuro|quita.*oscuro|baja.*oscuro/i.test(instruction)) {
+        next = reduceVideoDarkness(next);
+      }
+      next = sanitizeGeneratedLanding(next);
+      if (normalizeHtmlForCompare(next) === before) return false;
+      landing.html = next;
+      renderPreview(next);
+      return true;
+    };
 
     // ── Visual edit mode ──
     let _isEditing = false;
@@ -1435,7 +1474,7 @@ function renderVideoTemplates() {
         const html = postProcessLandingHtml(await AI.generateLanding(brief, []), brief);
         history = [
           { role: 'user', content: brief },
-          { role: 'assistant', content: html, display: 'Acá tenés la primera versión. Pedime cambios si querés.' },
+          { role: 'assistant', content: '', display: 'Acá tenés la primera versión. Pedime cambios si querés.' },
         ];
 
         if (!landing) {
@@ -1479,6 +1518,14 @@ function renderVideoTemplates() {
       setStatus('Actualizando…');
 
       try {
+        if (applyLocalChatCommand(msg)) {
+          removeThinking();
+          history.push({ role: 'assistant', content: '', display: 'Listo, apliqué ese ajuste directamente en la vista previa.' });
+          renderMessages();
+          await persistLanding();
+          setStatus('Guardado');
+          return;
+        }
         const currentHtml = landing.html || '';
         const revisionBrief = [
           'EDITA ESTA LANDING EXISTENTE. No contestes con explicaciones.',
@@ -1487,14 +1534,14 @@ function renderVideoTemplates() {
           'Si el usuario pide que sea interactiva, agrega CSS/JS inline para FAQ, animaciones o tabs segun corresponda.',
           `INSTRUCCION DEL USUARIO: ${msg}`,
           'HTML ACTUAL:',
-          currentHtml.slice(0, 65000)
+          currentHtml.slice(0, 28000)
         ].join('\n\n');
         const html = postProcessLandingHtml(await AI.generateLanding(revisionBrief, []), msg);
         if (normalizeHtmlForCompare(html) === normalizeHtmlForCompare(currentHtml)) {
           throw new Error('La IA devolvio el mismo HTML sin cambios. Prueba una instruccion mas especifica o edita visualmente la seccion.');
         }
         removeThinking();
-        history.push({ role: 'assistant', content: html, display: 'Listo, apliqué los cambios.' });
+        history.push({ role: 'assistant', content: '', display: 'Listo, apliqué los cambios.' });
         history[history.length - 1].display = 'Listo, actualice la landing y refresque la vista previa.';
         landing.html = html;
         renderPreview(html);
