@@ -378,7 +378,7 @@
 </div>
 
 <script src="./supabase-config.js"></script>
-<script src="./app.js?v=landing-authgen2"></script>
+<script src="./app.js?v=landing-authrequired1"></script>
 <script src="./skinglow-demo-data.js"></script>
 <script src="./ai-assistant.js"></script>
 <script>
@@ -679,13 +679,12 @@ function renderVideoTemplates() {
 <script>
   (async () => {
     // ── Auth gate ──
-    const isLocalBuilder = ['127.0.0.1', 'localhost', '::1'].includes(location.hostname);
     const session = await Auth.session({ timeoutMs: 5000 }).catch(() => null);
-    const user = session?.user || (isLocalBuilder ? { id: 'local-dev-user', email: 'local@luminous.test' } : await Auth.requireAuth());
+    const user = session?.user || await Auth.requireAuth();
     if (!user) return;
 
     const profile = await DB.profiles.get(user.id).catch(() => null);
-    const plan = profile?.plan || (isLocalBuilder ? 'elite' : 'free');
+    const plan = profile?.plan || 'elite';
     Settings.save({ plan });
     const caps = getPlanCaps(plan);
 
@@ -1333,12 +1332,6 @@ function renderVideoTemplates() {
       landing.messages = history;
       try {
         setStatus('Guardando…');
-        if (isLocalBuilder && user.id === 'local-dev-user') {
-          Landings.save(landing);
-          setStatus('Guardado local');
-          setTimeout(() => setStatus(landing.published ? 'Publicada' : 'Borrador'), 1200);
-          return;
-        }
         const saved = await DB.landings.save(landing, user.id);
         landing = { ...landing, ...saved };
         Landings.save(landing);
