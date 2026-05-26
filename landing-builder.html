@@ -378,7 +378,7 @@
 </div>
 
 <script src="./supabase-config.js?v=authhandoff1"></script>
-<script src="./app.js?v=landing-authrequired1"></script>
+<script src="./app.js?v=landing-landfix1"></script>
 <script src="./skinglow-demo-data.js"></script>
 <script src="./ai-assistant.js"></script>
 <script>
@@ -789,7 +789,7 @@ function renderVideoTemplates() {
 
     const setStatus = (s) => { statusEl.textContent = s; };
 
-    const PREVIEW_INJECTION = `<base target="_blank"><script>document.addEventListener('click',function(e){var a=e.target.closest('a');if(!a)return;var href=a.getAttribute('href')||'';if(!href||href==='#'||href.indexOf('landing-builder.html')>-1||href.indexOf('dashboard.html')>-1||href.indexOf('quiz.html')>-1||href.indexOf('ebook-builder.html')>-1){e.preventDefault();}},true);document.addEventListener('submit',function(e){e.preventDefault();},true);<\/script>`;
+    const PREVIEW_INJECTION = `<base target="_blank"><script>document.addEventListener('click',function(e){var a=e.target.closest('a');if(!a)return;var href=a.getAttribute('href')||'';if(href&&href.charAt(0)==='#'&&href.length>1){e.preventDefault();var el=document.querySelector(href);if(el)el.scrollIntoView({behavior:'smooth',block:'start'});return;}if(!href||href==='#'||href.indexOf('landing-builder.html')>-1||href.indexOf('dashboard.html')>-1||href.indexOf('quiz.html')>-1||href.indexOf('ebook-builder.html')>-1||href.indexOf('login.html')>-1){e.preventDefault();}},true);document.addEventListener('submit',function(e){e.preventDefault();},true);<\/script>`;
     const PREVIEW_INJECTION_RE = /<base target="_blank">\s*<script>[^<]*<\/script>\s*/;
 
     const renderPreview = (html) => {
@@ -830,6 +830,7 @@ function renderVideoTemplates() {
     const ensureRequestedImages = (html, instruction = '', forceVisibleSection = false) => {
       if (!wantsImages(instruction)) return html;
       let output = sanitizeGeneratedLanding(html);
+      if (/IM[AÁ]GENES\s+tipo=["']upload["']|imagenes\s+tipo=["']upload["']/i.test(instruction)) return output;
       const seed = (titleEl.value || document.getElementById('fld-product')?.value || instruction || 'premium product').slice(0, 140);
       let n = 1;
       output = output.replace(/<div\b([^>]*data-upload-slot=["']true["'][^>]*)>[\s\S]*?<\/div>/gi, () => imageTag(seed, n++));
@@ -889,17 +890,19 @@ function renderVideoTemplates() {
 
     const reduceVideoDarkness = (html) => {
       let output = String(html || '');
-      output = output.replace(/bg-black\/(?:[7-9]\d|100)/g, 'bg-black/35');
-      output = output.replace(/from-black\/(?:[7-9]\d|100)/g, 'from-black/40');
-      output = output.replace(/via-black\/(?:[7-9]\d|100)/g, 'via-black/25');
-      output = output.replace(/to-black\/(?:[7-9]\d|100)/g, 'to-black/35');
-      output = output.replace(/rgba\(\s*0\s*,\s*0\s*,\s*0\s*,\s*0\.(?:[7-9]\d?|9)\s*\)/gi, 'rgba(0,0,0,.35)');
-      output = output.replace(/opacity:\s*0\.(?:[7-9]\d?|9)\s*;?/gi, 'opacity:.35;');
+      output = output.replace(/bg-black\/(?:[4-9]\d|100)/g, 'bg-black/25');
+      output = output.replace(/from-black\/(?:[4-9]\d|100)/g, 'from-black/30');
+      output = output.replace(/via-black\/(?:[4-9]\d|100)/g, 'via-black/15');
+      output = output.replace(/to-black\/(?:[4-9]\d|100)/g, 'to-black/25');
+      output = output.replace(/rgba\(\s*0\s*,\s*0\s*,\s*0\s*,\s*0\.(?:[4-9]\d?|9)\s*\)/gi, 'rgba(0,0,0,.25)');
+      output = output.replace(/opacity-\[(?:0\.[0-4]\d?|0\.5)\]/g, 'opacity-[0.62]');
+      output = output.replace(/opacity-(?:20|25|30|35|40|45|50)/g, 'opacity-65');
+      output = output.replace(/opacity:\s*0\.(?:[0-4]\d?|5)\s*;?/gi, 'opacity:.62;');
       return output;
     };
 
     const postProcessLandingHtml = (html, instruction = '') =>
-      ensureInteractiveLanding(ensureRequestedImages(sanitizeGeneratedLanding(html), instruction), instruction);
+      ensureInteractiveLanding(reduceVideoDarkness(ensureRequestedImages(sanitizeGeneratedLanding(html), instruction)), instruction);
 
     const localLandingHtml = (brief = '') => {
       const product = document.getElementById('fld-product')?.value?.trim() || titleEl.value.trim() || 'Oferta premium';
@@ -1010,8 +1013,6 @@ function renderVideoTemplates() {
       if (!landing?.html) return false;
       let next = landing.html;
       const before = normalizeHtmlForCompare(next);
-      if (wantsImages(instruction)) next = ensureRequestedImages(next, instruction, true);
-      if (wantsInteractive(instruction)) next = ensureInteractiveLanding(next, instruction);
       if (/video|hero|fondo/i.test(instruction) && /claro|aclara|no se ve|muy oscuro|menos oscuro|quita.*oscuro|baja.*oscuro/i.test(instruction)) {
         next = reduceVideoDarkness(next);
       }
@@ -1677,6 +1678,9 @@ function renderVideoTemplates() {
           'EDITA ESTA LANDING EXISTENTE. No contestes con explicaciones.',
           'Debes devolver SOLO el HTML completo actualizado, empezando por <!DOCTYPE html> o <html>.',
           'No digas "aplique los cambios" dentro del HTML. Si el usuario pide imagenes placeholder/placebo/fotos, coloca <img> reales de Pollinations.ai, no dejes espacios vacios.',
+          'Si el usuario pide imagenes, distribuyelas en varias secciones existentes: hero, beneficios, testimonios, bonos o contenido. No las pongas todas juntas.',
+          'Si hay video de fondo en hero, el video debe verse claramente: usa opacity-65 en el video y overlay maximo bg-black/25.',
+          'Los links superiores tipo beneficios/contenido/precio deben ser anclas internas que funcionen dentro de la misma pagina, nunca rutas al builder.',
           'Si el usuario pide que sea interactiva, agrega CSS/JS inline para FAQ, animaciones o tabs segun corresponda.',
           `INSTRUCCION DEL USUARIO: ${msg}`,
           'HTML ACTUAL:',

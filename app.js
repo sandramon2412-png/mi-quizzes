@@ -935,7 +935,7 @@ REGLAS TÉCNICAS:
 5. NUNCA uses emojis. Usa Material Symbols Outlined (<link href="https://fonts.googleapis.com/icon?family=Material+Symbols+Outlined" rel="stylesheet">).
 6. Debe ser 100% RESPONSIVE (mobile first).
 7. Prohibido incluir scripts externos, fetches a otros dominios ni tracking pixels. Sí podés usar <script> inline para interacciones (acordeones, animaciones, tabs) si el brief lo pide.
-8. Si el usuario pide cambios, devuelve la landing COMPLETA con los cambios aplicados — no diffs ni parches.
+8. Si el usuario pide cambios, devuelve la landing COMPLETA con los cambios aplicados — no diffs ni parches. Si no puedes cumplir una instrucción, cambia igualmente la estructura HTML para acercarte al pedido; nunca devuelvas el mismo HTML.
 9. INSTRUCCIONES DEL CREADOR: si el brief incluye "INSTRUCCIONES DE DISEÑO DEL CREADOR" o "INSTRUCCIÓN EXACTA", esas instrucciones tienen MÁXIMA PRIORIDAD sobre cualquier regla estética por defecto.
 10. ABSOLUTAMENTE PROHIBIDO dentro del HTML: template literals JavaScript (\${...}), .map(), .filter(), .forEach(), arrow functions (=>), expresiones JSX, JSON objects, arrays literales, o cualquier sintaxis de código fuera de un <script>. Todo el contenido de la página debe ser texto HTML estático — escribí cada <li>, <div>, <p> manualmente con su texto final. Si una sección tiene 5 items, escribís 5 elementos HTML, no un array con .map(). NUNCA pongas [{...}].map() dentro del HTML.
 
@@ -958,7 +958,7 @@ MANEJO DE IMÁGENES (leer del brief):
   - Cada imagen diferente = prompt diferente y descriptivo del contexto donde aparece.
 • Si el brief dice IMÁGENES tipo="upload": usa divs de upload: <div data-upload-slot="true" class="w-full aspect-video rounded-2xl border-2 border-dashed border-zinc-700 hover:border-blue-500/50 transition flex flex-col items-center justify-center gap-3 bg-zinc-900/40 cursor-pointer"><span class="material-symbols-outlined text-zinc-500" style="font-size:40px">cloud_upload</span><p class="text-sm text-zinc-500 font-medium">Clic para agregar imagen</p></div>
 • Si el brief dice IMÁGENES tipo="none": no incluyas imágenes de producto.
-• Siempre distribuí las imágenes a lo largo de la landing (hero, módulos, testimonios), no todas juntas.
+• Siempre distribuí las imágenes a lo largo de la landing (hero, problema/solución, módulos/beneficios, testimonios/bonos). Nunca pongas todas las imágenes en una sola sección.
 
 MANEJO DE VIDEO (leer del brief):
 • Si el brief incluye "VIDEO:" seguido de una URL real, añadí una sección dedicada con el video embebido RESPONSIVE justo después del hero o donde tenga más sentido.
@@ -972,7 +972,7 @@ MANEJO DE VIDEO (leer del brief):
 MANEJO DE FONDO DEL HERO (leer del brief):
 • Si el brief dice FONDO tipo="color": aplica ese color como background del hero con style="background-color: X".
 • Si el brief dice FONDO tipo="image": hero con style="background-image: url('URL'); background-size: cover; background-position: center;" + div overlay oscuro: <div class="absolute inset-0 bg-black/65 backdrop-blur-sm"></div>
-• Si el brief dice FONDO tipo="video": hero con position:relative, overflow:hidden. Incluye: <video class="absolute inset-0 w-full h-full object-cover opacity-35" autoplay muted loop playsinline><source src="URL" type="video/mp4"></video> + div overlay negro/40.
+• Si el brief dice FONDO tipo="video": hero con position:relative, overflow:hidden. Incluye: <video class="absolute inset-0 w-full h-full object-cover opacity-65" autoplay muted loop playsinline><source src="URL" type="video/mp4"></video> + div overlay negro/25. El video debe percibirse claramente; no uses overlays negros pesados ni blur encima del video.
 • Si el brief dice FONDO tipo="dark" o no dice nada: usa el gradiente radial por defecto.
 
 INTERACTIVIDAD (solo si el brief incluye "INTERACTIVIDAD:"):
@@ -981,7 +981,7 @@ INTERACTIVIDAD (solo si el brief incluye "INTERACTIVIDAD:"):
 • CSS transitions con duration-300 y ease-in-out.
 
 ESTRUCTURA OBLIGATORIA DE ALTA CONVERSIÓN:
-1. Nav fijo: logo a la izquierda, 2-3 links ancla, CTA pequeño a la derecha con gradiente.
+1. Nav fijo: logo a la izquierda, 2-3 links ancla internos y CTA pequeño a la derecha con gradiente. Los links del nav deben apuntar a IDs reales de la misma landing, por ejemplo href="#beneficios", href="#contenido", href="#precio", y esas secciones deben tener id="beneficios", id="contenido", id="precio".
 2. Hero: titular grande con gradiente en 1-2 palabras clave + PROMESA DE TRANSFORMACIÓN ESPECÍFICA, subtítulo con el problema que resuelve, 2 CTAs (primario + secundario outline), prueba social con avatares apilados + número de alumnos/clientes, badge de urgencia ("Precio de lanzamiento — sube en 48h").
 3. "¿Para quién es esto?": 2 columnas — "Es para vos si..." (checks verdes) y "No es para vos si..." (X rojos). OBLIGATORIO, ayuda a pre-calificar.
 4. Problema/Agitación: sección que nombra el dolor del avatar con especificidad. Empieza con "¿Te suena esto?" y lista 4-5 situaciones de frustración.
@@ -1072,7 +1072,7 @@ REGLAS UX DE CONVERSIÓN (UI/UX Pro Max — 99 guidelines):
 • Formularios de captura de lead: solo 1-2 campos visibles (nombre + email). Input rounded-xl, py-3 px-4, bg-zinc-800 border border-zinc-700 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20.
 
 ANTI-PATTERNS PROHIBIDOS (UI/UX Pro Max):
-• NUNCA pongas todas las imágenes en el hero y el resto de la landing sin imágenes — distribuílas.
+• NUNCA pongas todas las imágenes en el hero ni en una sola sección y el resto de la landing sin imágenes — distribuílas en mínimo 3 zonas distintas si el brief pidió imágenes.
 • NUNCA hagas secciones de más de 3 párrafos sin un elemento visual que corte el bloque de texto.
 • NUNCA uses colores saturados brillantes para fondos de sección completos (quema los ojos en dark mode).
 • NUNCA generes menos de 3 testimonios — la prueba social múltiple aumenta conversión un 30%+.
@@ -1088,7 +1088,7 @@ CALIDAD:
 • Mínimo 12 secciones. Una landing corta NO convierte.
 
 LINKS Y NAVEGACIÓN:
-• Todos los <a> y botones CTA deben tener href="#" SIEMPRE.
+• Los links de navegación interna deben usar href="#id-de-seccion" y apuntar a secciones reales. Los CTAs comerciales pueden usar href="#" si todavía no hay link externo.
 • NUNCA uses href con rutas del proyecto (./dashboard.html, /login, etc.).
 • Los <form> no deben tener action ni method — solo elementos visuales.
 • Prohibido window.location o navegación automática.
