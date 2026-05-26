@@ -377,7 +377,7 @@
   </div>
 </div>
 
-<script src="./supabase-config.js?v=authpersist1"></script>
+<script src="./supabase-config.js?v=authhandoff1"></script>
 <script src="./app.js?v=landing-authrequired1"></script>
 <script src="./skinglow-demo-data.js"></script>
 <script src="./ai-assistant.js"></script>
@@ -679,6 +679,32 @@ function renderVideoTemplates() {
 <script>
   (async () => {
     // ── Auth gate ──
+    async function importAuthHandoff() {
+      if (!new URLSearchParams(location.search).has('auth_handoff')) return null;
+      let session = null;
+      try {
+        const raw = sessionStorage.getItem('ls_auth_handoff');
+        if (raw) session = JSON.parse(raw);
+      } catch {}
+      if (!session) {
+        try {
+          const named = JSON.parse(window.name || '{}');
+          if (named?.type === 'luminous-auth-handoff') session = named.session;
+        } catch {}
+      }
+      if (!session || !window.Auth?.hydrateSession) return null;
+      const hydrated = await Auth.hydrateSession(session);
+      try { sessionStorage.removeItem('ls_auth_handoff'); } catch {}
+      try { window.name = ''; } catch {}
+      try {
+        const clean = new URL(location.href);
+        clean.searchParams.delete('auth_handoff');
+        history.replaceState(null, '', clean.pathname + clean.search + clean.hash);
+      } catch {}
+      return hydrated;
+    }
+
+    await importAuthHandoff();
     const session = await Auth.session({ timeoutMs: 5000 }).catch(() => null);
     const user = session?.user || await Auth.requireAuth();
     if (!user) return;

@@ -59,6 +59,7 @@ function createOfflineSupabaseClient() {
   return {
     auth: {
       getSession: () => result({ session: null }),
+      setSession: () => result({ session: null }),
       refreshSession: () => result({ session: null }),
       getUser: () => result({ user: null }),
       signInWithPassword: () => result(null, offlineError),
@@ -160,6 +161,24 @@ const Auth = {
 
   async waitForSession(timeoutMs = 4000) {
     return waitForStoredSession(timeoutMs);
+  },
+
+  async hydrateSession(session) {
+    if (!isUsableSession(session)) return null;
+    persistCachedSupabaseSession(session);
+    try {
+      if (db.auth.setSession && session.access_token && session.refresh_token) {
+        const { data } = await db.auth.setSession({
+          access_token: session.access_token,
+          refresh_token: session.refresh_token,
+        });
+        if (data?.session) {
+          persistCachedSupabaseSession(data.session);
+          return data.session;
+        }
+      }
+    } catch {}
+    return await readCurrentSession() || session;
   },
 
   // Siempre devuelve un token válido, refrescándolo si es necesario

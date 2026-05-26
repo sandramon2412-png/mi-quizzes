@@ -11,7 +11,7 @@
 </script>
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="./supabase-config.js?v=authpersist1"></script>
+<script src="./supabase-config.js?v=authhandoff1"></script>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
 <script id="tailwind-config">
@@ -211,6 +211,18 @@
     return './dashboard.html';
   }
 
+  function withAuthHandoff(dest, session) {
+    try { sessionStorage.setItem('ls_auth_handoff', JSON.stringify(session)); } catch {}
+    try { window.name = JSON.stringify({ type: 'luminous-auth-handoff', session }); } catch {}
+    try {
+      const url = new URL(dest, location.href);
+      url.searchParams.set('auth_handoff', '1');
+      return url.pathname + url.search + url.hash;
+    } catch {
+      return dest;
+    }
+  }
+
   async function handleLogin(e) {
     e.preventDefault();
     const email    = document.getElementById('email').value.trim();
@@ -228,7 +240,7 @@
         || result?.session
         || await Auth.session({ timeoutMs: 3000 });
       if (!session) throw new Error('La sesión no quedó activa. Inténtalo de nuevo.');
-      window.location.assign(safeNextUrl(nextUrl));
+      window.location.assign(withAuthHandoff(safeNextUrl(nextUrl), session));
     } catch (err) {
       showError(friendlyLoginError(err.message));
     } finally {
