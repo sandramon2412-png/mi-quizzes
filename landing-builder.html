@@ -378,7 +378,7 @@
 </div>
 
 <script src="./supabase-config.js?v=authhandoff1"></script>
-<script src="./app.js?v=landing-landfix1"></script>
+<script src="./app.js?v=landing-builderhardfix1"></script>
 <script src="./skinglow-demo-data.js"></script>
 <script src="./ai-assistant.js"></script>
 <script>
@@ -902,7 +902,101 @@ function renderVideoTemplates() {
     };
 
     const postProcessLandingHtml = (html, instruction = '') =>
-      ensureInteractiveLanding(reduceVideoDarkness(ensureRequestedImages(sanitizeGeneratedLanding(html), instruction)), instruction);
+      applyBuilderQuality(ensureInteractiveLanding(reduceVideoDarkness(ensureRequestedImages(sanitizeGeneratedLanding(html), instruction)), instruction), instruction);
+
+    const activePalette = () => {
+      const custom = document.getElementById('fld-custom-color')?.value?.trim() || '';
+      const hex = custom.match(/#[0-9a-f]{6}\b/i)?.[0];
+      if (hex) return { from: hex, to: hex, twFrom: 'from-pink-500', twTo: 'to-rose-600', accent: hex };
+      const p = PALETTES.find(x => x.id === _selectedPalette) || PALETTES[0];
+      const map = {
+        default: ['from-blue-500', 'to-violet-600', '#2E5BFF'],
+        green: ['from-emerald-600', 'to-teal-500', '#059669'],
+        rose: ['from-rose-600', 'to-pink-500', '#e11d48'],
+        orange: ['from-orange-600', 'to-amber-500', '#ea580c'],
+        cyan: ['from-cyan-600', 'to-blue-600', '#0891b2'],
+        violet: ['from-violet-600', 'to-fuchsia-500', '#7c3aed'],
+        red: ['from-red-700', 'to-rose-800', '#dc2626'],
+        gold: ['from-amber-700', 'to-yellow-600', '#b45309'],
+      };
+      const [twFrom, twTo, accent] = map[p.id] || map.default;
+      return { ...p, twFrom, twTo, accent };
+    };
+
+    const applyPaletteToHtml = (html) => {
+      const p = activePalette();
+      let output = String(html || '');
+      output = output
+        .replace(/#2E5BFF|#3157C9|#2563eb|#3b82f6/gi, p.from || p.accent)
+        .replace(/#7c3aed|#6366f1|#8b5cf6|#a855f7/gi, p.to || p.accent)
+        .replace(/\bfrom-(?:blue|indigo|violet|purple|fuchsia|pink|rose|emerald|teal|cyan|orange|amber|red)-[0-9]{3}\b/g, p.twFrom)
+        .replace(/\bto-(?:blue|indigo|violet|purple|fuchsia|pink|rose|emerald|teal|cyan|orange|amber|red)-[0-9]{3}\b/g, p.twTo)
+        .replace(/\bvia-(?:blue|indigo|violet|purple|fuchsia|pink|rose|emerald|teal|cyan|orange|amber|red)-[0-9]{3}\b/g, p.twTo);
+      return output;
+    };
+
+    const ensureMinimumLandingSections = (html) => {
+      let output = String(html || '');
+      const lower = output.toLowerCase();
+      const missing = [];
+      if (!/id=["']beneficios["']|beneficios/.test(lower)) missing.push(`
+<section id="beneficios" class="py-24 px-6 bg-zinc-950 text-white">
+  <div class="max-w-6xl mx-auto">
+    <p class="text-sm font-black uppercase tracking-[0.22em] text-pink-300">Beneficios</p>
+    <h2 class="mt-4 text-4xl md:text-5xl font-black tracking-tight">Lo que cambia cuando la oferta se vuelve clara.</h2>
+    <div class="mt-10 grid md:grid-cols-3 gap-5">
+      <article class="rounded-2xl bg-white/8 border border-white/10 p-6"><span class="material-symbols-outlined text-pink-300">target</span><h3 class="mt-4 text-xl font-black">Mensaje preciso</h3><p class="mt-2 text-white/65">El cliente entiende rapido que problema resuelve y por que importa.</p></article>
+      <article class="rounded-2xl bg-white/8 border border-white/10 p-6"><span class="material-symbols-outlined text-pink-300">workspace_premium</span><h3 class="mt-4 text-xl font-black">Valor percibido</h3><p class="mt-2 text-white/65">Bonos, prueba y estructura elevan la decision de compra.</p></article>
+      <article class="rounded-2xl bg-white/8 border border-white/10 p-6"><span class="material-symbols-outlined text-pink-300">bolt</span><h3 class="mt-4 text-xl font-black">Accion inmediata</h3><p class="mt-2 text-white/65">Cada seccion empuja hacia el siguiente paso sin confundir.</p></article>
+    </div>
+  </div>
+</section>`);
+      if (!/id=["']contenido["']|m[oó]dulos|contenido/.test(lower)) missing.push(`
+<section id="contenido" class="py-24 px-6 bg-zinc-900 text-white">
+  <div class="max-w-5xl mx-auto">
+    <p class="text-sm font-black uppercase tracking-[0.22em] text-pink-300">Contenido</p>
+    <h2 class="mt-4 text-4xl md:text-5xl font-black">Una ruta organizada, no una promesa suelta.</h2>
+    <div class="mt-10 space-y-4">
+      <div class="rounded-2xl border border-white/10 bg-white/8 p-6"><b>1. Diagnostico inicial</b><p class="mt-2 text-white/65">Identifica el punto de partida y la prioridad del cliente.</p></div>
+      <div class="rounded-2xl border border-white/10 bg-white/8 p-6"><b>2. Metodo guiado</b><p class="mt-2 text-white/65">Entrega pasos simples para avanzar sin sentirse perdido.</p></div>
+      <div class="rounded-2xl border border-white/10 bg-white/8 p-6"><b>3. Seguimiento</b><p class="mt-2 text-white/65">Refuerza constancia, resultados y siguiente accion.</p></div>
+    </div>
+  </div>
+</section>`);
+      if (!/bono|bonus/.test(lower)) missing.push(`
+<section id="bonos" class="py-24 px-6 bg-zinc-950 text-white">
+  <div class="max-w-6xl mx-auto">
+    <p class="text-sm font-black uppercase tracking-[0.22em] text-pink-300">Bonos incluidos</p>
+    <h2 class="mt-4 text-4xl md:text-5xl font-black">Extras que hacen que la oferta se sienta completa.</h2>
+    <div class="mt-10 grid md:grid-cols-3 gap-5">
+      <article class="rounded-2xl bg-white/8 border border-white/10 p-6"><h3 class="text-xl font-black">Checklist rapido</h3><p class="mt-2 text-white/65">Para implementar sin dudas desde el primer dia.</p><p class="mt-4 text-pink-300 font-black">Incluido gratis</p></article>
+      <article class="rounded-2xl bg-white/8 border border-white/10 p-6"><h3 class="text-xl font-black">Guia de seguimiento</h3><p class="mt-2 text-white/65">Para mantener avance y medir progreso.</p><p class="mt-4 text-pink-300 font-black">Incluido gratis</p></article>
+      <article class="rounded-2xl bg-white/8 border border-white/10 p-6"><h3 class="text-xl font-black">Plantillas de apoyo</h3><p class="mt-2 text-white/65">Recursos listos para usar y ahorrar tiempo.</p><p class="mt-4 text-pink-300 font-black">Incluido gratis</p></article>
+    </div>
+  </div>
+</section>`);
+      if (!/id=["']precio["']|precio|garant[ií]a/.test(lower)) missing.push(`
+<section id="precio" class="py-24 px-6 bg-zinc-900 text-white">
+  <div class="max-w-3xl mx-auto text-center rounded-[2rem] border border-white/10 bg-white/8 p-10">
+    <p class="text-sm font-black uppercase tracking-[0.22em] text-pink-300">Acceso completo</p>
+    <h2 class="mt-4 text-4xl md:text-5xl font-black">Empieza con la ruta completa hoy.</h2>
+    <p class="mt-5 text-white/65">Incluye contenido principal, bonos, seguimiento y garantia.</p>
+    <a href="#" class="mt-8 inline-flex rounded-xl px-8 py-4 bg-gradient-to-r from-pink-500 to-rose-600 font-black">Quiero empezar ahora</a>
+    <p class="mt-3 text-xs text-white/50">Acceso inmediato. Garantia de satisfaccion.</p>
+  </div>
+</section>`);
+      if (!missing.length) return output;
+      const addon = missing.join('\n');
+      if (/<\/main>/i.test(output)) return output.replace(/<\/main>/i, addon + '\n</main>');
+      if (/<\/body>/i.test(output)) return output.replace(/<\/body>/i, addon + '\n</body>');
+      return output + addon;
+    };
+
+    const applyBuilderQuality = (html, instruction = '') => {
+      let output = applyPaletteToHtml(ensureMinimumLandingSections(html));
+      if (wantsInteractive(instruction)) output = ensureInteractiveLanding(output, instruction);
+      return output;
+    };
 
     const localLandingHtml = (brief = '') => {
       const product = document.getElementById('fld-product')?.value?.trim() || titleEl.value.trim() || 'Oferta premium';
@@ -1013,6 +1107,10 @@ function renderVideoTemplates() {
       if (!landing?.html) return false;
       let next = landing.html;
       const before = normalizeHtmlForCompare(next);
+      if (wantsImages(instruction)) next = ensureRequestedImages(next, instruction, true);
+      if (wantsInteractive(instruction)) next = ensureInteractiveLanding(next, instruction);
+      if (/color|paleta|theme|tema|marca|degrad|gradiente/i.test(instruction)) next = applyPaletteToHtml(next);
+      if (/incomplet|completa|faltan|beneficios|contenido|precio|bonos|garant/i.test(instruction)) next = ensureMinimumLandingSections(next);
       if (/video|hero|fondo/i.test(instruction) && /claro|aclara|no se ve|muy oscuro|menos oscuro|quita.*oscuro|baja.*oscuro/i.test(instruction)) {
         next = reduceVideoDarkness(next);
       }
@@ -1357,6 +1455,7 @@ function renderVideoTemplates() {
       if (typedSlug) landing.slug = typedSlug;
       history = compactMessages(history);
       landing.messages = history;
+      Landings.save(landing);
       try {
         setStatus('Guardando…');
         const saved = await DB.landings.save(landing, user.id);
@@ -1366,8 +1465,8 @@ function renderVideoTemplates() {
         setTimeout(() => setStatus(landing.published ? 'Publicada' : 'Borrador'), 1200);
       } catch (e) {
         console.error(e);
-        setStatus('Error al guardar');
-        toast('Error al guardar: ' + e.message, 'err');
+        setStatus('Guardado local');
+        toast('Guardado local. La nube no respondió, pero no se perdió.', 'ok');
       }
     };
 
