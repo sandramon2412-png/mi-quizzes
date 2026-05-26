@@ -7,7 +7,7 @@
 // Claude de la plataforma.
 //
 // Llamado desde: mini-app-player.html, resultado-quiz.html
-// Body: { contentType: 'miniapp'|'quiz', contentId, messages,
+// Body: { contentType: 'miniapp'|'quiz'|'landing_builder', contentId, messages,
 //         systemPrompt, maxTokens, model }
 // ============================================================
 
@@ -103,6 +103,27 @@ serve(async (req) => {
         JSON.stringify({ error: { message: "contentType y contentId son requeridos" } }),
         { status: 400, headers: { ...CORS, "Content-Type": "application/json" } }
       );
+    }
+
+    // Landing Builder: generacion publica controlada para evitar depender
+    // de la sesion local del navegador. Mantiene rate limit por IP y usa
+    // solo la llave server-side de la plataforma.
+    if (contentType === "landing_builder") {
+      const claudeKey = Deno.env.get("ANTHROPIC_API_KEY");
+      if (!claudeKey) {
+        return new Response(
+          JSON.stringify({ error: { message: "No hay proveedor de IA disponible" } }),
+          { status: 503, headers: { ...CORS, "Content-Type": "application/json" } }
+        );
+      }
+      const result = await callClaude(claudeKey, {
+        ...body,
+        maxTokens: Math.min(Number(body.maxTokens || 6500), 8000),
+        claudeModel: body.claudeModel || "claude-haiku-4-5-20251001",
+      });
+      return new Response(JSON.stringify(result), {
+        headers: { ...CORS, "Content-Type": "application/json" },
+      });
     }
 
     // Cliente con service role para leer la groq_api_key del creador

@@ -522,6 +522,20 @@ const Claude = {
       body: JSON.stringify(payload),
     });
 
+    const doPublicBuilderRequest = async (payload = buildBody(model)) => fetch(`${SUPABASE_URL}/functions/v1/creator-ai-proxy`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        contentType: 'landing_builder',
+        contentId: 'landing-builder',
+        messages: payload.messages,
+        systemPrompt: payload.system,
+        maxTokens: payload.max_tokens,
+        claudeModel: payload.model,
+        temperature: opts.temperature ?? 0.7,
+      }),
+    });
+
     // Use the shared auth helper so Claude reads the same cached/refreshed session as Groq.
     let token = null;
     try { token = await Auth.getToken(); } catch {}
@@ -531,7 +545,18 @@ const Claude = {
         token = session?.access_token || null;
       } catch {}
     }
-    if (!token) throw new Error('Sesión no válida. Por favor recarga la página e inicia sesión de nuevo.');
+    if (!token) {
+      if (opts.publicBuilderProxy) {
+        const publicRes = await doPublicBuilderRequest();
+        if (!publicRes.ok) {
+          const err = await publicRes.json().catch(() => ({}));
+          throw new Error(err.error?.message || `Error ${publicRes.status}`);
+        }
+        const data = await publicRes.json();
+        return data.content || '';
+      }
+      throw new Error('Sesión no válida. Por favor recarga la página e inicia sesión de nuevo.');
+    }
 
     let res = await doRequest(token);
 
@@ -1114,6 +1139,7 @@ Si encontrás que BONOS no está en el HTML generado, insertá la sección compl
     const text = await this._call(messages, 8000, {
       model: 'claude-haiku-4-5-20251001',
       system: this._landingSystemPrompt(),
+      publicBuilderProxy: true,
     });
     // Extract pure HTML: strip any markdown fences or preamble
     let html = text.trim();
