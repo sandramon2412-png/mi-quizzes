@@ -378,7 +378,7 @@
 </div>
 
 <script src="./supabase-config.js"></script>
-<script src="./app.js?v=landing-localgen1"></script>
+<script src="./app.js?v=landing-authgen2"></script>
 <script src="./skinglow-demo-data.js"></script>
 <script src="./ai-assistant.js"></script>
 <script>
@@ -680,8 +680,7 @@ function renderVideoTemplates() {
   (async () => {
     // ── Auth gate ──
     const isLocalBuilder = ['127.0.0.1', 'localhost', '::1'].includes(location.hostname);
-    const session = await Auth.session({ timeoutMs: isLocalBuilder ? 1200 : 5000 }).catch(() => null);
-    const hasRealSession = !!session?.access_token;
+    const session = await Auth.session({ timeoutMs: 5000 }).catch(() => null);
     const user = session?.user || (isLocalBuilder ? { id: 'local-dev-user', email: 'local@luminous.test' } : await Auth.requireAuth());
     if (!user) return;
 
@@ -1598,17 +1597,7 @@ function renderVideoTemplates() {
       setStatus('Generando con IA…');
 
       try {
-        let generatedHtml = '';
-        try {
-          generatedHtml = (!hasRealSession && isLocalBuilder)
-            ? localLandingHtml(brief)
-            : await AI.generateLanding(brief, []);
-        } catch (aiError) {
-          const sessionProblem = /sesi[oó]n|session|inicia sesi[oó]n|invalid/i.test(aiError?.message || '');
-          if (!isLocalBuilder || !sessionProblem) throw aiError;
-          generatedHtml = localLandingHtml(brief);
-          toast('Sin sesion real: genere una landing local de prueba.', 'ok');
-        }
+        const generatedHtml = await AI.generateLanding(brief, []);
         const html = postProcessLandingHtml(generatedHtml, brief);
         history = [
           { role: 'user', content: brief },
@@ -1674,16 +1663,7 @@ function renderVideoTemplates() {
           'HTML ACTUAL:',
           currentHtml.slice(0, 28000)
         ].join('\n\n');
-        let revisedHtml = '';
-        try {
-          revisedHtml = (!hasRealSession && isLocalBuilder)
-            ? localLandingHtml(revisionBrief)
-            : await AI.generateLanding(revisionBrief, []);
-        } catch (aiError) {
-          const sessionProblem = /sesi[oó]n|session|inicia sesi[oó]n|invalid/i.test(aiError?.message || '');
-          if (!isLocalBuilder || !sessionProblem) throw aiError;
-          revisedHtml = localLandingHtml(revisionBrief);
-        }
+        const revisedHtml = await AI.generateLanding(revisionBrief, []);
         const html = postProcessLandingHtml(revisedHtml, msg);
         if (normalizeHtmlForCompare(html) === normalizeHtmlForCompare(currentHtml)) {
           throw new Error('La IA devolvio el mismo HTML sin cambios. Prueba una instruccion mas especifica o edita visualmente la seccion.');

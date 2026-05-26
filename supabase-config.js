@@ -154,7 +154,15 @@ const Auth = {
 
   // Siempre devuelve un token válido, refrescándolo si es necesario
   async getToken() {
-    // Intentar refresh incondicional para garantizar token fresco
+    try {
+      const session = await readCurrentSession();
+      if (session?.access_token) return session.access_token;
+    } catch {}
+    try {
+      const session = await waitForStoredSession(2500);
+      if (session?.access_token) return session.access_token;
+    } catch {}
+    // Intentar refresh para garantizar token fresco
     try {
       const { data, error } = await db.auth.refreshSession();
       if (!error && data.session?.access_token) return data.session.access_token;
