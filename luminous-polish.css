@@ -1,0 +1,148 @@
+/* Luminous Studio - shared premium polish layer */
+:root {
+  --lum-bg: #090a0f;
+  --lum-panel: rgba(18, 19, 27, 0.82);
+  --lum-panel-strong: rgba(27, 28, 39, 0.9);
+  --lum-line: rgba(255, 255, 255, 0.1);
+  --lum-line-soft: rgba(255, 255, 255, 0.065);
+  --lum-text: #f8fafc;
+  --lum-muted: rgba(226, 232, 240, 0.68);
+  --lum-blue: #4f7cff;
+  --lum-violet: #8b5cf6;
+  --lum-teal: #2dd4bf;
+  --lum-rose: #ec4899;
+  --lum-shadow: 0 22px 70px rgba(0, 0, 0, 0.36);
+  --lum-shadow-soft: 0 14px 38px rgba(0, 0, 0, 0.22);
+}
+
+html.dark,
+body {
+  background:
+    radial-gradient(circle at 16% -8%, rgba(79, 124, 255, 0.16), transparent 34rem),
+    radial-gradient(circle at 88% 4%, rgba(45, 212, 191, 0.09), transparent 30rem),
+    radial-gradient(circle at 64% 104%, rgba(236, 72, 153, 0.08), transparent 30rem),
+    var(--lum-bg) !important;
+  color: var(--lum-text);
+}
+
+body {
+  letter-spacing: 0;
+  text-rendering: geometricPrecision;
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: -1;
+  background:
+    linear-gradient(rgba(255, 255, 255, 0.018) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.014) 1px, transparent 1px);
+  background-size: 56px 56px;
+  mask-image: linear-gradient(to bottom, rgba(0,0,0,0.65), transparent 72%);
+}
+
+.primary-gradient,
+.bg-primary,
+[class*="from-blue-500"][class*="to-violet"],
+[class*="from-primary"] {
+  background-image: linear-gradient(135deg, var(--lum-blue), var(--lum-violet) 58%, var(--lum-rose)) !important;
+  box-shadow: 0 16px 40px rgba(79, 124, 255, 0.24), inset 0 1px 0 rgba(255,255,255,0.18);
+}
+
+header[class*="fixed"],
+header[class*="sticky"],
+header.h-14,
+header.h-16 {
+  background: rgba(9, 10, 15, 0.78) !important;
+  border-bottom: 1px solid var(--lum-line-soft) !important;
+  backdrop-filter: blur(20px) saturate(1.25);
+  -webkit-backdrop-filter: blur(20px) saturate(1.25);
+}
+
+:where(.bg-surface-container-low, .bg-surface-container, .bg-surface-container-high, .bg-surface-container-highest, .stats-bar, .welcome-card, .mode-card) {
+  background: linear-gradient(145deg, rgba(31, 33, 46, 0.86), rgba(14, 15, 23, 0.82)) !important;
+  border-color: var(--lum-line-soft) !important;
+  box-shadow: var(--lum-shadow-soft), inset 0 1px 0 rgba(255,255,255,0.045);
+}
+
+:where(.stat-card, .quiz-card, .miniapp-card, .landing-card, .template-card, .bot-card, .lead-card, .integration-card),
+:where(article, section, aside, div)[class*="rounded"][class*="border"][class*="bg-"] {
+  border-color: var(--lum-line-soft) !important;
+}
+
+:where(.stat-card, .quiz-card, .miniapp-card, .landing-card, .template-card, .bot-card, .lead-card, .integration-card):hover {
+  transform: translateY(-2px);
+  border-color: rgba(79, 124, 255, 0.32) !important;
+  box-shadow: var(--lum-shadow), 0 0 0 1px rgba(79, 124, 255, 0.07);
+}
+
+:where(button, a)[class*="rounded"]:not(.no-polish) {
+  transition: transform .18s ease, filter .18s ease, border-color .18s ease, background .18s ease, box-shadow .18s ease;
+}
+
+:where(button, a)[class*="rounded"]:not(.no-polish):hover {
+  filter: brightness(1.06);
+}
+
+:where(button, a)[class*="rounded"]:not(.no-polish):active {
+  transform: translateY(1px) scale(0.99);
+}
+
+input,
+textarea,
+select {
+  background: rgba(255,255,255,0.045) !important;
+  border-color: var(--lum-line-soft) !important;
+  color: var(--lum-text) !important;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.035);
+}
+
+input:focus,
+textarea:focus,
+select:focus {
+  border-color: rgba(79, 124, 255, 0.72) !important;
+  box-shadow: 0 0 0 3px rgba(79, 124, 255, 0.16), inset 0 1px 0 rgba(255,255,255,0.05) !important;
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: rgba(226, 232, 240, 0.38) !important;
+}
+
+.dash-tab.active-tab,
+[class*="active-tab"],
+[aria-selected="true"] {
+  box-shadow: 0 14px 34px rgba(79, 124, 255, 0.26), inset 0 1px 0 rgba(255,255,255,0.16) !important;
+}
+
+.material-symbols-outlined {
+  vertical-align: middle;
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, rgba(79,124,255,.55), rgba(139,92,246,.45));
+  border-radius: 999px;
+  border: 2px solid rgba(9,10,15,.7);
+}
+
+@media (max-width: 720px) {
+  body::before { opacity: 0.45; }
+  header[class*="fixed"],
+  header[class*="sticky"],
+  header.h-14,
+  header.h-16 {
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+  }
+}

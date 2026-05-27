@@ -54,6 +54,7 @@
   .section-pulse { animation: section-pulse 1.2s ease; }
   @keyframes section-pulse { 0%,100% { box-shadow: 0 0 0 rgba(46,91,255,0); } 35% { box-shadow: 0 0 0 3px rgba(46,91,255,.28); } }
 </style>
+<link rel="stylesheet" href="./luminous-polish.css?v=platform-polish1"/>
 </head>
 <body class="bg-background text-on-background" data-lloyd-default-mode="landing">
 
@@ -978,7 +979,8 @@ function renderVideoTemplates() {
       const js = `<script data-luminous-interactive="true">(function(){var blocks=[].slice.call(document.querySelectorAll('section,header,.card,[class*="card"],[class*="benefit"],[class*="bonus"]'));blocks.forEach(function(el){if(!el.dataset.luminousReveal)el.dataset.luminousReveal='true';});var reveal=function(el){el.classList.add('is-visible')};if('IntersectionObserver'in window){var io=new IntersectionObserver(function(entries){entries.forEach(function(e){if(e.isIntersecting)reveal(e.target);});},{threshold:.12});document.querySelectorAll('[data-luminous-reveal]').forEach(function(el){io.observe(el);});}else{document.querySelectorAll('[data-luminous-reveal]').forEach(reveal);}document.querySelectorAll('details,.faq-item,[data-faq]').forEach(function(el){el.addEventListener('click',function(){el.classList.toggle('luminous-faq-open');});var p=el.querySelector('p,div');if(p)p.classList.add('luminous-faq-answer');});})();<\/script>`;
       output = output.replace(/<style\s+data-luminous-interactive=["']true["'][\s\S]*?<\/style>/gi, '');
       output = output.replace(/<script\s+data-luminous-interactive=["']true["'][\s\S]*?<\/script>/gi, '');
-      if (/<\/head>/i.test(output)) output = output.replace(/<\/head>/i, css + '\n</head>');
+      if (/<\/head>/i.test(output)) output = output.replace(/<\/head>/i, css + '\n<link rel="stylesheet" href="./luminous-polish.css?v=platform-polish1"/>
+</head>');
       else output = css + output;
       if (/<\/body>/i.test(output)) return output.replace(/<\/body>/i, js + '\n</body>');
       return output + js;
@@ -1394,6 +1396,7 @@ function renderVideoTemplates() {
   <script src="https://cdn.tailwindcss.com"><\/script>
   <link href="https://fonts.googleapis.com/icon?family=Material+Symbols+Outlined" rel="stylesheet">
   <title>${product}</title>
+<link rel="stylesheet" href="./luminous-polish.css?v=platform-polish1"/>
 </head>
 <body class="bg-[#110b10] text-white antialiased">
   <main>
