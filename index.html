@@ -221,8 +221,80 @@
           background-size: 24px 24px;
         }
     </style>
+<link rel="stylesheet" href="./luminous-polish.css?v=platform-polish1"/>
+<style>
+  /* Home-specific premium pass: keep the video hero, refine depth and consistency. */
+  body.home-polish {
+    background:
+      radial-gradient(circle at 18% 10%, rgba(79,124,255,0.18), transparent 28rem),
+      radial-gradient(circle at 80% 6%, rgba(236,72,153,0.14), transparent 30rem),
+      #090a0f !important;
+  }
+  body.home-polish main {
+    background:
+      radial-gradient(circle at 50% 18%, rgba(45,212,191,0.08), transparent 30rem),
+      linear-gradient(180deg, rgba(8,8,16,0) 0%, rgba(9,10,15,0.88) 18%, rgba(9,10,15,1) 100%) !important;
+  }
+  body.home-polish header {
+    background: rgba(8, 8, 16, 0.66) !important;
+    border-bottom-color: rgba(255,255,255,0.09) !important;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.28) !important;
+  }
+  body.home-polish h1,
+  body.home-polish h2 {
+    text-wrap: balance;
+  }
+  body.home-polish .hero-glow {
+    box-shadow:
+      0 0 0 1px rgba(255,255,255,0.08),
+      0 36px 110px rgba(0,0,0,0.62),
+      0 0 110px rgba(79,124,255,0.22),
+      0 0 80px rgba(139,92,246,0.15) !important;
+  }
+  body.home-polish .glass-card,
+  body.home-polish .premium-testimonial,
+  body.home-polish .feat-card-inner,
+  body.home-polish [class*="bg-[#0"],
+  body.home-polish [class*="bg-surface"] {
+    border-color: rgba(255,255,255,0.09) !important;
+  }
+  body.home-polish .glass-card {
+    background:
+      linear-gradient(145deg, rgba(26,28,42,0.78), rgba(9,10,17,0.82)) !important;
+    box-shadow: 0 18px 58px rgba(0,0,0,0.28), inset 0 1px 0 rgba(255,255,255,0.045);
+  }
+  body.home-polish .feat-card {
+    background: linear-gradient(135deg, rgba(79,124,255,0.30), rgba(45,212,191,0.12), rgba(236,72,153,0.18)) !important;
+  }
+  body.home-polish .feat-card-inner,
+  body.home-polish .premium-testimonial {
+    background: linear-gradient(145deg, rgba(22,24,36,0.92), rgba(10,11,18,0.88)) !important;
+    box-shadow: 0 18px 55px rgba(0,0,0,0.28), inset 0 1px 0 rgba(255,255,255,0.04);
+  }
+  body.home-polish .faq-item {
+    background: linear-gradient(145deg, rgba(24,26,39,0.84), rgba(11,12,20,0.88)) !important;
+  }
+  body.home-polish .section-divider {
+    opacity: 0.95;
+    background: linear-gradient(90deg, transparent 0%, rgba(79,124,255,0.18) 22%, rgba(236,72,153,0.34) 50%, rgba(45,212,191,0.18) 78%, transparent 100%) !important;
+  }
+  body.home-polish footer {
+    background: rgba(6,7,12,0.88) !important;
+    border-top: 1px solid rgba(255,255,255,0.08);
+  }
+  @media (max-width: 720px) {
+    body.home-polish .hero-glow {
+      border-radius: 18px !important;
+      box-shadow: 0 20px 70px rgba(0,0,0,0.58), 0 0 55px rgba(79,124,255,0.18) !important;
+    }
+    body.home-polish .glass-card,
+    body.home-polish .feat-card-inner {
+      box-shadow: 0 14px 38px rgba(0,0,0,0.24), inset 0 1px 0 rgba(255,255,255,0.04);
+    }
+  }
+</style>
 </head>
-<body class="bg-background text-on-background selection:bg-primary/30 selection:text-primary" data-lloyd-public="true">
+<body class="home-polish bg-background text-on-background selection:bg-primary/30 selection:text-primary" data-lloyd-public="true">
 
 <header class="w-full top-0 sticky z-50 transition-colors duration-300" style="background:rgba(8,8,16,0.85);backdrop-filter:blur(20px);border-bottom:1px solid rgba(255,255,255,0.05);box-shadow:0 20px 40px rgba(0,0,0,0.3);">
 <nav class="flex justify-between items-center px-6 py-4 w-full">
