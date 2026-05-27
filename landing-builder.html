@@ -381,9 +381,9 @@
 </div>
 
 <script src="./supabase-config.js?v=authhandoff1"></script>
-<script src="./app.js?v=landing-expert2"></script>
+<script src="./app.js?v=landing-expert3"></script>
 <script src="./skinglow-demo-data.js"></script>
-<script src="./ai-assistant.js"></script>
+<script src="./ai-assistant.js?v=lloydlocal1"></script>
 <script>
 const VIDEO_CATEGORIES = [
   { key: 'all',      label: 'Todos' },
@@ -1091,7 +1091,7 @@ function renderVideoTemplates() {
     };
 
     const postProcessLandingHtml = (html, instruction = '') =>
-      applyBuilderQuality(distributeMediaAcrossSections(distributeGeneratedImages(ensureInteractiveLanding(reduceVideoDarkness(ensureRequestedImages(sanitizeGeneratedLanding(html), instruction)), instruction))), instruction);
+      sanitizeGeneratedLanding(applyBuilderQuality(distributeMediaAcrossSections(distributeGeneratedImages(ensureInteractiveLanding(reduceVideoDarkness(ensureRequestedImages(sanitizeGeneratedLanding(html), instruction)), instruction))), instruction));
 
     const activePalette = () => {
       const custom = document.getElementById('fld-custom-color')?.value?.trim() || '';
@@ -1262,11 +1262,61 @@ function renderVideoTemplates() {
   </div>
 </section>`;
 
+    const faqSectionHtml = () => `
+<section id="faq" class="py-24 px-6 bg-zinc-950 text-white">
+  <div class="max-w-4xl mx-auto">
+    <p class="text-sm font-black uppercase tracking-[0.22em] text-pink-300">Preguntas frecuentes</p>
+    <h2 class="mt-4 text-4xl md:text-5xl font-black">Resuelve las dudas antes de comprar.</h2>
+    <div class="mt-10 space-y-4">
+      <details class="faq-item rounded-2xl bg-white/8 border border-white/10 p-6"><summary class="cursor-pointer font-black">Como recibo el acceso?</summary><p class="mt-3 text-white/65">Despues de la compra recibes el material, bonos y la ruta de implementacion.</p></details>
+      <details class="faq-item rounded-2xl bg-white/8 border border-white/10 p-6"><summary class="cursor-pointer font-black">Necesito experiencia previa?</summary><p class="mt-3 text-white/65">No. La experiencia esta pensada para empezar con pasos claros y acompanados.</p></details>
+      <details class="faq-item rounded-2xl bg-white/8 border border-white/10 p-6"><summary class="cursor-pointer font-black">Que pasa si tengo dudas?</summary><p class="mt-3 text-white/65">La oferta incluye recursos de apoyo para avanzar con mas seguridad.</p></details>
+    </div>
+  </div>
+</section>`;
+
     const forceSection = (html, kind) => {
       if (kind === 'testimonios') return appendBeforeDocumentEnd(removeSectionById(html, ['testimonios']), testimonialSectionHtml());
       if (kind === 'cta') return appendBeforeDocumentEnd(removeSectionById(html, ['cta-final']), ctaSectionHtml());
+      if (kind === 'faq') return appendBeforeDocumentEnd(removeSectionById(html, ['faq']), faqSectionHtml());
       return html;
     };
+
+    const replaceVisibleText = (html, from, to) => {
+      if (!from || !to) return html;
+      try {
+        const doc = new DOMParser().parseFromString(String(html || ''), 'text/html');
+        const walker = doc.createTreeWalker(doc.body || doc, NodeFilter.SHOW_TEXT);
+        let changed = false;
+        while (walker.nextNode()) {
+          const node = walker.currentNode;
+          const parentTag = node.parentElement?.tagName;
+          if (parentTag === 'SCRIPT' || parentTag === 'STYLE') continue;
+          if ((node.nodeValue || '').includes(from)) {
+            node.nodeValue = node.nodeValue.split(from).join(to);
+            changed = true;
+          }
+        }
+        return changed ? '<!DOCTYPE html>\n' + doc.documentElement.outerHTML : html;
+      } catch {
+        return String(html || '').split(from).join(to);
+      }
+    };
+
+    const parseTextReplacement = (instruction = '') => {
+      const text = String(instruction || '');
+      const quoted = text.match(/(?:cambia|reemplaza|edita|modifica)[\s\S]{0,80}?["“']([^"”']+)["”'][\s\S]{0,80}?(?:por|a)[\s\S]{0,30}?["“']([^"”']+)["”']/i);
+      if (quoted) return { from: quoted[1], to: quoted[2] };
+      const plain = text.match(/(?:cambia|reemplaza)\s+(.{3,90}?)\s+(?:por|a)\s+(.{3,120})$/i);
+      if (plain) return { from: plain[1].trim(), to: plain[2].trim() };
+      return null;
+    };
+
+    const adjustHeroVideoClarity = (html) => reduceVideoDarkness(String(html || ''))
+      .replace(/filter:\s*blur\([^)]*\)\s*;?/gi, '')
+      .replace(/\bblur-(?:sm|md|lg|xl|2xl|3xl)\b/g, '')
+      .replace(/brightness\(\s*0\.[0-7]\s*\)/gi, 'brightness(0.92)')
+      .replace(/\bbrightness-(?:50|75)\b/g, 'brightness-95');
 
     const resizeLandingMedia = (html, size = 'medium') => {
       try {
@@ -1424,17 +1474,23 @@ function renderVideoTemplates() {
       if (!landing?.html) return false;
       let next = landing.html;
       const before = visibleFingerprint(next);
+      const replacement = parseTextReplacement(instruction);
+      if (replacement) next = replaceVisibleText(next, replacement.from, replacement.to);
+      if (/quita|borra|elimina|arregla|corrige|sale|aparece/i.test(instruction) && /javascript|c[oó]digo|function|queryselector|intersectionobserver|checklist cro|error/i.test(instruction)) {
+        next = sanitizeGeneratedLanding(next);
+      }
       if (/testimonio|testimonios|prueba social|rese[ñn]a/i.test(instruction)) next = forceSection(next, 'testimonios');
       if (/\bcta\b|bot[oó]n final|llamad[ao] a la acci[oó]n|compra ahora|quiero empezar|secci[oó]n final/i.test(instruction)) next = forceSection(next, 'cta');
       if (/imagen|foto|media|espacio/i.test(instruction) && /pequeñ|pequen|menos grande|muy grande|achica|reduce|baja/i.test(instruction)) next = resizeLandingMedia(next, 'small');
       if (/imagen|foto|media|espacio/i.test(instruction) && /median|normal/i.test(instruction)) next = resizeLandingMedia(next, 'medium');
       if (/imagen|foto|media|espacio/i.test(instruction) && /grande|agranda|amplia/i.test(instruction) && !/menos grande|muy grande/i.test(instruction)) next = resizeLandingMedia(next, 'large');
+      if (/\bfaq\b|preguntas frecuentes|dudas frecuentes|preguntas/i.test(instruction)) next = forceSection(next, 'faq');
       if (wantsImages(instruction)) next = distributeMediaAcrossSections(distributeGeneratedImages(ensureRequestedImages(next, instruction, true)));
       if (wantsInteractive(instruction)) next = ensureInteractiveLanding(next, instruction);
       if (/color|paleta|theme|tema|marca|degrad|gradiente/i.test(instruction)) next = applyPaletteToHtml(next);
       if (/incomplet|completa|faltan|beneficios|contenido|precio|bonos|garant|testimonio|faq|preguntas|cta|bot[oó]n/i.test(instruction)) next = ensureConversionLandingSections(next);
       if (/video|hero|fondo/i.test(instruction) && /claro|aclara|no se ve|muy oscuro|menos oscuro|quita.*oscuro|baja.*oscuro/i.test(instruction)) {
-        next = reduceVideoDarkness(next);
+        next = adjustHeroVideoClarity(next);
       }
       next = distributeMediaAcrossSections(sanitizeGeneratedLanding(next));
       if (visibleFingerprint(next) === before) return false;

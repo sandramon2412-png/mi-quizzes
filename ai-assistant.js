@@ -902,6 +902,13 @@ TONO: cercano, directo, entusiasta pero sin exagerar. Respuestas cortas (2-4 ora
     }
     try {
       if (typeof Auth === 'undefined') return false;
+      const isLocal = ['127.0.0.1', 'localhost', '::1'].includes(location.hostname);
+      if (isLocal && document.body?.dataset?.lloydDefaultMode) {
+        const def = document.body.dataset.lloydDefaultMode;
+        const match = MODES.find(m => m.id === def);
+        if (match) _currentMode = match;
+        return true;
+      }
       const user = await Auth.user();
       if (!user) return false;
       // Permite pre-seleccionar un modo via data-lloyd-default-mode="landing"
