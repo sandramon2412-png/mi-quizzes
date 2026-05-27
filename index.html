@@ -314,6 +314,56 @@
     background: rgba(255,255,255,0.065);
     border: 1px solid rgba(255,255,255,0.095);
   }
+  body.home-polish .home-tilt-card {
+    --card-glow-x: 50%;
+    --card-glow-y: 0%;
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    transform: perspective(1000px) rotateX(var(--card-tilt-x, 0deg)) rotateY(var(--card-tilt-y, 0deg)) translateY(0);
+    transition: transform .26s ease, border-color .26s ease, box-shadow .26s ease, filter .26s ease;
+    will-change: transform;
+  }
+  body.home-polish .home-tilt-card::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    background:
+      radial-gradient(circle at var(--card-glow-x) var(--card-glow-y), rgba(124,58,237,0.18), transparent 18rem),
+      linear-gradient(120deg, rgba(255,255,255,0.10), transparent 24%, transparent 74%, rgba(255,255,255,0.055));
+    opacity: 0;
+    transition: opacity .26s ease;
+  }
+  body.home-polish .home-tilt-card > * {
+    position: relative;
+    z-index: 1;
+  }
+  body.home-polish .home-tilt-card:hover,
+  body.home-polish .home-tilt-card:focus-within {
+    border-color: rgba(139,92,246,0.34) !important;
+    box-shadow:
+      0 30px 90px rgba(0,0,0,0.44),
+      0 0 72px rgba(79,124,255,0.16),
+      inset 0 1px 0 rgba(255,255,255,0.12) !important;
+    filter: brightness(1.055);
+  }
+  body.home-polish .home-tilt-card:hover::after,
+  body.home-polish .home-tilt-card:focus-within::after {
+    opacity: 1;
+  }
+  body.home-polish .feat-card.home-tilt-card {
+    overflow: visible;
+  }
+  body.home-polish .feat-card.home-tilt-card::after {
+    inset: 2px;
+    border-radius: 18px;
+    overflow: hidden;
+  }
+  body.home-polish .faq-item.home-tilt-card:hover {
+    transform: perspective(1000px) rotateX(var(--card-tilt-x, 0deg)) rotateY(var(--card-tilt-y, 0deg)) translateY(-2px);
+  }
   body.home-polish .faq-item {
     background: linear-gradient(145deg, rgba(24,26,39,0.84), rgba(11,12,20,0.88)) !important;
   }
@@ -396,6 +446,9 @@
     }
     body.home-polish .pain-card {
       min-height: auto;
+      transform: none !important;
+    }
+    body.home-polish .home-tilt-card {
       transform: none !important;
     }
   }
@@ -2407,22 +2460,27 @@
 <script>
   (function(){
     if (window.matchMedia && window.matchMedia('(pointer: coarse)').matches) return;
-    var cards = document.querySelectorAll('.pain-card');
+    document.querySelectorAll('.feat-card, .glass-card, .premium-testimonial, .faq-item').forEach(function(card){
+      if (!card.classList.contains('pain-card')) card.classList.add('home-tilt-card');
+    });
+    var cards = document.querySelectorAll('.pain-card, .home-tilt-card');
     cards.forEach(function(card){
       card.addEventListener('pointermove', function(event){
         var rect = card.getBoundingClientRect();
         var x = (event.clientX - rect.left) / rect.width;
         var y = (event.clientY - rect.top) / rect.height;
-        card.style.setProperty('--glow-x', (x * 100).toFixed(1) + '%');
-        card.style.setProperty('--glow-y', (y * 100).toFixed(1) + '%');
-        card.style.setProperty('--tilt-y', ((x - 0.5) * 8).toFixed(2) + 'deg');
-        card.style.setProperty('--tilt-x', ((0.5 - y) * 7).toFixed(2) + 'deg');
+        var isPain = card.classList.contains('pain-card');
+        card.style.setProperty(isPain ? '--glow-x' : '--card-glow-x', (x * 100).toFixed(1) + '%');
+        card.style.setProperty(isPain ? '--glow-y' : '--card-glow-y', (y * 100).toFixed(1) + '%');
+        card.style.setProperty(isPain ? '--tilt-y' : '--card-tilt-y', ((x - 0.5) * 7).toFixed(2) + 'deg');
+        card.style.setProperty(isPain ? '--tilt-x' : '--card-tilt-x', ((0.5 - y) * 6).toFixed(2) + 'deg');
       });
       card.addEventListener('pointerleave', function(){
-        card.style.setProperty('--tilt-x', '0deg');
-        card.style.setProperty('--tilt-y', '0deg');
-        card.style.setProperty('--glow-x', '50%');
-        card.style.setProperty('--glow-y', '0%');
+        var isPain = card.classList.contains('pain-card');
+        card.style.setProperty(isPain ? '--tilt-x' : '--card-tilt-x', '0deg');
+        card.style.setProperty(isPain ? '--tilt-y' : '--card-tilt-y', '0deg');
+        card.style.setProperty(isPain ? '--glow-x' : '--card-glow-x', '50%');
+        card.style.setProperty(isPain ? '--glow-y' : '--card-glow-y', '0%');
       });
     });
   })();
