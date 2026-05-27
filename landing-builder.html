@@ -381,7 +381,7 @@
 </div>
 
 <script src="./supabase-config.js?v=authhandoff1"></script>
-<script src="./app.js?v=landing-expert1"></script>
+<script src="./app.js?v=landing-expert2"></script>
 <script src="./skinglow-demo-data.js"></script>
 <script src="./ai-assistant.js"></script>
 <script>
@@ -708,8 +708,9 @@ function renderVideoTemplates() {
     }
 
     await importAuthHandoff();
+    const isLocalBuilder = ['127.0.0.1', 'localhost', '::1'].includes(location.hostname);
     const session = await Auth.session({ timeoutMs: 5000 }).catch(() => null);
-    const user = session?.user || await Auth.requireAuth();
+    const user = session?.user || (isLocalBuilder ? { id: 'local-dev-user', email: 'local@luminous.dev' } : await Auth.requireAuth());
     if (!user) return;
 
     const profile = await DB.profiles.get(user.id).catch(() => null);
@@ -824,6 +825,36 @@ function renderVideoTemplates() {
       }
     };
 
+    const sectionSignature = (section) => {
+      const id = section.getAttribute?.('id');
+      if (id) return `id:${id}`;
+      const heading = section.querySelector?.('h1,h2,h3,[class*="title"]')?.textContent || '';
+      const text = (heading || section.textContent || '').replace(/\s+/g, ' ').trim().slice(0, 90).toLowerCase();
+      return text ? `text:${text}` : '';
+    };
+
+    const preserveExistingSections = (beforeHtml, afterHtml) => {
+      try {
+        const before = new DOMParser().parseFromString(String(beforeHtml || ''), 'text/html');
+        const after = new DOMParser().parseFromString(String(afterHtml || ''), 'text/html');
+        const beforeSections = Array.from(before.querySelectorAll('main > section, body > section, main > header, body > header'))
+          .map(section => ({ section, sig: sectionSignature(section) }))
+          .filter(item => item.sig);
+        if (beforeSections.length < 3) return afterHtml;
+        const afterSigs = new Set(Array.from(after.querySelectorAll('main > section, body > section, main > header, body > header')).map(sectionSignature).filter(Boolean));
+        const afterRoot = after.querySelector('main') || after.body;
+        beforeSections.forEach(({ section, sig }) => {
+          if (!afterSigs.has(sig)) {
+            afterRoot.appendChild(after.importNode(section, true));
+            afterSigs.add(sig);
+          }
+        });
+        return '<!DOCTYPE html>\n' + after.documentElement.outerHTML;
+      } catch {
+        return afterHtml;
+      }
+    };
+
     const wantsImages = (text) => /imagen|im[aá]genes|foto|fotos|placeholder|placehold|placebo|pollinations|visual/i.test(String(text || ''));
     const wantsInteractive = (text) => /interactiv|animaci[oó]n|animaciones|faq|acorde[oó]n|tabs|contador|parallax|click/i.test(String(text || ''));
 
@@ -870,8 +901,29 @@ function renderVideoTemplates() {
       reader.readAsDataURL(file);
     });
 
-    const sanitizeGeneratedLanding = (html) => {
+    const stripVisibleScriptText = (html) => {
       let output = String(html || '');
+      output = output.replace(/\(function\(\)\{var blocks=\[\]\.slice\.call\(document\.querySelectorAll\([\s\S]*?luminous-faq-answer[\s\S]*?\}\)\(\);?/gi, '');
+      output = output.replace(/\(function\(\)\{[\s\S]{0,3500}?IntersectionObserver[\s\S]{0,3500}?luminous-faq-answer[\s\S]{0,900}?\}\)\(\);?/gi, '');
+      output = output.replace(/document\.querySelectorAll\([\s\S]{0,1600}?addEventListener\(['"]click['"][\s\S]{0,1600}?luminous-faq-open[\s\S]{0,1600}?;?/gi, '');
+      try {
+        const doc = new DOMParser().parseFromString(output, 'text/html');
+        const walker = doc.createTreeWalker(doc.body || doc, NodeFilter.SHOW_TEXT);
+        const bad = [];
+        while (walker.nextNode()) {
+          const parentTag = walker.currentNode.parentElement?.tagName;
+          if (parentTag === 'SCRIPT' || parentTag === 'STYLE') continue;
+          const value = walker.currentNode.nodeValue || '';
+          if (/document\.querySelectorAll|IntersectionObserver|luminous-faq-answer|\(function\(\)\{var blocks=|querySelectorAll\('section,header/.test(value)) bad.push(walker.currentNode);
+        }
+        bad.forEach(node => node.parentNode?.removeChild(node));
+        output = '<!DOCTYPE html>\n' + doc.documentElement.outerHTML;
+      } catch {}
+      return output;
+    };
+
+    const sanitizeGeneratedLanding = (html) => {
+      let output = stripVisibleScriptText(html);
       output = output.replace(/\[data-luminous-reveal\]\{[\s\S]{0,900}?max-height:260px\}\s*/gi, '');
       output = output.replace(/\s(?:href|formaction)=["'](?:\.\/|\/)?(?:landing-builder|dashboard|quiz|ebook-builder|generador-ia|login)[^"']*["']/gi, ' href="#"');
       output = output.replace(/\saction=["'][^"']*["']/gi, '');
@@ -948,7 +1000,7 @@ function renderVideoTemplates() {
         imgs.forEach((img, idx) => {
           const target = targets[idx % targets.length];
           const clone = img.cloneNode(true);
-          clone.className = 'mt-8 w-full max-h-[420px] rounded-3xl object-cover shadow-2xl border border-white/10';
+          clone.className = 'mt-8 w-full max-w-2xl mx-auto max-h-[420px] rounded-3xl object-cover shadow-2xl border border-white/10';
           const h = target.querySelector('h2,h3,p');
           if (h?.parentNode) h.parentNode.insertBefore(clone, h.nextSibling);
           else target.appendChild(clone);
@@ -1005,10 +1057,10 @@ function renderVideoTemplates() {
           const target = targets[t++ % targets.length];
           const clone = el.cloneNode(true);
           clone.className = clone.className || 'mt-8 w-full rounded-3xl object-cover shadow-2xl';
-          if (clone.tagName === 'IMG') clone.className = 'mt-8 w-full max-h-[430px] rounded-3xl object-cover shadow-2xl border border-white/10';
+          if (clone.tagName === 'IMG') clone.className = 'mt-8 w-full max-w-2xl mx-auto max-h-[430px] rounded-3xl object-cover shadow-2xl border border-white/10';
           if (clone.matches?.('[data-upload-slot="true"]')) {
-            clone.className = 'mt-8 flex min-h-[260px] w-full items-center justify-center rounded-3xl border-2 border-dashed border-white/25 bg-white/10 p-8 text-center text-sm font-bold text-white/75';
-            clone.setAttribute('data-image-class', 'mt-8 w-full max-h-[430px] rounded-3xl object-cover shadow-2xl border border-white/10');
+            clone.className = 'mt-8 flex min-h-[260px] w-full max-w-2xl mx-auto items-center justify-center rounded-3xl border-2 border-dashed border-white/25 bg-white/10 p-8 text-center text-sm font-bold text-white/75';
+            clone.setAttribute('data-image-class', 'mt-8 w-full max-w-2xl mx-auto max-h-[430px] rounded-3xl object-cover shadow-2xl border border-white/10');
           }
           const anchor = mediaInsertionPoint(target);
           anchor.insertAdjacentElement(anchor === target ? 'beforeend' : 'afterend', clone);
@@ -1220,9 +1272,9 @@ function renderVideoTemplates() {
       try {
         const doc = new DOMParser().parseFromString(String(html || ''), 'text/html');
         const map = {
-          small: { img: 'mt-6 w-full max-h-[260px] rounded-2xl object-cover shadow-xl border border-white/10', slot: 'mt-6 flex min-h-[150px] w-full items-center justify-center rounded-2xl border-2 border-dashed border-white/25 bg-white/10 p-5 text-center text-xs font-bold text-white/75' },
-          medium: { img: 'mt-8 w-full max-h-[360px] rounded-3xl object-cover shadow-2xl border border-white/10', slot: 'mt-8 flex min-h-[220px] w-full items-center justify-center rounded-3xl border-2 border-dashed border-white/25 bg-white/10 p-6 text-center text-sm font-bold text-white/75' },
-          large: { img: 'mt-10 w-full max-h-[520px] rounded-[2rem] object-cover shadow-2xl border border-white/10', slot: 'mt-10 flex min-h-[360px] w-full items-center justify-center rounded-[2rem] border-2 border-dashed border-white/25 bg-white/10 p-8 text-center text-sm font-bold text-white/75' },
+          small: { img: 'mt-6 w-full max-w-md mx-auto max-h-[260px] rounded-2xl object-cover shadow-xl border border-white/10', slot: 'mt-6 flex min-h-[150px] w-full max-w-md mx-auto items-center justify-center rounded-2xl border-2 border-dashed border-white/25 bg-white/10 p-5 text-center text-xs font-bold text-white/75' },
+          medium: { img: 'mt-8 w-full max-w-2xl mx-auto max-h-[360px] rounded-3xl object-cover shadow-2xl border border-white/10', slot: 'mt-8 flex min-h-[220px] w-full max-w-2xl mx-auto items-center justify-center rounded-3xl border-2 border-dashed border-white/25 bg-white/10 p-6 text-center text-sm font-bold text-white/75' },
+          large: { img: 'mt-10 w-full max-w-5xl mx-auto max-h-[520px] rounded-[2rem] object-cover shadow-2xl border border-white/10', slot: 'mt-10 flex min-h-[360px] w-full max-w-5xl mx-auto items-center justify-center rounded-[2rem] border-2 border-dashed border-white/25 bg-white/10 p-8 text-center text-sm font-bold text-white/75' },
         };
         const selected = map[size] || map.medium;
         doc.querySelectorAll('img').forEach(img => {
@@ -1508,9 +1560,9 @@ function renderVideoTemplates() {
     const applyMediaSizeToElement = (el, size = 'medium') => {
       if (!el) return;
       const map = {
-        small: { img: 'width:100%;max-height:260px;object-fit:cover;', slot: 'min-height:150px;padding:20px;' },
-        medium: { img: 'width:100%;max-height:360px;object-fit:cover;', slot: 'min-height:220px;padding:24px;' },
-        large: { img: 'width:100%;max-height:520px;object-fit:cover;', slot: 'min-height:360px;padding:32px;' },
+        small: { img: 'width:100%;max-width:28rem;margin-left:auto;margin-right:auto;max-height:260px;object-fit:cover;', slot: 'min-height:150px;padding:20px;max-width:28rem;margin-left:auto;margin-right:auto;' },
+        medium: { img: 'width:100%;max-width:42rem;margin-left:auto;margin-right:auto;max-height:360px;object-fit:cover;', slot: 'min-height:220px;padding:24px;max-width:42rem;margin-left:auto;margin-right:auto;' },
+        large: { img: 'width:100%;max-width:64rem;margin-left:auto;margin-right:auto;max-height:520px;object-fit:cover;', slot: 'min-height:360px;padding:32px;max-width:64rem;margin-left:auto;margin-right:auto;' },
       };
       const selected = map[size] || map.medium;
       const kind = getMediaKind(el);
@@ -2081,7 +2133,7 @@ function renderVideoTemplates() {
           currentHtml.slice(0, 28000)
         ].join('\n\n');
         const revisedHtml = await AI.generateLanding(revisionBrief, []);
-        const html = postProcessLandingHtml(revisedHtml, msg);
+        const html = postProcessLandingHtml(preserveExistingSections(currentHtml, revisedHtml), msg);
         if (visibleFingerprint(html) === visibleFingerprint(currentHtml)) {
           throw new Error('La IA no hizo un cambio visible. No guardé una respuesta falsa; intenta con una orden más concreta o usa edición visual.');
         }
