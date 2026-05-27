@@ -328,17 +328,13 @@
     content: "";
     position: absolute;
     inset: 0;
-    z-index: 0;
+    z-index: 2;
     pointer-events: none;
     background:
       radial-gradient(circle at var(--card-glow-x) var(--card-glow-y), rgba(124,58,237,0.18), transparent 18rem),
       linear-gradient(120deg, rgba(255,255,255,0.10), transparent 24%, transparent 74%, rgba(255,255,255,0.055));
     opacity: 0;
     transition: opacity .26s ease;
-  }
-  body.home-polish .home-tilt-card > * {
-    position: relative;
-    z-index: 1;
   }
   body.home-polish .home-tilt-card:hover,
   body.home-polish .home-tilt-card:focus-within {
@@ -363,6 +359,13 @@
   }
   body.home-polish .faq-item.home-tilt-card:hover {
     transform: perspective(1000px) rotateX(var(--card-tilt-x, 0deg)) rotateY(var(--card-tilt-y, 0deg)) translateY(-2px);
+  }
+  body.home-polish #pricing .home-tilt-card {
+    transform: translateY(0);
+  }
+  body.home-polish #pricing .home-tilt-card:hover,
+  body.home-polish #pricing .home-tilt-card:focus-within {
+    transform: translateY(-4px);
   }
   body.home-polish .faq-item {
     background: linear-gradient(145deg, rgba(24,26,39,0.84), rgba(11,12,20,0.88)) !important;
