@@ -1318,6 +1318,14 @@ function renderVideoTemplates() {
       .replace(/brightness\(\s*0\.[0-7]\s*\)/gi, 'brightness(0.92)')
       .replace(/\bbrightness-(?:50|75)\b/g, 'brightness-95');
 
+    const shouldRebuildLanding = (instruction = '') =>
+      /rehaz|reconstru|hazla completa|landing completa|faltan secciones|no me hizo.*secciones|no hizo.*secciones|qued[oó].*enred|enrredo|enredo|desorden|organiza.*landing|ordena.*landing/i.test(String(instruction || ''));
+
+    const rebuildControlledLanding = (instruction = '') => {
+      const rebuilt = localLandingHtml(instruction);
+      return postProcessLandingHtml(rebuilt, `${instruction}\nLanding completa con hero, problema, beneficios, contenido, bonos, testimonios, FAQ, precio y CTA final.`);
+    };
+
     const resizeLandingMedia = (html, size = 'medium') => {
       try {
         const doc = new DOMParser().parseFromString(String(html || ''), 'text/html');
@@ -1474,6 +1482,12 @@ function renderVideoTemplates() {
       if (!landing?.html) return false;
       let next = landing.html;
       const before = visibleFingerprint(next);
+      if (shouldRebuildLanding(instruction)) {
+        next = rebuildControlledLanding(instruction);
+        landing.html = next;
+        renderPreview(next);
+        return true;
+      }
       const replacement = parseTextReplacement(instruction);
       if (replacement) next = replaceVisibleText(next, replacement.from, replacement.to);
       if (/quita|borra|elimina|arregla|corrige|sale|aparece/i.test(instruction) && /javascript|c[oó]digo|function|queryselector|intersectionobserver|checklist cro|error/i.test(instruction)) {
