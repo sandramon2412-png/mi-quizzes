@@ -274,6 +274,66 @@
   body.home-polish .faq-item {
     background: linear-gradient(145deg, rgba(24,26,39,0.84), rgba(11,12,20,0.88)) !important;
   }
+  body.home-polish .pain-card {
+    isolation: isolate;
+    min-height: 350px;
+    cursor: default;
+    transform: perspective(900px) rotateX(var(--tilt-x, 0deg)) rotateY(var(--tilt-y, 0deg)) translateY(0);
+    background:
+      linear-gradient(145deg, rgba(255,255,255,0.105), rgba(255,255,255,0.026) 42%, rgba(10,12,22,0.76)),
+      radial-gradient(circle at var(--glow-x, 50%) var(--glow-y, 0%), rgba(124,58,237,0.22), transparent 34rem) !important;
+    border: 1px solid rgba(255,255,255,0.105) !important;
+    box-shadow:
+      0 28px 85px rgba(0,0,0,0.42),
+      0 0 0 1px rgba(255,255,255,0.035) inset,
+      0 1px 0 rgba(255,255,255,0.12) inset;
+    backdrop-filter: blur(24px) saturate(1.35);
+    -webkit-backdrop-filter: blur(24px) saturate(1.35);
+    transition: transform .28s ease, border-color .28s ease, box-shadow .28s ease, filter .28s ease;
+  }
+  body.home-polish .pain-card::before {
+    content: "";
+    position: absolute;
+    inset: 1px;
+    z-index: -1;
+    border-radius: 15px;
+    background:
+      linear-gradient(120deg, rgba(255,255,255,0.18), transparent 22%, transparent 72%, rgba(255,255,255,0.06)),
+      radial-gradient(circle at 18% 0%, rgba(79,124,255,0.18), transparent 18rem);
+    opacity: .72;
+    pointer-events: none;
+  }
+  body.home-polish .pain-card::after {
+    content: "";
+    position: absolute;
+    inset: auto 24px -1px 24px;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.42), transparent);
+    opacity: 0;
+    transition: opacity .28s ease;
+  }
+  body.home-polish .pain-card:hover {
+    border-color: rgba(139,92,246,0.34) !important;
+    box-shadow:
+      0 34px 105px rgba(0,0,0,0.54),
+      0 0 72px rgba(79,124,255,0.18),
+      0 0 0 1px rgba(255,255,255,0.075) inset,
+      0 1px 0 rgba(255,255,255,0.18) inset;
+    filter: brightness(1.06);
+  }
+  body.home-polish .pain-card:hover::after {
+    opacity: 1;
+  }
+  body.home-polish .pain-card .pain-mock {
+    background: linear-gradient(145deg, rgba(4,5,12,0.62), rgba(17,18,31,0.56)) !important;
+    border-color: rgba(255,255,255,0.08) !important;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.05), 0 14px 38px rgba(0,0,0,0.22);
+  }
+  body.home-polish .pain-card .pain-row {
+    background: linear-gradient(135deg, rgba(255,255,255,0.055), rgba(255,255,255,0.018)) !important;
+    border-color: rgba(255,255,255,0.075) !important;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.035);
+  }
   body.home-polish .section-divider {
     opacity: 0.95;
     background: linear-gradient(90deg, transparent 0%, rgba(79,124,255,0.18) 22%, rgba(236,72,153,0.34) 50%, rgba(45,212,191,0.18) 78%, transparent 100%) !important;
@@ -290,6 +350,10 @@
     body.home-polish .glass-card,
     body.home-polish .feat-card-inner {
       box-shadow: 0 14px 38px rgba(0,0,0,0.24), inset 0 1px 0 rgba(255,255,255,0.04);
+    }
+    body.home-polish .pain-card {
+      min-height: auto;
+      transform: none !important;
     }
   }
 </style>
@@ -764,7 +828,7 @@
     <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
 
       <!-- Card 1: PDFs -->
-      <div class="rounded-2xl p-6 border relative overflow-hidden" style="background:linear-gradient(180deg,rgba(255,255,255,0.025) 0%,rgba(255,255,255,0.01) 100%);border-color:rgba(255,255,255,0.07);">
+      <div class="pain-card rounded-2xl p-6 border relative overflow-hidden" tabindex="0" style="background:linear-gradient(180deg,rgba(255,255,255,0.025) 0%,rgba(255,255,255,0.01) 100%);border-color:rgba(255,255,255,0.07);">
         <div class="absolute top-0 left-0 right-0 h-px" style="background:linear-gradient(90deg,transparent,rgba(124,58,237,0.5),transparent);"></div>
         <div class="flex items-center justify-between mb-4">
           <span class="text-[10px] font-bold uppercase tracking-[0.2em]" style="color:rgba(255,255,255,0.35);">Problema 01</span>
@@ -772,7 +836,7 @@
         </div>
         <h3 class="text-lg font-extrabold text-white mb-4 leading-tight tracking-tight">Publicas PDFs que <span class="font-serif-italic" style="color:#c084fc;font-weight:400;">nadie</span> lee.</h3>
         <!-- Visual mock: email inbox with ignored PDF -->
-        <div class="rounded-lg p-3 mb-4" style="background:rgba(0,0,0,0.3);border:1px solid rgba(255,255,255,0.05);">
+        <div class="pain-mock rounded-lg p-3 mb-4" style="background:rgba(0,0,0,0.3);border:1px solid rgba(255,255,255,0.05);">
           <div class="flex items-center gap-2 mb-2 pb-2" style="border-bottom:1px solid rgba(255,255,255,0.05);">
             <span class="material-symbols-outlined" style="font-size:13px;color:rgba(255,255,255,0.4);">inbox</span>
             <span class="text-[10px] font-semibold" style="color:rgba(255,255,255,0.45);">Bandeja de entrada</span>
@@ -792,7 +856,7 @@
       </div>
 
       <!-- Card 2: 4 tools - FEATURED -->
-      <div class="rounded-2xl p-6 border relative overflow-hidden" style="background:linear-gradient(180deg,rgba(46,91,255,0.04) 0%,rgba(255,255,255,0.01) 100%);border-color:rgba(46,91,255,0.15);">
+      <div class="pain-card rounded-2xl p-6 border relative overflow-hidden" tabindex="0" style="background:linear-gradient(180deg,rgba(46,91,255,0.04) 0%,rgba(255,255,255,0.01) 100%);border-color:rgba(46,91,255,0.15);">
         <div class="absolute top-0 left-0 right-0 h-px" style="background:linear-gradient(90deg,transparent,rgba(46,91,255,0.6),transparent);"></div>
         <div class="flex items-center justify-between mb-4">
           <span class="text-[10px] font-bold uppercase tracking-[0.2em]" style="color:rgba(255,255,255,0.35);">Problema 02</span>
@@ -801,28 +865,28 @@
         <h3 class="text-lg font-extrabold text-white mb-4 leading-tight tracking-tight">Pagas <span class="font-serif-italic" style="color:#4d7cff;font-weight:400;">cuatro</span> suscripciones.</h3>
         <!-- Visual mock: stacked tool costs -->
         <div class="space-y-1.5 mb-4">
-          <div class="flex items-center gap-2 px-3 py-2 rounded-lg" style="background:rgba(0,0,0,0.25);border:1px solid rgba(255,255,255,0.05);">
+          <div class="pain-row flex items-center gap-2 px-3 py-2 rounded-lg" style="background:rgba(0,0,0,0.25);border:1px solid rgba(255,255,255,0.05);">
             <div class="w-5 h-5 rounded-md flex items-center justify-center" style="background:rgba(255,100,100,0.15);">
               <span class="material-symbols-outlined" style="font-size:12px;color:rgba(255,150,150,0.7);">quiz</span>
             </div>
             <span class="text-[10px] flex-1" style="color:rgba(255,255,255,0.7);">Typeform</span>
             <span class="text-[10px] font-mono font-bold" style="color:rgba(255,150,150,0.8);">−$59</span>
           </div>
-          <div class="flex items-center gap-2 px-3 py-2 rounded-lg" style="background:rgba(0,0,0,0.25);border:1px solid rgba(255,255,255,0.05);">
+          <div class="pain-row flex items-center gap-2 px-3 py-2 rounded-lg" style="background:rgba(0,0,0,0.25);border:1px solid rgba(255,255,255,0.05);">
             <div class="w-5 h-5 rounded-md flex items-center justify-center" style="background:rgba(255,100,100,0.15);">
               <span class="material-symbols-outlined" style="font-size:12px;color:rgba(255,150,150,0.7);">mail</span>
             </div>
             <span class="text-[10px] flex-1" style="color:rgba(255,255,255,0.7);">Mailchimp</span>
             <span class="text-[10px] font-mono font-bold" style="color:rgba(255,150,150,0.8);">−$69</span>
           </div>
-          <div class="flex items-center gap-2 px-3 py-2 rounded-lg" style="background:rgba(0,0,0,0.25);border:1px solid rgba(255,255,255,0.05);">
+          <div class="pain-row flex items-center gap-2 px-3 py-2 rounded-lg" style="background:rgba(0,0,0,0.25);border:1px solid rgba(255,255,255,0.05);">
             <div class="w-5 h-5 rounded-md flex items-center justify-center" style="background:rgba(255,100,100,0.15);">
               <span class="material-symbols-outlined" style="font-size:12px;color:rgba(255,150,150,0.7);">smart_toy</span>
             </div>
             <span class="text-[10px] flex-1" style="color:rgba(255,255,255,0.7);">ChatBot Pro</span>
             <span class="text-[10px] font-mono font-bold" style="color:rgba(255,150,150,0.8);">−$49</span>
           </div>
-          <div class="flex items-center gap-2 px-3 py-2 rounded-lg" style="background:rgba(0,0,0,0.25);border:1px solid rgba(255,255,255,0.05);">
+          <div class="pain-row flex items-center gap-2 px-3 py-2 rounded-lg" style="background:rgba(0,0,0,0.25);border:1px solid rgba(255,255,255,0.05);">
             <div class="w-5 h-5 rounded-md flex items-center justify-center" style="background:rgba(255,100,100,0.15);">
               <span class="material-symbols-outlined" style="font-size:12px;color:rgba(255,150,150,0.7);">auto_stories</span>
             </div>
@@ -834,7 +898,7 @@
       </div>
 
       <!-- Card 3: IA en inglés -->
-      <div class="rounded-2xl p-6 border relative overflow-hidden" style="background:linear-gradient(180deg,rgba(255,255,255,0.025) 0%,rgba(255,255,255,0.01) 100%);border-color:rgba(255,255,255,0.07);">
+      <div class="pain-card rounded-2xl p-6 border relative overflow-hidden" tabindex="0" style="background:linear-gradient(180deg,rgba(255,255,255,0.025) 0%,rgba(255,255,255,0.01) 100%);border-color:rgba(255,255,255,0.07);">
         <div class="absolute top-0 left-0 right-0 h-px" style="background:linear-gradient(90deg,transparent,rgba(167,139,250,0.5),transparent);"></div>
         <div class="flex items-center justify-between mb-4">
           <span class="text-[10px] font-bold uppercase tracking-[0.2em]" style="color:rgba(255,255,255,0.35);">Problema 03</span>
@@ -842,7 +906,7 @@
         </div>
         <h3 class="text-lg font-extrabold text-white mb-4 leading-tight tracking-tight">La IA habla <span class="font-serif-italic" style="color:#a78bfa;font-weight:400;">gringo</span>, no tú.</h3>
         <!-- Visual mock: translate flow with awkward output -->
-        <div class="rounded-lg p-3 mb-4" style="background:rgba(0,0,0,0.3);border:1px solid rgba(255,255,255,0.05);">
+        <div class="pain-mock rounded-lg p-3 mb-4" style="background:rgba(0,0,0,0.3);border:1px solid rgba(255,255,255,0.05);">
           <div class="flex items-center gap-2 mb-2 pb-2" style="border-bottom:1px solid rgba(255,255,255,0.05);">
             <span class="material-symbols-outlined" style="font-size:13px;color:rgba(255,255,255,0.4);">translate</span>
             <span class="text-[10px] font-semibold" style="color:rgba(255,255,255,0.45);">ChatGPT → ES</span>
@@ -2288,6 +2352,28 @@
   Empezar gratis
 </a>
 <script>
+  (function(){
+    if (window.matchMedia && window.matchMedia('(pointer: coarse)').matches) return;
+    var cards = document.querySelectorAll('.pain-card');
+    cards.forEach(function(card){
+      card.addEventListener('pointermove', function(event){
+        var rect = card.getBoundingClientRect();
+        var x = (event.clientX - rect.left) / rect.width;
+        var y = (event.clientY - rect.top) / rect.height;
+        card.style.setProperty('--glow-x', (x * 100).toFixed(1) + '%');
+        card.style.setProperty('--glow-y', (y * 100).toFixed(1) + '%');
+        card.style.setProperty('--tilt-y', ((x - 0.5) * 8).toFixed(2) + 'deg');
+        card.style.setProperty('--tilt-x', ((0.5 - y) * 7).toFixed(2) + 'deg');
+      });
+      card.addEventListener('pointerleave', function(){
+        card.style.setProperty('--tilt-x', '0deg');
+        card.style.setProperty('--tilt-y', '0deg');
+        card.style.setProperty('--glow-x', '50%');
+        card.style.setProperty('--glow-y', '0%');
+      });
+    });
+  })();
+
   (function(){
     var cta = document.getElementById('sticky-cta');
     if(!cta) return;
