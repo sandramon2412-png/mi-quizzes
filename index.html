@@ -605,6 +605,128 @@
     opacity: 0.95;
     background: linear-gradient(90deg, transparent 0%, rgba(79,124,255,0.18) 22%, rgba(236,72,153,0.34) 50%, rgba(45,212,191,0.18) 78%, transparent 100%) !important;
   }
+  body.home-polish .solution-launch-card {
+    isolation: isolate;
+    background:
+      radial-gradient(circle at 8% 18%, rgba(45,212,191,0.18), transparent 20rem),
+      radial-gradient(circle at 76% 8%, rgba(236,72,153,0.22), transparent 21rem),
+      radial-gradient(circle at 55% 100%, rgba(79,124,255,0.24), transparent 24rem),
+      linear-gradient(135deg, rgba(255,255,255,0.13), rgba(255,255,255,0.035)) !important;
+    border: 1px solid rgba(255,255,255,0.18) !important;
+    box-shadow:
+      0 34px 110px rgba(0,0,0,0.56),
+      0 0 0 1px rgba(255,255,255,0.04) inset,
+      0 1px 0 rgba(255,255,255,0.22) inset,
+      0 0 120px rgba(124,58,237,0.18);
+    backdrop-filter: blur(24px) saturate(145%);
+  }
+  body.home-polish .solution-launch-card::before {
+    content: "";
+    position: absolute;
+    inset: -2px;
+    z-index: -2;
+    border-radius: inherit;
+    background:
+      conic-gradient(from 210deg at 50% 50%, rgba(79,124,255,0), rgba(79,124,255,0.55), rgba(236,72,153,0.5), rgba(45,212,191,0.5), rgba(79,124,255,0));
+    filter: blur(22px);
+    opacity: .58;
+    animation: solutionAura 8s linear infinite;
+  }
+  body.home-polish .solution-launch-card::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    pointer-events: none;
+    background:
+      linear-gradient(115deg, transparent 0%, transparent 34%, rgba(255,255,255,0.20) 44%, transparent 56%, transparent 100%),
+      repeating-linear-gradient(90deg, rgba(255,255,255,0.04) 0 1px, transparent 1px 72px);
+    mix-blend-mode: screen;
+    opacity: .38;
+    transform: translateX(-24%);
+    animation: solutionSweep 7s ease-in-out infinite;
+  }
+  @keyframes solutionAura {
+    to { transform: rotate(360deg); }
+  }
+  @keyframes solutionSweep {
+    0%, 100% { transform: translateX(-30%); opacity: .18; }
+    46%, 56% { transform: translateX(26%); opacity: .45; }
+  }
+  body.home-polish .solution-orb {
+    position: absolute;
+    right: clamp(1rem, 5vw, 4rem);
+    top: 50%;
+    width: 9rem;
+    height: 9rem;
+    transform: translateY(-50%);
+    border-radius: 999px;
+    background:
+      radial-gradient(circle at 35% 32%, rgba(255,255,255,0.78), rgba(255,255,255,0.12) 18%, transparent 42%),
+      conic-gradient(from 160deg, #4d7cff, #a78bfa, #ec4899, #2dd4bf, #4d7cff);
+    opacity: .28;
+    filter: blur(.2px);
+    box-shadow: 0 0 95px rgba(124,58,237,0.58);
+    animation: solutionFloat 5s ease-in-out infinite;
+  }
+  @keyframes solutionFloat {
+    0%, 100% { transform: translateY(-50%) translateX(0) scale(1); }
+    50% { transform: translateY(-57%) translateX(-8px) scale(1.04); }
+  }
+  body.home-polish .solution-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: .45rem;
+    padding: .55rem .75rem;
+    border-radius: 999px;
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.13);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.10);
+  }
+  body.home-polish .solution-chip span:last-child {
+    color: rgba(255,255,255,0.82) !important;
+  }
+  body.home-polish .solution-cta {
+    position: relative;
+    overflow: hidden;
+    border: 1px solid rgba(255,255,255,0.18);
+    box-shadow: 0 18px 55px rgba(79,124,255,0.34), 0 0 70px rgba(236,72,153,0.22) !important;
+  }
+  body.home-polish .solution-cta::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(100deg, transparent 0%, rgba(255,255,255,0.22) 48%, transparent 70%);
+    transform: translateX(-120%);
+    transition: transform .65s ease;
+  }
+  body.home-polish .solution-cta:hover::before {
+    transform: translateX(120%);
+  }
+  body.home-polish .solution-trust-section {
+    background:
+      radial-gradient(circle at 50% 0%, rgba(79,124,255,0.12), transparent 26rem),
+      linear-gradient(180deg,#080810 0%,#0a0a15 100%) !important;
+  }
+  body.home-polish .solution-trust-strip {
+    width: min(100%, 1050px);
+    margin-inline: auto;
+    padding: 1rem;
+    border-radius: 999px;
+    background: linear-gradient(135deg, rgba(255,255,255,0.075), rgba(255,255,255,0.025));
+    border: 1px solid rgba(255,255,255,0.10);
+    box-shadow: 0 24px 90px rgba(0,0,0,0.38), inset 0 1px 0 rgba(255,255,255,0.08);
+  }
+  body.home-polish .solution-trust-section .brand-logo-item {
+    color: rgba(255,255,255,0.58);
+    padding: .5rem .7rem;
+    border-radius: 999px;
+  }
+  body.home-polish .solution-trust-section .brand-logo-item:hover {
+    color: #fff;
+    background: rgba(255,255,255,0.07);
+    transform: translateY(-1px);
+  }
   body.home-polish footer {
     background: rgba(6,7,12,0.88) !important;
     border-top: 1px solid rgba(255,255,255,0.08);
@@ -621,6 +743,19 @@
     body.home-polish .pain-card {
       min-height: auto;
       transform: none !important;
+    }
+    body.home-polish .solution-launch-card {
+      border-radius: 24px !important;
+    }
+    body.home-polish .solution-orb {
+      right: -2rem;
+      top: 1rem;
+      width: 7rem;
+      height: 7rem;
+      transform: none;
+    }
+    body.home-polish .solution-trust-strip {
+      border-radius: 24px;
     }
     body.home-polish .home-tilt-card {
       transform: none !important;
@@ -1207,9 +1342,10 @@
     </div>
 
     <!-- Solution bridge + CTA -->
-    <div class="relative rounded-3xl p-8 md:p-10 overflow-hidden" style="background:linear-gradient(135deg,rgba(46,91,255,0.08) 0%,rgba(124,58,237,0.05) 100%);border:1px solid rgba(167,139,250,0.18);">
+    <div class="solution-launch-card relative rounded-3xl p-8 md:p-10 overflow-hidden">
       <!-- Ambient glow -->
       <div class="absolute inset-0 pointer-events-none" style="background:radial-gradient(ellipse 60% 80% at 50% 0%,rgba(46,91,255,0.15) 0%,transparent 70%);"></div>
+      <div class="solution-orb pointer-events-none"></div>
 
       <div class="relative grid md:grid-cols-[1fr_auto] gap-8 items-center">
         <div>
@@ -1217,23 +1353,23 @@
           <h3 class="text-2xl md:text-3xl lg:text-4xl font-extrabold tracking-[-0.02em] leading-[1.1] text-white">
             Una plataforma. Un pago. <br class="hidden md:block"><span class="font-serif-italic" style="background:linear-gradient(135deg,#4d7cff,#a78bfa);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;font-weight:400;">IA que piensa en español.</span>
           </h3>
-          <div class="flex flex-wrap items-center gap-x-5 gap-y-2 mt-5 text-xs">
-            <div class="flex items-center gap-1.5">
+          <div class="flex flex-wrap items-center gap-2 mt-5 text-xs">
+            <div class="solution-chip">
               <span class="material-symbols-outlined" style="font-size:14px;color:#4d7cff;font-variation-settings:'FILL' 1">check_circle</span>
               <span style="color:rgba(255,255,255,0.7);">Todo en un solo login</span>
             </div>
-            <div class="flex items-center gap-1.5">
+            <div class="solution-chip">
               <span class="material-symbols-outlined" style="font-size:14px;color:#4d7cff;font-variation-settings:'FILL' 1">check_circle</span>
               <span style="color:rgba(255,255,255,0.7);">Entrenada en tu nicho</span>
             </div>
-            <div class="flex items-center gap-1.5">
+            <div class="solution-chip">
               <span class="material-symbols-outlined" style="font-size:14px;color:#4d7cff;font-variation-settings:'FILL' 1">check_circle</span>
               <span style="color:rgba(255,255,255,0.7);">Desde $9/mes</span>
             </div>
           </div>
         </div>
         <div class="flex flex-col items-start md:items-end gap-3">
-          <a href="./registro.html" class="primary-gradient inline-flex items-center gap-2 px-8 py-4 rounded-xl font-bold text-white text-sm hover:scale-[1.02] active:scale-95 transition-all shrink-0" style="box-shadow:0 0 36px rgba(46,91,255,0.4);">
+          <a href="./registro.html" class="solution-cta primary-gradient inline-flex items-center gap-2 px-8 py-4 rounded-xl font-bold text-white text-sm hover:scale-[1.02] active:scale-95 transition-all shrink-0" style="box-shadow:0 0 36px rgba(46,91,255,0.4);">
             <span class="material-symbols-outlined" style="font-size:18px;font-variation-settings:'FILL' 1">bolt</span>
             Empezar gratis ahora
           </a>
@@ -1248,12 +1384,12 @@
 <div class="section-divider mx-auto max-w-5xl"></div>
 
 <!-- ===== FEATURED / SOCIAL PROOF PREMIUM ===== -->
-<section class="pt-20 pb-16 px-6" style="background:#080810;">
+<section class="solution-trust-section pt-20 pb-16 px-6" style="background:#080810;">
   <div class="max-w-6xl mx-auto">
     <!-- "Usado por" strip -->
     <div class="text-center mb-14">
       <p class="text-[10px] font-bold tracking-[0.25em] uppercase mb-6" style="color:rgba(255,255,255,0.3);">Usado por creadores de toda la región</p>
-      <div class="flex items-center justify-center gap-x-10 gap-y-4 flex-wrap">
+      <div class="solution-trust-strip flex items-center justify-center gap-x-4 gap-y-3 flex-wrap">
         <span class="brand-logo-item flex items-center gap-2">
           <span class="material-symbols-outlined" style="font-size:18px;">self_improvement</span>
           Coaches &amp; Mentores
