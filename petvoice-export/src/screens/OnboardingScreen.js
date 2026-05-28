@@ -18,14 +18,14 @@ const C = {
 };
 
 const GLASS = {
-  backgroundColor: "rgba(255,255,255,0.88)",
+  backgroundColor: "rgba(255,255,255,0.92)",
   borderWidth: 1,
-  borderColor: "rgba(255,255,255,0.55)",
+  borderColor: "rgba(0,0,0,0.05)",
   shadowColor: "#4F46E5",
   shadowOffset: { width: 0, height: 8 },
-  shadowOpacity: 0.12,
-  shadowRadius: 24,
-  elevation: 8,
+  shadowOpacity: 0.14,
+  shadowRadius: 28,
+  elevation: 10,
 };
 
 // ─── PressableScale ───────────────────────────────────────────────────────────
@@ -305,12 +305,18 @@ const s = StyleSheet.create({
 
   speciesRow: { flexDirection: "row", gap: 14 },
   speciesGradWrap: { borderRadius: 18, padding: 2 },
-  speciesInnerActive: { borderRadius: 16, alignItems: "center", justifyContent: "center", paddingVertical: 28, backgroundColor: "#EEF2FF" },
-  speciesInnerInactive: {
-    alignItems: "center", justifyContent: "center", paddingVertical: 28,
-    backgroundColor: "rgba(255,255,255,0.7)", borderRadius: 16, borderWidth: 2, borderColor: "rgba(0,0,0,0.08)",
+  speciesInnerActive: {
+    borderRadius: 16, flexDirection: "column",
+    alignItems: "center", justifyContent: "center",
+    paddingVertical: 32, gap: 12, backgroundColor: "#EEF2FF",
   },
-  speciesLabel: { fontFamily: "Inter_600SemiBold", fontSize: 15, color: C.muted, marginTop: 10 },
+  speciesInnerInactive: {
+    flexDirection: "column", alignItems: "center", justifyContent: "center",
+    paddingVertical: 32, gap: 12,
+    backgroundColor: "rgba(255,255,255,0.7)", borderRadius: 16,
+    borderWidth: 2, borderColor: "rgba(0,0,0,0.08)",
+  },
+  speciesLabel: { fontFamily: "Inter_600SemiBold", fontSize: 15, color: C.muted },
 
   fieldLabel: { fontFamily: "Inter_700Bold", fontSize: 13, color: C.text, marginBottom: 9 },
   input: {

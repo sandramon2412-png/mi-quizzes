@@ -21,10 +21,10 @@ const C = {
 };
 
 const GLASS = {
-  backgroundColor: C.card,
-  borderWidth: 1, borderColor: "rgba(255,255,255,0.55)",
+  backgroundColor: "rgba(255,255,255,0.92)",
+  borderWidth: 1, borderColor: "rgba(0,0,0,0.05)",
   shadowColor: "#4F46E5", shadowOffset: { width: 0, height: 6 },
-  shadowOpacity: 0.10, shadowRadius: 20, elevation: 7,
+  shadowOpacity: 0.12, shadowRadius: 24, elevation: 9,
 };
 
 const POSTURES_CAT = [
@@ -193,7 +193,7 @@ export default function HomeScreen({ navigation }) {
       <LinearGradient colors={["#F8FAFC", "#EEF2FF", "#F5F3FF"]} style={StyleSheet.absoluteFill} />
       <Animated.View pointerEvents="none" style={[StyleSheet.absoluteFill, { backgroundColor: "#000", opacity: dimAnim }]} />
 
-      <SafeAreaView style={{ flex: 1 }} edges={["top"]}>
+      <SafeAreaView style={{ flex: 1 }} edges={["top", "bottom"]}>
         <StatusBar barStyle="dark-content" />
         <ScrollView style={{ flex: 1 }} contentContainerStyle={s.scrollContent} showsVerticalScrollIndicator={false}>
 
