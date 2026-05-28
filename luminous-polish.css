@@ -239,6 +239,8 @@ body.studio-page header {
   display: block;
   object-fit: cover;
   object-position: center;
+  transform: scale(1.85);
+  transform-origin: center;
 }
 
 body.studio-page main:not(.print-doc),
