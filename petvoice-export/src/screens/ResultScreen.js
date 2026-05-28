@@ -150,6 +150,7 @@ export default function ResultScreen({ navigation }) {
             style={[styles.heroSection, { opacity: heroOpacity, transform: [{ translateY: heroSlide }] }]}
           >
             <View style={[styles.emotionPill, { backgroundColor: emo.pillBg }]}>
+              <MaterialCommunityIcons name={emo.icon} size={14} color={emo.pillText} style={{ marginRight: 5 }} />
               <Text style={[styles.emotionPillText, { color: emo.pillText }]}>
                 {result.emocion_principal}
               </Text>
@@ -224,16 +225,16 @@ const styles = StyleSheet.create({
   backBtn: {
     width: 42, height: 42, borderRadius: 21,
     alignItems: "center", justifyContent: "center",
-    shadowColor: "#4F46E5", shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3, shadowRadius: 8, elevation: 5,
+    shadowColor: "#0F172A", shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.14, shadowRadius: 6, elevation: 3,
   },
   topBarTitle: { fontFamily: "Inter_700Bold", fontSize: 18, color: "#1E293B" },
 
   avatarSection: { alignItems: "center", paddingTop: 8, paddingBottom: 28 },
   avatarBorder: {
     width: 88, height: 88, borderRadius: 44, padding: 3,
-    shadowColor: "#4F46E5", shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.22, shadowRadius: 14, elevation: 7,
+    shadowColor: "#0F172A", shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.10, shadowRadius: 12, elevation: 5,
   },
   petCircle: { width: "100%", height: "100%", borderRadius: 41 },
   petCircleFallback: {
@@ -247,14 +248,15 @@ const styles = StyleSheet.create({
   heroSection: { paddingHorizontal: 24, marginBottom: 28 },
   emotionPill: {
     alignSelf: "flex-start",
+    flexDirection: "row", alignItems: "center",
     borderRadius: 9999, paddingHorizontal: 14, paddingVertical: 6, marginBottom: 16,
   },
   emotionPillText: { fontFamily: "Inter_700Bold", fontSize: 13, letterSpacing: 0.1 },
   translationCard: {
     borderRadius: 20, padding: 20,
-    borderWidth: 1, borderColor: "rgba(0,0,0,0.06)",
-    shadowColor: "#4F46E5", shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.08, shadowRadius: 16, elevation: 5,
+    borderWidth: 1, borderColor: "rgba(255,255,255,0.65)",
+    shadowColor: "#0F172A", shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.05, shadowRadius: 12, elevation: 2,
   },
   translationHero: {
     fontFamily: "Inter_500Medium", fontSize: 18,
@@ -267,8 +269,8 @@ const styles = StyleSheet.create({
     backgroundColor: "rgba(255,255,255,0.92)",
     borderRadius: 24,
     borderWidth: 1, borderColor: "rgba(0,0,0,0.05)",
-    shadowColor: "#4F46E5", shadowOffset: { width: 0, height: 6 },
-    shadowOpacity: 0.10, shadowRadius: 24, elevation: 8,
+    shadowColor: "#0F172A", shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.06, shadowRadius: 16, elevation: 5,
     overflow: "hidden",
   },
   confSection: { padding: 20, paddingBottom: 16 },

@@ -23,8 +23,8 @@ const C = {
 const GLASS = {
   backgroundColor: "rgba(255,255,255,0.92)",
   borderWidth: 1, borderColor: "rgba(0,0,0,0.05)",
-  shadowColor: "#4F46E5", shadowOffset: { width: 0, height: 6 },
-  shadowOpacity: 0.12, shadowRadius: 24, elevation: 9,
+  shadowColor: "#0F172A", shadowOffset: { width: 0, height: 2 },
+  shadowOpacity: 0.06, shadowRadius: 12, elevation: 4,
 };
 
 const POSTURES_CAT = [
@@ -146,8 +146,13 @@ export default function HomeScreen({ navigation }) {
   const [recordingObj, setRecordingObj] = useState(null);
 
   const dimAnim = useRef(new Animated.Value(0)).current;
+  const recordingRef = useRef(null);
   const selectedEnv = ENVIRONMENTS.find(e => e.key === environment) || ENVIRONMENTS[0];
   const petInitial = pet?.name ? pet.name[0].toUpperCase() : "?";
+
+  useEffect(() => {
+    return () => { recordingRef.current?.stopAndUnloadAsync().catch(() => {}); };
+  }, []);
 
   useEffect(() => {
     Animated.timing(dimAnim, {
@@ -161,6 +166,7 @@ export default function HomeScreen({ navigation }) {
       await Audio.requestPermissionsAsync();
       await Audio.setAudioModeAsync({ allowsRecordingIOS: true, playsInSilentModeIOS: true });
       const { recording } = await Audio.Recording.createAsync(Audio.RecordingOptionsPresets.HIGH_QUALITY);
+      recordingRef.current = recording;
       setRecordingObj(recording);
       setIsRecording(true);
     } catch (e) { console.warn("startRecording:", e); }
@@ -174,6 +180,7 @@ export default function HomeScreen({ navigation }) {
       await recordingObj.stopAndUnloadAsync();
       const uri = recordingObj.getURI();
       setLastAnalysisAudio(uri);
+      recordingRef.current = null;
       setRecordingObj(null);
       setLastPosture(posture);
       setLastEnvironment(environment);
