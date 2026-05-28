@@ -150,15 +150,16 @@ export default function ResultScreen({ navigation }) {
             style={[styles.heroSection, { opacity: heroOpacity, transform: [{ translateY: heroSlide }] }]}
           >
             <View style={[styles.emotionPill, { backgroundColor: emo.pillBg }]}>
-              <MaterialCommunityIcons name={emo.icon} size={16} color={emo.pillText} style={{ marginRight: 6 }} />
               <Text style={[styles.emotionPillText, { color: emo.pillText }]}>
                 {result.emocion_principal}
               </Text>
             </View>
 
-            <Text style={styles.translationHero}>
-              {result.traduccion_humana}
-            </Text>
+            <View style={styles.translationCard}>
+              <Text style={styles.translationHero}>
+                {result.traduccion_humana}
+              </Text>
+            </View>
           </Animated.View>
 
           {/* ── Tarjeta unificada: confianza + consejo ── */}
@@ -245,13 +246,20 @@ const styles = StyleSheet.create({
   // Hero (no card)
   heroSection: { paddingHorizontal: 24, marginBottom: 28 },
   emotionPill: {
-    flexDirection: "row", alignItems: "center", alignSelf: "flex-start",
-    borderRadius: 24, paddingHorizontal: 14, paddingVertical: 7, marginBottom: 16,
+    alignSelf: "flex-start",
+    borderRadius: 9999, paddingHorizontal: 14, paddingVertical: 6, marginBottom: 16,
   },
-  emotionPillText: { fontFamily: "Inter_700Bold", fontSize: 14 },
+  emotionPillText: { fontFamily: "Inter_700Bold", fontSize: 13, letterSpacing: 0.1 },
+  translationCard: {
+    backgroundColor: "rgba(255,255,255,0.88)",
+    borderRadius: 20, padding: 20,
+    borderWidth: 1, borderColor: "rgba(0,0,0,0.05)",
+    shadowColor: "#4F46E5", shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.08, shadowRadius: 16, elevation: 5,
+  },
   translationHero: {
-    fontFamily: "Inter_600SemiBold", fontSize: 22,
-    color: "#1E293B", lineHeight: 34, letterSpacing: -0.3,
+    fontFamily: "Inter_500Medium", fontSize: 18,
+    color: "#1E293B", lineHeight: 30, letterSpacing: -0.2,
   },
 
   // Unified card

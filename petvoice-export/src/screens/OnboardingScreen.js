@@ -1,8 +1,11 @@
 import React, { useState, useRef, useEffect } from "react";
 import {
   View, Text, TextInput, TouchableOpacity, StyleSheet,
-  Image, ScrollView, Animated, StatusBar, Easing,
+  Image, ScrollView, Animated, StatusBar, Easing, Dimensions,
 } from "react-native";
+
+const { width: SCREEN_W } = Dimensions.get("window");
+const CARD_SIZE = Math.floor((SCREEN_W - 48 - 16) / 2);
 import { SafeAreaView } from "react-native-safe-area-context";
 import { LinearGradient } from "expo-linear-gradient";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
@@ -169,20 +172,16 @@ export default function OnboardingScreen({ navigation }) {
                   {[{ key: "dog", label: "Perro", icon: "dog" }, { key: "cat", label: "Gato", icon: "cat" }].map(sp => {
                     const active = species === sp.key;
                     return (
-                      <PressableScale key={sp.key} onPress={() => setSpecies(sp.key)} style={{ flex: 1 }} activeScale={0.95}>
-                        {active ? (
-                          <LinearGradient colors={["#4F46E5", "#7C3AED"]} style={s.speciesGradWrap}>
-                            <View style={s.speciesInnerActive}>
-                              <MaterialCommunityIcons name={sp.icon} size={48} color={C.indigo} />
-                              <Text style={[s.speciesLabel, { color: C.indigo }]}>{sp.label}</Text>
-                            </View>
-                          </LinearGradient>
-                        ) : (
-                          <View style={s.speciesInnerInactive}>
-                            <MaterialCommunityIcons name={sp.icon} size={48} color={C.muted} />
-                            <Text style={s.speciesLabel}>{sp.label}</Text>
-                          </View>
-                        )}
+                      <PressableScale key={sp.key} onPress={() => setSpecies(sp.key)} activeScale={0.95}>
+                        <View style={[s.speciesCard, active && s.speciesCardActive]}>
+                          <MaterialCommunityIcons
+                            name={sp.icon} size={44}
+                            color={active ? C.indigo : C.muted}
+                          />
+                          <Text style={[s.speciesLabel, active && { color: C.indigo }]}>
+                            {sp.label}
+                          </Text>
+                        </View>
                       </PressableScale>
                     );
                   })}
@@ -303,18 +302,20 @@ const s = StyleSheet.create({
   title: { fontFamily: "Inter_700Bold", fontSize: 21, color: C.text, marginBottom: 7, letterSpacing: -0.4 },
   subtitle: { fontFamily: "Inter_400Regular", fontSize: 14, color: C.muted, marginBottom: 24, lineHeight: 21 },
 
-  speciesRow: { flexDirection: "row", gap: 14 },
-  speciesGradWrap: { borderRadius: 18, padding: 2, flex: 1 },
-  speciesInnerActive: {
-    borderRadius: 16, flex: 1, flexDirection: "column",
-    alignItems: "center", justifyContent: "center",
-    paddingVertical: 32, gap: 12, backgroundColor: "#EEF2FF",
+  speciesRow: { flexDirection: "row", gap: 16, justifyContent: "center" },
+  speciesCard: {
+    width: CARD_SIZE, height: CARD_SIZE,
+    backgroundColor: "#FFFFFF", borderRadius: 16,
+    borderWidth: 1, borderColor: "#E2E8F0",
+    alignItems: "center", justifyContent: "center", gap: 12,
+    shadowColor: "#000", shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.05, shadowRadius: 8, elevation: 2,
   },
-  speciesInnerInactive: {
-    flex: 1, flexDirection: "column", alignItems: "center", justifyContent: "center",
-    paddingVertical: 32, gap: 12,
-    backgroundColor: "rgba(255,255,255,0.7)", borderRadius: 16,
-    borderWidth: 2, borderColor: "rgba(0,0,0,0.08)",
+  speciesCardActive: {
+    backgroundColor: "#EEF2FF",
+    borderColor: "#4F46E5", borderWidth: 1.5,
+    shadowColor: "#4F46E5", shadowOpacity: 0.14,
+    shadowRadius: 14, elevation: 5,
   },
   speciesLabel: { fontFamily: "Inter_600SemiBold", fontSize: 15, color: C.muted },
 
