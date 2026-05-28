@@ -377,6 +377,56 @@
   body.home-polish .pricing-grid .glass-card > a {
     margin-top: auto;
   }
+  body.home-polish .integrations-section {
+    background:
+      radial-gradient(circle at 16% 20%, rgba(79,124,255,0.16), transparent 24rem),
+      radial-gradient(circle at 82% 26%, rgba(45,212,191,0.12), transparent 26rem),
+      linear-gradient(180deg, rgba(18,20,34,0.72), rgba(10,12,20,0.96) 55%, rgba(12,15,25,0.88)) !important;
+  }
+  body.home-polish .integrations-section::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background:
+      linear-gradient(rgba(255,255,255,0.026) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.018) 1px, transparent 1px);
+    background-size: 62px 62px;
+    mask-image: linear-gradient(to bottom, transparent, black 18%, black 82%, transparent);
+  }
+  body.home-polish .integrations-section .integration-copy {
+    color: rgba(226,232,240,0.72) !important;
+  }
+  body.home-polish .integrations-section .integration-category-label {
+    color: rgba(226,232,240,0.58) !important;
+  }
+  body.home-polish .integrations-section .integration-line {
+    background: linear-gradient(90deg, rgba(79,124,255,0.22), rgba(45,212,191,0.13), transparent) !important;
+  }
+  body.home-polish .integrations-section :where(.integration-card, a.rounded-2xl[href="./settings.html#integrations"]) {
+    background:
+      linear-gradient(145deg, rgba(255,255,255,0.092), rgba(255,255,255,0.028) 48%, rgba(8,10,18,0.62)) !important;
+    border-color: rgba(255,255,255,0.12) !important;
+    box-shadow: 0 20px 58px rgba(0,0,0,0.30), inset 0 1px 0 rgba(255,255,255,0.08);
+    backdrop-filter: blur(18px) saturate(1.22);
+    -webkit-backdrop-filter: blur(18px) saturate(1.22);
+  }
+  body.home-polish .integrations-section :where(.integration-card, a.rounded-2xl[href="./settings.html#integrations"]):hover {
+    border-color: rgba(79,124,255,0.34) !important;
+    box-shadow: 0 28px 78px rgba(0,0,0,0.42), 0 0 54px rgba(79,124,255,0.14), inset 0 1px 0 rgba(255,255,255,0.12);
+    transform: translateY(-4px) scale(1.015);
+  }
+  body.home-polish .integrations-section :where(.integration-card, a.rounded-2xl[href="./settings.html#integrations"]) p:first-of-type {
+    color: #ffffff !important;
+  }
+  body.home-polish .integrations-section :where(.integration-card, a.rounded-2xl[href="./settings.html#integrations"]) p:last-of-type {
+    color: rgba(226,232,240,0.60) !important;
+  }
+  body.home-polish .integrations-section :where(.integration-card, a.rounded-2xl[href="./settings.html#integrations"]) .w-10 {
+    background: linear-gradient(135deg, rgba(79,124,255,0.24), rgba(45,212,191,0.14)) !important;
+    border-color: rgba(139,92,246,0.28) !important;
+    box-shadow: 0 12px 26px rgba(79,124,255,0.18), inset 0 1px 0 rgba(255,255,255,0.12);
+  }
   @media (max-width: 1180px) {
     body.home-polish .pricing-grid {
       grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -1776,7 +1826,7 @@
 </section>
 
 <!-- ===== INTEGRACIONES ===== -->
-<section class="py-32 px-6 relative overflow-hidden">
+<section class="integrations-section py-32 px-6 relative overflow-hidden">
   <!-- Ambient bg -->
   <div class="absolute inset-0 pointer-events-none" style="background:radial-gradient(ellipse 80% 50% at 50% 100%,rgba(46,91,255,0.07) 0%,transparent 70%);"></div>
 
@@ -1788,7 +1838,7 @@
         <h2 class="text-5xl md:text-6xl font-extrabold tracking-[-0.03em] leading-[0.95] text-white">Conecta con las<br>herramientas que<br><span class="font-serif-italic" style="background:linear-gradient(135deg,#4d7cff,#a78bfa);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;font-weight:400;">ya usas.</span></h2>
       </div>
       <div class="md:pb-3 md:max-w-xs">
-        <p class="text-base leading-relaxed font-light" style="color:rgba(255,255,255,0.55);">Sin fricción. Un clic para conectar con las plataformas que ya usas para vender, automatizar y escalar.</p>
+        <p class="integration-copy text-base leading-relaxed font-light" style="color:rgba(255,255,255,0.55);">Sin fricción. Un clic para conectar con las plataformas que ya usas para vender, automatizar y escalar.</p>
         <a href="./settings.html#integrations" class="inline-flex items-center gap-2 mt-5 text-sm font-semibold group" style="color:rgba(255,255,255,0.6);">
           <span>Ver todas las integraciones</span>
           <span class="material-symbols-outlined group-hover:translate-x-1 transition-transform" style="font-size:18px;background:linear-gradient(135deg,#4d7cff,#a78bfa);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">arrow_forward</span>
@@ -1799,8 +1849,8 @@
     <!-- Category: Pagos & Ventas -->
     <div>
       <div class="flex items-center gap-3 mb-5">
-        <span class="text-[10px] font-bold uppercase tracking-[0.2em]" style="color:rgba(255,255,255,0.35);">Pagos & Ventas</span>
-        <div class="flex-1 h-px" style="background:rgba(255,255,255,0.06);"></div>
+        <span class="integration-category-label text-[10px] font-bold uppercase tracking-[0.2em]" style="color:rgba(255,255,255,0.35);">Pagos & Ventas</span>
+        <div class="integration-line flex-1 h-px" style="background:rgba(255,255,255,0.06);"></div>
       </div>
       <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
         <a href="./settings.html#integrations" class="group rounded-2xl p-4 border relative overflow-hidden transition-all hover:scale-[1.02]" style="background:rgba(255,255,255,0.02);border-color:rgba(255,255,255,0.07);">
