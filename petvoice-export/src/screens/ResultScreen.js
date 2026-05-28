@@ -11,14 +11,14 @@ import { useApp } from "../context/AppContext";
 const { width: SCREEN_W } = Dimensions.get("window");
 
 const GLASS = {
-  backgroundColor: "rgba(255,255,255,0.88)",
+  backgroundColor: "rgba(255,255,255,0.92)",
   borderWidth: 1,
-  borderColor: "rgba(255,255,255,0.55)",
+  borderColor: "rgba(0,0,0,0.05)",
   shadowColor: "#4F46E5",
   shadowOffset: { width: 0, height: 6 },
-  shadowOpacity: 0.10,
-  shadowRadius: 20,
-  elevation: 7,
+  shadowOpacity: 0.12,
+  shadowRadius: 24,
+  elevation: 9,
 };
 
 const EMOTION_MAP = {
@@ -127,7 +127,7 @@ export default function ResultScreen({ navigation }) {
 
   return (
     <LinearGradient colors={["#F8FAFC", "#EEF2FF", "#F5F3FF"]} style={{ flex: 1 }}>
-      <SafeAreaView style={{ flex: 1 }} edges={["top"]}>
+      <SafeAreaView style={{ flex: 1 }} edges={["top", "bottom"]}>
         <StatusBar barStyle="dark-content" backgroundColor="#F8FAFC" />
 
         <ScrollView
@@ -247,7 +247,7 @@ export default function ResultScreen({ navigation }) {
 
 // ─── Styles ───────────────────────────────────────────────────────────────────
 const styles = StyleSheet.create({
-  scrollContent: { paddingBottom: 48 },
+  scrollContent: { paddingBottom: 64 },
 
   topBar: {
     flexDirection: "row", alignItems: "center", justifyContent: "space-between",
@@ -285,7 +285,7 @@ const styles = StyleSheet.create({
     alignItems: "center", justifyContent: "center",
   },
   emotionLabel: { fontFamily: "Inter_800ExtraBold", fontSize: 24, letterSpacing: -0.5 },
-  translationText: { fontFamily: "Inter_500Medium", fontSize: 17, lineHeight: 27, letterSpacing: 0.1 },
+  translationText: { fontFamily: "Inter_600SemiBold", fontSize: 18, lineHeight: 29, letterSpacing: 0.1 },
 
   confCard: { marginHorizontal: 20, borderRadius: 20, padding: 18, marginBottom: 16 },
   confHeader: {
