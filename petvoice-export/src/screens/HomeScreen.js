@@ -246,10 +246,10 @@ export default function HomeScreen({ navigation }) {
                 return (
                   <PressableScale key={p.key} onPress={() => setPosture(p.key)} activeScale={0.95}>
                     {active ? (
-                      <LinearGradient colors={["#4F46E5", "#7C3AED"]} style={s.chipActive}>
-                        <MaterialCommunityIcons name={p.icon} size={16} color="#fff" style={{ marginRight: 5 }} />
+                      <View style={s.chipActive}>
+                        <MaterialCommunityIcons name={p.icon} size={16} color={C.indigo} style={{ marginRight: 5 }} />
                         <Text style={s.chipTextActive}>{p.label}</Text>
-                      </LinearGradient>
+                      </View>
                     ) : (
                       <View style={[s.chip, GLASS]}>
                         <MaterialCommunityIcons name={p.icon} size={16} color={C.muted} style={{ marginRight: 5 }} />
@@ -398,11 +398,11 @@ const s = StyleSheet.create({
   chipActive: {
     flexDirection: "row", alignItems: "center",
     borderRadius: 24, paddingHorizontal: 14, paddingVertical: 9,
-    shadowColor: "#4F46E5", shadowOffset: { width: 0, height: 3 },
-    shadowOpacity: 0.3, shadowRadius: 8, elevation: 4,
+    backgroundColor: "rgba(79,70,229,0.10)",
+    borderWidth: 1, borderColor: "rgba(79,70,229,0.25)",
   },
   chipText: { fontFamily: "Inter_500Medium", fontSize: 13, color: C.muted },
-  chipTextActive: { fontFamily: "Inter_600SemiBold", fontSize: 13, color: "#fff" },
+  chipTextActive: { fontFamily: "Inter_600SemiBold", fontSize: 13, color: C.indigo },
 
   envSelector: {
     borderRadius: 16, paddingHorizontal: 16, paddingVertical: 14,

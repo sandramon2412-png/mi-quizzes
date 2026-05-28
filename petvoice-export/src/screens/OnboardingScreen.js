@@ -1,11 +1,8 @@
 import React, { useState, useRef, useEffect } from "react";
 import {
   View, Text, TextInput, TouchableOpacity, StyleSheet,
-  Image, ScrollView, Animated, StatusBar, Easing, Dimensions,
+  Image, ScrollView, Animated, StatusBar, Easing,
 } from "react-native";
-
-const { width: SCREEN_W } = Dimensions.get("window");
-const CARD_SIZE = Math.floor((SCREEN_W - 48 - 16) / 2);
 import { SafeAreaView } from "react-native-safe-area-context";
 import { LinearGradient } from "expo-linear-gradient";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
@@ -13,6 +10,7 @@ import * as ImagePicker from "expo-image-picker";
 import { useApp } from "../context/AppContext";
 
 const TOTAL_STEPS = 4;
+const CARD_SIZE = 110;
 
 const C = {
   text: "#1E293B", muted: "#64748B", border: "#E2E8F0",
@@ -26,9 +24,9 @@ const GLASS = {
   borderColor: "rgba(0,0,0,0.05)",
   shadowColor: "#4F46E5",
   shadowOffset: { width: 0, height: 8 },
-  shadowOpacity: 0.14,
-  shadowRadius: 28,
-  elevation: 10,
+  shadowOpacity: 0.12,
+  shadowRadius: 24,
+  elevation: 9,
 };
 
 // ─── PressableScale ───────────────────────────────────────────────────────────
@@ -164,6 +162,7 @@ export default function OnboardingScreen({ navigation }) {
           {/* Step card */}
           <Animated.View style={[s.card, GLASS, { opacity: cardOpacity, transform: [{ translateX: slideAnim }] }]}>
 
+            {/* PASO 1 — Especie */}
             {step === 0 && (
               <View>
                 <Text style={s.title}>¿Qué tipo de mascota tienes?</Text>
@@ -174,13 +173,8 @@ export default function OnboardingScreen({ navigation }) {
                     return (
                       <PressableScale key={sp.key} onPress={() => setSpecies(sp.key)} activeScale={0.95}>
                         <View style={[s.speciesCard, active && s.speciesCardActive]}>
-                          <MaterialCommunityIcons
-                            name={sp.icon} size={44}
-                            color={active ? C.indigo : C.muted}
-                          />
-                          <Text style={[s.speciesLabel, active && { color: C.indigo }]}>
-                            {sp.label}
-                          </Text>
+                          <MaterialCommunityIcons name={sp.icon} size={40} color={active ? C.indigo : C.muted} />
+                          <Text style={[s.speciesLabel, active && { color: C.indigo }]}>{sp.label}</Text>
                         </View>
                       </PressableScale>
                     );
@@ -189,6 +183,7 @@ export default function OnboardingScreen({ navigation }) {
               </View>
             )}
 
+            {/* PASO 2 — Nombre */}
             {step === 1 && (
               <View>
                 <Text style={s.title}>¿Cómo se llama?</Text>
@@ -199,6 +194,7 @@ export default function OnboardingScreen({ navigation }) {
               </View>
             )}
 
+            {/* PASO 3 — Edad */}
             {step === 2 && (
               <View>
                 <Text style={s.title}>¿Cuántos años tiene?</Text>
@@ -211,6 +207,7 @@ export default function OnboardingScreen({ navigation }) {
               </View>
             )}
 
+            {/* PASO 4 — Foto */}
             {step === 3 && (
               <View>
                 <Text style={s.title}>Agrega una foto</Text>
@@ -231,7 +228,7 @@ export default function OnboardingScreen({ navigation }) {
                         <MaterialCommunityIcons name="camera-outline" size={28} color={C.indigo} />
                       </View>
                       <Text style={s.photoHint}>Foto de {petName || "tu mascota"}</Text>
-                      <Text style={s.photoSubHint}>Opcional · JPG o PNG</Text>
+                      <Text style={s.photoSubHint}>Opcional (JPG o PNG)</Text>
                     </LinearGradient>
                   )}
                 </View>
@@ -247,6 +244,20 @@ export default function OnboardingScreen({ navigation }) {
                 </View>
               </View>
             )}
+
+            {/* PASO 5 — Confirmación (sin óvalo vacío) */}
+            {step === 4 && (
+              <View style={s.completionWrap}>
+                <LinearGradient colors={["#4F46E5", "#7C3AED"]} style={s.completionIcon}>
+                  <MaterialCommunityIcons name="check-circle-outline" size={36} color="#fff" />
+                </LinearGradient>
+                <Text style={s.completionTitle}>¡Todo listo!</Text>
+                <Text style={s.completionBody}>
+                  El perfil biológico de {petName || "tu mascota"} ha sido configurado correctamente para calibrar el algoritmo de análisis.
+                </Text>
+              </View>
+            )}
+
           </Animated.View>
 
           {/* Nav */}
@@ -298,26 +309,26 @@ const s = StyleSheet.create({
   progressFillWrap: { height: "100%", borderRadius: 3, overflow: "hidden" },
   progressLabel: { fontFamily: "Inter_500Medium", fontSize: 12, color: C.muted, textAlign: "right" },
 
-  card: { borderRadius: 24, padding: 26, marginBottom: 24 },
+  card: { borderRadius: 24, padding: 26, paddingBottom: 28, marginBottom: 24 },
   title: { fontFamily: "Inter_700Bold", fontSize: 21, color: C.text, marginBottom: 7, letterSpacing: -0.4 },
   subtitle: { fontFamily: "Inter_400Regular", fontSize: 14, color: C.muted, marginBottom: 24, lineHeight: 21 },
 
   speciesRow: { flexDirection: "row", gap: 16, justifyContent: "center" },
   speciesCard: {
     width: CARD_SIZE, height: CARD_SIZE,
-    backgroundColor: "#FFFFFF", borderRadius: 16,
+    backgroundColor: "#F8FAFC", borderRadius: 16,
     borderWidth: 1, borderColor: "#E2E8F0",
-    alignItems: "center", justifyContent: "center", gap: 12,
-    shadowColor: "#000", shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.05, shadowRadius: 8, elevation: 2,
+    alignItems: "center", justifyContent: "center", gap: 10,
+    shadowColor: "#000", shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.04, shadowRadius: 6, elevation: 1,
   },
   speciesCardActive: {
     backgroundColor: "#EEF2FF",
     borderColor: "#4F46E5", borderWidth: 1.5,
-    shadowColor: "#4F46E5", shadowOpacity: 0.14,
-    shadowRadius: 14, elevation: 5,
+    shadowColor: "#4F46E5", shadowOpacity: 0.12,
+    shadowRadius: 12, elevation: 4,
   },
-  speciesLabel: { fontFamily: "Inter_600SemiBold", fontSize: 15, color: C.muted },
+  speciesLabel: { fontFamily: "Inter_600SemiBold", fontSize: 14, color: C.muted },
 
   fieldLabel: { fontFamily: "Inter_700Bold", fontSize: 13, color: C.text, marginBottom: 9 },
   input: {
@@ -338,7 +349,7 @@ const s = StyleSheet.create({
     alignItems: "center", justifyContent: "center", marginBottom: 10,
   },
   photoHint: { fontFamily: "Inter_600SemiBold", fontSize: 13, color: C.indigo, textAlign: "center" },
-  photoSubHint: { fontFamily: "Inter_400Regular", fontSize: 11, color: C.muted, marginTop: 3, textAlign: "center" },
+  photoSubHint: { fontFamily: "Inter_400Regular", fontSize: 11, color: C.muted, marginTop: 4, textAlign: "center" },
   photoPreview: { width: 160, height: 160, borderRadius: 80, borderWidth: 3, borderColor: C.indigo },
   photoEditBtn: {
     position: "absolute", bottom: 6, right: 6, width: 34, height: 34,
@@ -350,6 +361,23 @@ const s = StyleSheet.create({
     borderWidth: 1, borderColor: "rgba(79,70,229,0.18)",
   },
   photoBtnText: { fontFamily: "Inter_600SemiBold", fontSize: 14, color: C.indigo },
+
+  // Completion step (step 4)
+  completionWrap: { alignItems: "center", paddingVertical: 12 },
+  completionIcon: {
+    width: 72, height: 72, borderRadius: 22,
+    alignItems: "center", justifyContent: "center", marginBottom: 20,
+    shadowColor: "#4F46E5", shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.35, shadowRadius: 14, elevation: 8,
+  },
+  completionTitle: {
+    fontFamily: "Inter_800ExtraBold", fontSize: 24, color: C.text,
+    letterSpacing: -0.5, marginBottom: 14, textAlign: "center",
+  },
+  completionBody: {
+    fontFamily: "Inter_400Regular", fontSize: 15, color: C.muted,
+    textAlign: "center", lineHeight: 24, paddingHorizontal: 8,
+  },
 
   navRow: { flexDirection: "row", alignItems: "center", marginBottom: 24 },
   backBtn: { flexDirection: "row", alignItems: "center", paddingVertical: 10, paddingHorizontal: 8 },

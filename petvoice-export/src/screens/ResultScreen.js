@@ -9,14 +9,14 @@ import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useApp } from "../context/AppContext";
 
 const EMOTION_MAP = {
-  Feliz:      { pillBg: "rgba(16,185,129,0.13)",  pillText: "#059669", barColors: ["#10B981","#34D399"], icon: "emoticon-happy-outline" },
-  Juguetón:   { pillBg: "rgba(16,185,129,0.13)",  pillText: "#059669", barColors: ["#10B981","#34D399"], icon: "emoticon-excited-outline" },
-  Alerta:     { pillBg: "rgba(245,158,11,0.13)",  pillText: "#D97706", barColors: ["#F59E0B","#FBBF24"], icon: "alert-circle-outline" },
-  Curioso:    { pillBg: "rgba(251,191,36,0.13)",  pillText: "#B45309", barColors: ["#FBBF24","#FCD34D"], icon: "help-circle-outline" },
-  Estresado:  { pillBg: "rgba(239,68,68,0.13)",   pillText: "#DC2626", barColors: ["#EF4444","#F87171"], icon: "emoticon-sad-outline" },
-  Asustado:   { pillBg: "rgba(220,38,38,0.13)",   pillText: "#B91C1C", barColors: ["#DC2626","#EF4444"], icon: "shield-alert-outline" },
-  Tranquilo:  { pillBg: "rgba(100,116,139,0.13)", pillText: "#475569", barColors: ["#64748B","#94A3B8"], icon: "sleep" },
-  Hambriento: { pillBg: "rgba(249,115,22,0.13)",  pillText: "#EA580C", barColors: ["#F97316","#FB923C"], icon: "food-outline" },
+  Feliz:      { pillBg: "rgba(16,185,129,0.13)",  pillText: "#059669", barColors: ["#10B981","#34D399"], icon: "emoticon-happy-outline",  cardBg: "rgba(16,185,129,0.07)" },
+  Juguetón:   { pillBg: "rgba(16,185,129,0.13)",  pillText: "#059669", barColors: ["#10B981","#34D399"], icon: "emoticon-excited-outline", cardBg: "rgba(16,185,129,0.07)" },
+  Alerta:     { pillBg: "rgba(245,158,11,0.13)",  pillText: "#D97706", barColors: ["#F59E0B","#FBBF24"], icon: "alert-circle-outline",     cardBg: "rgba(245,158,11,0.07)" },
+  Curioso:    { pillBg: "rgba(251,191,36,0.13)",  pillText: "#B45309", barColors: ["#FBBF24","#FCD34D"], icon: "help-circle-outline",      cardBg: "rgba(251,191,36,0.07)" },
+  Estresado:  { pillBg: "rgba(239,68,68,0.13)",   pillText: "#DC2626", barColors: ["#EF4444","#F87171"], icon: "emoticon-sad-outline",     cardBg: "rgba(239,68,68,0.08)"  },
+  Asustado:   { pillBg: "rgba(220,38,38,0.13)",   pillText: "#B91C1C", barColors: ["#DC2626","#EF4444"], icon: "shield-alert-outline",     cardBg: "rgba(220,38,38,0.08)"  },
+  Tranquilo:  { pillBg: "rgba(100,116,139,0.13)", pillText: "#475569", barColors: ["#64748B","#94A3B8"], icon: "sleep",                    cardBg: "rgba(100,116,139,0.07)"},
+  Hambriento: { pillBg: "rgba(249,115,22,0.13)",  pillText: "#EA580C", barColors: ["#F97316","#FB923C"], icon: "food-outline",             cardBg: "rgba(249,115,22,0.07)" },
 };
 
 function getEmo(emocion) {
@@ -155,7 +155,7 @@ export default function ResultScreen({ navigation }) {
               </Text>
             </View>
 
-            <View style={styles.translationCard}>
+            <View style={[styles.translationCard, { backgroundColor: emo.cardBg }]}>
               <Text style={styles.translationHero}>
                 {result.traduccion_humana}
               </Text>
@@ -251,9 +251,8 @@ const styles = StyleSheet.create({
   },
   emotionPillText: { fontFamily: "Inter_700Bold", fontSize: 13, letterSpacing: 0.1 },
   translationCard: {
-    backgroundColor: "rgba(255,255,255,0.88)",
     borderRadius: 20, padding: 20,
-    borderWidth: 1, borderColor: "rgba(0,0,0,0.05)",
+    borderWidth: 1, borderColor: "rgba(0,0,0,0.06)",
     shadowColor: "#4F46E5", shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.08, shadowRadius: 16, elevation: 5,
   },
