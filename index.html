@@ -367,6 +367,31 @@
   body.home-polish #pricing .home-tilt-card:focus-within {
     transform: translateY(-4px);
   }
+  body.home-polish .pricing-grid {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    align-items: stretch;
+  }
+  body.home-polish .pricing-grid .glass-card {
+    min-height: 0;
+  }
+  body.home-polish .pricing-grid .glass-card > a {
+    margin-top: auto;
+  }
+  @media (max-width: 1180px) {
+    body.home-polish .pricing-grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+  @media (max-width: 780px) {
+    body.home-polish .pricing-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+  @media (max-width: 560px) {
+    body.home-polish .pricing-grid {
+      grid-template-columns: 1fr;
+    }
+  }
   body.home-polish .faq-item {
     background: linear-gradient(145deg, rgba(24,26,39,0.84), rgba(11,12,20,0.88)) !important;
   }
@@ -2095,7 +2120,7 @@
         <span class="text-sm font-medium text-on-surface" id="label-annual">Anual <span class="text-xs font-bold" style="color:#4d7cff;">-20%</span></span>
       </div>
     </div>
-    <div class="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-5">
+    <div class="pricing-grid grid gap-5">
       <!-- FREE -->
       <div class="glass-card border border-outline-variant/10 rounded-xl p-6 flex flex-col gap-5 hover:border-outline-variant/30 transition-colors">
         <div>
