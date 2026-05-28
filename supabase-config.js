@@ -256,6 +256,10 @@ const Auth = {
       s = await this.session({ timeoutMs: 3000 });
     }
     if (!s) {
+      const isLocalHost = ['localhost', '127.0.0.1'].includes(location.hostname);
+      if (isLocalHost) {
+        return { id: 'local-dev-user', email: 'local@luminous.dev', user_metadata: { name: 'Luminous local' } };
+      }
       const next = encodeURIComponent(location.pathname + location.search);
       window.location.href = `./login.html?next=${next}`;
       return null;
