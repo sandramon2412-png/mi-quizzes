@@ -729,6 +729,111 @@
     background: rgba(255,255,255,0.07);
     transform: translateY(-1px);
   }
+  body.home-polish .process-runway-section {
+    background:
+      linear-gradient(115deg, rgba(77,124,255,0.10) 0 1px, transparent 1px 12px),
+      radial-gradient(circle at 15% 18%, rgba(45,212,191,0.13), transparent 24rem),
+      radial-gradient(circle at 88% 8%, rgba(236,72,153,0.16), transparent 26rem),
+      linear-gradient(180deg, #090914 0%, #111028 48%, #080810 100%) !important;
+  }
+  body.home-polish .process-runway-section::before {
+    content: "";
+    position: absolute;
+    inset: 4rem 0 auto 0;
+    height: 22rem;
+    pointer-events: none;
+    background:
+      linear-gradient(90deg, transparent, rgba(255,255,255,0.08), transparent),
+      radial-gradient(ellipse at 50% 0%, rgba(124,58,237,0.20), transparent 62%);
+    opacity: .72;
+  }
+  body.home-polish .process-runway {
+    position: relative;
+    padding-left: clamp(0rem, 2vw, 2rem);
+  }
+  body.home-polish .process-runway::before {
+    content: "";
+    position: absolute;
+    left: clamp(1rem, 4vw, 3.2rem);
+    top: 1rem;
+    bottom: 1rem;
+    width: 2px;
+    background: linear-gradient(180deg, transparent, rgba(77,124,255,0.65), rgba(236,72,153,0.45), transparent);
+    box-shadow: 0 0 30px rgba(77,124,255,0.38);
+  }
+  body.home-polish .process-step {
+    position: relative;
+    isolation: isolate;
+    padding: clamp(1rem, 2.4vw, 1.6rem);
+    border-radius: 30px;
+    background:
+      linear-gradient(135deg, rgba(255,255,255,0.075), rgba(255,255,255,0.018)),
+      radial-gradient(circle at 88% 16%, rgba(77,124,255,0.10), transparent 18rem);
+    border: 1px solid rgba(255,255,255,0.10);
+    box-shadow: 0 24px 90px rgba(0,0,0,0.32), inset 0 1px 0 rgba(255,255,255,0.08);
+    backdrop-filter: blur(18px);
+  }
+  body.home-polish .process-step::before {
+    content: "";
+    position: absolute;
+    left: clamp(.78rem, 3vw, 1.6rem);
+    top: 50%;
+    width: .8rem;
+    height: .8rem;
+    transform: translateY(-50%);
+    border-radius: 999px;
+    background: #77f7e3;
+    box-shadow: 0 0 0 7px rgba(119,247,227,0.10), 0 0 34px rgba(119,247,227,0.42);
+  }
+  body.home-polish .process-copy {
+    padding-left: clamp(1.35rem, 2.4vw, 2rem);
+  }
+  body.home-polish .process-num {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 8.4rem;
+    padding: .18em .16em .22em;
+    line-height: 1.05 !important;
+    overflow: visible;
+    text-shadow: 0 0 34px rgba(124,58,237,0.24);
+  }
+  body.home-polish .process-minute {
+    align-self: center;
+    padding: .4rem .65rem;
+    border-radius: 999px;
+    background: rgba(255,255,255,0.07);
+    border: 1px solid rgba(255,255,255,0.10);
+    color: rgba(255,255,255,0.60) !important;
+    white-space: nowrap;
+  }
+  body.home-polish .process-screen {
+    background:
+      linear-gradient(135deg, rgba(5,9,28,0.92), rgba(19,15,47,0.86)) !important;
+    border-color: rgba(139,157,255,0.22) !important;
+    box-shadow: 0 22px 70px rgba(0,0,0,0.36), 0 0 60px rgba(77,124,255,0.11), inset 0 1px 0 rgba(255,255,255,0.08);
+  }
+  body.home-polish .process-screen::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background:
+      linear-gradient(180deg, rgba(255,255,255,0.06), transparent 32%),
+      repeating-linear-gradient(0deg, rgba(255,255,255,0.018) 0 1px, transparent 1px 8px);
+    opacity: .55;
+  }
+  body.home-polish .process-screen > * {
+    position: relative;
+    z-index: 1;
+  }
+  body.home-polish .process-header-note {
+    padding: 1.25rem 1.4rem;
+    border-radius: 24px;
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.10);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.08);
+  }
   body.home-polish footer {
     background: rgba(6,7,12,0.88) !important;
     border-top: 1px solid rgba(255,255,255,0.08);
@@ -758,6 +863,17 @@
     }
     body.home-polish .solution-trust-strip {
       border-radius: 24px;
+    }
+    body.home-polish .process-runway::before,
+    body.home-polish .process-step::before {
+      display: none;
+    }
+    body.home-polish .process-copy {
+      padding-left: 0;
+    }
+    body.home-polish .process-num {
+      min-width: 6.2rem;
+      justify-content: flex-start;
     }
     body.home-polish .home-tilt-card {
       transform: none !important;
@@ -1514,7 +1630,7 @@
 </div>
 
 <!-- ===== CÓMO FUNCIONA — EDITORIAL TIMELINE ===== -->
-<section class="py-32 px-6 relative overflow-hidden">
+<section class="process-runway-section py-32 px-6 relative overflow-hidden">
   <!-- Ambient background accent -->
   <div class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none" style="width:800px;height:800px;background:radial-gradient(circle,rgba(124,58,237,0.08) 0%,transparent 70%);filter:blur(60px);"></div>
 
@@ -1525,7 +1641,7 @@
         <span class="text-[10px] font-bold uppercase tracking-[0.25em] block mb-4" style="background:linear-gradient(90deg,#7a9aff,#a78bfa);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">El proceso · 3 pasos</span>
         <h2 class="text-5xl md:text-6xl lg:text-7xl font-extrabold tracking-[-0.035em] leading-[0.95] text-white">De cero<br>a tu primer lead</h2>
       </div>
-      <div class="md:pb-4 md:border-l md:pl-10" style="border-color:rgba(255,255,255,0.08);">
+      <div class="process-header-note md:pb-4">
         <p class="text-lg md:text-xl leading-[1.5] font-light" style="color:rgba(255,255,255,0.55);">
           <span class="font-serif-italic" style="color:#a78bfa;font-size:1.3em;">8 minutos.</span> Eso es lo que tarda un creador promedio desde que se registra hasta que recibe su primer lead en Luminous Studio.
         </p>
@@ -1533,20 +1649,20 @@
     </div>
 
     <!-- Timeline with alternating rows -->
-    <div class="space-y-20 md:space-y-24">
+    <div class="process-runway space-y-12 md:space-y-14">
 
       <!-- Step 1 -->
-      <div class="grid md:grid-cols-12 gap-6 md:gap-10 items-center">
-        <div class="md:col-span-5 md:order-1">
+      <div class="process-step grid md:grid-cols-12 gap-6 md:gap-10 items-center">
+        <div class="process-copy md:col-span-5 md:order-1">
           <div class="flex items-baseline gap-4 mb-4">
-            <span class="font-serif-italic text-[90px] md:text-[120px] leading-none" style="background:linear-gradient(135deg,#4d7cff,#a78bfa);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;font-weight:400;">01</span>
-            <span class="text-[11px] font-bold uppercase tracking-[0.25em]" style="color:rgba(255,255,255,0.35);">Minuto 0–2</span>
+            <span class="process-num font-serif-italic text-[90px] md:text-[120px] leading-none" style="background:linear-gradient(135deg,#4d7cff,#a78bfa);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;font-weight:400;">01</span>
+            <span class="process-minute text-[11px] font-bold uppercase tracking-[0.25em]" style="color:rgba(255,255,255,0.35);">Minuto 0–2</span>
           </div>
           <h3 class="text-3xl md:text-4xl font-extrabold tracking-tight text-white mb-4 leading-tight">Describe tu nicho en una frase</h3>
           <p class="text-base leading-relaxed font-light" style="color:rgba(255,255,255,0.6);">Escribe a quién le hablas y qué quieres lograr. La IA entiende español, modismos y contexto cultural — no necesitas prompts perfectos.</p>
         </div>
         <div class="md:col-span-7 md:order-2">
-          <div class="rounded-2xl p-6 md:p-7 relative overflow-hidden" style="background:linear-gradient(135deg,rgba(46,91,255,0.06),rgba(124,58,237,0.04));border:1px solid rgba(255,255,255,0.08);">
+          <div class="process-screen rounded-2xl p-6 md:p-7 relative overflow-hidden" style="background:linear-gradient(135deg,rgba(46,91,255,0.06),rgba(124,58,237,0.04));border:1px solid rgba(255,255,255,0.08);">
             <div class="flex items-center gap-2 mb-4">
               <div class="flex gap-1.5">
                 <div class="w-2.5 h-2.5 rounded-full" style="background:rgba(255,255,255,0.15);"></div>
@@ -1566,17 +1682,17 @@
       </div>
 
       <!-- Step 2 (reversed) -->
-      <div class="grid md:grid-cols-12 gap-6 md:gap-10 items-center">
-        <div class="md:col-span-5 md:col-start-8 md:order-2">
+      <div class="process-step grid md:grid-cols-12 gap-6 md:gap-10 items-center">
+        <div class="process-copy md:col-span-5 md:col-start-8 md:order-2">
           <div class="flex items-baseline gap-4 mb-4">
-            <span class="font-serif-italic text-[90px] md:text-[120px] leading-none" style="background:linear-gradient(135deg,#a78bfa,#7c3aed);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;font-weight:400;">02</span>
-            <span class="text-[11px] font-bold uppercase tracking-[0.25em]" style="color:rgba(255,255,255,0.35);">Minuto 2–4</span>
+            <span class="process-num font-serif-italic text-[90px] md:text-[120px] leading-none" style="background:linear-gradient(135deg,#a78bfa,#7c3aed);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;font-weight:400;">02</span>
+            <span class="process-minute text-[11px] font-bold uppercase tracking-[0.25em]" style="color:rgba(255,255,255,0.35);">Minuto 2–4</span>
           </div>
           <h3 class="text-3xl md:text-4xl font-extrabold tracking-tight text-white mb-4 leading-tight">La IA genera todo en <span class="font-serif-italic" style="color:#a78bfa;font-weight:400;">8 segundos</span></h3>
           <p class="text-base leading-relaxed font-light" style="color:rgba(255,255,255,0.6);">Preguntas, resultados, copy de email, diseño y captura de leads — todo listo y editable. No empiezas desde cero nunca más.</p>
         </div>
         <div class="md:col-span-7 md:col-start-1 md:row-start-1 md:order-1">
-          <div class="rounded-2xl p-6 md:p-7 relative overflow-hidden" style="background:linear-gradient(135deg,rgba(124,58,237,0.08),rgba(46,91,255,0.04));border:1px solid rgba(167,139,250,0.15);">
+          <div class="process-screen rounded-2xl p-6 md:p-7 relative overflow-hidden" style="background:linear-gradient(135deg,rgba(124,58,237,0.08),rgba(46,91,255,0.04));border:1px solid rgba(167,139,250,0.15);">
             <div class="flex items-center justify-between mb-4">
               <div class="flex items-center gap-2">
                 <span class="material-symbols-outlined icon-gradient" style="font-size:16px;font-variation-settings:'FILL' 1">auto_awesome</span>
@@ -1611,17 +1727,17 @@
       </div>
 
       <!-- Step 3 -->
-      <div class="grid md:grid-cols-12 gap-6 md:gap-10 items-center">
-        <div class="md:col-span-5 md:order-1">
+      <div class="process-step grid md:grid-cols-12 gap-6 md:gap-10 items-center">
+        <div class="process-copy md:col-span-5 md:order-1">
           <div class="flex items-baseline gap-4 mb-4">
-            <span class="font-serif-italic text-[90px] md:text-[120px] leading-none" style="background:linear-gradient(135deg,#7c3aed,#a78bfa);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;font-weight:400;">03</span>
-            <span class="text-[11px] font-bold uppercase tracking-[0.25em]" style="color:rgba(255,255,255,0.35);">Minuto 5–8</span>
+            <span class="process-num font-serif-italic text-[90px] md:text-[120px] leading-none" style="background:linear-gradient(135deg,#7c3aed,#a78bfa);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;font-weight:400;">03</span>
+            <span class="process-minute text-[11px] font-bold uppercase tracking-[0.25em]" style="color:rgba(255,255,255,0.35);">Minuto 5–8</span>
           </div>
           <h3 class="text-3xl md:text-4xl font-extrabold tracking-tight text-white mb-4 leading-tight">Publica, comparte, <span class="font-serif-italic" style="color:#a78bfa;font-weight:400;">convierte.</span></h3>
           <p class="text-base leading-relaxed font-light" style="color:rgba(255,255,255,0.6);">Tu link estaba listo desde el minuto 1. Compártelo en WhatsApp, Instagram o tu bio — los leads llegan segmentados a tu panel, listos para vender.</p>
         </div>
         <div class="md:col-span-7 md:order-2">
-          <div class="rounded-2xl p-6 md:p-7 relative overflow-hidden" style="background:linear-gradient(135deg,rgba(46,91,255,0.05),rgba(124,58,237,0.08));border:1px solid rgba(255,255,255,0.08);">
+          <div class="process-screen rounded-2xl p-6 md:p-7 relative overflow-hidden" style="background:linear-gradient(135deg,rgba(46,91,255,0.05),rgba(124,58,237,0.08));border:1px solid rgba(255,255,255,0.08);">
             <div class="flex items-center justify-between mb-5">
               <span class="text-xs font-bold text-white flex items-center gap-2">
                 <span class="material-symbols-outlined" style="font-size:14px;color:#4d7cff;font-variation-settings:'FILL' 1">rocket_launch</span>
