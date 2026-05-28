@@ -52,7 +52,9 @@ MAPA DE COLORES:
 - Alerta, Curioso → #F59E0B (amarillo/ámbar)
 - Estresado, Asustado → #EF4444 (rojo)
 - Tranquilo → #64748B (gris azulado)
-- Hambriento → #F97316 (naranja)`;
+- Hambriento → #F97316 (naranja)
+
+IMPORTANTE: Escribe SIEMPRE en español correcto con todas las tildes ortográficas (á, é, í, ó, ú, ü, ñ). Nunca omitas acentos. Ejemplos obligatorios: "incómodo", "quédate", "estrés", "también", "más", "está", "así", "difícil", "cariño".`;
 }
 
 export async function analyzeWithOpenAI(species, name, posture, environment, audioDescription) {
@@ -174,6 +176,30 @@ function getDemoResult(species, posture, environment) {
       traduccion_humana: "Me siento incómodo y necesito tu ayuda. Por favor quédate cerca.",
       consejo_propietario: "Señales de estrés detectadas. Aleja de la fuente de estrés y ofrece un espacio seguro.",
       keyword_publicidad: "veterinario",
+    },
+    Tranquilo: {
+      emocion_principal: "Tranquilo",
+      porcentaje_confianza: 88,
+      color_interfaz: "#64748B",
+      traduccion_humana: "Estoy bien, descansando tranquilo. No me molestes demasiado, ¿vale?",
+      consejo_propietario: "Tu mascota está relajada. Es un buen momento para compartir espacio sin exigencias.",
+      keyword_publicidad: "bienestar_animal",
+    },
+    Hambriento: {
+      emocion_principal: "Hambriento",
+      porcentaje_confianza: 82,
+      color_interfaz: "#F97316",
+      traduccion_humana: "¡Tengo mucha hambre! ¿No es ya la hora de comer? Llevo rato esperando.",
+      consejo_propietario: "Tu mascota pide comida. Verifica si está dentro del horario regular de alimentación.",
+      keyword_publicidad: "comida_mascotas",
+    },
+    Curioso: {
+      emocion_principal: "Curioso",
+      porcentaje_confianza: 74,
+      color_interfaz: "#F59E0B",
+      traduccion_humana: "¿Qué es eso? Huelo algo diferente y necesito investigarlo bien.",
+      consejo_propietario: "Tu mascota está explorando activamente su entorno. Permítele investigar con seguridad.",
+      keyword_publicidad: "juguetes",
     },
   };
 

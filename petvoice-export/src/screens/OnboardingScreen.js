@@ -22,11 +22,11 @@ const GLASS = {
   backgroundColor: "rgba(255,255,255,0.92)",
   borderWidth: 1,
   borderColor: "rgba(0,0,0,0.05)",
-  shadowColor: "#4F46E5",
-  shadowOffset: { width: 0, height: 8 },
-  shadowOpacity: 0.12,
-  shadowRadius: 24,
-  elevation: 9,
+  shadowColor: "#0F172A",
+  shadowOffset: { width: 0, height: 3 },
+  shadowOpacity: 0.06,
+  shadowRadius: 14,
+  elevation: 5,
 };
 
 // ─── PressableScale ───────────────────────────────────────────────────────────
@@ -296,8 +296,8 @@ const s = StyleSheet.create({
   logoCircle: {
     width: 72, height: 72, borderRadius: 22,
     alignItems: "center", justifyContent: "center", marginBottom: 14,
-    shadowColor: "#4F46E5", shadowOffset: { width: 0, height: 6 },
-    shadowOpacity: 0.45, shadowRadius: 16, elevation: 10,
+    shadowColor: "#0F172A", shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.16, shadowRadius: 12, elevation: 6,
   },
   logoTitle: { fontFamily: "Inter_800ExtraBold", fontSize: 28, color: C.text, marginBottom: 6, letterSpacing: -0.8 },
   logoTagline: { fontFamily: "Inter_400Regular", fontSize: 14, color: C.muted, textAlign: "center", lineHeight: 21, marginBottom: 14, paddingHorizontal: 16 },
