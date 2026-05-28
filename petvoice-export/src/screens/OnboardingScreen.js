@@ -35,7 +35,7 @@ function PressableScale({ onPress, style, children, disabled, activeScale = 0.97
   const press = () => Animated.spring(anim, { toValue: activeScale, tension: 300, friction: 12, ...cfg }).start();
   const release = () => Animated.spring(anim, { toValue: 1, tension: 200, friction: 8, ...cfg }).start();
   return (
-    <TouchableOpacity onPressIn={press} onPressOut={release} onPress={onPress} disabled={disabled} activeOpacity={1}>
+    <TouchableOpacity onPressIn={press} onPressOut={release} onPress={onPress} disabled={disabled} activeOpacity={1} style={style}>
       <Animated.View style={[style, { transform: [{ scale: anim }] }]}>{children}</Animated.View>
     </TouchableOpacity>
   );
@@ -304,14 +304,14 @@ const s = StyleSheet.create({
   subtitle: { fontFamily: "Inter_400Regular", fontSize: 14, color: C.muted, marginBottom: 24, lineHeight: 21 },
 
   speciesRow: { flexDirection: "row", gap: 14 },
-  speciesGradWrap: { borderRadius: 18, padding: 2 },
+  speciesGradWrap: { borderRadius: 18, padding: 2, flex: 1 },
   speciesInnerActive: {
-    borderRadius: 16, flexDirection: "column",
+    borderRadius: 16, flex: 1, flexDirection: "column",
     alignItems: "center", justifyContent: "center",
     paddingVertical: 32, gap: 12, backgroundColor: "#EEF2FF",
   },
   speciesInnerInactive: {
-    flexDirection: "column", alignItems: "center", justifyContent: "center",
+    flex: 1, flexDirection: "column", alignItems: "center", justifyContent: "center",
     paddingVertical: 32, gap: 12,
     backgroundColor: "rgba(255,255,255,0.7)", borderRadius: 16,
     borderWidth: 2, borderColor: "rgba(0,0,0,0.08)",
