@@ -250,16 +250,18 @@ const Auth = {
 
   // Redirect to login if not authenticated (use on protected pages)
   async requireAuth() {
+    const isLocalHost = ['localhost', '127.0.0.1'].includes(location.hostname);
+    if (isLocalHost) {
+      const cached = readCachedSupabaseSession();
+      if (cached?.user) return cached.user;
+      return { id: 'local-dev-user', email: 'local@luminous.dev', user_metadata: { name: 'Luminous local' } };
+    }
     let s = await this.session({ timeoutMs: 5000 });
     if (!s) {
       await authSleep(650);
       s = await this.session({ timeoutMs: 3000 });
     }
     if (!s) {
-      const isLocalHost = ['localhost', '127.0.0.1'].includes(location.hostname);
-      if (isLocalHost) {
-        return { id: 'local-dev-user', email: 'local@luminous.dev', user_metadata: { name: 'Luminous local' } };
-      }
       const next = encodeURIComponent(location.pathname + location.search);
       window.location.href = `./login.html?next=${next}`;
       return null;

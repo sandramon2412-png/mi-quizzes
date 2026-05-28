@@ -1327,12 +1327,14 @@ async function applyPendingMiniAppTemplate() {
   try {
     const pendingId = localStorage.getItem('ls_miniapp_template_pending_id');
     const raw = localStorage.getItem('ls_miniapp_template_pending');
+    const editAfterCreate = localStorage.getItem('ls_miniapp_template_edit_after') === '1';
     if (!pendingId && !raw) {
       switchDashTab('miniapps');
       return;
     }
     localStorage.removeItem('ls_miniapp_template_pending_id');
     localStorage.removeItem('ls_miniapp_template_pending');
+    localStorage.removeItem('ls_miniapp_template_edit_after');
     const templates = typeof getBuiltinMiniAppTemplates === 'function' ? getBuiltinMiniAppTemplates() : [];
     const tpl = pendingId
       ? templates.find(item => item.id === pendingId)
@@ -1379,13 +1381,17 @@ async function applyPendingMiniAppTemplate() {
     };
 
     let localApp = null;
-    try {
-      const saved = await DB.miniApps.save(appFromTemplate, _currentUser.id);
-      localApp = { id: saved.id, ...saved, ...appFromTemplate };
-      try { MiniApps.save(localApp); } catch (cacheErr) { console.warn('Template local cache skipped:', cacheErr.message); }
-    } catch (dbErr) {
-      console.warn('Template DB save failed:', dbErr.message);
+    if (_currentUser?.id === 'local-dev-user') {
       localApp = MiniApps.create(appFromTemplate);
+    } else {
+      try {
+        const saved = await DB.miniApps.save(appFromTemplate, _currentUser.id);
+        localApp = { id: saved.id, ...saved, ...appFromTemplate };
+        try { MiniApps.save(localApp); } catch (cacheErr) { console.warn('Template local cache skipped:', cacheErr.message); }
+      } catch (dbErr) {
+        console.warn('Template DB save failed:', dbErr.message);
+        localApp = MiniApps.create(appFromTemplate);
+      }
     }
 
     await renderMiniApps();
@@ -1394,6 +1400,9 @@ async function applyPendingMiniAppTemplate() {
     showToast(`Mini-App "${localApp.name}" creada desde plantilla.`);
     setTimeout(() => {
       document.getElementById('section-miniapps')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      if (editAfterCreate && localApp?.id && typeof openEditContent === 'function') {
+        openEditContent(localApp.id);
+      }
     }, 150);
   } catch (e) {
     console.warn('applyPendingMiniAppTemplate:', e);
