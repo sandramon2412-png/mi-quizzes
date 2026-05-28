@@ -1,12 +1,13 @@
 import React, { useEffect, useRef, useState } from "react";
 import {
-  View, Text, StyleSheet, Animated, Dimensions, StatusBar,
+  View, Text, StyleSheet, Animated, Dimensions, StatusBar, Easing,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { LinearGradient } from "expo-linear-gradient";
 import { useApp } from "../context/AppContext";
 
 const { width: SCREEN_W } = Dimensions.get("window");
-const BAR_COUNT = 40;
+const BAR_COUNT = 36;
 const MESSAGES = [
   "Extrayendo frecuencia fundamental (F0)...",
   "Analizando variaciones de tono y ritmo...",
@@ -14,39 +15,41 @@ const MESSAGES = [
   "Cruzando datos con postura corporal...",
   "Generando traducción personalizada...",
 ];
-const MSG_INTERVAL = 800; // ms per message (5 × 800 = 4000ms)
-const TOTAL_DURATION = 4200; // ms before navigating
+const MSG_INTERVAL = 800;
+const TOTAL_DURATION = 4200;
 
-const C = {
-  bg: "#0F172A",
-  card: "#1E293B",
-  indigo: "#6366F1",
-  indigoGlow: "#4F46E5",
-  coral: "#FF8A65",
-  text: "#F1F5F9",
-  muted: "#94A3B8",
-  barBase: "#334155",
-};
+function barColor(index, total) {
+  const ratio = index / total;
+  if (ratio < 0.25) return "#60A5FA";
+  if (ratio < 0.5)  return "#818CF8";
+  if (ratio < 0.75) return "#A78BFA";
+  return "#F472B6";
+}
 
 // ─── Spectrogram bar ──────────────────────────────────────────────────────────
 function SpectroBar({ index, total }) {
   const anim = useRef(new Animated.Value(0.15)).current;
+  const r1 = useRef(Math.random()).current;
+  const r2 = useRef(Math.random()).current;
+  const r3 = useRef(Math.random()).current;
 
   useEffect(() => {
-    const delay = (index / total) * 300;
-    const duration = 400 + Math.random() * 300;
+    const delay = (index / total) * 350;
+    const duration = 380 + r1 * 320;
 
     const loop = Animated.loop(
       Animated.sequence([
         Animated.delay(delay),
         Animated.timing(anim, {
-          toValue: 0.2 + Math.random() * 0.8,
+          toValue: 0.2 + r2 * 0.8,
           duration,
+          easing: Easing.inOut(Easing.sin),
           useNativeDriver: false,
         }),
         Animated.timing(anim, {
-          toValue: 0.1 + Math.random() * 0.3,
+          toValue: 0.05 + r3 * 0.25,
           duration: duration * 0.7,
+          easing: Easing.inOut(Easing.sin),
           useNativeDriver: false,
         }),
       ])
@@ -55,50 +58,60 @@ function SpectroBar({ index, total }) {
     return () => loop.stop();
   }, [index]);
 
-  const maxHeight = 60;
+  const maxHeight = 80;
   const barHeight = anim.interpolate({
     inputRange: [0, 1],
     outputRange: [3, maxHeight],
   });
 
-  // Color varies across the spectrum
-  const isHighFreq = index > total * 0.6;
-  const isMidFreq = index > total * 0.35;
-  const barColor = isHighFreq ? C.coral : isMidFreq ? C.indigo : "#60A5FA";
+  const color = barColor(index, total);
+  const barW = Math.floor((SCREEN_W - 48 - (BAR_COUNT - 1) * 2) / BAR_COUNT);
 
   return (
     <Animated.View
-      style={[
-        styles.bar,
-        {
-          height: barHeight,
-          backgroundColor: barColor,
-          opacity: anim,
-        },
-      ]}
+      style={{
+        width: barW,
+        height: barHeight,
+        backgroundColor: color,
+        borderRadius: 2,
+        minHeight: 3,
+        shadowColor: color,
+        shadowOffset: { width: 0, height: 0 },
+        shadowOpacity: 0.85,
+        shadowRadius: 5,
+        elevation: 6,
+      }}
     />
   );
 }
 
 // ─── LoadingScreen ────────────────────────────────────────────────────────────
-export default function LoadingScreen({ navigation, route }) {
+export default function LoadingScreen({ navigation }) {
   const { analysisResult } = useApp();
   const [msgIndex, setMsgIndex] = useState(0);
   const fadeAnim = useRef(new Animated.Value(1)).current;
   const progressAnim = useRef(new Animated.Value(0)).current;
-
+  const dotScale = useRef(new Animated.Value(1)).current;
   const navigatedRef = useRef(false);
 
-  // Progress bar
   useEffect(() => {
     Animated.timing(progressAnim, {
       toValue: 1,
       duration: TOTAL_DURATION - 200,
+      easing: Easing.inOut(Easing.ease),
       useNativeDriver: false,
     }).start();
   }, []);
 
-  // Cycle messages
+  useEffect(() => {
+    Animated.loop(
+      Animated.sequence([
+        Animated.timing(dotScale, { toValue: 1.5, duration: 650, useNativeDriver: true }),
+        Animated.timing(dotScale, { toValue: 1.0, duration: 650, useNativeDriver: true }),
+      ])
+    ).start();
+  }, []);
+
   useEffect(() => {
     let current = 0;
     const interval = setInterval(() => {
@@ -106,19 +119,13 @@ export default function LoadingScreen({ navigation, route }) {
         Animated.timing(fadeAnim, { toValue: 0, duration: 150, useNativeDriver: true }),
         Animated.timing(fadeAnim, { toValue: 1, duration: 200, useNativeDriver: true }),
       ]).start();
-
       current += 1;
-      if (current < MESSAGES.length) {
-        setMsgIndex(current);
-      } else {
-        clearInterval(interval);
-      }
+      if (current < MESSAGES.length) setMsgIndex(current);
+      else clearInterval(interval);
     }, MSG_INTERVAL);
-
     return () => clearInterval(interval);
   }, []);
 
-  // Navigate to results when analysis is ready (or after max duration)
   useEffect(() => {
     const timer = setTimeout(() => {
       if (!navigatedRef.current) {
@@ -126,18 +133,16 @@ export default function LoadingScreen({ navigation, route }) {
         navigation.replace("Result");
       }
     }, TOTAL_DURATION);
-
     return () => clearTimeout(timer);
   }, []);
 
-  // If result arrives before timeout, navigate immediately
   useEffect(() => {
     if (analysisResult && !navigatedRef.current) {
-      const minTimer = setTimeout(() => {
+      const t = setTimeout(() => {
         navigatedRef.current = true;
         navigation.replace("Result");
-      }, 1800); // minimum 1.8s for UX
-      return () => clearTimeout(minTimer);
+      }, 1800);
+      return () => clearTimeout(t);
     }
   }, [analysisResult]);
 
@@ -147,125 +152,121 @@ export default function LoadingScreen({ navigation, route }) {
   });
 
   return (
-    <SafeAreaView style={styles.safe} edges={["top", "bottom"]}>
-      <StatusBar barStyle="light-content" backgroundColor={C.bg} />
+    <LinearGradient colors={["#08091A", "#0D1030", "#0A0F2E"]} style={{ flex: 1 }}>
+      <SafeAreaView style={{ flex: 1 }} edges={["top", "bottom"]}>
+        <StatusBar barStyle="light-content" backgroundColor="#08091A" />
 
-      <View style={styles.container}>
+        <View style={styles.container}>
 
-        {/* ── Top label ── */}
-        <View style={styles.topRow}>
-          <View style={styles.pulseDot} />
-          <Text style={styles.topLabel}>Analizando...</Text>
-        </View>
-
-        {/* ── Spectrogram ── */}
-        <View style={styles.spectroWrap}>
-          <View style={styles.spectroContainer}>
-            {[...Array(BAR_COUNT)].map((_, i) => (
-              <SpectroBar key={i} index={i} total={BAR_COUNT} />
-            ))}
+          {/* Top label */}
+          <View style={styles.topRow}>
+            <Animated.View style={[styles.dotWrap, { transform: [{ scale: dotScale }] }]}>
+              <LinearGradient
+                colors={["#818CF8", "#C084FC"]}
+                style={styles.dot}
+              />
+            </Animated.View>
+            <Text style={styles.topLabel}>Analizando tu mascota...</Text>
           </View>
-          <View style={styles.spectroAxisLine} />
-        </View>
 
-        {/* ── Frequency labels ── */}
-        <View style={styles.freqLabels}>
-          <Text style={styles.freqLabel}>0 Hz</Text>
-          <Text style={styles.freqLabel}>500 Hz</Text>
-          <Text style={styles.freqLabel}>2 kHz</Text>
-          <Text style={styles.freqLabel}>8 kHz</Text>
-        </View>
+          {/* Spectrogram */}
+          <View style={styles.spectroWrap}>
+            <View style={styles.spectroContainer}>
+              {[...Array(BAR_COUNT)].map((_, i) => (
+                <SpectroBar key={i} index={i} total={BAR_COUNT} />
+              ))}
+            </View>
+            <View style={styles.spectroAxisLine} />
+          </View>
 
-        {/* ── Sequential message ── */}
-        <View style={styles.msgWrap}>
-          <Animated.Text style={[styles.msgText, { opacity: fadeAnim }]}>
-            {MESSAGES[msgIndex]}
-          </Animated.Text>
-        </View>
+          {/* Frequency labels */}
+          <View style={styles.freqLabels}>
+            <Text style={styles.freqLabel}>0 Hz</Text>
+            <Text style={styles.freqLabel}>500 Hz</Text>
+            <Text style={styles.freqLabel}>2 kHz</Text>
+            <Text style={styles.freqLabel}>8 kHz</Text>
+          </View>
 
-        {/* ── Progress bar ── */}
-        <View style={styles.progressTrack}>
-          <Animated.View
-            style={[styles.progressFill, { width: progressWidth }]}
-          />
-        </View>
+          {/* Message */}
+          <View style={styles.msgWrap}>
+            <Animated.Text style={[styles.msgText, { opacity: fadeAnim }]}>
+              {MESSAGES[msgIndex]}
+            </Animated.Text>
+          </View>
 
-        {/* ── Science badge ── */}
-        <View style={styles.scienceBadge}>
-          <Text style={styles.scienceText}>
-            Modelo de etología computacional · Análisis multimodal
-          </Text>
-        </View>
+          {/* Gradient progress bar */}
+          <View style={styles.progressTrack}>
+            <Animated.View style={{ width: progressWidth, height: "100%", overflow: "hidden", borderRadius: 3 }}>
+              <LinearGradient
+                colors={["#4F46E5", "#7C3AED", "#A855F7"]}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 0 }}
+                style={{ flex: 1 }}
+              />
+            </Animated.View>
+          </View>
 
-      </View>
-    </SafeAreaView>
+          {/* Science badge */}
+          <View style={styles.scienceBadge}>
+            <Text style={styles.scienceText}>
+              Modelo de etología computacional · Análisis multimodal
+            </Text>
+          </View>
+
+        </View>
+      </SafeAreaView>
+    </LinearGradient>
   );
 }
 
 // ─── Styles ───────────────────────────────────────────────────────────────────
 const styles = StyleSheet.create({
-  safe: { flex: 1, backgroundColor: C.bg },
   container: {
     flex: 1, alignItems: "center", justifyContent: "center",
     paddingHorizontal: 24,
   },
 
-  // Top row
-  topRow: { flexDirection: "row", alignItems: "center", gap: 10, marginBottom: 40 },
-  pulseDot: {
-    width: 10, height: 10, borderRadius: 5, backgroundColor: C.coral,
-  },
+  topRow: { flexDirection: "row", alignItems: "center", gap: 10, marginBottom: 44 },
+  dotWrap: { width: 12, height: 12, borderRadius: 6 },
+  dot: { width: 12, height: 12, borderRadius: 6 },
   topLabel: {
-    fontFamily: "Inter_700Bold", fontSize: 22, color: C.text, letterSpacing: -0.3,
+    fontFamily: "Inter_700Bold", fontSize: 22, color: "#F1F5F9", letterSpacing: -0.3,
   },
 
-  // Spectrogram
-  spectroWrap: {
-    width: SCREEN_W - 48, marginBottom: 8, position: "relative",
-  },
+  spectroWrap: { width: SCREEN_W - 48, marginBottom: 10, position: "relative" },
   spectroContainer: {
     flexDirection: "row", alignItems: "flex-end", justifyContent: "space-between",
-    height: 80, width: "100%",
-  },
-  bar: {
-    width: Math.floor((SCREEN_W - 48 - (BAR_COUNT - 1) * 2) / BAR_COUNT),
-    borderRadius: 2, minHeight: 3,
+    height: 92, width: "100%",
   },
   spectroAxisLine: {
     position: "absolute", bottom: 0, left: 0, right: 0,
-    height: 1, backgroundColor: "#334155",
+    height: 1, backgroundColor: "rgba(255,255,255,0.07)",
   },
 
-  // Freq labels
   freqLabels: {
     flexDirection: "row", justifyContent: "space-between",
-    width: SCREEN_W - 48, marginBottom: 36,
+    width: SCREEN_W - 48, marginBottom: 40,
   },
-  freqLabel: { fontFamily: "Inter_400Regular", fontSize: 10, color: C.muted },
+  freqLabel: { fontFamily: "Inter_400Regular", fontSize: 10, color: "#475569" },
 
-  // Message
-  msgWrap: { height: 44, alignItems: "center", justifyContent: "center", marginBottom: 28 },
+  msgWrap: { height: 48, alignItems: "center", justifyContent: "center", marginBottom: 28 },
   msgText: {
-    fontFamily: "Inter_500Medium", fontSize: 14, color: "#CBD5E1",
+    fontFamily: "Inter_500Medium", fontSize: 14, color: "#94A3B8",
     textAlign: "center", letterSpacing: 0.1,
   },
 
-  // Progress
   progressTrack: {
-    width: SCREEN_W - 48, height: 4, backgroundColor: C.card,
-    borderRadius: 2, overflow: "hidden", marginBottom: 24,
-  },
-  progressFill: {
-    height: "100%", borderRadius: 2,
-    backgroundColor: C.indigoGlow,
+    width: SCREEN_W - 48, height: 5,
+    backgroundColor: "rgba(255,255,255,0.08)",
+    borderRadius: 3, overflow: "hidden", marginBottom: 28,
   },
 
-  // Science badge
   scienceBadge: {
-    borderWidth: 1, borderColor: "#334155", borderRadius: 20,
-    paddingHorizontal: 14, paddingVertical: 6,
+    borderWidth: 1, borderColor: "rgba(129,140,248,0.3)", borderRadius: 20,
+    paddingHorizontal: 14, paddingVertical: 7,
+    backgroundColor: "rgba(79,70,229,0.1)",
   },
   scienceText: {
-    fontFamily: "Inter_400Regular", fontSize: 11, color: C.muted, letterSpacing: 0.2,
+    fontFamily: "Inter_400Regular", fontSize: 11, color: "#818CF8", letterSpacing: 0.3,
   },
 });
