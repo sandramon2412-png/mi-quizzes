@@ -3180,7 +3180,7 @@ function getDefaultEnglishCompareOptions() {
     {name:'Speaking', pros:['Mejora fluidez real y confianza', 'Te prepara para entrevistas, viajes y conversaciones'], cons:['Da vergüenza al inicio', 'Necesita repetición frecuente']},
     {name:'Listening', pros:['Entrena oído para entender nativos', 'Mejora pronunciación por imitación'], cons:['Puede frustrar si eliges audios muy difíciles', 'Necesita audios cortos y repetidos']},
     {name:'Vocabulario útil', pros:['Da palabras para empezar rápido', 'Funciona bien con flashcards y ejemplos'], cons:['Si memorizas sin contexto se olvida rápido', 'No reemplaza hablar']},
-    {name:'Gramática práctica', pros:['Ordena frases y reduce errores repetidos', 'Ayuda a escribir y hablar con más claridad'], cons:['Demasiada teoría puede bloquear la fluidez', 'Debe practicarse en frases reales']}
+    {name:'Gramatica práctica', pros:['Ordena frases y reduce errores repetidos', 'Ayuda a escribir y hablar con más claridad'], cons:['Demasiada teoría puede bloquear la fluidez', 'Debe practicarse en frases reales']}
   ];
 }
 
@@ -3303,7 +3303,7 @@ function getDiagnosticQuestions(app = currentApp) {
       { q:'¿Puedes presentarte en inglés sin leer?', opts:['Sí, con fluidez','Sí, pero lento','Solo con ayuda','Todavía no'] },
       { q:'¿Entiendes audios cortos de nivel principiante?', opts:['La mayoría','Algunas frases','Palabras sueltas','Casi nada'] },
       { q:'¿Puedes mantener una conversación simple de 2 minutos?', opts:['Sí','Con pausas','Me bloqueo mucho','No todavía'] },
-      { q:'¿Qué te falta más ahora?', opts:['Speaking','Listening','Vocabulario','Gramática base'] }
+      { q:'¿Qué te falta más ahora?', opts:['Speaking','Listening','Vocabulario','Gramatica base'] }
     ];
   }
   if (/emocion|emocional|cuerpo|somatic|nervioso|regulacion|ansiedad|estres|calma|bienestar/.test(text)) {
@@ -5836,14 +5836,14 @@ function renderDiagnostico(el) {
       }).join(' ');
       const priority = /listening|audio|oir|escuchar/.test(selected) ? 'Listening'
         : /vocab|palabra|chunk|frase/.test(selected) ? 'Vocabulario'
-        : /gramat/.test(selected) ? 'Gramática'
+        : /gramat/.test(selected) ? 'Gramatica'
         : 'Speaking';
       const level = pct >= 75 ? 'Intermedio en progreso' : pct >= 45 ? 'Pre-Intermedio' : 'Principiante';
       const focusPlan = {
         Speaking:'10 minutos diarios de role-play: responde en voz alta, acepta corrección y repite la frase corregida 3 veces.',
         Listening:'5 minutos diarios con audio corto: una vez sin subtítulos, una con subtítulos y una repitiendo frases.',
         Vocabulario:'Aprende chunks completos, no palabras sueltas. Usa 10 flashcards y crea una frase propia con 3 de ellas.',
-        Gramática:'Practica una regla por vez con ejemplos reales. No estudies teoría antes de intentar decir frases.'
+        Gramatica:'Practica una regla por vez con ejemplos reales. No estudies teoría antes de intentar decir frases.'
       }[priority];
       return {
         pct,
