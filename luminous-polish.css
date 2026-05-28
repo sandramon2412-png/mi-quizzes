@@ -198,11 +198,9 @@ body.studio-page header {
   flex: 0 0 auto;
   border-radius: 15px;
   position: relative;
-  display: inline-grid;
-  place-items: center;
-  background:
-    radial-gradient(circle at 34% 24%, rgba(255,255,255,.78), transparent 18%),
-    conic-gradient(from 210deg, var(--lum-blue), var(--lum-violet), var(--lum-rose), var(--lum-teal), var(--lum-blue));
+  display: inline-block;
+  overflow: hidden;
+  background: #080810;
   box-shadow: 0 14px 34px rgba(79,124,255,.38), 0 0 42px rgba(139,92,246,.20), inset 0 1px 0 rgba(255,255,255,.25);
 }
 
@@ -223,6 +221,24 @@ body.studio-page header {
   font-weight: 800;
   letter-spacing: .14em;
   text-transform: uppercase;
+}
+
+.studio-logo-mark::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  border: 1px solid rgba(255,255,255,.22);
+  box-shadow: inset 0 0 18px rgba(255,255,255,.12);
+  pointer-events: none;
+}
+
+.studio-logo-mark video {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+  object-position: center;
 }
 
 body.studio-page main:not(.print-doc),

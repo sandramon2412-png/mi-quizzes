@@ -91,6 +91,8 @@
       letter-spacing: .10em;
       margin-top: 2px;
     }
+    .brand-icon { overflow: hidden; }
+    .brand-icon video { width: 100%; height: 100%; object-fit: cover; display: block; }
     .nav-actions { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
     .btn {
       min-height: 42px;
@@ -147,10 +149,10 @@
       position: absolute;
       inset: 0;
       background:
-        radial-gradient(circle at 82% 24%, rgba(49,199,182,.32), transparent 29%),
-        radial-gradient(circle at 72% 72%, rgba(223,79,136,.22), transparent 34%),
-        linear-gradient(90deg, rgba(9,9,17,.96), rgba(21,21,34,.80));
-      opacity: .96;
+        linear-gradient(90deg, rgba(6,7,15,.98) 0%, rgba(7,8,17,.96) 42%, rgba(8,9,18,.74) 62%, rgba(8,9,18,.46) 100%),
+        linear-gradient(0deg, rgba(8,9,18,.45), rgba(8,9,18,.18)),
+        url("https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=1500&q=80") center right / cover;
+      opacity: 1;
     }
     .hero-main > * { position: relative; z-index: 1; }
     .hero-visual {
@@ -164,6 +166,7 @@
       z-index: 0;
       opacity: .88;
       pointer-events: none;
+      display: none;
     }
     .ad-card {
       border: 1px solid rgba(255,255,255,.14);
@@ -613,7 +616,7 @@
   <nav>
     <div class="nav-inner">
       <a class="brand" href="./market-research-demo.html">
-        <span class="brand-icon material-symbols-outlined">travel_explore</span>
+        <span class="brand-icon" aria-hidden="true"><video autoplay muted loop playsinline preload="metadata"><source src="https://euauqqamrkqwoytveljp.supabase.co/storage/v1/object/public/public-assets/Logo_Reveal_A_purple_and_dark_blue_nebula_swirls_with_7dBpmcoS.mp4" type="video/mp4"></video></span>
         <span>Luminous Spy Lab <small>Investigacion de mercado y Ads</small></span>
       </a>
       <div class="nav-actions">
