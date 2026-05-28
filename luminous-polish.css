@@ -146,3 +146,128 @@ textarea::placeholder {
     -webkit-backdrop-filter: blur(14px);
   }
 }
+
+/* Unified app/product pages: builders, templates, Bot Lab */
+body.studio-page {
+  min-height: 100vh;
+  background:
+    radial-gradient(circle at 6% -8%, rgba(79,124,255,0.20), transparent 33rem),
+    radial-gradient(circle at 94% 2%, rgba(45,212,191,0.12), transparent 29rem),
+    radial-gradient(circle at 58% 18%, rgba(236,72,153,0.10), transparent 34rem),
+    linear-gradient(180deg, #080912 0%, #0c0d18 42%, #080810 100%) !important;
+}
+
+body.studio-page header {
+  min-height: 56px;
+  background: rgba(8,9,18,0.78) !important;
+  border-bottom: 1px solid rgba(255,255,255,0.085) !important;
+  box-shadow: 0 24px 70px rgba(0,0,0,0.30);
+  backdrop-filter: blur(22px) saturate(145%);
+  -webkit-backdrop-filter: blur(22px) saturate(145%);
+}
+
+.studio-brand {
+  color: #fff !important;
+  letter-spacing: -0.035em;
+  display: inline-flex !important;
+  align-items: center;
+  gap: .68rem;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.studio-brand::before {
+  content: "";
+  width: 2.1rem;
+  height: 2.1rem;
+  flex: 0 0 auto;
+  border-radius: 14px;
+  background:
+    radial-gradient(circle at 34% 25%, rgba(255,255,255,.72), transparent 18%),
+    linear-gradient(135deg, var(--lum-blue), var(--lum-violet) 55%, var(--lum-teal));
+  box-shadow: 0 14px 34px rgba(79,124,255,.34), inset 0 1px 0 rgba(255,255,255,.22);
+}
+
+.studio-brand .studio-brand-sub {
+  display: block;
+  margin-top: 1px;
+  color: rgba(226,232,240,.48);
+  font-size: 10px;
+  line-height: 1;
+  font-weight: 800;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+}
+
+body.studio-page main:not(.print-doc),
+body.studio-page .page-hero,
+body.studio-page #starter,
+body.studio-page aside,
+body.studio-page section {
+  position: relative;
+}
+
+body.studio-page .page-hero,
+body.studio-page main > .mb-8:first-child,
+body.studio-page main > .space-y-4:first-child,
+body.studio-page #starter > .flex:first-child {
+  border-radius: 28px;
+}
+
+body.studio-page :where(.bg-surface-container-low, .bg-surface-container, .bg-surface-container-high, .bg-surface-container-highest) {
+  background:
+    linear-gradient(145deg, rgba(255,255,255,.085), rgba(255,255,255,.026)) !important;
+  border-color: rgba(255,255,255,.095) !important;
+}
+
+body.studio-page :where(.template-card, .bot-card, .landing-card, .quiz-card, .miniapp-card, article[class*="rounded"], div[class*="rounded"][class*="border"]) {
+  box-shadow: 0 18px 58px rgba(0,0,0,.22), inset 0 1px 0 rgba(255,255,255,.07);
+}
+
+body.studio-page :where(.template-card, .bot-card, .landing-card, .quiz-card, .miniapp-card, article[class*="rounded"], div[class*="rounded"][class*="border"]):hover {
+  border-color: rgba(79,124,255,.30) !important;
+}
+
+body.studio-page input,
+body.studio-page textarea,
+body.studio-page select {
+  border-radius: 14px !important;
+}
+
+body.studio-page header .h-9.w-9,
+body.studio-page header a[title*="Volver"] {
+  border-radius: 14px !important;
+  background: rgba(255,255,255,.075) !important;
+  border: 1px solid rgba(255,255,255,.10);
+}
+
+body.studio-page header .primary-gradient,
+body.studio-page header button,
+body.studio-page header label {
+  border-radius: 999px !important;
+}
+
+body.studio-page .section-head {
+  border-left: 0 !important;
+  padding-left: 0 !important;
+}
+
+body.studio-page .section-head h2,
+body.studio-page h1,
+body.studio-page h2 {
+  letter-spacing: -0.035em;
+}
+
+@media (max-width: 720px) {
+  body.studio-page header {
+    min-height: 58px;
+  }
+  .studio-brand::before {
+    width: 1.85rem;
+    height: 1.85rem;
+    border-radius: 12px;
+  }
+  .studio-brand .studio-brand-sub {
+    display: none;
+  }
+}
