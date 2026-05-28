@@ -70,6 +70,14 @@
   }
   .serif { font-family:'Lora',Georgia,serif; }
   .material-symbols-outlined { font-variation-settings:'FILL' 0,'wght' 400,'GRAD' 0,'opsz' 24; }
+  #screen-access :not(.material-symbols-outlined),
+  #screen-app :not(.material-symbols-outlined) {
+    font-family: var(--app-font-family, 'Plus Jakarta Sans', sans-serif) !important;
+  }
+  #screen-access .material-symbols-outlined,
+  #screen-app .material-symbols-outlined {
+    font-family: 'Material Symbols Outlined' !important;
+  }
 
   /* App container — phone-width centered */
   #screen-access, #screen-app {
@@ -1182,8 +1190,10 @@ document.addEventListener('DOMContentLoaded', async () => {
   }
   if (app.font === 'serif') {
     document.body.style.fontFamily = "'Lora', Georgia, serif";
+    document.body.style.setProperty('--app-font-family', "'Lora', Georgia, serif");
   } else if (app.font === 'sans') {
     document.body.style.fontFamily = "'Plus Jakarta Sans', sans-serif";
+    document.body.style.setProperty('--app-font-family', "'Plus Jakarta Sans', sans-serif");
   }
 
   // Access screen
