@@ -176,6 +176,10 @@ body.studio-page header {
   white-space: nowrap;
 }
 
+.studio-brand:has(.studio-logo-mark)::before {
+  display: none;
+}
+
 .studio-brand::before {
   content: "";
   width: 2.1rem;
@@ -186,6 +190,28 @@ body.studio-page header {
     radial-gradient(circle at 34% 25%, rgba(255,255,255,.72), transparent 18%),
     linear-gradient(135deg, var(--lum-blue), var(--lum-violet) 55%, var(--lum-teal));
   box-shadow: 0 14px 34px rgba(79,124,255,.34), inset 0 1px 0 rgba(255,255,255,.22);
+}
+
+.studio-logo-mark {
+  width: 2.25rem;
+  height: 2.25rem;
+  flex: 0 0 auto;
+  border-radius: 15px;
+  position: relative;
+  display: inline-grid;
+  place-items: center;
+  background:
+    radial-gradient(circle at 34% 24%, rgba(255,255,255,.78), transparent 18%),
+    conic-gradient(from 210deg, var(--lum-blue), var(--lum-violet), var(--lum-rose), var(--lum-teal), var(--lum-blue));
+  box-shadow: 0 14px 34px rgba(79,124,255,.38), 0 0 42px rgba(139,92,246,.20), inset 0 1px 0 rgba(255,255,255,.25);
+}
+
+.studio-logo-mark::after {
+  content: "✦";
+  color: #fff;
+  font-size: 1rem;
+  line-height: 1;
+  text-shadow: 0 0 18px rgba(255,255,255,.78);
 }
 
 .studio-brand .studio-brand-sub {
@@ -214,6 +240,22 @@ body.studio-page #starter > .flex:first-child {
   border-radius: 28px;
 }
 
+body.studio-page .page-hero {
+  margin-top: 1rem;
+  padding: clamp(1.35rem, 3vw, 2.25rem) !important;
+  border: 1px solid rgba(255,255,255,.12);
+  background:
+    radial-gradient(circle at 14% 0%, rgba(79,124,255,.18), transparent 20rem),
+    radial-gradient(circle at 86% 0%, rgba(45,212,191,.12), transparent 20rem),
+    linear-gradient(135deg, rgba(255,255,255,.085), rgba(255,255,255,.026)) !important;
+  box-shadow: 0 24px 90px rgba(0,0,0,.34), inset 0 1px 0 rgba(255,255,255,.10);
+}
+
+body.studio-page .page-hero h1 {
+  font-size: clamp(2.2rem, 5vw, 4.4rem) !important;
+  line-height: .96 !important;
+}
+
 body.studio-page :where(.bg-surface-container-low, .bg-surface-container, .bg-surface-container-high, .bg-surface-container-highest) {
   background:
     linear-gradient(145deg, rgba(255,255,255,.085), rgba(255,255,255,.026)) !important;
@@ -226,6 +268,17 @@ body.studio-page :where(.template-card, .bot-card, .landing-card, .quiz-card, .m
 
 body.studio-page :where(.template-card, .bot-card, .landing-card, .quiz-card, .miniapp-card, article[class*="rounded"], div[class*="rounded"][class*="border"]):hover {
   border-color: rgba(79,124,255,.30) !important;
+}
+
+body.studio-page .bot-card,
+body.studio-page [data-bot-card],
+body.studio-page #bots-grid > *,
+body.studio-page #grid > * {
+  background:
+    linear-gradient(145deg, rgba(255,255,255,.10), rgba(255,255,255,.028)),
+    radial-gradient(circle at 12% 0%, rgba(79,124,255,.12), transparent 14rem) !important;
+  border: 1px solid rgba(255,255,255,.11) !important;
+  border-radius: 24px !important;
 }
 
 body.studio-page input,
