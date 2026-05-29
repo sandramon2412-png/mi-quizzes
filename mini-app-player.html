@@ -6564,7 +6564,17 @@ function cleanText(s) {
     .replace(/Ã|Í/g, '�')
     .replace(/Ã|Ó/g, '�')
     .replace(/Ã|Ú/g, '�')
-    .replace(/Ã|Ñ/g, '�');
+    .replace(/Ã|Ñ/g, '�')
+    .replace(/Qu\uFFFD/g, 'Qu\u00e9')
+    .replace(/qu\uFFFD/g, 'qu\u00e9')
+    .replace(/se\uFFFDal/g, 'se\u00f1al')
+    .replace(/Se\uFFFDal/g, 'Se\u00f1al')
+    .replace(/preocupaci\uFFFDn/g, 'preocupaci\u00f3n')
+    .replace(/depende de m\uFFFD+/g, 'depende de m\u00ed')
+    .replace(/m\uFFFD+/g, 'm\u00ed')
+    .replace(/s\uFFFD(?=\s+depende)/g, 's\u00ed')
+    .replace(/\bQu\s+se(?:n|\u00f1)?al/g, 'Qu\u00e9 se\u00f1al')
+    .replace(/\bqu\s+se(?:n|\u00f1)?al/g, 'qu\u00e9 se\u00f1al');
 }
 function esc(s){return cleanText(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
 
