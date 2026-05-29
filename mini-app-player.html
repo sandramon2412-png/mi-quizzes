@@ -1079,33 +1079,8 @@ document.addEventListener('DOMContentLoaded', async () => {
   document.body.classList.toggle('app-skinglow', app.id === 'skinglow-miniapp');
   if (app.id) document.body.dataset.appId = app.id;
 
-  // Track response (único por visitante, por mes) y verificar límite del plan
   const ownerId = app.owner_id || app.userId || app.user_id;
-  try {
-    if (ownerId && typeof ResponseTracker !== 'undefined') {
-      await withTimeout(ResponseTracker.track(ownerId, 'miniapp', id), 2500, 'tracking timeout');
-      // Bloquear si el creador superó su límite mensual de respuestas
-      const usage = await withTimeout(ResponseTracker.getUsageStatus(ownerId), 2500, 'usage timeout');
-      if (usage.exceeded) {
-        showError('Este contenido está temporalmente pausado. El creador ha alcanzado su límite mensual de visitas.');
-        return;
-      }
-    }
-  } catch (_) {}
-
   const originalTheme = extractAppTheme(app);
-
-  // Cargar white-label del creador (si existe)
-  try {
-    if (ownerId && typeof DB !== 'undefined') {
-      const profile = await withTimeout(DB.profiles.get(ownerId), 2500, 'profile timeout');
-      if (profile) {
-        app.whiteLabel     = !!profile.white_label;
-        app.whiteLabelName = profile.white_label_name || '';
-        app.whiteLabelLogo = profile.white_label_logo || '';
-      }
-    }
-  } catch (_) {}
 
   // Fallback theme if no AI-generated theme data
   if (!app.mode) {
@@ -1227,6 +1202,50 @@ document.addEventListener('DOMContentLoaded', async () => {
     requestAnimationFrame(() => enterApp());
     setTimeout(() => enterApp(), 350);
     window.addEventListener('load', () => enterApp(), { once:true });
+  }
+
+  // Track + usage + white-label en background (no bloquean la pantalla de acceso)
+  if (ownerId) {
+    (async () => {
+      try {
+        if (typeof ResponseTracker !== 'undefined') {
+          await withTimeout(ResponseTracker.track(ownerId, 'miniapp', id), 2500, 'tracking timeout');
+          const usage = await withTimeout(ResponseTracker.getUsageStatus(ownerId), 2500, 'usage timeout');
+          if (usage.exceeded) {
+            showError('Este contenido está temporalmente pausado. El creador ha alcanzado su límite mensual de visitas.');
+            return;
+          }
+        }
+      } catch (_) {}
+      try {
+        if (typeof DB !== 'undefined') {
+          const profile = await withTimeout(DB.profiles.get(ownerId), 2500, 'profile timeout');
+          if (profile) {
+            app.whiteLabel     = !!profile.white_label;
+            app.whiteLabelName = profile.white_label_name || '';
+            app.whiteLabelLogo = profile.white_label_logo || '';
+            // Update footer with white-label info once loaded
+            const footer     = document.getElementById('app-footer');
+            const footerText = document.getElementById('footer-text');
+            if (footer && footerText) {
+              if (app.whiteLabel && app.whiteLabelName) {
+                const logoHtml = app.whiteLabelLogo ? `<img src="${app.whiteLabelLogo}" alt="${app.whiteLabelName}" style="height:18px;vertical-align:middle;margin-right:6px;">` : '';
+                footerText.innerHTML = `${logoHtml}<span style="font-weight:600;color:var(--text);">${app.whiteLabelName}</span>`;
+                footer.style.display = 'block';
+              } else if (app.whiteLabel) {
+                footer.style.display = 'none';
+              }
+            }
+            // Update page title/meta
+            const brandSuffix2 = app.whiteLabelName ? ' | ' + app.whiteLabelName : '';
+            if (brandSuffix2) {
+              document.title = app.name + brandSuffix2;
+              document.querySelector('meta[property="og:title"]')?.setAttribute('content', app.name + brandSuffix2);
+            }
+          }
+        }
+      } catch (_) {}
+    })();
   }
 });
 
