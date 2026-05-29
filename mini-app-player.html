@@ -1059,15 +1059,17 @@ function withTimeout(promise, ms = 4000, message = 'timeout') {
 document.addEventListener('DOMContentLoaded', async () => {
   const id = getParam('id');
   if (!id) { showError('No se especificó una mini-app.'); return; }
+  try {
   const builtInApp = typeof getSkinGlowMiniApp === 'function' ? getSkinGlowMiniApp(id) : null;
   const localApp = MiniApps.get(id);
-  let app = builtInApp || null;
+  // Use localStorage immediately — no need to wait for DB if already cached
+  let app = builtInApp || localApp || null;
   if (!app && typeof DB !== 'undefined') {
     try { app = await withTimeout(DB.miniApps.get(id), 4500, 'No se pudo conectar con la base de datos.'); } catch(e) {
       console.warn('[mini-app] DB load failed:', e.message);
     }
   }
-  if (!app) app = localApp || getDemoPreviewApp(id);
+  if (!app) app = getDemoPreviewApp(id);
   if (!app) { showError('Mini-App no encontrada. Verifica el enlace.'); return; }
   app = repairTextTree(app);
   try {
@@ -1246,6 +1248,10 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
       } catch (_) {}
     })();
+  }
+  } catch (initErr) {
+    console.error('[mini-app] init error:', initErr);
+    showError('Error al cargar la aplicación. Por favor recarga la página.');
   }
 });
 
