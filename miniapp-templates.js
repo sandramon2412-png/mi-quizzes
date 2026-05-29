@@ -2130,6 +2130,7 @@ function getBuiltinMiniAppTemplates() {
   subcategory:'Idiomas',
   description:'Entrena tu oído con audios reales en inglés (TTS), aprende idioms avanzados y ejercita pronunciación con retos diarios.',
   icon:'self_improvement',
+  voiceLang:'en-US',
   primaryColor:'#0891b2',
   secondaryColor:'#0e7490',
   bgColor:'#0e0e0e',
