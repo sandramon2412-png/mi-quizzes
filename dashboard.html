@@ -1080,16 +1080,17 @@ document.addEventListener('DOMContentLoaded', async () => {
   if (!_currentUser) return;
   // Load profile first so plan is synced to Settings before renders gate by it.
   await loadUserInfo();
-  await Promise.all([renderMiniApps(), renderQuizzes(), renderLandings(), renderEbooks(), renderProjects()]);
-  loadLeadsCount();
-  loadUsageWidget();
   const pageParams = new URLSearchParams(window.location.search);
-  const requestedTab = pageParams.get('tab');
-  if (requestedTab) switchDashTab(requestedTab);
-  // Apply mini-app template if coming from plantillas-miniapps.html
+  // If a template is pending, create it locally BEFORE the Supabase renders
+  // so the new app appears immediately in the grid without waiting for DB.
   if (pageParams.get('miniapp_template')) {
     await applyPendingMiniAppTemplate();
   }
+  await Promise.all([renderMiniApps(), renderQuizzes(), renderLandings(), renderEbooks(), renderProjects()]);
+  loadLeadsCount();
+  loadUsageWidget();
+  const requestedTab = pageParams.get('tab');
+  if (requestedTab) switchDashTab(requestedTab);
   // Auto-open mini-app creation modal if ?create_miniapp=1
   if (pageParams.get('create_miniapp')) {
     setTimeout(() => openCreateModal(), 700);
@@ -1375,7 +1376,10 @@ function _dbWithTimeout(promise, ms = 6000) {
 
 async function renderMiniApps() {
   const container = document.getElementById('mini-apps-grid');
-  container.innerHTML = '<p class="text-xs text-on-surface-variant col-span-3 py-6 text-center animate-pulse">Cargando...</p>';
+  // Don't flash "Cargando..." if the grid already shows an optimistic result
+  if (!window._miniAppsCache?.length) {
+    container.innerHTML = '<p class="text-xs text-on-surface-variant col-span-3 py-6 text-center animate-pulse">Cargando...</p>';
+  }
   let apps = [];
   try {
     apps = await _dbWithTimeout(DB.miniApps.getAll(_currentUser.id));
