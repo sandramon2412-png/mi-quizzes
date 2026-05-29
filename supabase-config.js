@@ -380,7 +380,9 @@ const DB = {
         updated_at:   new Date().toISOString(),
       };
       if (app.id) {
-        const { data, error } = await db.from('mini_apps').update(row).eq('id', app.id).select().single();
+        const { data, error } = await db.from('mini_apps')
+          .upsert({ id: app.id, ...row }, { onConflict: 'id' })
+          .select().single();
         if (error) throw error;
         return this._norm(data);
       } else {
