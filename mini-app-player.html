@@ -1384,7 +1384,6 @@ function displayAppName(app = currentApp) {
 function enterApp() {
   if (!currentApp) return;
   try {
-    startTextRepairObserver();
     document.getElementById('screen-access').style.display = 'none';
     document.getElementById('screen-app').style.display = 'flex';
     const headerIconEl = document.getElementById('app-header-icon');
@@ -6502,7 +6501,9 @@ function repairReplacementSpanish(text) {
     .replace(/mandbula/g, 'mand\u00edbula')
     .replace(/Mandbula/g, 'Mand\u00edbula')
     .replace(/esto s depende/g, 'esto s\u00ed depende')
-    .replace(/ de m(\b|\W)/g, ' de m\u00ed$1');
+    .replace(/ de m(\b|\W)/g, ' de m\u00ed$1')
+    .replace(/\bQu (?=se|aparece|quieres|puedes|necesitas|depende|hacer)/g, 'Qu\u00e9 ')
+    .replace(/\bqu (?=se|aparece|quieres|puedes|necesitas|depende|hacer)/g, 'qu\u00e9 ');
 }
 function cleanText(s) {
   let out = repairReplacementSpanish(String(s || ''));
@@ -6621,25 +6622,7 @@ function repairRenderedText(root) {
 }
 
 function startTextRepairObserver() {
-  const target = document.getElementById('screen-app');
-  if (!target || window._textRepairObserver) return;
-  const schedule = () => {
-    if (window._textRepairQueued || window._repairingText) return;
-    window._textRepairQueued = true;
-    requestAnimationFrame(() => {
-      window._textRepairQueued = false;
-      repairRenderedText(target);
-    });
-  };
-  window._textRepairObserver = new MutationObserver(schedule);
-  window._textRepairObserver.observe(target, {
-    childList:true,
-    subtree:true,
-    characterData:true,
-    attributes:true,
-    attributeFilter:['placeholder','aria-label','title','data-label']
-  });
-  schedule();
+  repairRenderedText(document.getElementById('screen-app'));
 }
 </script>
 </body>
