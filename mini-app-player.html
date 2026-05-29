@@ -1037,7 +1037,7 @@
         <p style="font-size:13px;font-weight:900;color:var(--text)">Voz de lectura</p>
         <p style="font-size:11px;color:var(--muted);margin-top:3px">La calidad depende de las voces instaladas en este navegador.</p>
       </div>
-      <button onclick="closeVoicePanel()" class="icon-btn" style="width:34px;height:34px">${msIcon('close',17)}</button>
+      <button onclick="closeVoicePanel()" class="icon-btn" style="width:34px;height:34px"><span class="material-symbols-outlined" style="font-size:17px">close</span></button>
     </div>
     <label style="display:block;font-size:11px;font-weight:800;color:var(--accent);margin-bottom:6px;text-transform:uppercase;letter-spacing:.08em">Voz</label>
     <select id="voice-select" class="voice-field" onchange="saveVoiceSettings()"></select>
@@ -1049,7 +1049,7 @@
         <input id="voice-pitch" class="voice-range" type="range" min="0.82" max="1.1" step="0.01" onchange="saveVoiceSettings()" oninput="saveVoiceSettings()">
       </label>
     </div>
-    <button class="btn-primary" onclick="testSelectedVoice()">${msIcon('play_arrow',16)} Probar voz</button>
+    <button class="btn-primary" onclick="testSelectedVoice()"><span class="material-symbols-outlined" style="font-size:16px">play_arrow</span> Probar voz</button>
   </div>
 </div>
 
@@ -6472,8 +6472,40 @@ function showToast(msg,type='success') {
   clearTimeout(t._to);t._to=setTimeout(()=>t.style.opacity='0',2500);
 }
 
+function repairReplacementSpanish(text) {
+  return String(text || '')
+    .replace(/sue\uFFFD/g, 'sue\u00f1')
+    .replace(/Sue\uFFFD/g, 'Sue\u00f1')
+    .replace(/se\uFFFDal/g, 'se\u00f1al')
+    .replace(/Se\uFFFDal/g, 'Se\u00f1al')
+    .replace(/ni\uFFFD/g, 'ni\u00f1')
+    .replace(/Ni\uFFFD/g, 'Ni\u00f1')
+    .replace(/ma\uFFFDana/g, 'ma\u00f1ana')
+    .replace(/Ma\uFFFDana/g, 'Ma\u00f1ana')
+    .replace(/h\uFFFDbito/g, 'h\u00e1bito')
+    .replace(/H\uFFFDbito/g, 'H\u00e1bito')
+    .replace(/preocupaci\uFFFDn/g, 'preocupaci\u00f3n')
+    .replace(/Preocupaci\uFFFDn/g, 'Preocupaci\u00f3n')
+    .replace(/depende de m\uFFFD/g, 'depende de m\u00ed')
+    .replace(/ayudar\uFFFDn/g, 'ayudar\u00e1n')
+    .replace(/ayudarn/g, 'ayudar\u00e1n')
+    .replace(/Sueo/g, 'Sue\u00f1o')
+    .replace(/sueo/g, 'sue\u00f1o')
+    .replace(/Das/g, 'D\u00edas')
+    .replace(/das/g, 'd\u00edas')
+    .replace(/hbitos/g, 'h\u00e1bitos')
+    .replace(/Habitos/g, 'H\u00e1bitos')
+    .replace(/Seal/g, 'Se\u00f1al')
+    .replace(/seal/g, 'se\u00f1al')
+    .replace(/preocupacin/g, 'preocupaci\u00f3n')
+    .replace(/Preocupacin/g, 'Preocupaci\u00f3n')
+    .replace(/mandbula/g, 'mand\u00edbula')
+    .replace(/Mandbula/g, 'Mand\u00edbula')
+    .replace(/esto s depende/g, 'esto s\u00ed depende')
+    .replace(/ de m(\b|\W)/g, ' de m\u00ed$1');
+}
 function cleanText(s) {
-  let out = String(s || '');
+  let out = repairReplacementSpanish(String(s || ''));
   for (let i = 0; i < 3; i++) {
     const decoded = decodeMojibakeOnce(out);
     if (decoded === out) break;
@@ -6488,7 +6520,7 @@ function cleanText(s) {
     }
     return fixed;
   });
-  return out.replace(/\uFFFD/g, '')
+  return repairReplacementSpanish(out).replace(/\uFFFD/g, '')
     .replace(/Â¿|¿/g, '�')
     .replace(/Â¡|¡/g, '�')
     .replace(/Â·|·/g, '�')
