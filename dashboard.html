@@ -1392,6 +1392,29 @@ async function renderMiniApps() {
   }
   // Filter out user-deleted apps (handles Supabase RLS blocking deletes)
   apps = apps.filter(app => !_hiddenAppIds.has(app.id));
+  // Repair accent-stripped names/descriptions from clean templates
+  if (typeof getBuiltinMiniAppTemplates === 'function') {
+    const tplMap = new Map(getBuiltinMiniAppTemplates().map(t => [t.id, t]));
+    apps = apps.map(app => {
+      const tid = app._templateId;
+      if (!tid) return app;
+      const tpl = tplMap.get(tid);
+      if (!tpl) return app;
+      const repaired = {};
+      // Restore name if it looks accent-stripped (shorter than template or has no accents when template does)
+      if (tpl.name && app.name && app.name !== tpl.name) {
+        const stripped = tpl.name.normalize('NFD').replace(/[̀-ͯ]/g, '');
+        if (app.name === stripped || app.name.replace(/["\s]/g,'') === stripped.replace(/\s/g,'')) {
+          repaired.name = tpl.name;
+        }
+      }
+      if (tpl.description && app.description && app.description !== tpl.description) {
+        const stripped = tpl.description.normalize('NFD').replace(/[̀-ͯ]/g, '');
+        if (app.description === stripped) repaired.description = tpl.description;
+      }
+      return Object.keys(repaired).length ? { ...app, ...repaired } : app;
+    });
+  }
   window._miniAppsCache = apps;
 
   const dynamicCards = apps.map(app => buildAppCard(app)).join('');
@@ -1796,13 +1819,13 @@ function buildAppCard(app) {
       </div>
       <div class="flex gap-2 mt-auto">
         <a href="${appUrl}" class="flex-1 py-2 bg-primary text-white text-xs font-bold rounded-xl text-center hover:opacity-90 transition-opacity">Abrir App</a>
-        ${hasEditableContent ? `<button type="button" id="edit-btn-${app.id}" data-edit-app-id="${esc(app.id)}" class="w-9 h-9 rounded-xl bg-surface-container-high flex items-center justify-center hover:bg-primary/10 transition-colors" title="Editar contenido">
+        ${hasEditableContent ? `<button type="button" data-edit-app-id="${esc(app.id)}" class="w-9 h-9 rounded-xl bg-surface-container-high flex items-center justify-center hover:bg-primary/10 transition-colors" title="Editar contenido">
           <span class="material-symbols-outlined text-sm text-on-surface-variant">edit</span>
         </button>` : ''}
-        <button onclick="copyToClipboard(buildMiniAppUrl('${app.id}'))" class="w-9 h-9 rounded-xl bg-surface-container-high flex items-center justify-center hover:bg-primary/10 transition-colors" title="Copiar enlace">
+        <button data-copy-app-id="${esc(app.id)}" class="w-9 h-9 rounded-xl bg-surface-container-high flex items-center justify-center hover:bg-primary/10 transition-colors" title="Copiar enlace">
           <span class="material-symbols-outlined text-sm text-on-surface-variant">share</span>
         </button>
-        <button onclick="deleteApp('${esc(app.id)}')" class="w-9 h-9 rounded-xl bg-surface-container-high flex items-center justify-center hover:bg-error/10 transition-colors" title="Eliminar">
+        <button data-delete-app-id="${esc(app.id)}" class="w-9 h-9 rounded-xl bg-surface-container-high flex items-center justify-center hover:bg-error/10 transition-colors" title="Eliminar">
           <span class="material-symbols-outlined text-sm text-on-surface-variant">delete</span>
         </button>
       </div>
@@ -1822,8 +1845,7 @@ function _hideApp(id) {
 
 async function deleteApp(id) {
   if (!id) return;
-  if (!confirm('¿Eliminar esta mini-app? No se puede deshacer.')) return;
-  // Remove locally + add to permanent blacklist (survives page refresh)
+  // Remove locally + add to permanent blacklist (survives page refresh even if Supabase delete fails)
   MiniApps.delete(id);
   _hideApp(id);
   window._miniAppsCache = (window._miniAppsCache || []).filter(app => app.id !== id);
@@ -2894,10 +2916,15 @@ async function saveEditContent() {
 window.saveEditContent = saveEditContent;
 
 document.addEventListener('click', (event) => {
-  const btn = event.target.closest('[data-edit-app-id]');
-  if (!btn) return;
-  event.preventDefault();
-  openEditContent(btn.dataset.editAppId);
+  // Edit
+  const editBtn = event.target.closest('[data-edit-app-id]');
+  if (editBtn) { event.preventDefault(); openEditContent(editBtn.dataset.editAppId); return; }
+  // Copy link
+  const copyBtn = event.target.closest('[data-copy-app-id]');
+  if (copyBtn) { event.preventDefault(); copyToClipboard(buildMiniAppUrl(copyBtn.dataset.copyAppId)); return; }
+  // Delete
+  const delBtn = event.target.closest('[data-delete-app-id]');
+  if (delBtn) { event.preventDefault(); deleteApp(delBtn.dataset.deleteAppId); return; }
 });
 
 </script>
