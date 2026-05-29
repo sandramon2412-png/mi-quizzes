@@ -1390,6 +1390,8 @@ async function renderMiniApps() {
     // Supabase unreachable — fall back entirely to localStorage
     apps = MiniApps.getAll();
   }
+  // Filter out user-deleted apps (handles Supabase RLS blocking deletes)
+  apps = apps.filter(app => !_hiddenAppIds.has(app.id));
   window._miniAppsCache = apps;
 
   const dynamicCards = apps.map(app => buildAppCard(app)).join('');
@@ -1811,16 +1813,23 @@ function buildMiniAppUrl(appId) {
   return `${window.location.origin}/mini-app-player.html?id=${encodeURIComponent(appId)}`;
 }
 
+// IDs permanently hidden by user — survives Supabase re-fetch
+const _hiddenAppIds = new Set(JSON.parse(localStorage.getItem('ls_hidden_app_ids') || '[]'));
+function _hideApp(id) {
+  _hiddenAppIds.add(id);
+  localStorage.setItem('ls_hidden_app_ids', JSON.stringify([..._hiddenAppIds]));
+}
+
 async function deleteApp(id) {
   if (!id) return;
   if (!confirm('¿Eliminar esta mini-app? No se puede deshacer.')) return;
-  // Remove locally first (optimistic) — don't wait for Supabase
+  // Remove locally + add to permanent blacklist (survives page refresh)
   MiniApps.delete(id);
+  _hideApp(id);
   window._miniAppsCache = (window._miniAppsCache || []).filter(app => app.id !== id);
-  // Re-render immediately from cache so the card disappears at once
   _renderMiniAppsGrid(window._miniAppsCache);
   showToast('Mini-App eliminada.');
-  // Sync to Supabase in background — failure is silent (already gone from local view)
+  // Attempt Supabase delete silently in background
   try { await DB.miniApps.delete(id); } catch (err) { console.warn('deleteApp DB sync:', err); }
 }
 
