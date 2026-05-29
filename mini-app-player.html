@@ -6528,7 +6528,7 @@ function cleanText(s) {
     }
     return fixed;
   });
-  return repairReplacementSpanish(out).replace(/\uFFFD/g, '')
+  return repairReplacementSpanish(out)
     .replace(/\bQu\s+se(?:n|\u00f1)?al/g, 'Qu\u00e9 se\u00f1al')
     .replace(/\bQu\s+se(?:n|\u00f1)?ales/g, 'Qu\u00e9 se\u00f1ales')
     .replace(/\bqu\s+se(?:n|\u00f1)?al/g, 'qu\u00e9 se\u00f1al')
@@ -6574,7 +6574,26 @@ function cleanText(s) {
     .replace(/m\uFFFD+/g, 'm\u00ed')
     .replace(/s\uFFFD(?=\s+depende)/g, 's\u00ed')
     .replace(/\bQu\s+se(?:n|\u00f1)?al/g, 'Qu\u00e9 se\u00f1al')
-    .replace(/\bqu\s+se(?:n|\u00f1)?al/g, 'qu\u00e9 se\u00f1al');
+    .replace(/\bqu\s+se(?:n|\u00f1)?al/g, 'qu\u00e9 se\u00f1al')
+    .replace(/sue\uFFFD?o/gi, match => match[0] === 'S' ? 'Sue\u00f1o' : 'sue\u00f1o')
+    .replace(/h\uFFFDbito/gi, match => match[0] === 'H' ? 'H\u00e1bito' : 'h\u00e1bito')
+    .replace(/hbitos/g, 'h\u00e1bitos')
+    .replace(/Hbitos/g, 'H\u00e1bitos')
+    .replace(/ayudar\uFFFDn/g, 'ayudar\u00e1n')
+    .replace(/ayudarn/g, 'ayudar\u00e1n')
+    .replace(/Tensi\uFFFDn/g, 'Tensi\u00f3n')
+    .replace(/tensi\uFFFDn/g, 'tensi\u00f3n')
+    .replace(/Tensin/g, 'Tensi\u00f3n')
+    .replace(/tensin/g, 'tensi\u00f3n')
+    .replace(/Acci\uFFFDn/g, 'Acci\u00f3n')
+    .replace(/acci\uFFFDn/g, 'acci\u00f3n')
+    .replace(/Emoci\uFFFDn/g, 'Emoci\u00f3n')
+    .replace(/emoci\uFFFDn/g, 'emoci\u00f3n')
+    .replace(/Respiraci\uFFFDn/g, 'Respiraci\u00f3n')
+    .replace(/respiraci\uFFFDn/g, 'respiraci\u00f3n')
+    .replace(/Atenci\uFFFDn/g, 'Atenci\u00f3n')
+    .replace(/atenci\uFFFDn/g, 'atenci\u00f3n')
+    .replace(/\uFFFD/g, '');
 }
 function esc(s){return cleanText(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
 
