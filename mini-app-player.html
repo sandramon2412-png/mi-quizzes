@@ -2385,6 +2385,7 @@ function renderBodyMapToday(content, types) {
         </div>` : ''}
     </div>`;
   bindSignalMap();
+  repairRenderedText(content);
   content.scrollTop = 0;
 }
 
@@ -6502,6 +6503,8 @@ function repairReplacementSpanish(text) {
     .replace(/Mandbula/g, 'Mand\u00edbula')
     .replace(/esto s depende/g, 'esto s\u00ed depende')
     .replace(/ de m(\b|\W)/g, ' de m\u00ed$1')
+    .replace(/Qu\uFFFD/g, 'Qu\u00e9')
+    .replace(/qu\uFFFD/g, 'qu\u00e9')
     .replace(/\bQu (?=se|aparece|quieres|puedes|necesitas|depende|hacer)/g, 'Qu\u00e9 ')
     .replace(/\bqu (?=se|aparece|quieres|puedes|necesitas|depende|hacer)/g, 'qu\u00e9 ');
 }
@@ -6522,6 +6525,10 @@ function cleanText(s) {
     return fixed;
   });
   return repairReplacementSpanish(out).replace(/\uFFFD/g, '')
+    .replace(/\bQu\s+se(?:n|\u00f1)?al/g, 'Qu\u00e9 se\u00f1al')
+    .replace(/\bQu\s+se(?:n|\u00f1)?ales/g, 'Qu\u00e9 se\u00f1ales')
+    .replace(/\bqu\s+se(?:n|\u00f1)?al/g, 'qu\u00e9 se\u00f1al')
+    .replace(/\bqu\s+se(?:n|\u00f1)?ales/g, 'qu\u00e9 se\u00f1ales')
     .replace(/Â¿|¿/g, '�')
     .replace(/Â¡|¡/g, '�')
     .replace(/Â·|·/g, '�')
