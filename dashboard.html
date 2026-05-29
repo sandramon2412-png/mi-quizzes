@@ -1800,7 +1800,7 @@ function buildAppCard(app) {
         <button onclick="copyToClipboard(buildMiniAppUrl('${app.id}'))" class="w-9 h-9 rounded-xl bg-surface-container-high flex items-center justify-center hover:bg-primary/10 transition-colors" title="Copiar enlace">
           <span class="material-symbols-outlined text-sm text-on-surface-variant">share</span>
         </button>
-        <button onclick="deleteApp('${app.id}')" class="w-9 h-9 rounded-xl bg-surface-container-high flex items-center justify-center hover:bg-error/10 transition-colors" title="Eliminar">
+        <button onclick="deleteApp('${esc(app.id)}')" class="w-9 h-9 rounded-xl bg-surface-container-high flex items-center justify-center hover:bg-error/10 transition-colors" title="Eliminar">
           <span class="material-symbols-outlined text-sm text-on-surface-variant">delete</span>
         </button>
       </div>
@@ -1812,17 +1812,29 @@ function buildMiniAppUrl(appId) {
 }
 
 async function deleteApp(id) {
+  if (!id) return;
   if (!confirm('¿Eliminar esta mini-app? No se puede deshacer.')) return;
+  // Remove locally first (optimistic) — don't wait for Supabase
   MiniApps.delete(id);
   window._miniAppsCache = (window._miniAppsCache || []).filter(app => app.id !== id);
-  try {
-    await DB.miniApps.delete(id);
-    showToast('Mini-App eliminada.');
-  } catch (err) {
-    console.warn('deleteApp:', err);
-    showToast('Mini-App eliminada de este navegador. Revisa conexión para sincronizar.', 'info');
-  }
-  renderMiniApps();
+  // Re-render immediately from cache so the card disappears at once
+  _renderMiniAppsGrid(window._miniAppsCache);
+  showToast('Mini-App eliminada.');
+  // Sync to Supabase in background — failure is silent (already gone from local view)
+  try { await DB.miniApps.delete(id); } catch (err) { console.warn('deleteApp DB sync:', err); }
+}
+
+function _renderMiniAppsGrid(apps) {
+  const container = document.getElementById('mini-apps-grid');
+  if (!container) return;
+  const addCard = `
+    <div onclick="openCreateModal()" class="rounded-2xl flex flex-col items-center justify-center text-center gap-2 cursor-pointer border border-dashed border-outline-variant/20 hover:border-secondary/50 hover:bg-secondary/[0.04] transition-all min-h-[130px] group">
+      <div class="w-8 h-8 rounded-lg bg-surface-container-high border border-outline-variant/20 flex items-center justify-center group-hover:bg-secondary/10 group-hover:border-secondary/30 transition-all">
+        <span class="material-symbols-outlined text-base text-on-surface-variant/40 group-hover:text-secondary transition-colors">add</span>
+      </div>
+      <p class="text-xs font-semibold text-on-surface-variant/40 group-hover:text-secondary/70 transition-colors">Nueva Mini-App</p>
+    </div>`;
+  container.innerHTML = apps.map(app => buildAppCard(app)).join('') + addCard;
 }
 
 function copyLink(quizId, isLocal) {
