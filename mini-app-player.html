@@ -1028,7 +1028,7 @@
         <p style="font-size:13px;font-weight:900;color:var(--text)">Voz de lectura</p>
         <p style="font-size:11px;color:var(--muted);margin-top:3px">La calidad depende de las voces instaladas en este navegador.</p>
       </div>
-      <button onclick="closeVoicePanel()" class="icon-btn" style="width:34px;height:34px">${msIcon('close',17)}</button>
+      <button onclick="closeVoicePanel()" class="icon-btn" style="width:34px;height:34px"><span class="material-symbols-outlined" style="font-size:17px">close</span></button>
     </div>
     <label style="display:block;font-size:11px;font-weight:800;color:var(--accent);margin-bottom:6px;text-transform:uppercase;letter-spacing:.08em">Voz</label>
     <select id="voice-select" class="voice-field" onchange="saveVoiceSettings()"></select>
@@ -1040,7 +1040,7 @@
         <input id="voice-pitch" class="voice-range" type="range" min="0.82" max="1.1" step="0.01" onchange="saveVoiceSettings()" oninput="saveVoiceSettings()">
       </label>
     </div>
-    <button class="btn-primary" onclick="testSelectedVoice()">${msIcon('play_arrow',16)} Probar voz</button>
+    <button class="btn-primary" onclick="testSelectedVoice()"><span class="material-symbols-outlined" style="font-size:16px;vertical-align:middle;margin-right:4px">play_arrow</span>Probar voz</button>
   </div>
 </div>
 

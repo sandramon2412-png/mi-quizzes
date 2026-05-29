@@ -1157,23 +1157,22 @@ async function applyPendingMiniAppTemplate() {
       _templateId: templateId || '',
     };
 
-    let localApp = null;
-    try {
-      const saved = await DB.miniApps.save(appFromTemplate, _currentUser.id);
-      localApp = { id: saved.id, ...saved, ...appFromTemplate };
-      try { MiniApps.save(localApp); } catch (cacheErr) { console.warn('Template local cache skipped:', cacheErr.message); }
-    } catch (dbErr) {
-      console.warn('Template DB save failed:', dbErr.message);
-      localApp = MiniApps.create(appFromTemplate);
-    }
+    // Create locally first — instant, no Supabase wait
+    const localApp = MiniApps.create(appFromTemplate);
 
-    await renderMiniApps();
+    // Show in grid immediately (optimistic)
+    window._miniAppsCache = [localApp, ...(window._miniAppsCache || []).filter(a => a.id !== localApp.id)];
+    _renderMiniAppsGrid(window._miniAppsCache);
     switchDashTab('miniapps');
     history.replaceState(null, '', './dashboard.html?tab=miniapps');
     showToast(`Mini-App "${localApp.name}" creada desde plantilla.`);
     setTimeout(() => {
       document.getElementById('section-miniapps')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }, 150);
+
+    // Save to DB in background — upsert with same UUID so IDs stay in sync
+    DB.miniApps.save(localApp, _currentUser.id)
+      .catch(err => console.warn('Template DB save (background):', err.message));
   } catch (e) {
     console.warn('applyPendingMiniAppTemplate:', e);
     showToast('No pude crear la mini-app desde la plantilla.', 'error');
