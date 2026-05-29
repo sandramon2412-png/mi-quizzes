@@ -852,22 +852,22 @@
   .body-activity-bar { height:8px; border-radius:999px; background:var(--body-cream-dark); overflow:hidden; }
   .body-activity-bar span { display:block; height:100%; border-radius:999px; background:linear-gradient(90deg,var(--body-terra),#d4878a); }
   .body-guide-block { display:grid; gap:10px; margin:12px 0 14px; }
-  .body-guide-message { padding:13px 14px; border-radius:14px; background:#fff; border-left:4px solid var(--body-terra-light); color:var(--body-text); font-size:12px; line-height:1.72; }
+  .body-guide-message { padding:13px 14px; border-radius:14px; background:#fff; border-left:4px solid var(--body-terra-light,#e8a898); color:var(--body-text,#3d2b25); font-size:12px; line-height:1.72; }
   .body-guide-list { display:grid; gap:7px; }
-  .body-guide-list span { display:block; padding:9px 11px; border-radius:12px; background:rgba(255,255,255,.72); border:1px solid rgba(232,168,152,.38); color:var(--body-text); font-size:12px; line-height:1.5; }
+  .body-guide-list span { display:block; padding:9px 11px; border-radius:12px; background:rgba(255,255,255,.92); border:1px solid rgba(232,168,152,.38); color:var(--body-text,#3d2b25); font-size:12px; line-height:1.5; }
   .body-repair-grid { display:grid; gap:8px; }
-  .body-repair-card { padding:11px 12px; border-radius:13px; background:#fff; border:1px solid var(--body-cream-dark); font-size:12px; line-height:1.55; color:var(--body-text); }
-  .body-repair-card strong { display:block; color:var(--body-terra); font-size:10px; text-transform:uppercase; letter-spacing:.08em; margin-bottom:4px; }
+  .body-repair-card { padding:11px 12px; border-radius:13px; background:#fff; border:1px solid var(--body-cream-dark,rgba(180,140,120,0.22)); font-size:12px; line-height:1.55; color:var(--body-text,#3d2b25); }
+  .body-repair-card strong { display:block; color:var(--body-terra,#c4705a); font-size:10px; text-transform:uppercase; letter-spacing:.08em; margin-bottom:4px; }
   .body-chip-row { display:flex; gap:6px; flex-wrap:wrap; }
-  .body-mini-chip { border:1px solid var(--body-cream-dark); border-radius:999px; padding:6px 9px; background:#fff; color:var(--body-text); font-size:10px; font-weight:800; }
+  .body-mini-chip { border:1px solid var(--body-cream-dark,rgba(180,140,120,0.28)); border-radius:999px; padding:6px 9px; background:#fff; color:var(--body-text,#3d2b25); font-size:10px; font-weight:800; }
   button.body-mini-chip { cursor:pointer; transition:all .16s; }
-  button.body-mini-chip.active, button.body-mini-chip:hover { border-color:var(--body-terra-light); background:#f5e6e0; color:var(--body-terra); }
+  button.body-mini-chip.active, button.body-mini-chip:hover { border-color:var(--body-terra-light,#e8a898); background:#f5e6e0; color:var(--body-terra,#c4705a); }
   .body-flow-grid { display:grid; gap:9px; margin:12px 0 14px; }
   .body-flow-group { display:grid; gap:7px; }
-  .body-flow-group > strong { font-size:10px; text-transform:uppercase; letter-spacing:.08em; color:var(--body-terra); }
-  .body-dict-entry { padding:14px; border-radius:16px; background:#fff; border:1.5px solid var(--body-cream-dark); box-shadow:0 4px 16px rgba(160,100,80,.08); }
-  .body-dict-entry h4 { color:var(--body-terra); font-size:14px; margin-bottom:5px; }
-  .body-dict-entry p { color:var(--body-text); font-size:12px; line-height:1.65; }
+  .body-flow-group > strong { font-size:10px; text-transform:uppercase; letter-spacing:.08em; color:var(--body-terra,#c4705a); }
+  .body-dict-entry { padding:14px; border-radius:16px; background:#fff; border:1.5px solid var(--body-cream-dark,rgba(180,140,120,0.22)); box-shadow:0 4px 16px rgba(160,100,80,.08); }
+  .body-dict-entry h4 { color:var(--body-terra,#c4705a); font-size:14px; margin-bottom:5px; }
+  .body-dict-entry p { color:var(--body-text,#3d2b25); font-size:12px; line-height:1.65; }
   @media (min-width:980px) {
     body.map-engine-open #screen-app { max-width:1280px; }
     .body-engine-shell { grid-template-columns:220px minmax(420px,1fr) 280px; min-height:680px; }
