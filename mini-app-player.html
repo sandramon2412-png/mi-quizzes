@@ -1,13 +1,13 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
 <title>Mini-App | Luminous Studio</title>
-<meta name="description" content="AplicaciÃ³n interactiva creada con Luminous Studio"/>
+<meta name="description" content="Aplicación interactiva creada con Luminous Studio"/>
 <meta property="og:type" content="website"/>
 <meta property="og:title" content="Mini-App | Luminous Studio"/>
-<meta property="og:description" content="AplicaciÃ³n interactiva creada con Luminous Studio â€” quizzes, trackers, chatbots y mÃ¡s."/>
+<meta property="og:description" content="Aplicación interactiva creada con Luminous Studio — quizzes, trackers, chatbots y más."/>
 <meta property="og:site_name" content="Luminous Studio"/>
 <meta name="twitter:card" content="summary"/>
 <meta name="theme-color" content="#2E5BFF"/>
@@ -71,7 +71,7 @@
   .serif { font-family:'Lora',Georgia,serif; }
   .material-symbols-outlined { font-variation-settings:'FILL' 0,'wght' 400,'GRAD' 0,'opsz' 24; }
 
-  /* App container â€” phone-width centered */
+  /* App container — phone-width centered */
   #screen-access, #screen-app {
     width: 100%;
     max-width: 520px;
@@ -222,7 +222,7 @@
 
   /* â”€â”€ PREMIUM VISUAL UPGRADE â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 
-  /* Section hero â€” replaces flat card-dark in all 19 section types */
+  /* Section hero — replaces flat card-dark in all 19 section types */
   .section-hero {
     position: relative; overflow: hidden;
     background: linear-gradient(135deg, var(--accent) 0%, var(--accent2, var(--accent)) 100%);
@@ -255,7 +255,7 @@
     position: relative; z-index: 1;
   }
 
-  /* Stat values â€” solid color, no gradient (per design taste skill) */
+  /* Stat values — solid color, no gradient (per design taste skill) */
   .stat-val { font-size: 28px; font-weight: 800; line-height: 1.1; color: var(--text); font-variant-numeric: tabular-nums; letter-spacing: -0.02em; }
   .stat-lbl { font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; margin-top: 4px; font-weight: 600; }
 
@@ -974,11 +974,11 @@
     <p id="access-desc" style="color:var(--muted);font-size:14px;margin-bottom:36px;line-height:1.6">Cargando...</p>
 
     <div id="access-code-section" style="display:none;background:var(--card);border:1px solid var(--border);border-radius:22px;padding:24px;text-align:left">
-      <p style="font-weight:700;font-size:15px;margin-bottom:6px;color:var(--text)">Introduce tu cÃ³digo de acceso</p>
-      <p style="color:var(--muted);font-size:12px;margin-bottom:16px;line-height:1.5">EncontrarÃ¡s tu cÃ³digo en el email de confirmaciÃ³n de tu compra.</p>
+      <p style="font-weight:700;font-size:15px;margin-bottom:6px;color:var(--text)">Introduce tu código de acceso</p>
+      <p style="color:var(--muted);font-size:12px;margin-bottom:16px;line-height:1.5">Encontrarás tu código en el email de confirmación de tu compra.</p>
       <input id="access-code-input" class="input" style="width:100%;text-align:center;font-weight:700;margin-bottom:12px" type="text" placeholder="EJ: ROSA-1001"/>
       <button class="btn-primary" onclick="validateAccess()"><span class="material-symbols-outlined" style="font-size:16px">auto_awesome</span> Activar acceso</button>
-      <p id="access-error" style="display:none;text-align:center;margin-top:12px;font-size:12px;color:#e55">CÃ³digo incorrecto. Intenta de nuevo.</p>
+      <p id="access-error" style="display:none;text-align:center;margin-top:12px;font-size:12px;color:#e55">Código incorrecto. Intenta de nuevo.</p>
     </div>
 
     <div id="access-free-btn" style="display:none">
@@ -1013,7 +1013,7 @@
 
   <div id="app-content" style="flex:1;overflow-y:auto;width:100%;position:relative;z-index:1"><!-- filled by renderApp() --></div>
 
-  <nav id="bottom-nav" aria-label="NavegaciÃ³n de la mini-app"></nav>
+  <nav id="bottom-nav" aria-label="Navegación de la mini-app"></nav>
 
   <!-- Footer (se oculta/reemplaza con white-label) -->
   <footer id="app-footer" style="display:none;padding:14px 16px;text-align:center;font-size:11px;color:var(--muted);border-top:1px solid var(--border);background:var(--bg);">
@@ -1058,7 +1058,7 @@ function withTimeout(promise, ms = 4000, message = 'timeout') {
 // â”€â”€ Init â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 document.addEventListener('DOMContentLoaded', async () => {
   const id = getParam('id');
-  if (!id) { showError('No se especificÃ³ una mini-app.'); return; }
+  if (!id) { showError('No se especificó una mini-app.'); return; }
   const builtInApp = typeof getSkinGlowMiniApp === 'function' ? getSkinGlowMiniApp(id) : null;
   const localApp = MiniApps.get(id);
   let app = builtInApp || null;
@@ -1079,15 +1079,15 @@ document.addEventListener('DOMContentLoaded', async () => {
   document.body.classList.toggle('app-skinglow', app.id === 'skinglow-miniapp');
   if (app.id) document.body.dataset.appId = app.id;
 
-  // Track response (Ãºnico por visitante, por mes) y verificar lÃ­mite del plan
+  // Track response (único por visitante, por mes) y verificar límite del plan
   const ownerId = app.owner_id || app.userId || app.user_id;
   try {
     if (ownerId && typeof ResponseTracker !== 'undefined') {
       await withTimeout(ResponseTracker.track(ownerId, 'miniapp', id), 2500, 'tracking timeout');
-      // Bloquear si el creador superÃ³ su lÃ­mite mensual de respuestas
+      // Bloquear si el creador superó su límite mensual de respuestas
       const usage = await withTimeout(ResponseTracker.getUsageStatus(ownerId), 2500, 'usage timeout');
       if (usage.exceeded) {
-        showError('Este contenido estÃ¡ temporalmente pausado. El creador ha alcanzado su lÃ­mite mensual de visitas.');
+        showError('Este contenido está temporalmente pausado. El creador ha alcanzado su límite mensual de visitas.');
         return;
       }
     }
@@ -1120,7 +1120,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       Object.assign(app, {mode:'light',accent:'#047857',accent2:'#0f766e',bg:'#eefbf5',card:'#ffffff',text:'#12332a',muted:'#5f7b70',font:'sans'});
     else if (/nutrici|alimentaci|cocina|dieta|receta/i.test(n))
       Object.assign(app, {mode:'light',accent:'#16a34a',accent2:'#15803d',bg:'#f0fdf4',card:'#fff',text:'#1a3a1a',muted:'#6b7c6b',font:'sans'});
-    else if (/maternidad|bebe|embaraz|bebÃ©|infantil|niÃ±o/i.test(n))
+    else if (/maternidad|bebe|embaraz|bebé|infantil|niño/i.test(n))
       Object.assign(app, {mode:'light',accent:'#ec4899',accent2:'#f472b6',bg:'#fff5f7',card:'#fff',text:'#3a1a2a',muted:'#9c6b7e',font:'serif'});
   }
 
@@ -1189,10 +1189,10 @@ document.addEventListener('DOMContentLoaded', async () => {
   const accessIconEl = document.getElementById('access-icon');
   accessIconEl.innerHTML = appIconHtml(48, app.types?.[0] || app.type, app.icon);
   document.getElementById('access-title').textContent = app.name;
-  document.getElementById('access-desc').textContent = app.description || (app.niche ? `${app.niche}` : 'AplicaciÃ³n interactiva');
+  document.getElementById('access-desc').textContent = app.description || (app.niche ? `${app.niche}` : 'Aplicación interactiva');
   // White-label: si el creador tiene Elite + white-label activo, ocultar marca Luminous Studio
   const brandSuffix = app.whiteLabel && app.whiteLabelName ? ' | ' + app.whiteLabelName : (app.whiteLabel ? '' : ' | Luminous Studio');
-  const brandDesc = app.whiteLabel && app.whiteLabelName ? `AplicaciÃ³n interactiva de ${app.whiteLabelName}` : 'AplicaciÃ³n interactiva creada con Luminous Studio';
+  const brandDesc = app.whiteLabel && app.whiteLabelName ? `Aplicación interactiva de ${app.whiteLabelName}` : 'Aplicación interactiva creada con Luminous Studio';
   document.title = app.name + brandSuffix;
   document.querySelector('meta[property="og:title"]')?.setAttribute('content', app.name + brandSuffix);
   document.querySelector('meta[property="og:description"]')?.setAttribute('content', app.description || brandDesc);
@@ -1239,42 +1239,42 @@ function getDemoPreviewApp(id) {
   if (id === 'demo-finanzas-senales') return {
     ...base,
     name:'Mapa Financiero Antifugas', niche:'finanzas personales, ahorro, deudas', category:'Finanzas',
-    description:'Detecta fugas, deuda, ahorro, ingresos y metas para tomar una acciÃƒÂ³n concreta hoy.',
+    description:'Detecta fugas, deuda, ahorro, ingresos y metas para tomar una acción concreta hoy.',
     icon:'savings', types:['bodymap','checklist','diario','calculadora'],
     accent:'#047857', accent2:'#0f766e', bg:'#eefbf5', text:'#12332a', muted:'#5f7b70',
-    todayPrompt:'Toca la seÃƒÂ±al financiera que mÃƒÂ¡s necesita atenciÃƒÂ³n hoy y conviÃƒÂ©rtela en una acciÃƒÂ³n medible.',
+    todayPrompt:'Toca la señal financiera que más necesita atención hoy y conviértela en una acción medible.',
     bodySignals:[
-      {id:'gastos',label:'Gastos hormiga',x:50,y:15,icon:'receipt_long',title:'Fuga silenciosa',meaning:'Los gastos pequeÃƒÂ±os repetidos pueden estar drenando la meta sin sentirse como decisiones importantes.',prompt:'Ã‚Â¿QuÃƒÂ© gasto se repitiÃƒÂ³ esta semana sin aportar suficiente valor?',practice:'Revisa 10 movimientos y marca 3 gastos que puedes pausar por 7 dÃƒÂ­as.'},
-      {id:'deuda',label:'Deuda',x:32,y:36,icon:'credit_card',title:'PresiÃƒÂ³n acumulada',meaning:'La deuda se vuelve mÃƒÂ¡s pesada cuando no tiene orden visible ni siguiente paso concreto.',prompt:'Ã‚Â¿CuÃƒÂ¡l deuda te quita mÃƒÂ¡s energÃƒÂ­a mental?',practice:'Anota saldo, tasa, pago mÃƒÂ­nimo y una acciÃƒÂ³n: abonar, consolidar o negociar.'},
-      {id:'ahorro',label:'Ahorro',x:68,y:36,icon:'savings',title:'Reserva vulnerable',meaning:'Si el ahorro depende de lo que sobra, compite con cada urgencia del mes.',prompt:'Ã‚Â¿Tu ahorro se separa antes o despuÃƒÂ©s de gastar?',practice:'Programa una transferencia pequeÃƒÂ±a para el prÃƒÂ³ximo ingreso.'},
-      {id:'ingresos',label:'Ingresos',x:50,y:56,icon:'payments',title:'Entrada a fortalecer',meaning:'A veces el problema no es solo gastar menos, sino mirar quÃƒÂ© ingreso puede crecer o estabilizarse.',prompt:'Ã‚Â¿QuÃƒÂ© ingreso podrÃƒÂ­as mejorar con una acciÃƒÂ³n esta semana?',practice:'EnvÃƒÂ­a una propuesta, seguimiento, oferta o ajuste de precio concreto.'},
-      {id:'meta',label:'Meta',x:50,y:76,icon:'flag',title:'DirecciÃƒÂ³n borrosa',meaning:'Una meta poco clara hace que cada compra compita contra todas las demÃƒÂ¡s.',prompt:'Ã‚Â¿Para quÃƒÂ© quieres que trabaje tu dinero este mes?',practice:'Convierte tu meta en nÃƒÂºmero, fecha y primer paso.'}
+      {id:'gastos',label:'Gastos hormiga',x:50,y:15,icon:'receipt_long',title:'Fuga silenciosa',meaning:'Los gastos pequeños repetidos pueden estar drenando la meta sin sentirse como decisiones importantes.',prompt:'Ã‚¿Qué gasto se repitió esta semana sin aportar suficiente valor?',practice:'Revisa 10 movimientos y marca 3 gastos que puedes pausar por 7 días.'},
+      {id:'deuda',label:'Deuda',x:32,y:36,icon:'credit_card',title:'Presión acumulada',meaning:'La deuda se vuelve más pesada cuando no tiene orden visible ni siguiente paso concreto.',prompt:'Ã‚¿Cuál deuda te quita más energía mental?',practice:'Anota saldo, tasa, pago mínimo y una acción: abonar, consolidar o negociar.'},
+      {id:'ahorro',label:'Ahorro',x:68,y:36,icon:'savings',title:'Reserva vulnerable',meaning:'Si el ahorro depende de lo que sobra, compite con cada urgencia del mes.',prompt:'Ã‚¿Tu ahorro se separa antes o después de gastar?',practice:'Programa una transferencia pequeña para el próximo ingreso.'},
+      {id:'ingresos',label:'Ingresos',x:50,y:56,icon:'payments',title:'Entrada a fortalecer',meaning:'A veces el problema no es solo gastar menos, sino mirar qué ingreso puede crecer o estabilizarse.',prompt:'Ã‚¿Qué ingreso podrías mejorar con una acción esta semana?',practice:'Envía una propuesta, seguimiento, oferta o ajuste de precio concreto.'},
+      {id:'meta',label:'Meta',x:50,y:76,icon:'flag',title:'Dirección borrosa',meaning:'Una meta poco clara hace que cada compra compita contra todas las demás.',prompt:'Ã‚¿Para qué quieres que trabaje tu dinero este mes?',practice:'Convierte tu meta en número, fecha y primer paso.'}
     ],
-    initialItems:['Revisar 10 movimientos recientes','Separar ahorro antes de gastar','Elegir una deuda prioritaria','Definir meta financiera de 30 dÃƒÂ­as'],
-    journalPrompts:['Ã‚Â¿QuÃƒÂ© gasto me dio alivio inmediato pero no valor real?','Ã‚Â¿QuÃƒÂ© emociÃƒÂ³n aparece cuando reviso mi dinero?'],
+    initialItems:['Revisar 10 movimientos recientes','Separar ahorro antes de gastar','Elegir una deuda prioritaria','Definir meta financiera de 30 días'],
+    journalPrompts:['Ã‚¿Qué gasto me dio alivio inmediato pero no valor real?','Ã‚¿Qué emoción aparece cuando reviso mi dinero?'],
     calcFields:[{id:'ingreso',label:'Ingreso mensual',placeholder:'2500'},{id:'gastos',label:'Gastos fijos + variables',placeholder:'1900'}],
     calcFormula:'ingreso - gastos', calcResultLabel:'Margen disponible'
   };
   if (id === 'demo-mascotas-bodymap') return {
     ...base,
     name:'Chequeo Amoroso de Mascotas', niche:'mascotas, perros, gatos, bienestar animal, veterinaria preventiva', category:'Mascotas',
-    description:'Mapa corporal animal para observar seÃƒÂ±ales, rutina, comportamiento y decidir el siguiente cuidado.',
+    description:'Mapa corporal animal para observar señales, rutina, comportamiento y decidir el siguiente cuidado.',
     icon:'pets', types:['bodymap','checklist','diario','faq'],
     accent:'#ca8a04', accent2:'#7c3aed', bg:'#fff8ed', text:'#332719', muted:'#8a6b48',
-    todayPrompt:'Toca la zona del cuerpito donde notas algo diferente y registra seÃƒÂ±ales antes de decidir si requiere veterinario.',
+    todayPrompt:'Toca la zona del cuerpito donde notas algo diferente y registra señales antes de decidir si requiere veterinario.',
     bodySignals:[
-      {id:'cabeza',label:'Cabeza',x:16,y:42,icon:'pets',title:'ÃƒÂnimo y alerta',meaning:'Cambios en mirada, orientaciÃƒÂ³n o expresiÃƒÂ³n pueden acompaÃƒÂ±ar cansancio, estrÃƒÂ©s, dolor o incomodidad.',prompt:'Ã‚Â¿Tu mascota estÃƒÂ¡ mÃƒÂ¡s apagada, inquieta o diferente que de costumbre?',practice:'Observa 2 minutos: mirada, respuesta al nombre, postura y ganas de interactuar.'},
-      {id:'orejas',label:'Orejas',x:20,y:30,icon:'hearing',title:'Picor o sensibilidad',meaning:'Sacudidas, mal olor o rascado frecuente pueden indicar irritaciÃƒÂ³n o molestia que conviene vigilar.',prompt:'Ã‚Â¿Se rasca, sacude la cabeza o evita que le toques esa zona?',practice:'Revisa sin introducir nada: olor, enrojecimiento, secreciÃƒÂ³n o sensibilidad.'},
-      {id:'pecho',label:'Pecho',x:42,y:45,icon:'favorite',title:'RespiraciÃƒÂ³n y energÃƒÂ­a',meaning:'RespiraciÃƒÂ³n agitada en reposo, tos o fatiga pueden ser seÃƒÂ±ales importantes.',prompt:'Ã‚Â¿Respira distinto estando en reposo?',practice:'Cuenta respiraciones 30 segundos cuando estÃƒÂ© tranquilo y anota el resultado.'},
-      {id:'abdomen',label:'Abdomen',x:57,y:56,icon:'health_and_safety',title:'Digestivo sensible',meaning:'Apetito, vÃƒÂ³mitos, diarrea, hinchazÃƒÂ³n o postura encorvada ayudan a entender cÃƒÂ³mo estÃƒÂ¡ su sistema digestivo.',prompt:'Ã‚Â¿ComiÃƒÂ³, evacuÃƒÂ³ y se moviÃƒÂ³ como normalmente?',practice:'Registra comida, agua, heces y si hubo vÃƒÂ³mito. Si persiste, consulta veterinaria.'},
-      {id:'patas',label:'Patas',x:58,y:80,icon:'footprint',title:'Movimiento y apoyo',meaning:'Cojera, lamido de patas o dificultad para saltar puede seÃƒÂ±alar dolor, lesiÃƒÂ³n o uÃƒÂ±as/almohadillas sensibles.',prompt:'Ã‚Â¿Apoya igual las cuatro patas?',practice:'Mira caminar 10 pasos y revisa almohadillas/uÃƒÂ±as con suavidad.'},
-      {id:'cola',label:'Cola',x:87,y:42,icon:'timeline',title:'Lenguaje corporal',meaning:'La cola y postura general comunican miedo, dolor, alerta, juego o incomodidad.',prompt:'Ã‚Â¿La postura de la cola coincide con su comportamiento habitual?',practice:'Anota postura: alta, baja, escondida, rÃƒÂ­gida o movimiento distinto.'}
+      {id:'cabeza',label:'Cabeza',x:16,y:42,icon:'pets',title:'Ánimo y alerta',meaning:'Cambios en mirada, orientación o expresión pueden acompañar cansancio, estrés, dolor o incomodidad.',prompt:'Ã‚¿Tu mascota está más apagada, inquieta o diferente que de costumbre?',practice:'Observa 2 minutos: mirada, respuesta al nombre, postura y ganas de interactuar.'},
+      {id:'orejas',label:'Orejas',x:20,y:30,icon:'hearing',title:'Picor o sensibilidad',meaning:'Sacudidas, mal olor o rascado frecuente pueden indicar irritación o molestia que conviene vigilar.',prompt:'Ã‚¿Se rasca, sacude la cabeza o evita que le toques esa zona?',practice:'Revisa sin introducir nada: olor, enrojecimiento, secreción o sensibilidad.'},
+      {id:'pecho',label:'Pecho',x:42,y:45,icon:'favorite',title:'Respiración y energía',meaning:'Respiración agitada en reposo, tos o fatiga pueden ser señales importantes.',prompt:'Ã‚¿Respira distinto estando en reposo?',practice:'Cuenta respiraciones 30 segundos cuando esté tranquilo y anota el resultado.'},
+      {id:'abdomen',label:'Abdomen',x:57,y:56,icon:'health_and_safety',title:'Digestivo sensible',meaning:'Apetito, vómitos, diarrea, hinchazón o postura encorvada ayudan a entender cómo está su sistema digestivo.',prompt:'Ã‚¿Comió, evacuó y se movió como normalmente?',practice:'Registra comida, agua, heces y si hubo vómito. Si persiste, consulta veterinaria.'},
+      {id:'patas',label:'Patas',x:58,y:80,icon:'footprint',title:'Movimiento y apoyo',meaning:'Cojera, lamido de patas o dificultad para saltar puede señalar dolor, lesión o uñas/almohadillas sensibles.',prompt:'Ã‚¿Apoya igual las cuatro patas?',practice:'Mira caminar 10 pasos y revisa almohadillas/uñas con suavidad.'},
+      {id:'cola',label:'Cola',x:87,y:42,icon:'timeline',title:'Lenguaje corporal',meaning:'La cola y postura general comunican miedo, dolor, alerta, juego o incomodidad.',prompt:'Ã‚¿La postura de la cola coincide con su comportamiento habitual?',practice:'Anota postura: alta, baja, escondida, rígida o movimiento distinto.'}
     ],
-    initialItems:['Revisar agua y comida del dÃƒÂ­a','Observar energÃƒÂ­a y comportamiento','Registrar heces/orina si hubo cambios','Consultar veterinario si hay dolor intenso, dificultad respiratoria o decaimiento persistente'],
-    journalPrompts:['Ã‚Â¿QuÃƒÂ© cambio notÃƒÂ© hoy comparado con su normalidad?','Ã‚Â¿Hubo alimento, paseo, juego o situaciÃƒÂ³n nueva antes de la seÃƒÂ±al?'],
+    initialItems:['Revisar agua y comida del día','Observar energía y comportamiento','Registrar heces/orina si hubo cambios','Consultar veterinario si hay dolor intenso, dificultad respiratoria o decaimiento persistente'],
+    journalPrompts:['Ã‚¿Qué cambio noté hoy comparado con su normalidad?','Ã‚¿Hubo alimento, paseo, juego o situación nueva antes de la señal?'],
     faqItems:[
-      {q:'Ã‚Â¿CuÃƒÂ¡ndo debo ir al veterinario?',a:'Si hay dificultad para respirar, dolor intenso, decaimiento marcado, vÃƒÂ³mitos repetidos, sangre, convulsiones o no come/bebe, consulta cuanto antes.'},
-      {q:'Ã‚Â¿Este mapa diagnostica?',a:'No. Sirve para observar y registrar mejor. El diagnÃƒÂ³stico y tratamiento siempre corresponden al veterinario.'}
+      {q:'Ã‚¿Cuándo debo ir al veterinario?',a:'Si hay dificultad para respirar, dolor intenso, decaimiento marcado, vómitos repetidos, sangre, convulsiones o no come/bebe, consulta cuanto antes.'},
+      {q:'Ã‚¿Este mapa diagnostica?',a:'No. Sirve para observar y registrar mejor. El diagnóstico y tratamiento siempre corresponden al veterinario.'}
     ]
   };
   const quickDemos = {
@@ -1358,7 +1358,7 @@ function validateAccess() {
 
 function getGreeting() {
   const h = new Date().getHours();
-  if (h < 12) return 'Buenos dÃ­as';
+  if (h < 12) return 'Buenos días';
   if (h < 19) return 'Buenas tardes';
   return 'Buenas noches';
 }
@@ -1443,9 +1443,9 @@ function initialToolIndex(types) {
 function typeLabel(t) {
   return {'skin-scan':'Escaneo visual',devocional:'Devocional',checklist:'Checklist',tracker:'Tracker',reto:'Reto',diario:'Diario',
     calculadora:'Calculadora',planificador:'Planificador',generador:'Generador IA',chatbot:'Asistente IA',
-    comparador:'Comparador',diagnostico:'DiagnÃ³stico',roadmap:'Roadmap',faq:'FAQ',
+    comparador:'Comparador',diagnostico:'Diagnóstico',roadmap:'Roadmap',faq:'FAQ',
     glosario:'Glosario',flashcards:'Flashcards',biblioteca:'Biblioteca',
-    afirmaciones:'Afirmaciones',meditacion:'MeditaciÃ³n',bodymap:'Mapa de seÃ±ales','quiz-embed':'Quiz',simulador:'Simulador'}[t] || t;
+    afirmaciones:'Afirmaciones',meditacion:'Meditación',bodymap:'Mapa de señales','quiz-embed':'Quiz',simulador:'Simulador'}[t] || t;
 }
 
 const TYPE_MS_ICONS = {
@@ -1696,7 +1696,7 @@ function navShortLabel(type) {
     'skin-scan':'Foto', devocional:'Reflex', checklist:'Lista', tracker:'Track', reto:'Reto', diario:'Diario',
     calculadora:'Calc', planificador:'Plan', generador:'IA', chatbot:'Chat',
     comparador:'Comparar', diagnostico:'Test', roadmap:'Ruta', faq:'FAQ',
-    glosario:'GuÃ­a', flashcards:'Cards', biblioteca:'Recursos',
+    glosario:'Guía', flashcards:'Cards', biblioteca:'Recursos',
     afirmaciones:'Frases', meditacion:'Meditar', bodymap:'Mapa', simulador:'Simular'
   })[type] || typeLabel(type);
 }
@@ -2311,7 +2311,7 @@ function normalizeSignals(signals = []) {
   const xs = [50, 30, 70, 30, 70, 50, 50, 18, 82];
   const ys = [16, 34, 34, 56, 56, 74, 44, 44, 44];
   return signals.map((signal, idx) => {
-    const label = signal.label || signal.title || signal.name || `SeÃ±al ${idx + 1}`;
+    const label = signal.label || signal.title || signal.name || `Señal ${idx + 1}`;
     return {
       ...signal,
       id: signal.id || signalIdFromLabel(label, idx),
@@ -2329,12 +2329,12 @@ function getBodySignals(app = currentApp) {
   const nicheSignals = getSignalDefaults(app);
   if (nicheSignals.length) return normalizeSignals(nicheSignals);
   return normalizeSignals([
-    { id:'cabeza', label:'Cabeza', x:50, y:12, meaning:'Puede aparecer cuando la mente carga demasiadas decisiones, exigencia o ruido interno.', prompt:'Â¿QuÃ© pensamiento se repitiÃ³ hoy mÃ¡s de lo normal?', practice:'Baja la mirada, suelta la mandÃ­bula y respira lento durante 60 segundos.', icon:'psychology' },
-    { id:'garganta', label:'Garganta', x:50, y:28, meaning:'A veces seÃ±ala palabras guardadas, lÃ­mites no dichos o una conversaciÃ³n pendiente.', prompt:'Â¿QuÃ© necesitabas decir y decidiste callar?', practice:'Escribe una frase empezando por: â€œNecesito decir que...â€', icon:'record_voice_over' },
-    { id:'pecho', label:'Pecho', x:50, y:39, meaning:'Suele relacionarse con tristeza, miedo, duelo, amor contenido o necesidad de apoyo.', prompt:'Si esta sensaciÃ³n tuviera una emociÃ³n, Â¿cuÃ¡l serÃ­a?', practice:'Pon una mano en el pecho y repite: â€œEstoy aquÃ­ conmigoâ€.', icon:'favorite' },
-    { id:'hombros', label:'Hombros', x:31, y:34, meaning:'Puede hablar de cargas, responsabilidades ajenas o presiÃ³n sostenida.', prompt:'Â¿QuÃ© estÃ¡s cargando que no te corresponde del todo?', practice:'Sube los hombros al inhalar y suÃ©ltalos al exhalar 5 veces.', icon:'fitness_center' },
-    { id:'vientre', label:'Vientre', x:50, y:58, meaning:'A menudo marca intuiciÃ³n, nervios, control o emociones que todavÃ­a no se procesan.', prompt:'Â¿QuÃ© sabes en el fondo pero estÃ¡s evitando mirar?', practice:'Respira hacia el abdomen y deja que se afloje un poco mÃ¡s con cada exhalaciÃ³n.', icon:'self_improvement' },
-    { id:'pelvis', label:'Pelvis', x:50, y:73, meaning:'Puede conectar con seguridad, deseo, creatividad, ciclo, descanso o pertenencia.', prompt:'Â¿QuÃ© necesita tu cuerpo para sentirse mÃ¡s seguro hoy?', practice:'Haz un balanceo suave de cadera durante un minuto, sin forzar.', icon:'spa' },
+    { id:'cabeza', label:'Cabeza', x:50, y:12, meaning:'Puede aparecer cuando la mente carga demasiadas decisiones, exigencia o ruido interno.', prompt:'¿Qué pensamiento se repitió hoy más de lo normal?', practice:'Baja la mirada, suelta la mandíbula y respira lento durante 60 segundos.', icon:'psychology' },
+    { id:'garganta', label:'Garganta', x:50, y:28, meaning:'A veces señala palabras guardadas, límites no dichos o una conversación pendiente.', prompt:'¿Qué necesitabas decir y decidiste callar?', practice:'Escribe una frase empezando por: “Necesito decir que...”', icon:'record_voice_over' },
+    { id:'pecho', label:'Pecho', x:50, y:39, meaning:'Suele relacionarse con tristeza, miedo, duelo, amor contenido o necesidad de apoyo.', prompt:'Si esta sensación tuviera una emoción, ¿cuál sería?', practice:'Pon una mano en el pecho y repite: “Estoy aquí conmigo”.', icon:'favorite' },
+    { id:'hombros', label:'Hombros', x:31, y:34, meaning:'Puede hablar de cargas, responsabilidades ajenas o presión sostenida.', prompt:'¿Qué estás cargando que no te corresponde del todo?', practice:'Sube los hombros al inhalar y suéltalos al exhalar 5 veces.', icon:'fitness_center' },
+    { id:'vientre', label:'Vientre', x:50, y:58, meaning:'A menudo marca intuición, nervios, control o emociones que todavía no se procesan.', prompt:'¿Qué sabes en el fondo pero estás evitando mirar?', practice:'Respira hacia el abdomen y deja que se afloje un poco más con cada exhalación.', icon:'self_improvement' },
+    { id:'pelvis', label:'Pelvis', x:50, y:73, meaning:'Puede conectar con seguridad, deseo, creatividad, ciclo, descanso o pertenencia.', prompt:'¿Qué necesita tu cuerpo para sentirse más seguro hoy?', practice:'Haz un balanceo suave de cadera durante un minuto, sin forzar.', icon:'spa' },
   ]);
 }
 
@@ -2359,13 +2359,13 @@ function renderBodyMapToday(content, types) {
       ${companionPlanMarkup(types, currentApp)}
       ${practices.length ? `
         <div class="card" style="padding:18px">
-          <p class="signal-label">${msIcon('auto_awesome',14)} PrÃ¡cticas sugeridas</p>
+          <p class="signal-label">${msIcon('auto_awesome',14)} Prácticas sugeridas</p>
           <div class="practice-list">
             ${practices.slice(0, 4).map((p, i) => `
               <button class="practice-card" onclick="openPractice(${i})">
                 <span class="practice-icon">${msIcon(p.icon || 'self_improvement',22)}</span>
                 <span style="flex:1">
-                  <span class="tool-title">${esc(p.title || 'PrÃ¡ctica guiada')}</span>
+                  <span class="tool-title">${esc(p.title || 'Práctica guiada')}</span>
                   <span class="tool-sub">${esc(p.description || p.type || '')}</span>
                 </span>
                 <span class="material-symbols-outlined tool-arrow">arrow_forward</span>
@@ -2393,7 +2393,7 @@ function bodyMapMarkup(signals) {
       <div class="signal-center">
         ${msIcon(primaryIcon,24)}
         <strong>Yo hoy</strong>
-        <span>elige una seÃ±al</span>
+        <span>elige una señal</span>
       </div>
       ${signals.slice(0, 6).map((s, i) => {
         const pos = [
@@ -2492,8 +2492,8 @@ function bodyEngineMarkup(signals, copy) {
     <div class="body-engine-shell">
       <aside class="body-engine-side">
         ${[
-          ['favorite','Salud y sÃ­ntomas'], ['fitness_center','Fitness y mÃºsculos'], ['bolt','Dolor corporal'],
-          ['face','Belleza y skincare'], ['spa','Masajes'], ['nutrition','NutriciÃ³n'], ['pregnant_woman','Embarazo']
+          ['favorite','Salud y síntomas'], ['fitness_center','Fitness y músculos'], ['bolt','Dolor corporal'],
+          ['face','Belleza y skincare'], ['spa','Masajes'], ['nutrition','Nutrición'], ['pregnant_woman','Embarazo']
         ].map((item, i) => `<button class="body-engine-chip ${i===1?'active':''}" type="button">${msIcon(item[0],18)} ${item[1]}</button>`).join('')}
       </aside>
       <section class="body-engine-main">
@@ -2508,19 +2508,19 @@ function bodyEngineMarkup(signals, copy) {
         <div class="body-legend">
           <span><i style="background:#22c55e"></i> Trabajado</span>
           <span><i style="background:#fbbf24"></i> En progreso</span>
-          <span><i style="background:#ef4444"></i> Dolor / tensiÃ³n</span>
+          <span><i style="background:#ef4444"></i> Dolor / tensión</span>
           <span><i style="background:#d1d5db"></i> Sin actividad</span>
         </div>
       </section>
       <aside class="body-engine-info">
         <div class="body-zone-card">
           <p class="signal-label">${msIcon('layers',14)} Capas</p>
-          ${['MÃºsculos','Huesos','Ã“rganos','Nervios','Piel'].map((layer, i) => `<div class="body-layer"><strong>${layer}</strong><span class="material-symbols-outlined">${i===0?'visibility':'visibility_off'}</span></div>`).join('')}
+          ${['Músculos','Huesos','Ã“rganos','Nervios','Piel'].map((layer, i) => `<div class="body-layer"><strong>${layer}</strong><span class="material-symbols-outlined">${i===0?'visibility':'visibility_off'}</span></div>`).join('')}
         </div>
         <div class="body-zone-card">
           <p class="signal-label">${msIcon('monitoring',14)} Tu actividad</p>
           <div class="body-activity">
-            ${[['Trabajado',45],['En progreso',30],['Dolor / tensiÃ³n',15]].map(([label,val]) => `<div class="body-activity-row"><strong><span>${label}</span><span>${val}%</span></strong><div class="body-activity-bar"><span style="width:${val}%"></span></div></div>`).join('')}
+            ${[['Trabajado',45],['En progreso',30],['Dolor / tensión',15]].map(([label,val]) => `<div class="body-activity-row"><strong><span>${label}</span><span>${val}%</span></strong><div class="body-activity-bar"><span style="width:${val}%"></span></div></div>`).join('')}
           </div>
         </div>
         <button class="btn-secondary" style="width:100%" onclick="showBodyDictionary()">${msIcon('menu_book',16)} Diccionario del cuerpo</button>
@@ -2748,81 +2748,81 @@ function bodySignalGuide(signal) {
         { rx:/cabeza|hocico|ojo|nariz|animo|alerta/, zone:'Cabeza', sensation:['Mirada','Secrecion','Dientes'], emotion:['Alerta','Dolor','Incomodidad'], message:'La cabeza del conejo ayuda a leer ojos, nariz, dientes y animo. Cambios en secrecion, rechinar fuerte de dientes o cabeza ladeada son datos importantes.', reflections:['Hay lagrimeo, moco o cabeza ladeada?','Rechina dientes como dolor, no como ronroneo suave?','Esta mas escondido o menos curioso?'], repairs:{n1:'Observa ojos, nariz, dientes visibles y respuesta al entorno durante 2 minutos.',n2:'Anota comida reciente, heno, agua, cama y cualquier cambio de rutina.',n3:'Si hay cabeza ladeada, no come, dolor o secrecion marcada, contacta al veterinario.'}},
         { rx:/pecho|respir|corazon|energia/, zone:'Pecho', sensation:['Respiracion','Quietud','Fatiga'], emotion:['Alerta','Estres','Dolor'], message:'Los conejos suelen ocultar malestar. Respiracion rara en reposo, quietud excesiva o postura encogida no se deben normalizar.', reflections:['Respira diferente estando tranquilo?','Esta mas quieto o escondido de lo normal?','Su postura se ve encogida o tensa?'], repairs:{n1:'Baja estimulos y observa respiracion en reposo sin manipularlo de mas.',n2:'Registra hora, temperatura del ambiente, comida, heces y nivel de energia.',n3:'Si hay dificultad respiratoria, debilidad o encogimiento persistente, veterinario de exoticos.'}},
         { rx:/abdomen|vientre|estomago|digest|barriga|apetito|heces/, zone:'Abdomen', sensation:['Apetito','Heces','Gases'], emotion:['Dolor','Alerta','Incomodidad'], message:'En conejos, apetito y heces son prioridad. Si deja de comer, reduce mucho las bolitas o se encorva, puede ser urgente porque su digestion necesita moverse constantemente.', reflections:['Comio heno y bebio como siempre?','Las heces tienen cantidad y tamano habitual?','Se encorva, rechina dientes o evita moverse?'], repairs:{n1:'Revisa heno, agua y bandeja: cantidad de heces, tamano y hora aproximada.',n2:'No hagas cambios bruscos de alimento. Mantelo tranquilo y con heno disponible.',n3:'Si no come o no hace heces en varias horas, consulta veterinaria cuanto antes.'}},
-        { rx:/pata|pierna|cojera|movimiento|apoyo|almohadilla/, zone:'Patas', sensation:['Apoyo','Saltos','UÃ±as'], emotion:['Dolor','Miedo','Cansancio'], message:'Las patas muestran si el conejo salta, apoya y se mueve con normalidad. Cojera, arrastre, caidas o quietud pueden indicar dolor o lesion.', reflections:['Apoya igual las cuatro patas?','Evita saltar o moverse como antes?','Hay una uÃ±a, almohadilla o articulacion sensible?'], repairs:{n1:'Observa caminar y saltar sin perseguirlo. Revisa patas solo si se deja con calma.',n2:'Reduce saltos altos y superficies resbalosas mientras lo observas.',n3:'Si no apoya, arrastra patas o muestra dolor, consulta veterinaria.'}},
+        { rx:/pata|pierna|cojera|movimiento|apoyo|almohadilla/, zone:'Patas', sensation:['Apoyo','Saltos','Uñas'], emotion:['Dolor','Miedo','Cansancio'], message:'Las patas muestran si el conejo salta, apoya y se mueve con normalidad. Cojera, arrastre, caidas o quietud pueden indicar dolor o lesion.', reflections:['Apoya igual las cuatro patas?','Evita saltar o moverse como antes?','Hay una uña, almohadilla o articulacion sensible?'], repairs:{n1:'Observa caminar y saltar sin perseguirlo. Revisa patas solo si se deja con calma.',n2:'Reduce saltos altos y superficies resbalosas mientras lo observas.',n3:'Si no apoya, arrastra patas o muestra dolor, consulta veterinaria.'}},
         { rx:/cola|postura|lenguaje|lomo|espalda|piel/, zone:'Postura y lomo', sensation:['Encogido','Pelo','Tension'], emotion:['Miedo','Dolor','Alerta'], message:'En conejos, la postura completa importa mucho: lomo encorvado, pelo erizado, esconderse o no acicalarse puede indicar dolor, estres o malestar general.', reflections:['Esta encorvado o escondido mas de lo normal?','El pelo o la piel se ven distintos?','Se acicala y se mueve como siempre?'], repairs:{n1:'Observa postura, pelaje, acicalado y reaccion al entorno sin forzarlo.',n2:'Anota cambios de cama, convivencia, ruido, temperatura o alimentacion.',n3:'Si hay dolor, heridas, parasitos o decaimiento, consulta veterinaria.'}}
       ];
       return rabbitGuides.find(g => g.rx.test(key)) || rabbitGuides[3];
     }
     const petGuides = [
-      { rx:/oreja|oido|audicion/, zone:'Orejas', sensation:['Picor','Sacudidas','Sensibilidad'], emotion:['Molestia','Alerta','EstrÃƒÂ©s'], message:'Las orejas pueden mostrar irritaciÃƒÂ³n, sensibilidad o incomodidad. Sacudir la cabeza, rascarse mucho o evitar el contacto son datos importantes para observar.', reflections:['Ã‚Â¿Se rasca o sacude la cabeza mÃƒÂ¡s de lo normal?','Ã‚Â¿Hay olor, enrojecimiento o secreciÃƒÂ³n?','Ã‚Â¿Evita que le toques esa zona?'], repairs:{n1:'Observa sin introducir objetos en el oÃƒÂ­do. Mira olor, color y sensibilidad.',n2:'Registra cuÃƒÂ¡ndo empezÃƒÂ³ y si hubo baÃƒÂ±o, paseo, alergias o alimento nuevo.',n3:'Si hay dolor, mal olor, secreciÃƒÂ³n o inclinaciÃƒÂ³n de cabeza, consulta veterinaria.'}},
-      { rx:/cabeza|hocico|ojo|nariz|animo|alerta/, zone:'Cabeza', sensation:['Decaimiento','Inquietud','Cambio de mirada'], emotion:['EstrÃƒÂ©s','Dolor','Alerta'], message:'La cabeza y expresiÃƒÂ³n ayudan a leer ÃƒÂ¡nimo, orientaciÃƒÂ³n y respuesta. Si tu mascota estÃƒÂ¡ apagada, desorientada o muy inquieta, conviene registrar el cambio.', reflections:['Ã‚Â¿Responde a su nombre como siempre?','Ã‚Â¿La mirada o expresiÃƒÂ³n se ve distinta?','Ã‚Â¿Hay secreciÃƒÂ³n nasal u ocular?'], repairs:{n1:'Observa 2 minutos: mirada, respuesta, postura y ganas de interactuar.',n2:'Anota si hubo ruido, susto, cambio de rutina o paseo distinto.',n3:'Si hay decaimiento marcado, desorientaciÃƒÂ³n o dolor, contacta al veterinario.'}},
-      { rx:/pecho|respir|corazon|energia/, zone:'Pecho', sensation:['RespiraciÃƒÂ³n','Tos','Fatiga'], emotion:['Alerta','Cansancio','EstrÃƒÂ©s'], message:'El pecho muestra respiraciÃƒÂ³n y energÃƒÂ­a. Cambios en reposo, tos, jadeo excesivo o fatiga merecen atenciÃƒÂ³n especial.', reflections:['Ã‚Â¿Respira distinto estando en reposo?','Ã‚Â¿Tose o se cansa antes?','Ã‚Â¿El jadeo aparece sin calor ni ejercicio?'], repairs:{n1:'Cuenta respiraciones durante 30 segundos cuando estÃƒÂ© tranquilo y anota.',n2:'Reduce actividad y observa si mejora con descanso.',n3:'Si hay dificultad respiratoria, encÃƒÂ­as pÃƒÂ¡lidas/azules o colapso, urgencia veterinaria.'}},
-      { rx:/abdomen|vientre|estomago|digest|barriga/, zone:'Abdomen', sensation:['Apetito','VÃƒÂ³mito','Heces'], emotion:['Incomodidad','Dolor','EstrÃƒÂ©s'], message:'El abdomen ayuda a revisar comida, agua, heces, vÃƒÂ³mito, gases y postura. No diagnostica, pero ordena seÃƒÂ±ales para decidir mejor.', reflections:['Ã‚Â¿ComiÃƒÂ³ y bebiÃƒÂ³ como siempre?','Ã‚Â¿Hubo vÃƒÂ³mito, diarrea o estreÃƒÂ±imiento?','Ã‚Â¿Se encorva o protege la barriga?'], repairs:{n1:'Registra comida, agua, heces y vÃƒÂ³mitos con hora aproximada.',n2:'Evita cambios bruscos de alimento y observa energÃƒÂ­a general.',n3:'Si hay vÃƒÂ³mitos repetidos, sangre, abdomen duro o dolor, consulta veterinaria.'}},
-      { rx:/pata|pierna|cojera|movimiento|apoyo|almohadilla/, zone:'Patas', sensation:['Cojera','Lamido','Apoyo'], emotion:['Dolor','Incomodidad','Cansancio'], message:'Las patas muestran movilidad y dolor. Cojera, lamido insistente o dificultad para saltar pueden indicar lesiÃƒÂ³n, uÃƒÂ±as largas o almohadillas sensibles.', reflections:['Ã‚Â¿Apoya igual las cuatro patas?','Ã‚Â¿Se lame una zona especÃƒÂ­fica?','Ã‚Â¿Evita escaleras, saltos o paseos?'], repairs:{n1:'Mira caminar 10 pasos y revisa almohadillas/uÃƒÂ±as con suavidad.',n2:'Descanso relativo y evita saltos hasta entender la seÃƒÂ±al.',n3:'Si no apoya, hay hinchazÃƒÂ³n o dolor intenso, consulta veterinaria.'}},
-      { rx:/cola|postura|lenguaje/, zone:'Cola y postura', sensation:['Cola baja','Rigidez','Inquietud'], emotion:['Miedo','Dolor','Alerta'], message:'La cola y postura general comunican mucho: miedo, dolor, juego, tensiÃƒÂ³n o incomodidad. Es mejor leerla junto con orejas, mirada y energÃƒÂ­a.', reflections:['Ã‚Â¿La cola estÃƒÂ¡ distinta a su normalidad?','Ã‚Â¿El cuerpo estÃƒÂ¡ rÃƒÂ­gido o encogido?','Ã‚Â¿Hubo una situaciÃƒÂ³n nueva antes del cambio?'], repairs:{n1:'Observa postura completa: cola, orejas, mirada, espalda y respiraciÃƒÂ³n.',n2:'Ofrece un espacio tranquilo y evita forzar contacto.',n3:'Si la postura de dolor persiste, registra video y consulta.'}}
+      { rx:/oreja|oido|audicion/, zone:'Orejas', sensation:['Picor','Sacudidas','Sensibilidad'], emotion:['Molestia','Alerta','Estrés'], message:'Las orejas pueden mostrar irritación, sensibilidad o incomodidad. Sacudir la cabeza, rascarse mucho o evitar el contacto son datos importantes para observar.', reflections:['Ã‚¿Se rasca o sacude la cabeza más de lo normal?','Ã‚¿Hay olor, enrojecimiento o secreción?','Ã‚¿Evita que le toques esa zona?'], repairs:{n1:'Observa sin introducir objetos en el oído. Mira olor, color y sensibilidad.',n2:'Registra cuándo empezó y si hubo baño, paseo, alergias o alimento nuevo.',n3:'Si hay dolor, mal olor, secreción o inclinación de cabeza, consulta veterinaria.'}},
+      { rx:/cabeza|hocico|ojo|nariz|animo|alerta/, zone:'Cabeza', sensation:['Decaimiento','Inquietud','Cambio de mirada'], emotion:['Estrés','Dolor','Alerta'], message:'La cabeza y expresión ayudan a leer ánimo, orientación y respuesta. Si tu mascota está apagada, desorientada o muy inquieta, conviene registrar el cambio.', reflections:['Ã‚¿Responde a su nombre como siempre?','Ã‚¿La mirada o expresión se ve distinta?','Ã‚¿Hay secreción nasal u ocular?'], repairs:{n1:'Observa 2 minutos: mirada, respuesta, postura y ganas de interactuar.',n2:'Anota si hubo ruido, susto, cambio de rutina o paseo distinto.',n3:'Si hay decaimiento marcado, desorientación o dolor, contacta al veterinario.'}},
+      { rx:/pecho|respir|corazon|energia/, zone:'Pecho', sensation:['Respiración','Tos','Fatiga'], emotion:['Alerta','Cansancio','Estrés'], message:'El pecho muestra respiración y energía. Cambios en reposo, tos, jadeo excesivo o fatiga merecen atención especial.', reflections:['Ã‚¿Respira distinto estando en reposo?','Ã‚¿Tose o se cansa antes?','Ã‚¿El jadeo aparece sin calor ni ejercicio?'], repairs:{n1:'Cuenta respiraciones durante 30 segundos cuando esté tranquilo y anota.',n2:'Reduce actividad y observa si mejora con descanso.',n3:'Si hay dificultad respiratoria, encías pálidas/azules o colapso, urgencia veterinaria.'}},
+      { rx:/abdomen|vientre|estomago|digest|barriga/, zone:'Abdomen', sensation:['Apetito','Vómito','Heces'], emotion:['Incomodidad','Dolor','Estrés'], message:'El abdomen ayuda a revisar comida, agua, heces, vómito, gases y postura. No diagnostica, pero ordena señales para decidir mejor.', reflections:['Ã‚¿Comió y bebió como siempre?','Ã‚¿Hubo vómito, diarrea o estreñimiento?','Ã‚¿Se encorva o protege la barriga?'], repairs:{n1:'Registra comida, agua, heces y vómitos con hora aproximada.',n2:'Evita cambios bruscos de alimento y observa energía general.',n3:'Si hay vómitos repetidos, sangre, abdomen duro o dolor, consulta veterinaria.'}},
+      { rx:/pata|pierna|cojera|movimiento|apoyo|almohadilla/, zone:'Patas', sensation:['Cojera','Lamido','Apoyo'], emotion:['Dolor','Incomodidad','Cansancio'], message:'Las patas muestran movilidad y dolor. Cojera, lamido insistente o dificultad para saltar pueden indicar lesión, uñas largas o almohadillas sensibles.', reflections:['Ã‚¿Apoya igual las cuatro patas?','Ã‚¿Se lame una zona específica?','Ã‚¿Evita escaleras, saltos o paseos?'], repairs:{n1:'Mira caminar 10 pasos y revisa almohadillas/uñas con suavidad.',n2:'Descanso relativo y evita saltos hasta entender la señal.',n3:'Si no apoya, hay hinchazón o dolor intenso, consulta veterinaria.'}},
+      { rx:/cola|postura|lenguaje/, zone:'Cola y postura', sensation:['Cola baja','Rigidez','Inquietud'], emotion:['Miedo','Dolor','Alerta'], message:'La cola y postura general comunican mucho: miedo, dolor, juego, tensión o incomodidad. Es mejor leerla junto con orejas, mirada y energía.', reflections:['Ã‚¿La cola está distinta a su normalidad?','Ã‚¿El cuerpo está rígido o encogido?','Ã‚¿Hubo una situación nueva antes del cambio?'], repairs:{n1:'Observa postura completa: cola, orejas, mirada, espalda y respiración.',n2:'Ofrece un espacio tranquilo y evita forzar contacto.',n3:'Si la postura de dolor persiste, registra video y consulta.'}}
     ];
     return petGuides.find(g => g.rx.test(key)) || petGuides[1];
   }
   if (!isSomaticNiche()) {
     return {
-      zone: signal?.label || 'SeÃƒÂ±al',
-      sensation:['ObservaciÃƒÂ³n','Prioridad','AcciÃƒÂ³n'],
-      emotion:['Claridad','PresiÃƒÂ³n','DecisiÃƒÂ³n'],
-      message: signal?.meaning || 'Esta seÃƒÂ±al muestra un punto del proceso que necesita atenciÃƒÂ³n. La idea es convertir la observaciÃƒÂ³n en un siguiente paso concreto, no dejarla como preocupaciÃƒÂ³n suelta.',
+      zone: signal?.label || 'Señal',
+      sensation:['Observación','Prioridad','Acción'],
+      emotion:['Claridad','Presión','Decisión'],
+      message: signal?.meaning || 'Esta señal muestra un punto del proceso que necesita atención. La idea es convertir la observación en un siguiente paso concreto, no dejarla como preocupación suelta.',
       reflections:[
-        signal?.prompt || 'Ã‚Â¿QuÃƒÂ© estÃƒÂ¡ mostrando esta seÃƒÂ±al hoy?',
-        'Ã‚Â¿QuÃƒÂ© dato concreto confirma que esto necesita atenciÃƒÂ³n?',
-        'Ã‚Â¿QuÃƒÂ© acciÃƒÂ³n pequeÃƒÂ±a puedes completar en menos de 15 minutos?'
+        signal?.prompt || 'Ã‚¿Qué está mostrando esta señal hoy?',
+        'Ã‚¿Qué dato concreto confirma que esto necesita atención?',
+        'Ã‚¿Qué acción pequeña puedes completar en menos de 15 minutos?'
       ],
       repairs:{
-        n1: signal?.practice || 'Haz una revisiÃƒÂ³n rÃƒÂ¡pida del dato principal y anota lo que ves sin juzgar.',
-        n2: 'Escribe quÃƒÂ© patrÃƒÂ³n se repite y quÃƒÂ© decisiÃƒÂ³n estÃƒÂ¡ pidiendo.',
-        n3: 'Define una acciÃƒÂ³n medible, con fecha o nÃƒÂºmero, para revisar el avance.'
+        n1: signal?.practice || 'Haz una revisión rápida del dato principal y anota lo que ves sin juzgar.',
+        n2: 'Escribe qué patrón se repite y qué decisión está pidiendo.',
+        n3: 'Define una acción medible, con fecha o número, para revisar el avance.'
       }
     };
   }
   const guides = [
     {
       rx:/cabeza|mente|migra|frente|ruido/,
-      zone:'Cabeza', sensation:['TensiÃ³n','Punzada','Ruido mental'], emotion:['Miedo','Rabia','ConfusiÃ³n'],
-      message:'La cabeza suele hablar cuando la mente intenta resolverlo todo sola. Puede ser presiÃ³n de control, pensamientos en bucle o exceso de alerta. Tu cuerpo no estÃ¡ fallando: estÃ¡ pidiendo pausa y descarga.',
-      reflections:['Â¿QuÃ© pensamiento se repitiÃ³ hoy mÃ¡s de lo normal?','Â¿QuÃ© estÃ¡s intentando controlar que quizÃ¡ no depende de ti?','Â¿CuÃ¡ndo fue la Ãºltima vez que descansaste sin culpa?'],
-      repairs:{ n1:'Masajea sienes y nuca con movimientos lentos. Exhala largo 5 veces.', n2:'Haz una descarga mental de 10 minutos: escribe todo sin ordenar.', n3:'Elige una preocupaciÃ³n y escribe: "esto sÃ­ depende de mÃ­ / esto no depende de mÃ­".' }
+      zone:'Cabeza', sensation:['Tensión','Punzada','Ruido mental'], emotion:['Miedo','Rabia','Confusión'],
+      message:'La cabeza suele hablar cuando la mente intenta resolverlo todo sola. Puede ser presión de control, pensamientos en bucle o exceso de alerta. Tu cuerpo no está fallando: está pidiendo pausa y descarga.',
+      reflections:['¿Qué pensamiento se repitió hoy más de lo normal?','¿Qué estás intentando controlar que quizá no depende de ti?','¿Cuándo fue la última vez que descansaste sin culpa?'],
+      repairs:{ n1:'Masajea sienes y nuca con movimientos lentos. Exhala largo 5 veces.', n2:'Haz una descarga mental de 10 minutos: escribe todo sin ordenar.', n3:'Elige una preocupación y escribe: "esto sí depende de mí / esto no depende de mí".' }
     },
     {
       rx:/garganta|cuello|voz|nuca/,
-      zone:'Garganta y cuello', sensation:['Nudo','Ronquera','TensiÃ³n'], emotion:['Miedo','VergÃ¼enza','Rabia'],
-      message:'La garganta aparece cuando hay palabras guardadas, lÃ­mites pendientes o una conversaciÃ³n que da miedo abrir. El nudo no es un enemigo: es una verdad esperando una salida segura.',
-      reflections:['Â¿QuÃ© necesitabas decir y decidiste callar?','Â¿A quiÃ©n necesitas decirle algo importante?','Â¿QuÃ© temes que pase si lo dices?'],
-      repairs:{ n1:'Pon una mano en la garganta y emite un zumbido suave durante 30 segundos.', n2:'Escribe una carta que empiece con: "Necesito decirte que...".', n3:'Practica una frase lÃ­mite pequeÃ±a y real para usar esta semana.' }
+      zone:'Garganta y cuello', sensation:['Nudo','Ronquera','Tensión'], emotion:['Miedo','Vergüenza','Rabia'],
+      message:'La garganta aparece cuando hay palabras guardadas, límites pendientes o una conversación que da miedo abrir. El nudo no es un enemigo: es una verdad esperando una salida segura.',
+      reflections:['¿Qué necesitabas decir y decidiste callar?','¿A quién necesitas decirle algo importante?','¿Qué temes que pase si lo dices?'],
+      repairs:{ n1:'Pon una mano en la garganta y emite un zumbido suave durante 30 segundos.', n2:'Escribe una carta que empiece con: "Necesito decirte que...".', n3:'Practica una frase límite pequeña y real para usar esta semana.' }
     },
     {
       rx:/pecho|corazon|respir|torax/,
-      zone:'Pecho y corazÃ³n', sensation:['OpresiÃ³n','Palpitaciones','VacÃ­o'], emotion:['Tristeza','Miedo','Soledad'],
-      message:'El pecho suele guardar tristeza, miedo, duelo, amor contenido o necesidad de apoyo. Cuando se oprime, el corazÃ³n no pide que lo arregles rÃ¡pido: pide presencia.',
-      reflections:['Â¿QuÃ© pesa en tu corazÃ³n ahora mismo?','Â¿Hay una pena que no te has permitido llorar?','Â¿QuÃ© apoyo necesitarÃ­as pedir, aunque sea pequeÃ±o?'],
-      repairs:{ n1:'Mano izquierda sobre el corazÃ³n. Respira y repite: "me permito sentir esto".', n2:'Escribe una carta a lo que extraÃ±as o a lo que duele.', n3:'Busca un gesto real de apoyo: enviar un mensaje, pedir compaÃ±Ã­a o descansar.' }
+      zone:'Pecho y corazón', sensation:['Opresión','Palpitaciones','Vacío'], emotion:['Tristeza','Miedo','Soledad'],
+      message:'El pecho suele guardar tristeza, miedo, duelo, amor contenido o necesidad de apoyo. Cuando se oprime, el corazón no pide que lo arregles rápido: pide presencia.',
+      reflections:['¿Qué pesa en tu corazón ahora mismo?','¿Hay una pena que no te has permitido llorar?','¿Qué apoyo necesitarías pedir, aunque sea pequeño?'],
+      repairs:{ n1:'Mano izquierda sobre el corazón. Respira y repite: "me permito sentir esto".', n2:'Escribe una carta a lo que extrañas o a lo que duele.', n3:'Busca un gesto real de apoyo: enviar un mensaje, pedir compañía o descansar.' }
     },
     {
       rx:/hombro|hombros|carga|espalda alta/,
       zone:'Hombros y espalda alta', sensation:['Contractura','Peso','Rigidez'], emotion:['Agotamiento','Miedo','Rabia'],
-      message:'Los hombros suelen cargar responsabilidades, expectativas y cuidados ajenos. Cuando se tensan, muchas veces el cuerpo pregunta: "Â¿esto de verdad es mÃ­o?".',
-      reflections:['Â¿QuÃ© estÃ¡s cargando que no te corresponde del todo?','Â¿A quÃ© le dices que sÃ­ cuando querÃ­as decir no?','Â¿CuÃ¡ndo fue la Ãºltima vez que pediste ayuda?'],
-      repairs:{ n1:'Sube los hombros a las orejas, sostÃ©n 5 segundos y suelta con sonido. Repite 7 veces.', n2:'Haz dos columnas: "lo que cargo" y "lo que puedo devolver".', n3:'Devuelve o delega una responsabilidad pequeÃ±a esta semana.' }
+      message:'Los hombros suelen cargar responsabilidades, expectativas y cuidados ajenos. Cuando se tensan, muchas veces el cuerpo pregunta: "¿esto de verdad es mío?".',
+      reflections:['¿Qué estás cargando que no te corresponde del todo?','¿A qué le dices que sí cuando querías decir no?','¿Cuándo fue la última vez que pediste ayuda?'],
+      repairs:{ n1:'Sube los hombros a las orejas, sostén 5 segundos y suelta con sonido. Repite 7 veces.', n2:'Haz dos columnas: "lo que cargo" y "lo que puedo devolver".', n3:'Devuelve o delega una responsabilidad pequeña esta semana.' }
     },
     {
       rx:/vientre|abdomen|estomago|digest|intestin/,
-      zone:'Vientre y digestivo', sensation:['Nudo','InflamaciÃ³n','Ardor'], emotion:['Miedo','Rabia','ConfusiÃ³n'],
-      message:'El vientre suele reaccionar a lo que todavÃ­a no has podido digerir emocionalmente: incertidumbre, control, irritaciÃ³n o intuiciones que la mente discute.',
-      reflections:['Â¿QuÃ© situaciÃ³n te estÃ¡ sentando mal?','Â¿QuÃ© sabe tu cuerpo que tu mente todavÃ­a discute?','Â¿QuÃ© estÃ¡s tragando sin poder procesar?'],
-      repairs:{ n1:'Masaje abdominal en sentido horario y respiraciÃ³n hacia el vientre durante un minuto.', n2:'Escribe quÃ© estÃ¡s acumulando o tragando en silencio.', n3:'Reduce un estresor concreto hoy o pon distancia de lo que te irrita.' }
+      zone:'Vientre y digestivo', sensation:['Nudo','Inflamación','Ardor'], emotion:['Miedo','Rabia','Confusión'],
+      message:'El vientre suele reaccionar a lo que todavía no has podido digerir emocionalmente: incertidumbre, control, irritación o intuiciones que la mente discute.',
+      reflections:['¿Qué situación te está sentando mal?','¿Qué sabe tu cuerpo que tu mente todavía discute?','¿Qué estás tragando sin poder procesar?'],
+      repairs:{ n1:'Masaje abdominal en sentido horario y respiración hacia el vientre durante un minuto.', n2:'Escribe qué estás acumulando o tragando en silencio.', n3:'Reduce un estresor concreto hoy o pon distancia de lo que te irrita.' }
     },
     {
       rx:/pelvis|cadera|utero|seguridad|sexual/,
-      zone:'Pelvis y Ãºtero', sensation:['TensiÃ³n','InflamaciÃ³n','Dolor'], emotion:['Miedo','Rabia','Culpa'],
-      message:'La pelvis habla de seguridad, lÃ­mites, deseo, creatividad, ciclo y pertenencia. Si se activa, puede estar pidiendo mÃ¡s respeto por tu espacio Ã­ntimo y tu ritmo.',
-      reflections:['Â¿Tu cuerpo se siente seguro en este momento?','Â¿Hay un lÃ­mite Ã­ntimo que necesitas reconocer?','Â¿QuÃ© necesita tu parte creativa o femenina hoy?'],
-      repairs:{ n1:'Pon las manos en el bajo vientre y respira diciendo: "este cuerpo es mÃ­o".', n2:'Escribe quÃ© necesita tu pelvis para sentirse segura.', n3:'Haz una acciÃ³n de autocuidado real: descanso, calor local, cita mÃ©dica o lÃ­mite claro.' }
+      zone:'Pelvis y útero', sensation:['Tensión','Inflamación','Dolor'], emotion:['Miedo','Rabia','Culpa'],
+      message:'La pelvis habla de seguridad, límites, deseo, creatividad, ciclo y pertenencia. Si se activa, puede estar pidiendo más respeto por tu espacio íntimo y tu ritmo.',
+      reflections:['¿Tu cuerpo se siente seguro en este momento?','¿Hay un límite íntimo que necesitas reconocer?','¿Qué necesita tu parte creativa o femenina hoy?'],
+      repairs:{ n1:'Pon las manos en el bajo vientre y respira diciendo: "este cuerpo es mío".', n2:'Escribe qué necesita tu pelvis para sentirse segura.', n3:'Haz una acción de autocuidado real: descanso, calor local, cita médica o límite claro.' }
     }
   ];
   return guides.find(g => g.rx.test(key)) || guides[4];
@@ -2923,7 +2923,7 @@ function getBodyDictionaryEntries() {
 function showBodyDictionary() {
   const content = document.getElementById('app-content');
   const entries = getBodyDictionaryEntries();
-  content.innerHTML = `${sectionHdr('menu_book', 'Diccionario del cuerpo', 'Lecturas rÃ¡pidas por zona, con preguntas y reparaciÃ³n')}
+  content.innerHTML = `${sectionHdr('menu_book', 'Diccionario del cuerpo', 'Lecturas rápidas por zona, con preguntas y reparación')}
     <div class="today-wrap">
       <button class="btn-secondary" style="margin-bottom:14px" onclick="showToday()">${msIcon('arrow_back',16)} Volver al mapa</button>
       <div class="tool-grid">
@@ -2934,7 +2934,7 @@ function showBodyDictionary() {
             <div class="body-guide-list" style="margin-bottom:10px">
               ${guide.reflections.map(r => `<span>${esc(r)}</span>`).join('')}
             </div>
-            <div class="body-repair-card"><strong>ReparaciÃ³n sugerida</strong>${esc(guide.repairs.n1)}</div>
+            <div class="body-repair-card"><strong>Reparación sugerida</strong>${esc(guide.repairs.n1)}</div>
           </div>
         `).join('')}
       </div>
@@ -2960,11 +2960,11 @@ function openPractice(idx) {
   if (!item) return;
   const content = document.getElementById('app-content');
   const script = item.script || item.text || currentApp.meditationScript || '';
-  content.innerHTML = `${sectionHdr(item.icon || 'self_improvement', item.title || 'PrÃ¡ctica guiada', item.description || `${item.duration || 8} min`)}
+  content.innerHTML = `${sectionHdr(item.icon || 'self_improvement', item.title || 'Práctica guiada', item.description || `${item.duration || 8} min`)}
     <div class="fade-up" style="padding:20px">
       <button type="button" class="btn-secondary" style="width:100%;margin-bottom:12px" onclick="showMeditationList()">${msIcon('arrow_back',16)} Volver a meditaciones</button>
       <div class="card" style="padding:22px;text-align:center;margin-bottom:14px">
-        <p class="serif" style="font-size:22px;font-weight:800;margin-bottom:8px">${esc(item.title || 'PrÃ¡ctica guiada')}</p>
+        <p class="serif" style="font-size:22px;font-weight:800;margin-bottom:8px">${esc(item.title || 'Práctica guiada')}</p>
         <p style="font-size:13px;color:var(--muted);line-height:1.7">${esc(item.description || '')}</p>
         <div id="practice-speaking" style="display:none;justify-content:center;margin-top:16px" class="speaking-wrap">
           <div class="speaking-bars">
@@ -3016,39 +3016,39 @@ function togglePracticeVoice(idx) {
 function todayGuidance(type) {
   return ({
     'skin-scan':'Toma o sube una foto con luz natural. El escaneo no diagnostica: te ayuda a observar senales visibles y decidir que registrar hoy.',
-    diagnostico:'Empieza identificando dÃ³nde estÃ¡s hoy. Responde con honestidad y usa el resultado como brÃºjula para tu siguiente paso.',
-    reto:'Avanza un dÃ­a a la vez. No busques hacerlo perfecto: busca completar el paso de hoy y registrar cÃ³mo te fue.',
-    diario:'TÃ³mate unos minutos para escribir sin filtro. Esta herramienta funciona mejor cuando respondes desde lo real, no desde lo correcto.',
-    checklist:'Marca solo lo que realmente completaste. Cada check pequeÃ±o crea sensaciÃ³n de avance.',
-    tracker:'Registra tu hÃ¡bito de hoy. La constancia se ve mejor cuando puedes mirarla acumulada.',
-    meditacion:'Busca un lugar tranquilo, baja el ritmo y escucha la prÃ¡ctica como un acompaÃ±amiento.',
-    chatbot:'Haz una pregunta concreta. Mientras mÃ¡s contexto des, mÃ¡s Ãºtil serÃ¡ la respuesta.',
-    generador:'Describe lo que necesitas crear y deja que la herramienta te dÃ© un primer borrador Ãºtil.'
-  })[type] || 'Elige una herramienta para continuar. La idea es que esta mini-app acompaÃ±e la oferta principal con una experiencia simple y accionable.';
+    diagnostico:'Empieza identificando dónde estás hoy. Responde con honestidad y usa el resultado como brújula para tu siguiente paso.',
+    reto:'Avanza un día a la vez. No busques hacerlo perfecto: busca completar el paso de hoy y registrar cómo te fue.',
+    diario:'Tómate unos minutos para escribir sin filtro. Esta herramienta funciona mejor cuando respondes desde lo real, no desde lo correcto.',
+    checklist:'Marca solo lo que realmente completaste. Cada check pequeño crea sensación de avance.',
+    tracker:'Registra tu hábito de hoy. La constancia se ve mejor cuando puedes mirarla acumulada.',
+    meditacion:'Busca un lugar tranquilo, baja el ritmo y escucha la práctica como un acompañamiento.',
+    chatbot:'Haz una pregunta concreta. Mientras más contexto des, más útil será la respuesta.',
+    generador:'Describe lo que necesitas crear y deja que la herramienta te dé un primer borrador útil.'
+  })[type] || 'Elige una herramienta para continuar. La idea es que esta mini-app acompañe la oferta principal con una experiencia simple y accionable.';
 }
 
 function toolDescription(type) {
   return ({
     'skin-scan':'Sube una foto y recibe una lectura visual educativa para orientar tu rutina.',
-    devocional:'Lectura y reflexiÃ³n para conectar con el mensaje del dÃ­a.',
+    devocional:'Lectura y reflexión para conectar con el mensaje del día.',
     checklist:'Acciones concretas para avanzar sin perderte.',
-    tracker:'Seguimiento visual de hÃ¡bitos y constancia.',
-    reto:'Ruta diaria con pasos pequeÃ±os y medibles.',
+    tracker:'Seguimiento visual de hábitos y constancia.',
+    reto:'Ruta diaria con pasos pequeños y medibles.',
     diario:'Preguntas guiadas para ordenar lo que sientes o decides.',
-    calculadora:'Resultado prÃ¡ctico a partir de tus datos.',
+    calculadora:'Resultado práctico a partir de tus datos.',
     planificador:'Organiza tareas, fechas y prioridades.',
     generador:'Crea ideas, textos o respuestas con asistencia IA.',
-    chatbot:'AcompaÃ±amiento conversacional dentro de la mini-app.',
-    comparador:'Compara opciones y decide con mÃ¡s claridad.',
+    chatbot:'Acompañamiento conversacional dentro de la mini-app.',
+    comparador:'Compara opciones y decide con más claridad.',
     diagnostico:'Preguntas para identificar tu punto de partida.',
     roadmap:'Mapa de pasos para llegar al resultado.',
-    faq:'Respuestas rÃ¡pidas a dudas frecuentes.',
+    faq:'Respuestas rápidas a dudas frecuentes.',
     glosario:'Conceptos clave explicados de forma simple.',
     flashcards:'Tarjetas para aprender y repasar.',
     biblioteca:'Recursos adicionales para profundizar.',
     afirmaciones:'Frases guiadas para reforzar enfoque y calma.',
-    meditacion:'PrÃ¡ctica guiada con temporizador.',
-    bodymap:'Mapa interactivo para registrar seÃ±ales y volver a una prÃ¡ctica concreta.',
+    meditacion:'Práctica guiada con temporizador.',
+    bodymap:'Mapa interactivo para registrar señales y volver a una práctica concreta.',
     simulador:'Explora escenarios antes de decidir.'
   })[type] || 'Herramienta interactiva de apoyo.';
 }
@@ -3578,15 +3578,15 @@ function localAIResponse(input, mode = 'generator') {
   const topic = currentApp?.niche || currentApp?.name || 'este proceso';
   const cleanInput = String(input || '').trim();
   if (mode === 'chat') {
-    return `Te entiendo. Para avanzar en ${topic}, empieza por una acciÃ³n pequeÃ±a y concreta: escribe quÃ© necesitas resolver, elige un paso que puedas hacer hoy y revisa cÃ³mo te sientes despuÃ©s. Si quieres, cuÃ©ntame un poco mÃ¡s de tu situaciÃ³n y te ayudo a ordenarla.`;
+    return `Te entiendo. Para avanzar en ${topic}, empieza por una acción pequeña y concreta: escribe qué necesitas resolver, elige un paso que puedas hacer hoy y revisa cómo te sientes después. Si quieres, cuéntame un poco más de tu situación y te ayudo a ordenarla.`;
   }
   return [
     `Respuesta sugerida para ${topic}:`,
     '',
     `1. Punto de partida: ${cleanInput || 'define con claridad lo que necesitas resolver'}.`,
-    '2. Primer paso: elige una acciÃ³n simple que puedas completar hoy sin complicarte.',
-    '3. RecomendaciÃ³n: convierte esa acciÃ³n en una rutina pequeÃ±a y medible.',
-    '4. Cierre: revisa el resultado al final del dÃ­a y ajusta el siguiente paso.'
+    '2. Primer paso: elige una acción simple que puedas completar hoy sin complicarte.',
+    '3. Recomendación: convierte esa acción en una rutina pequeña y medible.',
+    '4. Cierre: revisa el resultado al final del día y ajusta el siguiente paso.'
   ].join('\n');
 }
 
@@ -3774,7 +3774,7 @@ async function callCreatorAI({ messages, systemPrompt, maxTokens = 700, mode = '
       throw new Error(data?.error?.message || `Error ${r.status}`);
     }
     const content = data.content || data?.message || data?.choices?.[0]?.message?.content;
-    if (!content) throw new Error('La IA no devolviÃ³ contenido.');
+    if (!content) throw new Error('La IA no devolvió contenido.');
     return { content, fallback: false };
   } catch (e) {
     console.warn('[miniapp-ai] usando fallback local:', e.message);
@@ -4642,7 +4642,7 @@ function renderSkinScan(el) {
   if (latestPhoto) setPreview(latestPhoto);
 }
 
-// â”€â”€ RETO (guided day-by-day, like CÃ³digo Cuerpo) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// â”€â”€ RETO (guided day-by-day, like Código Cuerpo) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function renderReto(el) {
   const app = currentApp;
   const storageKey = `reto_${app.id}`;
@@ -4657,11 +4657,11 @@ function renderReto(el) {
 
   // If no guided content, show simple grid
   if (!days.length) {
-    el.innerHTML = sectionHdr(app.icon||sectionIcon('reto'), app.name, `Reto ${totalDays} dÃ­as Â· ${completed} completados`) +
+    el.innerHTML = sectionHdr(app.icon||sectionIcon('reto'), app.name, `Reto ${totalDays} días · ${completed} completados`) +
     `<div class="fade-up" style="padding:20px">
       <div style="margin-bottom:16px">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
-          <span style="font-size:13px;font-weight:700">${completed}/${totalDays} dÃ­as</span>
+          <span style="font-size:13px;font-weight:700">${completed}/${totalDays} días</span>
           <span style="font-size:12px;color:var(--accent);font-weight:700">${pct}%</span>
         </div>
         <div class="prog-wrap"><div class="prog-bar" style="width:${pct}%"></div></div>
@@ -4678,7 +4678,7 @@ function renderReto(el) {
   }
 
   // Guided content
-  el.innerHTML = sectionHdr(app.icon||sectionIcon('reto'), app.name, app.description||`Reto ${totalDays} dÃ­as`) +
+  el.innerHTML = sectionHdr(app.icon||sectionIcon('reto'), app.name, app.description||`Reto ${totalDays} días`) +
   `<div class="fade-up" style="padding:20px">
     <div class="stat-row">
       <div class="stat-pill"><div class="stat-val">${completed}</div><div class="stat-lbl">Completados</div></div>
@@ -4694,21 +4694,21 @@ function renderReto(el) {
         <div class="day-card-header" onclick="toggleDayCard(${i+1})">
           <div class="day-num ${isDone?'done':''}">${isDone?msIcon('check',16):i+1}</div>
           <div style="flex:1">
-            <div style="font-size:13px;font-weight:700;${isDone?'color:var(--muted);text-decoration:line-through':''}">${dayIconHtml(day.icon)}${esc(day.title||`DÃ­a ${i+1}`)}</div>
+            <div style="font-size:13px;font-weight:700;${isDone?'color:var(--muted);text-decoration:line-through':''}">${dayIconHtml(day.icon)}${esc(day.title||`Día ${i+1}`)}</div>
           </div>
-          <span style="font-size:20px;color:var(--muted);transition:transform .2s" id="day-chevron-${i+1}">${isDone?msIcon('check',18):'â€º'}</span>
+          <span style="font-size:20px;color:var(--muted);transition:transform .2s" id="day-chevron-${i+1}">${isDone?msIcon('check',18):'›'}</span>
         </div>
         <div id="day-body-${i+1}" class="day-card-body" style="display:none">
           ${day.quote?`<div class="quote-box" style="margin:16px 0">${esc(day.quote)}</div>`:''}
           ${day.instructions?`<p style="font-size:13px;line-height:1.7;margin-bottom:16px;color:var(--text)">${esc(day.instructions)}</p>`:''}
           ${day.reflectionPrompt?`
-            <p style="font-size:11px;font-weight:700;color:var(--accent);margin-bottom:6px;text-transform:uppercase;letter-spacing:.05em">Tu reflexiÃ³n</p>
+            <p style="font-size:11px;font-weight:700;color:var(--accent);margin-bottom:6px;text-transform:uppercase;letter-spacing:.05em">Tu reflexión</p>
             <textarea class="input" style="width:100%" rows="4" placeholder="${esc(day.reflectionPrompt)}"
               onblur="saveNote(${i+1},this.value)">${esc(savedNote)}</textarea>
           `:''}
           <div style="margin-top:16px">
             ${isDone
-              ? `<button class="btn-done" onclick="markDay(${i+1},false)">${msIcon('check_circle',16)} Completado â€” Desmarcar</button>`
+              ? `<button class="btn-done" onclick="markDay(${i+1},false)">${msIcon('check_circle',16)} Completado — Desmarcar</button>`
               : `<button class="btn-primary" onclick="markDay(${i+1},true)">Marcar como completado ${msIcon('check',16)}</button>`
             }
           </div>
@@ -4722,14 +4722,14 @@ function renderReto(el) {
     const chev = document.getElementById(`day-chevron-${n}`);
     const isOpen = body.style.display !== 'none';
     body.style.display = isOpen ? 'none' : 'block';
-    if (!done[n]) chev.textContent = isOpen ? 'â€º' : 'â€¹';
+    if (!done[n]) chev.textContent = isOpen ? '›' : '‹';
   };
   window.saveNote = (n, val) => { localStorage.setItem(`reto_note_${app.id}_${n}`, val); };
   window.markDay = (n, val) => {
     done[n] = val;
     localStorage.setItem(storageKey, JSON.stringify(done));
     renderReto(el);
-    if (val) showToast(`Â¡DÃ­a ${n} completado!`);
+    if (val) showToast(`¡Día ${n} completado!`);
   };
 }
 // â”€â”€ CHECKLIST â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
@@ -4768,10 +4768,10 @@ function renderChecklist(el) {
             <span style="flex:1;font-size:13px;${item.done?'text-decoration:line-through;color:var(--muted)':''}">${esc(item.text)}</span>
             <button onclick="removeItem(${i})" style="background:none;border:none;color:var(--muted);cursor:pointer;font-size:18px;line-height:1">Ã—</button>
           </div>`).join('')}
-        ${items.length===0?'<p style="text-align:center;color:var(--muted);padding:24px;font-size:13px">Agrega tu primer Ã­tem</p>':''}
+        ${items.length===0?'<p style="text-align:center;color:var(--muted);padding:24px;font-size:13px">Agrega tu primer ítem</p>':''}
       </div>
       <div style="display:flex;gap:8px">
-        <input id="new-check-item" class="input" style="flex:1" placeholder="Agregar Ã­tem..." maxlength="100"
+        <input id="new-check-item" class="input" style="flex:1" placeholder="Agregar ítem..." maxlength="100"
           onkeydown="if(event.key==='Enter')addCheckItem()"/>
         <button class="btn-secondary" onclick="addCheckItem()">+ Agregar</button>
       </div>
@@ -4799,11 +4799,11 @@ function renderTracker(el) {
   function draw() {
     const todayDone=checked.has(today);
     const s=streak(), pct=days?Math.round(checked.size/days*100):0;
-    el.innerHTML=sectionHdr(currentApp.icon||sectionIcon('tracker'), currentApp.name, currentApp.description||`HÃ¡bito de ${days} dÃ­as`) +
+    el.innerHTML=sectionHdr(currentApp.icon||sectionIcon('tracker'), currentApp.name, currentApp.description||`Hábito de ${days} días`) +
     `<div class="fade-up" style="padding:20px">
       <div class="stat-row">
         <div class="stat-pill"><div class="stat-val">${s}</div><div class="stat-lbl">${msIcon('local_fire_department',14)} Racha</div></div>
-        <div class="stat-pill"><div class="stat-val">${checked.size}</div><div class="stat-lbl">DÃ­as</div></div>
+        <div class="stat-pill"><div class="stat-val">${checked.size}</div><div class="stat-lbl">Días</div></div>
         <div class="stat-pill"><div class="stat-val">${pct}%</div><div class="stat-lbl">Logrado</div></div>
       </div>
       ${currentApp.trackerHabit?`<div class="quote-box" style="margin-bottom:16px">"${esc(currentApp.trackerHabit)}"</div>`:''}
@@ -4816,11 +4816,11 @@ function renderTracker(el) {
         }).join('')}
       </div>
       <button onclick="toggleTrackerDay('${today}')" class="${todayDone?'btn-done':'btn-primary'}">
-        ${todayDone?msIcon('check_circle',16)+' Hoy completado â€” Desmarcar':'Marcar hoy como completado '+msIcon('check',16)}
+        ${todayDone?msIcon('check_circle',16)+' Hoy completado — Desmarcar':'Marcar hoy como completado '+msIcon('check',16)}
       </button>
     </div>`;
   }
-  window.toggleTrackerDay=(key)=>{if(checked.has(key))checked.delete(key);else checked.add(key);save();if(!checked.has(key)||key===today)draw();else{showToast('Â¡DÃ­a marcado!');draw();}};
+  window.toggleTrackerDay=(key)=>{if(checked.has(key))checked.delete(key);else checked.add(key);save();if(!checked.has(key)||key===today)draw();else{showToast('¡Día marcado!');draw();}};
   draw();
 }
 
@@ -4834,21 +4834,21 @@ function renderDevocional(el) {
   el.innerHTML=sectionHdr(currentApp.icon||sectionIcon('devocional'), currentApp.name, dateStr) +
   `<div class="fade-up" style="padding:20px">
     <div class="card" style="padding:16px;text-align:center;margin-bottom:16px;border-top:3px solid var(--accent)">
-      <p style="font-size:11px;font-weight:800;color:var(--accent);text-transform:uppercase;letter-spacing:.12em">DÃ­a ${dayNum}</p>
+      <p style="font-size:11px;font-weight:800;color:var(--accent);text-transform:uppercase;letter-spacing:.12em">Día ${dayNum}</p>
     </div>
     ${(currentApp.devotionalText||currentApp.content?.devotionalText)?`<div class="quote-box" style="margin-bottom:16px">"${esc(currentApp.devotionalText||currentApp.content?.devotionalText)}"</div>`:''}
     <div class="card" style="padding:20px;margin-bottom:12px">
-      <p style="font-size:11px;font-weight:700;color:var(--accent);text-transform:uppercase;letter-spacing:.08em;margin-bottom:10px">${msIcon('edit_note',14)} Mi reflexiÃ³n de hoy</p>
+      <p style="font-size:11px;font-weight:700;color:var(--accent);text-transform:uppercase;letter-spacing:.08em;margin-bottom:10px">${msIcon('edit_note',14)} Mi reflexión de hoy</p>
       <textarea id="devo-note" class="input" style="width:100%" rows="6" placeholder="Escribe tus pensamientos, oraciones o reflexiones...">${esc(notes[today]||'')}</textarea>
-      <button class="btn-primary" style="margin-top:12px" onclick="saveDevo()">${msIcon('save',14)} Guardar reflexiÃ³n</button>
+      <button class="btn-primary" style="margin-top:12px" onclick="saveDevo()">${msIcon('save',14)} Guardar reflexión</button>
     </div>
     ${Object.keys(notes).filter(k=>k!==today).slice(0,3).map(k=>`
       <div class="card2" style="padding:12px 16px;margin-bottom:8px;border-radius:12px">
         <p style="font-size:10px;font-weight:700;color:var(--muted);margin-bottom:4px">${k}</p>
-        <p style="font-size:12px;color:var(--text);line-height:1.5">${esc(notes[k].substring(0,120))}${notes[k].length>120?'â€¦':''}</p>
+        <p style="font-size:12px;color:var(--text);line-height:1.5">${esc(notes[k].substring(0,120))}${notes[k].length>120?'…':''}</p>
       </div>`).join('')}
   </div>`;
-  window.saveDevo=()=>{const v=document.getElementById('devo-note')?.value?.trim();if(v){notes[today]=v;localStorage.setItem(storageKey,JSON.stringify(notes));showToast('ReflexiÃ³n guardada');}};
+  window.saveDevo=()=>{const v=document.getElementById('devo-note')?.value?.trim();if(v){notes[today]=v;localStorage.setItem(storageKey,JSON.stringify(notes));showToast('Reflexión guardada');}};
 }
 
 // â”€â”€ DIARIO â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
@@ -5173,8 +5173,8 @@ function renderGenerador(el) {
   el.innerHTML=sectionHdr(currentApp.icon||sectionIcon('generador'), currentApp.name, currentApp.description||'Generador con IA') +
   `<div class="fade-up" style="padding:20px">
     <div class="card" style="padding:16px;margin-bottom:12px">
-      <p style="font-size:12px;font-weight:800;color:var(--accent);text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px">${esc(currentApp.inputLabel||'Â¿QuÃ© necesitas?')}</p>
-      <textarea id="gen-input" class="input" style="width:100%" rows="4" placeholder="${esc(currentApp.inputPlaceholder||'Describe tu situaciÃ³n...')}"></textarea>
+      <p style="font-size:12px;font-weight:800;color:var(--accent);text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px">${esc(currentApp.inputLabel||'¿Qué necesitas?')}</p>
+      <textarea id="gen-input" class="input" style="width:100%" rows="4" placeholder="${esc(currentApp.inputPlaceholder||'Describe tu situación...')}"></textarea>
     </div>
     <button class="btn-primary" id="gen-btn" onclick="generateContent()">${msIcon('auto_awesome',14)} Generar con IA</button>
     <div id="gen-listen" style="display:none;align-items:center;gap:10px;margin-top:10px">
@@ -5198,7 +5198,7 @@ function renderGenerador(el) {
     const btn=document.getElementById('gen-btn');
     btn.disabled=true;btn.innerHTML=msIcon('auto_awesome',14)+' Generando...';
     stopVoice();
-    const rawPrompt=currentApp.generatorPrompt||`Genera contenido Ãºtil y accionable. Responde en espaÃ±ol con formato claro.`;
+    const rawPrompt=currentApp.generatorPrompt||`Genera contenido útil y accionable. Responde en español con formato claro.`;
     const prompt=rawPrompt.replace('[input del usuario]',input).includes(input)?rawPrompt.replace('[input del usuario]',input):`${rawPrompt}\n\nSolicitud del usuario: ${input}`;
     try{
       const ai=await callCreatorAI({systemPrompt:buildGeneratorSystemPrompt(currentApp),messages:[{role:'user',content:prompt}],maxTokens:700,mode:'generator',temperature:0.5});
@@ -5208,7 +5208,7 @@ function renderGenerador(el) {
       resEl.textContent=result;resEl.style.display='block';
       const listenWrap=document.getElementById('gen-listen');
       if(listenWrap)listenWrap.style.display='flex';
-      if(ai.fallback) showToast('Modo prueba: respuesta local porque la IA no respondiÃ³.');
+      if(ai.fallback) showToast('Modo prueba: respuesta local porque la IA no respondió.');
     }catch(e){showToast('Error: '+e.message,'error');}
     btn.disabled=false;btn.innerHTML=msIcon('auto_awesome',14)+' Generar con IA';
   };
@@ -5233,7 +5233,7 @@ function renderChatbot(el) {
       <div style="width:44px;height:44px;border-radius:50%;background:var(--btn);display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0">${botIcon}</div>
       <div style="flex:1">
         <div style="font-weight:800;font-size:14px">${esc(botName)}</div>
-        <div id="chat-status" style="font-size:11px;color:var(--success);display:flex;align-items:center;gap:4px"><span style="width:6px;height:6px;border-radius:50%;background:var(--success);display:inline-block"></span>En lÃ­nea</div>
+        <div id="chat-status" style="font-size:11px;color:var(--success);display:flex;align-items:center;gap:4px"><span style="width:6px;height:6px;border-radius:50%;background:var(--success);display:inline-block"></span>En línea</div>
       </div>
       <button onclick="toggleChatVoice()" id="chat-voice-btn" class="voice-toggle" title="Voz del asistente">${msIcon('volume_off',18)}</button>
     </div>
@@ -5265,7 +5265,7 @@ function renderChatbot(el) {
     const input=document.getElementById('chat-input');const text=input.value.trim();if(!text)return;
     input.value='';stopVoice();
     appendChatMsg('user',text);msgs.push({role:'user',content:text});
-    const tid='t'+Date.now();appendChatMsg('bot','â€¦',tid);
+    const tid='t'+Date.now();appendChatMsg('bot','…',tid);
     const statusEl=document.getElementById('chat-status');
     if(statusEl)statusEl.innerHTML=`<span style="width:6px;height:6px;border-radius:50%;background:var(--accent);display:inline-block;animation:pulseRing 1.4s infinite"></span><span style="color:var(--accent)">Escribiendo...</span>`;
     try{
@@ -5275,14 +5275,14 @@ function renderChatbot(el) {
       document.getElementById(tid)?.remove();
       appendChatMsg('bot',reply);
       if(chatVoiceOn)speakShort(reply);
-      if(ai.fallback) showToast('Modo prueba: respuesta local porque la IA no respondiÃ³.');
+      if(ai.fallback) showToast('Modo prueba: respuesta local porque la IA no respondió.');
     }catch(e){
       document.getElementById(tid)?.remove();
       const reply=smartLocalAIResponse(text,'chat',systemPrompt);
       msgs.push({role:'assistant',content:reply});
       appendChatMsg('bot',reply);
     }
-    if(statusEl)statusEl.innerHTML=`<span style="width:6px;height:6px;border-radius:50%;background:var(--success);display:inline-block"></span><span>En lÃ­nea</span>`;
+    if(statusEl)statusEl.innerHTML=`<span style="width:6px;height:6px;border-radius:50%;background:var(--success);display:inline-block"></span><span>En línea</span>`;
     document.getElementById('chat-msgs').scrollTop=9999;
   };
 
@@ -5316,7 +5316,7 @@ function renderFaq(el) {
           <span style="font-size:13px;font-weight:700;flex:1;line-height:1.4">${esc(f.q||f)}</span>
           <span id="faq-chev-${i}" style="color:var(--accent);font-size:20px;font-weight:300;transition:transform .25s;flex-shrink:0;line-height:1">+</span>
         </div>
-        <div id="faq-body-${i}" style="display:none;padding:0 16px 16px;font-size:13px;color:var(--muted);line-height:1.7;border-top:1px solid var(--border)">${esc(f.a||'Respuesta prÃ³ximamente.')}</div>
+        <div id="faq-body-${i}" style="display:none;padding:0 16px 16px;font-size:13px;color:var(--muted);line-height:1.7;border-top:1px solid var(--border)">${esc(f.a||'Respuesta próximamente.')}</div>
       </div>`).join('')}
     ${faqs.length===0?'<p style="text-align:center;padding:40px;color:var(--muted);font-size:13px">Sin preguntas configuradas.</p>':''}
   </div>`;
@@ -5480,10 +5480,10 @@ function renderFlashcards(el) {
         <div id="fc-pronunciation-feedback" style="display:none;margin-top:10px;border-radius:15px;padding:10px 12px;font-size:12px;line-height:1.5"></div>
       </div>`:''}
       <div style="display:flex;gap:8px">
-        <button onclick="prevFC()" class="btn-secondary" style="width:44px;padding:0;display:flex;align-items:center;justify-content:center;font-size:20px">â€¹</button>
-        <button onclick="markFC('no')" style="flex:1;padding:12px;border-radius:50px;border:2px solid #e55;background:transparent;color:#e55;font-weight:800;font-size:13px;cursor:pointer;transition:all .15s">${msIcon('close',14)} No sabÃ­a</button>
-        <button onclick="markFC('yes')" style="flex:1;padding:12px;border-radius:50px;border:2px solid var(--success);background:transparent;color:var(--success);font-weight:800;font-size:13px;cursor:pointer;transition:all .15s">${msIcon('check',14)} Lo sabÃ­a</button>
-        <button onclick="nextFC()" class="btn-secondary" style="width:44px;padding:0;display:flex;align-items:center;justify-content:center;font-size:20px">â€º</button>
+        <button onclick="prevFC()" class="btn-secondary" style="width:44px;padding:0;display:flex;align-items:center;justify-content:center;font-size:20px">‹</button>
+        <button onclick="markFC('no')" style="flex:1;padding:12px;border-radius:50px;border:2px solid #e55;background:transparent;color:#e55;font-weight:800;font-size:13px;cursor:pointer;transition:all .15s">${msIcon('close',14)} No sabía</button>
+        <button onclick="markFC('yes')" style="flex:1;padding:12px;border-radius:50px;border:2px solid var(--success);background:transparent;color:var(--success);font-weight:800;font-size:13px;cursor:pointer;transition:all .15s">${msIcon('check',14)} Lo sabía</button>
+        <button onclick="nextFC()" class="btn-secondary" style="width:44px;padding:0;display:flex;align-items:center;justify-content:center;font-size:20px">›</button>
       </div>
     </div>`;
   }
@@ -5667,7 +5667,7 @@ function renderGlosario(el) {
             <p style="font-weight:700;font-size:13px;flex:1">${esc(t.term||t)}</p>
             <span id="glos-chev-${i}" style="color:var(--muted);font-size:18px;transition:transform .2s">+</span>
           </div>
-          <div id="glos-def-${i}" style="display:none;padding:0 16px 14px 60px;font-size:13px;color:var(--muted);line-height:1.6;border-top:1px solid var(--border)">${esc(t.def||'DefiniciÃ³n prÃ³ximamente.')}</div>
+          <div id="glos-def-${i}" style="display:none;padding:0 16px 14px 60px;font-size:13px;color:var(--muted);line-height:1.6;border-top:1px solid var(--border)">${esc(t.def||'Definición próximamente.')}</div>
         </div>`).join('')}
       ${terms.length===0?'<p style="text-align:center;padding:40px;color:var(--muted);font-size:13px">Sin términos configurados.</p>':''}
     </div>
@@ -5983,7 +5983,7 @@ function renderBiblioteca(el) {
 // â”€â”€ MEDITACIÃ“N â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function renderBodyMap(el) {
   const signals = getBodySignals();
-  el.innerHTML = sectionHdr(currentApp.icon || sectionIcon('bodymap'), currentApp.name || signalMapCopy().mapLabel, currentApp.description || 'Explora seÃ±ales y registros personalizados') +
+  el.innerHTML = sectionHdr(currentApp.icon || sectionIcon('bodymap'), currentApp.name || signalMapCopy().mapLabel, currentApp.description || 'Explora señales y registros personalizados') +
     `<div class="fade-up" style="padding:20px">${bodyMapMarkup(signals)}</div>`;
   bindSignalMap();
 }
@@ -5992,14 +5992,14 @@ function renderMeditacion(el) {
   const app = currentApp;
   const library = getPracticeItems();
   if (library.length > 1) {
-    el.innerHTML = sectionHdr(app.icon||sectionIcon('meditacion'), app.name, app.description || 'PrÃ¡cticas guiadas') +
+    el.innerHTML = sectionHdr(app.icon||sectionIcon('meditacion'), app.name, app.description || 'Prácticas guiadas') +
     `<div class="fade-up" style="padding:20px">
       <div class="practice-list">
         ${library.map((p, i) => `
           <button class="practice-card" onclick="openPractice(${i})">
             <span class="practice-icon">${msIcon(p.icon || 'self_improvement',22)}</span>
             <span style="flex:1">
-              <span class="tool-title">${esc(p.title || 'PrÃ¡ctica guiada')}</span>
+              <span class="tool-title">${esc(p.title || 'Práctica guiada')}</span>
               <span class="tool-sub">${esc(p.description || `${p.duration || 8} min`)}</span>
             </span>
             <span class="material-symbols-outlined tool-arrow">arrow_forward</span>
@@ -6009,7 +6009,7 @@ function renderMeditacion(el) {
     </div>`;
     return;
   }
-  const script = app.meditationScript || app.content?.meditationScript || `Cierra los ojos y respira profundamente. Inhala contando hasta 4... mantÃ©n contando hasta 4... exhala contando hasta 6. Repite este ciclo a tu propio ritmo. Permite que tu mente se calme y tu cuerpo se relaje con cada respiraciÃ³n.`;
+  const script = app.meditationScript || app.content?.meditationScript || `Cierra los ojos y respira profundamente. Inhala contando hasta 4... mantén contando hasta 4... exhala contando hasta 6. Repite este ciclo a tu propio ritmo. Permite que tu mente se calme y tu cuerpo se relaje con cada respiración.`;
   const durationMin = parseInt(app.meditationDuration || app.content?.meditationDuration || 10);
   const bellFreq = app.bellFreq || 440;
   let timerInterval = null, secondsLeft = durationMin * 60;
@@ -6019,7 +6019,7 @@ function renderMeditacion(el) {
   function fmt(s){ return `${Math.floor(s/60).toString().padStart(2,'0')}:${(s%60).toString().padStart(2,'0')}`; }
 
   function drawMed() {
-    el.innerHTML = sectionHdr(app.icon||sectionIcon('meditacion'), app.name, app.description||`MeditaciÃ³n Â· ${durationMin} min`) +
+    el.innerHTML = sectionHdr(app.icon||sectionIcon('meditacion'), app.name, app.description||`Meditación · ${durationMin} min`) +
     `<div class="fade-up" style="padding:20px">
       <div class="card" style="padding:28px;text-align:center;margin-bottom:16px">
         <div id="med-timer" class="med-timer">${fmt(durationMin*60)}</div>
@@ -6038,14 +6038,14 @@ function renderMeditacion(el) {
       </div>
       ${script?`<div class="card" style="padding:20px;margin-bottom:16px">
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
-          <p style="font-size:11px;font-weight:800;color:var(--accent);text-transform:uppercase;letter-spacing:.08em">${msIcon('article',14)} GuiÃ³n</p>
+          <p style="font-size:11px;font-weight:800;color:var(--accent);text-transform:uppercase;letter-spacing:.08em">${msIcon('article',14)} Guión</p>
           <button onclick="speakCurrentMeditation()" class="voice-toggle on" style="font-size:10px">${msIcon('volume_up',14)} Leer</button>
         </div>
         <p style="font-size:13px;line-height:1.9;color:var(--muted);white-space:pre-wrap">${esc(script)}</p>
       </div>`:''}
       ${(app.meditationTips||[]).length?`<div class="card" style="padding:16px">
-        <p style="font-size:11px;font-weight:800;color:var(--accent);margin-bottom:10px">${msIcon('lightbulb',14)} Tips para tu prÃ¡ctica</p>
-        ${(app.meditationTips||[]).map(t=>`<p style="font-size:13px;color:var(--muted);margin-bottom:6px;line-height:1.5">â€¢ ${esc(t)}</p>`).join('')}
+        <p style="font-size:11px;font-weight:800;color:var(--accent);margin-bottom:10px">${msIcon('lightbulb',14)} Tips para tu práctica</p>
+        ${(app.meditationTips||[]).map(t=>`<p style="font-size:13px;color:var(--muted);margin-bottom:6px;line-height:1.5">• ${esc(t)}</p>`).join('')}
       </div>`:''}
     </div>`;
   }
@@ -6064,7 +6064,7 @@ function renderMeditacion(el) {
       document.getElementById('med-play-btn').innerHTML = msIcon('pause',28);
       document.getElementById('med-stop-btn').style.display = 'flex';
       if (!timerInterval) {
-        // First start â€” ring bell
+        // First start — ring bell
         playBell(bellFreq, 2.5);
         if (medVoiceOn && script) {
           setTimeout(() => {
@@ -6089,7 +6089,7 @@ function renderMeditacion(el) {
           playBell(528, 3.5);
           document.getElementById('med-speaking') && (document.getElementById('med-speaking').style.display = 'none');
           document.getElementById('med-play-btn') && (document.getElementById('med-play-btn').innerHTML = msIcon('play_arrow',28));
-          showToast('MeditaciÃ³n completada. Gracias por este tiempo');
+          showToast('Meditación completada. Gracias por este tiempo');
         }
       }, 1000);
     }
@@ -6177,8 +6177,8 @@ function renderGeneric(el) {
 }
 
 // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
-// AUDIO ENGINE â€” Campana (Web Audio API) + Voz guiada (TTS)
-// Inspirado en CÃ³digo Cuerpo y LittleStar
+// AUDIO ENGINE — Campana (Web Audio API) + Voz guiada (TTS)
+// Inspirado en Código Cuerpo y LittleStar
 // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 let _audioCtx = null;
 function _getAudioCtx() {
@@ -6200,7 +6200,7 @@ function playBell(freq=440, duration=2.5) {
     gain.gain.setValueAtTime(0.7, now);
     gain.gain.exponentialRampToValueAtTime(0.001, now + duration);
     osc.start(now); osc.stop(now + duration);
-    // ArmÃ³nico suave
+    // Armónico suave
     const osc2 = ctx.createOscillator(), gain2 = ctx.createGain();
     osc2.connect(gain2); gain2.connect(ctx.destination);
     osc2.type = 'sine'; osc2.frequency.setValueAtTime(freq * 2.01, now);
@@ -6211,7 +6211,7 @@ function playBell(freq=440, duration=2.5) {
   ctx.state === 'suspended' ? ctx.resume().then(_doPlay).catch(()=>{}) : _doPlay();
 }
 
-// â”€â”€ TTS (Text-to-Speech) chunked â€” fix Chrome que corta textos largos â”€â”€
+// â”€â”€ TTS (Text-to-Speech) chunked — fix Chrome que corta textos largos â”€â”€
 let _voiceQueue = [], _voiceIdx = 0, _voiceStopped = true, _voicePaused = false, _lastUtterance = null;
 if (window.speechSynthesis) {
   window.speechSynthesis.onvoiceschanged = () => hydrateVoicePanel();
@@ -6299,7 +6299,7 @@ function saveVoiceSettings() {
 
 function testSelectedVoice() {
   saveVoiceSettings();
-  speakShort('Hola, esta es una prueba de voz para tu mini app. Puedes cambiarla hasta encontrar una que suene mÃ¡s amable.');
+  speakShort('Hola, esta es una prueba de voz para tu mini app. Puedes cambiarla hasta encontrar una que suene más amable.');
 }
 
 function _bestVoice(lang) {
@@ -6446,7 +6446,7 @@ function speakButtonText(text, btn) {
 function showError(msg) {
   document.getElementById('screen-access').innerHTML=`<div style="text-align:center;padding:40px">
     <div style="margin-bottom:16px;color:var(--warn)">${msIcon('warning',48)}</div>
-    <p style="font-weight:700;font-size:18px;margin-bottom:8px">Algo saliÃ³ mal</p>
+    <p style="font-weight:700;font-size:18px;margin-bottom:8px">Algo salió mal</p>
     <p style="color:var(--muted);font-size:13px;margin-bottom:24px">${esc(msg)}</p>
     <a href="./dashboard.html?tab=miniapps" style="padding:12px 24px;background:var(--btn);color:#fff;border-radius:50px;text-decoration:none;font-weight:700;font-size:14px">&larr; Volver</a>
   </div>`;
@@ -6478,42 +6478,42 @@ function cleanText(s) {
     return fixed;
   });
   return out.replace(/\uFFFD/g, '')
-    .replace(/Ã‚Â¿|Â¿/g, '¿')
-    .replace(/Ã‚Â¡|Â¡/g, '¡')
-    .replace(/Ã‚Â·|Â·/g, '·')
+    .replace(/Ã‚¿|¿/g, '¿')
+    .replace(/Ã‚¡|¡/g, '¡')
+    .replace(/Ã‚·|·/g, '·')
     .replace(/â†’/g, '→')
     .replace(/â†/g, '←')
     .replace(/âœ“/g, '✓')
-    .replace(/â€¦/g, '…')
-    .replace(/â€”/g, '—')
-    .replace(/â€“/g, '–')
-    .replace(/â€¢/g, '•')
-    .replace(/â€œ|â€�/g, '"')
-    .replace(/â€˜|â€™/g, "'")
-    .replace(/â€º/g, '›')
-    .replace(/â€¹/g, '‹')
+    .replace(/…/g, '…')
+    .replace(/—/g, '—')
+    .replace(/–/g, '–')
+    .replace(/•/g, '•')
+    .replace(/“|â€�/g, '"')
+    .replace(/‘|’/g, "'")
+    .replace(/›/g, '›')
+    .replace(/‹/g, '‹')
     .replace(/â†º/g, '↺')
     .replace(/â– /g, '■')
     .replace(/âˆ’/g, '−')
     .replace(/â™¡/g, '♡')
     .replace(/â˜½/g, '☽')
-    .replace(/ÃƒÂ¡|Ã¡/g, 'á')
-    .replace(/ÃƒÂ©|Ã©/g, 'é')
-    .replace(/ÃƒÂ­|Ã­/g, 'í')
-    .replace(/ÃƒÂ³|Ã³/g, 'ó')
-    .replace(/ÃƒÂº|Ãº/g, 'ú')
-    .replace(/ÃƒÂ±|Ã±/g, 'ñ')
-    .replace(/ÃƒÂ¼|Ã¼/g, 'ü')
-    .replace(/ÃƒÂ|Ã/g, 'Á')
-    .replace(/ÃƒÂ‰|Ã‰/g, 'É')
-    .replace(/ÃƒÂ|Ã/g, 'Í')
-    .replace(/ÃƒÂ“|Ã“/g, 'Ó')
-    .replace(/ÃƒÂš|Ãš/g, 'Ú')
-    .replace(/ÃƒÂ‘|Ã‘/g, 'Ñ');
+    .replace(/á|á/g, 'á')
+    .replace(/é|é/g, 'é')
+    .replace(/í|í/g, 'í')
+    .replace(/ó|ó/g, 'ó')
+    .replace(/ú|ú/g, 'ú')
+    .replace(/ñ|ñ/g, 'ñ')
+    .replace(/ü|ü/g, 'ü')
+    .replace(/Á|Á/g, 'Á')
+    .replace(/Â‰|Ã‰/g, 'É')
+    .replace(/Í|Í/g, 'Í')
+    .replace(/Â“|Ã“/g, 'Ó')
+    .replace(/Âš|Ãš/g, 'Ú')
+    .replace(/Â‘|Ã‘/g, 'Ñ');
 }
 function esc(s){return cleanText(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
 
-const MOJIBAKE_RE = /[ÃÂ]|â€|â€™|â€œ|â€|â€¢|â€“|â€”|Â¿|Â¡|Â·/;
+const MOJIBAKE_RE = /[ÃÂ]|â€|’|“|”|•|–|—|¿|¡|·/;
 const CP1252_BYTES = {
   '€':0x80, '‚':0x82, 'ƒ':0x83, '„':0x84, '…':0x85, '†':0x86, '‡':0x87, 'ˆ':0x88, '‰':0x89,
   'Š':0x8a, '‹':0x8b, 'Œ':0x8c, 'Ž':0x8e, '‘':0x91, '’':0x92, '“':0x93, '”':0x94,
