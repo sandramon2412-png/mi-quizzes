@@ -2603,13 +2603,17 @@ function getBodySignals(app = currentApp) {
 function isWellnessApp(app = currentApp) {
   if (isPetNiche(app) || isEnglishLearningApp(app)) return false;
   const cat = normalizeText(app?.category || '');
-  if (['bienestar', 'fitness', 'deporte', 'salud', 'nutricion'].includes(cat)) return true;
-  const hasReto    = Array.isArray(app.retoContent    || app.content?.retoContent)    && (app.retoContent    || app.content?.retoContent).length > 0;
-  const hasRoadmap = Array.isArray(app.roadmapSteps   || app.content?.roadmapSteps)   && (app.roadmapSteps   || app.content?.roadmapSteps).length > 0;
-  const hasTracker = !!(app.trackerHabit || app.content?.trackerHabit);
-  const hasAff     = Array.isArray(app.affirmations   || app.content?.affirmations)   && (app.affirmations   || app.content?.affirmations).length  > 0;
-  const hasMed     = !!(app.meditationScript || app.content?.meditationScript);
-  return hasReto || hasRoadmap || hasTracker || (hasAff && hasMed);
+  const RICH_CATS = ['bienestar','fitness','deporte','salud','nutricion',
+                     'finanzas','negocio','emprendimiento','marketing','productividad',
+                     'educacion','idiomas','desarrollo personal'];
+  if (RICH_CATS.includes(cat)) return true;
+  const hasReto     = Array.isArray(app.retoContent    || app.content?.retoContent)    && (app.retoContent    || app.content?.retoContent).length > 0;
+  const hasRoadmap  = Array.isArray(app.roadmapSteps   || app.content?.roadmapSteps)   && (app.roadmapSteps   || app.content?.roadmapSteps).length > 0;
+  const hasTracker  = !!(app.trackerHabit || app.content?.trackerHabit);
+  const hasAff      = Array.isArray(app.affirmations   || app.content?.affirmations)   && (app.affirmations   || app.content?.affirmations).length  > 0;
+  const hasMed      = !!(app.meditationScript || app.content?.meditationScript);
+  const hasPlan     = Array.isArray(app.initialTasks   || app.content?.initialTasks)   && (app.initialTasks   || app.content?.initialTasks).length  > 0;
+  return hasReto || hasRoadmap || hasTracker || hasPlan || (hasAff && hasMed);
 }
 
 const WELLNESS_QUICK_COLORS = {
@@ -2625,11 +2629,13 @@ function renderWellnessToday(content, types) {
   const retoArr     = Array.isArray(app.retoContent    || app.content?.retoContent)    ? (app.retoContent    || app.content?.retoContent)    : [];
   const affArr      = Array.isArray(app.affirmations   || app.content?.affirmations)   ? (app.affirmations   || app.content?.affirmations)   : [];
   const roadmapArr  = Array.isArray(app.roadmapSteps   || app.content?.roadmapSteps)   ? (app.roadmapSteps   || app.content?.roadmapSteps)   : [];
+  const seedTasks   = Array.isArray(app.initialTasks   || app.content?.initialTasks)   ? (app.initialTasks   || app.content?.initialTasks)   : [];
   const trackerHabit = app.trackerHabit || app.content?.trackerHabit || '';
   const meditSrc    = app.meditationScript || app.content?.meditationScript || '';
   const appName     = displayAppName(app) || app.name || 'Tu app';
   const appIcon     = iconNameForApp(getPrimaryActionType(types), app.icon);
   const isFitnessMode = retoArr.length === 0 && roadmapArr.length > 0;
+  const isPlanMode    = retoArr.length === 0 && roadmapArr.length === 0 && seedTasks.length > 0;
 
   const primaryType = getPrimaryActionType(types);
   const primaryIdx  = Math.max(0, types.indexOf(primaryType));
@@ -2653,6 +2659,17 @@ function renderWellnessToday(content, types) {
   const currentRoadmapStep = roadmapArr.find((_, i) => !roadmapDone[i]) || roadmapArr[roadmapArr.length - 1];
   const currentRoadmapIdx  = roadmapArr.findIndex((_, i) => !roadmapDone[i]);
 
+  // Planificador (plan mode) progress
+  let planTasks = [];
+  try {
+    const raw = localStorage.getItem(`plan_${app.id}`);
+    planTasks = raw ? JSON.parse(raw) : seedTasks.map(t => ({text: t, done: false}));
+  } catch { planTasks = seedTasks.map(t => ({text: t, done: false})); }
+  if (!planTasks.length && seedTasks.length) planTasks = seedTasks.map(t => ({text: t, done: false}));
+  const planDone    = planTasks.filter(t => t.done).length;
+  const todayPlanTask = planTasks.find(t => !t.done) || null;
+  const planIdx     = types.indexOf('planificador');
+
   // Tracker streak
   let streak = 0;
   try { streak = Number(JSON.parse(localStorage.getItem(`streak_${app.id}`) || '0')); } catch {}
@@ -2663,7 +2680,9 @@ function renderWellnessToday(content, types) {
   // Progress values
   const pct = isFitnessMode
     ? Math.round(roadmapCompleted / Math.max(1, roadmapArr.length) * 100)
-    : Math.round(retoDone / Math.max(1, retoDays) * 100);
+    : isPlanMode
+      ? Math.round(planDone / Math.max(1, planTasks.length) * 100)
+      : Math.round(retoDone / Math.max(1, retoDays) * 100);
 
   // Hero pills (max 2)
   let pills;
@@ -2680,6 +2699,11 @@ function renderWellnessToday(content, types) {
       affArr.length ? `${msIcon('brightness_7',14)} ${affArr.length} afirmaciones` : null,
       types.length > 1 ? `${msIcon('auto_awesome',14)} ${types.length} herramientas` : null,
     ].filter(Boolean).slice(0, 2);
+  } else if (isPlanMode) {
+    pills = [
+      planTasks.length ? `${msIcon('checklist',14)} ${planTasks.length} pasos del plan` : null,
+      types.length > 1 ? `${msIcon('auto_awesome',14)} ${types.length} herramientas` : null,
+    ].filter(Boolean).slice(0, 2);
   }
 
   // Metrics row
@@ -2687,6 +2711,10 @@ function renderWellnessToday(content, types) {
   if (isFitnessMode) {
     metric1 = { val: `${roadmapCompleted}/${roadmapArr.length}`, label: 'pasos' };
     metric2 = { val: streak || trackerIdx >= 0 ? `${streak}` : types.length, label: streak || trackerIdx >= 0 ? 'días racha' : 'herramientas' };
+    metric3 = { val: `${pct}%`, label: 'progreso' };
+  } else if (isPlanMode) {
+    metric1 = { val: `${planDone}/${planTasks.length}`, label: 'tareas' };
+    metric2 = { val: types.length, label: 'herramientas' };
     metric3 = { val: `${pct}%`, label: 'progreso' };
   } else {
     metric1 = { val: retoDone, label: 'días listos' };
@@ -2699,9 +2727,10 @@ function renderWellnessToday(content, types) {
   const quickCards = quickTypes.map((type) => {
     const col = WELLNESS_QUICK_COLORS[type] || '#7c3aed';
     const idx = types.indexOf(type);
-    const countLabel = (type === 'reto' && retoDays)            ? `${retoDone}/${retoDays}` :
-                       (type === 'roadmap' && roadmapArr.length) ? `${roadmapCompleted}/${roadmapArr.length}` :
-                       (type === 'afirmaciones' && affArr.length) ? `${affArr.length}` :
+    const countLabel = (type === 'reto' && retoDays)              ? `${retoDone}/${retoDays}` :
+                       (type === 'roadmap' && roadmapArr.length)   ? `${roadmapCompleted}/${roadmapArr.length}` :
+                       (type === 'planificador' && planTasks.length) ? `${planDone}/${planTasks.length}` :
+                       (type === 'afirmaciones' && affArr.length)  ? `${affArr.length}` :
                        (type === 'flashcards' && (app.cards||app.content?.cards||[]).length) ? `${(app.cards||app.content?.cards||[]).length}` : '';
     return `
       <button type="button" class="well-quick-card" onclick="showTab(${idx})">
@@ -2748,6 +2777,20 @@ function renderWellnessToday(content, types) {
       <p style="font-size:11px;color:var(--muted);margin-top:6px;font-weight:700">${roadmapCompleted} de ${roadmapArr.length} pasos completados · ${pct}%</p>
       <button class="btn-primary" type="button" onclick="showTab(${roadmapIdx >= 0 ? roadmapIdx : primaryIdx})" style="margin-top:14px;border-radius:14px">${msIcon('play_arrow',18)} Ir al plan</button>
     </div>`;
+  } else if (todayPlanTask) {
+    const taskNum = planTasks.indexOf(todayPlanTask) + 1;
+    todayCard = `
+    <div class="well-section-head">
+      <h2>Tu tarea de hoy</h2>
+      ${planIdx >= 0 ? `<button type="button" onclick="showTab(${planIdx})">Ver todas</button>` : ''}
+    </div>
+    <div class="well-today-card">
+      <div class="well-today-kicker">${msIcon('checklist',13)} Tarea ${taskNum} de ${planTasks.length}</div>
+      <div class="well-today-title">${esc(todayPlanTask.text || 'Próxima tarea')}</div>
+      <div class="well-progress-bar" style="margin-top:14px"><div class="well-progress-fill" style="width:${pct}%"></div></div>
+      <p style="font-size:11px;color:var(--muted);margin-top:6px;font-weight:700">${planDone} de ${planTasks.length} tareas completadas · ${pct}%</p>
+      <button class="btn-primary" type="button" onclick="showTab(${planIdx >= 0 ? planIdx : primaryIdx})" style="margin-top:14px;border-radius:14px">${msIcon('play_arrow',18)} Ir al plan</button>
+    </div>`;
   }
 
   // Tracker shortcut (fitness mode)
@@ -2785,7 +2828,9 @@ function renderWellnessToday(content, types) {
       <span class="material-symbols-outlined tool-arrow">arrow_forward</span>
     </button>` : '';
 
-  const defaultDesc = isFitnessMode ? 'Tu plan de entrenamiento progresivo.' : 'Tu espacio de bienestar diario.';
+  const defaultDesc = isFitnessMode ? 'Tu plan de entrenamiento progresivo.'
+                    : isPlanMode    ? 'Tu plan de acción paso a paso.'
+                    : 'Tu espacio de bienestar diario.';
 
   content.innerHTML = `
     <div class="well-wrap">
