@@ -1660,10 +1660,25 @@ function resolveAppTheme(app = {}, originalTheme = extractAppTheme(app)) {
   const legacyWarm = isLegacyWarmTheme(explicitTheme);
 
   if (fromTemplate) {
+    const origAccent = explicitTheme.primaryColor || explicitTheme.accent;
+    const origAccent2 = explicitTheme.secondaryColor || explicitTheme.accent2;
+    // If the template has custom colors AND an explicit dark background, preserve the dark theme
+    if (origAccent && isDarkHex(explicitTheme.bg)) {
+      return {
+        mode: 'dark',
+        accent: origAccent,
+        accent2: origAccent2 || origAccent,
+        bg: explicitTheme.bg,
+        card: '#1c1c28',
+        text: '#f5f5ff',
+        muted: '#9898b0',
+        font: palette.font || 'sans',
+      };
+    }
     return {
       ...palette,
-      accent: palette.accent,
-      accent2: palette.accent2,
+      accent: origAccent || palette.accent,
+      accent2: origAccent2 || palette.accent2,
       bg: (genericDarkBg || darkBgForLightNiche) ? palette.bg : (explicitTheme.bg || palette.bg),
     };
   }
@@ -1800,7 +1815,7 @@ function getPrimaryActionType(types) {
 }
 
 function nicheText(app = currentApp) {
-  return normalizeText(`${app?.category || ''} ${app?.subcategory || ''} ${app?.niche || ''} ${app?.name || ''} ${app?.description || ''}`);
+  return normalizeText(`${app?.category || ''} ${app?.subcategory || ''} ${app?.niche || ''} ${app?.name || ''}`);
 }
 
 const SIGNAL_NICHE_PROFILES = [
@@ -1848,6 +1863,13 @@ const SIGNAL_NICHE_PROFILES = [
     ]
   },
   {
+    id:'emotional',
+    test:/bienestar|ansiedad|burnout|autoestima|mindful|gratitud|tdah|mental|ruptura|emocion|emocional|proposito|estres|calma|medita|regulacion|nervioso|somatic|somatico|sueno|insomnio|descanso|duelo|trauma/,
+    support:{ label:'Soporte emocional', title:'Acompaña la señal, no la pelees', insight:'La app debe ayudarte a nombrar lo que pasa, regular el sistema y elegir una acción amable pero concreta.', action:'Detecta una señal, respira un minuto y responde una pregunta antes de decidir qué hacer.', checkpoint:'Guarda un registro pequeño: situación, emoción, necesidad y práctica que te ayudó.', metric:'calma, claridad, autocuidado' },
+    copy:{ title:'¿Qué señal interna aparece hoy?', prompt:'Toca una señal y conviértela en regulación, claridad y una acción amable.', mapLabel:'Mapa emocional', notePlaceholder:'Escribe situación, emoción, necesidad y práctica que vas a probar...' },
+    chips:[['self_improvement','Calma'],['psychology','Pensamientos'],['favorite','Corazon'],['bedtime','Descanso'],['front_hand','Limites'],['spa','Autocuidado']]
+  },
+  {
     id:'learning',
     test:/educaci|estudio|ingles|programacion|lectura|escritura|curso|aprendiz|productividad|habitos/,
     support:{ label:'Soporte de aprendizaje', title:'Menos consumo, mas evidencia', insight:'Aprender se vuelve real cuando produces evidencia: una respuesta, una practica, una explicacion o un entregable.', action:'Elige una practica corta y genera algo visible antes de avanzar a mas contenido.', checkpoint:'Marca que concepto entendiste, que sigue confuso y que vas a repasar manana.', metric:'practica, retencion, ritmo, entrega' },
@@ -1890,18 +1912,25 @@ const SIGNAL_NICHE_PROFILES = [
     ]
   },
   {
+    id:'nutrition',
+    test:/nutric|alimenta|keto|meal|ayuno|vegano|cocina|dieta|meal.?prep|receta/,
+    support:{ label:'Soporte de alimentación', title:'Un cambio pequeño, una señal clara', insight:'La alimentación funciona cuando es consistente y flexible, no perfecta. Registrar lo que comes y sientes da más claridad que cualquier calculadora.', action:'Elige un área de tu alimentación y haz una pequeña mejora hoy: porción, tiempo, hidratación o calidad de un ingrediente.', checkpoint:'Anota cómo te sientes 2 horas después de comer: energía, saciedad y digestión.', metric:'consistencia, energia, hidratacion, calidad' },
+    copy:{ title:'¿Qué señal de alimentación aparece hoy?', prompt:'Toca una señal y convierte la observación en una acción concreta.', mapLabel:'Mapa de alimentación', notePlaceholder:'Escribe lo que comiste, cómo te sentiste y qué ajustarías...' },
+    chips:[['nutrition','Nutrientes'],['water_drop','Hidratacion'],['schedule','Horarios'],['bolt','Energia'],['flag','Meta'],['monitor_heart','Digestion']],
+    signals:[
+      { id:'nutrientes', label:'Nutrientes', x:50, y:15, icon:'nutrition', meaning:'Puede indicar carencia de proteína, fibra, grasas saludables o micronutrientes esenciales.', prompt:'¿Tu plato de hoy tiene proteína, vegetal y grasa saludable?', practice:'Agrega un alimento de alta densidad nutricional a tu siguiente comida.' },
+      { id:'hidratacion', label:'Hidratación', x:32, y:36, icon:'water_drop', meaning:'La falta de agua afecta energía, digestión y concentración antes de que sientas sed.', prompt:'¿Cuántos vasos de agua llevas hoy?', practice:'Pon una botella visible y bebe un vaso antes de cada comida.' },
+      { id:'horarios', label:'Horarios', x:68, y:36, icon:'schedule', meaning:'Comer a horas irregulares afecta el metabolismo y puede aumentar el hambre emocional.', prompt:'¿Tus horarios de comida son consistentes esta semana?', practice:'Establece una hora fija para tu próxima comida principal.' },
+      { id:'energia', label:'Energía', x:50, y:56, icon:'bolt', meaning:'La energía post-comida revela si tu plato tiene el balance correcto de macros.', prompt:'¿Cómo está tu energía 2 horas después de comer?', practice:'Si hay fatiga post-comida, reduce azúcares simples y aumenta proteína.' },
+      { id:'meta', label:'Meta', x:50, y:76, icon:'flag', meaning:'Sin una meta clara, los cambios de alimentación duran poco.', prompt:'¿Qué resultado concreto quieres ver en las próximas 4 semanas?', practice:'Convierte tu meta en una acción diaria de menos de 5 minutos.' }
+    ]
+  },
+  {
     id:'body',
-    test:/fitness|yoga|running|funcional|movilidad|calistenia|ejercic|deport|nutric|alimenta|keto|meal|ayuno|vegano|cocina|dieta|dolor|salud fisica/,
+    test:/fitness|yoga|running|funcional|movilidad|calistenia|ejercic|deport|dolor.corporal|salud fisica/,
     support:{ label:'Soporte cuerpo-habito', title:'Hazlo medible y sostenible', insight:'El progreso fisico no necesita perfeccion: necesita carga, recuperacion, nutricion o adherencia observables.', action:'Elige una variable del dia y hazla concreta: repeticiones, pasos, agua, proteina, movilidad o descanso.', checkpoint:'Registra energia y dificultad para ajustar sin irte al extremo.', metric:'energia, constancia, recuperacion' },
     copy:{ title:'Que esta diciendo tu cuerpo hoy?', prompt:'Toca una zona y recibe una lectura breve, una pregunta y una practica para volver a ti.', mapLabel:'Mapa corporal', notePlaceholder:'Escribe lo que notas en tu cuerpo, entrenamiento, energia o recuperacion...' },
     chips:[['fitness_center','Musculos'],['bolt','Dolor'],['directions_run','Movimiento'],['nutrition','Nutricion'],['hotel','Descanso'],['monitor_heart','Recuperacion']]
-  },
-  {
-    id:'emotional',
-    test:/bienestar|ansiedad|burnout|autoestima|mindful|gratitud|tdah|mental|ruptura|emocion|emocional|proposito|estres|calma|medita|regulacion|nervioso|somatic|somatico/,
-    support:{ label:'Soporte emocional', title:'Acompaña la señal, no la pelees', insight:'La app debe ayudarte a nombrar lo que pasa, regular el sistema y elegir una acción amable pero concreta.', action:'Detecta una señal, respira un minuto y responde una pregunta antes de decidir qué hacer.', checkpoint:'Guarda un registro pequeño: situación, emoción, necesidad y práctica que te ayudó.', metric:'calma, claridad, autocuidado' },
-    copy:{ title:'¿Qué señal interna aparece hoy?', prompt:'Toca una señal y conviértela en regulación, claridad y una acción amable.', mapLabel:'Mapa emocional', notePlaceholder:'Escribe situación, emoción, necesidad y práctica que vas a probar...' },
-    chips:[['self_improvement','Calma'],['psychology','Pensamientos'],['favorite','Corazon'],['bedtime','Descanso'],['front_hand','Limites'],['spa','Autocuidado']]
   },
   {
     id:'spiritual',
@@ -1914,7 +1943,8 @@ const SIGNAL_NICHE_PROFILES = [
 
 function getSignalProfile(app = currentApp) {
   const text = nicheText(app);
-  if (/emocion|emocional|ansiedad|estres|calma|regulacion|nervioso|somatic|somatico/.test(text)) {
+  // Fast-path for clear emotional/body keywords so they don't fall through to learning/nutrition
+  if (/emocion|emocional|ansiedad|estres|calma|regulacion|nervioso|somatic|somatico|bienestar|sueno|insomnio|descanso|autoestima|mindful|burnout|tdah|mental|ruptura|gratitud/.test(text)) {
     return SIGNAL_NICHE_PROFILES.find(profile => profile.id === 'emotional') || null;
   }
   return SIGNAL_NICHE_PROFILES.find(profile => profile.test.test(text)) || null;
