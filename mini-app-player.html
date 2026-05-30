@@ -715,9 +715,10 @@
     --body-text:#3d2b25;
     --body-muted:#9e7a72;
     overflow:hidden; text-align:left;
-    background:linear-gradient(145deg,#faf5ef 0%,#fff 48%,#e8f2f0 100%);
+    background:linear-gradient(145deg,#fceee8 0%,#fffaf8 44%,#e2efec 100%);
     color:var(--body-text);
-    border-color:rgba(196,112,90,.16);
+    border-color:rgba(196,112,90,.22);
+    box-shadow:0 0 0 0 transparent, inset 0 1px 0 rgba(255,255,255,.8);
   }
   .body-engine-shell { display:grid; grid-template-columns:1fr; min-height:auto; min-width:0; }
   .body-engine-side, .body-engine-info { padding:14px; background:rgba(255,255,255,.72); }
@@ -742,8 +743,8 @@
     white-space:normal; text-align:center; line-height:1.15;
   }
   .body-engine-chip.active, .body-engine-chip:hover { background:#f5e6e0; border-color:var(--body-terra-light); color:var(--body-terra); }
-  .body-engine-main { position:relative; padding:14px; background:linear-gradient(145deg,#faf5ef 0%,#fff 56%,#e8f2f0 100%); display:grid; gap:12px; justify-items:center; min-height:0; }
-  [data-theme="light"] .body-engine-main { background:linear-gradient(145deg,#faf5ef 0%,#fff 56%,#e8f2f0 100%); }
+  .body-engine-main { position:relative; padding:14px; background:radial-gradient(ellipse at 50% 38%,rgba(196,112,90,.10) 0%,transparent 58%),linear-gradient(145deg,#fdf0e8 0%,#fffaf8 50%,#deeee9 100%); display:grid; gap:12px; justify-items:center; min-height:0; }
+  [data-theme="light"] .body-engine-main { background:radial-gradient(ellipse at 50% 38%,rgba(196,112,90,.10) 0%,transparent 58%),linear-gradient(145deg,#fdf0e8 0%,#fffaf8 50%,#deeee9 100%); }
   .body-canvas { position:relative; width:min(100%, 280px); min-height:690px; display:flex; align-items:flex-start; justify-content:center; padding-top:8px; }
   .body-figures { width:100%; max-width:260px; height:auto; filter:drop-shadow(0 4px 12px rgba(196,112,90,.12)); }
   .body-engine-pet {
@@ -890,6 +891,73 @@
     .body-engine-pet .body-engine-title { align-items:flex-start; flex-wrap:wrap; }
     .pet-type-switch { width:100%; justify-content:flex-start; margin-left:58px; }
   }
+
+  /* Dark mode body engine overrides — apply when body has no data-theme="light" */
+  body:not([data-theme="light"]) .body-engine {
+    --body-terra: var(--accent);
+    --body-terra-light: color-mix(in srgb, var(--accent) 55%, var(--card));
+    --body-cream: var(--card);
+    --body-cream-dark: var(--border);
+    --body-green: var(--accent2, var(--accent));
+    --body-green-pale: color-mix(in srgb, var(--accent2, var(--accent)) 12%, var(--card));
+    --body-brown: var(--muted);
+    --body-text: var(--text);
+    --body-muted: var(--muted);
+    background: var(--card);
+    border-color: var(--border);
+    color: var(--text);
+  }
+  body:not([data-theme="light"]) .body-engine .body-engine-side,
+  body:not([data-theme="light"]) .body-engine .body-engine-info {
+    background: color-mix(in srgb, var(--bg, #0a0a0f) 55%, var(--card));
+  }
+  body:not([data-theme="light"]) .body-engine .body-engine-title {
+    background: color-mix(in srgb, var(--bg, #0a0a0f) 45%, var(--card));
+    border-color: var(--border);
+  }
+  body:not([data-theme="light"]) .body-engine .body-engine-chip {
+    background: var(--card2, var(--card));
+    border-color: var(--border);
+    color: var(--text);
+  }
+  body:not([data-theme="light"]) .body-engine .body-engine-chip.active,
+  body:not([data-theme="light"]) .body-engine .body-engine-chip:hover {
+    background: color-mix(in srgb, var(--accent) 14%, var(--card));
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+  body:not([data-theme="light"]) .body-engine-main {
+    background: var(--bg, #0a0a0f);
+  }
+  body:not([data-theme="light"]) .body-zone-card {
+    background: var(--card);
+    border-color: var(--border);
+    color: var(--text);
+  }
+  body:not([data-theme="light"]) .body-engine-current {
+    background: color-mix(in srgb, var(--accent) 10%, var(--card));
+    border-color: color-mix(in srgb, var(--accent) 28%, var(--border));
+  }
+  body:not([data-theme="light"]) .body-legend {
+    background: var(--card);
+    border-color: var(--border);
+  }
+  body:not([data-theme="light"]) .body-legend span { color: var(--text); }
+  body:not([data-theme="light"]) .body-layer { border-color: var(--border); color: var(--muted); }
+  body:not([data-theme="light"]) .body-layer strong { color: var(--text); }
+  body:not([data-theme="light"]) .body-zone-btn {
+    background: var(--card2, var(--card));
+    border-color: rgba(255,255,255,.08);
+  }
+  body:not([data-theme="light"]) .body-zone-btn:after {
+    background: var(--card);
+    color: var(--text);
+  }
+  body:not([data-theme="light"]) .body-engine-logo {
+    background: linear-gradient(135deg, var(--accent), var(--accent2, var(--accent)));
+  }
+  body:not([data-theme="light"]) .body-engine-title h3 { color: var(--text); }
+
   .practice-list { display:grid; gap:10px; }
   .practice-card { width:100%; text-align:left; border:1px solid var(--border); background:var(--card); color:var(--text); border-radius:18px; padding:15px; display:flex; gap:12px; align-items:flex-start; cursor:pointer; font:inherit; }
   .practice-card:hover { border-color:color-mix(in srgb, var(--accent) 42%, transparent); transform:translateY(-1px); }
