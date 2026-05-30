@@ -959,6 +959,75 @@
   }
   body:not([data-theme="light"]) .body-engine-title h3 { color: var(--text); }
 
+  /* Light mode glass cards — Skinglow style: warm translucent + strong inner highlight + warm diffused shadow */
+  body[data-theme="light"] .card {
+    background: color-mix(in srgb, var(--accent) 3%, rgba(255,255,255,.88));
+    border-color: color-mix(in srgb, var(--accent) 10%, rgba(0,0,0,.07));
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.75), 0 14px 40px -22px color-mix(in srgb, var(--accent) 14%, rgba(30,12,28,.30));
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+  }
+  body[data-theme="light"] .card2 {
+    background: color-mix(in srgb, var(--accent) 4%, rgba(255,255,255,.80));
+    border-color: color-mix(in srgb, var(--accent) 10%, rgba(0,0,0,.06));
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.70), 0 8px 24px -14px color-mix(in srgb, var(--accent) 10%, rgba(30,12,28,.22));
+  }
+  body[data-theme="light"] .tool-card,
+  body[data-theme="light"] .day-card,
+  body[data-theme="light"] .flip-face {
+    background: rgba(255,255,255,.88);
+    border-color: color-mix(in srgb, var(--accent) 10%, rgba(0,0,0,.07));
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.72), 0 14px 36px -20px color-mix(in srgb, var(--accent) 12%, rgba(30,12,28,.25));
+  }
+  body[data-theme="light"] .btn-secondary {
+    background: rgba(255,255,255,.82);
+    border-color: color-mix(in srgb, var(--accent) 14%, rgba(0,0,0,.09));
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.65);
+  }
+  body[data-theme="light"] .quote-box {
+    background: color-mix(in srgb, var(--accent) 7%, rgba(255,255,255,.82));
+    border-left-color: var(--accent);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.60);
+  }
+  body[data-theme="light"] .soft-note {
+    background: linear-gradient(135deg, color-mix(in srgb, var(--accent) 8%, rgba(255,255,255,.85)), color-mix(in srgb, var(--accent2,var(--accent)) 10%, rgba(255,255,255,.80)));
+    border-color: color-mix(in srgb, var(--accent) 14%, transparent);
+  }
+  /* Inputs/textareas: glass instead of cream */
+  body[data-theme="light"] .input {
+    background: rgba(255,255,255,.72);
+    border-color: color-mix(in srgb, var(--accent) 12%, rgba(0,0,0,.09));
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+  }
+  /* Affirmation card: keep dark but less saturated so it feels elegant, not aggressive */
+  body[data-theme="light"] .card-dark {
+    background: linear-gradient(145deg,
+      color-mix(in srgb, var(--accent) 52%, #16042a) 0%,
+      color-mix(in srgb, var(--accent2,var(--accent)) 42%, #0a0220) 100%);
+    box-shadow: 0 22px 60px -22px color-mix(in srgb, var(--accent) 24%, rgba(0,0,0,.18)), inset 0 1px 0 rgba(255,255,255,.28);
+  }
+  /* Chat bubbles: glass in light mode */
+  body[data-theme="light"] .bubble.bot {
+    background: rgba(255,255,255,.82);
+    border-color: color-mix(in srgb, var(--accent) 10%, rgba(0,0,0,.07));
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.70), 0 6px 18px -10px color-mix(in srgb, var(--accent) 10%, rgba(30,12,28,.18));
+  }
+  /* Stat pills glass */
+  body[data-theme="light"] .stat-pill {
+    background: rgba(255,255,255,.82);
+    border-color: color-mix(in srgb, var(--accent) 10%, rgba(0,0,0,.06));
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.70), 0 6px 18px -10px color-mix(in srgb, var(--accent) 8%, rgba(30,12,28,.18));
+  }
+  /* today-hero glass strip */
+  body[data-theme="light"] .today-hero {
+    background:
+      radial-gradient(circle at 12% 18%, color-mix(in srgb, var(--accent) 14%, transparent), transparent 36%),
+      linear-gradient(135deg, color-mix(in srgb, var(--accent) 6%, rgba(255,255,255,.90)), color-mix(in srgb, var(--accent2,var(--accent)) 5%, rgba(255,255,255,.86)));
+    border-color: color-mix(in srgb, var(--accent) 14%, rgba(0,0,0,.06));
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.72), 0 12px 36px -20px color-mix(in srgb, var(--accent) 14%, rgba(30,12,28,.22));
+  }
+
   .practice-list { display:grid; gap:10px; }
   .practice-card { width:100%; text-align:left; border:1px solid var(--border); background:var(--card); color:var(--text); border-radius:18px; padding:15px; display:flex; gap:12px; align-items:flex-start; cursor:pointer; font:inherit; }
   .practice-card:hover { border-color:color-mix(in srgb, var(--accent) 42%, transparent); transform:translateY(-1px); }
