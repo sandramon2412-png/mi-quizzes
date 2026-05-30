@@ -95,7 +95,7 @@
     backdrop-filter: blur(14px);
     -webkit-backdrop-filter: blur(14px);
   }
-  .card-dark { background:linear-gradient(135deg,var(--accent),var(--accent2,var(--accent))); color:#fff; border-radius:var(--radius); padding:20px; margin-bottom:14px; box-shadow:0 6px 24px rgba(0,0,0,0.18); }
+  .card-dark { background:linear-gradient(145deg,color-mix(in srgb,var(--accent) 78%,#100820) 0%,color-mix(in srgb,var(--accent2,var(--accent)) 64%,#080618) 100%); color:#fff; border-radius:var(--radius); padding:20px; margin-bottom:14px; border:1px solid rgba(255,255,255,.18); box-shadow:0 8px 28px color-mix(in srgb,var(--accent) 28%,rgba(0,0,0,.22)),inset 0 1px 0 rgba(255,255,255,.24); }
   .quote-box { background:var(--bg3); border-left:3px solid var(--accent); border-radius:10px; padding:14px 16px; font-style:italic; color:var(--muted); font-size:13px; line-height:1.7; }
 
   /* Buttons */
@@ -1943,6 +1943,10 @@ const SIGNAL_NICHE_PROFILES = [
 
 function getSignalProfile(app = currentApp) {
   const text = nicheText(app);
+  // Spiritual always takes priority — meditacion espiritual should NOT get body engine
+  if (/fe\b|espirit|biblia|oraci|devocional|dios|cristi|manifestacion/.test(text)) {
+    return SIGNAL_NICHE_PROFILES.find(profile => profile.id === 'spiritual') || null;
+  }
   // Fast-path for clear emotional/body keywords so they don't fall through to learning/nutrition
   if (/emocion|emocional|ansiedad|estres|calma|regulacion|nervioso|somatic|somatico|bienestar|sueno|insomnio|descanso|autoestima|mindful|burnout|tdah|mental|ruptura|gratitud/.test(text)) {
     return SIGNAL_NICHE_PROFILES.find(profile => profile.id === 'emotional') || null;
@@ -2301,6 +2305,8 @@ function hasBodyMapExperience(app = currentApp) {
 function isSomaticNiche(app = currentApp) {
   const text = normalizeText(`${app.name || ''} ${app.niche || ''} ${app.category || ''} ${app.description || ''}`);
   if (isPetNiche(app)) return true;
+  // Spiritual apps never trigger somatic/body engine even if they mention meditacion
+  if (/fe\b|espirit|biblia|oraci|devocional|dios|cristi|manifestacion/.test(text)) return false;
   if (/finanz|dinero|deuda|ahorr|inversion|presupuesto|trading|cripto|negocio|marketing|venta|copy|email|seo|freelance|emprend|lanzamiento|contenido|educaci|estudio|ingles|programacion|lectura|curso|aprendiz|relacion|pareja|crianza|embarazo|comunicacion|familia|amor|ruptura|belleza|skincare|colorimetria|armario|cabello/.test(text)) {
     return /cuerpo|dolor fisico|tension corporal|respiracion|somatic|somatico|salud fisica|fitness|yoga|piel/.test(text);
   }
@@ -6207,9 +6213,10 @@ function renderAfirmaciones(el) {
     const aff = items[idx % items.length];
     el.innerHTML = sectionHdr(app.icon||sectionIcon('afirmaciones'), app.name, app.description||`${items.length} afirmaciones`) +
     `<div class="fade-up" style="padding:20px">
-      <div class="card-dark" style="padding:32px;text-align:center;margin-bottom:16px;min-height:200px;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer" onclick="nextAff()">
-        <p class="serif" style="font-size:20px;font-weight:700;line-height:1.5;color:#fff;margin-bottom:12px">"${esc(aff)}"</p>
-        <p style="font-size:11px;opacity:.65;color:#fff">${idx+1} de ${items.length} &middot; Toca para continuar</p>
+      <div class="card-dark" style="padding:32px;text-align:center;margin-bottom:16px;min-height:200px;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;position:relative;overflow:hidden" onclick="nextAff()">
+        <div style="position:absolute;inset:0;background:radial-gradient(ellipse at 50% 0%,rgba(255,255,255,.18) 0%,transparent 65%);pointer-events:none"></div>
+        <p class="serif" style="font-size:20px;font-weight:700;line-height:1.5;color:#fff;margin-bottom:12px;position:relative">"${esc(aff)}"</p>
+        <p style="font-size:11px;opacity:.6;color:#fff;position:relative">${idx+1} de ${items.length} &middot; Toca para continuar</p>
       </div>
       <div style="display:flex;gap:10px;margin-bottom:12px">
         <button onclick="prevAff()" class="btn-secondary" style="flex:1">&larr; Anterior</button>
