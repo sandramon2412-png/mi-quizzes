@@ -1028,6 +1028,52 @@
     box-shadow: inset 0 1px 0 rgba(255,255,255,.72), 0 12px 36px -20px color-mix(in srgb, var(--accent) 14%, rgba(30,12,28,.22));
   }
 
+  /* ── Wellness today renderer ─────────────────────────────────── */
+  .well-wrap { min-height:100%; padding:18px 16px 24px; }
+  .well-hero { position:relative;overflow:hidden;border-radius:28px;padding:22px;color:#fff;
+    background:linear-gradient(135deg,var(--accent) 0%,color-mix(in srgb,var(--accent2,var(--accent)) 56%,#0a0218) 100%);
+    box-shadow:0 22px 50px color-mix(in srgb,var(--accent) 26%,rgba(0,0,0,.12)); }
+  .well-hero-bg,.well-hero-bg2 { position:absolute;border-radius:50%;background:rgba(255,255,255,.13);pointer-events:none; }
+  .well-hero-bg { right:-34px;top:-42px;width:172px;height:172px; }
+  .well-hero-bg2 { left:-58px;bottom:-70px;width:190px;height:190px;opacity:.7; }
+  .well-hero-grid { position:relative;z-index:1;display:grid;grid-template-columns:minmax(0,1fr) 108px;gap:14px;align-items:center; }
+  .well-kicker { display:flex;flex-wrap:wrap;gap:7px;margin-bottom:12px; }
+  .well-pill { display:inline-flex;align-items:center;gap:6px;border-radius:999px;padding:7px 10px;background:rgba(255,255,255,.18);color:#fff;font-size:11px;font-weight:900;border:1px solid rgba(255,255,255,.24); }
+  .well-hero h1 { font-family:'Lora',serif;font-size:26px;line-height:1.08;color:#fff;margin:0 0 8px;letter-spacing:0; }
+  .well-hero p { color:rgba(255,255,255,.86);font-size:13px;line-height:1.55;margin:0; }
+  .well-avatar { width:104px;height:104px;border-radius:28px;background:rgba(255,255,255,.18);border:1.5px solid rgba(255,255,255,.32);display:flex;align-items:center;justify-content:center;flex-shrink:0;box-shadow:0 14px 30px rgba(0,0,0,.14),inset 0 0 0 1px rgba(255,255,255,.22); }
+  .well-avatar .material-symbols-outlined { font-size:50px!important;color:#fff; }
+  .well-action-row { position:relative;z-index:1;display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:18px; }
+  .well-action-row .btn-primary { border-radius:16px;min-height:44px;background:rgba(255,255,255,.22);box-shadow:none;border:1.5px solid rgba(255,255,255,.38); }
+  .well-action-row .btn-secondary { border-radius:16px;min-height:44px; }
+  .well-metric-grid { display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px;margin:14px 0 20px; }
+  .well-metric { border:1px solid color-mix(in srgb,var(--accent) 16%,var(--border));border-radius:18px;
+    background:color-mix(in srgb,var(--accent) 4%,var(--card));
+    padding:13px 10px;box-shadow:inset 0 1px 0 rgba(255,255,255,.10),0 8px 24px -14px color-mix(in srgb,var(--accent) 12%,rgba(0,0,0,.2));text-align:left; }
+  .well-metric strong { display:block;font-size:17px;font-weight:900;color:var(--text);line-height:1.1; }
+  .well-metric span { display:block;margin-top:4px;color:var(--muted);font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:.06em; }
+  .well-section-head { display:flex;align-items:flex-end;justify-content:space-between;gap:12px;margin:24px 0 12px; }
+  .well-section-head h2 { font-size:20px;font-weight:950;color:var(--text);line-height:1.1;margin:0; }
+  .well-section-head a,.well-section-head button { border:none;background:transparent;color:var(--accent);font:inherit;font-size:12px;font-weight:950;cursor:pointer;padding:0;text-decoration:none; }
+  .well-today-card { border-radius:20px;border:1px solid color-mix(in srgb,var(--accent) 18%,var(--border));background:color-mix(in srgb,var(--accent) 5%,var(--card));padding:16px;box-shadow:inset 0 1px 0 rgba(255,255,255,.10),0 12px 32px -20px color-mix(in srgb,var(--accent) 18%,rgba(0,0,0,.2)); }
+  .well-today-kicker { font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:.08em;color:var(--accent);margin-bottom:8px;display:flex;align-items:center;gap:5px; }
+  .well-today-title { font-size:15px;font-weight:900;color:var(--text);margin-bottom:6px;line-height:1.22; }
+  .well-today-desc { font-size:13px;color:var(--muted);line-height:1.55;margin-bottom:14px; }
+  .well-progress-bar { height:6px;border-radius:999px;background:color-mix(in srgb,var(--accent) 14%,var(--card2));overflow:hidden;margin-top:8px; }
+  .well-progress-fill { height:100%;border-radius:999px;background:linear-gradient(90deg,var(--accent),var(--accent2,color-mix(in srgb,var(--accent) 64%,#7c3aed))); }
+  .well-quick-grid { display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:11px; }
+  .well-quick-card { border-radius:22px;overflow:hidden;border:1px solid var(--border);background:var(--card);font:inherit;cursor:pointer;text-align:left;box-shadow:inset 0 1px 0 rgba(255,255,255,.08),0 12px 28px -18px rgba(0,0,0,.18);transition:transform .16s; }
+  .well-quick-card:hover { transform:translateY(-2px); }
+  .well-quick-top { min-height:78px;display:flex;align-items:center;justify-content:space-between;padding:13px;position:relative;overflow:hidden; }
+  .well-quick-top::after { content:"";position:absolute;right:-20px;top:-24px;width:80px;height:80px;border-radius:50%;background:rgba(255,255,255,.18);pointer-events:none; }
+  .well-quick-top .material-symbols-outlined { font-size:38px!important;position:relative;z-index:1;color:#fff; }
+  .well-quick-count { position:relative;z-index:1;border-radius:999px;padding:5px 9px;background:rgba(255,255,255,.20);font-size:11px;font-weight:900;color:#fff;white-space:nowrap; }
+  .well-quick-body { padding:12px 13px; }
+  .well-quick-body strong { display:block;font-size:14px;font-weight:900;line-height:1.22;color:var(--text);margin-bottom:3px; }
+  .well-quick-body span { display:block;color:var(--muted);font-size:11px;line-height:1.3; }
+  .well-aff-strip { border-radius:20px;border:1px solid color-mix(in srgb,var(--accent) 14%,var(--border));background:linear-gradient(135deg,color-mix(in srgb,var(--accent) 6%,var(--card)),color-mix(in srgb,var(--accent2,var(--accent)) 5%,var(--card)));padding:18px 16px;box-shadow:inset 0 1px 0 rgba(255,255,255,.10),0 8px 24px -14px color-mix(in srgb,var(--accent) 12%,rgba(0,0,0,.14)); }
+  .well-aff-text { font-family:'Lora',Georgia,serif;font-size:16px;font-style:italic;color:var(--text);line-height:1.55;margin-bottom:12px; }
+
   .practice-list { display:grid; gap:10px; }
   .practice-card { width:100%; text-align:left; border:1px solid var(--border); background:var(--card); color:var(--text); border-radius:18px; padding:15px; display:flex; gap:12px; align-items:flex-start; cursor:pointer; font:inherit; }
   .practice-card:hover { border-color:color-mix(in srgb, var(--accent) 42%, transparent); transform:translateY(-1px); }
@@ -2191,6 +2237,10 @@ function showToday() {
     renderEnglishLearningToday(content, types);
     return;
   }
+  if (isWellnessApp(currentApp)) {
+    renderWellnessToday(content, types);
+    return;
+  }
   if (hasBodyMapExperience(currentApp)) {
     renderBodyMapToday(content, types);
     return;
@@ -2547,6 +2597,159 @@ function getBodySignals(app = currentApp) {
     { id:'vientre', label:'Vientre', x:50, y:58, meaning:'A menudo marca intuición, nervios, control o emociones que todavía no se procesan.', prompt:'¿Qué sabes en el fondo pero estás evitando mirar?', practice:'Respira hacia el abdomen y deja que se afloje un poco más con cada exhalación.', icon:'self_improvement' },
     { id:'pelvis', label:'Pelvis', x:50, y:73, meaning:'Puede conectar con seguridad, deseo, creatividad, ciclo, descanso o pertenencia.', prompt:'¿Qué necesita tu cuerpo para sentirse más seguro hoy?', practice:'Haz un balanceo suave de cadera durante un minuto, sin forzar.', icon:'spa' },
   ]);
+}
+
+function isWellnessApp(app = currentApp) {
+  if (isPetNiche(app) || isEnglishLearningApp(app)) return false;
+  const cat = normalizeText(app?.category || '');
+  if (cat === 'bienestar') return true;
+  const hasReto = Array.isArray(app.retoContent || app.content?.retoContent) && (app.retoContent || app.content?.retoContent).length > 0;
+  const hasAff  = Array.isArray(app.affirmations  || app.content?.affirmations)  && (app.affirmations  || app.content?.affirmations).length  > 0;
+  const hasMed  = !!(app.meditationScript || app.content?.meditationScript);
+  return hasReto || (hasAff && hasMed);
+}
+
+const WELLNESS_QUICK_COLORS = {
+  reto:'#059669', checklist:'#0891b2', diario:'#7c3aed', afirmaciones:'#db2777',
+  meditacion:'#0284c7', tracker:'#d97706', bodymap:'#16a34a', chatbot:'#4f46e5',
+  generador:'#6366f1', diagnostico:'#9333ea', flashcards:'#f59e0b', glosario:'#14b8a6',
+  roadmap:'#0f766e', planificador:'#4338ca', comparador:'#be185d', faq:'#374151',
+  biblioteca:'#0369a1', calculadora:'#065f46', simulador:'#7c2d12', devocional:'#ca8a04'
+};
+
+function renderWellnessToday(content, types) {
+  const app = currentApp;
+  const retoArr = Array.isArray(app.retoContent || app.content?.retoContent) ? (app.retoContent || app.content?.retoContent) : [];
+  const affArr  = Array.isArray(app.affirmations  || app.content?.affirmations)  ? (app.affirmations  || app.content?.affirmations)  : [];
+  const meditSrc = app.meditationScript || app.content?.meditationScript || '';
+  const practices = getPracticeItems();
+  const progress = getAppProgressSummary(types);
+  const appName = displayAppName(app) || app.name || 'Tu app';
+  const appIcon = iconNameForApp(getPrimaryActionType(types), app.icon);
+
+  const primaryType = getPrimaryActionType(types);
+  const primaryIdx = Math.max(0, types.indexOf(primaryType));
+  const medIdx  = types.indexOf('meditacion');
+  const affIdx  = types.indexOf('afirmaciones');
+  const retoIdx = types.indexOf('reto');
+  const retoDays = Number(app.retoDays) || retoArr.length || 30;
+
+  // Current reto day
+  let retoDone = 0;
+  try { retoDone = Object.values(JSON.parse(localStorage.getItem(`reto_${app.id}`) || '{}')).filter(Boolean).length; } catch {}
+  const currentDay = Math.min(retoArr.length, retoDone + 1);
+  const todayChallenge = retoArr[Math.max(0, currentDay - 1)];
+
+  // Random affirmation
+  const randAff = affArr.length ? affArr[Math.floor(Date.now() / 86400000) % affArr.length] : null;
+
+  // Hero pills (max 2)
+  const pills = [
+    retoDays  ? `${msIcon('local_fire_department',14)} Reto de ${retoDays} días` : null,
+    meditSrc  ? `${msIcon('self_improvement',14)} Meditación guiada` : null,
+    affArr.length ? `${msIcon('brightness_7',14)} ${affArr.length} afirmaciones` : null,
+    types.length > 1 ? `${msIcon('auto_awesome',14)} ${types.length} herramientas` : null,
+  ].filter(Boolean).slice(0, 2);
+
+  // Metrics
+  const pct = Math.round(retoDone / Math.max(1, retoDays) * 100);
+  const streakKey = `streak_${app.id}`;
+  let streak = 0;
+  try { streak = Number(JSON.parse(localStorage.getItem(streakKey) || '0')); } catch {}
+
+  // Quick section cards (up to 4)
+  const quickTypes = types.filter(t => !['bodymap','skin-scan','quiz-embed'].includes(t)).slice(0, 4);
+  const quickCards = quickTypes.map((type, i) => {
+    const col = WELLNESS_QUICK_COLORS[type] || '#7c3aed';
+    const idx = types.indexOf(type);
+    const countLabel = (type === 'reto' && retoDays) ? `${retoDone}/${retoDays}` :
+                       (type === 'afirmaciones' && affArr.length) ? `${affArr.length}` :
+                       (type === 'flashcards' && (app.cards||app.content?.cards||[]).length) ? `${(app.cards||app.content?.cards||[]).length}` : '';
+    return `
+      <button type="button" class="well-quick-card" onclick="showTab(${idx})">
+        <div class="well-quick-top" style="background:linear-gradient(135deg,${col},color-mix(in srgb,${col} 58%,#080618))">
+          ${msIcon(TYPE_MS_ICONS[type] || 'deployed_code', 38)}
+          ${countLabel ? `<span class="well-quick-count">${esc(countLabel)}</span>` : ''}
+        </div>
+        <div class="well-quick-body">
+          <strong>${esc(typeLabel(type))}</strong>
+          <span>${esc(toolDescription(type))}</span>
+        </div>
+      </button>`;
+  }).join('');
+
+  // Today card
+  const todayCard = todayChallenge ? `
+    <div class="well-section-head">
+      <h2>Tu práctica de hoy</h2>
+      ${retoIdx >= 0 ? `<button type="button" onclick="showTab(${retoIdx})">Ver todo</button>` : ''}
+    </div>
+    <div class="well-today-card">
+      <div class="well-today-kicker">${msIcon('local_fire_department',13)} ${retoArr.length > 1 ? `Día ${currentDay} de ${retoDays}` : 'Práctica de hoy'}</div>
+      <div class="well-today-title">${esc(todayChallenge.title || 'Práctica de hoy')}</div>
+      <div class="well-today-desc">${esc((todayChallenge.instructions || '').slice(0, 120))}${(todayChallenge.instructions || '').length > 120 ? '…' : ''}</div>
+      <div class="well-progress-bar"><div class="well-progress-fill" style="width:${pct}%"></div></div>
+      <p style="font-size:11px;color:var(--muted);margin-top:6px;font-weight:700">${retoDone} de ${retoDays} días completados · ${pct}%</p>
+      <button class="btn-primary" type="button" onclick="showTab(${retoIdx >= 0 ? retoIdx : primaryIdx})" style="margin-top:14px;border-radius:14px">${msIcon('play_arrow',18)} Comenzar práctica</button>
+    </div>` : '';
+
+  // Affirmation strip
+  const affCard = randAff ? `
+    <div class="well-section-head">
+      <h2>Afirmación de hoy</h2>
+      ${affIdx >= 0 ? `<button type="button" onclick="showTab(${affIdx})">Ver todas</button>` : ''}
+    </div>
+    <div class="well-aff-strip">
+      <div class="well-aff-text">"${esc(randAff)}"</div>
+      ${affIdx >= 0 ? `<button class="btn-secondary" type="button" onclick="startVoice(${JSON.stringify(randAff)},null)" style="width:auto;padding:8px 14px;border-radius:999px;font-size:12px">${msIcon('volume_up',14)} Escuchar</button>` : ''}
+    </div>` : '';
+
+  // Meditation shortcut
+  const medCard = (meditSrc && medIdx >= 0) ? `
+    <div class="well-section-head"><h2>Meditación</h2></div>
+    <button type="button" class="tool-card" onclick="showTab(${medIdx})">
+      <span class="tool-icon">${msIcon('self_improvement',22)}</span>
+      <span style="flex:1">
+        <span class="tool-title">Meditación guiada</span>
+        <span class="tool-sub">Pausa de ${Math.ceil(meditSrc.split(' ').length / 120)} min para reconectar</span>
+      </span>
+      <span class="material-symbols-outlined tool-arrow">arrow_forward</span>
+    </button>` : '';
+
+  content.innerHTML = `
+    <div class="well-wrap">
+      <div class="well-hero">
+        <div class="well-hero-bg"></div>
+        <div class="well-hero-bg2"></div>
+        <div class="well-hero-grid">
+          <div>
+            <div class="well-kicker">${pills.map(p=>`<span class="well-pill">${p}</span>`).join('')}</div>
+            <h1>${esc(appName)}</h1>
+            <p>${esc(app.description || 'Tu espacio de bienestar diario.')}</p>
+          </div>
+          <div class="well-avatar">${msIcon(appIcon, 50)}</div>
+        </div>
+        <div class="well-action-row">
+          <button class="btn-primary" type="button" onclick="showTab(${primaryIdx})">${msIcon('play_arrow',18)} Comenzar</button>
+          <button class="btn-secondary" type="button" onclick="showTab(${Math.min(1,types.length-1)})" style="background:rgba(255,255,255,.88);color:var(--accent);border-color:rgba(255,255,255,.4)">${msIcon('explore',18)} Explorar</button>
+        </div>
+      </div>
+
+      <div class="well-metric-grid">
+        <div class="well-metric"><strong>${retoDone}</strong><span>días listos</span></div>
+        <div class="well-metric"><strong>${types.length}</strong><span>herramientas</span></div>
+        <div class="well-metric"><strong>${pct}%</strong><span>progreso</span></div>
+      </div>
+
+      ${todayCard}
+
+      <div class="well-section-head"><h2>Tus herramientas</h2></div>
+      <div class="well-quick-grid">${quickCards}</div>
+
+      ${affCard}
+      ${medCard}
+    </div>`;
+  content.scrollTop = 0;
 }
 
 function renderBodyMapToday(content, types) {
