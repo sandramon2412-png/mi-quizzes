@@ -2603,11 +2603,13 @@ function getBodySignals(app = currentApp) {
 function isWellnessApp(app = currentApp) {
   if (isPetNiche(app) || isEnglishLearningApp(app)) return false;
   const cat = normalizeText(app?.category || '');
-  if (cat === 'bienestar') return true;
-  const hasReto = Array.isArray(app.retoContent || app.content?.retoContent) && (app.retoContent || app.content?.retoContent).length > 0;
-  const hasAff  = Array.isArray(app.affirmations  || app.content?.affirmations)  && (app.affirmations  || app.content?.affirmations).length  > 0;
-  const hasMed  = !!(app.meditationScript || app.content?.meditationScript);
-  return hasReto || (hasAff && hasMed);
+  if (['bienestar', 'fitness', 'deporte', 'salud', 'nutricion'].includes(cat)) return true;
+  const hasReto    = Array.isArray(app.retoContent    || app.content?.retoContent)    && (app.retoContent    || app.content?.retoContent).length > 0;
+  const hasRoadmap = Array.isArray(app.roadmapSteps   || app.content?.roadmapSteps)   && (app.roadmapSteps   || app.content?.roadmapSteps).length > 0;
+  const hasTracker = !!(app.trackerHabit || app.content?.trackerHabit);
+  const hasAff     = Array.isArray(app.affirmations   || app.content?.affirmations)   && (app.affirmations   || app.content?.affirmations).length  > 0;
+  const hasMed     = !!(app.meditationScript || app.content?.meditationScript);
+  return hasReto || hasRoadmap || hasTracker || (hasAff && hasMed);
 }
 
 const WELLNESS_QUICK_COLORS = {
@@ -2620,50 +2622,85 @@ const WELLNESS_QUICK_COLORS = {
 
 function renderWellnessToday(content, types) {
   const app = currentApp;
-  const retoArr = Array.isArray(app.retoContent || app.content?.retoContent) ? (app.retoContent || app.content?.retoContent) : [];
-  const affArr  = Array.isArray(app.affirmations  || app.content?.affirmations)  ? (app.affirmations  || app.content?.affirmations)  : [];
-  const meditSrc = app.meditationScript || app.content?.meditationScript || '';
-  const practices = getPracticeItems();
-  const progress = getAppProgressSummary(types);
-  const appName = displayAppName(app) || app.name || 'Tu app';
-  const appIcon = iconNameForApp(getPrimaryActionType(types), app.icon);
+  const retoArr     = Array.isArray(app.retoContent    || app.content?.retoContent)    ? (app.retoContent    || app.content?.retoContent)    : [];
+  const affArr      = Array.isArray(app.affirmations   || app.content?.affirmations)   ? (app.affirmations   || app.content?.affirmations)   : [];
+  const roadmapArr  = Array.isArray(app.roadmapSteps   || app.content?.roadmapSteps)   ? (app.roadmapSteps   || app.content?.roadmapSteps)   : [];
+  const trackerHabit = app.trackerHabit || app.content?.trackerHabit || '';
+  const meditSrc    = app.meditationScript || app.content?.meditationScript || '';
+  const appName     = displayAppName(app) || app.name || 'Tu app';
+  const appIcon     = iconNameForApp(getPrimaryActionType(types), app.icon);
+  const isFitnessMode = retoArr.length === 0 && roadmapArr.length > 0;
 
   const primaryType = getPrimaryActionType(types);
-  const primaryIdx = Math.max(0, types.indexOf(primaryType));
-  const medIdx  = types.indexOf('meditacion');
-  const affIdx  = types.indexOf('afirmaciones');
-  const retoIdx = types.indexOf('reto');
-  const retoDays = Number(app.retoDays) || retoArr.length || 30;
+  const primaryIdx  = Math.max(0, types.indexOf(primaryType));
+  const medIdx      = types.indexOf('meditacion');
+  const affIdx      = types.indexOf('afirmaciones');
+  const retoIdx     = types.indexOf('reto');
+  const roadmapIdx  = types.indexOf('roadmap');
+  const trackerIdx  = types.indexOf('tracker');
+  const retoDays    = Number(app.retoDays) || retoArr.length || 30;
 
-  // Current reto day
+  // Reto progress
   let retoDone = 0;
   try { retoDone = Object.values(JSON.parse(localStorage.getItem(`reto_${app.id}`) || '{}')).filter(Boolean).length; } catch {}
-  const currentDay = Math.min(retoArr.length, retoDone + 1);
-  const todayChallenge = retoArr[Math.max(0, currentDay - 1)];
+  const currentRetoDay = Math.min(retoArr.length, retoDone + 1);
+  const todayReto = retoArr[Math.max(0, currentRetoDay - 1)];
+
+  // Roadmap progress
+  let roadmapDone = {};
+  try { roadmapDone = JSON.parse(localStorage.getItem(`roadmap_${app.id}`) || '{}'); } catch {}
+  const roadmapCompleted = Object.values(roadmapDone).filter(Boolean).length;
+  const currentRoadmapStep = roadmapArr.find((_, i) => !roadmapDone[i]) || roadmapArr[roadmapArr.length - 1];
+  const currentRoadmapIdx  = roadmapArr.findIndex((_, i) => !roadmapDone[i]);
+
+  // Tracker streak
+  let streak = 0;
+  try { streak = Number(JSON.parse(localStorage.getItem(`streak_${app.id}`) || '0')); } catch {}
 
   // Random affirmation
   const randAff = affArr.length ? affArr[Math.floor(Date.now() / 86400000) % affArr.length] : null;
 
-  // Hero pills (max 2)
-  const pills = [
-    retoDays  ? `${msIcon('local_fire_department',14)} Reto de ${retoDays} días` : null,
-    meditSrc  ? `${msIcon('self_improvement',14)} Meditación guiada` : null,
-    affArr.length ? `${msIcon('brightness_7',14)} ${affArr.length} afirmaciones` : null,
-    types.length > 1 ? `${msIcon('auto_awesome',14)} ${types.length} herramientas` : null,
-  ].filter(Boolean).slice(0, 2);
+  // Progress values
+  const pct = isFitnessMode
+    ? Math.round(roadmapCompleted / Math.max(1, roadmapArr.length) * 100)
+    : Math.round(retoDone / Math.max(1, retoDays) * 100);
 
-  // Metrics
-  const pct = Math.round(retoDone / Math.max(1, retoDays) * 100);
-  const streakKey = `streak_${app.id}`;
-  let streak = 0;
-  try { streak = Number(JSON.parse(localStorage.getItem(streakKey) || '0')); } catch {}
+  // Hero pills (max 2)
+  let pills;
+  if (isFitnessMode) {
+    pills = [
+      roadmapArr.length ? `${msIcon('route',14)} Plan de ${roadmapArr.length} pasos` : null,
+      trackerHabit      ? `${msIcon('fitness_center',14)} Tracker diario` : null,
+      types.length > 1  ? `${msIcon('auto_awesome',14)} ${types.length} herramientas` : null,
+    ].filter(Boolean).slice(0, 2);
+  } else {
+    pills = [
+      retoDays      ? `${msIcon('local_fire_department',14)} Reto de ${retoDays} días` : null,
+      meditSrc      ? `${msIcon('self_improvement',14)} Meditación guiada` : null,
+      affArr.length ? `${msIcon('brightness_7',14)} ${affArr.length} afirmaciones` : null,
+      types.length > 1 ? `${msIcon('auto_awesome',14)} ${types.length} herramientas` : null,
+    ].filter(Boolean).slice(0, 2);
+  }
+
+  // Metrics row
+  let metric1, metric2, metric3;
+  if (isFitnessMode) {
+    metric1 = { val: `${roadmapCompleted}/${roadmapArr.length}`, label: 'pasos' };
+    metric2 = { val: streak || trackerIdx >= 0 ? `${streak}` : types.length, label: streak || trackerIdx >= 0 ? 'días racha' : 'herramientas' };
+    metric3 = { val: `${pct}%`, label: 'progreso' };
+  } else {
+    metric1 = { val: retoDone, label: 'días listos' };
+    metric2 = { val: types.length, label: 'herramientas' };
+    metric3 = { val: `${pct}%`, label: 'progreso' };
+  }
 
   // Quick section cards (up to 4)
   const quickTypes = types.filter(t => !['bodymap','skin-scan','quiz-embed'].includes(t)).slice(0, 4);
-  const quickCards = quickTypes.map((type, i) => {
+  const quickCards = quickTypes.map((type) => {
     const col = WELLNESS_QUICK_COLORS[type] || '#7c3aed';
     const idx = types.indexOf(type);
-    const countLabel = (type === 'reto' && retoDays) ? `${retoDone}/${retoDays}` :
+    const countLabel = (type === 'reto' && retoDays)            ? `${retoDone}/${retoDays}` :
+                       (type === 'roadmap' && roadmapArr.length) ? `${roadmapCompleted}/${roadmapArr.length}` :
                        (type === 'afirmaciones' && affArr.length) ? `${affArr.length}` :
                        (type === 'flashcards' && (app.cards||app.content?.cards||[]).length) ? `${(app.cards||app.content?.cards||[]).length}` : '';
     return `
@@ -2679,20 +2716,51 @@ function renderWellnessToday(content, types) {
       </button>`;
   }).join('');
 
-  // Today card
-  const todayCard = todayChallenge ? `
+  // Today card — reto OR roadmap step
+  let todayCard = '';
+  if (todayReto) {
+    todayCard = `
     <div class="well-section-head">
       <h2>Tu práctica de hoy</h2>
       ${retoIdx >= 0 ? `<button type="button" onclick="showTab(${retoIdx})">Ver todo</button>` : ''}
     </div>
     <div class="well-today-card">
-      <div class="well-today-kicker">${msIcon('local_fire_department',13)} ${retoArr.length > 1 ? `Día ${currentDay} de ${retoDays}` : 'Práctica de hoy'}</div>
-      <div class="well-today-title">${esc(todayChallenge.title || 'Práctica de hoy')}</div>
-      <div class="well-today-desc">${esc((todayChallenge.instructions || '').slice(0, 120))}${(todayChallenge.instructions || '').length > 120 ? '…' : ''}</div>
+      <div class="well-today-kicker">${msIcon('local_fire_department',13)} ${retoArr.length > 1 ? `Día ${currentRetoDay} de ${retoDays}` : 'Práctica de hoy'}</div>
+      <div class="well-today-title">${esc(todayReto.title || 'Práctica de hoy')}</div>
+      <div class="well-today-desc">${esc((todayReto.instructions || '').slice(0, 120))}${(todayReto.instructions || '').length > 120 ? '…' : ''}</div>
       <div class="well-progress-bar"><div class="well-progress-fill" style="width:${pct}%"></div></div>
       <p style="font-size:11px;color:var(--muted);margin-top:6px;font-weight:700">${retoDone} de ${retoDays} días completados · ${pct}%</p>
       <button class="btn-primary" type="button" onclick="showTab(${retoIdx >= 0 ? retoIdx : primaryIdx})" style="margin-top:14px;border-radius:14px">${msIcon('play_arrow',18)} Comenzar práctica</button>
-    </div>` : '';
+    </div>`;
+  } else if (currentRoadmapStep) {
+    const stepNum = currentRoadmapIdx >= 0 ? currentRoadmapIdx + 1 : roadmapArr.length;
+    const stepDesc = currentRoadmapStep.description || currentRoadmapStep.desc || '';
+    todayCard = `
+    <div class="well-section-head">
+      <h2>Tu práctica de hoy</h2>
+      ${roadmapIdx >= 0 ? `<button type="button" onclick="showTab(${roadmapIdx})">Ver plan</button>` : ''}
+    </div>
+    <div class="well-today-card">
+      <div class="well-today-kicker">${msIcon('route',13)} Paso ${stepNum} de ${roadmapArr.length}</div>
+      <div class="well-today-title">${esc(currentRoadmapStep.title || currentRoadmapStep.name || `Paso ${stepNum}`)}</div>
+      <div class="well-today-desc">${esc(stepDesc.slice(0, 140))}${stepDesc.length > 140 ? '…' : ''}</div>
+      <div class="well-progress-bar"><div class="well-progress-fill" style="width:${pct}%"></div></div>
+      <p style="font-size:11px;color:var(--muted);margin-top:6px;font-weight:700">${roadmapCompleted} de ${roadmapArr.length} pasos completados · ${pct}%</p>
+      <button class="btn-primary" type="button" onclick="showTab(${roadmapIdx >= 0 ? roadmapIdx : primaryIdx})" style="margin-top:14px;border-radius:14px">${msIcon('play_arrow',18)} Ir al plan</button>
+    </div>`;
+  }
+
+  // Tracker shortcut (fitness mode)
+  const trackerCard = (isFitnessMode && trackerHabit && trackerIdx >= 0) ? `
+    <div class="well-section-head"><h2>Hábito diario</h2></div>
+    <button type="button" class="tool-card" onclick="showTab(${trackerIdx})">
+      <span class="tool-icon">${msIcon('fitness_center',22)}</span>
+      <span style="flex:1">
+        <span class="tool-title">${esc(trackerHabit)}</span>
+        <span class="tool-sub">${streak > 0 ? `${streak} días de racha` : 'Registra tu entrenamiento de hoy'}</span>
+      </span>
+      <span class="material-symbols-outlined tool-arrow">arrow_forward</span>
+    </button>` : '';
 
   // Affirmation strip
   const affCard = randAff ? `
@@ -2717,6 +2785,8 @@ function renderWellnessToday(content, types) {
       <span class="material-symbols-outlined tool-arrow">arrow_forward</span>
     </button>` : '';
 
+  const defaultDesc = isFitnessMode ? 'Tu plan de entrenamiento progresivo.' : 'Tu espacio de bienestar diario.';
+
   content.innerHTML = `
     <div class="well-wrap">
       <div class="well-hero">
@@ -2726,7 +2796,7 @@ function renderWellnessToday(content, types) {
           <div>
             <div class="well-kicker">${pills.map(p=>`<span class="well-pill">${p}</span>`).join('')}</div>
             <h1>${esc(appName)}</h1>
-            <p>${esc(app.description || 'Tu espacio de bienestar diario.')}</p>
+            <p>${esc(app.description || defaultDesc)}</p>
           </div>
           <div class="well-avatar">${msIcon(appIcon, 50)}</div>
         </div>
@@ -2737,9 +2807,9 @@ function renderWellnessToday(content, types) {
       </div>
 
       <div class="well-metric-grid">
-        <div class="well-metric"><strong>${retoDone}</strong><span>días listos</span></div>
-        <div class="well-metric"><strong>${types.length}</strong><span>herramientas</span></div>
-        <div class="well-metric"><strong>${pct}%</strong><span>progreso</span></div>
+        <div class="well-metric"><strong>${metric1.val}</strong><span>${metric1.label}</span></div>
+        <div class="well-metric"><strong>${metric2.val}</strong><span>${metric2.label}</span></div>
+        <div class="well-metric"><strong>${metric3.val}</strong><span>${metric3.label}</span></div>
       </div>
 
       ${todayCard}
@@ -2747,6 +2817,7 @@ function renderWellnessToday(content, types) {
       <div class="well-section-head"><h2>Tus herramientas</h2></div>
       <div class="well-quick-grid">${quickCards}</div>
 
+      ${trackerCard}
       ${affCard}
       ${medCard}
     </div>`;
