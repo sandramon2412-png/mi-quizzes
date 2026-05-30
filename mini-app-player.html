@@ -2692,16 +2692,16 @@ function renderWellnessToday(content, types) {
       trackerHabit      ? `${msIcon('fitness_center',14)} Tracker diario` : null,
       types.length > 1  ? `${msIcon('auto_awesome',14)} ${types.length} herramientas` : null,
     ].filter(Boolean).slice(0, 2);
+  } else if (isPlanMode) {
+    pills = [
+      planTasks.length ? `${msIcon('checklist',14)} ${planTasks.length} pasos del plan` : null,
+      types.length > 1 ? `${msIcon('auto_awesome',14)} ${types.length} herramientas` : null,
+    ].filter(Boolean).slice(0, 2);
   } else {
     pills = [
       retoDays      ? `${msIcon('local_fire_department',14)} Reto de ${retoDays} días` : null,
       meditSrc      ? `${msIcon('self_improvement',14)} Meditación guiada` : null,
       affArr.length ? `${msIcon('brightness_7',14)} ${affArr.length} afirmaciones` : null,
-      types.length > 1 ? `${msIcon('auto_awesome',14)} ${types.length} herramientas` : null,
-    ].filter(Boolean).slice(0, 2);
-  } else if (isPlanMode) {
-    pills = [
-      planTasks.length ? `${msIcon('checklist',14)} ${planTasks.length} pasos del plan` : null,
       types.length > 1 ? `${msIcon('auto_awesome',14)} ${types.length} herramientas` : null,
     ].filter(Boolean).slice(0, 2);
   }
