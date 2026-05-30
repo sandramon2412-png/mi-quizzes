@@ -15,6 +15,7 @@
 <script src="https://cdn.tailwindcss.com"></script>
 <script src="./supabase-config.js"></script>
 <script src="./app.js"></script>
+<script src="./miniapp-templates.js"></script>
 <script src="./skinglow-demo-data.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400;1,600&family=Lora:ital,wght@0,400;0,600;1,400;1,600&display=swap" rel="stylesheet"/>
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
@@ -1125,20 +1126,32 @@ function withTimeout(promise, ms = 4000, message = 'timeout') {
 
 // â”€â”€ Init â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 document.addEventListener('DOMContentLoaded', async () => {
+  const templateId = getParam('template_id');
   const id = getParam('id');
-  if (!id) { showError('No se especificó una mini-app.'); return; }
-  try {
-  const builtInApp = typeof getSkinGlowMiniApp === 'function' ? getSkinGlowMiniApp(id) : null;
-  const localApp = MiniApps.get(id);
-  // Use localStorage immediately — no need to wait for DB if already cached
-  let app = builtInApp || localApp || null;
-  if (!app && typeof DB !== 'undefined') {
-    try { app = await withTimeout(DB.miniApps.get(id), 4500, 'No se pudo conectar con la base de datos.'); } catch(e) {
-      console.warn('[mini-app] DB load failed:', e.message);
+  let app = null;
+  // Direct template preview via ?template_id=tpl-xxx — no localStorage needed
+  if (templateId && typeof getBuiltinMiniAppTemplates === 'function') {
+    const tpl = getBuiltinMiniAppTemplates().find(t => t.id === templateId);
+    if (tpl) {
+      app = { ...tpl, id: tpl.id, status: 'active', _fromTemplate: true, _templateId: tpl.id, _isPreview: true,
+        accent: tpl.primaryColor, accent2: tpl.secondaryColor, bg: tpl.bgColor,
+        types: Array.isArray(tpl.types) && tpl.types.length ? tpl.types : [tpl.type || 'reto'] };
     }
   }
-  if (!app) app = getDemoPreviewApp(id);
+  if (!app) {
+    if (!id) { showError('No se especificó una mini-app.'); return; }
+    const builtInApp = typeof getSkinGlowMiniApp === 'function' ? getSkinGlowMiniApp(id) : null;
+    const localApp = MiniApps.get(id);
+    app = builtInApp || localApp || null;
+    if (!app && typeof DB !== 'undefined') {
+      try { app = await withTimeout(DB.miniApps.get(id), 4500, 'No se pudo conectar con la base de datos.'); } catch(e) {
+        console.warn('[mini-app] DB load failed:', e.message);
+      }
+    }
+    if (!app) app = getDemoPreviewApp(id);
+  }
   if (!app) { showError('Mini-App no encontrada. Verifica el enlace.'); return; }
+  try {
   app = repairTextTree(app);
   try {
     MiniApps.save(app);
