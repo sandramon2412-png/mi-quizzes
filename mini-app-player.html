@@ -872,7 +872,8 @@
   .body-dict-entry p { color:var(--body-text,var(--text)); font-size:12px; line-height:1.65; }
   @media (min-width:980px) {
     body.map-engine-open #screen-app { max-width:1280px; }
-    .body-engine-shell { grid-template-columns:220px minmax(420px,1fr) 280px; min-height:680px; }
+    /* Use minmax(0,1fr) so middle column can shrink within constrained containers */
+    .body-engine-shell { grid-template-columns:200px minmax(0,1fr) 260px; min-height:680px; }
     .body-engine-side { display:block; border-bottom:0; border-right:1px solid var(--border); overflow:visible; }
     .body-engine-chip { width:100%; flex:none; justify-content:flex-start; border-radius:15px; padding:11px 12px; font-size:12px; white-space:nowrap; text-align:left; }
     .body-engine-info { border-top:0; border-left:1px solid var(--border); padding:18px; }
@@ -3850,6 +3851,8 @@ function getAppProgressSummary(types) {
 function showTab(idx) {
   activeTab = idx;
   const types = getAppTypes(currentApp);
+  // Remove map-engine-open when leaving bodymap — renderBodyMap re-adds if needed
+  if (types[idx] !== 'bodymap') document.body.classList.remove('map-engine-open');
   document.querySelectorAll('.tab-btn').forEach((b,i) => b.classList.toggle('active', i===idx));
   setActiveNav(`type-${idx}`);
   const content = document.getElementById('app-content');
@@ -6355,6 +6358,10 @@ function renderBiblioteca(el) {
 // â”€â”€ MEDITACIÃ“N â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function renderBodyMap(el) {
   const signals = getBodySignals();
+  // Expand container so 3-col body engine doesn't overflow
+  const profile = getSignalProfile();
+  const showEngine = isPetNiche() || (profile && (profile.id === 'body' || profile.id === 'emotional')) || (!profile && isSomaticNiche());
+  document.body.classList.toggle('map-engine-open', showEngine);
   el.innerHTML = sectionHdr(currentApp.icon || sectionIcon('bodymap'), currentApp.name || signalMapCopy().mapLabel, currentApp.description || 'Explora señales y registros personalizados') +
     `<div class="fade-up" style="padding:20px">${bodyMapMarkup(signals)}</div>`;
   bindSignalMap();
