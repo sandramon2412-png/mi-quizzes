@@ -1662,13 +1662,15 @@ function resolveAppTheme(app = {}, originalTheme = extractAppTheme(app)) {
   if (fromTemplate) {
     const origAccent = explicitTheme.primaryColor || explicitTheme.accent;
     const origAccent2 = explicitTheme.secondaryColor || explicitTheme.accent2;
+    // Check both app.bg (which dashboard may have overridden to palette.bg) and app.bgColor (original template value)
+    const hasDarkBg = isDarkHex(explicitTheme.bg) || isDarkHex(app.bgColor);
     // If the template has custom colors AND an explicit dark background, preserve the dark theme
-    if (origAccent && isDarkHex(explicitTheme.bg)) {
+    if (origAccent && hasDarkBg) {
       return {
         mode: 'dark',
         accent: origAccent,
         accent2: origAccent2 || origAccent,
-        bg: explicitTheme.bg,
+        bg: isDarkHex(app.bgColor) ? app.bgColor : explicitTheme.bg,
         card: '#1c1c28',
         text: '#f5f5ff',
         muted: '#9898b0',
