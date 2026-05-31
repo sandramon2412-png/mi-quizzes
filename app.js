@@ -1079,6 +1079,16 @@ LINKS Y NAVEGACIÓN:
 • Los <form> no deben tener action ni method — solo elementos visuales.
 • Prohibido window.location o navegación automática.
 
+LÍMITE DE VELOCIDAD — MUY IMPORTANTE:
+El HTML debe generarse en menos de 10,000 tokens. Para lograrlo sin sacrificar secciones:
+• Testimonios: máximo 2 oraciones cada uno.
+• Descripciones de módulos: máximo 1 oración.
+• FAQ respuestas: máximo 2-3 oraciones.
+• Descripción de bonos: máximo 1 línea.
+• NO dejes líneas en blanco entre elementos HTML.
+• Usá clases Tailwind en una sola línea, no en múltiples líneas.
+PRIORIDAD ABSOLUTA: incluir las 14 secciones aunque algunas sean más concisas. Es mejor tener todas las secciones que secciones perfectas pero incompletas.
+
 AUTOCHECK OBLIGATORIO ANTES DE DEVOLVER EL HTML:
 Revisá que la landing contiene TODAS estas secciones (si alguna falta, agregala antes de responder):
 ☑ Hero con titular grande y CTA
@@ -1097,7 +1107,7 @@ Si encontrás que BONOS no está en el HTML generado, insertá la sección compl
 
   async generateLanding(brief, history = []) {
     const messages = [...history, { role: 'user', content: brief }];
-    const text = await this._call(messages, 16000, {
+    const text = await this._call(messages, 12000, {
       model: 'claude-sonnet-4-6',
       system: this._landingSystemPrompt(),
     });
