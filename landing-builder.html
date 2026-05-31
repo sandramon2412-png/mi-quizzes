@@ -786,7 +786,7 @@ document.addEventListener('click', function(e) {
   if (btn && !btn.closest('form')) e.preventDefault();
 }, true);
 <\/script>`;
-    // Strips EVERYTHING from <base target="_blank"> through the first </script> (covers old and new injection format)
+    // Strips EVERYTHING from <base target="_blank"> through the first <\/script> tag (covers old and new injection format)
     const PREVIEW_INJECTION_RE = /<base target="_blank">[\s\S]*?<\/script>/;
 
     let _previewLoadingEl = null;
