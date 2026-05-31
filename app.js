@@ -969,11 +969,15 @@ INTERACTIVIDAD (solo si el brief incluye "INTERACTIVIDAD:"):
 • CSS transitions con duration-300 y ease-in-out.
 
 ESTRUCTURA OBLIGATORIA DE ALTA CONVERSIÓN:
-1. Nav fijo: logo a la izquierda, 2-3 links ancla, CTA pequeño a la derecha con gradiente.
-2. Hero: titular grande con gradiente en 1-2 palabras clave + PROMESA DE TRANSFORMACIÓN ESPECÍFICA, subtítulo con el problema que resuelve, 2 CTAs (primario + secundario outline), prueba social con avatares apilados + número de alumnos/clientes, badge de urgencia ("Precio de lanzamiento — sube en 48h").
-3. "¿Para quién es esto?": 2 columnas — "Es para vos si..." (checks verdes) y "No es para vos si..." (X rojos). OBLIGATORIO, ayuda a pre-calificar.
-4. Problema/Agitación: sección que nombra el dolor del avatar con especificidad. Empieza con "¿Te suena esto?" y lista 4-5 situaciones de frustración.
-5. Métricas/logros: fila de 3-4 stats con números grandes y gradiente (ej: "2.400 alumnos", "97% tasa de éxito").
+⚠️ IDs OBLIGATORIOS: cada sección DEBE tener exactamente este id para permitir edición quirúrgica:
+<nav id="ld-nav"> | <section id="ld-hero"> | <section id="ld-para-quien"> | <section id="ld-problema"> | <section id="ld-metricas"> | <section id="ld-beneficios"> | <section id="ld-modulos"> | <section id="ld-testimonios"> | <section id="ld-bonos"> | <section id="ld-stack"> | <section id="ld-garantia"> | <section id="ld-faq"> | <section id="ld-cta-final"> | <footer id="ld-footer">
+NO omitas ningún id — sin ellos la edición posterior está rota.
+
+1. <nav id="ld-nav"> fijo: logo a la izquierda, 2-3 links ancla, CTA pequeño a la derecha con gradiente.
+2. <section id="ld-hero"> titular grande con gradiente en 1-2 palabras clave + PROMESA DE TRANSFORMACIÓN ESPECÍFICA, subtítulo con el problema que resuelve, 2 CTAs (primario + secundario outline), prueba social con avatares apilados + número de alumnos/clientes, badge de urgencia ("Precio de lanzamiento — sube en 48h").
+3. <section id="ld-para-quien"> 2 columnas — "Es para vos si..." (checks verdes) y "No es para vos si..." (X rojos). OBLIGATORIO.
+4. <section id="ld-problema"> que nombra el dolor del avatar con especificidad. Empieza con "¿Te suena esto?" y lista 4-5 situaciones de frustración.
+5. <section id="ld-metricas"> fila de 3-4 stats con números grandes y gradiente (ej: "2.400 alumnos", "97% tasa de éxito").
 6. Beneficios: grid 2-3 columnas, mínimo 6 beneficios, cada uno con icono Material Symbols en gradiente. Verbos de acción.
 7. "Qué incluye" / Módulos: lista numerada o timeline con cada módulo/entregable y su transformación concreta.
 8. Testimonios: mínimo 3 cards con avatar placeholder, nombre latino, rol, quote con resultado ESPECÍFICO MEDIBLE ("pasé de 0 a $3,400 en 60 días"), rating 5 estrellas.
@@ -1121,6 +1125,39 @@ Si encontrás que BONOS no está en el HTML generado, insertá la sección compl
     if (docStart > 0) html = html.slice(docStart);
     if (!/<html[\s>]/i.test(html)) {
       throw new Error('La IA respondió con texto en vez de HTML. Volvé a enviarlo.');
+    }
+    return html;
+  },
+
+  async editLandingSection(sectionId, sectionHtml, change, contextBrief = '') {
+    const system = `Eres un experto en edición quirúrgica de landing pages HTML+Tailwind.
+Tu tarea: modificar UNA SOLA sección de una landing. Devolvé ÚNICAMENTE el HTML de esa sección.
+
+REGLAS INAMOVIBLES:
+1. Devolvé SOLO el HTML de la sección — desde el tag de apertura (<section id="${sectionId}">, <nav id="${sectionId}"> o <footer id="${sectionId}">) hasta su tag de cierre correspondiente.
+2. NO incluyas <!DOCTYPE>, <html>, <head>, <body> ni nada fuera de la sección.
+3. El id="${sectionId}" debe mantenerse exactamente igual.
+4. Aplicá SOLO el cambio solicitado. Conservá todo el estilo, clases Tailwind y contenido que no sea afectado por el cambio.
+5. NUNCA uses emojis. Material Symbols válidos (copia el nombre en minúsculas): psychology, school, bolt, star, check_circle, rocket_launch, diamond, workspace_premium, shield, verified, auto_awesome, emoji_events, trending_up, person, group, favorite, monetization_on, savings, business_center, work, fitness_center, spa, health_and_safety, restaurant, menu_book, computer, code, analytics, bar_chart, pie_chart, play_circle, email, phone, location_on, home, shopping_cart, schedule, calendar_today, lock, security, help, info, warning_amber, wb_sunny, eco, engineering, music_note, travel_explore, flight, storefront, payment, celebration, support, lightbulb, format_quote, thumb_up, military_tech, speed, layers, hub, devices, cloud_done, done_all
+6. PROHIBIDO: template literals \${...}, .map(), .filter(), .forEach(), ni código JS fuera de un <script>.`;
+
+    const userMsg = [
+      contextBrief ? `CONTEXTO DEL PRODUCTO:\n${contextBrief}\n` : '',
+      `SECCIÓN ACTUAL (id="${sectionId}"):\n${sectionHtml}`,
+      `\nCAMBIO SOLICITADO: ${change}`,
+      `\nDevolvé SOLO el HTML de esta sección modificada, empezando con su tag de apertura.`,
+    ].filter(Boolean).join('\n');
+
+    const text = await this._call(
+      [{ role: 'user', content: userMsg }],
+      4000,
+      { model: 'claude-haiku-4-5-20251001', system }
+    );
+    let html = text.trim()
+      .replace(/^```html\s*/i, '').replace(/^```\s*/i, '').replace(/```\s*$/i, '').trim();
+    // Sanity check: must look like a section/nav/footer tag
+    if (!/<(?:section|nav|footer)/i.test(html)) {
+      throw new Error('La IA no devolvió HTML de sección válido.');
     }
     return html;
   },
@@ -1673,9 +1710,13 @@ const AI = {
     try { return await Groq.generateAppTheme(niche, product); }
     catch (e) { return Claude.generateAppTheme(niche, product); }
   },
-  // Complejo: landing completa en HTML+Tailwind con Sonnet 4.6
+  // Complejo: landing completa en HTML+Tailwind con Haiku
   async generateLanding(brief, history = []) {
     return Claude.generateLanding(brief, history);
+  },
+  // Quirúrgico: editar UNA sección de la landing sin tocar el resto
+  async editLandingSection(sectionId, sectionHtml, change, contextBrief = '') {
+    return Claude.editLandingSection(sectionId, sectionHtml, change, contextBrief);
   },
   // Complejo: ebook estructurado — intenta Claude, cae a Groq si no hay créditos
   async generateEbook(brief, history = [], onProgress, docType = 'ebook') {
