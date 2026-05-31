@@ -90,13 +90,29 @@
 
     <!-- Starter form (only shown on empty state) -->
     <div id="starter" class="p-5 overflow-y-auto">
-      <div class="flex items-center gap-2 mb-3">
+      <div class="flex items-center gap-2 mb-2">
         <span class="material-symbols-outlined icon-gradient" style="font-size:20px">auto_awesome</span>
-        <h2 class="text-base font-extrabold tracking-tight">Describí tu landing</h2>
+        <h2 class="text-base font-extrabold tracking-tight">Creá tu landing</h2>
       </div>
-      <p class="text-[11px] text-on-surface-variant mb-4">Claude Sonnet diseña tu página en ~15 segundos. Podés iterar por chat después.</p>
 
-      <div class="space-y-3">
+      <!-- Mode tabs -->
+      <div class="flex gap-1 bg-surface-container rounded-lg p-1 mb-4">
+        <button class="ld-mode-tab flex-1 h-7 rounded-md text-[10px] font-bold transition" data-mode="form">
+          <span class="material-symbols-outlined align-middle" style="font-size:12px">list_alt</span> Formulario
+        </button>
+        <button class="ld-mode-tab flex-1 h-7 rounded-md text-[10px] font-bold transition" data-mode="prompt">
+          <span class="material-symbols-outlined align-middle" style="font-size:12px">edit_note</span> Prompt
+        </button>
+        <button class="ld-mode-tab flex-1 h-7 rounded-md text-[10px] font-bold transition" data-mode="url">
+          <span class="material-symbols-outlined align-middle" style="font-size:12px">link</span> URL
+        </button>
+        <button class="ld-mode-tab flex-1 h-7 rounded-md text-[10px] font-bold transition" data-mode="paste">
+          <span class="material-symbols-outlined align-middle" style="font-size:12px">upload_file</span> PDF/Texto
+        </button>
+      </div>
+
+      <!-- PANEL: Formulario (default) -->
+      <div id="ld-panel-form" class="space-y-3">
         <div>
           <label class="text-[11px] font-semibold text-on-surface-variant block mb-1">¿Qué vendés?</label>
           <input id="fld-product" type="text" placeholder="Ej: Curso de repostería para emprendedoras"
@@ -118,20 +134,86 @@
                     class="w-full bg-surface-container border border-outline-variant/40 rounded-lg px-3 py-2 text-sm focus:border-primary focus:ring-0 outline-none resize-none"></textarea>
         </div>
         <div>
-          <label class="text-[11px] font-semibold text-on-surface-variant block mb-1">URL de referencia (opcional)</label>
+          <label class="text-[11px] font-semibold text-on-surface-variant block mb-1">URL de referencia visual (opcional)</label>
           <input id="fld-refurl" type="text" placeholder="Ej: https://apple.com o https://framer.com/templates"
                  class="w-full bg-surface-container border border-outline-variant/40 rounded-lg px-3 py-2 text-sm focus:border-primary focus:ring-0 outline-none"/>
-          <p class="text-[10px] text-on-surface-variant/60 mt-1">Claude usará el estilo visual del sitio como inspiración.</p>
+          <p class="text-[10px] text-on-surface-variant/60 mt-1">Claude modela el estilo visual del sitio como inspiración.</p>
         </div>
+      </div>
 
-        <!-- Divider -->
+      <!-- PANEL: Prompt libre -->
+      <div id="ld-panel-prompt" class="hidden space-y-3">
+        <div>
+          <label class="text-[11px] font-semibold text-on-surface-variant block mb-1">Describí tu landing en tus propias palabras</label>
+          <textarea id="fld-prompt-libre" rows="7"
+                    placeholder="Ej: Quiero una landing para mi curso de finanzas para mujeres de 30-45 años. Precio $197. Incluir tres bonos: planilla de presupuesto ($47), comunidad privada ($97) y sesión de preguntas en vivo ($197). Testimonios de María que ahorró $3,000 en 6 meses y Ana que canceló sus deudas. Paleta verde oscuro y dorado. CTA principal 'Quiero mis primeras finanzas sanas'. Sección antes/después."
+                    class="w-full bg-surface-container border border-outline-variant/40 rounded-lg px-3 py-2 text-sm focus:border-primary focus:ring-0 outline-none resize-none"></textarea>
+          <p class="text-[10px] text-on-surface-variant/60 mt-1">Escribí todo en prosa: producto, audiencia, precio, bonos, testimonios, colores, instrucciones especiales. Claude lo interpreta todo.</p>
+        </div>
+      </div>
+
+      <!-- PANEL: Desde URL -->
+      <div id="ld-panel-url" class="hidden space-y-3">
+        <div>
+          <label class="text-[11px] font-semibold text-on-surface-variant block mb-1">URL del sitio a modelar <span class="text-primary/80">*</span></label>
+          <input id="fld-url-model" type="url" placeholder="https://ejemplo.com"
+                 class="w-full bg-surface-container border border-outline-variant/40 rounded-lg px-3 py-2 text-sm focus:border-primary focus:ring-0 outline-none"/>
+          <p class="text-[10px] text-on-surface-variant/60 mt-1">Claude modela la paleta, tipografía, layout y estética de ese sitio para tu landing.</p>
+        </div>
+        <div>
+          <label class="text-[11px] font-semibold text-on-surface-variant block mb-1">¿Qué vendés? <span class="text-primary/80">*</span></label>
+          <input id="fld-url-product" type="text" placeholder="Ej: Programa de coaching de negocios"
+                 class="w-full bg-surface-container border border-outline-variant/40 rounded-lg px-3 py-2 text-sm focus:border-primary focus:ring-0 outline-none"/>
+        </div>
+        <div>
+          <label class="text-[11px] font-semibold text-on-surface-variant block mb-1">Precio</label>
+          <input id="fld-url-price" type="text" placeholder="Ej: $297"
+                 class="w-full bg-surface-container border border-outline-variant/40 rounded-lg px-3 py-2 text-sm focus:border-primary focus:ring-0 outline-none"/>
+        </div>
+        <div>
+          <label class="text-[11px] font-semibold text-on-surface-variant block mb-1">Notas adicionales (opcional)</label>
+          <textarea id="fld-url-notes" rows="2" placeholder="Audiencia, detalles del producto, bonos, testimonios…"
+                    class="w-full bg-surface-container border border-outline-variant/40 rounded-lg px-3 py-2 text-sm focus:border-primary focus:ring-0 outline-none resize-none"></textarea>
+        </div>
+      </div>
+
+      <!-- PANEL: PDF / Texto -->
+      <div id="ld-panel-paste" class="hidden space-y-3">
+        <div>
+          <label class="text-[11px] font-semibold text-on-surface-variant block mb-1">
+            Pegá el contenido <span class="text-primary/80">*</span>
+            <span class="ml-1 text-[10px] font-normal text-on-surface-variant/60">(texto de tu PDF, propuesta, guión, etc.)</span>
+          </label>
+          <div class="relative">
+            <textarea id="fld-paste-content" rows="7"
+                      placeholder="Copiá y pegá acá el texto de tu documento, propuesta comercial, guión de VSL, presentación... Claude extrae toda la información para crear tu landing."
+                      class="w-full bg-surface-container border border-outline-variant/40 rounded-lg px-3 py-2 text-sm focus:border-primary focus:ring-0 outline-none resize-none"></textarea>
+            <label class="absolute bottom-2 right-2 cursor-pointer flex items-center gap-1 px-2 py-1 bg-surface-container-highest rounded-md text-[10px] font-semibold hover:bg-outline-variant/30 transition border border-outline-variant/30">
+              <span class="material-symbols-outlined" style="font-size:12px">upload_file</span> Subir .txt
+              <input id="fld-paste-file" type="file" accept=".txt,.md,.csv" class="hidden"/>
+            </label>
+          </div>
+          <p class="text-[10px] text-on-surface-variant/60 mt-1">Claude extrae: copy, beneficios, módulos, testimonios, bonos, FAQ. Completa lo que falte. PDFs: abrí el PDF, seleccioná todo (Ctrl+A), copiá y pegá acá.</p>
+        </div>
+        <div>
+          <label class="text-[11px] font-semibold text-on-surface-variant block mb-1">¿Qué vendés? (para contexto)</label>
+          <input id="fld-paste-product" type="text" placeholder="Ej: Curso online de fotografía"
+                 class="w-full bg-surface-container border border-outline-variant/40 rounded-lg px-3 py-2 text-sm focus:border-primary focus:ring-0 outline-none"/>
+        </div>
+        <div>
+          <label class="text-[11px] font-semibold text-on-surface-variant block mb-1">Precio</label>
+          <input id="fld-paste-price" type="text" placeholder="Ej: $147"
+                 class="w-full bg-surface-container border border-outline-variant/40 rounded-lg px-3 py-2 text-sm focus:border-primary focus:ring-0 outline-none"/>
+        </div>
+      </div>
+
+      <!-- SHARED: Contenido -->
+      <div class="space-y-3 mt-3">
         <div class="flex items-center gap-2 pt-1">
           <div class="flex-1 h-px bg-outline-variant/20"></div>
           <span class="text-[10px] font-bold text-on-surface-variant/50 uppercase tracking-widest">Contenido</span>
           <div class="flex-1 h-px bg-outline-variant/20"></div>
         </div>
-
-        <!-- Bonuses -->
         <div>
           <label class="text-[11px] font-semibold text-on-surface-variant block mb-1">
             Bonos incluidos
@@ -139,15 +221,13 @@
           </label>
           <textarea id="fld-bonuses" rows="3" placeholder="Bono 1: Plantilla de Email ($97)&#10;Bono 2: Checklist de inicio rápido ($47)&#10;Bono 3: Sesión grupal en vivo ($197)"
                     class="w-full bg-surface-container border border-outline-variant/40 rounded-lg px-3 py-2 text-sm focus:border-primary focus:ring-0 outline-none resize-none"></textarea>
-          <p class="text-[10px] text-on-surface-variant/60 mt-1">Uno por línea. Si no ponés nada, Claude inventa bonos coherentes con tu producto.</p>
+          <p class="text-[10px] text-on-surface-variant/60 mt-1">Uno por línea. Si no ponés nada, Claude inventa bonos coherentes.</p>
         </div>
-
-        <!-- Images -->
         <div>
           <label class="text-[11px] font-semibold text-on-surface-variant block mb-1">Imágenes del producto</label>
           <div class="flex gap-2">
             <select id="fld-img-type" class="flex-1 bg-surface-container border border-outline-variant/40 rounded-lg px-3 py-2 text-sm focus:border-primary focus:ring-0 outline-none">
-              <option value="placeholder">Generar placeholders (placehold.co)</option>
+              <option value="placeholder">Generar con IA (Pollinations.ai)</option>
               <option value="upload">Dejar espacios para subir mis fotos</option>
               <option value="none">Sin imágenes de producto</option>
             </select>
@@ -156,46 +236,37 @@
           </div>
           <p class="text-[10px] text-on-surface-variant/60 mt-1">El número indica cuántas imágenes distribuir a lo largo de la landing.</p>
         </div>
-
-        <!-- Video -->
         <div>
           <label class="text-[11px] font-semibold text-on-surface-variant block mb-1">Video (opcional)</label>
           <input id="fld-video" type="text" placeholder="URL de YouTube, Vimeo o video .mp4 directo"
                  class="w-full bg-surface-container border border-outline-variant/40 rounded-lg px-3 py-2 text-sm focus:border-primary focus:ring-0 outline-none"/>
           <p class="text-[10px] text-on-surface-variant/60 mt-1">Se agrega sección de video embebido responsive justo después del hero.</p>
         </div>
+      </div>
 
-        <!-- Divider -->
+      <!-- SHARED: Diseño avanzado -->
+      <div class="space-y-3 mt-3">
         <div class="flex items-center gap-2 pt-1">
           <div class="flex-1 h-px bg-outline-variant/20"></div>
           <span class="text-[10px] font-bold text-on-surface-variant/50 uppercase tracking-widest">Diseño avanzado</span>
           <div class="flex-1 h-px bg-outline-variant/20"></div>
         </div>
-
-        <!-- Page color palette -->
         <div>
           <label class="text-[11px] font-semibold text-on-surface-variant block mb-1.5">Paleta de color de la página</label>
-          <div class="grid grid-cols-4 gap-1.5" id="palette-grid">
-            <!-- filled by JS -->
-          </div>
+          <div class="grid grid-cols-4 gap-1.5" id="palette-grid"></div>
           <input id="fld-custom-color" type="text" placeholder="O escribí un color: rojo vino, verde esmeralda, dorado..."
                  class="mt-2 w-full bg-surface-container border border-outline-variant/40 rounded-lg px-3 py-2 text-sm focus:border-primary focus:ring-0 outline-none"/>
         </div>
-
-        <!-- Background -->
         <div>
           <label class="text-[11px] font-semibold text-on-surface-variant block mb-1">Fondo del hero</label>
-          <div class="flex gap-2">
-            <select id="fld-bg-type" onchange="toggleBgValue()" class="flex-1 bg-surface-container border border-outline-variant/40 rounded-lg px-3 py-2 text-sm focus:border-primary focus:ring-0 outline-none">
-              <option value="dark">Oscuro con gradiente (default)</option>
-              <option value="color">Color sólido</option>
-              <option value="image">Imagen de fondo</option>
-              <option value="video">Video de fondo (loop)</option>
-            </select>
-          </div>
+          <select id="fld-bg-type" onchange="toggleBgValue()" class="w-full bg-surface-container border border-outline-variant/40 rounded-lg px-3 py-2 text-sm focus:border-primary focus:ring-0 outline-none">
+            <option value="dark">Oscuro con gradiente (default)</option>
+            <option value="color">Color sólido</option>
+            <option value="image">Imagen de fondo</option>
+            <option value="video">Video de fondo (loop)</option>
+          </select>
           <input id="fld-bg-value" type="text" placeholder="Color hex o URL…" style="display:none"
                  class="mt-2 w-full bg-surface-container border border-outline-variant/40 rounded-lg px-3 py-2 text-sm focus:border-primary focus:ring-0 outline-none"/>
-          <!-- Video templates gallery -->
           <div id="video-templates-grid" style="display:none" class="mt-2">
             <p class="text-[10px] font-semibold text-on-surface-variant/70 mb-2">Galería de fondos — hover para preview, clic para usar:</p>
             <div class="flex flex-wrap gap-1 mb-2" id="vtg-cat-tabs"></div>
@@ -203,8 +274,6 @@
             <p class="text-[10px] text-on-surface-variant/50 mt-1.5">O pegá tu URL arriba. Videos de Mixkit (gratis, sin atribución).</p>
           </div>
         </div>
-
-        <!-- Interactive toggle -->
         <div class="flex items-center justify-between py-2.5 px-3 border border-outline-variant/20 rounded-lg bg-surface-container">
           <div>
             <p class="text-[11px] font-semibold text-on-surface-variant">Landing interactiva</p>
@@ -215,8 +284,6 @@
             <div class="w-9 h-5 bg-outline-variant rounded-full peer peer-checked:bg-primary transition-colors after:content-[''] after:absolute after:top-0.5 after:left-0.5 after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-transform peer-checked:after:translate-x-4"></div>
           </label>
         </div>
-
-        <!-- Custom prompt (exact instructions) -->
         <div>
           <label class="text-[11px] font-semibold text-on-surface-variant block mb-1">
             Instrucción exacta a la IA
@@ -224,7 +291,6 @@
           </label>
           <textarea id="fld-custom" rows="3" placeholder="Ej: el hero debe tener un countdown de 48 horas, sección antes/después con dos columnas, paleta de color violeta oscuro, sin sección de métricas…"
                     class="w-full bg-surface-container border border-outline-variant/40 rounded-lg px-3 py-2 text-sm focus:border-primary focus:ring-0 outline-none resize-none"></textarea>
-          <p class="text-[10px] text-on-surface-variant/60 mt-1">Descripción libre de lo que querés que aparezca o no aparezca. Máxima prioridad sobre el estilo por defecto.</p>
         </div>
       </div>
 
@@ -232,7 +298,6 @@
         <span class="material-symbols-outlined" style="font-size:18px">bolt</span>
         Generar mi landing
       </button>
-
       <p class="mt-3 text-[10px] text-on-surface-variant/70 leading-relaxed">
         Claude genera hero, beneficios, bonos, testimonios, FAQ, garantía y CTA — optimizada para conversión. Después iterás por chat.
       </p>
@@ -463,7 +528,42 @@ function renderPalettes() {
     grid.appendChild(btn);
   });
 }
-document.addEventListener('DOMContentLoaded', renderPalettes);
+let _ldMode = 'form';
+
+function switchLdMode(mode) {
+  _ldMode = mode;
+  const panels = { form: 'ld-panel-form', prompt: 'ld-panel-prompt', url: 'ld-panel-url', paste: 'ld-panel-paste' };
+  Object.entries(panels).forEach(([m, id]) => {
+    const el = document.getElementById(id);
+    if (el) el.classList.toggle('hidden', m !== mode);
+  });
+  document.querySelectorAll('.ld-mode-tab').forEach(btn => {
+    const active = btn.dataset.mode === mode;
+    btn.className = 'ld-mode-tab flex-1 h-7 rounded-md text-[10px] font-bold transition ' +
+      (active ? 'primary-gradient text-white' : 'text-on-surface-variant/70 hover:bg-surface-container-highest hover:text-on-surface');
+  });
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  renderPalettes();
+  switchLdMode('form');
+  document.querySelectorAll('.ld-mode-tab').forEach(btn => {
+    btn.addEventListener('click', () => switchLdMode(btn.dataset.mode));
+  });
+  const pasteFile = document.getElementById('fld-paste-file');
+  if (pasteFile) {
+    pasteFile.addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = (ev) => {
+        const ta = document.getElementById('fld-paste-content');
+        if (ta) { ta.value = ev.target.result; ta.dispatchEvent(new Event('input')); }
+      };
+      reader.readAsText(file, 'UTF-8');
+    });
+  }
+});
 
 function toggleBgValue() {
   const type = document.getElementById('fld-bg-type').value;
@@ -770,7 +870,7 @@ function renderVideoTemplates() {
       chatLog.innerHTML = history.map(m => {
         if (m.role === 'user') {
           return `<div class="msg flex justify-end">
-            <div class="max-w-[85%] px-3 py-2 rounded-lg primary-gradient text-white text-xs leading-relaxed whitespace-pre-wrap">${escapeHtml(m.content)}</div>
+            <div class="max-w-[85%] px-3 py-2 rounded-lg primary-gradient text-white text-xs leading-relaxed whitespace-pre-wrap">${escapeHtml(m.display || m.content)}</div>
           </div>`;
         }
         return `<div class="msg flex gap-2">
@@ -934,39 +1034,83 @@ function renderVideoTemplates() {
 
     // ── Generate (first time, from form) ──
     genBtn.onclick = async () => {
-      const product  = document.getElementById('fld-product').value.trim();
-      const audience = document.getElementById('fld-audience').value.trim();
-      const price    = document.getElementById('fld-price').value.trim();
-      const extras   = document.getElementById('fld-extras').value.trim();
-      const custom   = document.getElementById('fld-custom').value.trim();
-      const refurl   = document.getElementById('fld-refurl').value.trim();
-      const bonuses  = document.getElementById('fld-bonuses').value.trim();
-      const imgType  = document.getElementById('fld-img-type').value;
-      const imgCount = document.getElementById('fld-img-count').value || '3';
-      const video    = document.getElementById('fld-video').value.trim();
-      const bgType   = document.getElementById('fld-bg-type').value;
-      const bgValue  = document.getElementById('fld-bg-value').value.trim();
+      // Shared fields (all modes)
+      const custom      = document.getElementById('fld-custom').value.trim();
+      const bonuses     = document.getElementById('fld-bonuses').value.trim();
+      const imgType     = document.getElementById('fld-img-type').value;
+      const imgCount    = document.getElementById('fld-img-count').value || '3';
+      const video       = document.getElementById('fld-video').value.trim();
+      const bgType      = document.getElementById('fld-bg-type').value;
+      const bgValue     = document.getElementById('fld-bg-value').value.trim();
       const interactive = document.getElementById('fld-interactive').checked;
       const customColor = document.getElementById('fld-custom-color').value.trim();
 
-      if (!product) { toast('Contanos qué vendés', 'err'); return; }
+      // Mode-specific: build core brief + set product (used as title fallback)
+      let product = '', coreBrief = '', briefDisplay = '';
 
-      if (!(await canCreate())) {
-        toast(`Llegaste al límite de ${caps.landings} landings de tu plan`, 'err');
-        return;
+      if (_ldMode === 'form') {
+        product        = document.getElementById('fld-product').value.trim();
+        const audience = document.getElementById('fld-audience').value.trim();
+        const price    = document.getElementById('fld-price').value.trim();
+        const extras   = document.getElementById('fld-extras').value.trim();
+        const refurl   = document.getElementById('fld-refurl').value.trim();
+        if (!product) { toast('Contanos qué vendés', 'err'); return; }
+        coreBrief = [
+          `Necesito una landing page para: ${product}.`,
+          audience ? `Audiencia: ${audience}.` : '',
+          price    ? `Precio/oferta: ${price}.` : '',
+          extras   ? `Detalles adicionales: ${extras}` : '',
+          refurl   ? `INSPIRACIÓN VISUAL: tomá como referencia el estilo del sitio ${refurl} — paleta, tipografía, espaciado, tono visual.` : '',
+        ].filter(Boolean).join('\n');
+        briefDisplay = product;
+
+      } else if (_ldMode === 'prompt') {
+        const promptLibre = document.getElementById('fld-prompt-libre').value.trim();
+        if (!promptLibre) { toast('Escribí tu descripción de la landing', 'err'); return; }
+        product = promptLibre.split('\n')[0].slice(0, 60);
+        coreBrief = `DESCRIPCIÓN COMPLETA DEL CREADOR:\n${promptLibre}`;
+        briefDisplay = promptLibre.slice(0, 120) + (promptLibre.length > 120 ? '…' : '');
+
+      } else if (_ldMode === 'url') {
+        const urlModel   = document.getElementById('fld-url-model').value.trim();
+        const urlProduct = document.getElementById('fld-url-product').value.trim();
+        const urlPrice   = document.getElementById('fld-url-price').value.trim();
+        const urlNotes   = document.getElementById('fld-url-notes').value.trim();
+        if (!urlModel)   { toast('Ingresá la URL del sitio a modelar', 'err'); return; }
+        if (!urlProduct) { toast('Contanos qué vendés', 'err'); return; }
+        product = urlProduct;
+        coreBrief = [
+          `Necesito una landing page para: ${urlProduct}.`,
+          urlPrice ? `Precio/oferta: ${urlPrice}.` : '',
+          `REFERENCIA VISUAL PRINCIPAL: modelá el estilo estético del sitio ${urlModel} — su paleta de colores, tipografía, espaciado, tono visual y estructura de layout. Adaptalo completamente a mi producto, no copies texto ni contenido.`,
+          urlNotes ? `Detalles adicionales: ${urlNotes}` : '',
+        ].filter(Boolean).join('\n');
+        briefDisplay = `${urlProduct} — estilo de ${urlModel}`;
+
+      } else if (_ldMode === 'paste') {
+        const pasteContent = document.getElementById('fld-paste-content').value.trim();
+        const pasteProduct = document.getElementById('fld-paste-product').value.trim();
+        const pastePrice   = document.getElementById('fld-paste-price').value.trim();
+        if (!pasteContent) { toast('Pegá el contenido de tu documento', 'err'); return; }
+        product = pasteProduct || 'mi producto';
+        coreBrief = [
+          pasteProduct ? `Producto: ${pasteProduct}.` : '',
+          pastePrice   ? `Precio: ${pastePrice}.` : '',
+          `CONTENIDO DEL DOCUMENTO (extraé toda la información relevante — copy, beneficios, módulos, testimonios, bonos, FAQ, garantía — y usala para construir la landing):`,
+          pasteContent,
+        ].filter(Boolean).join('\n');
+        briefDisplay = (pasteProduct || 'Landing') + ' (generado desde documento)';
       }
 
-      // Build image instruction
+      // Build shared instructions (all modes)
       const imgInstr = imgType === 'none'
         ? 'IMÁGENES tipo="none": no incluyas imágenes de producto.'
         : `IMÁGENES tipo="${imgType}", cantidad=${imgCount}: distribuí ${imgCount} imágenes a lo largo de la landing (hero, módulos, testimonios).`;
 
-      // Build background instruction
       const bgInstr = bgType !== 'dark' && bgValue
         ? `FONDO tipo="${bgType}", valor="${bgValue}".`
         : '';
 
-      // Build palette instruction
       const selPal = PALETTES.find(p => p.id === _selectedPalette);
       const paletteInstr = customColor
         ? `PALETA DE COLOR DE TODA LA PÁGINA: usá "${customColor}" como color primario en TODO — gradientes del hero, botones CTA, iconos, textos de acento, bullets, sección de bonos, footer. Generá variantes claras y oscuras del mismo color para los diferentes elementos.`
@@ -975,10 +1119,7 @@ function renderVideoTemplates() {
           : '';
 
       const brief = [
-        `Necesito una landing page para: ${product}.`,
-        audience ? `Audiencia: ${audience}.` : '',
-        price    ? `Precio/oferta: ${price}.` : '',
-        extras   ? `Detalles adicionales: ${extras}` : '',
+        coreBrief,
         bonuses
           ? `BONOS DEL PRODUCTO (sección OBLIGATORIA, usá exactamente estos bonos): ${bonuses}`
           : 'BONOS: inventá 2-3 bonos creativos y coherentes con el producto, con nombre, descripción breve y valor en dólares.',
@@ -988,7 +1129,6 @@ function renderVideoTemplates() {
         bgInstr,
         interactive ? 'INTERACTIVIDAD: agrega animaciones CSS y JavaScript inline: contadores animados con IntersectionObserver, FAQ con smooth expand (max-height transition), tabs en módulos/beneficios, parallax leve en hero.' : '',
         custom ? `INSTRUCCIÓN EXACTA DEL CREADOR (máxima prioridad, seguí esto al pie de la letra): ${custom}` : '',
-        refurl ? `INSPIRACIÓN VISUAL: tomá como referencia el estilo del sitio ${refurl} — paleta, tipografía, espaciado, tono visual.` : '',
       ].filter(Boolean).join('\n');
 
       if (!titleEl.value.trim()) titleEl.value = product.slice(0, 60);
@@ -1002,7 +1142,7 @@ function renderVideoTemplates() {
         const autocheck = '\n\nANTES DE CERRAR </html>: verificá que incluís TODAS estas secciones — si falta alguna, agregala antes de terminar: (1) Hero con CTA, (2) Para quién es/no es, (3) Problema/dolor, (4) Métricas, (5) Beneficios en grid, (6) Qué incluye/módulos, (7) Mínimo 3 testimonios, (8) BONOS con valores tachados + "INCLUIDO GRATIS", (9) Stack de valor, (10) Garantía con escudo, (11) FAQ mínimo 6 preguntas, (12) CTA final con urgencia y precio, (13) Footer.';
         const html = await AI.generateLanding(brief + autocheck, []);
         history = [
-          { role: 'user', content: brief },
+          { role: 'user', content: brief, display: briefDisplay },
           { role: 'assistant', content: html, display: 'Acá tenés la primera versión. Pedime cambios si querés.' },
         ];
 
