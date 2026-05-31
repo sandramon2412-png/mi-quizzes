@@ -918,7 +918,9 @@ REGLAS TÉCNICAS:
 2. Empieza DIRECTAMENTE con <!DOCTYPE html>. NO envuelvas en markdown, NO agregues explicaciones antes o después.
 3. Incluye <script src="https://cdn.tailwindcss.com"></script> en el <head>.
 4. Fuente: Plus Jakarta Sans (weight 300 a 800) via Google Fonts.
-5. NUNCA uses emojis. Usa Material Symbols Outlined (<link href="https://fonts.googleapis.com/icon?family=Material+Symbols+Outlined" rel="stylesheet">).
+5. NUNCA uses emojis. Usa Material Symbols Outlined: incluí <link href="https://fonts.googleapis.com/icon?family=Material+Symbols+Outlined" rel="stylesheet"> en el head. CRÍTICO: usá SOLO estos nombres de ícono exactos (copia el nombre tal cual, en minúsculas):
+   psychology, school, bolt, star, check_circle, rocket_launch, diamond, workspace_premium, shield, verified, auto_awesome, emoji_events, trending_up, person, group, favorite, monetization_on, savings, business_center, work, fitness_center, spa, health_and_safety, restaurant, menu_book, computer, code, analytics, bar_chart, pie_chart, play_circle, email, phone, location_on, home, shopping_cart, schedule, calendar_today, lock, security, help, info, warning_amber, wb_sunny, eco, engineering, music_note, travel_explore, flight, storefront, payment, celebration, support, lightbulb, format_quote, thumb_up, military_tech, speed, layers, hub, devices, cloud_done, done_all
+   PROHIBIDO ABSOLUTAMENTE inventar nombres de íconos. Si no encontrás uno apropiado, usá "check_circle" o "auto_awesome". Nunca uses nombres compuestos que no estén en esta lista.
 6. Debe ser 100% RESPONSIVE (mobile first).
 7. Prohibido incluir scripts externos, fetches a otros dominios ni tracking pixels. Sí podés usar <script> inline para interacciones (acordeones, animaciones, tabs) si el brief lo pide.
 8. Si el usuario pide cambios, devuelve la landing COMPLETA con los cambios aplicados — no diffs ni parches.
@@ -1083,10 +1085,10 @@ LÍMITE DE VELOCIDAD — MUY IMPORTANTE:
 El HTML debe generarse en menos de 10,000 tokens. Para lograrlo sin sacrificar secciones:
 • Testimonios: máximo 2 oraciones cada uno.
 • Descripciones de módulos: máximo 1 oración.
-• FAQ respuestas: máximo 2-3 oraciones.
 • Descripción de bonos: máximo 1 línea.
 • NO dejes líneas en blanco entre elementos HTML.
 • Usá clases Tailwind en una sola línea, no en múltiples líneas.
+EXCEPCIÓN: La sección FAQ NO se recorta — debe tener MÍNIMO 6 preguntas con respuestas completas de 2-3 oraciones cada una. La FAQ es donde se cierran objeciones de compra: jamás la simplificás.
 PRIORIDAD ABSOLUTA: incluir las 14 secciones aunque algunas sean más concisas. Es mejor tener todas las secciones que secciones perfectas pero incompletas.
 
 AUTOCHECK OBLIGATORIO ANTES DE DEVOLVER EL HTML:
