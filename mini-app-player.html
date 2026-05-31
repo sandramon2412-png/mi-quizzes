@@ -6883,12 +6883,21 @@ function _speakNext(onDone) {
   const u = new SpeechSynthesisUtterance(_voiceQueue[_voiceIdx++]);
   const settings = voiceSettings();
   const ttsLang = ttsLangForText(u.text, settings.lang || 'es-MX');
-  u.lang = ttsLang;
-  // English sounds more natural at a slightly faster rate than Spanish
-  u.rate  = ttsLang.startsWith('en') ? Math.max(settings.rate, 0.92) : settings.rate;
+  const best = _bestVoice(ttsLang);
+  if (best) {
+    // Requested voice is available — use it
+    u.voice = best;
+    u.lang  = ttsLang;
+    u.rate  = ttsLang.startsWith('en') ? Math.max(settings.rate, 0.92) : settings.rate;
+  } else {
+    // No voice for the requested language — fall back to any available voice
+    // Don't force u.lang to avoid "language-unavailable" error on devices without that language pack
+    const fallback = _bestVoice(settings.lang || 'es-MX') || (window.speechSynthesis?.getVoices()||[])[0];
+    if (fallback) u.voice = fallback;
+    u.rate = settings.rate;
+  }
   u.pitch = settings.pitch;
   u.volume = 1;
-  const best = _bestVoice(ttsLang); if (best) u.voice = best;
   u.onend = () => { if (!_voiceStopped && !_voicePaused) setTimeout(() => _speakNext(onDone), 350); };
   u.onerror = (e) => { if (e.error !== 'interrupted') setTimeout(() => _speakNext(onDone), 150); };
   window.speechSynthesis.speak(u);
@@ -6915,13 +6924,20 @@ function speakShort(text) {
     const u = new SpeechSynthesisUtterance(clean);
     const settings = voiceSettings();
     const ttsLang = ttsLangForText(clean, settings.lang || 'es-MX');
-    u.lang = ttsLang;
-    u.rate = settings.rate;
+    const best = _bestVoice(ttsLang);
+    if (best) {
+      u.voice = best;
+      u.lang  = ttsLang;
+      u.rate  = ttsLang.startsWith('en') ? Math.max(settings.rate, 0.92) : settings.rate;
+    } else {
+      const fallback = _bestVoice(settings.lang || 'es-MX') || (window.speechSynthesis?.getVoices()||[])[0];
+      if (fallback) u.voice = fallback;
+      u.rate = settings.rate;
+    }
     u.pitch = settings.pitch;
     u.volume = 1;
-    const best = _bestVoice(ttsLang); if (best) u.voice = best;
     u.onend = () => { _voiceStopped = true; };
-    u.onerror = () => { _voiceStopped = true; showToast('El navegador no pudo reproducir ese audio.', 'error'); };
+    u.onerror = (e) => { if (e.error !== 'interrupted') { _voiceStopped = true; } };
     _lastUtterance = u;
     try { window.speechSynthesis.resume(); } catch {}
     window.speechSynthesis.speak(u);
