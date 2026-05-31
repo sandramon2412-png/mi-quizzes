@@ -1107,8 +1107,9 @@ Si encontrás que BONOS no está en el HTML generado, insertá la sección compl
 
   async generateLanding(brief, history = []) {
     const messages = [...history, { role: 'user', content: brief }];
-    const text = await this._call(messages, 12000, {
-      model: 'claude-sonnet-4-6',
+    // Use Haiku: 5-10x faster than Sonnet, completes 10000 tokens in ~15s (Sonnet needs 70s+ → proxy timeout)
+    const text = await this._call(messages, 10000, {
+      model: 'claude-haiku-4-5-20251001',
       system: this._landingSystemPrompt(),
     });
     // Extract pure HTML: strip any markdown fences or preamble
