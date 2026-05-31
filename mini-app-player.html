@@ -6801,12 +6801,21 @@ function testSelectedVoice() {
 function _bestVoice(lang) {
   const all = window.speechSynthesis?.getVoices() || [];
   const settings = voiceSettings();
-  const savedVoice = all.find(v => v.name === settings.name && v.lang === settings.lang);
-  if (savedVoice) return savedVoice;
   const prefix = (lang || 'es').split('-')[0];
+  // Only use saved voice if its language matches what we're requesting
+  const savedVoice = all.find(v => v.name === settings.name && v.lang === settings.lang && v.lang.startsWith(prefix));
+  if (savedVoice) return savedVoice;
   const matches = all.filter(v => v.lang.startsWith(prefix));
   if (!matches.length) return null;
   const ranked = matches.slice().sort((a, b) => _voiceQualityScore(b) - _voiceQualityScore(a));
+  if (prefix === 'en') {
+    return ranked.find(v => /natural|neural|online|enhanced|premium|cloud/i.test(v.name))
+        || ranked.find(v => /samantha|ava|allison|victoria|karen|serena|moira|tessa|daniel|alex|siri/i.test(v.name))
+        || ranked.find(v => /google.*english|google.*us|google.*uk/i.test(normalizeText(v.name || '')))
+        || ranked.find(v => /^en-(US|GB|AU|CA)/i.test(v.lang))
+        || ranked.find(v => !v.localService)
+        || ranked[0];
+  }
   return ranked.find(v => /natural|neural|online|enhanced|premium|cloud/i.test(v.name))
       || ranked.find(v => /dalia|sabina|monica|paulina|helena|elvira|laura|lucia|sofia|valentina|ximena|camila|alvaro/i.test(v.name))
       || ranked.find(v => /google.*espanol|google.*spanish/i.test(normalizeText(v.name || '')))
@@ -6823,13 +6832,17 @@ function _cleanForTTS(text) {
 }
 
 function ttsLangForText(text, fallbackLang) {
+  // English apps always use English — saved Spanish voice settings don't apply
+  if (isEnglishLearningApp(currentApp)) {
+    return currentApp?.voiceLang || 'en-US';
+  }
   let saved = {};
   try { saved = JSON.parse(localStorage.getItem('ls_voice_settings') || '{}'); } catch {}
   if (saved.version === 2 && saved.lang) return saved.lang;
   const clean = normalizeText(text);
   const soundsEnglish = /\b(i|you|we|they|what|where|when|could|would|please|hello|thanks|interview|coffee|airport|hotel|work|job|english)\b/.test(clean);
-  if (isEnglishLearningApp(currentApp) && soundsEnglish) return 'en-US';
-  return fallbackLang || (isEnglishLearningApp(currentApp) ? 'en-US' : 'es-MX');
+  if (soundsEnglish) return 'en-US';
+  return fallbackLang || 'es-MX';
 }
 
 function _splitForTTS(text) {
@@ -6871,7 +6884,8 @@ function _speakNext(onDone) {
   const settings = voiceSettings();
   const ttsLang = ttsLangForText(u.text, settings.lang || 'es-MX');
   u.lang = ttsLang;
-  u.rate = settings.rate;
+  // English sounds more natural at a slightly faster rate than Spanish
+  u.rate  = ttsLang.startsWith('en') ? Math.max(settings.rate, 0.92) : settings.rate;
   u.pitch = settings.pitch;
   u.volume = 1;
   const best = _bestVoice(ttsLang); if (best) u.voice = best;
