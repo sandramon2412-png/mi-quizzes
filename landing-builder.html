@@ -821,6 +821,10 @@ function renderVideoTemplates() {
         const saved = await DB.landings.save(landing, user.id);
         landing = { ...landing, ...saved };
         Landings.save(landing);
+        // Update URL so browser back/refresh loads this landing, not a blank builder
+        if (landing.id && !window.location.search.includes('id=')) {
+          window.history.replaceState(null, '', `?id=${landing.id}`);
+        }
         setStatus('Guardado');
         setTimeout(() => setStatus(landing.published ? 'Publicada' : 'Borrador'), 1200);
       } catch (e) {
@@ -1029,7 +1033,7 @@ function renderVideoTemplates() {
       }
     };
 
-    // ── Chat iteration ──
+    // ── Chat iteration (Lovable-style: stateless, always sends full current HTML as context) ──
     const sendChat = async () => {
       const msg = chatInput.value.trim();
       if (!msg || !landing) return;
@@ -1043,41 +1047,21 @@ function renderVideoTemplates() {
       setStatus('Actualizando…');
 
       try {
-        // Build history: strip full HTML from older assistant turns (keep only the most recent)
-        // to avoid bloating the context and leaving room for the new response.
-        const rawHistory = history
-          .filter(m => typeof m.content === 'string' && m.content.trim())
-          .map(m => ({ role: m.role, content: m.content }));
+        // Stateless approach: always send the full current HTML + specific change request.
+        // This is more reliable than accumulating a conversation history:
+        // - Claude always sees exactly the current state of the landing
+        // - No token bloat from previous HTML versions
+        // - No risk of the new user message being dropped due to alternation issues
+        const ctxMsg = [
+          'LANDING HTML ACTUAL — aplicá el cambio pedido y devolvé la landing COMPLETA:',
+          landing.html,
+          '---',
+          `CAMBIO SOLICITADO: ${msg}`,
+          '',
+          'CRÍTICO: devolvé ÚNICAMENTE el HTML completo de la landing con el cambio aplicado. Empezá con <!DOCTYPE html>. Sin texto, sin explicaciones, sin markdown — solo HTML.',
+        ].join('\n');
 
-        let lastHtmlIdx = -1;
-        for (let i = rawHistory.length - 1; i >= 0; i--) {
-          if (rawHistory[i].role === 'assistant' && /<!DOCTYPE\s+html/i.test(rawHistory[i].content)) {
-            lastHtmlIdx = i; break;
-          }
-        }
-        // Stub older HTML responses; keep only the most recent landing HTML as context
-        let apiHistory = rawHistory.map((m, i) => {
-          if (i !== lastHtmlIdx && m.role === 'assistant' && /<!DOCTYPE\s+html/i.test(m.content)) {
-            return { role: 'assistant', content: '[Versión anterior de la landing — HTML omitido para ahorrar contexto]' };
-          }
-          return m;
-        });
-        // Fix alternation: if consecutive same-role messages exist (e.g. after an error),
-        // keep only the most recent of each pair so _call doesn't silently drop the new msg.
-        const alternated = [];
-        for (const m of apiHistory) {
-          if (alternated.length > 0 && alternated[alternated.length - 1].role === m.role) {
-            alternated[alternated.length - 1] = m; // replace older with newer
-          } else {
-            alternated.push(m);
-          }
-        }
-        apiHistory = alternated.slice(-20);
-
-        // Reinforce that Claude MUST return full HTML — never a text reply
-        const reinforcedMsg = msg + '\n\nCRÍTICO: tu respuesta debe ser la landing COMPLETA con todos los cambios aplicados. Empezá directamente con <!DOCTYPE html>. No incluyas texto explicativo ni markdown — solo HTML.';
-
-        const html = await AI.generateLanding(reinforcedMsg, apiHistory.slice(0, -1));
+        const html = await AI.generateLanding(ctxMsg, []);
         removeThinking();
         history.push({ role: 'assistant', content: html, display: 'Listo, apliqué los cambios.' });
         landing.html = html;
