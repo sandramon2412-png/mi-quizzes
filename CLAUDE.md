@@ -128,23 +128,30 @@ La matriz de capacidades está en `app.js` → `PlanLimits`.
 
 ---
 
-## ESTADO ACTUAL — Todo deployado en `main` (24 abr 2026)
+## ESTADO ACTUAL — Todo deployado en `main` (31 may 2026)
 
-### Free Tier + Biblioteca de Plantillas de Mini-Apps — COMPLETO ✅
-- ✅ **Dashboard manual path para Free/Starter** (`dashboard.html`): `updateMiniAppModalForPlan()` + banner `#ma-no-ai-banner` + gate `if (hasAI)` en `handleCreateMiniApp`
-- ✅ **`miniapp-templates.js`** — 60 plantillas prearmadas con contenido real (58 planificadas + 2 extra de inglés). Función `getBuiltinMiniAppTemplates()`.
-- ✅ **`plantillas-miniapps.html`** — Galería de 356 líneas con filtros por categoría (12), buscador, grid de cards, botón "Usar esta plantilla" que clona al dashboard via localStorage.
+### Mini-App Player — Pantalla "Hoy" premium para todas las categorías ✅
+- ✅ `renderWellnessToday()` + `isWellnessApp()` en `mini-app-player.html`
+- ✅ Light mode glassmorphic cards (`.well-*` CSS, `body[data-theme="light"]`)
+- ✅ Tres modos de renderer (reto/bienestar, fitness/gym, finanzas/plan)
+- ✅ Body map cutoff corregido (`map-engine-open` class + `minmax(0,1fr)`)
 
-### Ebook Builder — COMPLETO ✅ (ver sección detallada abajo)
-- Versión actual: `v20260423n`
-- Bloques visuales, 4 temas de color, botón "Expandir con IA" por sección, cleanup de artefactos del source
+### TTS (Text-to-Speech) — Fixes completos ✅
+- ✅ Todos los templates de inglés tienen `voiceLang:'en-US'`
+- ✅ Panel de voz muestra voces en inglés para apps de inglés
+- ✅ TTS priming automático en primer toque
+- ✅ Fallback graceful si no hay voces inglesas instaladas
 
-### Archivos importantes agregados
+### Ebook Builder — Estado previo ✅ (ver secciones de historial)
+- 🟡 `app.js → PlanLimits`: Pro=999, Growth=999 (temporal para testing) — **REVERTIR** a Pro→5, Growth→20
+
+### Archivos importantes
 | Archivo | Función |
 |---------|---------|
-| `miniapp-templates.js` | 60 plantillas de mini-apps prearmadas para Free/Starter |
-| `plantillas-miniapps.html` | Galería de plantillas de mini-apps con filtros y buscador |
-| `ebook-builder.html` | Builder de documentos estilo Gamma (ebooks, propuestas, presentaciones) |
+| `miniapp-templates.js` | 60 plantillas + `voiceLang:'en-US'` en 4 templates de inglés |
+| `mini-app-player.html` | Player universal — `renderWellnessToday`, `isWellnessApp`, TTS panel |
+| `plantillas-miniapps.html` | Galería de plantillas con filtros |
+| `ebook-builder.html` | Builder de documentos estilo Gamma |
 
 ---
 
@@ -1079,3 +1086,122 @@ Esto hacía que en temas oscuros (dark-neon) el bloque crema se viera totalmente
 | `ebook-print.html` | @page margins, widows/orphans, image-card break-inside:auto, size presets CSS |
 | `landing-builder.html` | Cap apiHistory a 30 mensajes |
 - 🟡 Límites de ebooks (Pro=999, Growth=999) — REVERTIR cuando Sandra confirme que el flujo funciona: Pro→5, Growth→20 en `app.js → PlanLimits`
+
+---
+
+## SESIÓN 31 MAY 2026 — branch `claude/hopeful-ride-4sZKP`
+
+### Contexto
+Sesión enfocada en el mini-app player: hacer que apps de bienestar, fitness y finanzas tengan una pantalla "Hoy" tan premium como Inglés 90 Pro. También múltiples fixes de TTS.
+
+### 1. Pantalla "Hoy" premium universal — COMPLETO ✅
+
+#### Arquitectura del renderer
+La función `renderTodayHome()` en `mini-app-player.html` hace dispatch en este orden:
+1. `isEnglishLearningApp` → `renderEnglishLearningToday` (existente)
+2. `isWellnessApp` → `renderWellnessToday` (NUEVO)
+3. `hasBodyMapExperience` → `renderBodyMapToday` (existente)
+4. Genérico (fallback)
+
+#### `isWellnessApp()` — detección ampliada
+Captura apps por **categoría** (bienestar, fitness, deporte, salud, nutricion, finanzas, negocio, emprendimiento, marketing, productividad, educacion, idiomas, desarrollo personal) O por **datos** (retoContent, roadmapSteps, trackerHabit, initialTasks, affirmations+meditationScript).
+
+#### `renderWellnessToday()` — tres modos
+| Modo | Condición | Tarjeta "Hoy" | Métricas |
+|------|-----------|---------------|---------|
+| **Wellness** (default) | tiene `retoContent` | Día X del reto | días / herramientas / % |
+| **Fitness** | no reto, tiene `roadmapSteps` | Paso actual del plan | pasos / racha / % |
+| **Plan** | no reto ni roadmap, tiene `initialTasks` | Tarea X del planificador | tareas / herramientas / % |
+
+Todos los modos incluyen: hero glassmorphic con pills, métricas 3-col, tarjeta de hoy con barra progreso, grid 2×2 de herramientas rápidas, shortcuts a affirmaciones/meditación/tracker.
+
+#### CSS `.well-*`
+50+ líneas de clases CSS en `mini-app-player.html`. El hero usa `linear-gradient(135deg, var(--accent), ...)`. Las métricas usan `color-mix(in srgb, var(--accent) 4%, var(--card))`. Todo es accent-adaptive — funciona con cualquier paleta de template.
+
+#### Light mode glassmorphic cards
+`body[data-theme="light"] .card { background: color-mix(in srgb, var(--accent) 3%, rgba(255,255,255,.88)); backdrop-filter:blur(8px); }` + extensiones para `.card2`, `.tool-card`, `.day-card`, `.flip-face`, `.btn-secondary`, `.quote-box`, `.bubble.bot`, `.stat-pill`.
+
+### 2. Body map cutoff fix — COMPLETO ✅
+
+**Causa raíz**: el grid 3-columnas del body engine (`220px minmax(420px,1fr) 280px`) requería ~920px. Sin `map-engine-open` el contenedor era 520px → overflow → figura cortada a la derecha.
+
+**Fix en `mini-app-player.html`**:
+- `renderBodyMap()` ahora llama `document.body.classList.toggle('map-engine-open', showEngine)`
+- `showTab()` remueve `map-engine-open` al cambiar a cualquier tab que no sea bodymap
+- CSS: `grid-template-columns: 200px minmax(0,1fr) 260px` (el `minmax(420px,...)` causaba overflow)
+
+### 3. Templates de inglés — `voiceLang:'en-US'` ✅
+
+Solo `tpl-ingles-listening` (B2) tenía `voiceLang:'en-US'`. Se agregó a los 3 restantes:
+- `tpl-ingles-90-tutor`
+- `tpl-ingles-30`
+- `tpl-ingles-speaking`
+
+Ahora los 4 templates de inglés leen el contenido con voz inglesa.
+
+### 4. TTS — múltiples fixes ✅
+
+#### Priming automático
+```js
+let _ttsPrimed = false;
+function _primeTTS() { /* habla utterance silenciosa en primer toque */ }
+document.addEventListener('pointerup', _primeTTS, { once: true, passive: true });
+```
+Ya no es necesario presionar "Probar voz" primero.
+
+#### `ttsLangForText()` simplificada
+```js
+if (isEnglishLearningApp(currentApp)) return currentApp?.voiceLang || 'en-US';
+// else: saved settings → currentApp.voiceLang → currentApp.lang → fallback
+```
+
+#### `_bestVoice()` — sin cross-language
+La voz guardada solo se retorna si `v.lang.startsWith(prefix)` — evita que la voz española guardada sea retornada cuando se pide inglés.
+
+Rama `if (prefix === 'en')` agrega preferencias: Samantha, Ava, Google English → `_voiceQualityScoreEn()`.
+
+#### Fallback sin error
+Si `_bestVoice(ttsLang)` retorna null (no hay voces para ese idioma), usa fallback en lugar de lanzar `language-unavailable`:
+```js
+if (best) { u.voice = best; u.lang = ttsLang; }
+else { u.voice = fallback || primeroDisponible; /* no setea u.lang */ }
+```
+
+#### Rate para inglés
+`u.rate = ttsLang.startsWith('en') ? Math.max(settings.rate, 0.92) : settings.rate`
+
+### 5. Panel de voz — modo inglés ✅
+
+- `englishVoices()` + `_voiceQualityScoreEn()` — funciones nuevas para voces en inglés
+- `hydrateVoicePanel()` detecta `isEnglishLearningApp(currentApp)` → usa `englishVoices()` y muestra label "Inglés" en el panel
+- `saveVoiceSettings()` usa `select._voices` (el array correcto según idioma)
+- `testSelectedVoice()` dice texto en inglés para apps de inglés: *"Hello! This is a voice test for your English learning app."*
+- Filtra voces con score < -10 para ocultar las que nunca funcionan
+
+### Bug crítico introducido y corregido — pills block syntax error
+Al agregar `isPlanMode` en el bloque de pills, quedó `} else { ... } else if (isPlanMode)` — dos `else` seguidos. Rompía TODA la app (página cargando infinito). Fix: reordenar correctamente a `if (...) {} else if (...) {} else {}`. **Verificar siempre con node syntax check antes de pushear cambios en este archivo.**
+
+### Archivos modificados esta sesión
+| Archivo | Cambios clave |
+|---------|---------------|
+| `mini-app-player.html` | `isWellnessApp`, `renderWellnessToday` (3 modos), `.well-*` CSS, light glass cards, body map fix, TTS priming, `englishVoices`, `hydrateVoicePanel` modo inglés |
+| `miniapp-templates.js` | `voiceLang:'en-US'` en tpl-ingles-90-tutor, tpl-ingles-30, tpl-ingles-speaking |
+
+### Commits del branch `claude/hopeful-ride-4sZKP`
+- `d0fd74e` Light mode glass cards
+- `3a5ebca` Wellness today renderer (inicial, solo bienestar)
+- `d3ffa2d` Body map cutoff fix
+- `56a70b6` Wellness renderer para fitness/gym (roadmap+tracker mode)
+- `0ac5dae` Wellness renderer para finanzas/plan (initialTasks mode)
+- `70c014f` **Fix syntax error: double else** — página congelada
+- `d725e0f` TTS: English voice, ignore saved Spanish settings
+- `4ea50d7` TTS: fallback graceful para dispositivos sin voces inglesas
+- `2bc3977` Agregar `voiceLang:'en-US'` a 3 templates de inglés + simplify ttsLangForText
+- `34cd32c` TTS panel: priming, modo inglés, filtro voces malas
+
+### Estado al 31 may 2026
+- ✅ Pantalla "Hoy" premium para bienestar, fitness, finanzas y cualquier app con datos estructurados
+- ✅ TTS funciona sin necesidad de "Probar voz" primero
+- ✅ Panel de voz muestra voces en inglés para apps de inglés
+- ✅ 4 templates de inglés con `voiceLang:'en-US'`
+- 🟡 Límites ebook: Pro=999, Growth=999 → REVERTIR a Pro→5, Growth→20
