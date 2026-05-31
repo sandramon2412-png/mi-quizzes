@@ -760,7 +760,28 @@ function renderVideoTemplates() {
 /* Fix gradient-text descender clipping (letters like g, y, p get cut off at bottom) */
 .bg-clip-text{padding-bottom:0.1em;}
 h1,h2,h3{overflow:visible!important;}
-</style><script>document.addEventListener('click',function(e){var a=e.target.closest('a,button');if(a&&(!a.href||a.getAttribute('href')==='#'||a.tagName==='BUTTON')){e.preventDefault();}},true);<\/script>`;
+</style><script>
+document.addEventListener('click', function(e) {
+  var a = e.target.closest('a');
+  if (a) {
+    var href = a.getAttribute('href') || '';
+    if (href.startsWith('#')) {
+      // Internal anchor — scroll within preview instead of opening new tab
+      e.preventDefault();
+      var target = document.querySelector(href);
+      if (target) target.scrollIntoView({ behavior: 'smooth' });
+      return;
+    }
+    if (!href || href === 'javascript:void(0)' || href === 'javascript:;') {
+      e.preventDefault();
+      return;
+    }
+    // External links: base target="_blank" opens them in new tab (correct)
+  }
+  var btn = e.target.closest('button[type="submit"],button:not([type])');
+  if (btn && !btn.closest('form')) e.preventDefault();
+}, true);
+<\/script>`;
     const PREVIEW_INJECTION_RE = /<base target="_blank">\s*<script>[^<]*<\/script>\s*/;
 
     let _previewLoadingEl = null;
