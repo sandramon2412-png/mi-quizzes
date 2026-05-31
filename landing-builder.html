@@ -74,7 +74,11 @@
   <button id="btn-edit-html" class="hidden h-9 w-9 rounded-lg bg-surface-container-high hover:bg-surface-container-highest flex items-center justify-center transition-colors" title="Editar código HTML (avanzado)">
     <span class="material-symbols-outlined" style="font-size:16px">code</span>
   </button>
-  <button id="btn-open" class="hidden h-9 px-3 rounded-lg bg-surface-container-high hover:bg-surface-container-highest text-xs font-semibold flex items-center gap-1.5 transition-colors" title="Abrir en nueva pestaña">
+  <button id="btn-preview-new-tab" class="hidden h-9 px-3 rounded-lg bg-surface-container-high hover:bg-surface-container-highest text-xs font-semibold flex items-center gap-1.5 transition-colors" title="Vista previa completa en nueva pestaña">
+    <span class="material-symbols-outlined" style="font-size:16px">preview</span>
+    <span class="hidden md:inline">Vista previa</span>
+  </button>
+  <button id="btn-open" class="hidden h-9 px-3 rounded-lg bg-surface-container-high hover:bg-surface-container-highest text-xs font-semibold flex items-center gap-1.5 transition-colors" title="Abrir landing publicada en nueva pestaña">
     <span class="material-symbols-outlined" style="font-size:16px">open_in_new</span>
     <span class="hidden md:inline">Abrir</span>
   </button>
@@ -782,7 +786,8 @@ document.addEventListener('click', function(e) {
   if (btn && !btn.closest('form')) e.preventDefault();
 }, true);
 <\/script>`;
-    const PREVIEW_INJECTION_RE = /<base target="_blank">\s*<script>[^<]*<\/script>\s*/;
+    // Strips EVERYTHING from <base target="_blank"> through the first </script> (covers old and new injection format)
+    const PREVIEW_INJECTION_RE = /<base target="_blank">[\s\S]*?<\/script>/;
 
     let _previewLoadingEl = null;
     const renderPreview = (html) => {
@@ -995,6 +1000,7 @@ document.addEventListener('click', function(e) {
       if (_isEditing) exitEditMode(); else enterEditMode();
     };
 
+    const previewNewTabBtn = document.getElementById('btn-preview-new-tab');
     const updatePublishUI = () => {
       if (landing?.published) {
         publishBtn.innerHTML = `<span class="material-symbols-outlined" style="font-size:16px">check_circle</span>Publicada`;
@@ -1011,11 +1017,31 @@ document.addEventListener('click', function(e) {
       if (landing?.html) {
         editHtmlBtn.classList.remove('hidden');
         editVisualBtn.classList.remove('hidden');
+        previewNewTabBtn.classList.remove('hidden');
       } else {
         editHtmlBtn.classList.add('hidden');
         editVisualBtn.classList.add('hidden');
+        previewNewTabBtn.classList.add('hidden');
       }
       if (landing?.slug) slugPreview.value = landing.slug;
+    };
+
+    previewNewTabBtn.onclick = () => {
+      if (!landing?.html) return;
+      // Use current iframe DOM if available (captures unsaved manual edits too)
+      let htmlToShow = landing.html;
+      try {
+        const liveDoc = previewFrame.contentDocument;
+        if (liveDoc && liveDoc.documentElement) {
+          const liveHtml = '<!DOCTYPE html>\n' + liveDoc.documentElement.outerHTML;
+          const liveClean = liveHtml.replace(PREVIEW_INJECTION_RE, '').trim();
+          if (liveClean.length > 1000 && liveClean.includes('<body')) htmlToShow = liveClean;
+        }
+      } catch (_) {}
+      const blob = new Blob([htmlToShow], { type: 'text/html; charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      window.open(url, '_blank');
+      setTimeout(() => URL.revokeObjectURL(url), 120000);
     };
 
     // Manual HTML editor
@@ -1300,6 +1326,20 @@ document.addEventListener('click', function(e) {
       setStatus('Actualizando…');
 
       try {
+        // ── Sync desde iframe DOM ANTES de cualquier edición ──
+        // Captura cambios manuales (imágenes subidas, colores editados, texto editado)
+        // incluso si el usuario no hizo click en "Terminar" en el modo visual.
+        try {
+          const liveDoc = previewFrame.contentDocument;
+          if (liveDoc && liveDoc.documentElement) {
+            const liveHtml = '<!DOCTYPE html>\n' + liveDoc.documentElement.outerHTML;
+            const liveClean = liveHtml.replace(PREVIEW_INJECTION_RE, '').trim();
+            if (liveClean.length > 1000 && liveClean.includes('<body')) {
+              landing.html = liveClean;
+            }
+          }
+        } catch (_) { /* cross-origin o iframe vacío — usar landing.html tal como está */ }
+
         // ── Modo quirúrgico: edita solo la sección detectada ──
         const targetSectionId = detectTargetSection(msg);
 
