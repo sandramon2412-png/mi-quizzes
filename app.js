@@ -1097,7 +1097,7 @@ Si encontrás que BONOS no está en el HTML generado, insertá la sección compl
 
   async generateLanding(brief, history = []) {
     const messages = [...history, { role: 'user', content: brief }];
-    const text = await this._call(messages, 12000, {
+    const text = await this._call(messages, 16000, {
       model: 'claude-sonnet-4-6',
       system: this._landingSystemPrompt(),
     });
