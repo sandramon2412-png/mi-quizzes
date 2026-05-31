@@ -1819,6 +1819,9 @@ const PlanLimits = {
 };
 
 function getPlanCaps(plan) {
+  // Dev/testing override: localStorage.setItem('ls_plan_override','elite') in browser console
+  const override = typeof localStorage !== 'undefined' && localStorage.getItem('ls_plan_override');
+  if (override && PlanLimits[override]) return PlanLimits[override];
   return PlanLimits[plan] || PlanLimits.free;
 }
 
