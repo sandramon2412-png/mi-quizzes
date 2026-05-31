@@ -1156,8 +1156,8 @@ REGLAS INAMOVIBLES:
 
     const text = await this._call(
       [{ role: 'user', content: userMsg }],
-      6000,
-      { model: 'claude-haiku-4-5-20251001', system }
+      4000,
+      { model: 'claude-sonnet-4-6', system }  // Sonnet: sigue instrucciones complejas sin simplificar
     );
     let html = text.trim()
       .replace(/^```html\s*/i, '').replace(/^```\s*/i, '').replace(/```\s*$/i, '').trim();

@@ -1469,6 +1469,23 @@ document.addEventListener('click', function(e) {
       const reader = new FileReader();
       reader.onload = (ev) => {
         _selectedEl.src = ev.target.result;
+        // Mostrar la imagen completa sin recorte (el generador la pone con tamaño fijo)
+        _selectedEl.style.objectFit = 'contain';
+        _selectedEl.style.objectPosition = 'center';
+        _selectedEl.style.maxHeight = 'none';
+        // Si la imagen estaba absolute (fondo del hero, etc.), convertirla a relativa
+        const pos = previewFrame.contentWindow.getComputedStyle(_selectedEl).position;
+        if (pos === 'absolute') {
+          const parent = _selectedEl.parentElement;
+          if (parent) {
+            _selectedEl.style.position = 'relative';
+            _selectedEl.style.width = '100%';
+            _selectedEl.style.height = 'auto';
+            _selectedEl.style.inset = '';
+            parent.style.height = 'auto';
+            parent.style.minHeight = '200px';
+          }
+        }
         toast('Imagen cargada — hacé clic en "Terminar" para guardar');
       };
       reader.readAsDataURL(file);
