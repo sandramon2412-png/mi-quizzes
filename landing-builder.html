@@ -1168,8 +1168,14 @@ function renderVideoTemplates() {
         await persistLanding();
       } catch (e) {
         console.error(e);
-        toast('Error generando: ' + e.message, 'err');
-        setStatus('Error');
+        const isTimeout = e.message && (e.message.includes('tiempo') || e.message.includes('timeout') || e.message.includes('504') || e.message.includes('546'));
+        if (isTimeout) {
+          toast('Tiempo de espera agotado — la IA tardó demasiado. Intentá de nuevo.', 'err');
+          setStatus('Timeout — intentá de nuevo');
+        } else {
+          toast('Error: ' + e.message, 'err');
+          setStatus('Error');
+        }
       } finally {
         genBtn.disabled = false;
         genBtn.innerHTML = `<span class="material-symbols-outlined" style="font-size:18px">bolt</span>Generar mi landing`;
