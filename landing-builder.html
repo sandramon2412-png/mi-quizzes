@@ -47,6 +47,7 @@
 
   .toast { animation: toast-in .25s ease both; }
   @keyframes toast-in { from { opacity:0; transform: translateY(-6px);} to { opacity:1; transform:translateY(0);} }
+  @keyframes spin { to { transform: rotate(360deg); } }
 </style>
 </head>
 <body class="bg-background text-on-background" data-lloyd-default-mode="landing">
@@ -132,6 +133,15 @@
           <label class="text-[11px] font-semibold text-on-surface-variant block mb-1">Detalles extra (opcional)</label>
           <textarea id="fld-extras" rows="2" placeholder="Ej: testimonios específicos, colores de marca, módulos del curso, garantía personalizada…"
                     class="w-full bg-surface-container border border-outline-variant/40 rounded-lg px-3 py-2 text-sm focus:border-primary focus:ring-0 outline-none resize-none"></textarea>
+        </div>
+        <div>
+          <label class="text-[11px] font-semibold text-on-surface-variant block mb-1">
+            Tus estadísticas reales
+            <span class="ml-1 text-[10px] font-normal text-on-surface-variant/60">(evita los "0" en la sección de métricas)</span>
+          </label>
+          <input id="fld-stats" type="text" placeholder="Ej: 2,400 familias, 97% de éxito, 48 actividades, 30 días de garantía"
+                 class="w-full bg-surface-container border border-outline-variant/40 rounded-lg px-3 py-2 text-sm focus:border-primary focus:ring-0 outline-none"/>
+          <p class="text-[10px] text-on-surface-variant/60 mt-1">Separalos con comas. Si dejás vacío, Claude pone números genéricos.</p>
         </div>
         <div>
           <label class="text-[11px] font-semibold text-on-surface-variant block mb-1">URL de referencia visual (opcional)</label>
@@ -335,7 +345,7 @@
       <h3 class="text-lg font-bold mb-1">Tu landing va a aparecer acá</h3>
       <p class="text-sm max-w-md">Completá el formulario de la izquierda y Claude Sonnet te genera la landing completa en ~15 segundos. Vas a poder iterarla por chat hasta que quede como querés.</p>
     </div>
-    <iframe id="preview-frame" class="hidden flex-1 w-full bg-white" sandbox="allow-same-origin allow-scripts allow-popups allow-forms" title="Preview"></iframe>
+    <iframe id="preview-frame" class="hidden flex-1 w-full" style="background:#09090b" sandbox="allow-same-origin allow-scripts allow-popups allow-forms" title="Preview"></iframe>
   </section>
 </main>
 
@@ -746,14 +756,33 @@ function renderVideoTemplates() {
 
     const setStatus = (s) => { statusEl.textContent = s; };
 
-    const PREVIEW_INJECTION = `<base target="_blank"><script>document.addEventListener('click',function(e){var a=e.target.closest('a,button');if(a&&(!a.href||a.getAttribute('href')==='#'||a.tagName==='BUTTON')){e.preventDefault();}},true);<\/script>`;
+    const PREVIEW_INJECTION = `<base target="_blank"><style>
+/* Fix gradient-text descender clipping (letters like g, y, p get cut off at bottom) */
+.bg-clip-text{padding-bottom:0.1em;}
+h1,h2,h3{overflow:visible!important;}
+</style><script>document.addEventListener('click',function(e){var a=e.target.closest('a,button');if(a&&(!a.href||a.getAttribute('href')==='#'||a.tagName==='BUTTON')){e.preventDefault();}},true);<\/script>`;
     const PREVIEW_INJECTION_RE = /<base target="_blank">\s*<script>[^<]*<\/script>\s*/;
 
+    let _previewLoadingEl = null;
     const renderPreview = (html) => {
       previewEmpty.classList.add('hidden');
       previewFrame.classList.remove('hidden');
+      // Show loading overlay while iframe processes HTML + Tailwind CDN
+      if (!_previewLoadingEl) {
+        _previewLoadingEl = document.createElement('div');
+        _previewLoadingEl.id = 'preview-loading';
+        _previewLoadingEl.style.cssText = 'position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:#09090b;z-index:10;pointer-events:none;';
+        _previewLoadingEl.innerHTML = '<div style="width:24px;height:24px;border:2px solid #333;border-top-color:#4d7cff;border-radius:50%;animation:spin .7s linear infinite"></div>';
+        previewFrame.parentElement.style.position = 'relative';
+        previewFrame.parentElement.appendChild(_previewLoadingEl);
+      } else {
+        _previewLoadingEl.style.display = 'flex';
+      }
+      previewFrame.onload = () => { if (_previewLoadingEl) _previewLoadingEl.style.display = 'none'; };
       const withInjection = (html || '').replace(/<head[^>]*>/i, (m) => m + PREVIEW_INJECTION);
       previewFrame.srcdoc = withInjection || html || '';
+      // Fallback: hide spinner after 4s even if onload doesn't fire
+      setTimeout(() => { if (_previewLoadingEl) _previewLoadingEl.style.display = 'none'; }, 4000);
     };
 
     // ── Visual edit mode ──
@@ -1053,6 +1082,7 @@ function renderVideoTemplates() {
         const audience = document.getElementById('fld-audience').value.trim();
         const price    = document.getElementById('fld-price').value.trim();
         const extras   = document.getElementById('fld-extras').value.trim();
+        const stats    = document.getElementById('fld-stats')?.value.trim();
         const refurl   = document.getElementById('fld-refurl').value.trim();
         if (!product) { toast('Contanos qué vendés', 'err'); return; }
         coreBrief = [
@@ -1060,6 +1090,7 @@ function renderVideoTemplates() {
           audience ? `Audiencia: ${audience}.` : '',
           price    ? `Precio/oferta: ${price}.` : '',
           extras   ? `Detalles adicionales: ${extras}` : '',
+          stats    ? `ESTADÍSTICAS REALES — usá ESTOS números exactos en la sección de métricas (no inventes, no pongas 0): ${stats}` : '',
           refurl   ? `INSPIRACIÓN VISUAL: tomá como referencia el estilo del sitio ${refurl} — paleta, tipografía, espaciado, tono visual.` : '',
         ].filter(Boolean).join('\n');
         briefDisplay = product;
