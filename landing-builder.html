@@ -1184,7 +1184,57 @@ function renderVideoTemplates() {
       }
     };
 
-    // ── Chat iteration (Lovable-style: stateless, always sends full current HTML as context) ──
+    // ── Edición quirúrgica por sección (Lovable-style: solo toca la sección pedida) ──
+
+    // Mapeo de palabras clave → id de sección
+    const SECTION_KEYWORDS = {
+      'ld-nav':        ['nav', 'navegación', 'navegacion', 'menú', 'menu', 'header', 'cabecera', 'logo', 'link nav', 'barra de navegación'],
+      'ld-hero':       ['hero', 'título principal', 'titulo principal', 'h1', 'encabezado', 'titular', 'portada', 'cta principal', 'botón principal', 'boton principal', 'subtítulo', 'subtitulo', 'badge de urgencia', 'avatares apilados', 'fondo del hero', 'video de fondo', 'primera sección', 'primera seccion'],
+      'ld-para-quien': ['para quién', 'para quien', 'para vos', 'ideal para', 'no es para', 'público objetivo', 'audiencia objetivo', 'para ti', 'a quién va dirigido', 'a quien va dirigido'],
+      'ld-problema':   ['problema', 'dolor', 'frustración', 'frustracion', 'te suena', 'situaciones', 'pain point', 'qué sientes', 'que sientes', 'dificultades'],
+      'ld-metricas':   ['métricas', 'metricas', 'estadísticas', 'estadisticas', 'números grandes', 'numeros grandes', 'stats', 'cifras', 'resultados en números', 'contadores', 'datos de impacto'],
+      'ld-beneficios': ['beneficios', 'ventajas', 'qué vas a lograr', 'que vas a lograr', 'lo que obtenés', 'lo que obtenes', 'lo que aprenderás', 'lo que aprenderas', 'beneficio'],
+      'ld-modulos':    ['módulos', 'modulos', 'qué incluye', 'que incluye', 'contenido del curso', 'lecciones', 'temario', 'programa', 'currículum', 'curriculum', 'clases', 'módulo', 'modulo'],
+      'ld-testimonios':['testimonios', 'testimonio', 'reseñas', 'reseña', 'reseñas de alumnos', 'opiniones', 'resultados de alumnos', 'casos de éxito', 'casos de exito', 'alumnos dicen', 'clientes dicen'],
+      'ld-bonos':      ['bonos', 'bono', 'bonus', 'extras', 'regalos', 'regalo', 'incluido gratis', 'gratis con la compra', 'valor de los bonos'],
+      'ld-stack':      ['stack', 'valor total', 'todo lo que recibís', 'todo lo que recibes', 'precio tachado', 'precio original', 'inversión total', 'inversion total', 'resumen de valor'],
+      'ld-garantia':   ['garantía', 'garantia', 'guarantee', 'escudo', 'riesgo', 'reembolso', '30 días de garantía', '30 dias de garantia', 'sin riesgo'],
+      'ld-faq':        ['faq', 'preguntas frecuentes', 'pregunta', 'frecuentes', 'dudas', 'respuestas', 'accordion', 'preguntas y respuestas'],
+      'ld-cta-final':  ['cta final', 'llamada a la acción final', 'llamado a la accion final', 'botón final', 'boton final', 'compra ahora', 'empezar ahora', 'cupos disponibles', 'oferta final', 'precio final', 'última sección', 'ultima seccion'],
+      'ld-footer':     ['footer', 'pie de página', 'pie de pagina', 'copyright', 'links legales', 'pie'],
+    };
+
+    function detectTargetSection(msg) {
+      const lower = msg.toLowerCase();
+      for (const [sectionId, keywords] of Object.entries(SECTION_KEYWORDS)) {
+        if (keywords.some(kw => lower.includes(kw))) return sectionId;
+      }
+      return null;
+    }
+
+    function extractSection(fullHtml, sectionId) {
+      try {
+        const doc = new DOMParser().parseFromString(fullHtml, 'text/html');
+        const el = doc.getElementById(sectionId);
+        return el ? el.outerHTML : null;
+      } catch { return null; }
+    }
+
+    function spliceSection(fullHtml, sectionId, newSectionHtml) {
+      try {
+        const doc = new DOMParser().parseFromString(fullHtml, 'text/html');
+        const el = doc.getElementById(sectionId);
+        if (!el) return fullHtml;
+        // Parse new section and insert
+        const tmp = new DOMParser().parseFromString(`<body>${newSectionHtml}</body>`, 'text/html');
+        const newEl = tmp.body.firstElementChild;
+        if (!newEl) return fullHtml;
+        el.replaceWith(newEl);
+        return '<!DOCTYPE html>\n' + doc.documentElement.outerHTML;
+      } catch { return fullHtml; }
+    }
+
+    // ── Chat iteration (sección quirúrgica cuando es posible, full-page como fallback) ──
     const sendChat = async () => {
       const msg = chatInput.value.trim();
       if (!msg || !landing) return;
@@ -1198,7 +1248,28 @@ function renderVideoTemplates() {
       setStatus('Actualizando…');
 
       try {
-        // Strip base64 images before sending — they can be 500k+ chars and blow the token limit
+        // ── Modo quirúrgico: edita solo la sección detectada ──
+        const targetSectionId = detectTargetSection(msg);
+
+        if (targetSectionId) {
+          const sectionHtml = extractSection(landing.html, targetSectionId);
+          if (sectionHtml) {
+            const contextBrief = (landing.brief || '')
+              .replace(/src="data:[a-zA-Z0-9/+;,]{50,}"/g, 'src="[IMG]"')
+              .slice(0, 2000);
+            const newSectionHtml = await AI.editLandingSection(targetSectionId, sectionHtml, msg, contextBrief);
+            const newHtml = spliceSection(landing.html, targetSectionId, newSectionHtml);
+            removeThinking();
+            history.push({ role: 'assistant', content: newHtml, display: `Listo, actualicé la sección.` });
+            landing.html = newHtml;
+            renderPreview(newHtml);
+            renderMessages();
+            await persistLanding();
+            return;
+          }
+        }
+
+        // ── Fallback: reemplazo de página completa (para cambios generales o si no se encontró la sección) ──
         const htmlForCtx = (landing.html || '')
           .replace(/src="data:[a-zA-Z0-9/+;,]{50,}"/g, 'src="[IMAGEN_SUBIDA]"')
           .replace(/url\(data:[a-zA-Z0-9/+;,]{50,}\)/g, 'url([IMAGEN_SUBIDA])');
