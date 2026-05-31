@@ -937,12 +937,12 @@ ESTÉTICA OBLIGATORIA (salvo que el creador indique otra cosa):
 • Radial gradients de fondo en hero con blur-3xl.
 
 MANEJO DE IMÁGENES (leer del brief):
-• Si el brief dice IMÁGENES tipo="placeholder": usa Pollinations.ai para generar imágenes IA reales y relevantes al producto. Formato: <img src="https://image.pollinations.ai/prompt/PROMPT?width=800&height=500&nologo=true" alt="..." class="w-full rounded-2xl object-cover" loading="lazy"/>
+• Si el brief dice IMÁGENES tipo="placeholder": usa Pollinations.ai para generar imágenes IA reales y relevantes al producto. Formato: <img src="https://image.pollinations.ai/prompt/PROMPT?width=800&height=500&nologo=true" alt="..." class="w-full max-h-72 rounded-2xl object-cover" loading="lazy"/>
   - Construí el PROMPT en inglés, específico al nicho del producto, siempre terminando con: +professional+high+quality+modern+dark+background
   - Ejemplos: curso de finanzas → "financial+freedom+laptop+woman+entrepreneur+professional+high+quality+modern+dark+background"; fitness → "woman+fitness+workout+healthy+lifestyle+professional+high+quality+modern+dark+background"; coaching → "business+coaching+success+mentor+professional+high+quality+modern+dark+background"; espiritualidad → "meditation+zen+peaceful+spiritual+woman+professional+high+quality+modern+dark+background"
   - IMPORTANTE: variá los prompts entre imágenes — no uses el mismo para todas. Una puede mostrar al usuario ideal, otra el producto/resultado, otra el proceso.
   - Cada imagen diferente = prompt diferente y descriptivo del contexto donde aparece.
-• Si el brief dice IMÁGENES tipo="upload": usa divs de upload: <div data-upload-slot="true" class="w-full aspect-video rounded-2xl border-2 border-dashed border-zinc-700 hover:border-blue-500/50 transition flex flex-col items-center justify-center gap-3 bg-zinc-900/40 cursor-pointer"><span class="material-symbols-outlined text-zinc-500" style="font-size:40px">cloud_upload</span><p class="text-sm text-zinc-500 font-medium">Clic para agregar imagen</p></div>
+• Si el brief dice IMÁGENES tipo="upload": usa divs de upload con altura moderada (no aspect-video): <div data-upload-slot="true" class="w-full h-48 rounded-2xl border-2 border-dashed border-zinc-700 hover:border-blue-500/50 transition flex flex-col items-center justify-center gap-2 bg-zinc-900/40 cursor-pointer"><span class="material-symbols-outlined text-zinc-500" style="font-size:32px">cloud_upload</span><p class="text-sm text-zinc-500 font-medium">Clic para agregar imagen</p></div>
 • Si el brief dice IMÁGENES tipo="none": no incluyas imágenes de producto.
 • Siempre distribuí las imágenes a lo largo de la landing (hero, módulos, testimonios), no todas juntas.
 
