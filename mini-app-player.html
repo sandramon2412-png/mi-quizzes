@@ -1215,7 +1215,9 @@
       </div>
       <button onclick="closeVoicePanel()" class="icon-btn" style="width:34px;height:34px"><span class="material-symbols-outlined" style="font-size:17px">close</span></button>
     </div>
-    <label style="display:block;font-size:11px;font-weight:800;color:var(--accent);margin-bottom:6px;text-transform:uppercase;letter-spacing:.08em">Voz</label>
+    <label style="display:flex;align-items:center;justify-content:space-between;font-size:11px;font-weight:800;color:var(--accent);margin-bottom:6px;text-transform:uppercase;letter-spacing:.08em">
+      Voz <span id="voice-panel-lang" style="font-weight:700;opacity:.7;font-size:10px;text-transform:none;letter-spacing:0">Español</span>
+    </label>
     <select id="voice-select" class="voice-field" onchange="saveVoiceSettings()"></select>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:14px 0">
       <label style="font-size:11px;color:var(--muted);font-weight:700">Velocidad
@@ -6709,6 +6711,20 @@ function playBell(freq=440, duration=2.5) {
 
 // â”€â”€ TTS (Text-to-Speech) chunked — fix Chrome que corta textos largos â”€â”€
 let _voiceQueue = [], _voiceIdx = 0, _voiceStopped = true, _voicePaused = false, _lastUtterance = null;
+let _ttsPrimed = false;
+function _primeTTS() {
+  if (_ttsPrimed || !window.speechSynthesis) return;
+  _ttsPrimed = true;
+  try {
+    const u = new SpeechSynthesisUtterance(' '); // non-breaking space — silent prime
+    u.volume = 0;
+    u.onend = () => window.speechSynthesis.cancel();
+    window.speechSynthesis.speak(u);
+  } catch {}
+}
+// Prime on first user interaction so any TTS call works without "Probar voz" first
+document.addEventListener('pointerup', _primeTTS, { once: true, passive: true });
+
 if (window.speechSynthesis) {
   window.speechSynthesis.onvoiceschanged = () => hydrateVoicePanel();
 }
@@ -6734,6 +6750,25 @@ function spanishVoices() {
   return voices.slice().sort((a, b) => _voiceQualityScore(b) - _voiceQualityScore(a));
 }
 
+function englishVoices() {
+  const all = window.speechSynthesis?.getVoices() || [];
+  const en = all.filter(v => /^en/i.test(v.lang));
+  const voices = en.length ? en : all;
+  return voices.slice().sort((a, b) => _voiceQualityScoreEn(b) - _voiceQualityScoreEn(a));
+}
+
+function _voiceQualityScoreEn(v) {
+  const name = `${v?.name || ''} ${v?.lang || ''}`.toLowerCase();
+  let score = 0;
+  if (/neural|natural|online|premium|enhanced|cloud|google|microsoft|edge/i.test(name)) score += 35;
+  if (/samantha|ava|allison|victoria|karen|serena|moira|tessa|daniel|alex/i.test(name)) score += 25;
+  if (/google.*us|google.*english|google.*uk/i.test(name)) score += 20;
+  if (/^en-(US|GB|AU|CA)/i.test(v?.lang || '')) score += 15;
+  if (!v?.localService) score += 10;
+  if (/desktop|compact|legacy|eloquence|espeak|festival|pico/i.test(name)) score -= 25;
+  return score;
+}
+
 function _voiceQualityScore(v) {
   const name = `${v?.name || ''} ${v?.lang || ''}`.toLowerCase();
   let score = 0;
@@ -6749,19 +6784,41 @@ function _voiceQualityScore(v) {
 function hydrateVoicePanel() {
   const select = document.getElementById('voice-select');
   if (!select) return;
-  const voices = spanishVoices();
+  const isEn = isEnglishLearningApp(currentApp);
+  const voices = isEn ? englishVoices() : spanishVoices();
   const settings = voiceSettings();
-  select.innerHTML = voices.map((v, i) => {
-    const quality = _voiceQualityScore(v);
-    const label = quality >= 45 ? 'recomendada' : (v.localService ? 'local' : 'online');
-    return `<option value="${i}">${esc(v.name)} - ${esc(v.lang)} - ${label}</option>`;
+
+  // Update panel title to reflect current language
+  const panelTitle = document.getElementById('voice-panel-lang');
+  if (panelTitle) panelTitle.textContent = isEn ? 'Inglés' : 'Español';
+
+  // Filter out voices that are very unlikely to work (score < -10)
+  const goodVoices = voices.filter(v => {
+    const s = isEn ? _voiceQualityScoreEn(v) : _voiceQualityScore(v);
+    return s > -10;
+  });
+  const displayVoices = goodVoices.length >= 2 ? goodVoices : voices;
+
+  select.innerHTML = displayVoices.map((v, i) => {
+    const score = isEn ? _voiceQualityScoreEn(v) : _voiceQualityScore(v);
+    const label = score >= 45 ? '★ recomendada' : (!v.localService ? 'online' : 'local');
+    return `<option value="${i}">${esc(v.name)} — ${esc(v.lang)} — ${label}</option>`;
   }).join('');
-  const selectedIndex = voices.findIndex(v => v.name === settings.name && v.lang === settings.lang);
+
+  const savedLangPrefix = (settings.lang || 'es').split('-')[0];
+  const targetLang = isEn ? 'en' : 'es';
+  const selectedIndex = displayVoices.findIndex(v =>
+    v.name === settings.name && v.lang.startsWith(targetLang)
+  );
   select.value = String(selectedIndex >= 0 ? selectedIndex : 0);
+
   const rate = document.getElementById('voice-rate');
   const pitch = document.getElementById('voice-pitch');
   if (rate) rate.value = String(settings.rate);
   if (pitch) pitch.value = String(settings.pitch);
+
+  // Store voices for saveVoiceSettings
+  select._voices = displayVoices;
 }
 
 function openVoicePanel() {
@@ -6774,8 +6831,8 @@ function closeVoicePanel() {
 }
 
 function saveVoiceSettings() {
-  const voices = spanishVoices();
   const select = document.getElementById('voice-select');
+  const voices = select?._voices || (isEnglishLearningApp(currentApp) ? englishVoices() : spanishVoices());
   const chosen = voices[Number(select?.value || 0)] || voices[0];
   const settings = {
     version: 2,
@@ -6795,7 +6852,11 @@ function saveVoiceSettings() {
 
 function testSelectedVoice() {
   saveVoiceSettings();
-  speakShort('Hola, esta es una prueba de voz para tu mini app. Puedes cambiarla hasta encontrar una que suene más amable.');
+  const isEn = isEnglishLearningApp(currentApp);
+  const text = isEn
+    ? 'Hello! This is a voice test for your English learning app. Let\'s practice together!'
+    : 'Hola, esta es una prueba de voz. Puedes cambiarla hasta encontrar una que suene natural.';
+  speakShort(text);
 }
 
 function _bestVoice(lang) {
