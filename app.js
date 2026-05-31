@@ -1137,7 +1137,13 @@ REGLAS INAMOVIBLES:
 1. Devolvé SOLO el HTML de la sección — desde el tag de apertura (<section id="${sectionId}">, <nav id="${sectionId}"> o <footer id="${sectionId}">) hasta su tag de cierre correspondiente.
 2. NO incluyas <!DOCTYPE>, <html>, <head>, <body> ni nada fuera de la sección.
 3. El id="${sectionId}" debe mantenerse exactamente igual.
-4. Aplicá SOLO el cambio solicitado. Conservá todo el estilo, clases Tailwind y contenido que no sea afectado por el cambio.
+4. ⚠️ CONSERVACIÓN ESTRICTA — NO simplificues ni reduzcas el contenido existente:
+   - Si la sección tiene 6 preguntas FAQ, devolvé las 6 con sus respuestas completas.
+   - Si la sección tiene 3 testimonios, devolvé los 3 con todos sus datos.
+   - Si la sección tiene imágenes, conservá TODAS las imágenes con sus URLs EXACTAS (src sin cambios).
+   - Si hay colores inline (style="color:...", style="background:..."), conservalos exactamente.
+   - Si hay clases Tailwind, conservalas exactamente.
+   - SOLO cambiá lo que fue pedido explícitamente. El resto permanece IDÉNTICO al original.
 5. NUNCA uses emojis. Material Symbols válidos (copia el nombre en minúsculas): psychology, school, bolt, star, check_circle, rocket_launch, diamond, workspace_premium, shield, verified, auto_awesome, emoji_events, trending_up, person, group, favorite, monetization_on, savings, business_center, work, fitness_center, spa, health_and_safety, restaurant, menu_book, computer, code, analytics, bar_chart, pie_chart, play_circle, email, phone, location_on, home, shopping_cart, schedule, calendar_today, lock, security, help, info, warning_amber, wb_sunny, eco, engineering, music_note, travel_explore, flight, storefront, payment, celebration, support, lightbulb, format_quote, thumb_up, military_tech, speed, layers, hub, devices, cloud_done, done_all
 6. PROHIBIDO: template literals \${...}, .map(), .filter(), .forEach(), ni código JS fuera de un <script>.`;
 
@@ -1145,12 +1151,12 @@ REGLAS INAMOVIBLES:
       contextBrief ? `CONTEXTO DEL PRODUCTO:\n${contextBrief}\n` : '',
       `SECCIÓN ACTUAL (id="${sectionId}"):\n${sectionHtml}`,
       `\nCAMBIO SOLICITADO: ${change}`,
-      `\nDevolvé SOLO el HTML de esta sección modificada, empezando con su tag de apertura.`,
+      `\nDevolvé SOLO el HTML de esta sección modificada, conservando TODO el contenido existente excepto lo pedido. Empezá con el tag de apertura.`,
     ].filter(Boolean).join('\n');
 
     const text = await this._call(
       [{ role: 'user', content: userMsg }],
-      4000,
+      6000,
       { model: 'claude-haiku-4-5-20251001', system }
     );
     let html = text.trim()
