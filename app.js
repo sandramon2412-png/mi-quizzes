@@ -1097,7 +1097,7 @@ Si encontrás que BONOS no está en el HTML generado, insertá la sección compl
 
   async generateLanding(brief, history = []) {
     const messages = [...history, { role: 'user', content: brief }];
-    const text = await this._call(messages, 8000, {
+    const text = await this._call(messages, 12000, {
       model: 'claude-sonnet-4-6',
       system: this._landingSystemPrompt(),
     });
@@ -1106,6 +1106,9 @@ Si encontrás que BONOS no está en el HTML generado, insertá la sección compl
     html = html.replace(/^```html\s*/i, '').replace(/^```\s*/i, '').replace(/```\s*$/i, '').trim();
     const docStart = html.search(/<!DOCTYPE\s+html/i);
     if (docStart > 0) html = html.slice(docStart);
+    if (!/<html[\s>]/i.test(html)) {
+      throw new Error('La IA respondió con texto en vez de HTML. Volvé a enviarlo.');
+    }
     return html;
   },
 

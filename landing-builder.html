@@ -994,7 +994,9 @@ function renderVideoTemplates() {
       setStatus('Generando con Claude Sonnet…');
 
       try {
-        const html = await AI.generateLanding(brief, []);
+        // Append mandatory-sections autocheck so Claude doesn't skip sections
+        const autocheck = '\n\nANTES DE CERRAR </html>: verificá que incluís TODAS estas secciones — si falta alguna, agregala antes de terminar: (1) Hero con CTA, (2) Para quién es/no es, (3) Problema/dolor, (4) Métricas, (5) Beneficios en grid, (6) Qué incluye/módulos, (7) Mínimo 3 testimonios, (8) BONOS con valores tachados + "INCLUIDO GRATIS", (9) Stack de valor, (10) Garantía con escudo, (11) FAQ mínimo 6 preguntas, (12) CTA final con urgencia y precio, (13) Footer.';
+        const html = await AI.generateLanding(brief + autocheck, []);
         history = [
           { role: 'user', content: brief },
           { role: 'assistant', content: html, display: 'Acá tenés la primera versión. Pedime cambios si querés.' },
@@ -1041,12 +1043,41 @@ function renderVideoTemplates() {
       setStatus('Actualizando…');
 
       try {
-        // Only send role+content to Claude (strip display, drop empty content blocks)
-        const apiHistory = history
+        // Build history: strip full HTML from older assistant turns (keep only the most recent)
+        // to avoid bloating the context and leaving room for the new response.
+        const rawHistory = history
           .filter(m => typeof m.content === 'string' && m.content.trim())
-          .map(m => ({ role: m.role, content: m.content }))
-          .slice(-30); // cap to last 30 messages to avoid Anthropic auto-caching errors on long history
-        const html = await AI.generateLanding(msg, apiHistory.slice(0, -1));
+          .map(m => ({ role: m.role, content: m.content }));
+
+        let lastHtmlIdx = -1;
+        for (let i = rawHistory.length - 1; i >= 0; i--) {
+          if (rawHistory[i].role === 'assistant' && /<!DOCTYPE\s+html/i.test(rawHistory[i].content)) {
+            lastHtmlIdx = i; break;
+          }
+        }
+        // Stub older HTML responses; keep only the most recent landing HTML as context
+        let apiHistory = rawHistory.map((m, i) => {
+          if (i !== lastHtmlIdx && m.role === 'assistant' && /<!DOCTYPE\s+html/i.test(m.content)) {
+            return { role: 'assistant', content: '[Versión anterior de la landing — HTML omitido para ahorrar contexto]' };
+          }
+          return m;
+        });
+        // Fix alternation: if consecutive same-role messages exist (e.g. after an error),
+        // keep only the most recent of each pair so _call doesn't silently drop the new msg.
+        const alternated = [];
+        for (const m of apiHistory) {
+          if (alternated.length > 0 && alternated[alternated.length - 1].role === m.role) {
+            alternated[alternated.length - 1] = m; // replace older with newer
+          } else {
+            alternated.push(m);
+          }
+        }
+        apiHistory = alternated.slice(-20);
+
+        // Reinforce that Claude MUST return full HTML — never a text reply
+        const reinforcedMsg = msg + '\n\nCRÍTICO: tu respuesta debe ser la landing COMPLETA con todos los cambios aplicados. Empezá directamente con <!DOCTYPE html>. No incluyas texto explicativo ni markdown — solo HTML.';
+
+        const html = await AI.generateLanding(reinforcedMsg, apiHistory.slice(0, -1));
         removeThinking();
         history.push({ role: 'assistant', content: html, display: 'Listo, apliqué los cambios.' });
         landing.html = html;
@@ -1058,6 +1089,7 @@ function renderVideoTemplates() {
         history.push({ role: 'assistant', content: '', display: `Error: ${e.message}` });
         renderMessages();
         toast('Error: ' + e.message, 'err');
+        setStatus(landing?.published ? 'Publicada' : 'Borrador');
       } finally {
         sendBtn.disabled = false;
       }
