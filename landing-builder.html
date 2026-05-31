@@ -1108,7 +1108,9 @@ function renderVideoTemplates() {
         : `IMÁGENES tipo="${imgType}", cantidad=${imgCount}: distribuí ${imgCount} imágenes a lo largo de la landing (hero, módulos, testimonios).`;
 
       const bgInstr = bgType !== 'dark' && bgValue
-        ? `FONDO tipo="${bgType}", valor="${bgValue}".`
+        ? bgType === 'video'
+          ? `⚠️ FONDO DEL HERO tipo="video" — OBLIGATORIO: el hero section DEBE tener style="position:relative;overflow:hidden" y este video EXACTO dentro:\n<video class="absolute inset-0 w-full h-full object-cover" style="opacity:0.4" autoplay muted loop playsinline><source src="${bgValue}" type="video/mp4"></video>\nMás overlay oscuro: <div class="absolute inset-0" style="background:rgba(0,0,0,0.55)"></div>\nTodo el contenido del hero va ENCIMA con position:relative z-10.`
+          : `FONDO tipo="${bgType}", valor="${bgValue}".`
         : '';
 
       const selPal = PALETTES.find(p => p.id === _selectedPalette);
@@ -1119,6 +1121,7 @@ function renderVideoTemplates() {
           : '';
 
       const brief = [
+        bgInstr,      // primero: fondo del hero (incluye video bg URL) — Claude debe aplicarlo al hero
         coreBrief,
         bonuses
           ? `BONOS DEL PRODUCTO (sección OBLIGATORIA, usá exactamente estos bonos): ${bonuses}`
@@ -1126,11 +1129,11 @@ function renderVideoTemplates() {
         paletteInstr,
         imgInstr,
         video ? `VIDEO: embebí este video en sección dedicada después del hero: ${video}` : '',
-        bgInstr,
         interactive ? 'INTERACTIVIDAD: agrega animaciones CSS y JavaScript inline: contadores animados con IntersectionObserver, FAQ con smooth expand (max-height transition), tabs en módulos/beneficios, parallax leve en hero.' : '',
         custom ? `INSTRUCCIÓN EXACTA DEL CREADOR (máxima prioridad, seguí esto al pie de la letra): ${custom}` : '',
       ].filter(Boolean).join('\n');
 
+      if (!coreBrief) { toast('Completá los campos del modo seleccionado', 'err'); return; }
       if (!titleEl.value.trim()) titleEl.value = product.slice(0, 60);
 
       genBtn.disabled = true;
@@ -1187,19 +1190,20 @@ function renderVideoTemplates() {
       setStatus('Actualizando…');
 
       try {
-        // Stateless approach: always send the full current HTML + specific change request.
-        // This is more reliable than accumulating a conversation history:
-        // - Claude always sees exactly the current state of the landing
-        // - No token bloat from previous HTML versions
-        // - No risk of the new user message being dropped due to alternation issues
         const ctxMsg = [
-          'LANDING HTML ACTUAL — aplicá el cambio pedido y devolvé la landing COMPLETA:',
+          'MODIFICA ESTA LANDING — aplicá el cambio pedido conservando TODAS las secciones:',
           landing.html,
-          '---',
+          '',
+          landing.brief ? `══ BRIEF ORIGINAL (contexto completo: producto, paleta, URLs de video/imágenes) ══\n${landing.brief}\n══ FIN DEL BRIEF ══` : '',
+          '',
           `CAMBIO SOLICITADO: ${msg}`,
           '',
-          'CRÍTICO: devolvé ÚNICAMENTE el HTML completo de la landing con el cambio aplicado. Empezá con <!DOCTYPE html>. Sin texto, sin explicaciones, sin markdown — solo HTML.',
-        ].join('\n');
+          'REGLAS INAMOVIBLES:',
+          '1. Devolvé ÚNICAMENTE el HTML completo empezando con <!DOCTYPE html>. Sin texto ni markdown.',
+          '2. CONSERVÁ todas las secciones existentes (hero, para quién, problema, beneficios, módulos, testimonios, bonos, stack, garantía, FAQ, CTA, footer). NO eliminés ni muevas ninguna.',
+          '3. Aplicá SOLO el cambio específico pedido, sin alterar el resto.',
+          '4. Para video de fondo en el hero: el hero section necesita style="position:relative;overflow:hidden" con <video class="absolute inset-0 w-full h-full object-cover" style="opacity:0.4" autoplay muted loop playsinline><source src="URL_DEL_BRIEF" type="video/mp4"></video> + <div class="absolute inset-0" style="background:rgba(0,0,0,0.55)"></div>. La URL la encontrás en el brief original.',
+        ].filter(Boolean).join('\n');
 
         const html = await AI.generateLanding(ctxMsg, []);
         removeThinking();
