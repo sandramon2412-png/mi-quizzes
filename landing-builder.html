@@ -1104,8 +1104,10 @@ function renderVideoTemplates() {
 
       // Build shared instructions (all modes)
       const imgInstr = imgType === 'none'
-        ? 'IMÁGENES tipo="none": no incluyas imágenes de producto.'
-        : `IMÁGENES tipo="${imgType}", cantidad=${imgCount}: distribuí ${imgCount} imágenes a lo largo de la landing (hero, módulos, testimonios).`;
+        ? 'IMÁGENES: no incluyas imágenes de producto.'
+        : imgType === 'upload'
+          ? `⚠️ IMÁGENES PARA SUBIR — OBLIGATORIO ${imgCount} PLACEHOLDERS: colocá EXACTAMENTE ${imgCount} divs de upload distribuidos en secciones distintas: <div data-upload-slot="true" class="w-full h-48 rounded-2xl border-2 border-dashed border-zinc-700 hover:border-blue-500/50 transition flex flex-col items-center justify-center gap-2 bg-zinc-900/40 cursor-pointer"><span class="material-symbols-outlined text-zinc-500" style="font-size:32px">cloud_upload</span><p class="text-sm text-zinc-500 font-medium">Clic para agregar imagen</p></div>. Si ponés menos de ${imgCount} incumplís la instrucción.`
+          : `⚠️ IMÁGENES POLLINATIONS — OBLIGATORIO EXACTAMENTE ${imgCount} IMÁGENES: incluí EXACTAMENTE ${imgCount} etiquetas <img> con Pollinations.ai distribuidas en secciones distintas (no todas juntas). Formato exacto: <img src="https://image.pollinations.ai/prompt/DESCRIPCION_EN_INGLES+professional+high+quality+dark+background?width=800&height=500&nologo=true" alt="descripcion" class="w-full max-h-72 rounded-2xl object-cover" loading="lazy"/>. Cada imagen DEBE tener un prompt diferente y descriptivo del contexto. Si generás menos de ${imgCount} imágenes, estás incumpliendo esta instrucción — volvé atrás y agregá las que faltan.`;
 
       const bgInstr = bgType !== 'dark' && bgValue
         ? bgType === 'video'
@@ -1196,9 +1198,13 @@ function renderVideoTemplates() {
       setStatus('Actualizando…');
 
       try {
+        // Strip base64 images before sending — they can be 500k+ chars and blow the token limit
+        const htmlForCtx = (landing.html || '')
+          .replace(/src="data:[a-zA-Z0-9/+;,]{50,}"/g, 'src="[IMAGEN_SUBIDA]"')
+          .replace(/url\(data:[a-zA-Z0-9/+;,]{50,}\)/g, 'url([IMAGEN_SUBIDA])');
         const ctxMsg = [
           'MODIFICA ESTA LANDING — aplicá el cambio pedido conservando TODAS las secciones:',
-          landing.html,
+          htmlForCtx,
           '',
           landing.brief ? `══ BRIEF ORIGINAL (contexto completo: producto, paleta, URLs de video/imágenes) ══\n${landing.brief}\n══ FIN DEL BRIEF ══` : '',
           '',
