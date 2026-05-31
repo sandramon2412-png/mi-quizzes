@@ -6832,17 +6832,15 @@ function _cleanForTTS(text) {
 }
 
 function ttsLangForText(text, fallbackLang) {
-  // English apps always use English — saved Spanish voice settings don't apply
+  // English apps: always use the app's voiceLang, never defer to saved Spanish settings
   if (isEnglishLearningApp(currentApp)) {
     return currentApp?.voiceLang || 'en-US';
   }
+  // Other apps: respect saved voice settings, then app lang, then fallback
   let saved = {};
   try { saved = JSON.parse(localStorage.getItem('ls_voice_settings') || '{}'); } catch {}
   if (saved.version === 2 && saved.lang) return saved.lang;
-  const clean = normalizeText(text);
-  const soundsEnglish = /\b(i|you|we|they|what|where|when|could|would|please|hello|thanks|interview|coffee|airport|hotel|work|job|english)\b/.test(clean);
-  if (soundsEnglish) return 'en-US';
-  return fallbackLang || 'es-MX';
+  return currentApp?.voiceLang || currentApp?.lang || fallbackLang || 'es-MX';
 }
 
 function _splitForTTS(text) {
