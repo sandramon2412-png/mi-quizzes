@@ -8,9 +8,9 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
 <link href="https://fonts.googleapis.com/icon?family=Material+Symbols+Outlined" rel="stylesheet"/>
-<script src="./supabase-config.js?v=20260602b"></script>
-<script src="./app.js?v=20260602b"></script>
-<script src="./landing-blocks.js?v=20260602b"></script>
+<script src="./supabase-config.js?v=20260602c"></script>
+<script src="./app.js?v=20260602c"></script>
+<script src="./landing-blocks.js?v=20260602c"></script>
 <script>
   tailwind.config = {
     theme: {
@@ -152,7 +152,7 @@
 <main class="flex h-[calc(100vh-56px)]">
 
 <!-- ═══ LEFT PANEL ═══ -->
-<aside id="left-panel" class="w-72 shrink-0 border-r border-outline-variant/20 flex flex-col bg-surface-container-low overflow-hidden">
+<aside id="left-panel" class="shrink-0 border-r border-outline-variant/20 flex flex-col bg-surface-container-low overflow-hidden" style="width:320px;min-width:300px;">
 
   <!-- ── STARTER FORM (initial state) ── -->
   <div id="starter" class="flex-1 overflow-y-auto p-4 space-y-3">
@@ -1199,18 +1199,86 @@ async function regenAll() {
   await generateLanding();
 }
 
+function saveActiveBlock() {
+  if (activeBlockIdx < 0 || !landing) return;
+  const block = landing.blocks[activeBlockIdx];
+  block.data = collectBlockData(block);
+  renderPreview();
+  renderBlocksList();
+  autosave();
+  showToast('Bloque guardado');
+}
+
 // ═══════════════════════════════════════════════════════════
-// INIT
+// UI INIT — runs synchronously on DOMContentLoaded
+// (no awaits — all buttons/swatches wired before auth check)
+// ═══════════════════════════════════════════════════════════
+function initUI() {
+  // Palette swatches
+  buildSwatches('palette-swatches', (id) => {
+    const p = (window.LANDING_PALETTES_DEF || []).find(x => x.id === id);
+    document.getElementById('palette-name-lbl').textContent = p ? p.name : '';
+  }, 'blue-purple');
+  const defPal = (window.LANDING_PALETTES_DEF || []).find(p => p.id === 'blue-purple');
+  document.getElementById('palette-name-lbl').textContent = defPal ? defPal.name : 'Azul → Púrpura';
+
+  // Image strategy radio
+  document.querySelectorAll('.img-opt').forEach(opt => {
+    opt.addEventListener('click', () => {
+      document.querySelectorAll('.img-opt').forEach(o => o.classList.remove('sel'));
+      opt.classList.add('sel');
+      const radio = opt.querySelector('input[type=radio]');
+      if (radio) radio.checked = true;
+    });
+  });
+
+  // Wire all buttons
+  document.getElementById('btn-generate').addEventListener('click', generateLanding);
+  document.getElementById('btn-publish').addEventListener('click', publishLanding);
+  document.getElementById('btn-regen').addEventListener('click', regenAll);
+  document.getElementById('btn-add-block').addEventListener('click', openAddBlockModal);
+  document.getElementById('modal-close').addEventListener('click', () =>
+    document.getElementById('add-block-modal').classList.add('hidden'));
+  document.getElementById('add-block-modal').addEventListener('click', e => {
+    if (e.target === document.getElementById('add-block-modal'))
+      document.getElementById('add-block-modal').classList.add('hidden');
+  });
+  document.getElementById('chat-toggle').addEventListener('click', toggleChat);
+  document.getElementById('chat-send').addEventListener('click', sendChat);
+  document.getElementById('chat-input').addEventListener('keydown', e => {
+    if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendChat(); }
+  });
+  document.getElementById('rp-save').addEventListener('click', saveActiveBlock);
+  document.getElementById('ld-title').addEventListener('input', () => autosave());
+  document.getElementById('btn-open-tab').addEventListener('click', () => {
+    if (landing && landing.slug)
+      window.open(`landing-view.html?slug=${landing.slug}`, '_blank');
+  });
+}
+
+// ═══════════════════════════════════════════════════════════
+// ASYNC INIT — auth check, plan gate, load existing
 // ═══════════════════════════════════════════════════════════
 async function init() {
   // Auth check
-  const { data: { user } } = await Auth.getUser();
+  let user;
+  try {
+    const { data } = await Auth.getUser();
+    user = data?.user;
+  } catch(e) {
+    console.error('[init] Auth error:', e);
+  }
   if (!user) { location.href = 'login.html'; return; }
   currentUser = user;
 
   // Plan gate
-  const profile = await DB.profiles.get(user.id).catch(() => null);
-  const plan = profile?.plan || 'free';
+  let plan = 'free';
+  try {
+    const profile = await DB.profiles.get(user.id);
+    plan = profile?.plan || 'free';
+  } catch(e) {
+    console.warn('[init] profile load failed, assuming free plan:', e.message);
+  }
   Settings.save({ plan });
   const caps = typeof getPlanCaps === 'function' ? getPlanCaps(plan) : { landings: 0 };
   if ((caps.landings || 0) < 1) {
@@ -1227,61 +1295,16 @@ async function init() {
     return;
   }
 
-  // Build starter palette swatches
-  buildSwatches('palette-swatches', (id) => {
-    const p = (window.LANDING_PALETTES_DEF || []).find(x=>x.id===id);
-    document.getElementById('palette-name-lbl').textContent = p ? p.name : '';
-  }, 'blue-purple');
-  const defPal = (window.LANDING_PALETTES_DEF || []).find(p=>p.id==='blue-purple');
-  document.getElementById('palette-name-lbl').textContent = defPal ? defPal.name : '';
-
-  // Image strategy radio
-  document.querySelectorAll('.img-opt').forEach(opt => {
-    opt.addEventListener('click', () => {
-      document.querySelectorAll('.img-opt').forEach(o => o.classList.remove('sel'));
-      opt.classList.add('sel');
-      const radio = opt.querySelector('input[type=radio]');
-      if (radio) radio.checked = true;
-    });
-  });
-
   // Load existing landing from URL param
   const params = new URLSearchParams(location.search);
   const ldId = params.get('id');
   if (ldId) await loadLanding(ldId);
-
-  // Wire events
-  document.getElementById('btn-generate').addEventListener('click', generateLanding);
-  document.getElementById('btn-publish').addEventListener('click', publishLanding);
-  document.getElementById('btn-regen').addEventListener('click', regenAll);
-  document.getElementById('btn-add-block').addEventListener('click', openAddBlockModal);
-  document.getElementById('modal-close').addEventListener('click', () => document.getElementById('add-block-modal').classList.add('hidden'));
-  document.getElementById('add-block-modal').addEventListener('click', e => {
-    if (e.target === document.getElementById('add-block-modal')) document.getElementById('add-block-modal').classList.add('hidden');
-  });
-  document.getElementById('chat-toggle').addEventListener('click', toggleChat);
-  document.getElementById('chat-send').addEventListener('click', sendChat);
-  document.getElementById('chat-input').addEventListener('keydown', e => {
-    if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendChat(); }
-  });
-  document.getElementById('rp-save').addEventListener('click', saveActiveBlock);
-  document.getElementById('ld-title').addEventListener('input', () => { autosave(); });
-  document.getElementById('btn-open-tab').addEventListener('click', () => {
-    if (landing && landing.slug) window.open(`landing-view.html?slug=${landing.slug}`, '_blank');
-  });
 }
 
-function saveActiveBlock() {
-  if (activeBlockIdx < 0 || !landing) return;
-  const block = landing.blocks[activeBlockIdx];
-  block.data = collectBlockData(block);
-  renderPreview();
-  renderBlocksList();
-  autosave();
-  showToast('Bloque guardado');
-}
-
-document.addEventListener('DOMContentLoaded', init);
+document.addEventListener('DOMContentLoaded', () => {
+  initUI();   // sync — wires everything immediately
+  init();     // async — auth / plan gate / load existing landing
+});
 </script>
 </body>
 </html>
