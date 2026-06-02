@@ -1168,6 +1168,45 @@ REGLAS INAMOVIBLES:
     return html;
   },
 
+  async generateLandingBlocks(brief, defaultBlocks) {
+    const system = `Eres un experto en copywriting de landing pages para infoproductos en español latinoamericano.
+Tu tarea: completar el contenido de una landing page devolviendo SOLO un array JSON de bloques.
+
+REGLAS INAMOVIBLES:
+1. Devolvé ÚNICAMENTE JSON válido — sin texto adicional, sin markdown, sin \`\`\`
+2. Respeta EXACTAMENTE la estructura del schema — no agregues ni elimines campos del objeto "data"
+3. Llená TODOS los campos con contenido real y persuasivo basado en el brief
+4. NUNCA uses emojis — usa texto plano para íconos (icon: "check_circle")
+5. Para image_url: usa https://image.pollinations.ai/prompt/[descripcion-en-ingles]?width=1200&height=800&nologo=true
+6. Mínimo 3 testimonios, 5 beneficios, 4 preguntas FAQ, 3 módulos si el schema lo incluye
+7. El headline del hero debe seguir el patrón PAS-T: nombra el dolor → agita → solución → transformación con tiempo concreto
+8. CTAs deben ser verbo+resultado: "Quiero X en Y días" — nunca "Regístrate" o "Empezar"`;
+
+    const userMsg = `BRIEF DEL PRODUCTO:\n${brief}\n\nSCHEMA A COMPLETAR (devolvé el array completo con data lleno):\n${JSON.stringify(defaultBlocks, null, 2)}`;
+    const text = await this._call([{ role: 'user', content: userMsg }], 5000, {
+      model: 'claude-sonnet-4-6',
+      system,
+    });
+    return this._parseJSONLoose(text);
+  },
+
+  async editBlockData(blockType, currentData, instruction, contextBrief = '') {
+    const system = `Eres experto en copywriting de landing pages. Tu tarea: modificar el objeto "data" de una sección específica.
+
+REGLAS:
+1. Devolvé SOLO el objeto JSON del "data" actualizado — sin texto adicional, sin markdown, sin \`\`\`
+2. Mantené la estructura EXACTA — no agregues ni elimines campos
+3. Aplicá ÚNICAMENTE lo que pide la instrucción. El resto queda IDÉNTICO al original
+4. NUNCA uses emojis — texto plano para íconos (icon: "check_circle")`;
+
+    const userMsg = `SECCIÓN: ${blockType}\nCONTEXTO DEL PRODUCTO: ${contextBrief.slice(0, 400)}\n\nDATA ACTUAL:\n${JSON.stringify(currentData, null, 2)}\n\nINSTRUCCIÓN: ${instruction}\n\nDevolvé el objeto "data" completo con la modificación aplicada.`;
+    const text = await this._call([{ role: 'user', content: userMsg }], 2500, {
+      model: 'claude-sonnet-4-6',
+      system,
+    });
+    return this._parseJSONLoose(text);
+  },
+
   _ebookSystemPrompt() {
     return `Eres un escritor profesional y editor experto en crear ebooks en español estilo Gamma — con bloques visuales, callouts y stats destacados.
 
@@ -1723,6 +1762,12 @@ const AI = {
   // Quirúrgico: editar UNA sección de la landing sin tocar el resto
   async editLandingSection(sectionId, sectionHtml, change, contextBrief = '') {
     return Claude.editLandingSection(sectionId, sectionHtml, change, contextBrief);
+  },
+  async generateLandingBlocks(brief, defaultBlocks) {
+    return Claude.generateLandingBlocks(brief, defaultBlocks);
+  },
+  async editBlockData(blockType, currentData, instruction, contextBrief = '') {
+    return Claude.editBlockData(blockType, currentData, instruction, contextBrief);
   },
   // Complejo: ebook estructurado — intenta Claude, cae a Groq si no hay créditos
   async generateEbook(brief, history = [], onProgress, docType = 'ebook') {

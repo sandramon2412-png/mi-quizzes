@@ -417,24 +417,34 @@ const DB = {
 
   // ── Landings (Landing Builder) ─────────────────────────────
   landings: {
+    _norm(r) {
+      if (!r) return null;
+      const s = r.settings || {};
+      return {
+        ...r,
+        blocks:  r.blocks  ?? s.blocks  ?? null,
+        palette: r.palette ?? s.palette ?? null,
+      };
+    },
+
     async getAll(userId) {
       const { data, error } = await db.from('landings')
         .select('*').eq('user_id', userId)
         .order('updated_at', { ascending: false });
       if (error) throw error;
-      return data || [];
+      return (data || []).map(r => this._norm(r));
     },
 
     async get(id) {
       const { data, error } = await db.from('landings').select('*').eq('id', id).single();
       if (error) return null;
-      return data;
+      return this._norm(data);
     },
 
     async getBySlug(slug) {
       const { data, error } = await db.from('landings').select('*').eq('slug', slug).maybeSingle();
       if (error) return null;
-      return data;
+      return this._norm(data);
     },
 
     async save(landing, userId) {
@@ -469,7 +479,11 @@ const DB = {
         html:       landing.html || '',
         messages:   landing.messages || [],
         published:  !!landing.published,
-        settings:   landing.settings || {},
+        settings:   {
+          ...(landing.settings || {}),
+          ...(landing.blocks  ? { blocks:  landing.blocks  } : {}),
+          ...(landing.palette ? { palette: landing.palette } : {}),
+        },
         updated_at: new Date().toISOString(),
       };
       // If we have a local id, try update first; if no row exists yet, insert with that id

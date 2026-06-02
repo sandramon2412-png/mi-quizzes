@@ -4,57 +4,93 @@
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
 <title>Landing Builder · Luminous Studio</title>
-<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script src="https://cdn.tailwindcss.com?plugins=forms"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
 <link href="https://fonts.googleapis.com/icon?family=Material+Symbols+Outlined" rel="stylesheet"/>
+<script src="./supabase-config.js?v=20260602a"></script>
+<script src="./app.js?v=20260602a"></script>
+<script src="./landing-blocks.js?v=20260602a"></script>
 <script>
   tailwind.config = {
     theme: {
       extend: {
         colors: {
-          "primary": "#2E5BFF", "primary-dim": "#3867fb",
-          "background": "#0e0e0e", "surface": "#0e0e0e",
-          "surface-container": "#1a1a1a", "surface-container-high": "#20201f",
-          "surface-container-highest": "#262626", "surface-container-low": "#131313",
-          "surface-variant": "#262626", "on-surface": "#ffffff",
-          "on-surface-variant": "#adaaaa", "outline": "#767575",
-          "outline-variant": "#484847", "on-background": "#ffffff",
-          "on-primary": "#ffffff",
+          "primary":"#2E5BFF","background":"#0e0e0e","surface":"#0e0e0e",
+          "surface-container":"#1a1a1a","surface-container-high":"#20201f",
+          "surface-container-highest":"#262626","surface-container-low":"#131313",
+          "on-surface":"#ffffff","on-surface-variant":"#adaaaa",
+          "outline":"#767575","outline-variant":"#484847",
         },
-        fontFamily: { 'jakarta': ['Plus Jakarta Sans', 'sans-serif'] },
+        fontFamily:{'jakarta':['Plus Jakarta Sans','sans-serif']},
       },
     },
   };
 </script>
 <style>
-  body { font-family: 'Plus Jakarta Sans', sans-serif; background: #0e0e0e; color: #fff; overflow: hidden; }
-  .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
-  .icon-gradient { background: linear-gradient(135deg, #4d7cff, #a78bfa); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-  .primary-gradient { background: linear-gradient(135deg, #2E5BFF 0%, #7c3aed 100%); }
+  body{font-family:'Plus Jakarta Sans',sans-serif;background:#0e0e0e;color:#fff;overflow:hidden;}
+  .material-symbols-outlined{font-variation-settings:'FILL' 0,'wght' 400,'GRAD' 0,'opsz' 24;}
+  .icon-gradient{background:linear-gradient(135deg,#4d7cff,#a78bfa);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+  .primary-gradient{background:linear-gradient(135deg,#2E5BFF 0%,#7c3aed 100%);}
 
-  .msg { animation: in 0.25s ease both; }
-  @keyframes in { from { opacity:0; transform: translateY(6px); } to { opacity:1; transform: translateY(0); } }
+  /* Panel left scrollbar */
+  #left-panel::-webkit-scrollbar,#chat-log::-webkit-scrollbar{width:4px;}
+  #left-panel::-webkit-scrollbar-thumb,#chat-log::-webkit-scrollbar-thumb{background:#333;border-radius:2px;}
 
-  #chat-log::-webkit-scrollbar, #chat-log { scrollbar-width: thin; }
-  #chat-log::-webkit-scrollbar { width: 6px; }
-  #chat-log::-webkit-scrollbar-thumb { background: #333; border-radius: 3px; }
+  /* Block list item */
+  .block-item{cursor:pointer;transition:background .15s;}
+  .block-item:hover{background:#1e1e1e;}
+  .block-item.active{background:#1e2a45;border-left:2px solid #2E5BFF;}
+  .block-item.hidden-block{opacity:.45;}
 
-  .thinking-dot { width:6px; height:6px; border-radius:50%; background:#7a9aff; display:inline-block; margin:0 2px; animation: pulse 1s infinite; }
-  .thinking-dot:nth-child(2) { animation-delay: 0.15s; }
-  .thinking-dot:nth-child(3) { animation-delay: 0.3s; }
-  @keyframes pulse { 0%,100% { opacity: .3; transform: scale(0.9);} 50% { opacity: 1; transform: scale(1.1);} }
+  /* Field editor */
+  .field-label{display:block;font-size:11px;font-weight:600;color:#9a9a9a;margin-bottom:4px;}
+  .field-input{width:100%;background:#1a1a1a;border:1px solid rgba(255,255,255,.12);border-radius:8px;padding:7px 10px;font-size:13px;color:#fff;outline:none;resize:vertical;font-family:'Plus Jakarta Sans',sans-serif;}
+  .field-input:focus{border-color:#2E5BFF;}
+  .field-section-title{font-size:11px;font-weight:700;color:#6b7280;text-transform:uppercase;letter-spacing:.08em;margin:12px 0 6px;padding-top:8px;border-top:1px solid rgba(255,255,255,.06);}
 
-  .toast { animation: toast-in .25s ease both; }
-  @keyframes toast-in { from { opacity:0; transform: translateY(-6px);} to { opacity:1; transform:translateY(0);} }
-  @keyframes spin { to { transform: rotate(360deg); } }
+  /* Sublist items */
+  .sublist-item{background:#131313;border:1px solid rgba(255,255,255,.08);border-radius:8px;padding:8px 10px;margin-bottom:6px;}
+  .sublist-item input,.sublist-item textarea{background:#0e0e0e;border:1px solid rgba(255,255,255,.1);border-radius:6px;padding:5px 8px;font-size:12px;color:#e0e0e0;width:100%;margin-top:3px;outline:none;font-family:inherit;}
+  .sublist-item input:focus,.sublist-item textarea:focus{border-color:#2E5BFF;}
+  .btn-add-sub{font-size:11px;font-weight:600;color:#4d7cff;background:none;border:1px dashed #2E5BFF44;border-radius:6px;padding:4px 10px;cursor:pointer;width:100%;margin-top:4px;}
+  .btn-add-sub:hover{background:#1a2540;}
+  .btn-del-sub{font-size:13px;color:#666;background:none;border:none;cursor:pointer;line-height:1;padding:0 2px;float:right;}
+  .btn-del-sub:hover{color:#ef4444;}
+
+  /* Thinking dots */
+  .dot{width:6px;height:6px;border-radius:50%;background:#7a9aff;display:inline-block;margin:0 2px;animation:blink 1s infinite;}
+  .dot:nth-child(2){animation-delay:.15s;}.dot:nth-child(3){animation-delay:.3s;}
+  @keyframes blink{0%,100%{opacity:.3;transform:scale(.9);}50%{opacity:1;transform:scale(1.1);}}
+
+  /* Toast */
+  .toast{animation:toast-in .25s ease both;}
+  @keyframes toast-in{from{opacity:0;transform:translateY(-8px);}to{opacity:1;transform:translateY(0);}}
+
+  /* Palette swatches */
+  .swatch{width:22px;height:22px;border-radius:50%;cursor:pointer;border:2px solid transparent;transition:border-color .15s,transform .15s;}
+  .swatch:hover{transform:scale(1.15);}
+  .swatch.sel{border-color:#fff;}
+
+  /* Drag handle */
+  .drag-handle{cursor:grab;touch-action:none;}
+
+  /* Preview iframe */
+  #preview-frame{border:none;width:100%;height:100%;background:#fff;}
+
+  /* Chat msg */
+  .chat-msg{animation:in .22s ease both;}
+  @keyframes in{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:translateY(0);}}
+
+  /* Right panel empty state */
+  #rp-empty{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;color:#555;gap:8px;font-size:13px;}
 </style>
 </head>
-<body class="bg-background text-on-background" data-lloyd-default-mode="landing">
+<body class="bg-background text-on-surface font-jakarta">
 
-<!-- Top bar -->
-<header class="h-14 border-b border-outline-variant/20 bg-surface-container-low flex items-center px-4 gap-3 shrink-0">
-  <a href="./dashboard.html" class="flex items-center gap-2 text-sm text-on-surface-variant hover:text-primary transition-colors">
+<!-- ═══════════════════════════ TOP BAR ═══════════════════════════ -->
+<header class="h-14 border-b border-outline-variant/20 bg-surface-container-low flex items-center px-4 gap-3 shrink-0 z-10 relative">
+  <a href="./dashboard.html" class="flex items-center gap-2 text-sm text-on-surface-variant hover:text-primary transition-colors shrink-0">
     <span class="material-symbols-outlined" style="font-size:18px">arrow_back</span>
     <span class="hidden sm:inline">Dashboard</span>
   </a>
@@ -66,1453 +102,1056 @@
     <input id="ld-title" type="text" placeholder="Título de tu landing"
            class="bg-transparent border-none outline-none text-sm font-bold tracking-tight flex-1 min-w-0 focus:ring-0"/>
   </div>
-  <span id="ld-status" class="text-[11px] text-on-surface-variant/70 hidden sm:inline"></span>
-  <button id="btn-edit-visual" class="hidden h-9 px-3 rounded-lg bg-surface-container-high hover:bg-surface-container-highest text-xs font-semibold flex items-center gap-1.5 transition-colors" title="Editar textos haciendo click sobre ellos (sin IA)">
-    <span class="material-symbols-outlined" style="font-size:16px">edit</span>
-    <span class="hidden md:inline">Editar</span>
-  </button>
-  <button id="btn-edit-html" class="hidden h-9 w-9 rounded-lg bg-surface-container-high hover:bg-surface-container-highest flex items-center justify-center transition-colors" title="Editar código HTML (avanzado)">
-    <span class="material-symbols-outlined" style="font-size:16px">code</span>
-  </button>
-  <button id="btn-preview-new-tab" class="hidden h-9 px-3 rounded-lg bg-surface-container-high hover:bg-surface-container-highest text-xs font-semibold flex items-center gap-1.5 transition-colors" title="Vista previa completa en nueva pestaña">
-    <span class="material-symbols-outlined" style="font-size:16px">preview</span>
-    <span class="hidden md:inline">Vista previa</span>
-  </button>
-  <button id="btn-open" class="hidden h-9 px-3 rounded-lg bg-surface-container-high hover:bg-surface-container-highest text-xs font-semibold flex items-center gap-1.5 transition-colors" title="Abrir landing publicada en nueva pestaña">
-    <span class="material-symbols-outlined" style="font-size:16px">open_in_new</span>
-    <span class="hidden md:inline">Abrir</span>
+  <span id="ld-status" class="text-[11px] text-on-surface-variant/70 hidden sm:block whitespace-nowrap"></span>
+  <button id="btn-open-tab" class="hidden h-9 px-3 rounded-lg bg-surface-container-high hover:bg-surface-container-highest text-xs font-semibold items-center gap-1.5 transition-colors">
+    <span class="material-symbols-outlined" style="font-size:15px">open_in_new</span>
+    <span class="hidden md:inline">Ver</span>
   </button>
   <button id="btn-publish" class="h-9 px-4 rounded-lg primary-gradient text-white text-xs font-bold flex items-center gap-1.5 hover:opacity-90 transition">
-    <span class="material-symbols-outlined" style="font-size:16px">rocket_launch</span>
+    <span class="material-symbols-outlined" style="font-size:15px">rocket_launch</span>
     Publicar
   </button>
 </header>
 
-<!-- Split view -->
+<!-- ═══════════════════════════ MAIN AREA ═══════════════════════════ -->
 <main class="flex h-[calc(100vh-56px)]">
-  <!-- Chat pane -->
-  <aside class="w-[38%] max-w-[480px] min-w-[320px] border-r border-outline-variant/20 flex flex-col bg-surface-container-low">
 
-    <!-- Starter form (only shown on empty state) -->
-    <div id="starter" class="p-5 overflow-y-auto">
-      <div class="flex items-center gap-2 mb-2">
-        <span class="material-symbols-outlined icon-gradient" style="font-size:20px">auto_awesome</span>
-        <h2 class="text-base font-extrabold tracking-tight">Creá tu landing</h2>
-      </div>
+<!-- ═══ LEFT PANEL ═══ -->
+<aside id="left-panel" class="w-72 shrink-0 border-r border-outline-variant/20 flex flex-col bg-surface-container-low overflow-hidden">
 
-      <!-- Mode tabs -->
-      <div class="flex gap-1 bg-surface-container rounded-lg p-1 mb-4">
-        <button class="ld-mode-tab flex-1 h-7 rounded-md text-[10px] font-bold transition" data-mode="form">
-          <span class="material-symbols-outlined align-middle" style="font-size:12px">list_alt</span> Formulario
-        </button>
-        <button class="ld-mode-tab flex-1 h-7 rounded-md text-[10px] font-bold transition" data-mode="prompt">
-          <span class="material-symbols-outlined align-middle" style="font-size:12px">edit_note</span> Prompt
-        </button>
-        <button class="ld-mode-tab flex-1 h-7 rounded-md text-[10px] font-bold transition" data-mode="url">
-          <span class="material-symbols-outlined align-middle" style="font-size:12px">link</span> URL
-        </button>
-        <button class="ld-mode-tab flex-1 h-7 rounded-md text-[10px] font-bold transition" data-mode="paste">
-          <span class="material-symbols-outlined align-middle" style="font-size:12px">upload_file</span> PDF/Texto
-        </button>
-      </div>
+  <!-- ── STARTER FORM (initial state) ── -->
+  <div id="starter" class="flex-1 overflow-y-auto p-4 space-y-3">
+    <div class="flex items-center gap-2 mb-3">
+      <span class="material-symbols-outlined icon-gradient" style="font-size:20px">auto_awesome</span>
+      <h2 class="text-sm font-extrabold tracking-tight">Nueva landing</h2>
+    </div>
 
-      <!-- PANEL: Formulario (default) -->
-      <div id="ld-panel-form" class="space-y-3">
-        <div>
-          <label class="text-[11px] font-semibold text-on-surface-variant block mb-1">¿Qué vendés?</label>
-          <input id="fld-product" type="text" placeholder="Ej: Curso de repostería para emprendedoras"
-                 class="w-full bg-surface-container border border-outline-variant/40 rounded-lg px-3 py-2 text-sm focus:border-primary focus:ring-0 outline-none"/>
-        </div>
-        <div>
-          <label class="text-[11px] font-semibold text-on-surface-variant block mb-1">¿A quién le vendés?</label>
-          <input id="fld-audience" type="text" placeholder="Ej: Mujeres 30-50 que quieren emprender desde casa"
-                 class="w-full bg-surface-container border border-outline-variant/40 rounded-lg px-3 py-2 text-sm focus:border-primary focus:ring-0 outline-none"/>
-        </div>
-        <div>
-          <label class="text-[11px] font-semibold text-on-surface-variant block mb-1">Precio</label>
-          <input id="fld-price" type="text" placeholder="Ej: $97 o Gratis con lead magnet"
-                 class="w-full bg-surface-container border border-outline-variant/40 rounded-lg px-3 py-2 text-sm focus:border-primary focus:ring-0 outline-none"/>
-        </div>
-        <div>
-          <label class="text-[11px] font-semibold text-on-surface-variant block mb-1">Detalles extra (opcional)</label>
-          <textarea id="fld-extras" rows="2" placeholder="Ej: testimonios específicos, colores de marca, módulos del curso, garantía personalizada…"
-                    class="w-full bg-surface-container border border-outline-variant/40 rounded-lg px-3 py-2 text-sm focus:border-primary focus:ring-0 outline-none resize-none"></textarea>
-        </div>
-        <div>
-          <label class="text-[11px] font-semibold text-on-surface-variant block mb-1">
-            Tus estadísticas reales
-            <span class="ml-1 text-[10px] font-normal text-on-surface-variant/60">(evita los "0" en la sección de métricas)</span>
-          </label>
-          <input id="fld-stats" type="text" placeholder="Ej: 2,400 familias, 97% de éxito, 48 actividades, 30 días de garantía"
-                 class="w-full bg-surface-container border border-outline-variant/40 rounded-lg px-3 py-2 text-sm focus:border-primary focus:ring-0 outline-none"/>
-          <p class="text-[10px] text-on-surface-variant/60 mt-1">Separalos con comas. Si dejás vacío, Claude pone números genéricos.</p>
-        </div>
-        <div>
-          <label class="text-[11px] font-semibold text-on-surface-variant block mb-1">URL de referencia visual (opcional)</label>
-          <input id="fld-refurl" type="text" placeholder="Ej: https://apple.com o https://framer.com/templates"
-                 class="w-full bg-surface-container border border-outline-variant/40 rounded-lg px-3 py-2 text-sm focus:border-primary focus:ring-0 outline-none"/>
-          <p class="text-[10px] text-on-surface-variant/60 mt-1">Claude modela el estilo visual del sitio como inspiración.</p>
-        </div>
-      </div>
+    <div>
+      <label class="field-label">¿Qué vendés? *</label>
+      <input id="fld-product" type="text" placeholder="Ej: Curso de repostería para emprendedoras"
+             class="field-input"/>
+    </div>
+    <div>
+      <label class="field-label">¿A quién? *</label>
+      <input id="fld-audience" type="text" placeholder="Ej: Mujeres 30-50 que quieren emprender"
+             class="field-input"/>
+    </div>
+    <div>
+      <label class="field-label">Precio</label>
+      <input id="fld-price" type="text" placeholder="Ej: $97 USD"
+             class="field-input"/>
+    </div>
+    <div>
+      <label class="field-label">Bonos incluidos</label>
+      <textarea id="fld-bonuses" rows="2" placeholder="Bono 1: Plantilla ($47)&#10;Bono 2: Comunidad ($97)"
+                class="field-input"></textarea>
+    </div>
+    <div>
+      <label class="field-label">Estadísticas reales</label>
+      <input id="fld-stats" type="text" placeholder="Ej: 2,400 alumnos, 97% satisfacción"
+             class="field-input"/>
+    </div>
+    <div>
+      <label class="field-label">Detalles extra</label>
+      <textarea id="fld-extras" rows="2" placeholder="Módulos, testimonios específicos, garantía…"
+                class="field-input"></textarea>
+    </div>
 
-      <!-- PANEL: Prompt libre -->
-      <div id="ld-panel-prompt" class="hidden space-y-3">
-        <div>
-          <label class="text-[11px] font-semibold text-on-surface-variant block mb-1">Describí tu landing en tus propias palabras</label>
-          <textarea id="fld-prompt-libre" rows="7"
-                    placeholder="Ej: Quiero una landing para mi curso de finanzas para mujeres de 30-45 años. Precio $197. Incluir tres bonos: planilla de presupuesto ($47), comunidad privada ($97) y sesión de preguntas en vivo ($197). Testimonios de María que ahorró $3,000 en 6 meses y Ana que canceló sus deudas. Paleta verde oscuro y dorado. CTA principal 'Quiero mis primeras finanzas sanas'. Sección antes/después."
-                    class="w-full bg-surface-container border border-outline-variant/40 rounded-lg px-3 py-2 text-sm focus:border-primary focus:ring-0 outline-none resize-none"></textarea>
-          <p class="text-[10px] text-on-surface-variant/60 mt-1">Escribí todo en prosa: producto, audiencia, precio, bonos, testimonios, colores, instrucciones especiales. Claude lo interpreta todo.</p>
-        </div>
-      </div>
+    <!-- Palette picker -->
+    <div>
+      <label class="field-label">Paleta de color</label>
+      <div id="palette-swatches" class="flex flex-wrap gap-2 mt-1"></div>
+      <p class="text-[10px] text-on-surface-variant/60 mt-1" id="palette-name-lbl"></p>
+    </div>
 
-      <!-- PANEL: Desde URL -->
-      <div id="ld-panel-url" class="hidden space-y-3">
-        <div>
-          <label class="text-[11px] font-semibold text-on-surface-variant block mb-1">URL del sitio a modelar <span class="text-primary/80">*</span></label>
-          <input id="fld-url-model" type="url" placeholder="https://ejemplo.com"
-                 class="w-full bg-surface-container border border-outline-variant/40 rounded-lg px-3 py-2 text-sm focus:border-primary focus:ring-0 outline-none"/>
-          <p class="text-[10px] text-on-surface-variant/60 mt-1">Claude modela la paleta, tipografía, layout y estética de ese sitio para tu landing.</p>
-        </div>
-        <div>
-          <label class="text-[11px] font-semibold text-on-surface-variant block mb-1">¿Qué vendés? <span class="text-primary/80">*</span></label>
-          <input id="fld-url-product" type="text" placeholder="Ej: Programa de coaching de negocios"
-                 class="w-full bg-surface-container border border-outline-variant/40 rounded-lg px-3 py-2 text-sm focus:border-primary focus:ring-0 outline-none"/>
-        </div>
-        <div>
-          <label class="text-[11px] font-semibold text-on-surface-variant block mb-1">Precio</label>
-          <input id="fld-url-price" type="text" placeholder="Ej: $297"
-                 class="w-full bg-surface-container border border-outline-variant/40 rounded-lg px-3 py-2 text-sm focus:border-primary focus:ring-0 outline-none"/>
-        </div>
-        <div>
-          <label class="text-[11px] font-semibold text-on-surface-variant block mb-1">Notas adicionales (opcional)</label>
-          <textarea id="fld-url-notes" rows="2" placeholder="Audiencia, detalles del producto, bonos, testimonios…"
-                    class="w-full bg-surface-container border border-outline-variant/40 rounded-lg px-3 py-2 text-sm focus:border-primary focus:ring-0 outline-none resize-none"></textarea>
-        </div>
-      </div>
+    <button id="btn-generate" class="w-full h-10 rounded-xl primary-gradient text-white text-sm font-bold flex items-center justify-center gap-2 hover:opacity-90 transition mt-2">
+      <span class="material-symbols-outlined" style="font-size:17px">auto_awesome</span>
+      Generar landing
+    </button>
+    <p class="text-[10px] text-on-surface-variant/60 text-center">Tardará ~20 segundos</p>
+  </div>
 
-      <!-- PANEL: PDF / Texto -->
-      <div id="ld-panel-paste" class="hidden space-y-3">
-        <div>
-          <label class="text-[11px] font-semibold text-on-surface-variant block mb-1">
-            Pegá el contenido <span class="text-primary/80">*</span>
-            <span class="ml-1 text-[10px] font-normal text-on-surface-variant/60">(texto de tu PDF, propuesta, guión, etc.)</span>
-          </label>
-          <div class="relative">
-            <textarea id="fld-paste-content" rows="7"
-                      placeholder="Copiá y pegá acá el texto de tu documento, propuesta comercial, guión de VSL, presentación... Claude extrae toda la información para crear tu landing."
-                      class="w-full bg-surface-container border border-outline-variant/40 rounded-lg px-3 py-2 text-sm focus:border-primary focus:ring-0 outline-none resize-none"></textarea>
-            <label class="absolute bottom-2 right-2 cursor-pointer flex items-center gap-1 px-2 py-1 bg-surface-container-highest rounded-md text-[10px] font-semibold hover:bg-outline-variant/30 transition border border-outline-variant/30">
-              <span class="material-symbols-outlined" style="font-size:12px">upload_file</span> Subir .txt
-              <input id="fld-paste-file" type="file" accept=".txt,.md,.csv" class="hidden"/>
-            </label>
-          </div>
-          <p class="text-[10px] text-on-surface-variant/60 mt-1">Claude extrae: copy, beneficios, módulos, testimonios, bonos, FAQ. Completa lo que falte. PDFs: abrí el PDF, seleccioná todo (Ctrl+A), copiá y pegá acá.</p>
-        </div>
-        <div>
-          <label class="text-[11px] font-semibold text-on-surface-variant block mb-1">¿Qué vendés? (para contexto)</label>
-          <input id="fld-paste-product" type="text" placeholder="Ej: Curso online de fotografía"
-                 class="w-full bg-surface-container border border-outline-variant/40 rounded-lg px-3 py-2 text-sm focus:border-primary focus:ring-0 outline-none"/>
-        </div>
-        <div>
-          <label class="text-[11px] font-semibold text-on-surface-variant block mb-1">Precio</label>
-          <input id="fld-paste-price" type="text" placeholder="Ej: $147"
-                 class="w-full bg-surface-container border border-outline-variant/40 rounded-lg px-3 py-2 text-sm focus:border-primary focus:ring-0 outline-none"/>
-        </div>
-      </div>
+  <!-- ── BUILDER MODE (hidden until generated) ── -->
+  <div id="builder-mode" class="hidden flex-col h-full overflow-hidden">
 
-      <!-- SHARED: Contenido -->
-      <div class="space-y-3 mt-3">
-        <div class="flex items-center gap-2 pt-1">
-          <div class="flex-1 h-px bg-outline-variant/20"></div>
-          <span class="text-[10px] font-bold text-on-surface-variant/50 uppercase tracking-widest">Contenido</span>
-          <div class="flex-1 h-px bg-outline-variant/20"></div>
-        </div>
-        <div>
-          <label class="text-[11px] font-semibold text-on-surface-variant block mb-1">
-            Bonos incluidos
-            <span class="ml-1 text-[10px] font-normal text-primary/80">(la IA los incluye siempre — especificá los tuyos)</span>
-          </label>
-          <textarea id="fld-bonuses" rows="3" placeholder="Bono 1: Plantilla de Email ($97)&#10;Bono 2: Checklist de inicio rápido ($47)&#10;Bono 3: Sesión grupal en vivo ($197)"
-                    class="w-full bg-surface-container border border-outline-variant/40 rounded-lg px-3 py-2 text-sm focus:border-primary focus:ring-0 outline-none resize-none"></textarea>
-          <p class="text-[10px] text-on-surface-variant/60 mt-1">Uno por línea. Si no ponés nada, Claude inventa bonos coherentes.</p>
-        </div>
-        <div>
-          <label class="text-[11px] font-semibold text-on-surface-variant block mb-1">Imágenes del producto</label>
-          <div class="flex gap-2">
-            <select id="fld-img-type" class="flex-1 bg-surface-container border border-outline-variant/40 rounded-lg px-3 py-2 text-sm focus:border-primary focus:ring-0 outline-none">
-              <option value="placeholder">Generar con IA (Pollinations.ai)</option>
-              <option value="upload">Dejar espacios para subir mis fotos</option>
-              <option value="none">Sin imágenes de producto</option>
-            </select>
-            <input id="fld-img-count" type="number" min="1" max="8" value="3" title="Cantidad de imágenes"
-                   class="w-14 bg-surface-container border border-outline-variant/40 rounded-lg px-2 py-2 text-sm focus:border-primary focus:ring-0 outline-none text-center"/>
-          </div>
-          <p class="text-[10px] text-on-surface-variant/60 mt-1">El número indica cuántas imágenes distribuir a lo largo de la landing.</p>
-        </div>
-        <div>
-          <label class="text-[11px] font-semibold text-on-surface-variant block mb-1">Video (opcional)</label>
-          <input id="fld-video" type="text" placeholder="URL de YouTube, Vimeo o video .mp4 directo"
-                 class="w-full bg-surface-container border border-outline-variant/40 rounded-lg px-3 py-2 text-sm focus:border-primary focus:ring-0 outline-none"/>
-          <p class="text-[10px] text-on-surface-variant/60 mt-1">Se agrega sección de video embebido responsive justo después del hero.</p>
-        </div>
-      </div>
+    <!-- Palette row -->
+    <div class="px-3 py-2 border-b border-outline-variant/15 flex items-center gap-2 shrink-0">
+      <span class="text-[10px] font-bold text-on-surface-variant/60 uppercase tracking-wider">Paleta</span>
+      <div id="bld-swatches" class="flex gap-1.5 flex-1 flex-wrap"></div>
+    </div>
 
-      <!-- SHARED: Diseño avanzado -->
-      <div class="space-y-3 mt-3">
-        <div class="flex items-center gap-2 pt-1">
-          <div class="flex-1 h-px bg-outline-variant/20"></div>
-          <span class="text-[10px] font-bold text-on-surface-variant/50 uppercase tracking-widest">Diseño avanzado</span>
-          <div class="flex-1 h-px bg-outline-variant/20"></div>
-        </div>
-        <div>
-          <label class="text-[11px] font-semibold text-on-surface-variant block mb-1.5">Paleta de color de la página</label>
-          <div class="grid grid-cols-4 gap-1.5" id="palette-grid"></div>
-          <input id="fld-custom-color" type="text" placeholder="O escribí un color: rojo vino, verde esmeralda, dorado..."
-                 class="mt-2 w-full bg-surface-container border border-outline-variant/40 rounded-lg px-3 py-2 text-sm focus:border-primary focus:ring-0 outline-none"/>
-        </div>
-        <div>
-          <label class="text-[11px] font-semibold text-on-surface-variant block mb-1">Fondo del hero</label>
-          <select id="fld-bg-type" onchange="toggleBgValue()" class="w-full bg-surface-container border border-outline-variant/40 rounded-lg px-3 py-2 text-sm focus:border-primary focus:ring-0 outline-none">
-            <option value="dark">Oscuro con gradiente (default)</option>
-            <option value="color">Color sólido</option>
-            <option value="image">Imagen de fondo</option>
-            <option value="video">Video de fondo (loop)</option>
-          </select>
-          <input id="fld-bg-value" type="text" placeholder="Color hex o URL…" style="display:none"
-                 class="mt-2 w-full bg-surface-container border border-outline-variant/40 rounded-lg px-3 py-2 text-sm focus:border-primary focus:ring-0 outline-none"/>
-          <div id="video-templates-grid" style="display:none" class="mt-2">
-            <p class="text-[10px] font-semibold text-on-surface-variant/70 mb-2">Galería de fondos — hover para preview, clic para usar:</p>
-            <div class="flex flex-wrap gap-1 mb-2" id="vtg-cat-tabs"></div>
-            <div class="grid grid-cols-2 gap-1.5 max-h-[300px] overflow-y-auto pr-1" id="video-tpl-grid"></div>
-            <p class="text-[10px] text-on-surface-variant/50 mt-1.5">O pegá tu URL arriba. Videos de Mixkit (gratis, sin atribución).</p>
-          </div>
-        </div>
-        <div class="flex items-center justify-between py-2.5 px-3 border border-outline-variant/20 rounded-lg bg-surface-container">
-          <div>
-            <p class="text-[11px] font-semibold text-on-surface-variant">Landing interactiva</p>
-            <p class="text-[10px] text-on-surface-variant/55">Animaciones, FAQ con expand suave, tabs, contadores animados</p>
-          </div>
-          <label class="relative inline-flex items-center cursor-pointer shrink-0 ml-3">
-            <input id="fld-interactive" type="checkbox" class="sr-only peer"/>
-            <div class="w-9 h-5 bg-outline-variant rounded-full peer peer-checked:bg-primary transition-colors after:content-[''] after:absolute after:top-0.5 after:left-0.5 after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-transform peer-checked:after:translate-x-4"></div>
-          </label>
-        </div>
-        <div>
-          <label class="text-[11px] font-semibold text-on-surface-variant block mb-1">
-            Instrucción exacta a la IA
-            <span class="ml-1 text-[10px] font-normal text-on-surface-variant/60">(Claude la sigue al pie de la letra)</span>
-          </label>
-          <textarea id="fld-custom" rows="3" placeholder="Ej: el hero debe tener un countdown de 48 horas, sección antes/después con dos columnas, paleta de color violeta oscuro, sin sección de métricas…"
-                    class="w-full bg-surface-container border border-outline-variant/40 rounded-lg px-3 py-2 text-sm focus:border-primary focus:ring-0 outline-none resize-none"></textarea>
-        </div>
-      </div>
-
-      <button id="btn-generate" class="mt-5 w-full h-11 primary-gradient rounded-lg text-white font-bold text-sm flex items-center justify-center gap-2 hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed transition">
-        <span class="material-symbols-outlined" style="font-size:18px">bolt</span>
-        Generar mi landing
+    <!-- Blocks list -->
+    <div class="flex items-center justify-between px-3 py-2 shrink-0 border-b border-outline-variant/10">
+      <span class="text-[11px] font-bold text-on-surface-variant/70 uppercase tracking-wider">Bloques</span>
+      <button id="btn-add-block" class="text-[10px] font-semibold text-primary hover:text-blue-300 flex items-center gap-0.5" title="Agregar sección">
+        <span class="material-symbols-outlined" style="font-size:14px">add</span>
+        Agregar
       </button>
-      <p class="mt-3 text-[10px] text-on-surface-variant/70 leading-relaxed">
-        Claude genera hero, beneficios, bonos, testimonios, FAQ, garantía y CTA — optimizada para conversión. Después iterás por chat.
-      </p>
     </div>
+    <div id="blocks-list" class="flex-1 overflow-y-auto min-h-0"></div>
 
-    <!-- Chat messages (hidden until first generation) -->
-    <div id="chat-log" class="hidden flex-1 overflow-y-auto p-4 space-y-3"></div>
-
-    <!-- Chat input (hidden until first generation) -->
-    <div id="chat-input-wrap" class="hidden border-t border-outline-variant/20 p-3 bg-surface-container-low">
-      <div class="flex items-end gap-2">
-        <textarea id="chat-input" rows="1" placeholder="Pedile a Claude un cambio — 'cambiá el color', 'agregá una sección de bonos'..."
-                  class="flex-1 bg-surface-container border border-outline-variant/40 rounded-lg px-3 py-2 text-sm outline-none focus:border-primary resize-none max-h-32"></textarea>
-        <button id="btn-send" class="w-10 h-10 shrink-0 rounded-lg primary-gradient flex items-center justify-center hover:opacity-90 disabled:opacity-40 disabled:cursor-not-allowed transition">
-          <span class="material-symbols-outlined text-white" style="font-size:18px">arrow_upward</span>
-        </button>
+    <!-- Chat area -->
+    <div class="border-t border-outline-variant/20 shrink-0">
+      <button id="chat-toggle" class="w-full px-3 py-2 flex items-center gap-2 text-[11px] font-bold text-on-surface-variant/70 hover:text-on-surface hover:bg-surface-container-high/40 transition">
+        <span class="material-symbols-outlined" style="font-size:14px">chat</span>
+        Chat con IA
+        <span class="material-symbols-outlined ml-auto" style="font-size:14px" id="chat-toggle-icon">expand_less</span>
+      </button>
+      <div id="chat-area" class="hidden flex-col">
+        <div id="chat-log" class="overflow-y-auto p-2 space-y-2" style="max-height:160px;min-height:60px;"></div>
+        <div class="flex gap-2 p-2 border-t border-outline-variant/15">
+          <textarea id="chat-input" rows="2" placeholder="Cambia el título del hero, agrega un testimonio de Ana…"
+                    class="field-input text-xs resize-none flex-1" style="border-radius:8px;padding:6px 8px;"></textarea>
+          <button id="chat-send" class="w-8 h-8 shrink-0 primary-gradient rounded-lg flex items-center justify-center self-end hover:opacity-90 transition">
+            <span class="material-symbols-outlined text-white" style="font-size:15px">send</span>
+          </button>
+        </div>
       </div>
     </div>
-  </aside>
 
-  <!-- Preview pane -->
-  <section class="flex-1 flex flex-col bg-surface-container-low">
-    <div class="h-10 border-b border-outline-variant/20 flex items-center px-4 gap-3 bg-surface-container text-[11px] text-on-surface-variant">
-      <span class="material-symbols-outlined" style="font-size:14px">preview</span>
-      <span id="preview-url" class="font-mono truncate flex items-center gap-0.5">tudominio.com/<input id="slug-preview" type="text" placeholder="pendiente" class="bg-transparent border-none outline-none font-mono text-[11px] p-0 focus:ring-0 hover:bg-surface-container-high rounded px-1 transition-colors" style="width:auto;min-width:80px"/></span>
-      <span class="ml-auto hidden md:flex items-center gap-1 text-[10px]">
-        <span class="w-2 h-2 rounded-full bg-green-500"></span>
-        Preview en vivo
-      </span>
+  </div>
+</aside>
+
+<!-- ═══ PREVIEW (center) ═══ -->
+<div class="flex-1 flex flex-col overflow-hidden bg-[#111]">
+  <!-- Preview toolbar -->
+  <div id="preview-toolbar" class="hidden h-10 px-3 flex items-center gap-2 border-b border-outline-variant/15 bg-surface-container-low shrink-0">
+    <div class="flex items-center gap-1 bg-surface-container rounded-lg p-0.5">
+      <button class="viewport-btn w-8 h-7 rounded-md flex items-center justify-center text-on-surface-variant hover:text-on-surface transition active" data-vp="desktop" title="Desktop">
+        <span class="material-symbols-outlined" style="font-size:15px">desktop_windows</span>
+      </button>
+      <button class="viewport-btn w-8 h-7 rounded-md flex items-center justify-center text-on-surface-variant hover:text-on-surface transition" data-vp="tablet" title="Tablet">
+        <span class="material-symbols-outlined" style="font-size:15px">tablet_mac</span>
+      </button>
+      <button class="viewport-btn w-8 h-7 rounded-md flex items-center justify-center text-on-surface-variant hover:text-on-surface transition" data-vp="mobile" title="Móvil">
+        <span class="material-symbols-outlined" style="font-size:15px">smartphone</span>
+      </button>
     </div>
-    <div id="preview-empty" class="flex-1 flex flex-col items-center justify-center text-center p-8 text-on-surface-variant">
-      <div class="w-16 h-16 rounded-2xl primary-gradient flex items-center justify-center mb-4 opacity-50">
-        <span class="material-symbols-outlined text-white" style="font-size:32px">web</span>
-      </div>
-      <h3 class="text-lg font-bold mb-1">Tu landing va a aparecer acá</h3>
-      <p class="text-sm max-w-md">Completá el formulario de la izquierda y Claude Sonnet te genera la landing completa en ~15 segundos. Vas a poder iterarla por chat hasta que quede como querés.</p>
+    <div class="flex-1"></div>
+    <button id="btn-regen" class="h-7 px-3 rounded-lg bg-surface-container-high hover:bg-surface-container-highest text-[11px] font-semibold flex items-center gap-1 transition-colors text-on-surface-variant hover:text-on-surface" title="Regenerar toda la landing">
+      <span class="material-symbols-outlined" style="font-size:13px">refresh</span>
+      Regenerar todo
+    </button>
+  </div>
+  <!-- Iframe wrapper -->
+  <div id="iframe-wrapper" class="flex-1 flex items-start justify-center overflow-auto p-0">
+    <!-- Starter placeholder -->
+    <div id="preview-placeholder" class="flex flex-col items-center justify-center h-full gap-4 text-on-surface-variant/40">
+      <span class="material-symbols-outlined" style="font-size:48px">web</span>
+      <p class="text-sm">Completá el formulario y hacé click en "Generar landing"</p>
     </div>
-    <iframe id="preview-frame" class="hidden flex-1 w-full" style="background:#09090b" sandbox="allow-same-origin allow-scripts allow-popups allow-forms" title="Preview"></iframe>
-  </section>
+    <iframe id="preview-frame" class="hidden" style="width:100%;height:100%;border:none;background:#fff;"></iframe>
+  </div>
+</div>
+
+<!-- ═══ RIGHT PANEL (block editor) ═══ -->
+<aside id="right-panel" class="w-80 shrink-0 border-l border-outline-variant/20 flex flex-col bg-surface-container-low overflow-hidden hidden">
+  <div class="px-4 py-3 border-b border-outline-variant/15 flex items-center gap-2 shrink-0">
+    <span class="material-symbols-outlined icon-gradient" style="font-size:16px">edit_note</span>
+    <span id="rp-title" class="text-sm font-bold flex-1 truncate">Editor de bloque</span>
+    <button id="rp-save" class="h-7 px-3 rounded-lg primary-gradient text-white text-xs font-bold hover:opacity-90 transition">
+      Guardar
+    </button>
+  </div>
+  <div id="rp-body" class="flex-1 overflow-y-auto p-3">
+    <div id="rp-empty">
+      <span class="material-symbols-outlined" style="font-size:32px">touch_app</span>
+      <span>Seleccioná un bloque para editar</span>
+    </div>
+    <div id="rp-fields" class="hidden space-y-3"></div>
+  </div>
+</aside>
+
 </main>
 
-<!-- HTML Editor Modal -->
-<div id="html-editor" class="hidden fixed inset-0 z-40 bg-background flex flex-col">
-  <div class="h-12 border-b border-outline-variant/20 flex items-center px-4 gap-3 bg-surface-container-low">
-    <span class="material-symbols-outlined icon-gradient" style="font-size:20px">code</span>
-    <h2 class="text-sm font-extrabold tracking-tight">Editor HTML manual</h2>
-    <p class="text-[11px] text-on-surface-variant/70 hidden md:inline">Edita directamente el código. Sin consumo de IA.</p>
-    <div class="ml-auto flex items-center gap-2">
-      <button id="btn-cancel-html" class="h-9 px-3 rounded-lg bg-surface-container-high hover:bg-surface-container-highest text-xs font-semibold">Cancelar</button>
-      <button id="btn-save-html" class="h-9 px-4 rounded-lg primary-gradient text-white text-xs font-bold flex items-center gap-1.5 hover:opacity-90 transition">
-        <span class="material-symbols-outlined" style="font-size:16px">save</span>Guardar cambios
+<!-- ── ADD BLOCK MODAL ── -->
+<div id="add-block-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center" style="background:rgba(0,0,0,.7)">
+  <div class="bg-surface-container-high rounded-2xl p-5 w-96 max-h-[80vh] overflow-y-auto shadow-2xl border border-outline-variant/20">
+    <div class="flex items-center gap-2 mb-4">
+      <span class="material-symbols-outlined icon-gradient" style="font-size:18px">add_circle</span>
+      <h3 class="font-bold text-sm">Agregar sección</h3>
+      <button id="modal-close" class="ml-auto text-on-surface-variant hover:text-on-surface">
+        <span class="material-symbols-outlined" style="font-size:18px">close</span>
       </button>
     </div>
-  </div>
-  <textarea id="html-editor-textarea" spellcheck="false"
-            class="flex-1 w-full bg-[#0a0a0a] text-[#d4d4d4] font-mono text-[13px] leading-[1.5] p-4 border-none outline-none resize-none"></textarea>
-</div>
-
-<!-- Toast -->
-<div id="toast" class="fixed bottom-6 right-6 hidden toast px-4 py-3 rounded-lg bg-surface-container-highest border border-outline-variant/30 text-sm font-semibold shadow-xl flex items-center gap-2 z-50"></div>
-
-<!-- Floating edit toolbar (appears when user clicks on an editable element) -->
-<div id="edit-toolbar" class="hidden fixed z-40 flex items-center gap-1 bg-surface-container-highest border border-outline-variant/30 rounded-lg px-2 py-1.5 shadow-2xl text-xs">
-  <label class="flex items-center gap-1 px-1.5 hover:bg-surface-container-high rounded cursor-pointer" title="Color del texto">
-    <span class="material-symbols-outlined" style="font-size:14px">format_color_text</span>
-    <input id="tb-text-color" type="color" class="w-4 h-4 border-none cursor-pointer bg-transparent p-0" value="#000000"/>
-  </label>
-  <label class="flex items-center gap-1 px-1.5 hover:bg-surface-container-high rounded cursor-pointer" title="Color de fondo">
-    <span class="material-symbols-outlined" style="font-size:14px">format_color_fill</span>
-    <input id="tb-bg-color" type="color" class="w-4 h-4 border-none cursor-pointer bg-transparent p-0" value="#ffffff"/>
-  </label>
-  <button id="tb-bold" class="px-1.5 py-0.5 hover:bg-surface-container-high rounded font-bold" title="Negrita">B</button>
-  <button id="tb-italic" class="px-1.5 py-0.5 hover:bg-surface-container-high rounded italic" title="Cursiva">I</button>
-  <div id="tb-image-section" class="hidden flex items-center gap-1 border-l border-outline-variant/30 pl-1.5 ml-1">
-    <button id="tb-image-url" class="px-2 py-0.5 hover:bg-surface-container-high rounded text-[10px] font-semibold" title="Cambiar imagen por URL">
-      <span class="material-symbols-outlined" style="font-size:13px;vertical-align:middle">link</span> URL
-    </button>
-    <label id="tb-image-upload-label" class="px-2 py-0.5 hover:bg-surface-container-high rounded text-[10px] font-semibold cursor-pointer" title="Subir imagen desde tu dispositivo">
-      <span class="material-symbols-outlined" style="font-size:13px;vertical-align:middle">upload</span> Subir
-      <input id="tb-image-upload" type="file" accept="image/*" class="hidden"/>
-    </label>
-  </div>
-  <div class="border-l border-outline-variant/30 pl-1.5 ml-1 flex items-center gap-0.5">
-    <button id="tb-move-up" class="px-1.5 py-0.5 hover:bg-surface-container-high rounded" title="Mover sección arriba">
-      <span class="material-symbols-outlined" style="font-size:14px">arrow_upward</span>
-    </button>
-    <button id="tb-move-down" class="px-1.5 py-0.5 hover:bg-surface-container-high rounded" title="Mover sección abajo">
-      <span class="material-symbols-outlined" style="font-size:14px">arrow_downward</span>
-    </button>
-    <button id="tb-delete" class="px-1.5 py-0.5 hover:bg-red-500/20 hover:text-red-400 rounded" title="Borrar esta sección">
-      <span class="material-symbols-outlined" style="font-size:14px">delete</span>
-    </button>
+    <div id="add-block-grid" class="grid grid-cols-2 gap-2"></div>
   </div>
 </div>
 
-<script src="./supabase-config.js"></script>
-<script src="./app.js"></script>
-<script src="./skinglow-demo-data.js"></script>
-<script src="./ai-assistant.js"></script>
+<!-- ── TOAST ── -->
+<div id="toast" class="hidden fixed top-4 left-1/2 -translate-x-1/2 z-50 px-4 py-2 rounded-xl text-sm font-semibold shadow-xl toast" style="background:#1e2a45;border:1px solid #2E5BFF44;"></div>
+
 <script>
-const VIDEO_CATEGORIES = [
-  { key: 'all',      label: 'Todos' },
-  { key: 'mine',     label: 'Mis Videos' },
-  { key: 'people',   label: 'Personas' },
-  { key: 'tech',     label: 'Tech' },
-  { key: 'abstract', label: 'Abstract' },
-  { key: 'city',     label: 'Ciudad' },
-  { key: 'nature',   label: 'Naturaleza' },
-];
-const VIDEO_TEMPLATES = [
-  { id: 'mine-1', category: 'mine', label: 'Mi video 1', url: 'https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260307_083826_e938b29f-a43a-41ec-a153-3d4730578ab8.mp4' },
-  { id: 'mine-2', category: 'mine', label: 'Mi video 2', url: 'https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260418_094631_d30ab262-45ee-4b7d-99f3-5d5848c8ef13.mp4' },
-  { id: 'mine-3', category: 'mine', label: 'Mi video 3', url: 'https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260328_065045_c44942da-53c6-4804-b734-f9e07fc22e08.mp4' },
-  { id: 'mine-4', category: 'mine', label: 'Mi video 4', url: 'https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260319_165750_358b1e72-c921-48b7-aaac-f200994f32fb.mp4' },
-  { id: 'mine-5', category: 'mine', label: 'Mi video 5', url: 'https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260328_105406_16f4600d-7a92-4292-b96e-b19156c7830a.mp4' },
-  { id: 'mine-6', category: 'mine', label: 'Mi video 6', url: 'https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260328_083109_283f3553-e28f-428b-a723-d639c617eb2b.mp4' },
-  { id: 'mine-7', category: 'mine', label: 'Mi video 7', url: 'https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260319_015952_e1deeb12-8fb7-4071-a42a-60779fc64ab6.mp4' },
-  { id: 'mine-8', category: 'mine', label: 'Mi video 8', url: 'https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260325_132944_a0d124bb-eaa1-4082-aa30-2310efb42b4b.mp4' },
-  { id: 'mine-9',  category: 'mine', label: 'Mi video 9',  url: 'https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260325_125119_8e5ae31c-0021-4396-bc08-f7aebeb877a2.mp4' },
-  { id: 'mine-10', category: 'mine', label: 'Mi video 10', url: 'https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260210_031346_d87182fb-b0af-4273-84d1-c6fd17d6bf0f.mp4' },
-  { id: 'mine-11', category: 'mine', label: 'Mi video 11', url: 'https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260423_161253_c72b1869-400f-45ed-ac0c-52f68c2ed5bd.mp4' },
-  { id: 'mine-12', category: 'mine', label: 'Mi video 12', url: 'https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260424_064411_9e9d7f84-9277-41f4-ab10-59172d89e6be.mp4' },
-  { id: 'mine-13', category: 'mine', label: 'Mi video 13', url: 'https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260419_064822_f120e48a-d545-45dd-a02d-facb07829888.mp4' },
-  { id: 'mine-14', category: 'mine', label: 'Mi video 14', url: 'https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260419_065931_e3ca7b53-d32e-4ad5-81de-dc9d6fcfda6d.mp4' },
-  { id: 'mine-15', category: 'mine', label: 'Mi video 15', url: 'https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260417_110451_9f82b157-dc92-4a9f-a341-c25594ec20e1.mp4' },
-  { id: 'mine-16', category: 'mine', label: 'Mi video 16', url: 'https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260302_085640_276ea93b-d7da-4418-a09b-2aa5b490e838.mp4' },
-  { id: 'mine-17', category: 'mine', label: 'Mi video 17', url: 'https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260306_074215_04640ca7-042c-45d6-bb56-58b1e8a42489.mp4' },
-  { id: 'mine-18', category: 'mine', label: 'Mi video 18', url: 'https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260315_073750_51473149-4350-4920-ae24-c8214286f323.mp4' },
-  { id: 'mine-19', category: 'mine', label: 'Mi video 19', url: 'https://stream.mux.com/hUT6X11m1Vkw1QMxPOLgI761x2cfpi9bHFbi5cNg4014/high.mp4' },
-  { id: 'mine-20', category: 'mine', label: 'Mi video 20', url: 'https://stream.mux.com/9JXDljEVWYwWu01PUkAemafDugK89o01BR6zqJ3aS9u00A/high.mp4' },
-  { id: 'mine-21', category: 'mine', label: 'Mi video 21', url: 'https://stream.mux.com/s8pMcOvMQXc4GD6AX4e1o01xFogFxipmuKltNfSYza0200/high.mp4' },
-  { id: 'mine-22', category: 'mine', label: 'Mi video 22', url: 'https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260217_030345_246c0224-10a4-422c-b324-070b7c0eceda.mp4' },
-  { id: 'mine-23', category: 'mine', label: 'Mi video 23', url: 'https://stream.mux.com/T6oQJQ02cQ6N01TR6iHwZkKFkbepS34dkkIc9iukgy400g/high.mp4' },
-  { id: 'mine-24', category: 'mine', label: 'Mi video 24', url: 'https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260329_050842_be71947f-f16e-4a14-810c-06e83d23ddb5.mp4' },
-  { id: 'mine-25', category: 'mine', label: 'Mi video 25', url: 'https://res.cloudinary.com/dqd6gdwda/video/upload/v1777261664/Dise%C3%B1o_sin_t%C3%ADtulo_27_usnghs.mp4' },
-  { id: '4871',  category: 'people',   label: 'Negocios' },
-  { id: '5285',  category: 'people',   label: 'Equipo trabajando' },
-  { id: '4608',  category: 'people',   label: 'Profesional oficina' },
-  { id: '49583', category: 'people',   label: 'Lifestyle moderno' },
-  { id: '4503',  category: 'people',   label: 'Trabajo creativo' },
-  { id: '4957',  category: 'people',   label: 'Estudio profesional' },
-  { id: '308',   category: 'people',   label: 'Hombre laptop ciudad' },
-  { id: '4809',  category: 'people',   label: 'Reunión coworkers' },
-  { id: '42648', category: 'people',   label: 'Presentación gráficos' },
-  { id: '914',   category: 'people',   label: 'Oficina abierta' },
-  { id: '4907',  category: 'people',   label: 'Manos teclado' },
-  { id: '42664', category: 'people',   label: 'Mujer profesional' },
-  { id: '30012', category: 'people',   label: 'Apretón de manos' },
-  { id: '4547',  category: 'people',   label: 'Reunión exitosa' },
-  { id: '918',   category: 'people',   label: 'Startup activa' },
-  { id: '4948',  category: 'people',   label: 'Lectura tranquila' },
-  { id: '4800',  category: 'people',   label: 'Mujer meditando' },
-  { id: '4074',  category: 'tech',     label: 'Tecnología digital' },
-  { id: '6168',  category: 'tech',     label: 'Pantalla código' },
-  { id: '50264', category: 'tech',     label: 'Interfaz futurista' },
-  { id: '4068',  category: 'tech',     label: 'Red conectada' },
-  { id: '46635', category: 'tech',     label: 'Programación' },
-  { id: '99786', category: 'tech',     label: 'Dispositivos futuros' },
-  { id: '9757',  category: 'tech',     label: 'Código en pantalla' },
-  { id: '47051', category: 'tech',     label: 'Placa circuito' },
-  { id: '12748', category: 'tech',     label: 'Mapa digital mundial' },
-  { id: '51214', category: 'tech',     label: 'Gafas VR' },
-  { id: '50748', category: 'tech',     label: 'Pantallas matrix' },
-  { id: '23282', category: 'tech',     label: 'Centro de datos' },
-  { id: '31771', category: 'tech',     label: 'Red de puntos' },
-  { id: '47323', category: 'tech',     label: 'Huella digital' },
-  { id: '45378', category: 'tech',     label: 'Código HTML' },
-  { id: '31562', category: 'abstract', label: 'Túnel fractal' },
-  { id: '47282', category: 'abstract', label: 'Fuga de luz' },
-  { id: '44818', category: 'abstract', label: 'Tinta fluida' },
-  { id: '3524',  category: 'abstract', label: 'Glitch digital' },
-  { id: '4974',  category: 'abstract', label: 'Formas mono' },
-  { id: '45298', category: 'abstract', label: 'Humo abstracto' },
-  { id: '31497', category: 'abstract', label: 'Túnel cubos 3D' },
-  { id: '49845', category: 'city',     label: 'Edificios nocturnos' },
-  { id: '4231',  category: 'city',     label: 'Tokio luces neón' },
-  { id: '49878', category: 'city',     label: 'Rascacielos aérea' },
-  { id: '4332',  category: 'city',     label: 'Times Square lluvia' },
-  { id: '4067',  category: 'city',     label: 'Túnel tráfico' },
-  { id: '34562', category: 'city',     label: 'Avenidas nocturnas' },
-  { id: '41161', category: 'city',     label: 'Avenida principal' },
-  { id: '4308',  category: 'city',     label: 'Tokio atardecer' },
-  { id: '42343', category: 'city',     label: 'Tráfico aéreo noche' },
-  { id: '4451',  category: 'city',     label: 'Calle Tokio' },
-  { id: '41576', category: 'nature',   label: 'Carretera montaña' },
-  { id: '4075',  category: 'nature',   label: 'Pradera flores' },
-  { id: '2213',  category: 'nature',   label: 'Cascada bosque' },
-  { id: '51502', category: 'nature',   label: 'Costa rocosa' },
-  { id: '51445', category: 'nature',   label: 'Atardecer playa' },
-  { id: '4881',  category: 'nature',   label: 'Campo girasoles' },
-  { id: '5016',  category: 'nature',   label: 'Olas espuma' },
-  { id: '1610',  category: 'nature',   label: 'Estrellas espacio' },
-  { id: '26108', category: 'nature',   label: 'Cielo y nubes' },
-  { id: '4645',  category: 'nature',   label: 'Palmera soleada' },
-  { id: '4633',  category: 'nature',   label: 'Carretera 1ra persona' },
-];
-let _vtgActiveCat = 'all';
-let _vtgSelectedId = null;
+// ═══════════════════════════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════════════════════════
+let landing = null;       // { id, title, slug, blocks:[], palette:'blue-purple', brief, published, settings }
+let currentUser = null;
+let activeBlockIdx = -1;  // index in landing.blocks of the block being edited
+let chatOpen = false;
 
-const PALETTES = [
-  { id: 'default',   label: 'Azul/Púrpura', from: '#2E5BFF', to: '#7c3aed' },
-  { id: 'green',     label: 'Verde',         from: '#059669', to: '#10b981' },
-  { id: 'rose',      label: 'Rosa/Fucsia',   from: '#e11d48', to: '#ec4899' },
-  { id: 'orange',    label: 'Naranja',        from: '#ea580c', to: '#f59e0b' },
-  { id: 'cyan',      label: 'Cyan/Azul',     from: '#0891b2', to: '#2563eb' },
-  { id: 'violet',    label: 'Violeta',        from: '#7c3aed', to: '#a855f7' },
-  { id: 'red',       label: 'Rojo/Premium',  from: '#dc2626', to: '#9f1239' },
-  { id: 'gold',      label: 'Dorado/Negro',  from: '#b45309', to: '#d97706' },
-];
-let _selectedPalette = 'default';
+// ═══════════════════════════════════════════════════════════
+// PALETTE UI
+// ═══════════════════════════════════════════════════════════
+function buildSwatches(containerId, onSelect, selected) {
+  const container = document.getElementById(containerId);
+  if (!container) return;
+  container.innerHTML = '';
+  (LANDING_PALETTES_DEF || []).forEach(p => {
+    const s = document.createElement('div');
+    s.className = 'swatch' + (selected === p.id ? ' sel' : '');
+    s.title = p.name;
+    s.style.background = `linear-gradient(135deg, ${p.primary}, ${p.accent})`;
+    s.dataset.id = p.id;
+    s.onclick = () => {
+      container.querySelectorAll('.swatch').forEach(x => x.classList.remove('sel'));
+      s.classList.add('sel');
+      onSelect(p.id);
+    };
+    container.appendChild(s);
+  });
+}
 
-function renderPalettes() {
-  const grid = document.getElementById('palette-grid');
-  if (!grid) return;
-  grid.innerHTML = '';
-  PALETTES.forEach(p => {
-    const btn = document.createElement('button');
-    btn.type = 'button';
-    const isSel = _selectedPalette === p.id;
-    btn.style.cssText = `background:linear-gradient(135deg,${p.from},${p.to});`;
-    btn.className = 'h-8 rounded-lg transition relative border-2 ' +
-      (isSel ? 'border-white scale-105 shadow-lg' : 'border-transparent hover:border-white/60');
-    btn.title = p.label;
-    if (isSel) {
-      btn.innerHTML = '<span class="material-symbols-outlined text-white absolute inset-0 flex items-center justify-center" style="font-size:14px;display:flex">check</span>';
+function getCurrentPalette() {
+  return (landing && landing.palette) || 'blue-purple';
+}
+
+// ═══════════════════════════════════════════════════════════
+// BRIEF BUILDER
+// ═══════════════════════════════════════════════════════════
+function buildBrief() {
+  const product  = document.getElementById('fld-product').value.trim();
+  const audience = document.getElementById('fld-audience').value.trim();
+  const price    = document.getElementById('fld-price').value.trim();
+  const bonuses  = document.getElementById('fld-bonuses').value.trim();
+  const stats    = document.getElementById('fld-stats').value.trim();
+  const extras   = document.getElementById('fld-extras').value.trim();
+
+  if (!product) { showToast('Completá al menos "¿Qué vendés?"'); return null; }
+
+  let brief = `Producto: ${product}`;
+  if (audience) brief += `\nAudiencia: ${audience}`;
+  if (price)    brief += `\nPrecio: ${price}`;
+  if (bonuses)  brief += `\nBonos:\n${bonuses}`;
+  if (stats)    brief += `\nEstadísticas reales: ${stats}`;
+  if (extras)   brief += `\nDetalles extra: ${extras}`;
+  return brief;
+}
+
+// ═══════════════════════════════════════════════════════════
+// PREVIEW RENDER
+// ═══════════════════════════════════════════════════════════
+function renderPreview() {
+  if (!landing || !landing.blocks) return;
+  const frame = document.getElementById('preview-frame');
+  const html = renderLandingFromBlocks(landing.blocks, landing.palette || 'blue-purple');
+  frame.srcdoc = html;
+  frame.classList.remove('hidden');
+  document.getElementById('preview-placeholder').classList.add('hidden');
+}
+
+// ═══════════════════════════════════════════════════════════
+// BLOCKS LIST (left panel)
+// ═══════════════════════════════════════════════════════════
+function renderBlocksList() {
+  const container = document.getElementById('blocks-list');
+  if (!container || !landing) return;
+  container.innerHTML = '';
+
+  (landing.blocks || []).forEach((block, idx) => {
+    const item = document.createElement('div');
+    item.className = 'block-item px-3 py-2 flex items-center gap-2 border-l-2 border-transparent' +
+      (idx === activeBlockIdx ? ' active' : '') +
+      (block.hidden ? ' hidden-block' : '');
+    item.dataset.idx = idx;
+
+    const icon = BLOCK_ICONS[block.type] || 'view_module';
+    const label = BLOCK_LABELS[block.type] || block.type;
+
+    item.innerHTML = `
+      <span class="material-symbols-outlined text-on-surface-variant/60 drag-handle" style="font-size:16px;cursor:grab;">drag_indicator</span>
+      <span class="material-symbols-outlined text-on-surface-variant/60" style="font-size:15px;">${icon}</span>
+      <span class="text-xs font-semibold flex-1 truncate">${label}</span>
+      <button class="toggle-vis text-on-surface-variant/50 hover:text-on-surface" title="${block.hidden ? 'Mostrar' : 'Ocultar'}">
+        <span class="material-symbols-outlined" style="font-size:14px;">${block.hidden ? 'visibility_off' : 'visibility'}</span>
+      </button>
+    `;
+
+    item.addEventListener('click', (e) => {
+      if (e.target.closest('.toggle-vis')) {
+        block.hidden = !block.hidden;
+        renderPreview();
+        renderBlocksList();
+        autosave();
+        return;
+      }
+      openBlockEditor(idx);
+    });
+
+    container.appendChild(item);
+  });
+}
+
+// ═══════════════════════════════════════════════════════════
+// BLOCK EDITOR (right panel)
+// ═══════════════════════════════════════════════════════════
+function openBlockEditor(idx) {
+  activeBlockIdx = idx;
+  renderBlocksList(); // update active state
+
+  const block = landing.blocks[idx];
+  if (!block) return;
+
+  const rp = document.getElementById('right-panel');
+  rp.classList.remove('hidden');
+  document.getElementById('rp-empty').classList.add('hidden');
+  document.getElementById('rp-fields').classList.remove('hidden');
+  document.getElementById('rp-title').textContent = BLOCK_LABELS[block.type] || block.type;
+
+  buildFieldEditor(block, idx);
+}
+
+function buildFieldEditor(block, idx) {
+  const container = document.getElementById('rp-fields');
+  container.innerHTML = '';
+  const fields = BLOCK_FIELDS[block.type] || [];
+  const data = block.data || {};
+
+  fields.forEach(field => {
+    const wrap = document.createElement('div');
+
+    if (field.type === 'section-title') {
+      wrap.innerHTML = `<div class="field-section-title">${field.label}</div>`;
+      container.appendChild(wrap);
+      return;
     }
-    btn.onclick = () => { _selectedPalette = p.id; renderPalettes(); };
+
+    if (field.type === 'text' || field.type === 'textarea') {
+      wrap.innerHTML = `
+        <label class="field-label">${field.label}</label>
+        <${field.type === 'textarea' ? 'textarea rows="3"' : 'input type="text"'}
+          class="field-input"
+          data-key="${field.key}"
+          placeholder="${field.placeholder || ''}"
+          style="${field.type === 'textarea' ? '' : ''}">
+        ${field.type === 'textarea' ? (escHtml(data[field.key] || '')) + '</textarea>' : ''}
+      `;
+      if (field.type === 'text') {
+        wrap.querySelector('input').value = data[field.key] || '';
+      }
+    } else if (field.type === 'image') {
+      const currentUrl = data[field.key] || '';
+      wrap.innerHTML = `
+        <label class="field-label">${field.label}</label>
+        <div class="flex gap-2">
+          <input type="text" class="field-input flex-1" data-key="${field.key}"
+                 placeholder="https://..." value="${escAttr(currentUrl)}" style="border-radius:8px 0 0 8px;"/>
+          <button class="px-3 bg-surface-container-high hover:bg-surface-container-highest rounded-r-lg text-xs font-semibold border border-outline-variant/30 transition" onclick="pickPollinationsImage(this, '${field.key}')">
+            IA
+          </button>
+        </div>
+        ${currentUrl ? `<img src="${escAttr(currentUrl)}" class="w-full rounded-lg mt-2" style="max-height:100px;object-fit:cover;" onerror="this.style.display='none'"/>` : ''}
+      `;
+    } else if (field.type === 'list-simple') {
+      // Array of strings
+      const items = Array.isArray(data[field.key]) ? data[field.key] : [];
+      wrap.innerHTML = `
+        <label class="field-label">${field.label}</label>
+        <div class="sublist" data-key="${field.key}" data-type="list-simple">
+          ${items.map((v,i) => `
+            <div class="sublist-item">
+              <button class="btn-del-sub" onclick="delSubItem(this)">
+                <span class="material-symbols-outlined" style="font-size:14px;">close</span>
+              </button>
+              <input type="text" value="${escAttr(v)}" placeholder="Ítem ${i+1}"/>
+            </div>
+          `).join('')}
+          <button class="btn-add-sub" onclick="addSubItem(this, 'list-simple')">
+            <span class="material-symbols-outlined align-middle" style="font-size:12px">add</span> Agregar ítem
+          </button>
+        </div>
+      `;
+    } else if (field.type === 'list-qa') {
+      const items = Array.isArray(data[field.key]) ? data[field.key] : [];
+      wrap.innerHTML = `
+        <label class="field-label">${field.label}</label>
+        <div class="sublist" data-key="${field.key}" data-type="list-qa">
+          ${items.map(v => `
+            <div class="sublist-item">
+              <button class="btn-del-sub" onclick="delSubItem(this)">
+                <span class="material-symbols-outlined" style="font-size:14px;">close</span>
+              </button>
+              <input type="text" value="${escAttr(v.q || '')}" placeholder="Pregunta"/>
+              <textarea rows="2" style="margin-top:4px;">${escHtml(v.a || '')}</textarea>
+            </div>
+          `).join('')}
+          <button class="btn-add-sub" onclick="addSubItem(this,'list-qa')">
+            <span class="material-symbols-outlined align-middle" style="font-size:12px">add</span> Agregar pregunta
+          </button>
+        </div>
+      `;
+    } else if (field.type === 'list-icon-text') {
+      const items = Array.isArray(data[field.key]) ? data[field.key] : [];
+      wrap.innerHTML = `
+        <label class="field-label">${field.label}</label>
+        <div class="sublist" data-key="${field.key}" data-type="list-icon-text">
+          ${items.map(v => `
+            <div class="sublist-item">
+              <button class="btn-del-sub" onclick="delSubItem(this)">
+                <span class="material-symbols-outlined" style="font-size:14px;">close</span>
+              </button>
+              <input type="text" value="${escAttr(v.icon || 'check_circle')}" placeholder="icon (ej: check_circle)"/>
+              <input type="text" value="${escAttr(v.text || '')}" placeholder="Texto del ítem" style="margin-top:4px;"/>
+            </div>
+          `).join('')}
+          <button class="btn-add-sub" onclick="addSubItem(this,'list-icon-text')">
+            <span class="material-symbols-outlined align-middle" style="font-size:12px">add</span> Agregar beneficio
+          </button>
+        </div>
+      `;
+    } else if (field.type === 'list-value-label') {
+      const items = Array.isArray(data[field.key]) ? data[field.key] : [];
+      wrap.innerHTML = `
+        <label class="field-label">${field.label}</label>
+        <div class="sublist" data-key="${field.key}" data-type="list-value-label">
+          ${items.map(v => `
+            <div class="sublist-item">
+              <button class="btn-del-sub" onclick="delSubItem(this)">
+                <span class="material-symbols-outlined" style="font-size:14px;">close</span>
+              </button>
+              <input type="text" value="${escAttr(v.value || '')}" placeholder="Valor (ej: +2,400)"/>
+              <input type="text" value="${escAttr(v.label || '')}" placeholder="Etiqueta" style="margin-top:4px;"/>
+            </div>
+          `).join('')}
+          <button class="btn-add-sub" onclick="addSubItem(this,'list-value-label')">
+            <span class="material-symbols-outlined align-middle" style="font-size:12px">add</span> Agregar métrica
+          </button>
+        </div>
+      `;
+    } else if (field.type === 'list-bono') {
+      const items = Array.isArray(data[field.key]) ? data[field.key] : [];
+      wrap.innerHTML = `
+        <label class="field-label">${field.label}</label>
+        <div class="sublist" data-key="${field.key}" data-type="list-bono">
+          ${items.map(v => `
+            <div class="sublist-item">
+              <button class="btn-del-sub" onclick="delSubItem(this)">
+                <span class="material-symbols-outlined" style="font-size:14px;">close</span>
+              </button>
+              <input type="text" value="${escAttr(v.title || '')}" placeholder="Nombre del bono"/>
+              <input type="text" value="${escAttr(v.value || '')}" placeholder="Valor ($97)" style="margin-top:4px;"/>
+              <textarea rows="1" style="margin-top:4px;">${escHtml(v.desc || '')}</textarea>
+            </div>
+          `).join('')}
+          <button class="btn-add-sub" onclick="addSubItem(this,'list-bono')">
+            <span class="material-symbols-outlined align-middle" style="font-size:12px">add</span> Agregar bono
+          </button>
+        </div>
+      `;
+    } else if (field.type === 'list-testimonio') {
+      const items = Array.isArray(data[field.key]) ? data[field.key] : [];
+      wrap.innerHTML = `
+        <label class="field-label">${field.label}</label>
+        <div class="sublist" data-key="${field.key}" data-type="list-testimonio">
+          ${items.map(v => `
+            <div class="sublist-item">
+              <button class="btn-del-sub" onclick="delSubItem(this)">
+                <span class="material-symbols-outlined" style="font-size:14px;">close</span>
+              </button>
+              <input type="text" value="${escAttr(v.name || '')}" placeholder="Nombre"/>
+              <input type="text" value="${escAttr(v.role || '')}" placeholder="Rol (ej: Mamá de 3, Coach)" style="margin-top:4px;"/>
+              <textarea rows="2" style="margin-top:4px;">${escHtml(v.text || '')}</textarea>
+            </div>
+          `).join('')}
+          <button class="btn-add-sub" onclick="addSubItem(this,'list-testimonio')">
+            <span class="material-symbols-outlined align-middle" style="font-size:12px">add</span> Agregar testimonio
+          </button>
+        </div>
+      `;
+    } else if (field.type === 'list-module') {
+      const items = Array.isArray(data[field.key]) ? data[field.key] : [];
+      wrap.innerHTML = `
+        <label class="field-label">${field.label}</label>
+        <div class="sublist" data-key="${field.key}" data-type="list-module">
+          ${items.map(v => `
+            <div class="sublist-item">
+              <button class="btn-del-sub" onclick="delSubItem(this)">
+                <span class="material-symbols-outlined" style="font-size:14px;">close</span>
+              </button>
+              <input type="text" value="${escAttr(v.title || '')}" placeholder="Título del módulo"/>
+              <textarea rows="2" style="margin-top:4px;">${escHtml(v.desc || '')}</textarea>
+            </div>
+          `).join('')}
+          <button class="btn-add-sub" onclick="addSubItem(this,'list-module')">
+            <span class="material-symbols-outlined align-middle" style="font-size:12px">add</span> Agregar módulo
+          </button>
+        </div>
+      `;
+    } else if (field.type === 'list-link') {
+      const items = Array.isArray(data[field.key]) ? data[field.key] : [];
+      wrap.innerHTML = `
+        <label class="field-label">${field.label}</label>
+        <div class="sublist" data-key="${field.key}" data-type="list-link">
+          ${items.map(v => `
+            <div class="sublist-item">
+              <button class="btn-del-sub" onclick="delSubItem(this)">
+                <span class="material-symbols-outlined" style="font-size:14px;">close</span>
+              </button>
+              <input type="text" value="${escAttr(v.label || '')}" placeholder="Texto del link"/>
+              <input type="text" value="${escAttr(v.url || '')}" placeholder="https://..." style="margin-top:4px;"/>
+            </div>
+          `).join('')}
+          <button class="btn-add-sub" onclick="addSubItem(this,'list-link')">
+            <span class="material-symbols-outlined align-middle" style="font-size:12px">add</span> Agregar link
+          </button>
+        </div>
+      `;
+    }
+
+    container.appendChild(wrap);
+  });
+}
+
+function addSubItem(btn, type) {
+  const sublist = btn.closest('.sublist');
+  const div = document.createElement('div');
+  div.className = 'sublist-item';
+  const closeBtn = `<button class="btn-del-sub" onclick="delSubItem(this)"><span class="material-symbols-outlined" style="font-size:14px;">close</span></button>`;
+  if (type === 'list-simple') {
+    div.innerHTML = closeBtn + `<input type="text" placeholder="Nuevo ítem"/>`;
+  } else if (type === 'list-qa') {
+    div.innerHTML = closeBtn + `<input type="text" placeholder="Pregunta"/><textarea rows="2" style="margin-top:4px;"></textarea>`;
+  } else if (type === 'list-icon-text') {
+    div.innerHTML = closeBtn + `<input type="text" value="check_circle" placeholder="icon"/><input type="text" placeholder="Texto" style="margin-top:4px;"/>`;
+  } else if (type === 'list-value-label') {
+    div.innerHTML = closeBtn + `<input type="text" placeholder="Valor (ej: +2,400)"/><input type="text" placeholder="Etiqueta" style="margin-top:4px;"/>`;
+  } else if (type === 'list-bono') {
+    div.innerHTML = closeBtn + `<input type="text" placeholder="Nombre del bono"/><input type="text" placeholder="Valor ($97)" style="margin-top:4px;"/><textarea rows="1" style="margin-top:4px;"></textarea>`;
+  } else if (type === 'list-testimonio') {
+    div.innerHTML = closeBtn + `<input type="text" placeholder="Nombre"/><input type="text" placeholder="Rol" style="margin-top:4px;"/><textarea rows="2" style="margin-top:4px;"></textarea>`;
+  } else if (type === 'list-module') {
+    div.innerHTML = closeBtn + `<input type="text" placeholder="Título del módulo"/><textarea rows="2" style="margin-top:4px;"></textarea>`;
+  } else if (type === 'list-link') {
+    div.innerHTML = closeBtn + `<input type="text" placeholder="Texto del link"/><input type="text" placeholder="https://..." style="margin-top:4px;"/>`;
+  }
+  sublist.insertBefore(div, btn);
+}
+
+function delSubItem(btn) {
+  btn.closest('.sublist-item').remove();
+}
+
+function pickPollinationsImage(btn, key) {
+  const prompt = window.prompt('Descripción de la imagen en inglés (para Pollinations.ai):');
+  if (!prompt) return;
+  const url = `https://image.pollinations.ai/prompt/${encodeURIComponent(prompt)}?width=1200&height=800&nologo=true`;
+  const input = btn.closest('div').querySelector('input');
+  if (input) input.value = url;
+}
+
+// Collect all field values from the right panel into a data object
+function collectBlockData(block) {
+  const fields = BLOCK_FIELDS[block.type] || [];
+  const data = { ...(block.data || {}) };
+
+  document.querySelectorAll('#rp-fields [data-key]').forEach(el => {
+    const key = el.dataset.key;
+    if (!key) return;
+
+    if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') {
+      data[key] = el.value;
+    } else if (el.classList.contains('sublist')) {
+      const type = el.dataset.type;
+      const items = [];
+      el.querySelectorAll('.sublist-item').forEach(item => {
+        const inputs = item.querySelectorAll('input, textarea');
+        if (type === 'list-simple') {
+          if (inputs[0] && inputs[0].value.trim()) items.push(inputs[0].value.trim());
+        } else if (type === 'list-qa') {
+          items.push({ q: inputs[0]?.value || '', a: inputs[1]?.value || '' });
+        } else if (type === 'list-icon-text') {
+          items.push({ icon: inputs[0]?.value || 'check_circle', text: inputs[1]?.value || '' });
+        } else if (type === 'list-value-label') {
+          items.push({ value: inputs[0]?.value || '', label: inputs[1]?.value || '' });
+        } else if (type === 'list-bono') {
+          items.push({ title: inputs[0]?.value || '', value: inputs[1]?.value || '', desc: inputs[2]?.value || '' });
+        } else if (type === 'list-testimonio') {
+          items.push({ name: inputs[0]?.value || '', role: inputs[1]?.value || '', text: inputs[2]?.value || '' });
+        } else if (type === 'list-module') {
+          items.push({ title: inputs[0]?.value || '', desc: inputs[1]?.value || '' });
+        } else if (type === 'list-link') {
+          items.push({ label: inputs[0]?.value || '', url: inputs[1]?.value || '' });
+        }
+      });
+      data[key] = items;
+    }
+  });
+
+  return data;
+}
+
+// ═══════════════════════════════════════════════════════════
+// GENERATE
+// ═══════════════════════════════════════════════════════════
+async function generateLanding() {
+  const brief = buildBrief();
+  if (!brief) return;
+
+  const btn = document.getElementById('btn-generate');
+  btn.disabled = true;
+  btn.innerHTML = `<span class="dot"></span><span class="dot"></span><span class="dot"></span>`;
+  setStatus('Generando landing…');
+
+  try {
+    // Get selected palette
+    const selSwatch = document.querySelector('#palette-swatches .swatch.sel');
+    const palette = selSwatch ? selSwatch.dataset.id : 'blue-purple';
+
+    // Build default structure
+    const defaultBlocks = buildDefaultBlocks(brief);
+
+    // AI fills the content
+    const filledBlocks = await AI.generateLandingBlocks(brief, defaultBlocks);
+
+    // Validate: must be array
+    if (!Array.isArray(filledBlocks) || filledBlocks.length === 0) {
+      throw new Error('La IA no devolvió bloques válidos. Intentá de nuevo.');
+    }
+
+    // Merge: use type+hidden from defaults but data from AI
+    const mergedBlocks = defaultBlocks.map((def, i) => ({
+      ...def,
+      data: (filledBlocks[i] && filledBlocks[i].data) ? filledBlocks[i].data : def.data,
+    }));
+
+    const title = document.getElementById('fld-product').value.trim() || 'Mi Landing';
+    const slug  = title.toLowerCase()
+      .replace(/[áàä]/g,'a').replace(/[éèë]/g,'e').replace(/[íìï]/g,'i')
+      .replace(/[óòö]/g,'o').replace(/[úùü]/g,'u').replace(/ñ/g,'n')
+      .replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'').slice(0,60)
+      + '-' + Math.random().toString(36).slice(2,5);
+
+    landing = {
+      id:       null,
+      title,
+      slug,
+      brief,
+      palette,
+      blocks:   mergedBlocks,
+      messages: [],
+      published: false,
+      settings: {},
+    };
+
+    document.getElementById('ld-title').value = title;
+    switchToBuilderMode();
+    renderPreview();
+    renderBlocksList();
+    setStatus('Guardando…');
+    await saveLanding();
+    setStatus('Guardado');
+  } catch(e) {
+    console.error('[generate]', e);
+    showToast('Error: ' + e.message, true);
+    setStatus('');
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = `<span class="material-symbols-outlined" style="font-size:17px">auto_awesome</span> Generar landing`;
+  }
+}
+
+// ═══════════════════════════════════════════════════════════
+// BUILDER MODE SWITCH
+// ═══════════════════════════════════════════════════════════
+function switchToBuilderMode() {
+  document.getElementById('starter').classList.add('hidden');
+  const bm = document.getElementById('builder-mode');
+  bm.classList.remove('hidden');
+  bm.classList.add('flex');
+  document.getElementById('right-panel').classList.remove('hidden');
+  document.getElementById('preview-toolbar').classList.remove('hidden');
+  document.getElementById('preview-toolbar').classList.add('flex');
+  document.getElementById('btn-open-tab').classList.remove('hidden');
+  document.getElementById('btn-open-tab').classList.add('flex');
+
+  // Builder palette
+  buildSwatches('bld-swatches', (id) => {
+    if (landing) {
+      landing.palette = id;
+      renderPreview();
+      autosave();
+    }
+  }, getCurrentPalette());
+}
+
+// ═══════════════════════════════════════════════════════════
+// SAVE / AUTOSAVE
+// ═══════════════════════════════════════════════════════════
+let _saveTimer = null;
+function autosave() {
+  clearTimeout(_saveTimer);
+  _saveTimer = setTimeout(() => saveLanding(), 1500);
+}
+
+async function saveLanding() {
+  if (!currentUser || !landing) return;
+  try {
+    const row = await DB.landings.save({
+      ...landing,
+      title: document.getElementById('ld-title').value.trim() || landing.title,
+      html: renderLandingFromBlocks(landing.blocks, landing.palette || 'blue-purple'),
+    }, currentUser.id);
+    if (row && row.id) landing.id = row.id;
+    if (row && row.slug) landing.slug = row.slug;
+  } catch(e) {
+    console.error('[save]', e);
+  }
+}
+
+// ═══════════════════════════════════════════════════════════
+// PUBLISH
+// ═══════════════════════════════════════════════════════════
+async function publishLanding() {
+  if (!landing) return;
+  const btn = document.getElementById('btn-publish');
+  btn.disabled = true;
+  setStatus('Publicando…');
+  try {
+    landing.published = true;
+    landing.html = renderLandingFromBlocks(landing.blocks, landing.palette || 'blue-purple');
+    await saveLanding();
+    const url = `${location.origin}/landing-view.html?slug=${landing.slug}`;
+    showToast('Landing publicada');
+    document.getElementById('btn-open-tab').onclick = () => window.open(url, '_blank');
+    setStatus('Publicada');
+  } catch(e) {
+    showToast('Error al publicar: ' + e.message, true);
+    setStatus('');
+    landing.published = false;
+  } finally {
+    btn.disabled = false;
+  }
+}
+
+// ═══════════════════════════════════════════════════════════
+// CHAT (block-aware)
+// ═══════════════════════════════════════════════════════════
+async function sendChat() {
+  const input = document.getElementById('chat-input');
+  const msg = input.value.trim();
+  if (!msg || !landing) return;
+
+  addChatMsg(msg, 'user');
+  input.value = '';
+
+  const thinkingId = addChatMsg('<span class="dot"></span><span class="dot"></span><span class="dot"></span>', 'assistant', true);
+
+  try {
+    let targetIdx = activeBlockIdx >= 0 ? activeBlockIdx : -1;
+    let result;
+
+    if (targetIdx >= 0) {
+      // Edit specific block
+      const block = landing.blocks[targetIdx];
+      result = await AI.editBlockData(block.type, block.data, msg, landing.brief || '');
+      if (result && typeof result === 'object') {
+        landing.blocks[targetIdx].data = { ...landing.blocks[targetIdx].data, ...result };
+        renderPreview();
+        openBlockEditor(targetIdx);
+        autosave();
+        removeMsg(thinkingId);
+        addChatMsg(`Bloque "${BLOCK_LABELS[block.type]}" actualizado.`, 'assistant');
+      } else {
+        throw new Error('Respuesta inesperada de la IA');
+      }
+    } else {
+      // No active block — try to infer which block to edit from the message
+      removeMsg(thinkingId);
+      addChatMsg('Seleccioná un bloque en la lista para editar, o describí cuál querés cambiar.', 'assistant');
+    }
+  } catch(e) {
+    removeMsg(thinkingId);
+    addChatMsg('Error: ' + e.message, 'assistant');
+  }
+}
+
+function addChatMsg(html, role, isThinking = false) {
+  const log = document.getElementById('chat-log');
+  const id = 'cm' + Date.now() + Math.random().toString(36).slice(2,5);
+  const div = document.createElement('div');
+  div.id = id;
+  div.className = 'chat-msg flex ' + (role === 'user' ? 'justify-end' : 'justify-start');
+  div.innerHTML = `<div class="max-w-[90%] px-3 py-2 rounded-xl text-xs leading-relaxed
+    ${role === 'user'
+      ? 'primary-gradient text-white'
+      : 'bg-surface-container-high text-on-surface-variant border border-outline-variant/20'}">
+    ${html}
+  </div>`;
+  log.appendChild(div);
+  log.scrollTop = log.scrollHeight;
+  return id;
+}
+
+function removeMsg(id) {
+  document.getElementById(id)?.remove();
+}
+
+// ═══════════════════════════════════════════════════════════
+// ADD BLOCK MODAL
+// ═══════════════════════════════════════════════════════════
+function openAddBlockModal() {
+  const modal = document.getElementById('add-block-modal');
+  modal.classList.remove('hidden');
+  const grid = document.getElementById('add-block-grid');
+  grid.innerHTML = '';
+  Object.entries(BLOCK_LABELS).forEach(([type, label]) => {
+    const btn = document.createElement('button');
+    btn.className = 'flex flex-col items-center gap-1.5 p-3 rounded-xl bg-surface-container hover:bg-surface-container-high border border-outline-variant/20 hover:border-primary/40 transition text-center';
+    const icon = BLOCK_ICONS[type] || 'view_module';
+    btn.innerHTML = `
+      <span class="material-symbols-outlined text-on-surface-variant" style="font-size:22px">${icon}</span>
+      <span class="text-[11px] font-semibold text-on-surface-variant leading-tight">${label}</span>
+    `;
+    btn.onclick = () => {
+      const newBlock = { type, data: BLOCK_DEFAULTS[type] || {}, hidden: false };
+      landing.blocks.push(newBlock);
+      modal.classList.add('hidden');
+      renderBlocksList();
+      renderPreview();
+      openBlockEditor(landing.blocks.length - 1);
+      autosave();
+    };
     grid.appendChild(btn);
   });
 }
-let _ldMode = 'form';
 
-function switchLdMode(mode) {
-  _ldMode = mode;
-  const panels = { form: 'ld-panel-form', prompt: 'ld-panel-prompt', url: 'ld-panel-url', paste: 'ld-panel-paste' };
-  Object.entries(panels).forEach(([m, id]) => {
-    const el = document.getElementById(id);
-    if (el) el.classList.toggle('hidden', m !== mode);
+// ═══════════════════════════════════════════════════════════
+// VIEWPORT SWITCHER
+// ═══════════════════════════════════════════════════════════
+document.querySelectorAll('.viewport-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.viewport-btn').forEach(b => b.classList.remove('active','text-on-surface'));
+    btn.classList.add('active','text-on-surface');
+    const frame = document.getElementById('preview-frame');
+    const wrapper = document.getElementById('iframe-wrapper');
+    const vp = btn.dataset.vp;
+    if (vp === 'mobile') {
+      wrapper.style.justifyContent = 'center';
+      wrapper.style.background = '#333';
+      frame.style.width = '390px';
+      frame.style.height = '844px';
+      frame.style.boxShadow = '0 8px 32px rgba(0,0,0,.6)';
+      frame.style.borderRadius = '24px';
+      frame.style.margin = '16px auto';
+    } else if (vp === 'tablet') {
+      wrapper.style.justifyContent = 'center';
+      wrapper.style.background = '#333';
+      frame.style.width = '768px';
+      frame.style.height = '1024px';
+      frame.style.boxShadow = '0 8px 32px rgba(0,0,0,.6)';
+      frame.style.borderRadius = '16px';
+      frame.style.margin = '16px auto';
+    } else {
+      wrapper.style.justifyContent = '';
+      wrapper.style.background = '';
+      frame.style.width = '100%';
+      frame.style.height = '100%';
+      frame.style.boxShadow = '';
+      frame.style.borderRadius = '';
+      frame.style.margin = '';
+    }
   });
-  document.querySelectorAll('.ld-mode-tab').forEach(btn => {
-    const active = btn.dataset.mode === mode;
-    btn.className = 'ld-mode-tab flex-1 h-7 rounded-md text-[10px] font-bold transition ' +
-      (active ? 'primary-gradient text-white' : 'text-on-surface-variant/70 hover:bg-surface-container-highest hover:text-on-surface');
-  });
-}
-
-document.addEventListener('DOMContentLoaded', () => {
-  renderPalettes();
-  switchLdMode('form');
-  document.querySelectorAll('.ld-mode-tab').forEach(btn => {
-    btn.addEventListener('click', () => switchLdMode(btn.dataset.mode));
-  });
-  const pasteFile = document.getElementById('fld-paste-file');
-  if (pasteFile) {
-    pasteFile.addEventListener('change', (e) => {
-      const file = e.target.files[0];
-      if (!file) return;
-      const reader = new FileReader();
-      reader.onload = (ev) => {
-        const ta = document.getElementById('fld-paste-content');
-        if (ta) { ta.value = ev.target.result; ta.dispatchEvent(new Event('input')); }
-      };
-      reader.readAsText(file, 'UTF-8');
-    });
-  }
 });
 
-function toggleBgValue() {
-  const type = document.getElementById('fld-bg-type').value;
-  const input = document.getElementById('fld-bg-value');
-  const grid = document.getElementById('video-templates-grid');
-  const placeholders = { color: '#1a1a2e (color hex)', image: 'URL de imagen de fondo (JPG/PNG/WebP)', video: 'URL de video .mp4 de fondo' };
-  if (type === 'dark') {
-    input.style.display = 'none';
-    grid.style.display = 'none';
+// ═══════════════════════════════════════════════════════════
+// HELPERS
+// ═══════════════════════════════════════════════════════════
+function setStatus(msg) {
+  const el = document.getElementById('ld-status');
+  el.textContent = msg;
+}
+
+function showToast(msg, isError = false) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.style.background = isError ? '#2a1515' : '#1e2a45';
+  t.style.borderColor = isError ? '#ef444444' : '#2E5BFF44';
+  t.classList.remove('hidden');
+  clearTimeout(t._timer);
+  t._timer = setTimeout(() => t.classList.add('hidden'), 3500);
+}
+
+function escHtml(s) {
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function escAttr(s) {
+  return String(s).replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+}
+
+// ═══════════════════════════════════════════════════════════
+// LOAD EXISTING LANDING
+// ═══════════════════════════════════════════════════════════
+async function loadLanding(id) {
+  try {
+    const row = await DB.landings.get(id);
+    if (!row) return;
+    landing = {
+      id: row.id,
+      title: row.title || '',
+      slug: row.slug || '',
+      brief: row.brief || '',
+      palette: row.palette || 'blue-purple',
+      blocks: row.blocks || null,
+      messages: row.messages || [],
+      published: row.published || false,
+      settings: row.settings || {},
+      html: row.html || '',
+    };
+
+    document.getElementById('ld-title').value = landing.title;
+
+    if (landing.blocks && landing.blocks.length > 0) {
+      // New block-based landing
+      switchToBuilderMode();
+      renderPreview();
+      renderBlocksList();
+    } else if (landing.html) {
+      // Legacy HTML-only landing: show in iframe with migration notice
+      switchToBuilderMode();
+      const frame = document.getElementById('preview-frame');
+      frame.srcdoc = landing.html;
+      frame.classList.remove('hidden');
+      document.getElementById('preview-placeholder').classList.add('hidden');
+      addChatMsg('Esta landing fue creada con el sistema antiguo. Para editarla con bloques, hacé click en "Regenerar todo".', 'assistant');
+      if (!chatOpen) toggleChat();
+    }
+
+    setStatus(landing.published ? 'Publicada' : 'Borrador');
+  } catch(e) {
+    console.error('[load]', e);
+  }
+}
+
+// ═══════════════════════════════════════════════════════════
+// CHAT TOGGLE
+// ═══════════════════════════════════════════════════════════
+function toggleChat() {
+  chatOpen = !chatOpen;
+  const area = document.getElementById('chat-area');
+  const icon = document.getElementById('chat-toggle-icon');
+  if (chatOpen) {
+    area.classList.remove('hidden');
+    area.classList.add('flex');
+    icon.textContent = 'expand_more';
   } else {
-    input.style.display = 'block';
-    input.placeholder = placeholders[type] || 'URL o color hex…';
-    if (type === 'video') {
-      grid.style.display = 'block';
-      renderVideoTemplates();
-    } else {
-      grid.style.display = 'none';
-    }
+    area.classList.add('hidden');
+    area.classList.remove('flex');
+    icon.textContent = 'expand_less';
   }
 }
 
-function _vtgUrl(tpl) {
-  return tpl.url || `https://assets.mixkit.co/videos/${tpl.id}/${tpl.id}-720.mp4`;
-}
-const _CAT_COLORS = { people: '#1e293b', tech: '#0f172a', abstract: '#1a0533', city: '#0c1a2e', nature: '#0a1f0f' };
-function renderVideoTemplates() {
-  const tabsHost = document.getElementById('vtg-cat-tabs');
-  const grid = document.getElementById('video-tpl-grid');
-  if (!tabsHost.children.length) {
-    VIDEO_CATEGORIES.forEach(cat => {
-      const t = document.createElement('button');
-      t.type = 'button';
-      t.dataset.cat = cat.key;
-      t.className = 'px-2 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wider transition';
-      t.textContent = cat.label;
-      t.onclick = () => { _vtgActiveCat = cat.key; renderVideoTemplates(); };
-      tabsHost.appendChild(t);
-    });
-  }
-  tabsHost.querySelectorAll('button').forEach(b => {
-    const active = b.dataset.cat === _vtgActiveCat;
-    b.className = 'px-2 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wider transition ' +
-      (active ? 'bg-primary text-white' : 'bg-surface-container text-on-surface-variant/70 hover:bg-surface-container-high');
+// ═══════════════════════════════════════════════════════════
+// REGEN ALL
+// ═══════════════════════════════════════════════════════════
+async function regenAll() {
+  if (!landing || !landing.brief) return;
+  if (!confirm('¿Regenerar toda la landing? Se perderán los cambios actuales.')) return;
+  const brief = landing.brief;
+  document.getElementById('fld-product').value = brief.split('\n')[0].replace('Producto: ','');
+  document.getElementById('starter').classList.remove('hidden');
+  document.getElementById('builder-mode').classList.add('hidden');
+  document.getElementById('builder-mode').classList.remove('flex');
+  document.getElementById('right-panel').classList.add('hidden');
+  document.getElementById('preview-toolbar').classList.add('hidden');
+  // Rebuild the brief fields from saved brief
+  const lines = brief.split('\n');
+  lines.forEach(l => {
+    if (l.startsWith('Audiencia: ')) document.getElementById('fld-audience').value = l.slice(11);
+    if (l.startsWith('Precio: ')) document.getElementById('fld-price').value = l.slice(8);
   });
-  // Pause and release old videos before clearing
-  grid.querySelectorAll('video').forEach(v => { try { v.pause(); v.src = ''; v.load(); } catch(e){} });
-  grid.innerHTML = '';
-  const items = _vtgActiveCat === 'all'
-    ? VIDEO_TEMPLATES.slice(0, 20)   // cap "all" at 20 to avoid loading too many at once
-    : VIDEO_TEMPLATES.filter(t => t.category === _vtgActiveCat);
-  items.forEach(tpl => {
-    const url = _vtgUrl(tpl);
-    const bgColor = _CAT_COLORS[tpl.category] || '#111';
-    const isSel = _vtgSelectedId === tpl.id;
-    const card = document.createElement('button');
-    card.type = 'button';
-    card.style.cssText = `background:${bgColor};aspect-ratio:16/9;position:relative;`;
-    card.className = 'rounded-lg overflow-hidden border transition cursor-pointer ' +
-      (isSel ? 'border-primary ring-2 ring-primary/40' : 'border-outline-variant/20 hover:border-primary/50');
-    // Video — src set immediately, autoplay
-    const vid = document.createElement('video');
-    vid.src = url;
-    vid.muted = true;
-    vid.loop = true;
-    vid.playsInline = true;
-    vid.autoplay = true;
-    vid.setAttribute('playsinline', '');
-    vid.setAttribute('autoplay', '');
-    vid.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;object-fit:cover;pointer-events:none;';
-    // Gradient overlay
-    const ov = document.createElement('div');
-    ov.style.cssText = 'position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,.8) 0%,transparent 60%);pointer-events:none;';
-    // Label
-    const lbl = document.createElement('div');
-    lbl.style.cssText = 'position:absolute;bottom:4px;left:6px;right:6px;font-size:9px;font-weight:700;color:#fff;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;pointer-events:none;';
-    lbl.textContent = tpl.label;
-    card.appendChild(vid);
-    card.appendChild(ov);
-    card.appendChild(lbl);
-    if (isSel) {
-      const chk = document.createElement('div');
-      chk.style.cssText = 'position:absolute;top:4px;right:4px;width:16px;height:16px;border-radius:50%;background:#2E5BFF;display:flex;align-items:center;justify-content:center;pointer-events:none;';
-      chk.innerHTML = '<span class="material-symbols-outlined" style="font-size:10px;color:#fff">check</span>';
-      card.appendChild(chk);
-    }
-    card.onclick = () => {
-      document.getElementById('fld-bg-value').value = url;
-      _vtgSelectedId = tpl.id;
-      renderVideoTemplates();
-    };
-    grid.appendChild(card);
-    // Trigger play explicitly after append (needed on some browsers after autoplay policy)
-    vid.play().catch(() => {});
+  // Restore palette selector
+  buildSwatches('palette-swatches', (id) => {
+    document.querySelectorAll('#palette-swatches .swatch').forEach(s => s.classList.toggle('sel', s.dataset.id === id));
+    document.getElementById('palette-name-lbl').textContent = (LANDING_PALETTES_DEF.find(p=>p.id===id)||{}).name || '';
+  }, landing.palette || 'blue-purple');
+  document.getElementById('palette-name-lbl').textContent = (LANDING_PALETTES_DEF.find(p=>p.id===(landing.palette||'blue-purple'))||{}).name || '';
+
+  await generateLanding();
+}
+
+// ═══════════════════════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════════════════════
+async function init() {
+  // Auth check
+  const { data: { user } } = await Auth.getUser();
+  if (!user) { location.href = 'login.html'; return; }
+  currentUser = user;
+
+  // Plan gate
+  const profile = await DB.profiles.get(user.id).catch(() => null);
+  const plan = profile?.plan || 'free';
+  Settings.save({ plan });
+  const caps = typeof getPlanCaps === 'function' ? getPlanCaps(plan) : { landings: 0 };
+  if ((caps.landings || 0) < 1) {
+    document.getElementById('starter').innerHTML = `
+      <div class="flex flex-col items-center justify-center h-full gap-4 p-6 text-center">
+        <span class="material-symbols-outlined icon-gradient" style="font-size:40px">lock</span>
+        <h2 class="font-bold text-sm">Landing Builder — Plan Starter+</h2>
+        <p class="text-xs text-on-surface-variant/70">Las landings están disponibles desde el plan Starter.<br>Upgrade para crear páginas de venta profesionales con IA.</p>
+        <a href="precios.html" class="h-9 px-5 rounded-xl primary-gradient text-white text-sm font-bold flex items-center gap-2 hover:opacity-90 transition">
+          <span class="material-symbols-outlined" style="font-size:16px">upgrade</span>
+          Ver planes
+        </a>
+      </div>`;
+    return;
+  }
+
+  // Build starter palette swatches
+  buildSwatches('palette-swatches', (id) => {
+    document.querySelectorAll('#palette-swatches .swatch').forEach(s => s.classList.toggle('sel', s.dataset.id === id));
+    document.getElementById('palette-name-lbl').textContent = (LANDING_PALETTES_DEF.find(p=>p.id===id)||{}).name || '';
+  }, 'blue-purple');
+  document.getElementById('palette-name-lbl').textContent = (LANDING_PALETTES_DEF.find(p=>p.id==='blue-purple')||{}).name || '';
+
+  // Load existing landing from URL param
+  const params = new URLSearchParams(location.search);
+  const ldId = params.get('id');
+  if (ldId) await loadLanding(ldId);
+
+  // Wire events
+  document.getElementById('btn-generate').addEventListener('click', generateLanding);
+  document.getElementById('btn-publish').addEventListener('click', publishLanding);
+  document.getElementById('btn-regen').addEventListener('click', regenAll);
+  document.getElementById('btn-add-block').addEventListener('click', openAddBlockModal);
+  document.getElementById('modal-close').addEventListener('click', () => document.getElementById('add-block-modal').classList.add('hidden'));
+  document.getElementById('add-block-modal').addEventListener('click', e => {
+    if (e.target === document.getElementById('add-block-modal')) document.getElementById('add-block-modal').classList.add('hidden');
+  });
+  document.getElementById('chat-toggle').addEventListener('click', toggleChat);
+  document.getElementById('chat-send').addEventListener('click', sendChat);
+  document.getElementById('chat-input').addEventListener('keydown', e => {
+    if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendChat(); }
+  });
+  document.getElementById('rp-save').addEventListener('click', saveActiveBlock);
+  document.getElementById('ld-title').addEventListener('input', () => { autosave(); });
+  document.getElementById('btn-open-tab').addEventListener('click', () => {
+    if (landing && landing.slug) window.open(`landing-view.html?slug=${landing.slug}`, '_blank');
   });
 }
-</script>
-<script>
-  (async () => {
-    // ── Auth gate ──
-    const user = await Auth.requireAuth();
-    if (!user) return;
 
-    const profile = await DB.profiles.get(user.id).catch(() => null);
-    const plan = profile?.plan || 'free';
-    Settings.save({ plan });
-    const caps = getPlanCaps(plan);
+function saveActiveBlock() {
+  if (activeBlockIdx < 0 || !landing) return;
+  const block = landing.blocks[activeBlockIdx];
+  block.data = collectBlockData(block);
+  renderPreview();
+  renderBlocksList();
+  autosave();
+  showToast('Bloque guardado');
+}
 
-    // Gate: only Pro+ (landings > 0)
-    if (!caps.landings || caps.landings < 1) {
-      document.body.innerHTML = `
-        <div class="min-h-screen flex flex-col items-center justify-center p-8 text-center">
-          <div class="w-20 h-20 rounded-2xl primary-gradient flex items-center justify-center mb-6">
-            <span class="material-symbols-outlined text-white" style="font-size:40px">lock</span>
-          </div>
-          <h1 class="text-2xl font-extrabold tracking-tight mb-2">Landing Builder requiere plan Pro</h1>
-          <p class="text-on-surface-variant max-w-md mb-6">Generá landings completas con IA (Claude Sonnet) desde el plan Pro. Incluye hero, beneficios, testimonios, FAQ, garantía y CTA — listas para publicar.</p>
-          <div class="flex gap-3">
-            <a href="./precios.html" class="h-11 px-6 rounded-lg primary-gradient text-white font-bold text-sm flex items-center gap-2">Ver planes</a>
-            <a href="./dashboard.html" class="h-11 px-6 rounded-lg bg-surface-container-highest text-sm font-semibold flex items-center gap-2">Volver</a>
-          </div>
-        </div>`;
-      return;
-    }
-
-    // ── State ──
-    const params = new URLSearchParams(window.location.search);
-    const editingId = params.get('id');
-    const templateId = params.get('template');
-    let landing = null;      // full row (with id once saved)
-    let history = [];        // chat history for Claude (user+assistant messages)
-
-    // Pre-fill form if a template was selected in plantillas-landings.html
-    if (templateId && !editingId) {
-      try {
-        const raw = sessionStorage.getItem('ls_landing_template');
-        const tpl = raw ? JSON.parse(raw) : null;
-        if (tpl && tpl.form) {
-          setTimeout(() => {
-            const set = (id, v) => { const el = document.getElementById(id); if (el && v) el.value = v; };
-            set('fld-product', tpl.form.product);
-            set('fld-audience', tpl.form.audience);
-            set('fld-price', tpl.form.price);
-            set('fld-extras', tpl.form.extras);
-            set('fld-custom', tpl.form.custom);
-            set('fld-refurl', tpl.form.refurl);
-            set('fld-bonuses', tpl.form.bonuses);
-            set('fld-video', tpl.form.video);
-            if (tpl.form.imgType) { const el = document.getElementById('fld-img-type'); if (el) el.value = tpl.form.imgType; }
-            if (tpl.form.imgCount) { const el = document.getElementById('fld-img-count'); if (el) el.value = tpl.form.imgCount; }
-            if (tpl.form.bgType) { const el = document.getElementById('fld-bg-type'); if (el) { el.value = tpl.form.bgType; toggleBgValue(); } }
-            set('fld-bg-value', tpl.form.bgValue);
-          }, 0);
-        }
-      } catch {}
-    }
-
-    // ── DOM refs ──
-    const titleEl = document.getElementById('ld-title');
-    const statusEl = document.getElementById('ld-status');
-    const starter = document.getElementById('starter');
-    const chatLog = document.getElementById('chat-log');
-    const chatInputWrap = document.getElementById('chat-input-wrap');
-    const chatInput = document.getElementById('chat-input');
-    const sendBtn = document.getElementById('btn-send');
-    const genBtn = document.getElementById('btn-generate');
-    const previewEmpty = document.getElementById('preview-empty');
-    const previewFrame = document.getElementById('preview-frame');
-    const slugPreview = document.getElementById('slug-preview');
-    const publishBtn = document.getElementById('btn-publish');
-    const openBtn = document.getElementById('btn-open');
-    const toastEl = document.getElementById('toast');
-
-    // ── Helpers ──
-    const toast = (msg, kind = 'ok') => {
-      toastEl.textContent = msg;
-      toastEl.className = `fixed bottom-6 right-6 toast px-4 py-3 rounded-lg border text-sm font-semibold shadow-xl flex items-center gap-2 z-50 ${kind === 'err' ? 'bg-red-500/10 border-red-500/40 text-red-400' : 'bg-surface-container-highest border-outline-variant/30'}`;
-      toastEl.classList.remove('hidden');
-      setTimeout(() => toastEl.classList.add('hidden'), 2500);
-    };
-
-    const setStatus = (s) => { statusEl.textContent = s; };
-
-    const PREVIEW_INJECTION = `<base target="_blank"><style>
-/* Fix gradient-text descender clipping (letters like g, y, p get cut off at bottom) */
-.bg-clip-text{padding-bottom:0.1em;}
-h1,h2,h3{overflow:visible!important;}
-</style><script>
-document.addEventListener('click', function(e) {
-  var a = e.target.closest('a');
-  if (a) {
-    var href = a.getAttribute('href') || '';
-    if (href.startsWith('#')) {
-      // Internal anchor — scroll within preview instead of opening new tab
-      e.preventDefault();
-      var target = document.querySelector(href);
-      if (target) target.scrollIntoView({ behavior: 'smooth' });
-      return;
-    }
-    if (!href || href === 'javascript:void(0)' || href === 'javascript:;') {
-      e.preventDefault();
-      return;
-    }
-    // External links: base target="_blank" opens them in new tab (correct)
-  }
-  var btn = e.target.closest('button[type="submit"],button:not([type])');
-  if (btn && !btn.closest('form')) e.preventDefault();
-}, true);
-<\/script>`;
-    // Strips EVERYTHING from <base target="_blank"> through the first <\/script> tag (covers old and new injection format)
-    const PREVIEW_INJECTION_RE = /<base target="_blank">[\s\S]*?<\/script>/;
-
-    let _previewLoadingEl = null;
-    const renderPreview = (html) => {
-      previewEmpty.classList.add('hidden');
-      previewFrame.classList.remove('hidden');
-      // Show loading overlay while iframe processes HTML + Tailwind CDN
-      if (!_previewLoadingEl) {
-        _previewLoadingEl = document.createElement('div');
-        _previewLoadingEl.id = 'preview-loading';
-        _previewLoadingEl.style.cssText = 'position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:#09090b;z-index:10;pointer-events:none;';
-        _previewLoadingEl.innerHTML = '<div style="width:24px;height:24px;border:2px solid #333;border-top-color:#4d7cff;border-radius:50%;animation:spin .7s linear infinite"></div>';
-        previewFrame.parentElement.style.position = 'relative';
-        previewFrame.parentElement.appendChild(_previewLoadingEl);
-      } else {
-        _previewLoadingEl.style.display = 'flex';
-      }
-      previewFrame.onload = () => { if (_previewLoadingEl) _previewLoadingEl.style.display = 'none'; };
-      const withInjection = (html || '').replace(/<head[^>]*>/i, (m) => m + PREVIEW_INJECTION);
-      previewFrame.srcdoc = withInjection || html || '';
-      // Fallback: hide spinner after 4s even if onload doesn't fire
-      setTimeout(() => { if (_previewLoadingEl) _previewLoadingEl.style.display = 'none'; }, 4000);
-    };
-
-    // ── Visual edit mode ──
-    let _isEditing = false;
-    let _selectedEl = null;
-    const EDITABLE_SELECTORS = 'h1,h2,h3,h4,h5,h6,p,span,a,li,button,strong,em,td,th,label,small,figcaption,blockquote,summary';
-    const SECTION_SELECTORS = 'section,header,footer,article,aside,div[class*="section"],div[class*="hero"]';
-
-    const showSelectionToolbar = (el) => {
-      const toolbar = document.getElementById('edit-toolbar');
-      if (!toolbar) return;
-      _selectedEl = el;
-      const rect = el.getBoundingClientRect();
-      const frameRect = previewFrame.getBoundingClientRect();
-      toolbar.style.left = (frameRect.left + rect.left + window.scrollX) + 'px';
-      toolbar.style.top = (frameRect.top + rect.top + window.scrollY - 44) + 'px';
-      toolbar.classList.remove('hidden');
-      // Pre-fill inputs based on current element
-      const computed = previewFrame.contentWindow.getComputedStyle(el);
-      document.getElementById('tb-text-color').value = rgbToHex(computed.color);
-      document.getElementById('tb-bg-color').value = rgbToHex(computed.backgroundColor) || '#ffffff';
-      const isImg = el.tagName === 'IMG';
-      document.getElementById('tb-image-section').classList.toggle('hidden', !isImg);
-    };
-
-    const hideSelectionToolbar = () => {
-      const toolbar = document.getElementById('edit-toolbar');
-      toolbar?.classList.add('hidden');
-      _selectedEl = null;
-    };
-
-    const rgbToHex = (rgb) => {
-      if (!rgb || rgb === 'transparent' || rgb.includes('rgba(0, 0, 0, 0)')) return '';
-      const m = rgb.match(/rgb\((\d+),\s*(\d+),\s*(\d+)\)/);
-      if (!m) return '';
-      return '#' + [m[1], m[2], m[3]].map(n => parseInt(n).toString(16).padStart(2, '0')).join('');
-    };
-
-    const enterEditMode = () => {
-      if (!landing?.html) { toast('Primero generá una landing', 'err'); return; }
-      const doc = previewFrame.contentDocument;
-      if (!doc) return;
-      // Text elements: editable
-      doc.querySelectorAll(EDITABLE_SELECTORS).forEach(el => {
-        if (el.innerText && el.innerText.trim()) {
-          el.contentEditable = 'true';
-          el.style.outline = '1px dashed rgba(124,58,237,.45)';
-          el.style.outlineOffset = '2px';
-          el.style.cursor = 'text';
-          el.addEventListener('focus', () => { el.style.outline = '2px solid #7c3aed'; showSelectionToolbar(el); });
-          el.addEventListener('blur', () => { el.style.outline = '1px dashed rgba(124,58,237,.45)'; });
-        }
-      });
-      // Image elements: clickable for replacement
-      doc.querySelectorAll('img').forEach(img => {
-        img.style.outline = '1px dashed rgba(45,91,255,.45)';
-        img.style.outlineOffset = '2px';
-        img.style.cursor = 'pointer';
-        img.addEventListener('click', (e) => {
-          e.preventDefault(); e.stopPropagation();
-          showSelectionToolbar(img);
-        });
-      });
-      // Section elements: hoverable with delete button
-      doc.querySelectorAll('section,header,footer').forEach(sec => {
-        sec.style.position = sec.style.position || 'relative';
-        sec.addEventListener('mouseenter', () => {
-          sec.style.outline = '2px solid rgba(239,68,68,.35)';
-          sec.style.outlineOffset = '-2px';
-        });
-        sec.addEventListener('mouseleave', () => {
-          sec.style.outline = '';
-        });
-      });
-      _isEditing = true;
-      editVisualBtn.innerHTML = `<span class="material-symbols-outlined" style="font-size:16px">check</span><span class="hidden md:inline">Terminar</span>`;
-      editVisualBtn.classList.remove('bg-surface-container-high', 'hover:bg-surface-container-highest');
-      editVisualBtn.classList.add('bg-green-500/15', 'text-green-400', 'border', 'border-green-500/30');
-      toast('Click en texto para editar · Click en imágenes para reemplazar');
-    };
-
-    const exitEditMode = async () => {
-      const doc = previewFrame.contentDocument;
-      if (!doc) return;
-      hideSelectionToolbar();
-      doc.querySelectorAll('[contenteditable]').forEach(el => {
-        el.removeAttribute('contenteditable');
-        el.style.outline = '';
-        el.style.outlineOffset = '';
-        el.style.cursor = '';
-      });
-      doc.querySelectorAll('img').forEach(img => {
-        img.style.outline = '';
-        img.style.outlineOffset = '';
-        img.style.cursor = '';
-      });
-      doc.querySelectorAll('section,header,footer').forEach(sec => {
-        sec.style.outline = '';
-      });
-      const full = '<!DOCTYPE html>\n' + doc.documentElement.outerHTML;
-      const cleaned = full.replace(PREVIEW_INJECTION_RE, '');
-      landing.html = cleaned;
-      _isEditing = false;
-      editVisualBtn.innerHTML = `<span class="material-symbols-outlined" style="font-size:16px">edit</span><span class="hidden md:inline">Editar</span>`;
-      editVisualBtn.classList.add('bg-surface-container-high', 'hover:bg-surface-container-highest');
-      editVisualBtn.classList.remove('bg-green-500/15', 'text-green-400', 'border', 'border-green-500/30');
-      await persistLanding();
-      toast('Cambios guardados');
-      // Re-render to apply the saved version cleanly
-      renderPreview(cleaned);
-    };
-
-    const renderMessages = () => {
-      chatLog.innerHTML = history.map(m => {
-        if (m.role === 'user') {
-          return `<div class="msg flex justify-end">
-            <div class="max-w-[85%] px-3 py-2 rounded-lg primary-gradient text-white text-xs leading-relaxed whitespace-pre-wrap">${escapeHtml(m.display || m.content)}</div>
-          </div>`;
-        }
-        return `<div class="msg flex gap-2">
-          <div class="w-7 h-7 rounded-lg primary-gradient flex items-center justify-center shrink-0">
-            <span class="material-symbols-outlined text-white" style="font-size:14px">auto_awesome</span>
-          </div>
-          <div class="max-w-[85%] px-3 py-2 rounded-lg bg-surface-container border border-outline-variant/20 text-xs leading-relaxed">${escapeHtml(m.display || 'Landing actualizada')}</div>
-        </div>`;
-      }).join('');
-      chatLog.scrollTop = chatLog.scrollHeight;
-    };
-
-    const showThinking = () => {
-      chatLog.insertAdjacentHTML('beforeend', `
-        <div id="thinking" class="msg flex gap-2">
-          <div class="w-7 h-7 rounded-lg primary-gradient flex items-center justify-center shrink-0">
-            <span class="material-symbols-outlined text-white" style="font-size:14px">auto_awesome</span>
-          </div>
-          <div class="px-3 py-3 rounded-lg bg-surface-container border border-outline-variant/20">
-            <span class="thinking-dot"></span><span class="thinking-dot"></span><span class="thinking-dot"></span>
-          </div>
-        </div>`);
-      chatLog.scrollTop = chatLog.scrollHeight;
-    };
-    const removeThinking = () => document.getElementById('thinking')?.remove();
-
-    const escapeHtml = (s) => (s || '').toString().replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-
-    const switchToChatMode = () => {
-      starter.classList.add('hidden');
-      chatLog.classList.remove('hidden');
-      chatLog.classList.add('flex-1');
-      chatInputWrap.classList.remove('hidden');
-    };
-
-    const sanitizeSlug = (s) => (s || '').toString().toLowerCase()
-      .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
-      .replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 60);
-
-    const persistLanding = async () => {
-      if (!landing) return;
-      landing.title = titleEl.value.trim() || landing.title;
-      const typedSlug = sanitizeSlug(slugPreview.value);
-      if (typedSlug) landing.slug = typedSlug;
-      landing.messages = history;
-      try {
-        setStatus('Guardando…');
-        const saved = await DB.landings.save(landing, user.id);
-        landing = { ...landing, ...saved };
-        Landings.save(landing);
-        // Update URL so browser back/refresh loads this landing, not a blank builder
-        if (landing.id && !window.location.search.includes('id=')) {
-          window.history.replaceState(null, '', `?id=${landing.id}`);
-        }
-        setStatus('Guardado');
-        setTimeout(() => setStatus(landing.published ? 'Publicada' : 'Borrador'), 1200);
-      } catch (e) {
-        console.error(e);
-        setStatus('Error al guardar');
-        toast('Error al guardar: ' + e.message, 'err');
-      }
-    };
-
-    const editVisualBtn = document.getElementById('btn-edit-visual');
-    const editHtmlBtn = document.getElementById('btn-edit-html');
-    const htmlEditor = document.getElementById('html-editor');
-    const htmlTextarea = document.getElementById('html-editor-textarea');
-    const cancelHtmlBtn = document.getElementById('btn-cancel-html');
-    const saveHtmlBtn = document.getElementById('btn-save-html');
-
-    editVisualBtn.onclick = () => {
-      if (_isEditing) exitEditMode(); else enterEditMode();
-    };
-
-    const previewNewTabBtn = document.getElementById('btn-preview-new-tab');
-    const updatePublishUI = () => {
-      if (landing?.published) {
-        publishBtn.innerHTML = `<span class="material-symbols-outlined" style="font-size:16px">check_circle</span>Publicada`;
-        publishBtn.classList.remove('primary-gradient');
-        publishBtn.classList.add('bg-green-500/15', 'text-green-400', 'border', 'border-green-500/30');
-        openBtn.classList.remove('hidden');
-      } else {
-        publishBtn.innerHTML = `<span class="material-symbols-outlined" style="font-size:16px">rocket_launch</span>Publicar`;
-        publishBtn.classList.add('primary-gradient');
-        publishBtn.classList.remove('bg-green-500/15', 'text-green-400', 'border', 'border-green-500/30');
-        openBtn.classList.add('hidden');
-      }
-      // Show edit buttons once there's a landing with HTML
-      if (landing?.html) {
-        editHtmlBtn.classList.remove('hidden');
-        editVisualBtn.classList.remove('hidden');
-        previewNewTabBtn.classList.remove('hidden');
-      } else {
-        editHtmlBtn.classList.add('hidden');
-        editVisualBtn.classList.add('hidden');
-        previewNewTabBtn.classList.add('hidden');
-      }
-      if (landing?.slug) slugPreview.value = landing.slug;
-    };
-
-    previewNewTabBtn.onclick = () => {
-      if (!landing?.html) return;
-      // Use current iframe DOM if available (captures unsaved manual edits too)
-      let htmlToShow = landing.html;
-      try {
-        const liveDoc = previewFrame.contentDocument;
-        if (liveDoc && liveDoc.documentElement) {
-          const liveHtml = '<!DOCTYPE html>\n' + liveDoc.documentElement.outerHTML;
-          const liveClean = liveHtml.replace(PREVIEW_INJECTION_RE, '').trim();
-          if (liveClean.length > 1000 && liveClean.includes('<body')) htmlToShow = liveClean;
-        }
-      } catch (_) {}
-      const blob = new Blob([htmlToShow], { type: 'text/html; charset=utf-8' });
-      const url = URL.createObjectURL(blob);
-      window.open(url, '_blank');
-      setTimeout(() => URL.revokeObjectURL(url), 120000);
-    };
-
-    // Manual HTML editor
-    editHtmlBtn.onclick = () => {
-      if (!landing?.html) { toast('Primero generá una landing', 'err'); return; }
-      htmlTextarea.value = landing.html;
-      htmlEditor.classList.remove('hidden');
-    };
-    cancelHtmlBtn.onclick = () => { htmlEditor.classList.add('hidden'); };
-    saveHtmlBtn.onclick = async () => {
-      const newHtml = htmlTextarea.value;
-      if (!newHtml.trim()) { toast('El HTML no puede estar vacío', 'err'); return; }
-      landing.html = newHtml;
-      renderPreview(newHtml);
-      htmlEditor.classList.add('hidden');
-      await persistLanding();
-      toast('Cambios guardados');
-    };
-
-    // ── Load existing landing if editing ──
-    if (editingId) {
-      let row = null;
-      const isSkinGlowDemoLanding = editingId === 'skinglow-landing';
-      const loadSeededSkinGlowLanding = () => {
-        if (!isSkinGlowDemoLanding || typeof seedSkinGlowDemo !== 'function') return null;
-        const seeded = seedSkinGlowDemo({ setAnswers: true });
-        return seeded?.landing ? { ...seeded.landing, user_id: user.id } : null;
-      };
-      if (isSkinGlowDemoLanding) {
-        const local = Landings.get(editingId);
-        if (local?.html && local?.title) row = { ...local, user_id: user.id };
-        if (!row) row = loadSeededSkinGlowLanding();
-      } else {
-        try { row = await DB.landings.get(editingId); } catch (e) { console.warn('Supabase load falló:', e); }
-        if (!row) {
-          // Fallback: localStorage (en caso de que la landing no se haya sincronizado a Supabase)
-          const local = Landings.get(editingId);
-          if (local) row = { ...local, user_id: user.id };
-        }
-      }
-      if (row && row.user_id === user.id) {
-        landing = row;
-        history = Array.isArray(row.messages) ? row.messages : [];
-        titleEl.value = row.title || '';
-        slugPreview.value = row.slug || '';
-        if (row.html) {
-          renderPreview(row.html);
-          switchToChatMode();
-          renderMessages();
-        }
-        updatePublishUI();
-        setStatus(row.published ? 'Publicada' : 'Borrador');
-      } else {
-        toast('No se pudo cargar la landing. Generá una nueva.', 'err');
-      }
-    }
-
-    // ── Check quota before creating new ──
-    const canCreate = async () => {
-      if (editingId) return true;
-      try {
-        const all = await DB.landings.getAll(user.id);
-        return all.length < caps.landings;
-      } catch { return true; }
-    };
-
-    // ── Generate (first time, from form) ──
-    genBtn.onclick = async () => {
-      // Shared fields (all modes)
-      const custom      = document.getElementById('fld-custom').value.trim();
-      const bonuses     = document.getElementById('fld-bonuses').value.trim();
-      const imgType     = document.getElementById('fld-img-type').value;
-      const imgCount    = document.getElementById('fld-img-count').value || '3';
-      const video       = document.getElementById('fld-video').value.trim();
-      const bgType      = document.getElementById('fld-bg-type').value;
-      const bgValue     = document.getElementById('fld-bg-value').value.trim();
-      const interactive = document.getElementById('fld-interactive').checked;
-      const customColor = document.getElementById('fld-custom-color').value.trim();
-
-      // Mode-specific: build core brief + set product (used as title fallback)
-      let product = '', coreBrief = '', briefDisplay = '';
-
-      if (_ldMode === 'form') {
-        product        = document.getElementById('fld-product').value.trim();
-        const audience = document.getElementById('fld-audience').value.trim();
-        const price    = document.getElementById('fld-price').value.trim();
-        const extras   = document.getElementById('fld-extras').value.trim();
-        const stats    = document.getElementById('fld-stats')?.value.trim();
-        const refurl   = document.getElementById('fld-refurl').value.trim();
-        if (!product) { toast('Contanos qué vendés', 'err'); return; }
-        coreBrief = [
-          `Necesito una landing page para: ${product}.`,
-          audience ? `Audiencia: ${audience}.` : '',
-          price    ? `Precio/oferta: ${price}.` : '',
-          extras   ? `Detalles adicionales: ${extras}` : '',
-          stats    ? `ESTADÍSTICAS REALES — usá ESTOS números exactos en la sección de métricas (no inventes, no pongas 0): ${stats}` : '',
-          refurl   ? `INSPIRACIÓN VISUAL: tomá como referencia el estilo del sitio ${refurl} — paleta, tipografía, espaciado, tono visual.` : '',
-        ].filter(Boolean).join('\n');
-        briefDisplay = product;
-
-      } else if (_ldMode === 'prompt') {
-        const promptLibre = document.getElementById('fld-prompt-libre').value.trim();
-        if (!promptLibre) { toast('Escribí tu descripción de la landing', 'err'); return; }
-        product = promptLibre.split('\n')[0].slice(0, 60);
-        coreBrief = `DESCRIPCIÓN COMPLETA DEL CREADOR:\n${promptLibre}`;
-        briefDisplay = promptLibre.slice(0, 120) + (promptLibre.length > 120 ? '…' : '');
-
-      } else if (_ldMode === 'url') {
-        const urlModel   = document.getElementById('fld-url-model').value.trim();
-        const urlProduct = document.getElementById('fld-url-product').value.trim();
-        const urlPrice   = document.getElementById('fld-url-price').value.trim();
-        const urlNotes   = document.getElementById('fld-url-notes').value.trim();
-        if (!urlModel)   { toast('Ingresá la URL del sitio a modelar', 'err'); return; }
-        if (!urlProduct) { toast('Contanos qué vendés', 'err'); return; }
-        product = urlProduct;
-        coreBrief = [
-          `Necesito una landing page para: ${urlProduct}.`,
-          urlPrice ? `Precio/oferta: ${urlPrice}.` : '',
-          `REFERENCIA VISUAL PRINCIPAL: modelá el estilo estético del sitio ${urlModel} — su paleta de colores, tipografía, espaciado, tono visual y estructura de layout. Adaptalo completamente a mi producto, no copies texto ni contenido.`,
-          urlNotes ? `Detalles adicionales: ${urlNotes}` : '',
-        ].filter(Boolean).join('\n');
-        briefDisplay = `${urlProduct} — estilo de ${urlModel}`;
-
-      } else if (_ldMode === 'paste') {
-        const pasteContent = document.getElementById('fld-paste-content').value.trim();
-        const pasteProduct = document.getElementById('fld-paste-product').value.trim();
-        const pastePrice   = document.getElementById('fld-paste-price').value.trim();
-        if (!pasteContent) { toast('Pegá el contenido de tu documento', 'err'); return; }
-        product = pasteProduct || 'mi producto';
-        coreBrief = [
-          pasteProduct ? `Producto: ${pasteProduct}.` : '',
-          pastePrice   ? `Precio: ${pastePrice}.` : '',
-          `CONTENIDO DEL DOCUMENTO (extraé toda la información relevante — copy, beneficios, módulos, testimonios, bonos, FAQ, garantía — y usala para construir la landing):`,
-          pasteContent,
-        ].filter(Boolean).join('\n');
-        briefDisplay = (pasteProduct || 'Landing') + ' (generado desde documento)';
-      }
-
-      // Build shared instructions (all modes)
-      const imgInstr = imgType === 'none'
-        ? 'IMÁGENES: no incluyas imágenes de producto.'
-        : imgType === 'upload'
-          ? `⚠️ IMÁGENES PARA SUBIR — OBLIGATORIO ${imgCount} PLACEHOLDERS: colocá EXACTAMENTE ${imgCount} divs de upload distribuidos en secciones distintas: <div data-upload-slot="true" class="w-full h-48 rounded-2xl border-2 border-dashed border-zinc-700 hover:border-blue-500/50 transition flex flex-col items-center justify-center gap-2 bg-zinc-900/40 cursor-pointer"><span class="material-symbols-outlined text-zinc-500" style="font-size:32px">cloud_upload</span><p class="text-sm text-zinc-500 font-medium">Clic para agregar imagen</p></div>. Si ponés menos de ${imgCount} incumplís la instrucción.`
-          : `⚠️ IMÁGENES POLLINATIONS — OBLIGATORIO EXACTAMENTE ${imgCount} IMÁGENES: incluí EXACTAMENTE ${imgCount} etiquetas <img> con Pollinations.ai distribuidas en secciones distintas (no todas juntas). Formato exacto: <img src="https://image.pollinations.ai/prompt/DESCRIPCION_EN_INGLES+professional+high+quality+dark+background?width=800&height=500&nologo=true" alt="descripcion" class="w-full max-h-72 rounded-2xl object-cover" loading="lazy"/>. Cada imagen DEBE tener un prompt diferente y descriptivo del contexto. Si generás menos de ${imgCount} imágenes, estás incumpliendo esta instrucción — volvé atrás y agregá las que faltan.`;
-
-      const bgInstr = bgType !== 'dark' && bgValue
-        ? bgType === 'video'
-          ? `⚠️ FONDO DEL HERO tipo="video" — OBLIGATORIO: el hero section DEBE tener style="position:relative;overflow:hidden" y este video EXACTO dentro:\n<video class="absolute inset-0 w-full h-full object-cover" style="opacity:0.4" autoplay muted loop playsinline><source src="${bgValue}" type="video/mp4"></video>\nMás overlay oscuro: <div class="absolute inset-0" style="background:rgba(0,0,0,0.55)"></div>\nTodo el contenido del hero va ENCIMA con position:relative z-10.`
-          : `FONDO tipo="${bgType}", valor="${bgValue}".`
-        : '';
-
-      const selPal = PALETTES.find(p => p.id === _selectedPalette);
-      const paletteInstr = customColor
-        ? `PALETA DE COLOR DE TODA LA PÁGINA: usá "${customColor}" como color primario en TODO — gradientes del hero, botones CTA, iconos, textos de acento, bullets, sección de bonos, footer. Generá variantes claras y oscuras del mismo color para los diferentes elementos.`
-        : _selectedPalette !== 'default'
-          ? `PALETA DE COLOR DE TODA LA PÁGINA: usá el gradiente ${selPal.from} → ${selPal.to} como color primario en TODO — gradientes de texto en titulares, botones CTA, iconos, acentos, highlights, fondo de cards de bonos, badges. NUNCA uses azul/púrpura por defecto si la paleta es diferente.`
-          : '';
-
-      const brief = [
-        bgInstr,      // primero: fondo del hero (incluye video bg URL) — Claude debe aplicarlo al hero
-        coreBrief,
-        bonuses
-          ? `BONOS DEL PRODUCTO (sección OBLIGATORIA, usá exactamente estos bonos): ${bonuses}`
-          : 'BONOS: inventá 2-3 bonos creativos y coherentes con el producto, con nombre, descripción breve y valor en dólares.',
-        paletteInstr,
-        imgInstr,
-        video ? `VIDEO: embebí este video en sección dedicada después del hero: ${video}` : '',
-        interactive ? 'INTERACTIVIDAD: agrega animaciones CSS y JavaScript inline: contadores animados con IntersectionObserver, FAQ con smooth expand (max-height transition), tabs en módulos/beneficios, parallax leve en hero.' : '',
-        custom ? `INSTRUCCIÓN EXACTA DEL CREADOR (máxima prioridad, seguí esto al pie de la letra): ${custom}` : '',
-      ].filter(Boolean).join('\n');
-
-      if (!coreBrief) { toast('Completá los campos del modo seleccionado', 'err'); return; }
-      if (!titleEl.value.trim()) titleEl.value = product.slice(0, 60);
-
-      genBtn.disabled = true;
-      genBtn.innerHTML = `<span class="thinking-dot"></span><span class="thinking-dot"></span><span class="thinking-dot"></span>`;
-      setStatus('Generando con Claude Sonnet…');
-
-      try {
-        // Append mandatory-sections autocheck so Claude doesn't skip sections
-        const autocheck = '\n\nANTES DE CERRAR </html>: verificá que incluís TODAS estas secciones — si falta alguna, agregala antes de terminar: (1) Hero con CTA, (2) Para quién es/no es, (3) Problema/dolor, (4) Métricas, (5) Beneficios en grid, (6) Qué incluye/módulos, (7) Mínimo 3 testimonios, (8) BONOS con valores tachados + "INCLUIDO GRATIS", (9) Stack de valor, (10) Garantía con escudo, (11) FAQ mínimo 6 preguntas, (12) CTA final con urgencia y precio, (13) Footer.';
-        const html = await AI.generateLanding(brief + autocheck, []);
-        history = [
-          { role: 'user', content: brief, display: briefDisplay },
-          { role: 'assistant', content: html, display: 'Acá tenés la primera versión. Pedime cambios si querés.' },
-        ];
-
-        if (!landing) {
-          landing = Landings.create({
-            title: titleEl.value.trim() || product.slice(0, 60),
-            brief,
-            html,
-            messages: history,
-          });
-        } else {
-          landing.html = html;
-          landing.messages = history;
-        }
-
-        renderPreview(html);
-        switchToChatMode();
-        renderMessages();
-        updatePublishUI();
-        await persistLanding();
-      } catch (e) {
-        console.error(e);
-        const isTimeout = e.message && (e.message.includes('tiempo') || e.message.includes('timeout') || e.message.includes('504') || e.message.includes('546'));
-        if (isTimeout) {
-          toast('Tiempo de espera agotado — la IA tardó demasiado. Intentá de nuevo.', 'err');
-          setStatus('Timeout — intentá de nuevo');
-        } else {
-          toast('Error: ' + e.message, 'err');
-          setStatus('Error');
-        }
-      } finally {
-        genBtn.disabled = false;
-        genBtn.innerHTML = `<span class="material-symbols-outlined" style="font-size:18px">bolt</span>Generar mi landing`;
-      }
-    };
-
-    // ── Edición quirúrgica por sección (Lovable-style: solo toca la sección pedida) ──
-
-    // Mapeo de palabras clave → id de sección
-    const SECTION_KEYWORDS = {
-      'ld-nav':        ['nav', 'navegación', 'navegacion', 'menú', 'menu', 'header', 'cabecera', 'logo', 'link nav', 'barra de navegación'],
-      'ld-hero':       ['hero', 'título principal', 'titulo principal', 'h1', 'encabezado', 'titular', 'portada', 'cta principal', 'botón principal', 'boton principal', 'subtítulo', 'subtitulo', 'badge de urgencia', 'avatares apilados', 'fondo del hero', 'video de fondo', 'primera sección', 'primera seccion'],
-      'ld-para-quien': ['para quién', 'para quien', 'para vos', 'ideal para', 'no es para', 'público objetivo', 'audiencia objetivo', 'para ti', 'a quién va dirigido', 'a quien va dirigido'],
-      'ld-problema':   ['problema', 'dolor', 'frustración', 'frustracion', 'te suena', 'situaciones', 'pain point', 'qué sientes', 'que sientes', 'dificultades'],
-      'ld-metricas':   ['métricas', 'metricas', 'estadísticas', 'estadisticas', 'números grandes', 'numeros grandes', 'stats', 'cifras', 'resultados en números', 'contadores', 'datos de impacto'],
-      'ld-beneficios': ['beneficios', 'ventajas', 'qué vas a lograr', 'que vas a lograr', 'lo que obtenés', 'lo que obtenes', 'lo que aprenderás', 'lo que aprenderas', 'beneficio'],
-      'ld-modulos':    ['módulos', 'modulos', 'qué incluye', 'que incluye', 'contenido del curso', 'lecciones', 'temario', 'programa', 'currículum', 'curriculum', 'clases', 'módulo', 'modulo'],
-      'ld-testimonios':['testimonios', 'testimonio', 'reseñas', 'reseña', 'reseñas de alumnos', 'opiniones', 'resultados de alumnos', 'casos de éxito', 'casos de exito', 'alumnos dicen', 'clientes dicen'],
-      'ld-bonos':      ['bonos', 'bono', 'bonus', 'extras', 'regalos', 'regalo', 'incluido gratis', 'gratis con la compra', 'valor de los bonos'],
-      'ld-stack':      ['stack', 'valor total', 'todo lo que recibís', 'todo lo que recibes', 'precio tachado', 'precio original', 'inversión total', 'inversion total', 'resumen de valor'],
-      'ld-garantia':   ['garantía', 'garantia', 'guarantee', 'escudo', 'riesgo', 'reembolso', '30 días de garantía', '30 dias de garantia', 'sin riesgo'],
-      'ld-faq':        ['faq', 'preguntas frecuentes', 'pregunta', 'frecuentes', 'dudas', 'respuestas', 'accordion', 'preguntas y respuestas'],
-      'ld-cta-final':  ['cta final', 'llamada a la acción final', 'llamado a la accion final', 'botón final', 'boton final', 'compra ahora', 'empezar ahora', 'cupos disponibles', 'oferta final', 'precio final', 'última sección', 'ultima seccion'],
-      'ld-footer':     ['footer', 'pie de página', 'pie de pagina', 'copyright', 'links legales', 'pie'],
-    };
-
-    function detectTargetSection(msg) {
-      const lower = msg.toLowerCase();
-      for (const [sectionId, keywords] of Object.entries(SECTION_KEYWORDS)) {
-        if (keywords.some(kw => lower.includes(kw))) return sectionId;
-      }
-      return null;
-    }
-
-    function extractSection(fullHtml, sectionId) {
-      try {
-        const doc = new DOMParser().parseFromString(fullHtml, 'text/html');
-        const el = doc.getElementById(sectionId);
-        return el ? el.outerHTML : null;
-      } catch { return null; }
-    }
-
-    function spliceSection(fullHtml, sectionId, newSectionHtml) {
-      try {
-        const doc = new DOMParser().parseFromString(fullHtml, 'text/html');
-        const el = doc.getElementById(sectionId);
-        if (!el) return fullHtml;
-        // Parse new section and insert
-        const tmp = new DOMParser().parseFromString(`<body>${newSectionHtml}</body>`, 'text/html');
-        const newEl = tmp.body.firstElementChild;
-        if (!newEl) return fullHtml;
-        el.replaceWith(newEl);
-        return '<!DOCTYPE html>\n' + doc.documentElement.outerHTML;
-      } catch { return fullHtml; }
-    }
-
-    // ── Chat iteration (sección quirúrgica cuando es posible, full-page como fallback) ──
-    const sendChat = async () => {
-      const msg = chatInput.value.trim();
-      if (!msg || !landing) return;
-      chatInput.value = '';
-      chatInput.style.height = 'auto';
-
-      history.push({ role: 'user', content: msg });
-      renderMessages();
-      showThinking();
-      sendBtn.disabled = true;
-      setStatus('Actualizando…');
-
-      try {
-        // ── Sync desde iframe DOM ANTES de cualquier edición ──
-        // Captura cambios manuales (imágenes subidas, colores editados, texto editado)
-        // incluso si el usuario no hizo click en "Terminar" en el modo visual.
-        try {
-          const liveDoc = previewFrame.contentDocument;
-          if (liveDoc && liveDoc.documentElement) {
-            const liveHtml = '<!DOCTYPE html>\n' + liveDoc.documentElement.outerHTML;
-            const liveClean = liveHtml.replace(PREVIEW_INJECTION_RE, '').trim();
-            if (liveClean.length > 1000 && liveClean.includes('<body')) {
-              landing.html = liveClean;
-            }
-          }
-        } catch (_) { /* cross-origin o iframe vacío — usar landing.html tal como está */ }
-
-        // ── Modo quirúrgico: edita solo la sección detectada ──
-        const targetSectionId = detectTargetSection(msg);
-
-        if (targetSectionId) {
-          const sectionHtml = extractSection(landing.html, targetSectionId);
-          if (sectionHtml) {
-            const contextBrief = (landing.brief || '')
-              .replace(/src="data:[a-zA-Z0-9/+;,]{50,}"/g, 'src="[IMG]"')
-              .slice(0, 2000);
-            const newSectionHtml = await AI.editLandingSection(targetSectionId, sectionHtml, msg, contextBrief);
-            const newHtml = spliceSection(landing.html, targetSectionId, newSectionHtml);
-            removeThinking();
-            history.push({ role: 'assistant', content: newHtml, display: `Listo, actualicé la sección.` });
-            landing.html = newHtml;
-            renderPreview(newHtml);
-            renderMessages();
-            await persistLanding();
-            return;
-          }
-        }
-
-        // ── Fallback: reemplazo de página completa (para cambios generales o si no se encontró la sección) ──
-        const htmlForCtx = (landing.html || '')
-          .replace(/src="data:[a-zA-Z0-9/+;,]{50,}"/g, 'src="[IMAGEN_SUBIDA]"')
-          .replace(/url\(data:[a-zA-Z0-9/+;,]{50,}\)/g, 'url([IMAGEN_SUBIDA])');
-        const ctxMsg = [
-          'MODIFICA ESTA LANDING — aplicá el cambio pedido conservando TODAS las secciones:',
-          htmlForCtx,
-          '',
-          landing.brief ? `══ BRIEF ORIGINAL (contexto completo: producto, paleta, URLs de video/imágenes) ══\n${landing.brief}\n══ FIN DEL BRIEF ══` : '',
-          '',
-          `CAMBIO SOLICITADO: ${msg}`,
-          '',
-          'REGLAS INAMOVIBLES:',
-          '1. Devolvé ÚNICAMENTE el HTML completo empezando con <!DOCTYPE html>. Sin texto ni markdown.',
-          '2. CONSERVÁ todas las secciones existentes (hero, para quién, problema, beneficios, módulos, testimonios, bonos, stack, garantía, FAQ, CTA, footer). NO eliminés ni muevas ninguna.',
-          '3. Aplicá SOLO el cambio específico pedido, sin alterar el resto.',
-          '4. Para video de fondo en el hero: el hero section necesita style="position:relative;overflow:hidden" con <video class="absolute inset-0 w-full h-full object-cover" style="opacity:0.4" autoplay muted loop playsinline><source src="URL_DEL_BRIEF" type="video/mp4"></video> + <div class="absolute inset-0" style="background:rgba(0,0,0,0.55)"></div>. La URL la encontrás en el brief original.',
-        ].filter(Boolean).join('\n');
-
-        const html = await AI.generateLanding(ctxMsg, []);
-        removeThinking();
-        history.push({ role: 'assistant', content: html, display: 'Listo, apliqué los cambios.' });
-        landing.html = html;
-        renderPreview(html);
-        renderMessages();
-        await persistLanding();
-      } catch (e) {
-        removeThinking();
-        history.push({ role: 'assistant', content: '', display: `Error: ${e.message}` });
-        renderMessages();
-        toast('Error: ' + e.message, 'err');
-        setStatus(landing?.published ? 'Publicada' : 'Borrador');
-      } finally {
-        sendBtn.disabled = false;
-      }
-    };
-
-    sendBtn.onclick = sendChat;
-    chatInput.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendChat(); }
-    });
-    chatInput.addEventListener('input', () => {
-      chatInput.style.height = 'auto';
-      chatInput.style.height = Math.min(chatInput.scrollHeight, 130) + 'px';
-    });
-
-    // ── Publish / unpublish ──
-    publishBtn.onclick = async () => {
-      if (!landing) { toast('Primero generá la landing', 'err'); return; }
-      landing.published = !landing.published;
-      updatePublishUI();
-      await persistLanding();
-      if (landing.published) {
-        const url = `${window.location.origin}/${landing.slug}`;
-        toast('¡Publicada! URL copiada al portapapeles');
-        try { await navigator.clipboard.writeText(url); } catch {}
-      } else {
-        toast('Despublicada');
-      }
-    };
-
-    openBtn.onclick = () => {
-      if (landing?.slug) window.open(`/${landing.slug}`, '_blank');
-    };
-
-    // ── Title autosave ──
-    let titleTimer = null;
-    titleEl.addEventListener('input', () => {
-      clearTimeout(titleTimer);
-      titleTimer = setTimeout(() => { if (landing) persistLanding(); }, 800);
-    });
-
-    // ── Slug: sanitize on blur + autosave ──
-    slugPreview.addEventListener('blur', () => {
-      const clean = sanitizeSlug(slugPreview.value);
-      if (clean) slugPreview.value = clean;
-      if (landing && clean && clean !== landing.slug) persistLanding();
-    });
-    slugPreview.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter') { e.preventDefault(); slugPreview.blur(); }
-    });
-
-    // ── Edit toolbar handlers ──
-    document.getElementById('tb-text-color').addEventListener('input', (e) => {
-      if (_selectedEl) _selectedEl.style.color = e.target.value;
-    });
-    document.getElementById('tb-bg-color').addEventListener('input', (e) => {
-      if (_selectedEl) _selectedEl.style.backgroundColor = e.target.value;
-    });
-    document.getElementById('tb-bold').onclick = () => {
-      const doc = previewFrame.contentDocument;
-      try { doc.execCommand('bold'); } catch {}
-    };
-    document.getElementById('tb-italic').onclick = () => {
-      const doc = previewFrame.contentDocument;
-      try { doc.execCommand('italic'); } catch {}
-    };
-    document.getElementById('tb-image-url').onclick = () => {
-      if (!_selectedEl || _selectedEl.tagName !== 'IMG') return;
-      const url = prompt('URL de la nueva imagen:', _selectedEl.src);
-      if (url) _selectedEl.src = url;
-    };
-    document.getElementById('tb-image-upload').addEventListener('change', (e) => {
-      const file = e.target.files?.[0];
-      if (!file || !_selectedEl || _selectedEl.tagName !== 'IMG') return;
-      const reader = new FileReader();
-      reader.onload = (ev) => {
-        _selectedEl.src = ev.target.result;
-        // Mostrar la imagen completa sin recorte (el generador la pone con tamaño fijo)
-        _selectedEl.style.objectFit = 'contain';
-        _selectedEl.style.objectPosition = 'center';
-        _selectedEl.style.maxHeight = 'none';
-        // Si la imagen estaba absolute (fondo del hero, etc.), convertirla a relativa
-        const pos = previewFrame.contentWindow.getComputedStyle(_selectedEl).position;
-        if (pos === 'absolute') {
-          const parent = _selectedEl.parentElement;
-          if (parent) {
-            _selectedEl.style.position = 'relative';
-            _selectedEl.style.width = '100%';
-            _selectedEl.style.height = 'auto';
-            _selectedEl.style.inset = '';
-            parent.style.height = 'auto';
-            parent.style.minHeight = '200px';
-          }
-        }
-        toast('Imagen cargada — hacé clic en "Terminar" para guardar');
-      };
-      reader.readAsDataURL(file);
-      e.target.value = '';
-    });
-    document.getElementById('tb-move-up').onclick = () => {
-      const section = _selectedEl?.closest('section,header,footer,article,aside');
-      if (section?.previousElementSibling) {
-        section.parentNode.insertBefore(section, section.previousElementSibling);
-        hideSelectionToolbar();
-      }
-    };
-    document.getElementById('tb-move-down').onclick = () => {
-      const section = _selectedEl?.closest('section,header,footer,article,aside');
-      if (section?.nextElementSibling) {
-        section.parentNode.insertBefore(section.nextElementSibling, section);
-        hideSelectionToolbar();
-      }
-    };
-    document.getElementById('tb-delete').onclick = () => {
-      const section = _selectedEl?.closest('section,header,footer,article,aside');
-      if (section && confirm('¿Borrar esta sección? No se puede deshacer.')) {
-        section.remove();
-        hideSelectionToolbar();
-      }
-    };
-  })();
+document.addEventListener('DOMContentLoaded', init);
 </script>
 </body>
 </html>
