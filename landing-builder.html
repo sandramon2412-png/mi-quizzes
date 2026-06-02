@@ -8,9 +8,9 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
 <link href="https://fonts.googleapis.com/icon?family=Material+Symbols+Outlined" rel="stylesheet"/>
-<script src="./supabase-config.js?v=20260602c"></script>
-<script src="./app.js?v=20260602c"></script>
-<script src="./landing-blocks.js?v=20260602c"></script>
+<script src="./supabase-config.js?v=20260602d"></script>
+<script src="./app.js?v=20260602d"></script>
+<script src="./landing-blocks.js?v=20260602d"></script>
 <script>
   tailwind.config = {
     theme: {
@@ -1263,12 +1263,11 @@ async function init() {
   // Auth check
   let user;
   try {
-    const { data } = await Auth.getUser();
-    user = data?.user;
+    user = await Auth.user();
   } catch(e) {
     console.error('[init] Auth error:', e);
   }
-  if (!user) { location.href = 'login.html'; return; }
+  if (!user) { location.href = 'login.html?next=' + encodeURIComponent(location.pathname + location.search); return; }
   currentUser = user;
 
   // Plan gate
