@@ -427,17 +427,23 @@ function buildFieldEditor(block, idx) {
     }
 
     if (field.type === 'text' || field.type === 'textarea') {
-      wrap.innerHTML = `
-        <label class="field-label">${field.label}</label>
-        <${field.type === 'textarea' ? 'textarea rows="3"' : 'input type="text"'}
-          class="field-input"
-          data-key="${field.key}"
-          placeholder="${field.placeholder || ''}"
-          style="${field.type === 'textarea' ? '' : ''}">
-        ${field.type === 'textarea' ? (escHtml(data[field.key] || '')) + '</textarea>' : ''}
-      `;
-      if (field.type === 'text') {
-        wrap.querySelector('input').value = data[field.key] || '';
+      wrap.innerHTML = `<label class="field-label">${field.label}</label>`;
+      if (field.type === 'textarea') {
+        const ta = document.createElement('textarea');
+        ta.rows = 3;
+        ta.className = 'field-input';
+        ta.dataset.key = field.key;
+        ta.placeholder = field.placeholder || '';
+        ta.value = data[field.key] || '';
+        wrap.appendChild(ta);
+      } else {
+        const inp = document.createElement('input');
+        inp.type = 'text';
+        inp.className = 'field-input';
+        inp.dataset.key = field.key;
+        inp.placeholder = field.placeholder || '';
+        inp.value = data[field.key] || '';
+        wrap.appendChild(inp);
       }
     } else if (field.type === 'image') {
       const currentUrl = data[field.key] || '';
@@ -718,11 +724,16 @@ async function generateLanding() {
       throw new Error('La IA no devolvió bloques válidos. Intentá de nuevo.');
     }
 
-    // Merge: use type+hidden from defaults but data from AI
-    const mergedBlocks = defaultBlocks.map((def, i) => ({
-      ...def,
-      data: (filledBlocks[i] && filledBlocks[i].data) ? filledBlocks[i].data : def.data,
-    }));
+    // Merge: match by type (AI may return fewer/different order blocks)
+    const mergedBlocks = defaultBlocks.map(def => {
+      const aiBlock = filledBlocks.find(b => b && b.type === def.type);
+      return {
+        ...def,
+        data: (aiBlock && aiBlock.data && Object.keys(aiBlock.data).length > 0)
+          ? { ...def.data, ...aiBlock.data }
+          : def.data,
+      };
+    });
 
     const title = document.getElementById('fld-product').value.trim() || 'Mi Landing';
     const slug  = title.toLowerCase()
