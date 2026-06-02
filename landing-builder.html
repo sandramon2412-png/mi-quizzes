@@ -4,13 +4,13 @@
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
 <title>Landing Builder · Luminous Studio</title>
-<script src="https://cdn.tailwindcss.com?plugins=forms"></script>
+<script src="https://cdn.tailwindcss.com"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
 <link href="https://fonts.googleapis.com/icon?family=Material+Symbols+Outlined" rel="stylesheet"/>
-<script src="./supabase-config.js?v=20260602a"></script>
-<script src="./app.js?v=20260602a"></script>
-<script src="./landing-blocks.js?v=20260602a"></script>
+<script src="./supabase-config.js?v=20260602b"></script>
+<script src="./app.js?v=20260602b"></script>
+<script src="./landing-blocks.js?v=20260602b"></script>
 <script>
   tailwind.config = {
     theme: {
@@ -44,9 +44,33 @@
   .block-item.hidden-block{opacity:.45;}
 
   /* Field editor */
-  .field-label{display:block;font-size:11px;font-weight:600;color:#9a9a9a;margin-bottom:4px;}
-  .field-input{width:100%;background:#1a1a1a;border:1px solid rgba(255,255,255,.12);border-radius:8px;padding:7px 10px;font-size:13px;color:#fff;outline:none;resize:vertical;font-family:'Plus Jakarta Sans',sans-serif;}
-  .field-input:focus{border-color:#2E5BFF;}
+  .field-label{display:block;font-size:11px;font-weight:600;color:#9a9a9a;margin-bottom:5px;letter-spacing:.01em;}
+  .field-input,input.field-input,textarea.field-input,select.field-input{
+    width:100% !important;
+    background:#0f0f10 !important;
+    border:1px solid rgba(255,255,255,.10) !important;
+    border-radius:10px !important;
+    padding:9px 12px !important;
+    font-size:13px !important;
+    color:#fff !important;
+    outline:none !important;
+    resize:vertical;
+    font-family:'Plus Jakarta Sans',sans-serif !important;
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.02);
+    transition:border-color .15s,background .15s;
+  }
+  .field-input::placeholder{color:rgba(255,255,255,.28) !important;}
+  .field-input:focus{border-color:#2E5BFF !important;background:#131316 !important;box-shadow:0 0 0 3px rgba(46,91,255,.12) !important;}
+  /* Autofill: Chrome paints inputs yellow/white by default — override */
+  .field-input:-webkit-autofill,
+  .field-input:-webkit-autofill:hover,
+  .field-input:-webkit-autofill:focus{
+    -webkit-text-fill-color:#fff !important;
+    -webkit-box-shadow:0 0 0 100px #0f0f10 inset !important;
+    box-shadow:0 0 0 100px #0f0f10 inset !important;
+    caret-color:#fff;
+    transition:background-color 9999s ease-in-out 0s;
+  }
   .field-section-title{font-size:11px;font-weight:700;color:#6b7280;text-transform:uppercase;letter-spacing:.08em;margin:12px 0 6px;padding-top:8px;border-top:1px solid rgba(255,255,255,.06);}
 
   /* Sublist items */
@@ -68,9 +92,20 @@
   @keyframes toast-in{from{opacity:0;transform:translateY(-8px);}to{opacity:1;transform:translateY(0);}}
 
   /* Palette swatches */
-  .swatch{width:22px;height:22px;border-radius:50%;cursor:pointer;border:2px solid transparent;transition:border-color .15s,transform .15s;}
-  .swatch:hover{transform:scale(1.15);}
-  .swatch.sel{border-color:#fff;}
+  .swatch{width:28px;height:28px;border-radius:50%;cursor:pointer;border:2px solid rgba(255,255,255,.08);transition:transform .15s,border-color .15s,box-shadow .15s;display:inline-block;flex-shrink:0;}
+  .swatch:hover{transform:scale(1.12);}
+  .swatch.sel{border-color:#fff;box-shadow:0 0 0 3px rgba(255,255,255,.15);}
+
+  /* Starter card */
+  .starter-card{background:linear-gradient(180deg,rgba(46,91,255,.05) 0%,transparent 100%);border:1px solid rgba(255,255,255,.06);border-radius:16px;padding:14px;margin-bottom:12px;}
+
+  /* Image strategy radio */
+  .img-opt{display:flex;align-items:center;gap:8px;padding:10px 12px;background:#0f0f10;border:1px solid rgba(255,255,255,.08);border-radius:10px;cursor:pointer;font-size:12px;font-weight:600;transition:all .15s;}
+  .img-opt:hover{background:#131316;border-color:rgba(255,255,255,.15);}
+  .img-opt.sel{border-color:#2E5BFF;background:linear-gradient(135deg,rgba(46,91,255,.12),rgba(124,58,237,.08));}
+  .img-opt input[type=radio]{display:none;}
+  .img-opt .opt-icon{width:24px;height:24px;border-radius:8px;background:rgba(255,255,255,.06);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+  .img-opt.sel .opt-icon{background:linear-gradient(135deg,#2E5BFF,#7c3aed);}
 
   /* Drag handle */
   .drag-handle{cursor:grab;touch-action:none;}
@@ -121,54 +156,108 @@
 
   <!-- ── STARTER FORM (initial state) ── -->
   <div id="starter" class="flex-1 overflow-y-auto p-4 space-y-3">
-    <div class="flex items-center gap-2 mb-3">
-      <span class="material-symbols-outlined icon-gradient" style="font-size:20px">auto_awesome</span>
-      <h2 class="text-sm font-extrabold tracking-tight">Nueva landing</h2>
+    <div class="flex items-center gap-2 mb-1">
+      <div class="w-9 h-9 rounded-xl primary-gradient flex items-center justify-center">
+        <span class="material-symbols-outlined text-white" style="font-size:19px">auto_awesome</span>
+      </div>
+      <div class="min-w-0">
+        <h2 class="text-sm font-extrabold tracking-tight leading-tight">Nueva landing</h2>
+        <p class="text-[10px] text-on-surface-variant/60">Llená los datos y la IA arma todo</p>
+      </div>
     </div>
 
-    <div>
-      <label class="field-label">¿Qué vendés? *</label>
-      <input id="fld-product" type="text" placeholder="Ej: Curso de repostería para emprendedoras"
-             class="field-input"/>
-    </div>
-    <div>
-      <label class="field-label">¿A quién? *</label>
-      <input id="fld-audience" type="text" placeholder="Ej: Mujeres 30-50 que quieren emprender"
-             class="field-input"/>
-    </div>
-    <div>
-      <label class="field-label">Precio</label>
-      <input id="fld-price" type="text" placeholder="Ej: $97 USD"
-             class="field-input"/>
-    </div>
-    <div>
-      <label class="field-label">Bonos incluidos</label>
-      <textarea id="fld-bonuses" rows="2" placeholder="Bono 1: Plantilla ($47)&#10;Bono 2: Comunidad ($97)"
-                class="field-input"></textarea>
-    </div>
-    <div>
-      <label class="field-label">Estadísticas reales</label>
-      <input id="fld-stats" type="text" placeholder="Ej: 2,400 alumnos, 97% satisfacción"
-             class="field-input"/>
-    </div>
-    <div>
-      <label class="field-label">Detalles extra</label>
-      <textarea id="fld-extras" rows="2" placeholder="Módulos, testimonios específicos, garantía…"
-                class="field-input"></textarea>
+    <!-- ESENCIAL -->
+    <div class="starter-card">
+      <div class="text-[10px] font-bold text-on-surface-variant/50 uppercase tracking-widest mb-2">Producto</div>
+      <div class="space-y-2.5">
+        <div>
+          <label class="field-label">¿Qué vendés? *</label>
+          <input id="fld-product" type="text" autocomplete="off" spellcheck="false"
+                 placeholder="Ej: Curso de repostería para emprendedoras"
+                 class="field-input"/>
+        </div>
+        <div>
+          <label class="field-label">¿A quién? *</label>
+          <input id="fld-audience" type="text" autocomplete="off"
+                 placeholder="Ej: Mujeres 30-50 que quieren emprender"
+                 class="field-input"/>
+        </div>
+        <div>
+          <label class="field-label">Precio</label>
+          <input id="fld-price" type="text" autocomplete="off"
+                 placeholder="Ej: $97 USD"
+                 class="field-input"/>
+        </div>
+      </div>
     </div>
 
-    <!-- Palette picker -->
-    <div>
+    <!-- CONTENIDO -->
+    <div class="starter-card">
+      <div class="text-[10px] font-bold text-on-surface-variant/50 uppercase tracking-widest mb-2">Contenido</div>
+      <div class="space-y-2.5">
+        <div>
+          <label class="field-label">Bonos incluidos</label>
+          <textarea id="fld-bonuses" rows="2"
+                    placeholder="Bono 1: Plantilla ($47)&#10;Bono 2: Comunidad ($97)"
+                    class="field-input"></textarea>
+        </div>
+        <div>
+          <label class="field-label">Estadísticas reales</label>
+          <input id="fld-stats" type="text" autocomplete="off"
+                 placeholder="Ej: 2,400 alumnos, 97% satisfacción"
+                 class="field-input"/>
+        </div>
+        <div>
+          <label class="field-label">Detalles extra</label>
+          <textarea id="fld-extras" rows="2"
+                    placeholder="Módulos, testimonios específicos, garantía…"
+                    class="field-input"></textarea>
+        </div>
+      </div>
+    </div>
+
+    <!-- VISUAL -->
+    <div class="starter-card">
+      <div class="text-[10px] font-bold text-on-surface-variant/50 uppercase tracking-widest mb-2">Visual</div>
+
       <label class="field-label">Paleta de color</label>
-      <div id="palette-swatches" class="flex flex-wrap gap-2 mt-1"></div>
-      <p class="text-[10px] text-on-surface-variant/60 mt-1" id="palette-name-lbl"></p>
+      <div id="palette-swatches" class="flex flex-wrap gap-2 mt-1 mb-1"></div>
+      <p class="text-[10px] text-on-surface-variant/60 mb-3" id="palette-name-lbl">Cargando…</p>
+
+      <label class="field-label">Imágenes</label>
+      <div class="space-y-1.5">
+        <label class="img-opt sel" data-img="ai">
+          <input type="radio" name="img-strategy" value="ai" checked/>
+          <div class="opt-icon"><span class="material-symbols-outlined" style="font-size:14px;color:#fff">auto_awesome</span></div>
+          <div class="flex-1 min-w-0">
+            <div>Generar con IA</div>
+            <div class="text-[10px] font-normal text-on-surface-variant/60">Pollinations.ai · gratis</div>
+          </div>
+        </label>
+        <label class="img-opt" data-img="placeholder">
+          <input type="radio" name="img-strategy" value="placeholder"/>
+          <div class="opt-icon"><span class="material-symbols-outlined" style="font-size:14px;color:#fff">photo_library</span></div>
+          <div class="flex-1 min-w-0">
+            <div>Espacios vacíos</div>
+            <div class="text-[10px] font-normal text-on-surface-variant/60">Después subís las tuyas</div>
+          </div>
+        </label>
+        <label class="img-opt" data-img="none">
+          <input type="radio" name="img-strategy" value="none"/>
+          <div class="opt-icon"><span class="material-symbols-outlined" style="font-size:14px;color:#fff">block</span></div>
+          <div class="flex-1 min-w-0">
+            <div>Sin imágenes</div>
+            <div class="text-[10px] font-normal text-on-surface-variant/60">Solo texto + íconos</div>
+          </div>
+        </label>
+      </div>
     </div>
 
-    <button id="btn-generate" class="w-full h-10 rounded-xl primary-gradient text-white text-sm font-bold flex items-center justify-center gap-2 hover:opacity-90 transition mt-2">
-      <span class="material-symbols-outlined" style="font-size:17px">auto_awesome</span>
+    <button id="btn-generate" class="w-full h-11 rounded-xl primary-gradient text-white text-sm font-bold flex items-center justify-center gap-2 hover:opacity-90 transition shadow-lg" style="box-shadow:0 8px 24px -8px rgba(46,91,255,.6)">
+      <span class="material-symbols-outlined" style="font-size:18px">auto_awesome</span>
       Generar landing
     </button>
-    <p class="text-[10px] text-on-surface-variant/60 text-center">Tardará ~20 segundos</p>
+    <p class="text-[10px] text-on-surface-variant/50 text-center -mt-1">Tarda unos 20 segundos</p>
   </div>
 
   <!-- ── BUILDER MODE (hidden until generated) ── -->
@@ -296,8 +385,13 @@ let chatOpen = false;
 function buildSwatches(containerId, onSelect, selected) {
   const container = document.getElementById(containerId);
   if (!container) return;
+  if (!Array.isArray(window.LANDING_PALETTES_DEF) || window.LANDING_PALETTES_DEF.length === 0) {
+    console.error('[landing-builder] LANDING_PALETTES_DEF no está cargado. ¿landing-blocks.js se cargó?');
+    container.innerHTML = '<span class="text-[10px] text-red-400">Error cargando paletas</span>';
+    return;
+  }
   container.innerHTML = '';
-  (LANDING_PALETTES_DEF || []).forEach(p => {
+  window.LANDING_PALETTES_DEF.forEach(p => {
     const s = document.createElement('div');
     s.className = 'swatch' + (selected === p.id ? ' sel' : '');
     s.title = p.name;
@@ -319,6 +413,11 @@ function getCurrentPalette() {
 // ═══════════════════════════════════════════════════════════
 // BRIEF BUILDER
 // ═══════════════════════════════════════════════════════════
+function getImgStrategy() {
+  const sel = document.querySelector('input[name="img-strategy"]:checked');
+  return sel ? sel.value : 'ai';
+}
+
 function buildBrief() {
   const product  = document.getElementById('fld-product').value.trim();
   const audience = document.getElementById('fld-audience').value.trim();
@@ -326,6 +425,7 @@ function buildBrief() {
   const bonuses  = document.getElementById('fld-bonuses').value.trim();
   const stats    = document.getElementById('fld-stats').value.trim();
   const extras   = document.getElementById('fld-extras').value.trim();
+  const imgMode  = getImgStrategy();
 
   if (!product) { showToast('Completá al menos "¿Qué vendés?"'); return null; }
 
@@ -335,6 +435,13 @@ function buildBrief() {
   if (bonuses)  brief += `\nBonos:\n${bonuses}`;
   if (stats)    brief += `\nEstadísticas reales: ${stats}`;
   if (extras)   brief += `\nDetalles extra: ${extras}`;
+  if (imgMode === 'ai') {
+    brief += `\nImágenes: GENERAR con Pollinations.ai usando https://image.pollinations.ai/prompt/[descripcion-en-ingles]?width=1200&height=800&nologo=true`;
+  } else if (imgMode === 'placeholder') {
+    brief += `\nImágenes: dejar image_url vacío para que el usuario suba las suyas después`;
+  } else {
+    brief += `\nImágenes: NO incluir imágenes, dejar todos los image_url vacíos`;
+  }
   return brief;
 }
 
@@ -1083,10 +1190,11 @@ async function regenAll() {
   });
   // Restore palette selector
   buildSwatches('palette-swatches', (id) => {
-    document.querySelectorAll('#palette-swatches .swatch').forEach(s => s.classList.toggle('sel', s.dataset.id === id));
-    document.getElementById('palette-name-lbl').textContent = (LANDING_PALETTES_DEF.find(p=>p.id===id)||{}).name || '';
+    const p = (window.LANDING_PALETTES_DEF || []).find(x=>x.id===id);
+    document.getElementById('palette-name-lbl').textContent = p ? p.name : '';
   }, landing.palette || 'blue-purple');
-  document.getElementById('palette-name-lbl').textContent = (LANDING_PALETTES_DEF.find(p=>p.id===(landing.palette||'blue-purple'))||{}).name || '';
+  const _p = (window.LANDING_PALETTES_DEF || []).find(p=>p.id===(landing.palette||'blue-purple'));
+  document.getElementById('palette-name-lbl').textContent = _p ? _p.name : '';
 
   await generateLanding();
 }
@@ -1121,10 +1229,21 @@ async function init() {
 
   // Build starter palette swatches
   buildSwatches('palette-swatches', (id) => {
-    document.querySelectorAll('#palette-swatches .swatch').forEach(s => s.classList.toggle('sel', s.dataset.id === id));
-    document.getElementById('palette-name-lbl').textContent = (LANDING_PALETTES_DEF.find(p=>p.id===id)||{}).name || '';
+    const p = (window.LANDING_PALETTES_DEF || []).find(x=>x.id===id);
+    document.getElementById('palette-name-lbl').textContent = p ? p.name : '';
   }, 'blue-purple');
-  document.getElementById('palette-name-lbl').textContent = (LANDING_PALETTES_DEF.find(p=>p.id==='blue-purple')||{}).name || '';
+  const defPal = (window.LANDING_PALETTES_DEF || []).find(p=>p.id==='blue-purple');
+  document.getElementById('palette-name-lbl').textContent = defPal ? defPal.name : '';
+
+  // Image strategy radio
+  document.querySelectorAll('.img-opt').forEach(opt => {
+    opt.addEventListener('click', () => {
+      document.querySelectorAll('.img-opt').forEach(o => o.classList.remove('sel'));
+      opt.classList.add('sel');
+      const radio = opt.querySelector('input[type=radio]');
+      if (radio) radio.checked = true;
+    });
+  });
 
   // Load existing landing from URL param
   const params = new URLSearchParams(location.search);
