@@ -1392,9 +1392,11 @@ REGLAS CRÍTICAS:
     try { return JSON.parse(json); } catch {}
     // Try a couple of common fixups before giving up.
     let fixed = json
-      .replace(/[‘’]/g, "'")       // smart single quotes → straight
-      .replace(/[“”]/g, '"')       // smart double quotes → straight
-      .replace(/,(\s*[}\]])/g, '$1');        // trailing commas
+      .replace(/[‘’]/g, “’”)       // smart single quotes → straight
+      .replace(/[“”]/g, ‘”’)       // smart double quotes → straight
+      .replace(/,(\s*[}\]])/g, ‘$1’)         // trailing commas
+      .replace(/”(?!\s*[:,\]\}])(\s*\n)(\s*”)/g, ‘”,$1$2’)  // missing comma between “value”\n”key”
+      .replace(/\}(\s*\n\s*)\{/g, ‘},$1{‘); // missing comma between array objects
     try { return JSON.parse(fixed); } catch {}
     // Last resort: escape raw newlines/tabs that appear inside string values.
     // Walk the JSON, tracking whether we're inside a string, and escape any
