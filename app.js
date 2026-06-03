@@ -1379,8 +1379,15 @@ REGLAS CRÍTICAS:
   _parseJSONLoose(text) {
     let json = (text || '').trim();
     json = json.replace(/^```json\s*/i, '').replace(/^```\s*/i, '').replace(/```\s*$/i, '').trim();
-    const start = json.indexOf('{');
-    const end = json.lastIndexOf('}');
+    // Detect whether the response is an array or an object and extract accordingly.
+    const iBrace   = json.indexOf('{');
+    const iBracket = json.indexOf('[');
+    let start, end;
+    if (iBracket >= 0 && (iBrace < 0 || iBracket < iBrace)) {
+      start = iBracket; end = json.lastIndexOf(']');
+    } else {
+      start = iBrace;   end = json.lastIndexOf('}');
+    }
     if (start >= 0 && end > start) json = json.slice(start, end + 1);
     try { return JSON.parse(json); } catch {}
     // Try a couple of common fixups before giving up.
