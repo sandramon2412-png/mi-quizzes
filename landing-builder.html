@@ -511,11 +511,12 @@ function openBlockEditor(idx) {
 
   const rp = document.getElementById('right-panel');
   rp.classList.remove('hidden');
-  document.getElementById('rp-empty').classList.add('hidden');
+  document.getElementById('rp-empty').style.display = 'none';
   document.getElementById('rp-fields').classList.remove('hidden');
   document.getElementById('rp-title').textContent = BLOCK_LABELS[block.type] || block.type;
 
   buildFieldEditor(block, idx);
+  document.getElementById("rp-body").scrollTop = 0;
 }
 
 function buildFieldEditor(block, idx) {
