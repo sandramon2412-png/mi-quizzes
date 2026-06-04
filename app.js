@@ -1392,11 +1392,12 @@ REGLAS CRÍTICAS:
     try { return JSON.parse(json); } catch {}
     // Try a couple of common fixups before giving up.
     let fixed = json
-      .replace(/[‘’]/g, "’")   // smart single quotes
-      .replace(/[“”]/g, '"')         // smart double quotes
-      .replace(/,(\s*[}\]])/g, "$1")        // trailing commas
-      .replace(/"(?!\s*[:,\]\}])(\s*\n)(\s*")/g, "\",$1$2")  // missing comma: value/key
-      .replace(/\}(\s*\n\s*)\{/g, "},$1{");  // missing comma between array objects
+      .replace(/[‘’]/g, `\u2019`)       // smart single
+      .replace(/[“”]/g, `\u0022`)        // smart double
+      .replace(/,(\s*[}\]])/g, `$1`)             // trailing commas
+      .replace(/"(?!\s*[:,\]\}])(\s*\n)(\s*")/g, `",$1$2`)  // missing comma after string
+      .replace(/(\d+(?:\.\d+)?|true|false|null)\s*\n(\s*")/g, `$1,\n$2`)  // missing comma after number/bool/null
+      .replace(/\}(\s*\n\s*)\{/g, `},$1{`);   // missing comma between objects
     try { return JSON.parse(fixed); } catch {}
     // Last resort: escape raw newlines/tabs that appear inside string values.
     // Walk the JSON, tracking whether we're inside a string, and escape any
@@ -1773,7 +1774,12 @@ const AI = {
     return Claude.editLandingSection(sectionId, sectionHtml, change, contextBrief);
   },
   async generateLandingBlocks(brief, defaultBlocks) {
-    return Claude.generateLandingBlocks(brief, defaultBlocks);
+    let last;
+    for (let attempt = 0; attempt < 3; attempt++) {
+      try { return await Claude.generateLandingBlocks(brief, defaultBlocks); }
+      catch(e) { last = e; }
+    }
+    throw last;
   },
   async editBlockData(blockType, currentData, instruction, contextBrief = '') {
     return Claude.editBlockData(blockType, currentData, instruction, contextBrief);
