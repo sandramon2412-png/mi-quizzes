@@ -1394,10 +1394,11 @@ REGLAS CRÍTICAS:
     let fixed = json
       .replace(/[‘’]/g, `\u2019`)       // smart single
       .replace(/[“”]/g, `\u0022`)        // smart double
-      .replace(/,(\s*[}\]])/g, `$1`)             // trailing commas
-      .replace(/"(?!\s*[:,\]\}])(\s*\n)(\s*")/g, `",$1$2`)  // missing comma after string
-      .replace(/(\d+(?:\.\d+)?|true|false|null)\s*\n(\s*")/g, `$1,\n$2`)  // missing comma after number/bool/null
-      .replace(/\}(\s*\n\s*)\{/g, `},$1{`);   // missing comma between objects
+      .replace(/,([ \t]*[}\]])/g, `$1`)             // trailing commas
+      .replace(/"(?![ \t]*[:,\]\}])[ \t]*\n([ \t]*")/g, `",\n$1`)  // missing comma after string
+      .replace(/(\d+(?:\.\d+)?|true|false|null)[ \t]*\n([ \t]*")/g, `$1,\n$2`)  // missing comma after literal
+      .replace(/([}\]])[ \t]*\n([ \t]*")/g, `$1,\n$2`)  // missing comma after bracket
+      .replace(/\}[ \t]*\n([ \t]*)\{/g, `},\n$1{`);  // missing comma between objects
     try { return JSON.parse(fixed); } catch {}
     // Last resort: escape raw newlines/tabs that appear inside string values.
     // Walk the JSON, tracking whether we're inside a string, and escape any
