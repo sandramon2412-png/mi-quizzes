@@ -1414,7 +1414,44 @@ REGLAS CRÍTICAS:
       if (inStr && ch === '\t') { out += '\\t'; continue; }
       out += ch;
     }
-    return JSON.parse(out);
+    try { return JSON.parse(out); } catch {}
+    // Block-by-block extractor: scan for each {"type":...} object independently.
+    // This is immune to missing commas between top-level blocks in the array.
+    const DQUOTE = String.fromCharCode(34);
+    const OBRACE = String.fromCharCode(123);
+    const CBRACE = String.fromCharCode(125);
+    const BSLASH = String.fromCharCode(92);
+    const typeKey = DQUOTE + "type" + DQUOTE;
+    const blocks = [];
+    let si = 0;
+    while (si < out.length) {
+      const ti = out.indexOf(typeKey, si);
+      if (ti < 0) break;
+      // Walk backwards from the "type" key to find the opening {
+      let ob = ti - 1;
+      while (ob >= 0 && out[ob] !== OBRACE) ob--;
+      if (ob < 0) { si = ti + 1; continue; }
+      // Walk forward tracking brace depth to find the matching }
+      let depth = 0, j = ob, ins = false, escp = false;
+      while (j < out.length) {
+        const c = out[j];
+        if (escp) { escp = false; j++; continue; }
+        if (c === BSLASH) { escp = true; j++; continue; }
+        if (c === DQUOTE) { ins = !ins; j++; continue; }
+        if (!ins) {
+          if (c === OBRACE) depth++;
+          else if (c === CBRACE) { depth--; if (depth === 0) { j++; break; } }
+        }
+        j++;
+      }
+      try {
+        const blk = JSON.parse(out.slice(ob, j));
+        if (blk && blk.type) blocks.push(blk);
+      } catch(blockErr) { /* skip malformed block */ }
+      si = j;
+    }
+    if (blocks.length > 0) { console.warn('[parseJSONLoose] block extractor recovered', blocks.length, 'blocks'); return blocks; }
+    throw new Error(`JSON parse failed after all recovery attempts`);
   },
 
   _extractFromBadJSON(text) {
