@@ -152,13 +152,32 @@ const BLOCK_DEFAULTS = {
       { text: 'Política de privacidad', href: '#' }
     ],
     copyright: ''
-  }
+  },
+  imagen: {
+    title: '',
+    subtitle: '',
+    image_url: '',
+    caption: '',
+    image_size: 'wide',
+  },
+  galeria: {
+    title: 'Galería de imágenes',
+    subtitle: '',
+    columns: 3,
+    ratio: '4/3',
+    images: [
+      { url: '', caption: '' },
+      { url: '', caption: '' },
+      { url: '', caption: '' },
+    ],
+  },
 };
 
 const BLOCK_ORDER = [
   'nav', 'hero', 'para_quien', 'problema', 'metricas',
   'beneficios', 'modulos', 'testimonios', 'bonos',
-  'stack', 'garantia', 'faq', 'cta_final', 'footer'
+  'stack', 'garantia', 'faq', 'cta_final', 'footer',
+  'imagen', 'galeria'
 ];
 
 // ──────────────────────────────────────────────────────────
@@ -278,8 +297,14 @@ details.ld-faq .faq-body{padding:0 24px 20px;color:rgba(255,255,255,0.7);font-si
 // ──────────────────────────────────────────────────────────
 
 function _renderNav(data, pal) {
+  // Map nav link text to correct section IDs (text can be in any language/case)
+  function _navAnchor(text) {
+    var s = text.toLowerCase().replace(/[áéíóú]/g,function(c){return {á:'a',é:'e',í:'i',ó:'o',ú:'u'}[c]||c;}).replace(/[^a-z0-9]+/g,'');
+    var m = {paraquien:'para_quien',paraquienes:'para_quien',paraqueien:'para_quien',problema:'problema',dolor:'problema',metricas:'metricas',resultados:'metricas',beneficios:'beneficios',modulos:'modulos',temario:'modulos',contenido:'modulos',testimonios:'testimonios',clientes:'testimonios',bonos:'bonos',stack:'stack',incluye:'stack',garantia:'garantia',faq:'faq',preguntas:'faq',cta:'cta_final',comenzar:'cta_final',empezar:'cta_final'};
+    return '#ld-' + (m[s] || s.replace(/\s+/g,'-'));
+  }
   const links = (data.links || []).map(l =>
-    `<a href="#ld-${l.toLowerCase().replace(/\s+/g,'-').replace(/[áéíóú]/g,c=>({á:'a',é:'e',í:'i',ó:'o',ú:'u'}[c]||c))}" style="font-size:14px;font-weight:600;color:rgba(255,255,255,0.65);transition:color 0.2s" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,0.65)'">${_e(l)}</a>`
+    `<a href="${'$'}{_navAnchor(l)}" style="font-size:14px;font-weight:600;color:rgba(255,255,255,0.65);transition:color 0.2s" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,0.65)'">${'$'}{_e(l)}</a>`
   ).join('');
   return `
 <nav id="ld-nav" style="position:sticky;top:0;z-index:100;background:rgba(9,9,11,0.88);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-bottom:1px solid rgba(255,255,255,0.07)">
@@ -596,6 +621,44 @@ function _hexToRgb(hex) {
   return `${r},${g},${b}`;
 }
 
+
+function _renderImagen(data, pal) {
+  const sz = data.image_size || 'wide';
+  const sizeMap = {wide:'100%', medium:'80%', small:'50%', portrait:'45%'};
+  const ratioMap = {wide:'16/7', medium:'16/9', small:'4/3', portrait:'3/4'};
+  const w = sizeMap[sz] || '100%';
+  const ar = ratioMap[sz] || '16/7';
+  return `
+<section id="ld-imagen-${Math.random().toString(36).slice(2,5)}" class="ld-section-sm">
+  <div class="ld-inner">
+    ${data.title ? `<h2 class="ld-h2" style="text-align:center;margin-bottom:16px">${_e(data.title)}</h2>` : ''}
+    ${data.subtitle ? `<p class="ld-body" style="text-align:center;margin-bottom:32px;max-width:700px;margin-left:auto;margin-right:auto">${_e(data.subtitle)}</p>` : ''}
+    <div style="margin:0 auto;width:${w};border-radius:20px;overflow:hidden;box-shadow:0 24px 64px rgba(0,0,0,0.5)">
+      ${data.image_url ? `<img src="${_e(data.image_url)}" alt="${_e(data.caption||'')}" style="width:100%;aspect-ratio:${ar};object-fit:cover;display:block" onerror="this.style.display='none'"/>` : `<div style="width:100%;aspect-ratio:${ar};background:rgba(255,255,255,0.05);display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,0.3);font-size:14px">Sin imagen</div>`}
+    </div>
+    ${data.caption ? `<p style="text-align:center;margin-top:16px;font-size:13px;color:rgba(255,255,255,0.45)">${_e(data.caption)}</p>` : ''}
+  </div>
+</section>`;
+}
+
+function _renderGaleria(data, pal) {
+  const imgs = Array.isArray(data.images) ? data.images : [];
+  const cols = Math.min(imgs.length, data.columns || 3);
+  const imgHtml = imgs.map(img => `
+    <div style="border-radius:16px;overflow:hidden;box-shadow:0 8px 32px rgba(0,0,0,0.4)">
+      ${img.url ? `<img src="${_e(img.url)}" alt="${_e(img.caption||'')}" style="width:100%;aspect-ratio:${data.ratio||'4/3'};object-fit:cover;display:block" onerror="this.style.display='none'"/>` : `<div style="width:100%;aspect-ratio:${data.ratio||'4/3'};background:rgba(255,255,255,0.05)"></div>`}
+      ${img.caption ? `<p style="font-size:12px;color:rgba(255,255,255,0.4);padding:10px;text-align:center">${_e(img.caption)}</p>` : ''}
+    </div>`).join('');
+  return `
+<section id="ld-galeria-${Math.random().toString(36).slice(2,5)}" class="ld-section-sm">
+  <div class="ld-inner">
+    ${data.title ? `<h2 class="ld-h2" style="text-align:center;margin-bottom:12px">${_e(data.title)}</h2>` : ''}
+    ${data.subtitle ? `<p class="ld-body" style="text-align:center;margin-bottom:40px;max-width:640px;margin-left:auto;margin-right:auto">${_e(data.subtitle)}</p>` : ''}
+    <div style="display:grid;grid-template-columns:repeat(${cols},1fr);gap:20px">${imgHtml}</div>
+  </div>
+</section>`;
+}
+
 // ──────────────────────────────────────────────────────────
 // MAIN RENDERER
 // ──────────────────────────────────────────────────────────
@@ -615,6 +678,8 @@ function renderBlock(type, data, pal) {
     faq:        _renderFaq,
     cta_final:  _renderCtaFinal,
     footer:     _renderFooter,
+    imagen:     _renderImagen,
+    galeria:    _renderGaleria,
   }[type];
   return fn ? fn(data || {}, pal) : '';
 }
@@ -743,6 +808,27 @@ const BLOCK_FIELDS = {
     { key: 'links', label: 'Links legales (texto + URL)', type: 'list-link' },
     { key: 'copyright', label: 'Copyright (dejar vacío para autogenerar)', type: 'text' },
   ],
+  imagen: [
+    { key: 'title', label: 'Título (opcional)', type: 'text' },
+    { key: 'subtitle', label: 'Subtítulo (opcional)', type: 'textarea' },
+    { key: 'image_url', label: 'Imagen', type: 'image' },
+    { key: 'caption', label: 'Pie de foto (opcional)', type: 'text' },
+    { key: 'image_size', label: 'Tamaño', type: 'select',
+      options: [
+        { value: 'wide',     label: 'Ancho completo (16:7)' },
+        { value: 'medium',   label: 'Mediano (16:9)' },
+        { value: 'small',    label: 'Pequeño (4:3)' },
+        { value: 'portrait', label: 'Retrato / vertical (3:4)' },
+      ]
+    },
+  ],
+  galeria: [
+    { key: 'title', label: 'Título (opcional)', type: 'text' },
+    { key: 'subtitle', label: 'Subtítulo (opcional)', type: 'textarea' },
+    { key: 'columns', label: 'Columnas (2 o 3)', type: 'text' },
+    { key: 'ratio', label: 'Proporción de imágenes (ej: 4/3, 1/1, 3/4)', type: 'text' },
+    { key: 'images', label: 'Imágenes (URL + pie de foto)', type: 'list-image' },
+  ],
 };
 
 const BLOCK_LABELS = {
@@ -760,6 +846,8 @@ const BLOCK_LABELS = {
   faq:         'FAQ',
   cta_final:   'CTA Final',
   footer:      'Footer',
+  imagen:      'Imagen',
+  galeria:     'Galería de imágenes',
 };
 
 const BLOCK_ICONS = {
@@ -777,6 +865,8 @@ const BLOCK_ICONS = {
   faq:         'help',
   cta_final:   'rocket_launch',
   footer:      'web',
+  imagen:      'image',
+  galeria:     'photo_library',
 };
 
 // Expose globals

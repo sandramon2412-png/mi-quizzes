@@ -755,6 +755,38 @@ function buildFieldEditor(block, idx) {
           </button>
         </div>
       `;
+    } else if (field.type === 'select') {
+      const cur = data[field.key] || (field.options[0] && field.options[0].value) || '';
+      const opts = (field.options || []).map(o =>
+        `<option value="${escAttr(o.value)}" ${cur === o.value ? 'selected' : ''}>${escAttr(o.label)}</option>`
+      ).join('');
+      wrap.innerHTML = `
+        <label class="field-label">${field.label}</label>
+        <select class="field-input" data-key="${field.key}">${opts}</select>
+      `;
+    } else if (field.type === 'list-image') {
+      const items = Array.isArray(data[field.key]) ? data[field.key] : [];
+      wrap.innerHTML = `
+        <label class="field-label">${field.label}</label>
+        <div class="sublist" data-key="${field.key}" data-type="list-image">
+          ${items.map((v,i) => `
+            <div class="sublist-item">
+              <button class="btn-del-sub" onclick="delSubItem(this)">
+                <span class="material-symbols-outlined" style="font-size:14px;">close</span>
+              </button>
+              <input type="text" value="${escAttr(v.url || '')}" placeholder="URL de la imagen"/>
+              <input type="text" value="${escAttr(v.caption || '')}" placeholder="Pie de foto (opcional)" style="margin-top:4px;"/>
+              <label style="display:inline-flex;align-items:center;gap:6px;margin-top:4px;cursor:pointer;font-size:11px;color:#9ca3af">
+                <span class="material-symbols-outlined" style="font-size:14px">upload</span>Subir
+                <input type="file" accept="image/*" class="hidden" onchange="uploadImgSubItem(this)"/>
+              </label>
+            </div>
+          `).join('')}
+          <button class="btn-add-sub" onclick="addSubItem(this,'list-image')">
+            <span class="material-symbols-outlined align-middle" style="font-size:12px">add</span> Agregar imagen
+          </button>
+        </div>
+      `;
     }
 
     container.appendChild(wrap);
@@ -782,12 +814,25 @@ function addSubItem(btn, type) {
     div.innerHTML = closeBtn + `<input type="text" placeholder="Título del módulo"/><textarea rows="2" style="margin-top:4px;"></textarea>`;
   } else if (type === 'list-link') {
     div.innerHTML = closeBtn + `<input type="text" placeholder="Texto del link"/><input type="text" placeholder="https://..." style="margin-top:4px;"/>`;
+  } else if (type === 'list-image') {
+    div.innerHTML = closeBtn + `<input type="text" placeholder="URL de la imagen"/><input type="text" placeholder="Pie de foto" style="margin-top:4px;"/><label style="display:inline-flex;align-items:center;gap:6px;margin-top:4px;cursor:pointer;font-size:11px;color:#9ca3af"><span class="material-symbols-outlined" style="font-size:14px">upload</span>Subir<input type="file" accept="image/*" class="hidden" onchange="uploadImgSubItem(this)"/></label>`;
   }
   sublist.insertBefore(div, btn);
 }
 
 function delSubItem(btn) {
   btn.closest('.sublist-item').remove();
+}
+
+function uploadImgSubItem(input) {
+  const file = input.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    const urlInput = input.closest('.sublist-item').querySelector('input[type=text]');
+    if (urlInput) urlInput.value = e.target.result;
+  };
+  reader.readAsDataURL(file);
 }
 
 function uploadImgField(input, key) {
@@ -822,7 +867,7 @@ function collectBlockData(block) {
     const key = el.dataset.key;
     if (!key) return;
 
-    if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') {
+    if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA' || el.tagName === 'SELECT') {
       data[key] = el.value;
     } else if (el.classList.contains('sublist')) {
       const type = el.dataset.type;
@@ -845,6 +890,8 @@ function collectBlockData(block) {
           items.push({ title: inputs[0]?.value || '', desc: inputs[1]?.value || '' });
         } else if (type === 'list-link') {
           items.push({ label: inputs[0]?.value || '', url: inputs[1]?.value || '' });
+        } else if (type === 'list-image') {
+          items.push({ url: inputs[0]?.value || '', caption: inputs[1]?.value || '' });
         }
       });
       data[key] = items;
