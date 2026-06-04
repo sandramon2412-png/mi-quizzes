@@ -453,7 +453,10 @@ function buildBrief() {
 function renderPreview() {
   if (!landing || !landing.blocks) return;
   const frame = document.getElementById('preview-frame');
-  const html = renderLandingFromBlocks(landing.blocks, landing.palette || 'blue-purple');
+  let html = renderLandingFromBlocks(landing.blocks, landing.palette || 'blue-purple');
+  // Inject a script that intercepts anchor clicks so preview links don't navigate
+  const navGuard = '<scr' + 'ipt>document.addEventListener("click",function(e){var a=e.target.closest("a");if(!a)return;var h=a.getAttribute("href")||"";if(h.startsWith("#")){e.preventDefault();var t=document.querySelector(h);if(t)t.scrollIntoView({behavior:"smooth"});}else if(h&&!h.startsWith("javascript")){e.preventDefault();}},true);</scr' + 'ipt>';
+  html = html.replace('</body>', navGuard + '</body>');
   frame.srcdoc = html;
   frame.classList.remove('hidden');
   document.getElementById('preview-placeholder').classList.add('hidden');
@@ -478,15 +481,42 @@ function renderBlocksList() {
     const label = BLOCK_LABELS[block.type] || block.type;
 
     item.innerHTML = `
-      <span class="material-symbols-outlined text-on-surface-variant/60 drag-handle" style="font-size:16px;cursor:grab;">drag_indicator</span>
       <span class="material-symbols-outlined text-on-surface-variant/60" style="font-size:15px;">${icon}</span>
       <span class="text-xs font-semibold flex-1 truncate">${label}</span>
+      <button class="move-up text-on-surface-variant/40 hover:text-on-surface transition" title="Subir" style="padding:2px">
+        <span class="material-symbols-outlined" style="font-size:13px;">arrow_upward</span>
+      </button>
+      <button class="move-down text-on-surface-variant/40 hover:text-on-surface transition" title="Bajar" style="padding:2px">
+        <span class="material-symbols-outlined" style="font-size:13px;">arrow_downward</span>
+      </button>
       <button class="toggle-vis text-on-surface-variant/50 hover:text-on-surface" title="${block.hidden ? 'Mostrar' : 'Ocultar'}">
         <span class="material-symbols-outlined" style="font-size:14px;">${block.hidden ? 'visibility_off' : 'visibility'}</span>
       </button>
     `;
 
     item.addEventListener('click', (e) => {
+      if (e.target.closest('.move-up')) {
+        if (idx > 0) {
+          var tmp = landing.blocks[idx - 1];
+          landing.blocks[idx - 1] = landing.blocks[idx];
+          landing.blocks[idx] = tmp;
+          if (activeBlockIdx === idx) activeBlockIdx = idx - 1;
+          else if (activeBlockIdx === idx - 1) activeBlockIdx = idx;
+          renderBlocksList(); renderPreview(); autosave();
+        }
+        return;
+      }
+      if (e.target.closest('.move-down')) {
+        if (idx < landing.blocks.length - 1) {
+          var tmp2 = landing.blocks[idx + 1];
+          landing.blocks[idx + 1] = landing.blocks[idx];
+          landing.blocks[idx] = tmp2;
+          if (activeBlockIdx === idx) activeBlockIdx = idx + 1;
+          else if (activeBlockIdx === idx + 1) activeBlockIdx = idx;
+          renderBlocksList(); renderPreview(); autosave();
+        }
+        return;
+      }
       if (e.target.closest('.toggle-vis')) {
         block.hidden = !block.hidden;
         renderPreview();
@@ -561,9 +591,13 @@ function buildFieldEditor(block, idx) {
         <div class="flex gap-2">
           <input type="text" class="field-input flex-1" data-key="${field.key}"
                  placeholder="https://..." value="${escAttr(currentUrl)}" style="border-radius:8px 0 0 8px;"/>
-          <button class="px-3 bg-surface-container-high hover:bg-surface-container-highest rounded-r-lg text-xs font-semibold border border-outline-variant/30 transition" onclick="pickPollinationsImage(this, '${field.key}')">
+          <button class="px-3 bg-surface-container-high hover:bg-surface-container-highest text-xs font-semibold border-t border-b border-outline-variant/30 transition" onclick="pickPollinationsImage(this, '${field.key}')" title="Generar con IA">
             IA
           </button>
+          <label class="px-2 bg-surface-container-high hover:bg-surface-container-highest rounded-r-lg text-xs font-semibold border border-outline-variant/30 transition cursor-pointer flex items-center" title="Subir desde tu dispositivo">
+            <span class="material-symbols-outlined" style="font-size:14px">upload</span>
+            <input type="file" accept="image/*" class="hidden" onchange="uploadImgField(this, '${field.key}')"/>
+          </label>
         </div>
         ${currentUrl ? `<img src="${escAttr(currentUrl)}" class="w-full rounded-lg mt-2" style="max-height:100px;object-fit:cover;" onerror="this.style.display='none'"/>` : ''}
       `;
@@ -754,6 +788,21 @@ function addSubItem(btn, type) {
 
 function delSubItem(btn) {
   btn.closest('.sublist-item').remove();
+}
+
+function uploadImgField(input, key) {
+  const file = input.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    const fieldInput = input.closest('div').querySelector('input[type=text]');
+    if (fieldInput) {
+      fieldInput.value = e.target.result;
+      const preview = fieldInput.closest('.space-y-3 > div, [class*=field]').querySelector('img');
+      if (preview) { preview.src = e.target.result; preview.style.display = ''; }
+    }
+  };
+  reader.readAsDataURL(file);
 }
 
 function pickPollinationsImage(btn, key) {
@@ -1208,6 +1257,7 @@ function saveActiveBlock() {
   renderPreview();
   renderBlocksList();
   autosave();
+  buildFieldEditor(block, activeBlockIdx);
   showToast('Bloque guardado');
 }
 
@@ -1253,8 +1303,12 @@ function initUI() {
   document.getElementById('rp-save').addEventListener('click', saveActiveBlock);
   document.getElementById('ld-title').addEventListener('input', () => autosave());
   document.getElementById('btn-open-tab').addEventListener('click', () => {
-    if (landing && landing.slug)
-      window.open(`landing-view.html?slug=${landing.slug}`, '_blank');
+    if (!landing || !landing.blocks) return;
+    const previewHtml = renderLandingFromBlocks(landing.blocks, landing.palette || 'blue-purple');
+    const blob = new Blob([previewHtml], {type: 'text/html'});
+    const blobUrl = URL.createObjectURL(blob);
+    window.open(blobUrl, '_blank');
+    setTimeout(() => URL.revokeObjectURL(blobUrl), 10000);
   });
 }
 
