@@ -8,9 +8,9 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
 <link href="https://fonts.googleapis.com/icon?family=Material+Symbols+Outlined" rel="stylesheet"/>
-<script src="./supabase-config.js?v=20260604a"></script>
-<script src="./app.js?v=20260604a"></script>
-<script src="./landing-blocks.js?v=20260604a"></script>
+<script src="./supabase-config.js?v=20260605a"></script>
+<script src="./app.js?v=20260605a"></script>
+<script src="./landing-blocks.js?v=20260605a"></script>
 <script>
   tailwind.config = {
     theme: {
@@ -822,11 +822,11 @@ function addSubItem(btn, type) {
 
 function delSubItem(btn) {
   btn.closest('.sublist-item').remove();
-  // Auto-save so deleted items don't reappear when buildFieldEditor re-renders
   if (activeBlockIdx >= 0 && landing) {
     const block = landing.blocks[activeBlockIdx];
     block.data = collectBlockData(block);
     renderPreview();
+    buildFieldEditor(block, activeBlockIdx);
     autosave();
   }
 }
@@ -1138,7 +1138,7 @@ function openAddBlockModal() {
       <span class="text-[11px] font-semibold text-on-surface-variant leading-tight">${label}</span>
     `;
     btn.onclick = () => {
-      const newBlock = { type, data: BLOCK_DEFAULTS[type] || {}, hidden: false };
+      const newBlock = { type, data: JSON.parse(JSON.stringify(BLOCK_DEFAULTS[type] || {})), hidden: false };
       landing.blocks.push(newBlock);
       modal.classList.add('hidden');
       renderBlocksList();

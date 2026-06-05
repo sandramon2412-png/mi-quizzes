@@ -163,10 +163,9 @@ const BLOCK_DEFAULTS = {
   galeria: {
     title: 'Galería de imágenes',
     subtitle: '',
-    columns: 3,
+    columns: 2,
     ratio: '4/3',
     images: [
-      { url: '', caption: '' },
       { url: '', caption: '' },
       { url: '', caption: '' },
     ],
@@ -833,7 +832,7 @@ const BLOCK_FIELDS = {
   galeria: [
     { key: 'title', label: 'Título (opcional)', type: 'text' },
     { key: 'subtitle', label: 'Subtítulo (opcional)', type: 'textarea' },
-    { key: 'columns', label: 'Columnas (2 o 3)', type: 'text' },
+    { key: 'columns', label: 'Imágenes por fila (2 o 3)', type: 'text' },
     { key: 'ratio', label: 'Proporción de imágenes (ej: 4/3, 1/1, 3/4)', type: 'text' },
     { key: 'images', label: 'Imágenes (URL + pie de foto)', type: 'list-image' },
   ],
