@@ -1205,3 +1205,99 @@ Al agregar `isPlanMode` en el bloque de pills, quedó `} else { ... } else if (i
 - ✅ Panel de voz muestra voces en inglés para apps de inglés
 - ✅ 4 templates de inglés con `voiceLang:'en-US'`
 - 🟡 Límites ebook: Pro=999, Growth=999 → REVERTIR a Pro→5, Growth→20
+
+---
+
+## SESIÓN 5 JUN 2026 — branch `claude/confident-noether-9sN0E`
+
+### Contexto
+Sesión enfocada en el landing-builder: fixes de bugs críticos + mejoras de galería de imágenes.
+
+### 1. Fix: generación silenciosa fallaba ("se borra todo") — RESUELTO ✅
+
+**Síntoma**: Al hacer click en "Generar landing", el formulario desaparecía y la landing no se generaba. Sin errores en F12.
+
+**Causa raíz (2 problemas combinados)**:
+1. **Renderers con `(data.X || []).filter()`**: cuando la IA devuelve un string u objeto en lugar de array, `.filter()` lanzaba TypeError silencioso en el `catch`.
+2. **`switchToBuilderMode()` antes de los renders**: la función se llamaba ANTES de `renderPreview()` y `renderBlocksList()`. Si cualquier render fallaba, el formulario ya estaba oculto y no había forma de volver.
+
+**Fix**:
+- `_arr(v)` helper en `landing-blocks.js`: `function _arr(v) { return Array.isArray(v) ? v : []; }` — aplicado a TODOS los renderers (nav, para_quien, metricas, beneficios, modulos, testimonios, bonos, stack, faq, footer).
+- Reordenado en `generateLanding()`: primero `renderBlocksList()` → `renderPreview()` → luego `switchToBuilderMode()`.
+- `max_tokens` en `Claude.generateLandingBlocks`: 5000 → 8192 (evita truncado del JSON con 14 bloques).
+
+### 2. Fix: botón borrar imagen en galería no funcionaba — RESUELTO ✅
+
+**Causa raíz**: `openAddBlockModal()` no hacía deep-clone de `BLOCK_DEFAULTS`, así que `block.data.images` era referencia directa al array default. Al borrar, realmente borraba del default global.
+
+**Fix**: `JSON.parse(JSON.stringify(BLOCK_DEFAULTS[type] || {}))` en `openAddBlockModal`.
+
+**Fix adicional**: `delSubItem()` ahora llama `buildFieldEditor()` después de borrar para confirmar visualmente la eliminación.
+
+### 3. Fix: columnas = 2 pero salían 3 recuadros — RESUELTO ✅
+
+**Aclaración técnica**: `columns` controla cuántas columnas tiene el grid (ancho por fila), NO cuántas imágenes hay. Con 3 imágenes y `columns:2` → 2 en fila 1 + 1 en fila 2 (comportamiento correcto).
+
+**Fix UX**: Default cambiado a 2 imágenes + 2 columnas para que el comportamiento inicial sea el esperado. Label renombrado a "Imágenes por fila".
+
+### 4. Mejoras bloque imagen (`imagen`) — RESUELTO ✅
+
+**Problema**: Todas las opciones de tamaño resultaban en imágenes muy grandes (todas usaban `width:100%` + `aspect-ratio` forzado).
+
+**Fix en `_renderImagen`**:
+- Opción `natural`: `max-width:100%; height:auto` sin aspect-ratio forzado — respeta dimensiones originales
+- Tamaños reducidos: medium → 65%, small → 40%, portrait → 30% width
+- Nueva opción `square`: 40% width, aspect-ratio 1/1
+- `BLOCK_DEFAULTS.imagen.image_size` cambiado a `'natural'`
+- `BLOCK_FIELDS.imagen` actualizado: etiquetas explican si hay recorte
+
+### 5. Control de tamaño global para galería — RESUELTO ✅
+
+**Nuevo campo** `gallery_size` en `_renderGaleria`: `wMap = {full:'100%', large:'80%', medium:'60%', small:'40%'}` — controla el ancho del contenedor de la galería completa.
+
+**En `BLOCK_FIELDS.galeria`**: selector dropdown en lugar de campo texto para `ratio` (5 opciones). Label `columns` renombrado a "Imágenes por fila".
+
+### 6. Control de tamaño+proporción POR IMAGEN en galería (collage) — RESUELTO ✅
+
+**Request**: Sandra mostró ejemplo de collage con fotos de distintos tamaños y pidió poder controlar tamaño y proporción por cada foto individualmente.
+
+**Implementación**:
+
+**`landing-blocks.js` — `_renderGaleria`**:
+- Per imagen: `span = Math.min(parseInt(img.span) || 1, cols)` → `grid-column: span N`
+- Per imagen: `ratio = img.ratio || data.ratio || '1/1'` → aspect-ratio individual
+- `BLOCK_DEFAULTS.galeria.images`: cada imagen ahora tiene `span:'1', ratio:''`
+
+**`landing-builder.html` — `buildFieldEditor` para `list-image`**:
+- Dos selects nuevos por imagen: **Tamaño** (Normal/Doble ancho/Triple) y **Proporción** (Hereda galería / 1:1 / 4:3 / 16:9 / 3:4 / 3:2)
+- Pre-popula desde `v.span` y `v.ratio`
+
+**`landing-builder.html` — `collectBlockData` para `list-image`**:
+- Lee `sels[0]?.value` (span) y `sels[1]?.value` (ratio) de los selects del item
+
+**`landing-builder.html` — `addSubItem` para `list-image`**:
+- Nuevos items incluyen los mismos dos selects
+
+**Cómo usarlo**: Con `columns:3`, una foto con `span:2` ocupa 2/3 del ancho y la siguiente con `span:1` ocupa 1/3. Así se arman collages tipo Pinterest.
+
+### Archivos modificados esta sesión
+| Archivo | Cambios clave |
+|---------|---------------|
+| `landing-blocks.js` | `_arr()` helper, `_renderHero` image_size, `_renderImagen` natural+square+tamaños, `_renderGaleria` gallery_size+per-image span+ratio, BLOCK_DEFAULTS, BLOCK_FIELDS |
+| `landing-builder.html` | `generateLanding()` reorder, `openAddBlockModal` deep-clone, `delSubItem` visual confirm, `buildFieldEditor` list-image con selects, `collectBlockData` lee span+ratio, `addSubItem` list-image con selects |
+| `app.js` | `Claude.generateLandingBlocks` max_tokens 5000→8192 |
+
+### Commit del branch `claude/confident-noether-9sN0E`
+- `9294e89` — Gallery: per-image size (span) and ratio controls for collage layouts
+
+### Estado al 5 jun 2026
+- ✅ Generación de landing funciona sin el bug "se borra todo"
+- ✅ Galería: borrar imagen funciona
+- ✅ Galería: control de tamaño global (ancho del contenedor)
+- ✅ Galería: control de tamaño y proporción por imagen (collage)
+- ✅ Bloque imagen: opción "natural" que respeta dimensiones originales + square
+- 🟡 Límites ebook: Pro=999, Growth=999 en `app.js → PlanLimits` — REVERTIR a Pro→5, Growth→20 cuando Sandra confirme que el PDF funciona bien
+
+### Pendiente / próxima sesión
+- Verificar en la UI que el collage por imagen funciona correctamente
+- Posibles mejoras de landing-builder: responsive mobile/tablet, tipografía, variedad visual
