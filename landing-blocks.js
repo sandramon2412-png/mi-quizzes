@@ -176,8 +176,7 @@ const BLOCK_DEFAULTS = {
 const BLOCK_ORDER = [
   'nav', 'hero', 'para_quien', 'problema', 'metricas',
   'beneficios', 'modulos', 'testimonios', 'bonos',
-  'stack', 'garantia', 'faq', 'cta_final', 'footer',
-  'imagen', 'galeria'
+  'stack', 'garantia', 'faq', 'cta_final', 'footer'
 ];
 
 // ──────────────────────────────────────────────────────────
