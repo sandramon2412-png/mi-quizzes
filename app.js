@@ -1183,7 +1183,7 @@ REGLAS INAMOVIBLES:
 8. CTAs deben ser verbo+resultado: "Quiero X en Y días" — nunca "Regístrate" o "Empezar"`;
 
     const userMsg = `BRIEF DEL PRODUCTO:\n${brief}\n\nSCHEMA A COMPLETAR (devolvé el array completo con data lleno):\n${JSON.stringify(defaultBlocks, null, 2)}`;
-    const text = await this._call([{ role: 'user', content: userMsg }], 5000, {
+    const text = await this._call([{ role: 'user', content: userMsg }], 8192, {
       model: 'claude-sonnet-4-6',
       system,
     });
