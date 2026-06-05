@@ -822,6 +822,13 @@ function addSubItem(btn, type) {
 
 function delSubItem(btn) {
   btn.closest('.sublist-item').remove();
+  // Auto-save so deleted items don't reappear when buildFieldEditor re-renders
+  if (activeBlockIdx >= 0 && landing) {
+    const block = landing.blocks[activeBlockIdx];
+    block.data = collectBlockData(block);
+    renderPreview();
+    autosave();
+  }
 }
 
 function uploadImgSubItem(input) {

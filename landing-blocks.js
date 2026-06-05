@@ -322,7 +322,7 @@ function _renderHero(data, pal) {
     : `<span style="${_gradText(pal)}">${_e(data.headline)}</span>`;
   const imgCol = data.image_url
     ? `<div style="flex:1;min-width:0;display:flex;align-items:center;justify-content:center">
-        <img src="${_e(data.image_url)}" alt="" style="width:100%;max-width:560px;border-radius:24px;box-shadow:0 32px 80px rgba(0,0,0,0.6);object-fit:cover;aspect-ratio:4/3" onerror="this.style.display='none'">
+        <img src="${_e(data.image_url)}" alt="" style="width:100%;max-width:560px;border-radius:24px;box-shadow:0 32px 80px rgba(0,0,0,0.6);object-fit:cover;aspect-ratio:${data.image_ratio||'4/3'}" onerror="this.style.display='none'">
        </div>`
     : '';
   const socialProof = data.social_proof_count
@@ -643,7 +643,7 @@ function _renderImagen(data, pal) {
 
 function _renderGaleria(data, pal) {
   const imgs = Array.isArray(data.images) ? data.images : [];
-  const cols = Math.min(imgs.length, data.columns || 3);
+  const cols = Math.min(imgs.length, parseInt(data.columns) || 3);
   const imgHtml = imgs.map(img => `
     <div style="border-radius:16px;overflow:hidden;box-shadow:0 8px 32px rgba(0,0,0,0.4)">
       ${img.url ? `<img src="${_e(img.url)}" alt="${_e(img.caption||'')}" style="width:100%;aspect-ratio:${data.ratio||'4/3'};object-fit:cover;display:block" onerror="this.style.display='none'"/>` : `<div style="width:100%;aspect-ratio:${data.ratio||'4/3'};background:rgba(255,255,255,0.05)"></div>`}
@@ -738,6 +738,12 @@ const BLOCK_FIELDS = {
     { key: 'cta_text', label: 'Texto del botón principal', type: 'text' },
     { key: 'cta_href', label: 'URL del botón', type: 'text' },
     { key: 'image_url', label: 'Imagen del hero', type: 'image' },
+    { key: 'image_ratio', label: 'Proporción de la imagen', type: 'select', options: [
+      { value: '4/3',  label: 'Clásica (4:3)' },
+      { value: '16/9', label: 'Video / ancho (16:9)' },
+      { value: '1/1',  label: 'Cuadrada (1:1)' },
+      { value: '3/4',  label: 'Retrato / vertical (3:4)' },
+    ]},
     { key: 'social_proof_count', label: 'Número de social proof (ej: "+2,400")', type: 'text' },
     { key: 'social_proof_label', label: 'Texto de social proof (ej: "alumnos ya transformaron sus finanzas")', type: 'text' },
     { key: 'microcopy', label: 'Microcopy bajo el botón', type: 'text' },
