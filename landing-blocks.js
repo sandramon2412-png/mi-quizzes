@@ -295,6 +295,9 @@ details.ld-faq .faq-body{padding:0 24px 20px;color:rgba(255,255,255,0.7);font-si
 // SECTION RENDERERS
 // ──────────────────────────────────────────────────────────
 
+// Guard: AI sometimes returns a string/object instead of an array
+function _arr(v) { return Array.isArray(v) ? v : []; }
+
 function _renderNav(data, pal) {
   // Map nav link text to correct section IDs (text can be in any language/case)
   function _navAnchor(text) {
@@ -302,7 +305,7 @@ function _renderNav(data, pal) {
     var m = {paraquien:'para_quien',paraquienes:'para_quien',paraqueien:'para_quien',problema:'problema',dolor:'problema',metricas:'metricas',resultados:'metricas',beneficios:'beneficios',modulos:'modulos',temario:'modulos',contenido:'modulos',testimonios:'testimonios',clientes:'testimonios',bonos:'bonos',stack:'stack',incluye:'stack',garantia:'garantia',faq:'faq',preguntas:'faq',cta:'cta_final',comenzar:'cta_final',empezar:'cta_final'};
     return '#ld-' + (m[s] || s.replace(/\s+/g,'-'));
   }
-  const links = (data.links || []).map(l =>
+  const links = _arr(data.links).map(l =>
     `<a href="${_navAnchor(l)}" style="font-size:14px;font-weight:600;color:rgba(255,255,255,0.65);transition:color 0.2s" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,0.65)'">${_e(l)}</a>`
   ).join('');
   return `
@@ -353,11 +356,11 @@ function _renderHero(data, pal) {
 }
 
 function _renderParaQuien(data, pal) {
-  const forItems = (data.for_items || []).filter(Boolean).map(t =>
+  const forItems = _arr(data.for_items).filter(Boolean).map(t =>
     `<li style="display:flex;gap:12px;align-items:flex-start;padding:12px 0;border-bottom:1px solid rgba(255,255,255,0.06);font-size:15px;color:rgba(255,255,255,0.8)">
       <span style="${_gradText(pal)};flex-shrink:0">${_icon('check_circle',20)}</span> ${_e(t)}
      </li>`).join('');
-  const notForItems = (data.not_for_items || []).filter(Boolean).map(t =>
+  const notForItems = _arr(data.not_for_items).filter(Boolean).map(t =>
     `<li style="display:flex;gap:12px;align-items:flex-start;padding:12px 0;border-bottom:1px solid rgba(255,255,255,0.06);font-size:15px;color:rgba(255,255,255,0.6)">
       <span style="color:#ef4444;flex-shrink:0">${_icon('cancel',20)}</span> ${_e(t)}
      </li>`).join('');
@@ -399,12 +402,12 @@ function _renderProblema(data, pal) {
 }
 
 function _renderMetricas(data, pal) {
-  const items = (data.items || []).filter(i=>i.value).map((item, idx) =>
+  const items = _arr(data.items).filter(i=>i&&i.value).map((item, idx) =>
     `<div class="ld-card ld-center" style="padding:40px 24px">
       <div class="ld-metric-val ld-h1" style="${_gradText(pal)};animation-delay:${idx*0.1}s">${_e(item.value)}</div>
       <div style="margin-top:10px;font-size:15px;font-weight:600;color:rgba(255,255,255,0.55);text-align:center">${_e(item.label)}</div>
      </div>`).join('');
-  const cols = Math.min(4, (data.items||[]).filter(i=>i.value).length);
+  const cols = Math.min(4, _arr(data.items).filter(i=>i&&i.value).length);
   return `
 <section id="ld-metricas" class="ld-section-sm">
   <div class="ld-inner">
@@ -415,7 +418,7 @@ function _renderMetricas(data, pal) {
 }
 
 function _renderBeneficios(data, pal) {
-  const items = (data.items || []).filter(i=>i.title||i.text).map(item =>
+  const items = _arr(data.items).filter(i=>i&&(i.title||i.text)).map(item =>
     `<div class="ld-card" style="display:flex;flex-direction:column;gap:14px">
       <div style="width:48px;height:48px;border-radius:14px;${_gradBg(pal)};display:flex;align-items:center;justify-content:center;flex-shrink:0">
         ${_icon(item.icon||'check_circle', 24, '#fff')}
@@ -438,13 +441,13 @@ function _renderBeneficios(data, pal) {
 }
 
 function _renderModulos(data, pal) {
-  const items = (data.items || []).filter(i=>i.title).map((item, idx) =>
+  const items = _arr(data.items).filter(i=>i&&i.title).map((item, idx) =>
     `<div class="ld-card" style="display:flex;gap:20px">
       <div style="font-size:40px;font-weight:800;${_gradText(pal)};flex-shrink:0;line-height:1;padding-top:2px">${_e(item.number||String(idx+1).padStart(2,'0'))}</div>
       <div style="min-width:0">
         <h3 style="font-size:18px;font-weight:700;margin-bottom:8px">${_e(item.title)}</h3>
         <p style="font-size:14px;line-height:1.65;color:rgba(255,255,255,0.6);margin-bottom:14px">${_e(item.description)}</p>
-        ${(item.chips||[]).filter(Boolean).length ? `<div style="display:flex;flex-wrap:wrap;gap:6px">${(item.chips||[]).filter(Boolean).map(c=>`<span style="padding:4px 10px;border-radius:6px;background:rgba(255,255,255,0.07);font-size:11px;font-weight:600">${_e(c)}</span>`).join('')}</div>` : ''}
+        ${_arr(item.chips).filter(Boolean).length ? `<div style="display:flex;flex-wrap:wrap;gap:6px">${_arr(item.chips).filter(Boolean).map(c=>`<span style="padding:4px 10px;border-radius:6px;background:rgba(255,255,255,0.07);font-size:11px;font-weight:600">${_e(c)}</span>`).join('')}</div>` : ''}
       </div>
      </div>`).join('');
   return `
@@ -460,7 +463,7 @@ function _renderModulos(data, pal) {
 }
 
 function _renderTestimonios(data, pal) {
-  const items = (data.items || []).filter(i=>i.text).map(item => {
+  const items = _arr(data.items).filter(i=>i&&i.text).map(item => {
     const initials = item.initials || (item.name||'?').split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase();
     return `
     <div class="ld-card" style="display:flex;flex-direction:column;gap:16px">
@@ -487,7 +490,7 @@ function _renderTestimonios(data, pal) {
 }
 
 function _renderBonos(data, pal) {
-  const items = (data.items || []).filter(i=>i.name||i.title).map((item, idx) =>
+  const items = _arr(data.items).filter(i=>i&&(i.name||i.title)).map((item, idx) =>
     `<div class="ld-card" style="display:flex;gap:18px;align-items:flex-start;position:relative;overflow:hidden">
       <div style="width:52px;height:52px;border-radius:14px;${_gradBg(pal)};display:flex;align-items:center;justify-content:center;flex-shrink:0">
         ${_icon(item.icon||'workspace_premium', 26, '#fff')}
@@ -516,7 +519,7 @@ function _renderBonos(data, pal) {
 }
 
 function _renderStack(data, pal) {
-  const rows = (data.items || []).filter(i=>i.name||i.label).map(item =>
+  const rows = _arr(data.items).filter(i=>i&&(i.name||i.label)).map(item =>
     `<tr><td class="ld-table-name">${_icon('check',18,pal.from)} ${_e(item.name||item.label)}</td><td class="ld-table-val">${_e(item.value)}</td></tr>`
   ).join('');
   return `
@@ -559,7 +562,7 @@ function _renderGarantia(data, pal) {
 }
 
 function _renderFaq(data, pal) {
-  const items = (data.items || []).filter(i=>i.question).map((item, idx) =>
+  const items = _arr(data.items).filter(i=>i&&i.question).map((item, idx) =>
     `<details class="ld-faq" ${idx===0?'open':''}>
       <summary>${_e(item.question)}</summary>
       <div class="faq-body">${_e(item.answer)}</div>
@@ -593,7 +596,7 @@ function _renderCtaFinal(data, pal) {
 }
 
 function _renderFooter(data, pal) {
-  const links = (data.links || []).map(l =>
+  const links = _arr(data.links).filter(l=>l&&(l.text||l.href)).map(l =>
     `<a href="${_e(l.href||'#')}" style="font-size:13px;color:rgba(255,255,255,0.4);transition:color 0.2s" onmouseover="this.style.color='rgba(255,255,255,0.7)'" onmouseout="this.style.color='rgba(255,255,255,0.4)'">${_e(l.text)}</a>`
   ).join('');
   return `

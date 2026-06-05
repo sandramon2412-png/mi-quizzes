@@ -967,9 +967,11 @@ async function generateLanding() {
     };
 
     document.getElementById('ld-title').value = title;
-    switchToBuilderMode();
-    renderPreview();
+    // Render first — if rendering fails (e.g. AI returned bad data) we stay on starter form
     renderBlocksList();
+    renderPreview();
+    // Only switch UI after renders succeed
+    switchToBuilderMode();
     setStatus('Guardando…');
     await saveLanding();
     setStatus('Guardado');
