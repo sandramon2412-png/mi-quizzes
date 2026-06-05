@@ -650,8 +650,8 @@ function _renderImagen(data, pal) {
   </div>
 </section>`;
   }
-  const wMap  = {wide:'100%', medium:'65%', small:'40%', portrait:'30%'};
-  const arMap = {wide:'16/7', medium:'16/9', small:'4/3',  portrait:'3/4'};
+  const wMap  = {wide:'100%', medium:'65%', small:'40%', portrait:'30%', square:'40%'};
+  const arMap = {wide:'16/7', medium:'16/9', small:'4/3',  portrait:'3/4', square:'1/1'};
   const w  = wMap[sz]  || '100%';
   const ar = arMap[sz] || '16/7';
   return `
@@ -854,6 +854,7 @@ const BLOCK_FIELDS = {
     { key: 'image_size', label: 'Tamaño', type: 'select',
       options: [
         { value: 'natural',  label: 'Natural — respeta el tamaño original' },
+        { value: 'square',   label: 'Cuadrada (40%, recortada 1:1)' },
         { value: 'wide',     label: 'Banner ancho (100%, recortada 16:7)' },
         { value: 'medium',   label: 'Mediana (65%, recortada 16:9)' },
         { value: 'small',    label: 'Pequeña (40%, recortada 4:3)' },
