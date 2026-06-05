@@ -40,6 +40,8 @@ const BLOCK_DEFAULTS = {
     cta_text: '',
     cta_href: '#ld-cta_final',
     image_url: '',
+    image_size: 'grande',
+    image_ratio: '4/3',
     social_proof_count: '',
     social_proof_label: '',
     microcopy: 'Sin tarjeta de crédito · Acceso inmediato · Garantía 30 días'
@@ -321,11 +323,22 @@ function _renderHero(data, pal) {
   const headline = data.headline_gradient
     ? `${_e(data.headline)} <span style="${_gradText(pal)}">${_e(data.headline_gradient)}</span>`
     : `<span style="${_gradText(pal)}">${_e(data.headline)}</span>`;
-  const imgCol = data.image_url
-    ? `<div style="flex:1;min-width:0;display:flex;align-items:center;justify-content:center">
-        <img src="${_e(data.image_url)}" alt="" style="width:100%;max-width:560px;border-radius:24px;box-shadow:0 32px 80px rgba(0,0,0,0.6);object-fit:cover;aspect-ratio:${data.image_ratio||'4/3'}" onerror="this.style.display='none'">
-       </div>`
-    : '';
+
+  // Image size controls both flex width and layout
+  const sz = data.image_size || 'grande';
+  let imgCol = '';
+  if (data.image_url) {
+    const flexSz = sz === 'grande' ? 'flex:1;min-width:0' : sz === 'mediano' ? 'flex:0 0 38%;min-width:0' : sz === 'pequeno' ? 'flex:0 0 26%;min-width:0' : 'width:100%;margin-top:40px';
+    const maxW   = sz === 'grande' ? '560px' : sz === 'mediano' ? '420px' : sz === 'pequeno' ? '260px' : '720px';
+    imgCol = `<div style="${flexSz};display:flex;align-items:center;justify-content:center">
+        <img src="${_e(data.image_url)}" alt="" style="width:100%;max-width:${maxW};border-radius:24px;box-shadow:0 32px 80px rgba(0,0,0,0.6);object-fit:cover;aspect-ratio:${data.image_ratio||'4/3'}" onerror="this.style.display='none'">
+       </div>`;
+  }
+  // For 'centrado' layout, image goes below text in a separate row
+  const heroCols = sz === 'centrado'
+    ? `<div style="flex-direction:column;align-items:center;text-align:center">`
+    : `<div class="ld-hero-cols" style="display:flex;align-items:center;gap:64px">`;
+
   const socialProof = data.social_proof_count
     ? `<div style="display:flex;align-items:center;gap:12px;margin-top:16px">
         <div style="display:flex">
@@ -338,11 +351,11 @@ function _renderHero(data, pal) {
 <section id="ld-hero" style="padding:80px 0 64px;overflow:hidden">
   <div class="ld-inner">
     ${data.badge ? `<div style="display:inline-flex;align-items:center;gap:8px;padding:6px 16px;border-radius:999px;${_gradBg(pal)};font-size:12px;font-weight:700;letter-spacing:0.06em;margin-bottom:28px;opacity:0.9">${_e(data.badge)}</div>` : ''}
-    <div class="ld-hero-cols" style="display:flex;align-items:center;gap:64px">
-      <div style="flex:1;min-width:0">
+    ${heroCols}
+      <div style="${sz==='centrado'?'max-width:700px':'flex:1;min-width:0'}">
         <h1 class="ld-h1" style="margin-bottom:20px">${headline}</h1>
         <p class="ld-body" style="font-size:19px;margin-bottom:36px;max-width:580px">${_e(data.subheadline)}</p>
-        <div style="display:flex;flex-wrap:wrap;gap:14px;align-items:center">
+        <div style="display:flex;flex-wrap:wrap;gap:14px;align-items:center${sz==='centrado'?';justify-content:center':''}">
           <a href="${_e(data.cta_href||'#ld-cta_final')}" class="ld-btn ld-btn-lg">${_icon('bolt',22,'#fff')} ${_e(data.cta_text||'Comenzar ahora')}</a>
         </div>
         ${socialProof}
@@ -739,6 +752,12 @@ const BLOCK_FIELDS = {
     { key: 'cta_text', label: 'Texto del botón principal', type: 'text' },
     { key: 'cta_href', label: 'URL del botón', type: 'text' },
     { key: 'image_url', label: 'Imagen del hero', type: 'image' },
+    { key: 'image_size', label: 'Tamaño de la imagen', type: 'select', options: [
+      { value: 'grande',   label: 'Grande — mitad del hero (50%)' },
+      { value: 'mediano',  label: 'Mediano — 38% del ancho' },
+      { value: 'pequeno',  label: 'Pequeño — 26% del ancho' },
+      { value: 'centrado', label: 'Centrado — ancho completo, debajo del texto' },
+    ]},
     { key: 'image_ratio', label: 'Proporción de la imagen', type: 'select', options: [
       { value: '4/3',  label: 'Clásica (4:3)' },
       { value: '16/9', label: 'Video / ancho (16:9)' },
