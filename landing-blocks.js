@@ -169,8 +169,8 @@ const BLOCK_DEFAULTS = {
     columns: 2,
     ratio: '1/1',
     images: [
-      { url: '', caption: '' },
-      { url: '', caption: '' },
+      { url: '', caption: '', span: '1', ratio: '' },
+      { url: '', caption: '', span: '1', ratio: '' },
     ],
   },
 };
@@ -670,14 +670,19 @@ function _renderImagen(data, pal) {
 
 function _renderGaleria(data, pal) {
   const imgs = Array.isArray(data.images) ? data.images : [];
-  const cols = Math.min(imgs.length, parseInt(data.columns) || 2);
+  const cols = Math.max(parseInt(data.columns) || 2, 1);
   const wMap = { full:'100%', large:'80%', medium:'60%', small:'40%' };
   const gw = wMap[data.gallery_size] || '100%';
-  const imgHtml = imgs.map(img => `
-    <div style="border-radius:16px;overflow:hidden;box-shadow:0 8px 32px rgba(0,0,0,0.4)">
-      ${img.url ? `<img src="${_e(img.url)}" alt="${_e(img.caption||'')}" style="width:100%;aspect-ratio:${data.ratio||'1/1'};object-fit:cover;display:block" onerror="this.style.display='none'"/>` : `<div style="width:100%;aspect-ratio:${data.ratio||'1/1'};background:rgba(255,255,255,0.05)"></div>`}
+  const defaultRatio = data.ratio || '1/1';
+  const imgHtml = imgs.map(img => {
+    const span = Math.min(parseInt(img.span) || 1, cols);
+    const ratio = img.ratio || defaultRatio;
+    return `
+    <div style="grid-column:span ${span};border-radius:16px;overflow:hidden;box-shadow:0 8px 32px rgba(0,0,0,0.4)">
+      ${img.url ? `<img src="${_e(img.url)}" alt="${_e(img.caption||'')}" style="width:100%;aspect-ratio:${ratio};object-fit:cover;display:block" onerror="this.style.display='none'"/>` : `<div style="width:100%;aspect-ratio:${ratio};background:rgba(255,255,255,0.05)"></div>`}
       ${img.caption ? `<p style="font-size:12px;color:rgba(255,255,255,0.4);padding:10px;text-align:center">${_e(img.caption)}</p>` : ''}
-    </div>`).join('');
+    </div>`;
+  }).join('');
   return `
 <section id="ld-galeria-${Math.random().toString(36).slice(2,5)}" class="ld-section-sm">
   <div class="ld-inner">
