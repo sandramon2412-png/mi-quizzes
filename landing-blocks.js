@@ -165,6 +165,7 @@ const BLOCK_DEFAULTS = {
   galeria: {
     title: 'Galería de imágenes',
     subtitle: '',
+    gallery_size: 'full',
     columns: 2,
     ratio: '1/1',
     images: [
@@ -669,10 +670,12 @@ function _renderImagen(data, pal) {
 
 function _renderGaleria(data, pal) {
   const imgs = Array.isArray(data.images) ? data.images : [];
-  const cols = Math.min(imgs.length, parseInt(data.columns) || 3);
+  const cols = Math.min(imgs.length, parseInt(data.columns) || 2);
+  const wMap = { full:'100%', large:'80%', medium:'60%', small:'40%' };
+  const gw = wMap[data.gallery_size] || '100%';
   const imgHtml = imgs.map(img => `
     <div style="border-radius:16px;overflow:hidden;box-shadow:0 8px 32px rgba(0,0,0,0.4)">
-      ${img.url ? `<img src="${_e(img.url)}" alt="${_e(img.caption||'')}" style="width:100%;aspect-ratio:${data.ratio||'4/3'};object-fit:cover;display:block" onerror="this.style.display='none'"/>` : `<div style="width:100%;aspect-ratio:${data.ratio||'4/3'};background:rgba(255,255,255,0.05)"></div>`}
+      ${img.url ? `<img src="${_e(img.url)}" alt="${_e(img.caption||'')}" style="width:100%;aspect-ratio:${data.ratio||'1/1'};object-fit:cover;display:block" onerror="this.style.display='none'"/>` : `<div style="width:100%;aspect-ratio:${data.ratio||'1/1'};background:rgba(255,255,255,0.05)"></div>`}
       ${img.caption ? `<p style="font-size:12px;color:rgba(255,255,255,0.4);padding:10px;text-align:center">${_e(img.caption)}</p>` : ''}
     </div>`).join('');
   return `
@@ -680,7 +683,9 @@ function _renderGaleria(data, pal) {
   <div class="ld-inner">
     ${data.title ? `<h2 class="ld-h2" style="text-align:center;margin-bottom:12px">${_e(data.title)}</h2>` : ''}
     ${data.subtitle ? `<p class="ld-body" style="text-align:center;margin-bottom:40px;max-width:640px;margin-left:auto;margin-right:auto">${_e(data.subtitle)}</p>` : ''}
-    <div style="display:grid;grid-template-columns:repeat(${cols},1fr);gap:20px">${imgHtml}</div>
+    <div style="margin:0 auto;width:${gw}">
+      <div style="display:grid;grid-template-columns:repeat(${cols},1fr);gap:20px">${imgHtml}</div>
+    </div>
   </div>
 </section>`;
 }
@@ -865,6 +870,14 @@ const BLOCK_FIELDS = {
   galeria: [
     { key: 'title', label: 'Título (opcional)', type: 'text' },
     { key: 'subtitle', label: 'Subtítulo (opcional)', type: 'textarea' },
+    { key: 'gallery_size', label: 'Tamaño de la galería', type: 'select',
+      options: [
+        { value: 'full',   label: 'Ancho completo (100%)' },
+        { value: 'large',  label: 'Grande (80%)' },
+        { value: 'medium', label: 'Mediana (60%)' },
+        { value: 'small',  label: 'Pequeña (40%)' },
+      ]
+    },
     { key: 'columns', label: 'Imágenes por fila (2 o 3)', type: 'text' },
     { key: 'ratio', label: 'Proporción de cada imagen', type: 'select',
       options: [
