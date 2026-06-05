@@ -304,7 +304,7 @@ function _renderNav(data, pal) {
     return '#ld-' + (m[s] || s.replace(/\s+/g,'-'));
   }
   const links = (data.links || []).map(l =>
-    `<a href="${'$'}{_navAnchor(l)}" style="font-size:14px;font-weight:600;color:rgba(255,255,255,0.65);transition:color 0.2s" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,0.65)'">${'$'}{_e(l)}</a>`
+    `<a href="${_navAnchor(l)}" style="font-size:14px;font-weight:600;color:rgba(255,255,255,0.65);transition:color 0.2s" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,0.65)'">${_e(l)}</a>`
   ).join('');
   return `
 <nav id="ld-nav" style="position:sticky;top:0;z-index:100;background:rgba(9,9,11,0.88);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-bottom:1px solid rgba(255,255,255,0.07)">
