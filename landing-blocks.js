@@ -160,7 +160,7 @@ const BLOCK_DEFAULTS = {
     subtitle: '',
     image_url: '',
     caption: '',
-    image_size: 'wide',
+    image_size: 'natural',
   },
   galeria: {
     title: 'Galería de imágenes',
@@ -638,10 +638,22 @@ function _hexToRgb(hex) {
 
 function _renderImagen(data, pal) {
   const sz = data.image_size || 'wide';
-  const sizeMap = {wide:'100%', medium:'80%', small:'50%', portrait:'45%'};
-  const ratioMap = {wide:'16/7', medium:'16/9', small:'4/3', portrait:'3/4'};
-  const w = sizeMap[sz] || '100%';
-  const ar = ratioMap[sz] || '16/7';
+  // natural: image shows at its own size (no forced ratio, no crop)
+  if (sz === 'natural') {
+    return `
+<section id="ld-imagen-${Math.random().toString(36).slice(2,5)}" class="ld-section-sm">
+  <div class="ld-inner" style="display:flex;flex-direction:column;align-items:center">
+    ${data.title ? `<h2 class="ld-h2" style="text-align:center;margin-bottom:16px">${_e(data.title)}</h2>` : ''}
+    ${data.subtitle ? `<p class="ld-body" style="text-align:center;margin-bottom:32px;max-width:700px">${_e(data.subtitle)}</p>` : ''}
+    ${data.image_url ? `<img src="${_e(data.image_url)}" alt="${_e(data.caption||'')}" style="max-width:100%;height:auto;border-radius:16px;box-shadow:0 16px 48px rgba(0,0,0,0.45);display:block" onerror="this.style.display='none'"/>` : `<div style="width:300px;height:200px;background:rgba(255,255,255,0.05);border-radius:16px;display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,0.3);font-size:14px">Sin imagen</div>`}
+    ${data.caption ? `<p style="text-align:center;margin-top:12px;font-size:13px;color:rgba(255,255,255,0.45)">${_e(data.caption)}</p>` : ''}
+  </div>
+</section>`;
+  }
+  const wMap  = {wide:'100%', medium:'65%', small:'40%', portrait:'30%'};
+  const arMap = {wide:'16/7', medium:'16/9', small:'4/3',  portrait:'3/4'};
+  const w  = wMap[sz]  || '100%';
+  const ar = arMap[sz] || '16/7';
   return `
 <section id="ld-imagen-${Math.random().toString(36).slice(2,5)}" class="ld-section-sm">
   <div class="ld-inner">
@@ -841,10 +853,11 @@ const BLOCK_FIELDS = {
     { key: 'caption', label: 'Pie de foto (opcional)', type: 'text' },
     { key: 'image_size', label: 'Tamaño', type: 'select',
       options: [
-        { value: 'wide',     label: 'Ancho completo (16:7)' },
-        { value: 'medium',   label: 'Mediano (16:9)' },
-        { value: 'small',    label: 'Pequeño (4:3)' },
-        { value: 'portrait', label: 'Retrato / vertical (3:4)' },
+        { value: 'natural',  label: 'Natural — respeta el tamaño original' },
+        { value: 'wide',     label: 'Banner ancho (100%, recortada 16:7)' },
+        { value: 'medium',   label: 'Mediana (65%, recortada 16:9)' },
+        { value: 'small',    label: 'Pequeña (40%, recortada 4:3)' },
+        { value: 'portrait', label: 'Retrato (30%, recortada 3:4)' },
       ]
     },
   ],
