@@ -8,9 +8,9 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
 <link href="https://fonts.googleapis.com/icon?family=Material+Symbols+Outlined" rel="stylesheet"/>
-<script src="./supabase-config.js?v=20260605a"></script>
-<script src="./app.js?v=20260605a"></script>
-<script src="./landing-blocks.js?v=20260605a"></script>
+<script src="./supabase-config.js?v=20260605b"></script>
+<script src="./app.js?v=20260605b"></script>
+<script src="./landing-blocks.js?v=20260605b"></script>
 <script>
   tailwind.config = {
     theme: {
@@ -766,6 +766,7 @@ function buildFieldEditor(block, idx) {
       `;
     } else if (field.type === 'list-image') {
       const items = Array.isArray(data[field.key]) ? data[field.key] : [];
+      const imgSelectStyle = `background:#18181b;border:1px solid #27272a;color:#e4e4e7;border-radius:6px;padding:3px 5px;font-size:11px;flex:1`;
       wrap.innerHTML = `
         <label class="field-label">${field.label}</label>
         <div class="sublist" data-key="${field.key}" data-type="list-image">
@@ -776,6 +777,21 @@ function buildFieldEditor(block, idx) {
               </button>
               <input type="text" value="${escAttr(v.url || '')}" placeholder="URL de la imagen"/>
               <input type="text" value="${escAttr(v.caption || '')}" placeholder="Pie de foto (opcional)" style="margin-top:4px;"/>
+              <div style="display:flex;gap:6px;margin-top:4px;">
+                <select style="${imgSelectStyle}">
+                  <option value="1" ${(!v.span || v.span==='1') ? 'selected' : ''}>Normal</option>
+                  <option value="2" ${v.span==='2' ? 'selected' : ''}>Doble ancho</option>
+                  <option value="3" ${v.span==='3' ? 'selected' : ''}>Triple</option>
+                </select>
+                <select style="${imgSelectStyle}">
+                  <option value="" ${!v.ratio ? 'selected' : ''}>Hereda galería</option>
+                  <option value="1/1" ${v.ratio==='1/1' ? 'selected' : ''}>Cuadrada (1:1)</option>
+                  <option value="4/3" ${v.ratio==='4/3' ? 'selected' : ''}>Clásica (4:3)</option>
+                  <option value="16/9" ${v.ratio==='16/9' ? 'selected' : ''}>Panorámica (16:9)</option>
+                  <option value="3/4" ${v.ratio==='3/4' ? 'selected' : ''}>Retrato (3:4)</option>
+                  <option value="3/2" ${v.ratio==='3/2' ? 'selected' : ''}>Foto (3:2)</option>
+                </select>
+              </div>
               <label style="display:inline-flex;align-items:center;gap:6px;margin-top:4px;cursor:pointer;font-size:11px;color:#9ca3af">
                 <span class="material-symbols-outlined" style="font-size:14px">upload</span>Subir
                 <input type="file" accept="image/*" class="hidden" onchange="uploadImgSubItem(this)"/>
@@ -815,7 +831,8 @@ function addSubItem(btn, type) {
   } else if (type === 'list-link') {
     div.innerHTML = closeBtn + `<input type="text" placeholder="Texto del link"/><input type="text" placeholder="https://..." style="margin-top:4px;"/>`;
   } else if (type === 'list-image') {
-    div.innerHTML = closeBtn + `<input type="text" placeholder="URL de la imagen"/><input type="text" placeholder="Pie de foto" style="margin-top:4px;"/><label style="display:inline-flex;align-items:center;gap:6px;margin-top:4px;cursor:pointer;font-size:11px;color:#9ca3af"><span class="material-symbols-outlined" style="font-size:14px">upload</span>Subir<input type="file" accept="image/*" class="hidden" onchange="uploadImgSubItem(this)"/></label>`;
+    const ss = `background:#18181b;border:1px solid #27272a;color:#e4e4e7;border-radius:6px;padding:3px 5px;font-size:11px;flex:1`;
+    div.innerHTML = closeBtn + `<input type="text" placeholder="URL de la imagen"/><input type="text" placeholder="Pie de foto" style="margin-top:4px;"/><div style="display:flex;gap:6px;margin-top:4px;"><select style="${ss}"><option value="1" selected>Normal</option><option value="2">Doble ancho</option><option value="3">Triple</option></select><select style="${ss}"><option value="" selected>Hereda galería</option><option value="1/1">Cuadrada (1:1)</option><option value="4/3">Clásica (4:3)</option><option value="16/9">Panorámica (16:9)</option><option value="3/4">Retrato (3:4)</option><option value="3/2">Foto (3:2)</option></select></div><label style="display:inline-flex;align-items:center;gap:6px;margin-top:4px;cursor:pointer;font-size:11px;color:#9ca3af"><span class="material-symbols-outlined" style="font-size:14px">upload</span>Subir<input type="file" accept="image/*" class="hidden" onchange="uploadImgSubItem(this)"/></label>`;
   }
   sublist.insertBefore(div, btn);
 }
@@ -898,7 +915,8 @@ function collectBlockData(block) {
         } else if (type === 'list-link') {
           items.push({ label: inputs[0]?.value || '', url: inputs[1]?.value || '' });
         } else if (type === 'list-image') {
-          items.push({ url: inputs[0]?.value || '', caption: inputs[1]?.value || '' });
+          const sels = item.querySelectorAll('select');
+          items.push({ url: inputs[0]?.value || '', caption: inputs[1]?.value || '', span: sels[0]?.value || '1', ratio: sels[1]?.value || '' });
         }
       });
       data[key] = items;
