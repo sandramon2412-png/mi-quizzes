@@ -169,13 +169,12 @@ const BLOCK_DEFAULTS = {
     columns: '4',
     ratio: '1/1',
     images: [
-      { url: '', caption: '', span: '2', ratio: '4/3' },
-      { url: '', caption: '', span: '1', ratio: '1/1' },
-      { url: '', caption: '', span: '1', ratio: '1/1' },
-      { url: '', caption: '', span: '1', ratio: '1/1' },
-      { url: '', caption: '', span: '1', ratio: '1/1' },
-      { url: '', caption: '', span: '1', ratio: '1/1' },
-      { url: '', caption: '', span: '1', ratio: '1/1' },
+      { url: '', caption: '', span: '2', rowspan: '2', ratio: '4/3' },
+      { url: '', caption: '', span: '1', rowspan: '1', ratio: '1/1' },
+      { url: '', caption: '', span: '1', rowspan: '1', ratio: '1/1' },
+      { url: '', caption: '', span: '1', rowspan: '1', ratio: '1/1' },
+      { url: '', caption: '', span: '1', rowspan: '1', ratio: '1/1' },
+      { url: '', caption: '', span: '1', rowspan: '1', ratio: '1/1' },
     ],
   },
 };
@@ -681,10 +680,19 @@ function _renderGaleria(data, pal) {
   const defaultRatio = data.ratio || '1/1';
   const imgHtml = imgs.map(img => {
     const span = Math.min(parseInt(img.span) || 1, cols);
+    const rowspan = parseInt(img.rowspan) || 1;
     const ratio = img.ratio || defaultRatio;
+    const gridStyle = `grid-column:span ${span}${rowspan > 1 ? `;grid-row:span ${rowspan}` : ''}`;
+    // When rowspan > 1, use height:100% + object-fit:cover instead of aspect-ratio (fills the row area)
+    const imgStyle = rowspan > 1
+      ? `width:100%;height:100%;object-fit:cover;display:block`
+      : `width:100%;aspect-ratio:${ratio};object-fit:cover;display:block`;
+    const placeholderStyle = rowspan > 1
+      ? `width:100%;height:100%;background:rgba(255,255,255,0.05);min-height:200px`
+      : `width:100%;aspect-ratio:${ratio};background:rgba(255,255,255,0.05)`;
     return `
-    <div style="grid-column:span ${span};border-radius:16px;overflow:hidden;box-shadow:0 8px 32px rgba(0,0,0,0.4)">
-      ${img.url ? `<img src="${_e(img.url)}" alt="${_e(img.caption||'')}" style="width:100%;aspect-ratio:${ratio};object-fit:cover;display:block" onerror="this.style.display='none'"/>` : `<div style="width:100%;aspect-ratio:${ratio};background:rgba(255,255,255,0.05)"></div>`}
+    <div style="${gridStyle};border-radius:16px;overflow:hidden;box-shadow:0 8px 32px rgba(0,0,0,0.4)">
+      ${img.url ? `<img src="${_e(img.url)}" alt="${_e(img.caption||'')}" style="${imgStyle}" onerror="this.style.display='none'"/>` : `<div style="${placeholderStyle}"></div>`}
       ${img.caption ? `<p style="font-size:12px;color:rgba(255,255,255,0.4);padding:10px;text-align:center">${_e(img.caption)}</p>` : ''}
     </div>`;
   }).join('');
@@ -694,7 +702,7 @@ function _renderGaleria(data, pal) {
     ${data.title ? `<h2 class="ld-h2" style="text-align:center;margin-bottom:12px">${_e(data.title)}</h2>` : ''}
     ${data.subtitle ? `<p class="ld-body" style="text-align:center;margin-bottom:40px;max-width:640px;margin-left:auto;margin-right:auto">${_e(data.subtitle)}</p>` : ''}
     <div style="margin:0 auto;width:${gw}">
-      <div style="display:grid;grid-template-columns:repeat(${cols},1fr);gap:20px">${imgHtml}</div>
+      <div style="display:grid;grid-template-columns:repeat(${cols},1fr);grid-auto-rows:1fr;gap:16px;align-items:stretch">${imgHtml}</div>
     </div>
   </div>
 </section>`;
