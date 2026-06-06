@@ -1298,6 +1298,81 @@ Sesión enfocada en el landing-builder: fixes de bugs críticos + mejoras de gal
 - ✅ Bloque imagen: opción "natural" que respeta dimensiones originales + square
 - 🟡 Límites ebook: Pro=999, Growth=999 en `app.js → PlanLimits` — REVERTIR a Pro→5, Growth→20 cuando Sandra confirme que el PDF funciona bien
 
-### Pendiente / próxima sesión
-- Verificar en la UI que el collage por imagen funciona correctamente
-- Posibles mejoras de landing-builder: responsive mobile/tablet, tipografía, variedad visual
+---
+
+## BUGS PENDIENTES — Landing Builder (reportados 6 jun 2026)
+
+Sandra reportó 10 problemas al probar el landing-builder. Todos en `landing-builder.html` y `landing-blocks.js`. Ninguno corregido aún.
+
+### BUG 1 — Links del nav llevan a otra pestaña del builder
+**Síntoma**: Al hacer clic en los subtítulos/links del nav en la preview, abre otra pestaña o navega fuera del builder. Si se regresa, va a la home de Luminous.
+**Causa**: El `navGuard` script inyectado en el iframe intercepta los hash links (`#ld-X`) y usa `scrollIntoView`. El problema puede ser que la sección destino no existe en el iframe al momento del clic, haciendo que `document.querySelector(h)` retorne null y el evento propague.
+**Fix sugerido**: En el `navGuard`, si `!t` hacer scroll a `document.body` en lugar de no hacer nada. Adicionalmente, agregar `target="_self"` a todos los links en `_renderNav()`.
+
+### BUG 2 — Agregar bloque queda abajo y no se puede subir
+**Síntoma**: Cuando se agrega un bloque nuevo, queda al final de la lista. Los botones de subir/bajar (flechas) no responden.
+**Causa**: El evento de clic en `.move-up` / `.move-down` hace `return` pero no llama `e.stopPropagation()`, así que el evento burbujea al listener padre del `.block-item` que llama `openBlockEditor(idx)` y aborta el reorder.
+**Fix**: Agregar `e.stopPropagation()` en los handlers de `.move-up` y `.move-down` (líneas ~498-518 de `landing-builder.html`).
+
+### BUG 3 — Sección "Imagen" solo permite una imagen y solo con URL
+**Síntoma**: El bloque `imagen` tiene solo un campo de imagen (URL único). No hay forma de agregar múltiples.
+**Clarificación**: El bloque `galeria` sí permite múltiples imágenes. El bloque `imagen` es por diseño para una foto individual. Pero el campo de upload (subir archivo) no está disponible en `imagen`, solo en `galeria`.
+**Fix sugerido**: Agregar el campo `type:'image'` con soporte de upload en el bloque `imagen`, igual que en `galeria`.
+
+### BUG 4 — Panel derecho no actualiza el texto después de guardar
+**Síntoma**: Se edita un campo en el panel derecho (ej: "vos" → "tu"), se guarda, la landing cambia, pero el campo del panel sigue mostrando "vos".
+**Causa**: `saveActiveBlock()` llama `buildFieldEditor(block, activeBlockIdx)` al final (línea ~1334), que debería reconstruir los campos. Si no funciona, puede ser un problema de orden: `collectBlockData` lee el DOM, `block.data` se actualiza, pero `buildFieldEditor` reconstruye desde `block.data` de manera correcta. Revisar si `buildFieldEditor` realmente se llama con el objeto `block` ya actualizado.
+**Fix**: Verificar el orden en `saveActiveBlock`: `block.data = collectBlockData(block)` → `buildFieldEditor(block, activeBlockIdx)` → `renderPreview()`.
+
+### BUG 5 — Landing tarda ~2 minutos en generarse
+**Síntoma**: Después de completar el formulario y dar "Generar", la landing tarda demasiado.
+**Causa**: `Claude.generateLandingBlocks()` en `app.js` usa `model: 'claude-sonnet-4-6'` con `max_tokens: 8192`. El schema completo de 14 bloques como JSON es muy largo. Con el modelo Sonnet y el contexto grande, puede tardar 60-90 seg + reintentos.
+**Fix sugerido**: Cambiar a un modelo más rápido para la generación inicial, o mostrar un progress indicator más descriptivo mientras espera. También evaluar reducir el schema mandado a la IA.
+
+### BUG 6 — Fondo siempre negro, colores muy repetitivos
+**Síntoma**: Sin importar qué paleta se elige, el fondo de todas las secciones es negro (#09090b). Los colores de la paleta solo afectan botones y texto en gradiente.
+**Causa**: `_baseCss()` tiene `body { background: #09090b }` hardcodeado (línea ~207 de `landing-blocks.js`). La mayoría de secciones (`hero`, `para_quien`, `beneficios`, `modulos`, `bonos`, etc.) no tienen `background` propio — heredan el negro del body. Solo `problema`, `testimonios` y `cta_final` tienen fondos con el color de paleta.
+**Fix sugerido**: Agregar fondos alternativos a secciones clave usando `rgba(pal.from, 0.05-0.08)` para crear separación visual. Ver cómo `_renderTestimonios` ya lo hace con `_hexToRgb(pal.from)`.
+
+### BUG 7 — Sin control de tipografía
+**Síntoma**: No hay opciones para cambiar tipo de letra, tamaño, ni espaciado del texto.
+**Causa**: Toda la tipografía está hardcodeada en `_baseCss()` (`.ld-h1`, `.ld-h2`, `.ld-body`, etc.).
+**Fix sugerido**: Agregar a nivel global (en el formulario del builder) un selector de fuente (`Plus Jakarta Sans`, `Inter`, `Playfair Display`, etc.) que se inyecte como parámetro al `_baseCss()`. No hacer por bloque — hacerlo global para coherencia.
+
+### BUG 8 — En celular y tablet la landing se daña
+**Síntoma**: El layout se rompe en dispositivos móviles.
+**Causa**: Solo hay 2 breakpoints (`900px` y `640px`) en `_baseCss()`. Las imágenes del hero en móvil pueden quedar muy grandes. No hay menú hamburguesa (el nav se oculta pero no hay alternativa móvil).
+**Fix sugerido**:
+- Agregar breakpoint 768px para tablets
+- `.ld-hero-cols` en móvil: imagen después del texto, no antes
+- Imágenes: `max-width: 100%` en todos los tamaños en móvil
+- Grids: asegurar `1fr` en todos en móvil
+
+### BUG 9 — Vista previa dice "landing no existe"
+**Síntoma**: Al dar "Vista previa" aparece el mensaje de error.
+**Causa**: El botón "Ver" (`btn-open-tab`) abre un blob URL con el HTML renderizado — eso SÍ funciona. El problema es diferente: si el usuario accede a `landing-view.html?slug=X` antes de publicar, `DB.landings.getBySlug()` retorna la landing pero la condición `!row.published` hace que muestre el error.
+**Fix sugerido**: En `landing-view.html`, si el usuario es el owner, mostrar la landing aunque no esté publicada (modo preview). O agregar un modo `?preview=true&id=X` que bypass el check de `published`.
+
+### BUG 10 — Chat de IA no hace cambios / los daña
+**Síntoma**: El chat dice que hizo el cambio pero no lo aplica, o lo aplica mal.
+**Causa**: `sendChat()` solo funciona si hay un bloque activo seleccionado (`activeBlockIdx >= 0`). Si no hay bloque seleccionado, responde "Seleccioná un bloque". Si hay bloque, llama `AI.editBlockData()` pero si la IA devuelve JSON parcial o incorrecto, el merge con `{...block.data, ...result}` puede sobrescribir campos buenos.
+**Fix sugerido**:
+- Mostrar en el chat qué bloque está activo y si no hay ninguno, indicarlo claramente antes de que el usuario escriba
+- Al recibir la respuesta de la IA, hacer merge SOLO de los campos que devuelve (no sobrescribir campos que la IA no mencionó)
+- Agregar un "undo" para el último cambio del chat
+
+### Prioridad de corrección sugerida
+1. 🔴 **BUG 2** (move up/down) — una línea: `e.stopPropagation()`
+2. 🔴 **BUG 8** (móvil roto) — crítico porque la mayoría ve en celular
+3. 🔴 **BUG 6** (fondos negros repetitivos) — impacto visual grande
+4. 🟡 **BUG 4** (campo no actualiza) — verificar si es el orden en `saveActiveBlock`
+5. 🟡 **BUG 1** (nav links) — agregar `e.stopPropagation()` y verificar `querySelector`
+6. 🟡 **BUG 9** (vista previa) — bypass `published` check para el owner
+7. 🟡 **BUG 7** (tipografía global) — selector de fuente en el formulario
+8. 🟢 **BUG 3** (upload en imagen) — agregar campo `type:'image'` al bloque imagen
+9. 🟢 **BUG 5** (velocidad) — puede aceptarse si se mejora el UX de espera
+10. 🟢 **BUG 10** (chat) — mejora de UX del chat
+
+### Archivos a tocar en la próxima sesión
+- `landing-blocks.js`: `_baseCss()` (responsive + fondos), secciones con background, `_renderNav()` (target links)
+- `landing-builder.html`: `renderBlocksList()` (stopPropagation), `saveActiveBlock()` (orden), `sendChat()` (UX), `landing-view.html` (preview bypass)
