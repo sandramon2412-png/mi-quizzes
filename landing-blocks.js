@@ -166,10 +166,11 @@ const BLOCK_DEFAULTS = {
     title: 'Galería de imágenes',
     subtitle: '',
     gallery_size: 'full',
-    columns: '3',
+    columns: '4',
     ratio: '1/1',
     images: [
       { url: '', caption: '', span: '2', ratio: '4/3' },
+      { url: '', caption: '', span: '1', ratio: '1/1' },
       { url: '', caption: '', span: '1', ratio: '1/1' },
       { url: '', caption: '', span: '1', ratio: '1/1' },
       { url: '', caption: '', span: '1', ratio: '1/1' },
