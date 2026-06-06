@@ -805,20 +805,24 @@ function buildFieldEditor(block, idx) {
               </button>
               <input type="text" value="${escAttr(v.url || '')}" placeholder="URL de la imagen"/>
               <input type="text" value="${escAttr(v.caption || '')}" placeholder="Pie de foto (opcional)" style="margin-top:4px;"/>
-              <div style="display:flex;gap:6px;margin-top:4px;">
-                <select style="${imgSelectStyle}" onchange="liveUpdateGaleria()">
-                  <option value="1" ${(!v.span || v.span==='1') ? 'selected' : ''}>Normal (1 col)</option>
-                  <option value="2" ${v.span==='2' ? 'selected' : ''}>Doble (2 col)</option>
-                  <option value="3" ${v.span==='3' ? 'selected' : ''}>Triple (3 col)</option>
+              <div style="display:flex;gap:6px;margin-top:4px;flex-wrap:wrap;">
+                <select style="${imgSelectStyle}" onchange="liveUpdateGaleria()" title="Ancho en columnas">
+                  <option value="1" ${(!v.span || v.span==='1') ? 'selected' : ''}>1 col</option>
+                  <option value="2" ${v.span==='2' ? 'selected' : ''}>2 col</option>
+                  <option value="3" ${v.span==='3' ? 'selected' : ''}>3 col</option>
                 </select>
-                <select style="${imgSelectStyle}" onchange="liveUpdateGaleria()">
+                <select style="${imgSelectStyle}" onchange="liveUpdateGaleria()" title="Proporción">
                   <option value="" ${!v.ratio ? 'selected' : ''}>Auto</option>
-                  <option value="1/1" ${v.ratio==='1/1' ? 'selected' : ''}>Cuadrada 1:1</option>
-                  <option value="4/3" ${v.ratio==='4/3' ? 'selected' : ''}>Clásica 4:3</option>
-                  <option value="16/9" ${v.ratio==='16/9' ? 'selected' : ''}>Panorámica 16:9</option>
-                  <option value="3/4" ${v.ratio==='3/4' ? 'selected' : ''}>Retrato 3:4</option>
-                  <option value="9/16" ${v.ratio==='9/16' ? 'selected' : ''}>Vertical 9:16</option>
-                  <option value="3/2" ${v.ratio==='3/2' ? 'selected' : ''}>Foto 3:2</option>
+                  <option value="1/1" ${v.ratio==='1/1' ? 'selected' : ''}>1:1</option>
+                  <option value="4/3" ${v.ratio==='4/3' ? 'selected' : ''}>4:3</option>
+                  <option value="16/9" ${v.ratio==='16/9' ? 'selected' : ''}>16:9</option>
+                  <option value="3/4" ${v.ratio==='3/4' ? 'selected' : ''}>3:4</option>
+                  <option value="9/16" ${v.ratio==='9/16' ? 'selected' : ''}>9:16</option>
+                  <option value="3/2" ${v.ratio==='3/2' ? 'selected' : ''}>3:2</option>
+                </select>
+                <select style="${imgSelectStyle}" onchange="liveUpdateGaleria()" title="Alto en filas">
+                  <option value="1" ${(!v.rowspan || v.rowspan==='1') ? 'selected' : ''}>1 fila</option>
+                  <option value="2" ${v.rowspan==='2' ? 'selected' : ''}>2 filas</option>
                 </select>
               </div>
               <label style="display:inline-flex;align-items:center;gap:6px;margin-top:4px;cursor:pointer;font-size:11px;color:#9ca3af">
@@ -861,7 +865,7 @@ function addSubItem(btn, type) {
     div.innerHTML = closeBtn + `<input type="text" placeholder="Texto del link"/><input type="text" placeholder="https://..." style="margin-top:4px;"/>`;
   } else if (type === 'list-image') {
     const ss = `background:#18181b;border:1px solid #27272a;color:#e4e4e7;border-radius:6px;padding:3px 5px;font-size:11px;flex:1`;
-    div.innerHTML = closeBtn + `<input type="text" placeholder="URL de la imagen"/><input type="text" placeholder="Pie de foto" style="margin-top:4px;"/><div style="display:flex;gap:6px;margin-top:4px;"><select style="${ss}" onchange="liveUpdateGaleria()"><option value="1" selected>Normal (1 col)</option><option value="2">Doble (2 col)</option><option value="3">Triple (3 col)</option></select><select style="${ss}" onchange="liveUpdateGaleria()"><option value="" selected>Auto</option><option value="1/1">Cuadrada 1:1</option><option value="4/3">Clásica 4:3</option><option value="16/9">Panorámica 16:9</option><option value="3/4">Retrato 3:4</option><option value="9/16">Vertical 9:16</option><option value="3/2">Foto 3:2</option></select></div><label style="display:inline-flex;align-items:center;gap:6px;margin-top:4px;cursor:pointer;font-size:11px;color:#9ca3af"><span class="material-symbols-outlined" style="font-size:14px">upload</span>Subir<input type="file" accept="image/*" class="hidden" onchange="uploadImgSubItem(this)"/></label>`;
+    div.innerHTML = closeBtn + `<input type="text" placeholder="URL de la imagen"/><input type="text" placeholder="Pie de foto" style="margin-top:4px;"/><div style="display:flex;gap:6px;margin-top:4px;"><select style="${ss}" onchange="liveUpdateGaleria()"><option value="1" selected>Normal (1 col)</option><option value="2">Doble (2 col)</option><option value="3">Triple (3 col)</option></select><select style="${ss}" onchange="liveUpdateGaleria()"><option value="" selected>Auto</option><option value="1/1">1:1</option><option value="4/3">4:3</option><option value="16/9">16:9</option><option value="3/4">3:4</option><option value="9/16">9:16</option><option value="3/2">3:2</option></select><select style="${ss}" onchange="liveUpdateGaleria()" title="Alto en filas"><option value="1" selected>1 fila</option><option value="2">2 filas</option></select></div><label style="display:inline-flex;align-items:center;gap:6px;margin-top:4px;cursor:pointer;font-size:11px;color:#9ca3af"><span class="material-symbols-outlined" style="font-size:14px">upload</span>Subir<input type="file" accept="image/*" class="hidden" onchange="uploadImgSubItem(this)"/></label>`;
   }
   sublist.insertBefore(div, btn);
 }
@@ -885,7 +889,7 @@ function applyGaleriaPreset(presetId) {
   const n = Math.max(imgs.length, 4);
   const presets = {
     'grid-equal':  { cols: '3', fn: n => Array(n).fill(0).map(() => ({ span:'1', ratio:'1/1' })) },
-    'collage-1':   { cols: '4', fn: n => [{ span:'2', ratio:'4/3' }, { span:'1', ratio:'1/1' }, { span:'1', ratio:'1/1' }, ...Array(Math.max(n-3,3)).fill(0).map(() => ({ span:'1', ratio:'1/1' }))] },
+    'collage-1':   { cols: '4', fn: n => [{ span:'2', rowspan:'2', ratio:'4/3' }, { span:'1', ratio:'1/1' }, { span:'1', ratio:'1/1' }, { span:'1', ratio:'1/1' }, { span:'1', ratio:'1/1' }, ...Array(Math.max(n-5,0)).fill(0).map(() => ({ span:'1', ratio:'1/1' }))] },
     'collage-2':   { cols: '4', fn: n => [{ span:'2', ratio:'4/3' }, { span:'2', ratio:'4/3' }, ...Array(Math.max(n-2,4)).fill(0).map(() => ({ span:'1', ratio:'3/4' }))] },
     'horizontal':  { cols: '2', fn: n => Array(n).fill(0).map(() => ({ span:'1', ratio:'16/9' })) },
     'portrait':    { cols: '4', fn: n => Array(n).fill(0).map(() => ({ span:'1', ratio:'3/4' })) },
@@ -989,7 +993,7 @@ function collectBlockData(block) {
           items.push({ label: inputs[0]?.value || '', url: inputs[1]?.value || '' });
         } else if (type === 'list-image') {
           const sels = item.querySelectorAll('select');
-          items.push({ url: inputs[0]?.value || '', caption: inputs[1]?.value || '', span: sels[0]?.value || '1', ratio: sels[1]?.value || '' });
+          items.push({ url: inputs[0]?.value || '', caption: inputs[1]?.value || '', span: sels[0]?.value || '1', rowspan: sels[2]?.value || '1', ratio: sels[1]?.value || '' });
         }
       });
       data[key] = items;
