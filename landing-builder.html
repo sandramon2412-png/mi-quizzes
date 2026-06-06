@@ -496,6 +496,7 @@ function renderBlocksList() {
 
     item.addEventListener('click', (e) => {
       if (e.target.closest('.move-up')) {
+        e.stopPropagation();
         if (idx > 0) {
           var tmp = landing.blocks[idx - 1];
           landing.blocks[idx - 1] = landing.blocks[idx];
@@ -507,6 +508,7 @@ function renderBlocksList() {
         return;
       }
       if (e.target.closest('.move-down')) {
+        e.stopPropagation();
         if (idx < landing.blocks.length - 1) {
           var tmp2 = landing.blocks[idx + 1];
           landing.blocks[idx + 1] = landing.blocks[idx];
@@ -600,6 +602,32 @@ function buildFieldEditor(block, idx) {
           </label>
         </div>
         ${currentUrl ? `<img src="${escAttr(currentUrl)}" class="w-full rounded-lg mt-2" style="max-height:100px;object-fit:cover;" onerror="this.style.display='none'"/>` : ''}
+      `;
+    } else if (field.type === 'layout-preset') {
+      // Collage layout presets for galeria block
+      const presets = [
+        { id: 'grid-equal', label: 'Grid igual', icon: 'grid_view', desc: '3 columnas, todas iguales',
+          cols: '3', images: n => Array(n).fill(0).map(() => ({ span:'1', ratio:'1/1' })) },
+        { id: 'collage-1', label: '1 grande + pequeñas', icon: 'photo_library', desc: '1 foto doble + 4 normales',
+          cols: '3', images: n => [{ span:'2', ratio:'4/3' }, ...Array(Math.max(n-1,4)).fill(0).map(() => ({ span:'1', ratio:'1/1' }))] },
+        { id: 'collage-2', label: 'Mosaico 4 col', icon: 'dashboard', desc: '2 grandes + 4 pequeñas',
+          cols: '4', images: n => [{ span:'2', ratio:'4/3' }, { span:'2', ratio:'4/3' }, ...Array(Math.max(n-2,4)).fill(0).map(() => ({ span:'1', ratio:'3/4' }))] },
+        { id: 'horizontal', label: 'Panorámicas', icon: 'panorama', desc: '2 columnas, fotos horizontales',
+          cols: '2', images: n => Array(n).fill(0).map(() => ({ span:'1', ratio:'16/9' })) },
+        { id: 'portrait', label: 'Retratos', icon: 'portrait', desc: '4 columnas, fotos verticales',
+          cols: '4', images: n => Array(n).fill(0).map(() => ({ span:'1', ratio:'3/4' })) },
+      ];
+      wrap.innerHTML = `
+        <label class="field-label">${field.label}</label>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:4px">
+          ${presets.map(p => `
+            <button onclick="applyGaleriaPreset('${p.id}')" style="display:flex;flex-direction:column;align-items:flex-start;gap:2px;padding:8px 10px;background:#18181b;border:1px solid #3f3f46;border-radius:8px;cursor:pointer;text-align:left;transition:border-color 0.15s" onmouseover="this.style.borderColor='#6366f1'" onmouseout="this.style.borderColor='#3f3f46'">
+              <span class="material-symbols-outlined" style="font-size:16px;color:#818cf8">${p.icon}</span>
+              <span style="font-size:11px;font-weight:700;color:#e4e4e7">${p.label}</span>
+              <span style="font-size:10px;color:#71717a">${p.desc}</span>
+            </button>
+          `).join('')}
+        </div>
       `;
     } else if (field.type === 'list-simple') {
       // Array of strings
@@ -762,7 +790,7 @@ function buildFieldEditor(block, idx) {
       ).join('');
       wrap.innerHTML = `
         <label class="field-label">${field.label}</label>
-        <select class="field-input" data-key="${field.key}">${opts}</select>
+        <select class="field-input" data-key="${field.key}" onchange="if(activeBlockIdx>=0&&landing){const b=landing.blocks[activeBlockIdx];if(b){b.data=collectBlockData(b);renderPreview();autosave();}}">${opts}</select>
       `;
     } else if (field.type === 'list-image') {
       const items = Array.isArray(data[field.key]) ? data[field.key] : [];
@@ -778,18 +806,18 @@ function buildFieldEditor(block, idx) {
               <input type="text" value="${escAttr(v.url || '')}" placeholder="URL de la imagen"/>
               <input type="text" value="${escAttr(v.caption || '')}" placeholder="Pie de foto (opcional)" style="margin-top:4px;"/>
               <div style="display:flex;gap:6px;margin-top:4px;">
-                <select style="${imgSelectStyle}">
-                  <option value="1" ${(!v.span || v.span==='1') ? 'selected' : ''}>Normal</option>
-                  <option value="2" ${v.span==='2' ? 'selected' : ''}>Doble ancho</option>
-                  <option value="3" ${v.span==='3' ? 'selected' : ''}>Triple</option>
+                <select style="${imgSelectStyle}" onchange="liveUpdateGaleria()">
+                  <option value="1" ${(!v.span || v.span==='1') ? 'selected' : ''}>Normal (1 col)</option>
+                  <option value="2" ${v.span==='2' ? 'selected' : ''}>Doble (2 col)</option>
+                  <option value="3" ${v.span==='3' ? 'selected' : ''}>Triple (3 col)</option>
                 </select>
-                <select style="${imgSelectStyle}">
-                  <option value="" ${!v.ratio ? 'selected' : ''}>Hereda galería</option>
-                  <option value="1/1" ${v.ratio==='1/1' ? 'selected' : ''}>Cuadrada (1:1)</option>
-                  <option value="4/3" ${v.ratio==='4/3' ? 'selected' : ''}>Clásica (4:3)</option>
-                  <option value="16/9" ${v.ratio==='16/9' ? 'selected' : ''}>Panorámica (16:9)</option>
-                  <option value="3/4" ${v.ratio==='3/4' ? 'selected' : ''}>Retrato (3:4)</option>
-                  <option value="3/2" ${v.ratio==='3/2' ? 'selected' : ''}>Foto (3:2)</option>
+                <select style="${imgSelectStyle}" onchange="liveUpdateGaleria()">
+                  <option value="" ${!v.ratio ? 'selected' : ''}>Auto</option>
+                  <option value="1/1" ${v.ratio==='1/1' ? 'selected' : ''}>Cuadrada</option>
+                  <option value="4/3" ${v.ratio==='4/3' ? 'selected' : ''}>Clásica 4:3</option>
+                  <option value="16/9" ${v.ratio==='16/9' ? 'selected' : ''}>Panorámica</option>
+                  <option value="3/4" ${v.ratio==='3/4' ? 'selected' : ''}>Retrato 3:4</option>
+                  <option value="3/2" ${v.ratio==='3/2' ? 'selected' : ''}>Foto 3:2</option>
                 </select>
               </div>
               <label style="display:inline-flex;align-items:center;gap:6px;margin-top:4px;cursor:pointer;font-size:11px;color:#9ca3af">
@@ -832,9 +860,53 @@ function addSubItem(btn, type) {
     div.innerHTML = closeBtn + `<input type="text" placeholder="Texto del link"/><input type="text" placeholder="https://..." style="margin-top:4px;"/>`;
   } else if (type === 'list-image') {
     const ss = `background:#18181b;border:1px solid #27272a;color:#e4e4e7;border-radius:6px;padding:3px 5px;font-size:11px;flex:1`;
-    div.innerHTML = closeBtn + `<input type="text" placeholder="URL de la imagen"/><input type="text" placeholder="Pie de foto" style="margin-top:4px;"/><div style="display:flex;gap:6px;margin-top:4px;"><select style="${ss}"><option value="1" selected>Normal</option><option value="2">Doble ancho</option><option value="3">Triple</option></select><select style="${ss}"><option value="" selected>Hereda galería</option><option value="1/1">Cuadrada (1:1)</option><option value="4/3">Clásica (4:3)</option><option value="16/9">Panorámica (16:9)</option><option value="3/4">Retrato (3:4)</option><option value="3/2">Foto (3:2)</option></select></div><label style="display:inline-flex;align-items:center;gap:6px;margin-top:4px;cursor:pointer;font-size:11px;color:#9ca3af"><span class="material-symbols-outlined" style="font-size:14px">upload</span>Subir<input type="file" accept="image/*" class="hidden" onchange="uploadImgSubItem(this)"/></label>`;
+    div.innerHTML = closeBtn + `<input type="text" placeholder="URL de la imagen"/><input type="text" placeholder="Pie de foto" style="margin-top:4px;"/><div style="display:flex;gap:6px;margin-top:4px;"><select style="${ss}" onchange="liveUpdateGaleria()"><option value="1" selected>Normal (1 col)</option><option value="2">Doble (2 col)</option><option value="3">Triple (3 col)</option></select><select style="${ss}" onchange="liveUpdateGaleria()"><option value="" selected>Auto</option><option value="1/1">Cuadrada</option><option value="4/3">Clásica 4:3</option><option value="16/9">Panorámica</option><option value="3/4">Retrato 3:4</option><option value="3/2">Foto 3:2</option></select></div><label style="display:inline-flex;align-items:center;gap:6px;margin-top:4px;cursor:pointer;font-size:11px;color:#9ca3af"><span class="material-symbols-outlined" style="font-size:14px">upload</span>Subir<input type="file" accept="image/*" class="hidden" onchange="uploadImgSubItem(this)"/></label>`;
   }
   sublist.insertBefore(div, btn);
+}
+
+function liveUpdateGaleria() {
+  if (activeBlockIdx < 0 || !landing) return;
+  const block = landing.blocks[activeBlockIdx];
+  if (!block || block.type !== 'galeria') return;
+  block.data = collectBlockData(block);
+  renderPreview();
+  autosave();
+}
+
+function applyGaleriaPreset(presetId) {
+  if (activeBlockIdx < 0 || !landing) return;
+  const block = landing.blocks[activeBlockIdx];
+  if (!block || block.type !== 'galeria') return;
+  // Collect current data first to preserve URLs and captions
+  block.data = collectBlockData(block);
+  const imgs = Array.isArray(block.data.images) ? block.data.images : [];
+  const n = Math.max(imgs.length, 4);
+  const presets = {
+    'grid-equal':  { cols: '3', fn: n => Array(n).fill(0).map(() => ({ span:'1', ratio:'1/1' })) },
+    'collage-1':   { cols: '3', fn: n => [{ span:'2', ratio:'4/3' }, ...Array(Math.max(n-1,4)).fill(0).map(() => ({ span:'1', ratio:'1/1' }))] },
+    'collage-2':   { cols: '4', fn: n => [{ span:'2', ratio:'4/3' }, { span:'2', ratio:'4/3' }, ...Array(Math.max(n-2,4)).fill(0).map(() => ({ span:'1', ratio:'3/4' }))] },
+    'horizontal':  { cols: '2', fn: n => Array(n).fill(0).map(() => ({ span:'1', ratio:'16/9' })) },
+    'portrait':    { cols: '4', fn: n => Array(n).fill(0).map(() => ({ span:'1', ratio:'3/4' })) },
+  };
+  const p = presets[presetId];
+  if (!p) return;
+  const newSpans = p.fn(n);
+  block.data.columns = p.cols;
+  block.data.images = imgs.map((img, i) => ({
+    ...img,
+    span: newSpans[i]?.span || '1',
+    ratio: newSpans[i]?.ratio || img.ratio || '',
+  }));
+  // Pad if preset has more slots than current images
+  if (newSpans.length > imgs.length) {
+    for (let i = imgs.length; i < newSpans.length; i++) {
+      block.data.images.push({ url:'', caption:'', span: newSpans[i].span, ratio: newSpans[i].ratio });
+    }
+  }
+  renderPreview();
+  buildFieldEditor(block, activeBlockIdx);
+  autosave();
 }
 
 function delSubItem(btn) {

@@ -166,11 +166,15 @@ const BLOCK_DEFAULTS = {
     title: 'Galería de imágenes',
     subtitle: '',
     gallery_size: 'full',
-    columns: 2,
+    columns: '3',
     ratio: '1/1',
     images: [
-      { url: '', caption: '', span: '1', ratio: '' },
-      { url: '', caption: '', span: '1', ratio: '' },
+      { url: '', caption: '', span: '2', ratio: '4/3' },
+      { url: '', caption: '', span: '1', ratio: '1/1' },
+      { url: '', caption: '', span: '1', ratio: '1/1' },
+      { url: '', caption: '', span: '1', ratio: '1/1' },
+      { url: '', caption: '', span: '1', ratio: '1/1' },
+      { url: '', caption: '', span: '1', ratio: '1/1' },
     ],
   },
 };
@@ -883,8 +887,14 @@ const BLOCK_FIELDS = {
         { value: 'small',  label: 'Pequeña (40%)' },
       ]
     },
-    { key: 'columns', label: 'Imágenes por fila (2 o 3)', type: 'text' },
-    { key: 'ratio', label: 'Proporción de cada imagen', type: 'select',
+    { key: 'columns', label: 'Columnas del grid', type: 'select',
+      options: [
+        { value: '2', label: '2 columnas' },
+        { value: '3', label: '3 columnas' },
+        { value: '4', label: '4 columnas' },
+      ]
+    },
+    { key: 'ratio', label: 'Proporción por defecto', type: 'select',
       options: [
         { value: '1/1',  label: 'Cuadrada (1:1)' },
         { value: '4/3',  label: 'Clásica (4:3)' },
@@ -893,7 +903,8 @@ const BLOCK_FIELDS = {
         { value: '3/2',  label: 'Foto (3:2)' },
       ]
     },
-    { key: 'images', label: 'Imágenes (URL + pie de foto)', type: 'list-image' },
+    { key: '_layout_preset', label: 'Preset de collage', type: 'layout-preset' },
+    { key: 'images', label: 'Imágenes (ajustá tamaño y proporción por foto)', type: 'list-image' },
   ],
 };
 
