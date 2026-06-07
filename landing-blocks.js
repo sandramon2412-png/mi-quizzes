@@ -5,22 +5,58 @@
 // PALETTES
 // ──────────────────────────────────────────────────────────
 // LANDING_PALETTES_DEF: array format for the UI (id, name, primary=from, accent=to)
+// bg: fondo del body | surface: fondo de cards | fg: color de texto principal | mode: 'dark'|'light'
 const LANDING_PALETTES_DEF = [
-  { id: 'blue-purple',   name: 'Azul → Púrpura',    primary: '#2E5BFF', accent: '#7c3aed' },
-  { id: 'green-teal',    name: 'Verde → Teal',       primary: '#059669', accent: '#0891b2' },
-  { id: 'orange-rose',   name: 'Naranja → Rosa',     primary: '#ea580c', accent: '#e11d48' },
-  { id: 'gold-amber',    name: 'Dorado → Ámbar',     primary: '#d97706', accent: '#b45309' },
-  { id: 'violet-indigo', name: 'Violeta → Índigo',   primary: '#7c3aed', accent: '#4338ca' },
-  { id: 'rose-fuchsia',  name: 'Rosa → Fucsia',      primary: '#e11d48', accent: '#a21caf' },
-  { id: 'teal-cyan',     name: 'Teal → Cyan',        primary: '#0891b2', accent: '#06b6d4' },
-  { id: 'lime-green',    name: 'Lima → Verde',        primary: '#65a30d', accent: '#059669' },
+  // ── OSCURAS (dark) ──────────────────────────────────────
+  { id: 'blue-purple',    name: 'Azul → Púrpura',      primary: '#2E5BFF', accent: '#7c3aed', bg: '#09090b', surface: 'rgba(255,255,255,0.04)', fg: '#ffffff', mode: 'dark' },
+  { id: 'green-teal',     name: 'Verde → Teal',         primary: '#059669', accent: '#0891b2', bg: '#09090b', surface: 'rgba(255,255,255,0.04)', fg: '#ffffff', mode: 'dark' },
+  { id: 'orange-rose',    name: 'Naranja → Rosa',       primary: '#ea580c', accent: '#e11d48', bg: '#0c0a09', surface: 'rgba(255,255,255,0.04)', fg: '#ffffff', mode: 'dark' },
+  { id: 'gold-amber',     name: 'Dorado → Ámbar',       primary: '#d97706', accent: '#b45309', bg: '#0c0a00', surface: 'rgba(255,255,255,0.04)', fg: '#ffffff', mode: 'dark' },
+  { id: 'violet-indigo',  name: 'Violeta → Índigo',     primary: '#7c3aed', accent: '#4338ca', bg: '#09090b', surface: 'rgba(255,255,255,0.04)', fg: '#ffffff', mode: 'dark' },
+  { id: 'rose-fuchsia',   name: 'Rosa → Fucsia',        primary: '#e11d48', accent: '#a21caf', bg: '#0d0509', surface: 'rgba(255,255,255,0.04)', fg: '#ffffff', mode: 'dark' },
+  { id: 'teal-cyan',      name: 'Teal → Cyan',          primary: '#0891b2', accent: '#06b6d4', bg: '#030d12', surface: 'rgba(255,255,255,0.04)', fg: '#ffffff', mode: 'dark' },
+  { id: 'midnight-navy',  name: 'Medianoche → Marino',  primary: '#3b82f6', accent: '#1e40af', bg: '#05080f', surface: 'rgba(255,255,255,0.04)', fg: '#ffffff', mode: 'dark' },
+  { id: 'emerald-dark',   name: 'Esmeralda oscuro',     primary: '#10b981', accent: '#065f46', bg: '#030d08', surface: 'rgba(255,255,255,0.04)', fg: '#ffffff', mode: 'dark' },
+  { id: 'charcoal-gold',  name: 'Carbón → Dorado',      primary: '#f59e0b', accent: '#d97706', bg: '#111110', surface: 'rgba(255,255,255,0.05)', fg: '#ffffff', mode: 'dark' },
+
+  // ── TIERRA Y CÁLIDAS (light/warm) ───────────────────────
+  { id: 'tierra-cafe',    name: 'Tierra → Café',        primary: '#92400e', accent: '#78350f', bg: '#fdf6ee', surface: 'rgba(0,0,0,0.04)',     fg: '#1c0a00', mode: 'light' },
+  { id: 'nude-rose',      name: 'Nude → Rosa palo',     primary: '#c2856d', accent: '#9d5c4a', bg: '#fdf4f0', surface: 'rgba(0,0,0,0.04)',     fg: '#2c1810', mode: 'light' },
+  { id: 'crema-dorado',   name: 'Crema → Dorado',       primary: '#b5832a', accent: '#8a6120', bg: '#fffbf0', surface: 'rgba(0,0,0,0.04)',     fg: '#1a1000', mode: 'light' },
+  { id: 'terracota',      name: 'Terracota → Coral',    primary: '#c2533a', accent: '#9b3a28', bg: '#fef3ee', surface: 'rgba(0,0,0,0.04)',     fg: '#1a0800', mode: 'light' },
+  { id: 'madera-sage',    name: 'Madera → Sage',        primary: '#7c6f5b', accent: '#6b8f71', bg: '#f9f6f2', surface: 'rgba(0,0,0,0.04)',     fg: '#1c1a16', mode: 'light' },
+  { id: 'arena-tostada',  name: 'Arena → Tostado',      primary: '#a0845c', accent: '#7d6344', bg: '#faf7f2', surface: 'rgba(0,0,0,0.04)',     fg: '#1c1508', mode: 'light' },
+
+  // ── SUAVES Y PASTELES (light/soft) ──────────────────────
+  { id: 'lavanda-lila',   name: 'Lavanda → Lila',       primary: '#7c5cbf', accent: '#9d7ce0', bg: '#faf8ff', surface: 'rgba(0,0,0,0.04)',     fg: '#1a0f2e', mode: 'light' },
+  { id: 'sage-verde',     name: 'Sage → Verde suave',   primary: '#5a8f6a', accent: '#3d6e50', bg: '#f5faf6', surface: 'rgba(0,0,0,0.04)',     fg: '#0f2018', mode: 'light' },
+  { id: 'dusty-rose',     name: 'Rosa polvo → Malva',   primary: '#b06080', accent: '#8a4060', bg: '#fff8f9', surface: 'rgba(0,0,0,0.04)',     fg: '#2a0a18', mode: 'light' },
+  { id: 'azul-sereno',    name: 'Azul sereno → Cielo',  primary: '#3a78b5', accent: '#2563a0', bg: '#f5f9ff', surface: 'rgba(0,0,0,0.04)',     fg: '#0a1a30', mode: 'light' },
+  { id: 'menta-aqua',     name: 'Menta → Aqua',         primary: '#2a9e8f', accent: '#1e7b6e', bg: '#f2faf9', surface: 'rgba(0,0,0,0.04)',     fg: '#082820', mode: 'light' },
+  { id: 'blanco-clasico', name: 'Blanco clásico',        primary: '#1d2b3a', accent: '#3b5268', bg: '#ffffff', surface: 'rgba(0,0,0,0.04)',     fg: '#0d1520', mode: 'light' },
+  { id: 'gris-perla',     name: 'Gris perla → Plata',   primary: '#4a5568', accent: '#2d3748', bg: '#f8f9fa', surface: 'rgba(0,0,0,0.04)',     fg: '#1a202c', mode: 'light' },
+  { id: 'chocolate-miel', name: 'Chocolate → Miel',     primary: '#7b3f00', accent: '#c47f17', bg: '#fdf8f0', surface: 'rgba(0,0,0,0.04)',     fg: '#1a0a00', mode: 'light' },
 ];
 
-// Internal palette lookup by id (from, to)
+// Internal palette lookup by id (from, to, bg, fg, mode)
 function _palById(id) {
   const p = LANDING_PALETTES_DEF.find(x => x.id === id) || LANDING_PALETTES_DEF[0];
-  return { from: p.primary, to: p.accent };
+  return {
+    from:    p.primary,
+    to:      p.accent,
+    bg:      p.bg      || '#09090b',
+    surface: p.surface || 'rgba(255,255,255,0.04)',
+    fg:      p.fg      || '#ffffff',
+    mode:    p.mode    || 'dark',
+  };
 }
+
+// Derive text color helpers based on mode
+function _fgMain(pal)  { return pal.fg || '#ffffff'; }
+function _fgMuted(pal) { return pal.mode === 'light' ? 'rgba(0,0,0,0.55)' : 'rgba(255,255,255,0.65)'; }
+function _fgDim(pal)   { return pal.mode === 'light' ? 'rgba(0,0,0,0.35)' : 'rgba(255,255,255,0.4)'; }
+function _cardBg(pal)  { return pal.surface || 'rgba(255,255,255,0.04)'; }
+function _borderCol(pal){ return pal.mode === 'light' ? 'rgba(0,0,0,0.1)' : 'rgba(255,255,255,0.08)'; }
 
 // ──────────────────────────────────────────────────────────
 // BLOCK SCHEMAS (empty templates for AI to fill)
@@ -205,10 +241,20 @@ function _icon(name, size = 24, color = 'inherit') {
 // BASE CSS for rendered landings (no Tailwind dependency)
 // ──────────────────────────────────────────────────────────
 function _baseCss(pal) {
+  const isLight = pal.mode === 'light';
+  const bg      = pal.bg      || (isLight ? '#ffffff' : '#09090b');
+  const fg      = pal.fg      || (isLight ? '#111111' : '#ffffff');
+  const muted   = _fgMuted(pal);
+  const dim     = _fgDim(pal);
+  const card    = _cardBg(pal);
+  const border  = _borderCol(pal);
+  const cardHov = isLight ? 'rgba(0,0,0,0.07)' : 'rgba(255,255,255,0.06)';
+  const navBg   = isLight ? 'rgba(255,255,255,0.92)' : 'rgba(9,9,11,0.88)';
+  const darkCard = isLight ? 'rgba(0,0,0,0.06)' : '#111113';
   return `
 *{box-sizing:border-box;margin:0;padding:0}
 html{scroll-behavior:smooth;font-size:16px}
-body{font-family:'Plus Jakarta Sans',system-ui,sans-serif;background:#09090b;color:#fff;overflow-x:hidden;-webkit-font-smoothing:antialiased}
+body{font-family:'Plus Jakarta Sans',system-ui,sans-serif;background:${bg};color:${fg};overflow-x:hidden;-webkit-font-smoothing:antialiased}
 a{text-decoration:none;color:inherit}
 img{max-width:100%;height:auto;display:block;border-radius:12px}
 .material-symbols-outlined{font-family:'Material Symbols Outlined';font-variation-settings:'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 24;font-style:normal;line-height:1;letter-spacing:normal;text-transform:none;white-space:nowrap;word-wrap:normal;direction:ltr;-webkit-font-smoothing:antialiased}
@@ -227,22 +273,25 @@ img{max-width:100%;height:auto;display:block;border-radius:12px}
 .ld-h1{font-size:clamp(38px,5.5vw,76px);font-weight:800;line-height:1.06;letter-spacing:-0.025em}
 .ld-h2{font-size:clamp(30px,3.8vw,56px);font-weight:800;line-height:1.1;letter-spacing:-0.02em}
 .ld-h3{font-size:clamp(20px,2.2vw,30px);font-weight:700;line-height:1.2;letter-spacing:-0.01em}
-.ld-body{font-size:18px;line-height:1.75;color:rgba(255,255,255,0.68)}
-.ld-small{font-size:13px;color:rgba(255,255,255,0.45);letter-spacing:0.01em}
-.ld-label{font-size:11px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:rgba(255,255,255,0.5)}
-.ld-section-tag{display:inline-flex;align-items:center;gap:8px;padding:8px 18px;border-radius:999px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);font-size:13px;font-weight:600;margin-bottom:24px}
+.ld-body{font-size:18px;line-height:1.75;color:${muted}}
+.ld-small{font-size:13px;color:${dim};letter-spacing:0.01em}
+.ld-label{font-size:11px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:${dim}}
+.ld-section-tag{display:inline-flex;align-items:center;gap:8px;padding:8px 18px;border-radius:999px;background:${card};border:1px solid ${border};font-size:13px;font-weight:600;margin-bottom:24px}
 
 /* Cards */
-.ld-card{background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:20px;padding:28px;transition:background 0.2s,border-color 0.2s}
-.ld-card:hover{background:rgba(255,255,255,0.06);border-color:rgba(255,255,255,0.14)}
-.ld-card-dark{background:#111113;border:1px solid rgba(255,255,255,0.07);border-radius:20px;padding:28px}
+.ld-card{background:${card};border:1px solid ${border};border-radius:20px;padding:28px;transition:background 0.2s,border-color 0.2s}
+.ld-card:hover{background:${cardHov};border-color:${border}}
+.ld-card-dark{background:${darkCard};border:1px solid ${border};border-radius:20px;padding:28px}
 
 /* Buttons */
-.ld-btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;padding:18px 36px;border-radius:14px;font-weight:700;font-size:17px;cursor:pointer;transition:opacity 0.2s,transform 0.15s,box-shadow 0.2s;border:none;color:#fff;letter-spacing:-0.01em;${_gradBg(pal)};box-shadow:0 4px 24px rgba(0,0,0,0.4)}
-.ld-btn:hover{opacity:0.92;transform:translateY(-2px);box-shadow:0 8px 32px rgba(0,0,0,0.5)}
+.ld-btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;padding:18px 36px;border-radius:14px;font-weight:700;font-size:17px;cursor:pointer;transition:opacity 0.2s,transform 0.15s,box-shadow 0.2s;border:none;color:#fff;letter-spacing:-0.01em;${_gradBg(pal)};box-shadow:0 4px 24px rgba(0,0,0,0.2)}
+.ld-btn:hover{opacity:0.92;transform:translateY(-2px);box-shadow:0 8px 32px rgba(0,0,0,0.3)}
 .ld-btn-lg{font-size:19px;padding:20px 44px;border-radius:16px}
-.ld-btn-outline{background:rgba(255,255,255,0.06);border:1.5px solid rgba(255,255,255,0.18);color:rgba(255,255,255,0.85);box-shadow:none}
-.ld-btn-outline:hover{border-color:rgba(255,255,255,0.4);background:rgba(255,255,255,0.1)}
+.ld-btn-outline{background:${card};border:1.5px solid ${border};color:${fg};box-shadow:none}
+.ld-btn-outline:hover{border-color:${_fgMuted(pal)};background:${cardHov}}
+
+/* Nav */
+#ld-nav{background:${navBg}}
 
 /* Grids */
 .ld-g2{display:grid;grid-template-columns:repeat(2,1fr);gap:20px}
@@ -253,15 +302,15 @@ img{max-width:100%;height:auto;display:block;border-radius:12px}
 .ld-center{text-align:center;display:flex;flex-direction:column;align-items:center}
 
 /* Divider */
-.ld-hr{height:1px;background:rgba(255,255,255,0.07);margin:0 28px}
+.ld-hr{height:1px;background:${border};margin:0 28px}
 
 /* FAQ */
-details.ld-faq{border:1px solid rgba(255,255,255,0.08);border-radius:14px;overflow:hidden;margin-bottom:10px}
+details.ld-faq{border:1px solid ${border};border-radius:14px;overflow:hidden;margin-bottom:10px}
 details.ld-faq summary{padding:20px 24px;font-weight:700;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:space-between;list-style:none;user-select:none}
 details.ld-faq summary::-webkit-details-marker{display:none}
 details.ld-faq summary::after{content:'▾';font-size:18px;opacity:0.5;transition:transform 0.2s}
 details.ld-faq[open] summary::after{transform:rotate(180deg)}
-details.ld-faq .faq-body{padding:0 24px 20px;color:rgba(255,255,255,0.7);font-size:15px;line-height:1.75}
+details.ld-faq .faq-body{padding:0 24px 20px;color:${muted};font-size:15px;line-height:1.75}
 
 /* Animations */
 @keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:none}}
@@ -273,11 +322,11 @@ details.ld-faq .faq-body{padding:0 24px 20px;color:rgba(255,255,255,0.7);font-si
 
 /* Stack table */
 .ld-table{width:100%;border-collapse:separate;border-spacing:0}
-.ld-table tr{border-bottom:1px solid rgba(255,255,255,0.06)}
+.ld-table tr{border-bottom:1px solid ${border}}
 .ld-table td{padding:14px 0;font-size:15px}
-.ld-table .ld-table-name{color:rgba(255,255,255,0.75)}
-.ld-table .ld-table-val{text-align:right;font-weight:600;text-decoration:line-through;color:rgba(255,255,255,0.35);font-size:14px}
-.ld-table-total{border-top:2px solid rgba(255,255,255,0.12)!important;font-weight:800;font-size:18px}
+.ld-table .ld-table-name{color:${muted}}
+.ld-table .ld-table-val{text-align:right;font-weight:600;text-decoration:line-through;color:${dim};font-size:14px}
+.ld-table-total{border-top:2px solid ${border}!important;font-weight:800;font-size:18px}
 
 /* Metrics grid (responsive via CSS var) */
 .ld-metrics-grid{display:grid;gap:16px;grid-template-columns:repeat(var(--mcols,3),1fr)}
@@ -328,23 +377,25 @@ function _renderNav(data, pal) {
     return '#ld-' + (m[s] || s.replace(/\s+/g,'-'));
   }
   const links = _arr(data.links).map(l =>
-    `<a href="${_navAnchor(l)}" style="font-size:14px;font-weight:600;color:rgba(255,255,255,0.65);transition:color 0.2s" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,0.65)'">${_e(l)}</a>`
+    `<a href="${_navAnchor(l)}" style="font-size:14px;font-weight:600;color:${_fgMuted(pal)};transition:color 0.2s" onmouseover="this.style.color='${_fgMain(pal)}'" onmouseout="this.style.color='${_fgMuted(pal)}'">${_e(l)}</a>`
   ).join('');
+  const hamLineColor = _fgMain(pal);
+  const mobBg = pal.mode === 'light' ? (pal.bg || '#ffffff') : 'rgba(9,9,11,0.97)';
   return `
-<nav id="ld-nav" style="position:sticky;top:0;z-index:100;background:rgba(9,9,11,0.88);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-bottom:1px solid rgba(255,255,255,0.07)">
+<nav id="ld-nav" style="position:sticky;top:0;z-index:100;backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-bottom:1px solid ${_borderCol(pal)}">
   <div class="ld-inner" style="height:64px;display:flex;align-items:center;gap:32px">
     <div style="font-weight:800;font-size:19px;white-space:nowrap;${_gradText(pal)}">${_e(data.logo || 'Mi Brand')}</div>
     <div class="ld-nav-links" style="flex:1;display:flex;gap:28px;justify-content:center">${links}</div>
-    <button id="ld-nav-ham" onclick="var m=document.getElementById('ld-nav-mobile');m.style.display=m.style.display==='flex'?'none':'flex'" style="display:none;flex-direction:column;justify-content:center;gap:5px;width:36px;height:36px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);border-radius:8px;cursor:pointer;padding:6px;margin-left:auto">
-      <div style="height:2px;background:#fff;border-radius:2px"></div>
-      <div style="height:2px;background:#fff;border-radius:2px"></div>
-      <div style="height:2px;background:#fff;border-radius:2px"></div>
+    <button id="ld-nav-ham" onclick="var m=document.getElementById('ld-nav-mobile');m.style.display=m.style.display==='flex'?'none':'flex'" style="display:none;flex-direction:column;justify-content:center;gap:5px;width:36px;height:36px;background:${_cardBg(pal)};border:1px solid ${_borderCol(pal)};border-radius:8px;cursor:pointer;padding:6px;margin-left:auto">
+      <div style="height:2px;background:${hamLineColor};border-radius:2px"></div>
+      <div style="height:2px;background:${hamLineColor};border-radius:2px"></div>
+      <div style="height:2px;background:${hamLineColor};border-radius:2px"></div>
     </button>
     <a href="${_e(data.cta_href||'#ld-cta_final')}" class="ld-btn" style="padding:10px 22px;font-size:14px;border-radius:10px;box-shadow:none;${_gradBg(pal)}">${_e(data.cta_text||'Comenzar')}</a>
   </div>
 </nav>
-<div id="ld-nav-mobile" style="display:none;flex-direction:column;gap:0;background:rgba(9,9,11,0.97);border-bottom:1px solid rgba(255,255,255,0.08);padding:8px 0;position:sticky;top:64px;z-index:99">
-  ${_arr(data.links).map(l => `<a href="${_navAnchor(l)}" onclick="document.getElementById('ld-nav-mobile').style.display='none'" style="display:block;padding:14px 24px;font-size:15px;font-weight:600;color:rgba(255,255,255,0.8);border-bottom:1px solid rgba(255,255,255,0.05)">${_e(l)}</a>`).join('')}
+<div id="ld-nav-mobile" style="display:none;flex-direction:column;gap:0;background:${mobBg};border-bottom:1px solid ${_borderCol(pal)};padding:8px 0;position:sticky;top:64px;z-index:99">
+  ${_arr(data.links).map(l => `<a href="${_navAnchor(l)}" onclick="document.getElementById('ld-nav-mobile').style.display='none'" style="display:block;padding:14px 24px;font-size:15px;font-weight:600;color:${_fgMuted(pal)};border-bottom:1px solid ${_borderCol(pal)}">${_e(l)}</a>`).join('')}
   <div style="padding:12px 16px"><a href="${_e(data.cta_href||'#ld-cta_final')}" class="ld-btn" style="width:100%;justify-content:center;${_gradBg(pal)}">${_e(data.cta_text||'Comenzar')}</a></div>
 </div>`;
 }
@@ -374,7 +425,7 @@ function _renderHero(data, pal) {
         <div style="display:flex">
           ${[0,1,2,3].map(i=>`<div style="width:32px;height:32px;border-radius:50%;${_gradBg(pal)};border:2px solid #09090b;margin-left:${i?-8:0}px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700">${String.fromCharCode(65+i)}</div>`).join('')}
         </div>
-        <span style="font-size:13px;color:rgba(255,255,255,0.65)"><strong style="color:#fff">${_e(data.social_proof_count)}</strong> ${_e(data.social_proof_label)}</span>
+        <span style="font-size:13px;color:${_fgMuted(pal)}"><strong style="color:#fff">${_e(data.social_proof_count)}</strong> ${_e(data.social_proof_label)}</span>
        </div>`
     : '';
   return `
@@ -399,11 +450,11 @@ function _renderHero(data, pal) {
 
 function _renderParaQuien(data, pal) {
   const forItems = _arr(data.for_items).filter(Boolean).map(t =>
-    `<li style="display:flex;gap:12px;align-items:flex-start;padding:12px 0;border-bottom:1px solid rgba(255,255,255,0.06);font-size:15px;color:rgba(255,255,255,0.8)">
+    `<li style="display:flex;gap:12px;align-items:flex-start;padding:12px 0;border-bottom:1px solid rgba(255,255,255,0.06);font-size:15px;color:${_fgMuted(pal)}">
       <span style="${_gradText(pal)};flex-shrink:0">${_icon('check_circle',20)}</span> ${_e(t)}
      </li>`).join('');
   const notForItems = _arr(data.not_for_items).filter(Boolean).map(t =>
-    `<li style="display:flex;gap:12px;align-items:flex-start;padding:12px 0;border-bottom:1px solid rgba(255,255,255,0.06);font-size:15px;color:rgba(255,255,255,0.6)">
+    `<li style="display:flex;gap:12px;align-items:flex-start;padding:12px 0;border-bottom:1px solid rgba(255,255,255,0.06);font-size:15px;color:${_fgMuted(pal)}">
       <span style="color:#ef4444;flex-shrink:0">${_icon('cancel',20)}</span> ${_e(t)}
      </li>`).join('');
   return `
@@ -415,7 +466,7 @@ function _renderParaQuien(data, pal) {
         <ul style="list-style:none">${forItems}</ul>
       </div>
       <div class="ld-card" style="background:rgba(239,68,68,0.04);border-color:rgba(239,68,68,0.15)">
-        <h3 class="ld-h3" style="margin-bottom:20px;color:rgba(255,255,255,0.65)">${_e(data.not_for_headline||'NO es para vos si…')}</h3>
+        <h3 class="ld-h3" style="margin-bottom:20px;color:${_fgMuted(pal)}">${_e(data.not_for_headline||'NO es para vos si…')}</h3>
         <ul style="list-style:none">${notForItems}</ul>
       </div>
     </div>
@@ -429,7 +480,7 @@ function _renderProblema(data, pal) {
       <div style="width:44px;height:44px;border-radius:12px;background:rgba(239,68,68,0.12);display:flex;align-items:center;justify-content:center;flex-shrink:0">
         ${_icon(item.icon||'sentiment_dissatisfied', 22, '#f87171')}
       </div>
-      <p style="font-size:15px;line-height:1.65;color:rgba(255,255,255,0.78);padding-top:10px">${_e(item.text)}</p>
+      <p style="font-size:15px;line-height:1.65;color:${_fgMuted(pal)};padding-top:10px">${_e(item.text)}</p>
      </div>`).join('');
   return `
 <section id="ld-problema" class="ld-section" style="background:linear-gradient(to bottom,transparent,rgba(239,68,68,0.04) 30%,rgba(239,68,68,0.04) 70%,transparent)">
@@ -447,7 +498,7 @@ function _renderMetricas(data, pal) {
   const items = _arr(data.items).filter(i=>i&&i.value).map((item, idx) =>
     `<div class="ld-card ld-center" style="padding:40px 24px">
       <div class="ld-metric-val ld-h1" style="${_gradText(pal)};animation-delay:${idx*0.1}s">${_e(item.value)}</div>
-      <div style="margin-top:10px;font-size:15px;font-weight:600;color:rgba(255,255,255,0.55);text-align:center">${_e(item.label)}</div>
+      <div style="margin-top:10px;font-size:15px;font-weight:600;color:${_fgDim(pal)};text-align:center">${_e(item.label)}</div>
      </div>`).join('');
   const cols = Math.min(4, _arr(data.items).filter(i=>i&&i.value).length);
   return `
@@ -467,7 +518,7 @@ function _renderBeneficios(data, pal) {
       </div>
       <div>
         <h3 style="font-size:17px;font-weight:700;margin-bottom:8px">${_e(item.title||item.text)}</h3>
-        ${item.description ? `<p style="font-size:14px;line-height:1.65;color:rgba(255,255,255,0.62)">${_e(item.description)}</p>` : ''}
+        ${item.description ? `<p style="font-size:14px;line-height:1.65;color:${_fgMuted(pal)}">${_e(item.description)}</p>` : ''}
       </div>
      </div>`).join('');
   return `
@@ -488,7 +539,7 @@ function _renderModulos(data, pal) {
       <div style="font-size:40px;font-weight:800;${_gradText(pal)};flex-shrink:0;line-height:1;padding-top:2px">${_e(item.number||String(idx+1).padStart(2,'0'))}</div>
       <div style="min-width:0">
         <h3 style="font-size:18px;font-weight:700;margin-bottom:8px">${_e(item.title)}</h3>
-        <p style="font-size:14px;line-height:1.65;color:rgba(255,255,255,0.6);margin-bottom:14px">${_e(item.description)}</p>
+        <p style="font-size:14px;line-height:1.65;color:${_fgMuted(pal)};margin-bottom:14px">${_e(item.description)}</p>
         ${_arr(item.chips).filter(Boolean).length ? `<div style="display:flex;flex-wrap:wrap;gap:6px">${_arr(item.chips).filter(Boolean).map(c=>`<span style="padding:4px 10px;border-radius:6px;background:rgba(255,255,255,0.07);font-size:11px;font-weight:600">${_e(c)}</span>`).join('')}</div>` : ''}
       </div>
      </div>`).join('');
@@ -510,12 +561,12 @@ function _renderTestimonios(data, pal) {
     return `
     <div class="ld-card" style="display:flex;flex-direction:column;gap:16px">
       ${item.result ? `<div style="padding:8px 14px;border-radius:8px;${_gradBg(pal)};font-size:13px;font-weight:700;display:inline-block;align-self:flex-start">${_e(item.result)}</div>` : ''}
-      <p style="font-size:15px;line-height:1.75;color:rgba(255,255,255,0.8);flex:1;font-style:italic">"${_e(item.text)}"</p>
+      <p style="font-size:15px;line-height:1.75;color:${_fgMuted(pal)};flex:1;font-style:italic">"${_e(item.text)}"</p>
       <div style="display:flex;align-items:center;gap:12px;padding-top:8px;border-top:1px solid rgba(255,255,255,0.07)">
         <div style="width:40px;height:40px;border-radius:50%;${_gradBg(pal)};display:flex;align-items:center;justify-content:center;font-weight:800;font-size:14px;flex-shrink:0">${_e(initials)}</div>
         <div>
           <div style="font-weight:700;font-size:14px">${_e(item.name)}</div>
-          ${item.role ? `<div style="font-size:12px;color:rgba(255,255,255,0.45)">${_e(item.role)}</div>` : ''}
+          ${item.role ? `<div style="font-size:12px;color:${_fgDim(pal)}">${_e(item.role)}</div>` : ''}
         </div>
       </div>
      </div>`;
@@ -542,8 +593,8 @@ function _renderBonos(data, pal) {
           <h3 style="font-size:16px;font-weight:700;flex:1">${_e(item.name||item.title)}</h3>
           <span style="padding:4px 10px;border-radius:6px;${_gradBg(pal)};font-size:11px;font-weight:700;flex-shrink:0">${_e(item.badge||'GRATIS')}</span>
         </div>
-        <p style="font-size:14px;line-height:1.6;color:rgba(255,255,255,0.6);margin-bottom:8px">${_e(item.description||item.desc||'')}</p>
-        ${item.value ? `<p style="font-size:13px;color:rgba(255,255,255,0.35)">Valor: <span style="text-decoration:line-through">${_e(item.value)}</span></p>` : ''}
+        <p style="font-size:14px;line-height:1.6;color:${_fgMuted(pal)};margin-bottom:8px">${_e(item.description||item.desc||'')}</p>
+        ${item.value ? `<p style="font-size:13px;color:${_fgDim(pal)}">Valor: <span style="text-decoration:line-through">${_e(item.value)}</span></p>` : ''}
       </div>
       <div style="position:absolute;top:-20px;right:-20px;width:80px;height:80px;border-radius:50%;${_gradBg(pal)};opacity:0.08"></div>
      </div>`).join('');
@@ -572,8 +623,8 @@ function _renderStack(data, pal) {
       <table class="ld-table"><tbody>${rows}</tbody></table>
       <div style="margin-top:24px;padding-top:20px;border-top:2px solid rgba(255,255,255,0.1)">
         <div style="display:flex;justify-content:space-between;align-items:center">
-          <span style="font-size:15px;color:rgba(255,255,255,0.6)">Valor total</span>
-          <span style="font-size:15px;text-decoration:line-through;color:rgba(255,255,255,0.35)">${_e(data.total_value||'')}</span>
+          <span style="font-size:15px;color:${_fgMuted(pal)}">Valor total</span>
+          <span style="font-size:15px;text-decoration:line-through;color:${_fgDim(pal)}">${_e(data.total_value||'')}</span>
         </div>
         <div style="display:flex;justify-content:space-between;align-items:center;margin-top:16px">
           <span style="font-size:19px;font-weight:700">Tu inversión hoy</span>
@@ -595,7 +646,7 @@ function _renderGarantia(data, pal) {
         ${_icon('verified_user', 40, '#4ade80')}
       </div>
       <div style="font-size:64px;font-weight:800;${_gradText(pal)};line-height:1;margin-bottom:4px">${_e(data.days||'30')}</div>
-      <div style="font-size:14px;font-weight:700;color:rgba(255,255,255,0.5);letter-spacing:0.08em;text-transform:uppercase;margin-bottom:24px">días de garantía</div>
+      <div style="font-size:14px;font-weight:700;color:${_fgDim(pal)};letter-spacing:0.08em;text-transform:uppercase;margin-bottom:24px">días de garantía</div>
       <h2 class="ld-h3" style="margin-bottom:16px">${_e(data.headline||'Garantía total sin preguntas')}</h2>
       <p class="ld-body" style="max-width:500px;text-align:center">${_e(data.text)}</p>
     </div>
@@ -628,7 +679,7 @@ function _renderCtaFinal(data, pal) {
     <h2 class="ld-h2" style="margin-bottom:16px;max-width:720px">${_e(data.headline)}</h2>
     ${data.subheadline ? `<p class="ld-body" style="margin-bottom:32px;max-width:560px">${_e(data.subheadline)}</p>` : ''}
     <div style="display:flex;flex-direction:column;align-items:center;gap:12px;margin-bottom:20px">
-      ${data.original_price ? `<p style="font-size:15px;text-decoration:line-through;color:rgba(255,255,255,0.35)">Antes: ${_e(data.original_price)}</p>` : ''}
+      ${data.original_price ? `<p style="font-size:15px;text-decoration:line-through;color:${_fgDim(pal)}">Antes: ${_e(data.original_price)}</p>` : ''}
       ${data.price ? `<div class="ld-h2" style="${_gradText(pal)}">${_e(data.price)}</div>` : ''}
     </div>
     <a href="${_e(data.cta_href||'#')}" class="ld-btn ld-btn-lg" style="width:auto">${_icon('bolt',22,'#fff')} ${_e(data.cta_text||'Comenzar ahora')}</a>
@@ -639,7 +690,7 @@ function _renderCtaFinal(data, pal) {
 
 function _renderFooter(data, pal) {
   const links = _arr(data.links).filter(l=>l&&(l.text||l.href)).map(l =>
-    `<a href="${_e(l.href||'#')}" style="font-size:13px;color:rgba(255,255,255,0.4);transition:color 0.2s" onmouseover="this.style.color='rgba(255,255,255,0.7)'" onmouseout="this.style.color='rgba(255,255,255,0.4)'">${_e(l.text)}</a>`
+    `<a href="${_e(l.href||'#')}" style="font-size:13px;color:${_fgDim(pal)};transition:color 0.2s" onmouseover="this.style.color='rgba(255,255,255,0.7)'" onmouseout="this.style.color='rgba(255,255,255,0.4)'">${_e(l.text)}</a>`
   ).join('');
   return `
 <footer id="ld-footer" style="border-top:1px solid rgba(255,255,255,0.07);padding:48px 0 32px">
@@ -647,7 +698,7 @@ function _renderFooter(data, pal) {
     <div style="display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:20px;margin-bottom:24px">
       <div>
         <div style="font-weight:800;font-size:17px;${_gradText(pal)};margin-bottom:4px">${_e(data.brand||'Mi Brand')}</div>
-        ${data.tagline ? `<p style="font-size:13px;color:rgba(255,255,255,0.4)">${_e(data.tagline)}</p>` : ''}
+        ${data.tagline ? `<p style="font-size:13px;color:${_fgDim(pal)}">${_e(data.tagline)}</p>` : ''}
       </div>
       <div style="display:flex;gap:20px;flex-wrap:wrap">${links}</div>
     </div>
@@ -676,7 +727,7 @@ function _renderImagen(data, pal) {
     ${data.title ? `<h2 class="ld-h2" style="text-align:center;margin-bottom:16px">${_e(data.title)}</h2>` : ''}
     ${data.subtitle ? `<p class="ld-body" style="text-align:center;margin-bottom:32px;max-width:700px">${_e(data.subtitle)}</p>` : ''}
     ${data.image_url ? `<img src="${_e(data.image_url)}" alt="${_e(data.caption||'')}" style="max-width:100%;height:auto;border-radius:16px;box-shadow:0 16px 48px rgba(0,0,0,0.45);display:block" onerror="this.style.display='none'"/>` : `<div style="width:300px;height:200px;background:rgba(255,255,255,0.05);border-radius:16px;display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,0.3);font-size:14px">Sin imagen</div>`}
-    ${data.caption ? `<p style="text-align:center;margin-top:12px;font-size:13px;color:rgba(255,255,255,0.45)">${_e(data.caption)}</p>` : ''}
+    ${data.caption ? `<p style="text-align:center;margin-top:12px;font-size:13px;color:${_fgDim(pal)}">${_e(data.caption)}</p>` : ''}
   </div>
 </section>`;
   }
@@ -692,7 +743,7 @@ function _renderImagen(data, pal) {
     <div style="margin:0 auto;width:${w};border-radius:20px;overflow:hidden;box-shadow:0 24px 64px rgba(0,0,0,0.5)">
       ${data.image_url ? `<img src="${_e(data.image_url)}" alt="${_e(data.caption||'')}" style="width:100%;aspect-ratio:${ar};object-fit:cover;display:block" onerror="this.style.display='none'"/>` : `<div style="width:100%;aspect-ratio:${ar};background:rgba(255,255,255,0.05);display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,0.3);font-size:14px">Sin imagen</div>`}
     </div>
-    ${data.caption ? `<p style="text-align:center;margin-top:16px;font-size:13px;color:rgba(255,255,255,0.45)">${_e(data.caption)}</p>` : ''}
+    ${data.caption ? `<p style="text-align:center;margin-top:16px;font-size:13px;color:${_fgDim(pal)}">${_e(data.caption)}</p>` : ''}
   </div>
 </section>`;
 }
@@ -718,7 +769,7 @@ function _renderGaleria(data, pal) {
     return `
     <div style="${gridStyle};border-radius:16px;overflow:hidden;box-shadow:0 8px 32px rgba(0,0,0,0.4)">
       ${img.url ? `<img src="${_e(img.url)}" alt="${_e(img.caption||'')}" style="${imgStyle}" onerror="this.style.display='none'"/>` : `<div style="${placeholderStyle}"></div>`}
-      ${img.caption ? `<p style="font-size:12px;color:rgba(255,255,255,0.4);padding:10px;text-align:center">${_e(img.caption)}</p>` : ''}
+      ${img.caption ? `<p style="font-size:12px;color:${_fgDim(pal)};padding:10px;text-align:center">${_e(img.caption)}</p>` : ''}
     </div>`;
   }).join('');
   return `
