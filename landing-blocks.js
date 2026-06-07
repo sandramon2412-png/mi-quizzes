@@ -315,8 +315,11 @@ img{max-width:100%;height:auto;display:block;border-radius:12px}
 
 /* Nav */
 #ld-nav{background:${navBg};box-shadow:0 1px 0 ${border}}
-#ld-nav-cta{display:inline-flex}
-@media(max-width:768px){#ld-nav-cta{display:none!important}}
+@media(max-width:768px){
+  #ld-nav-cta{display:none!important}
+  #ld-nav-ham{display:flex!important}
+  .ld-nav-links{display:none!important}
+}
 
 /* Grids */
 .ld-g2{display:grid;grid-template-columns:repeat(2,1fr);gap:20px}
@@ -352,6 +355,34 @@ details.ld-faq .faq-body{padding:0 24px 22px;color:${muted};font-size:15px;line-
 /* Ambient glow orbs */
 .ld-orb{position:fixed;border-radius:50%;filter:blur(80px);pointer-events:none;z-index:0;animation:floatOrb 12s ease-in-out infinite}
 body>*:not(.ld-orb){position:relative;z-index:1}
+
+/* Aurora animated gradient */
+@keyframes aurora{
+  0%{background-position:0% 50%}
+  33%{background-position:100% 30%}
+  66%{background-position:50% 100%}
+  100%{background-position:0% 50%}
+}
+@keyframes meshMove{
+  0%,100%{background-position:0% 0%,100% 100%}
+  50%{background-position:100% 0%,0% 100%}
+}
+.ld-aurora{
+  background:linear-gradient(-45deg,${pal.bg||'#09090b'},${pal.from}55,${pal.to}44,${pal.bg||'#09090b'},${pal.from}33);
+  background-size:400% 400%;
+  animation:aurora 14s ease infinite;
+}
+.ld-aurora-card{
+  background:linear-gradient(-45deg,rgba(${_hexToRgb(pal.from)},${isLight?'0.08':'0.14'}) 0%,${isLight?'rgba(255,255,255,0.7)':'rgba(255,255,255,0.03)'} 40%,rgba(${_hexToRgb(pal.to)},${isLight?'0.07':'0.12'}) 100%);
+  background-size:300% 300%;
+  animation:aurora 10s ease infinite;
+  border:1px solid ${isLight?`rgba(${_hexToRgb(pal.from)},0.2)`:`rgba(${_hexToRgb(pal.from)},0.25)`};
+  border-radius:22px;
+  backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);
+  box-shadow:${isLight?`0 4px 24px rgba(${_hexToRgb(pal.from)},0.1),inset 0 1px 0 rgba(255,255,255,0.8)`:`0 4px 32px rgba(0,0,0,0.3),inset 0 1px 0 rgba(255,255,255,0.07)`};
+  transition:transform 0.25s cubic-bezier(.34,1.56,.64,1),box-shadow 0.25s;
+}
+.ld-aurora-card:hover{transform:translateY(-4px);box-shadow:${isLight?`0 16px 40px rgba(${_hexToRgb(pal.from)},0.18),inset 0 1px 0 rgba(255,255,255,0.9)`:`0 16px 48px rgba(0,0,0,0.5),inset 0 1px 0 rgba(255,255,255,0.1)`}}
 
 /* Stack table */
 .ld-table{width:100%;border-collapse:separate;border-spacing:0}
@@ -428,18 +459,18 @@ function _renderNav(data, pal) {
   const mobBg = pal.mode === 'light' ? (pal.bg || '#ffffff') : 'rgba(9,9,11,0.97)';
   return `
 <nav id="ld-nav" style="position:sticky;top:0;z-index:100;backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-bottom:1px solid ${_borderCol(pal)}">
-  <div class="ld-inner" style="height:64px;display:flex;align-items:center;gap:32px">
-    <div style="font-weight:800;font-size:19px;white-space:nowrap;${_gradText(pal)}">${_e(data.logo || 'Mi Brand')}</div>
-    <div class="ld-nav-links" style="flex:1;display:flex;gap:28px;justify-content:center">${links}</div>
-    <button id="ld-nav-ham" onclick="var m=document.getElementById('ld-nav-mobile');var open=m.style.display==='flex';m.style.display=open?'none':'flex';this.querySelector('.ham-label').textContent=open?'Menú':'Cerrar'" style="display:none;flex-direction:row;align-items:center;gap:6px;padding:8px 14px;background:${_cardBg(pal)};border:1px solid ${_borderCol(pal)};border-radius:10px;cursor:pointer;margin-left:auto;flex-shrink:0;white-space:nowrap">
-      <div style="display:flex;flex-direction:column;gap:4px;width:16px;flex-shrink:0">
+  <div class="ld-inner" style="height:64px;display:flex;align-items:center;gap:20px;min-width:0">
+    <div style="font-weight:800;font-size:18px;flex-shrink:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;${_gradText(pal)}">${_e(data.logo || 'Mi Brand')}</div>
+    <div class="ld-nav-links" style="flex:1;display:flex;gap:24px;justify-content:center;min-width:0">${links}</div>
+    <button id="ld-nav-ham" onclick="var m=document.getElementById('ld-nav-mobile');var open=m.style.display==='flex';m.style.display=open?'none':'flex';this.querySelector('.ham-label').textContent=open?'Menú':'Cerrar'" style="display:none;flex-direction:row;align-items:center;gap:5px;padding:8px 12px;background:${_cardBg(pal)};border:1px solid ${_borderCol(pal)};border-radius:10px;cursor:pointer;flex-shrink:0;white-space:nowrap">
+      <div style="display:flex;flex-direction:column;gap:3px;width:15px;flex-shrink:0">
         <div style="height:2px;background:${hamLineColor};border-radius:2px"></div>
         <div style="height:2px;background:${hamLineColor};border-radius:2px"></div>
         <div style="height:2px;background:${hamLineColor};border-radius:2px"></div>
       </div>
-      <span class="ham-label" style="font-size:13px;font-weight:700;color:${hamLineColor}">Menú</span>
+      <span class="ham-label" style="font-size:12px;font-weight:700;color:${hamLineColor}">Menú</span>
     </button>
-    <a id="ld-nav-cta" href="${_e(data.cta_href||'#ld-cta_final')}" class="ld-btn" style="padding:10px 22px;font-size:14px;border-radius:10px;${_gradBg(pal)}">${_e(data.cta_text||'Comenzar')}</a>
+    <a id="ld-nav-cta" href="${_e(data.cta_href||'#ld-cta_final')}" class="ld-btn" style="padding:10px 20px;font-size:13px;border-radius:10px;flex-shrink:0;${_gradBg(pal)}">${_e(data.cta_text||'Comenzar')}</a>
   </div>
 </nav>
 <div id="ld-nav-mobile" style="display:none;flex-direction:column;gap:0;background:${mobBg};border-bottom:1px solid ${_borderCol(pal)};padding:8px 0;position:sticky;top:64px;z-index:99">
@@ -551,7 +582,7 @@ function _renderMetricas(data, pal) {
     const prefix = numMatch ? String(item.value).slice(0, numMatch.index) : '';
     const suffix = numMatch ? String(item.value).slice(numMatch.index + numMatch[0].length) : '';
     const countAttr = numVal ? ` data-count="${numVal}" data-prefix="${_e(prefix)}" data-suffix="${_e(suffix)}"` : '';
-    return `<div class="ld-card ld-center ld-animate" style="padding:40px 24px;animation-delay:${idx*0.08}s">
+    return `<div class="ld-aurora-card ld-center ld-animate" style="padding:40px 24px;animation-delay:${idx*0.08}s;animation-play-state:paused">
       <div class="ld-metric-val ld-h1"${countAttr} style="${_gradText(pal)}">${_e(item.value)}</div>
       <div style="margin-top:10px;font-size:15px;font-weight:600;color:${_fgDim(pal)};text-align:center">${_e(item.label)}</div>
      </div>`;
@@ -615,8 +646,8 @@ function _renderTestimonios(data, pal) {
   const items = _arr(data.items).filter(i=>i&&i.text).map(item => {
     const initials = item.initials || (item.name||'?').split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase();
     return `
-    <div class="ld-card" style="display:flex;flex-direction:column;gap:16px">
-      ${item.result ? `<div style="padding:8px 14px;border-radius:8px;${_gradBg(pal)};font-size:13px;font-weight:700;display:inline-block;align-self:flex-start">${_e(item.result)}</div>` : ''}
+    <div class="ld-aurora-card" style="display:flex;flex-direction:column;gap:16px;padding:28px">
+      ${item.result ? `<div style="padding:8px 14px;border-radius:8px;${_gradBg(pal)};font-size:13px;font-weight:700;display:inline-block;align-self:flex-start;box-shadow:0 4px 16px rgba(${_hexToRgb(pal.from)},0.3)">${_e(item.result)}</div>` : ''}
       <p style="font-size:15px;line-height:1.75;color:${_fgMuted(pal)};flex:1;font-style:italic">"${_e(item.text)}"</p>
       <div style="display:flex;align-items:center;gap:12px;padding-top:12px;border-top:1px solid ${_borderCol(pal)}">
         <div style="width:40px;height:40px;border-radius:50%;${_gradBg(pal)};display:flex;align-items:center;justify-content:center;font-weight:800;font-size:14px;flex-shrink:0">${_e(initials)}</div>
@@ -728,18 +759,20 @@ function _renderFaq(data, pal) {
 }
 
 function _renderCtaFinal(data, pal) {
+  const isDark = pal.mode !== 'light';
   return `
-<section id="ld-cta_final" class="ld-section" style="background:linear-gradient(135deg,rgba(${_hexToRgb(pal.from)},0.12) 0%,rgba(${_hexToRgb(pal.to)},0.12) 100%)">
-  <div class="ld-inner ld-center">
-    ${data.urgency ? `<div style="display:inline-flex;align-items:center;gap:8px;padding:8px 18px;border-radius:999px;background:rgba(239,68,68,0.12);border:1px solid rgba(239,68,68,0.2);font-size:13px;font-weight:700;color:#f87171;margin-bottom:24px">${_icon('timer',16,'#f87171')} ${_e(data.urgency)}</div>` : ''}
+<section id="ld-cta_final" class="ld-section ld-aurora" style="overflow:hidden;position:relative">
+  <div style="position:absolute;inset:0;background:radial-gradient(ellipse 80% 60% at 50% 50%,rgba(${_hexToRgb(pal.from)},${isDark?'0.35':'0.18'}) 0%,transparent 70%);pointer-events:none"></div>
+  <div class="ld-inner ld-center" style="position:relative;z-index:2">
+    ${data.urgency ? `<div style="display:inline-flex;align-items:center;gap:8px;padding:8px 18px;border-radius:999px;background:rgba(239,68,68,0.14);border:1px solid rgba(239,68,68,0.25);font-size:13px;font-weight:700;color:#f87171;margin-bottom:24px">${_icon('timer',16,'#f87171')} ${_e(data.urgency)}</div>` : ''}
     <h2 class="ld-h2" style="margin-bottom:16px;max-width:720px">${_e(data.headline)}</h2>
     ${data.subheadline ? `<p class="ld-body" style="margin-bottom:32px;max-width:560px">${_e(data.subheadline)}</p>` : ''}
-    <div style="display:flex;flex-direction:column;align-items:center;gap:12px;margin-bottom:20px">
+    <div style="display:flex;flex-direction:column;align-items:center;gap:12px;margin-bottom:28px">
       ${data.original_price ? `<p style="font-size:15px;text-decoration:line-through;color:${_fgDim(pal)}">Antes: ${_e(data.original_price)}</p>` : ''}
       ${data.price ? `<div class="ld-h2" style="${_gradText(pal)}">${_e(data.price)}</div>` : ''}
     </div>
-    <a href="${_e(data.cta_href||'#')}" class="ld-btn ld-btn-lg" style="width:auto">${_icon('bolt',22,'#fff')} ${_e(data.cta_text||'Comenzar ahora')}</a>
-    ${data.microcopy ? `<p class="ld-small" style="margin-top:14px">${_e(data.microcopy)}</p>` : ''}
+    <a href="${_e(data.cta_href||'#')}" class="ld-btn ld-btn-lg" style="width:auto;font-size:20px;padding:22px 52px">${_icon('bolt',24,'#fff')} ${_e(data.cta_text||'Comenzar ahora')}</a>
+    ${data.microcopy ? `<p class="ld-small" style="margin-top:16px">${_e(data.microcopy)}</p>` : ''}
   </div>
 </section>`;
 }
@@ -943,6 +976,27 @@ ${htmlBlocks}
     });
   },{threshold:0.5});
   document.querySelectorAll('.ld-metric-val[data-count]').forEach(function(el){ obs2.observe(el); });
+})();
+// Responsive nav: JS fallback in case CSS media queries don't fire in iframe
+(function(){
+  function applyNavMode(){
+    var w = window.innerWidth;
+    var ham = document.getElementById('ld-nav-ham');
+    var cta = document.getElementById('ld-nav-cta');
+    var links = document.querySelector('.ld-nav-links');
+    if(!ham) return;
+    if(w <= 768){
+      ham.style.display='flex';
+      if(cta) cta.style.display='none';
+      if(links) links.style.display='none';
+    } else {
+      ham.style.display='none';
+      if(cta) cta.style.display='inline-flex';
+      if(links) links.style.display='flex';
+    }
+  }
+  applyNavMode();
+  window.addEventListener('resize', applyNavMode);
 })();
 // navGuard: prevent links escaping iframe
 document.querySelectorAll('a[href]').forEach(function(a){
