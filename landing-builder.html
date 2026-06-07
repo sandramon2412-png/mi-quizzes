@@ -261,6 +261,9 @@
       </div>
     </div>
 
+    <div id="gen-progress" class="hidden mb-2 rounded-lg overflow-hidden" style="height:3px;background:rgba(255,255,255,0.08)">
+      <div id="gen-progress-bar" style="height:100%;background:linear-gradient(90deg,#2E5BFF,#7c3aed);width:0%;transition:width 1s ease;border-radius:2px"></div>
+    </div>
     <button id="btn-generate" class="w-full h-11 rounded-xl primary-gradient text-white text-sm font-bold flex items-center justify-center gap-2 hover:opacity-90 transition shadow-lg" style="box-shadow:0 8px 24px -8px rgba(46,91,255,.6)">
       <span class="material-symbols-outlined" style="font-size:18px">auto_awesome</span>
       Generar landing
@@ -1068,8 +1071,28 @@ async function generateLanding() {
 
   const btn = document.getElementById('btn-generate');
   btn.disabled = true;
+
+  // Animated progress messages
+  const msgs = [
+    'Analizando tu producto…',
+    'Escribiendo el titular y subtítulo…',
+    'Creando secciones de beneficios y módulos…',
+    'Generando testimonios, FAQ y bonos…',
+    'Armando el diseño final…',
+  ];
+  const progSteps = [10, 30, 55, 75, 90];
+  let msgIdx = 0;
+  const progBar = document.getElementById('gen-progress-bar');
+  const progWrap = document.getElementById('gen-progress');
+  progWrap.classList.remove('hidden');
+  if (progBar) progBar.style.width = progSteps[0] + '%';
   btn.innerHTML = `<span class="dot"></span><span class="dot"></span><span class="dot"></span>`;
-  setStatus('Generando landing…');
+  setStatus(msgs[0]);
+  const msgInterval = setInterval(() => {
+    msgIdx = Math.min(msgIdx + 1, msgs.length - 1);
+    setStatus(msgs[msgIdx]);
+    if (progBar) progBar.style.width = progSteps[msgIdx] + '%';
+  }, 5000);
 
   try {
     // Get selected palette
@@ -1128,9 +1151,11 @@ async function generateLanding() {
     setStatus('Guardado');
   } catch(e) {
     console.error('[generate]', e);
-    showToast('Error: ' + e.message, true);
+    showToast('Error al generar: ' + (e.message || 'intentá de nuevo'), true);
     setStatus('');
   } finally {
+    clearInterval(msgInterval);
+    if (progBar) { progBar.style.width = '100%'; setTimeout(() => progWrap.classList.add('hidden'), 400); }
     btn.disabled = false;
     btn.innerHTML = `<span class="material-symbols-outlined" style="font-size:17px">auto_awesome</span> Generar landing`;
   }

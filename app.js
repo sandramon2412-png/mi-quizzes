@@ -1184,7 +1184,7 @@ REGLAS INAMOVIBLES:
 
     const userMsg = `BRIEF DEL PRODUCTO:\n${brief}\n\nSCHEMA A COMPLETAR (devolvé el array completo con data lleno):\n${JSON.stringify(defaultBlocks, null, 2)}`;
     const text = await this._call([{ role: 'user', content: userMsg }], 8192, {
-      model: 'claude-sonnet-4-6',
+      model: 'claude-haiku-4-5-20251001',
       system,
     });
     return this._parseJSONLoose(text);
