@@ -38,6 +38,17 @@ const LANDING_PALETTES_DEF = [
   { id: 'blanco-clasico', name: 'Blanco clásico',        primary: '#1d2b3a', accent: '#3b5268', bg: '#ffffff', surface: 'rgba(0,0,0,0.04)',     fg: '#0d1520', mode: 'light' },
   { id: 'gris-perla',     name: 'Gris perla → Plata',   primary: '#4a5568', accent: '#2d3748', bg: '#f8f9fa', surface: 'rgba(0,0,0,0.04)',     fg: '#1a202c', mode: 'light' },
   { id: 'chocolate-miel', name: 'Chocolate → Miel',     primary: '#7b3f00', accent: '#c47f17', bg: '#fdf8f0', surface: 'rgba(0,0,0,0.04)',     fg: '#1a0a00', mode: 'light' },
+
+  // ── SÓLIDOS / PLANOS ────────────────────────────────────
+  { id: 'solido-negro',   name: 'Negro puro',            primary: '#e5e5e5', accent: '#a3a3a3', bg: '#0a0a0a', surface: 'rgba(255,255,255,0.06)', fg: '#ffffff', mode: 'dark',  solid: true },
+  { id: 'solido-blanco',  name: 'Blanco puro',           primary: '#1a1a1a', accent: '#404040', bg: '#ffffff', surface: 'rgba(0,0,0,0.05)',     fg: '#0a0a0a', mode: 'light', solid: true },
+  { id: 'solido-rojo',    name: 'Rojo',                  primary: '#dc2626', accent: '#b91c1c', bg: '#0a0a0a', surface: 'rgba(255,255,255,0.05)', fg: '#ffffff', mode: 'dark',  solid: true },
+  { id: 'solido-azul',    name: 'Azul',                  primary: '#2563eb', accent: '#1d4ed8', bg: '#030712', surface: 'rgba(255,255,255,0.05)', fg: '#ffffff', mode: 'dark',  solid: true },
+  { id: 'solido-verde',   name: 'Verde',                 primary: '#16a34a', accent: '#15803d', bg: '#030a05', surface: 'rgba(255,255,255,0.05)', fg: '#ffffff', mode: 'dark',  solid: true },
+  { id: 'solido-morado',  name: 'Morado',                primary: '#9333ea', accent: '#7e22ce', bg: '#0a0212', surface: 'rgba(255,255,255,0.05)', fg: '#ffffff', mode: 'dark',  solid: true },
+  { id: 'solido-naranja', name: 'Naranja',               primary: '#ea580c', accent: '#c2410c', bg: '#0c0500', surface: 'rgba(255,255,255,0.05)', fg: '#ffffff', mode: 'dark',  solid: true },
+  { id: 'solido-rosa',    name: 'Rosa',                  primary: '#ec4899', accent: '#db2777', bg: '#0d020a', surface: 'rgba(255,255,255,0.05)', fg: '#ffffff', mode: 'dark',  solid: true },
+  { id: 'solido-cafe',    name: 'Café',                  primary: '#92400e', accent: '#78350f', bg: '#08040a', surface: 'rgba(255,255,255,0.05)', fg: '#ffffff', mode: 'dark',  solid: true },
 ];
 
 // Internal palette lookup by id (from, to, bg, fg, mode)
@@ -761,17 +772,13 @@ function _renderGaleria(data, pal) {
     const rowspan = parseInt(img.rowspan) || 1;
     const ratio = img.ratio || defaultRatio;
     const gridStyle = `grid-column:span ${span}${rowspan > 1 ? `;grid-row:span ${rowspan}` : ''}`;
-    // When rowspan > 1, use height:100% + object-fit:cover instead of aspect-ratio (fills the row area)
-    const imgStyle = rowspan > 1
-      ? `width:100%;height:100%;object-fit:cover;display:block`
-      : `width:100%;aspect-ratio:${ratio};object-fit:cover;display:block`;
-    const placeholderStyle = rowspan > 1
-      ? `width:100%;height:100%;background:rgba(255,255,255,0.05);min-height:200px`
-      : `width:100%;aspect-ratio:${ratio};background:rgba(255,255,255,0.05)`;
+    // Always use aspect-ratio — for rowspan images use a taller ratio (or user-set ratio)
+    // The container is position:relative + padding-bottom trick is overkill; aspect-ratio CSS works fine
+    const effectiveRatio = rowspan > 1 ? ratio : ratio;
     return `
-    <div style="${gridStyle};border-radius:16px;overflow:hidden;box-shadow:0 8px 32px rgba(0,0,0,0.4)">
-      ${img.url ? `<img src="${_e(img.url)}" alt="${_e(img.caption||'')}" style="${imgStyle}" onerror="this.style.display='none'"/>` : `<div style="${placeholderStyle}"></div>`}
-      ${img.caption ? `<p style="font-size:12px;color:${_fgDim(pal)};padding:10px;text-align:center">${_e(img.caption)}</p>` : ''}
+    <div style="${gridStyle};border-radius:16px;overflow:hidden;box-shadow:0 8px 32px rgba(0,0,0,0.25)">
+      ${img.url ? `<img src="${_e(img.url)}" alt="${_e(img.caption||'')}" style="width:100%;aspect-ratio:${effectiveRatio};object-fit:cover;display:block;height:100%" onerror="this.style.display='none'"/>` : `<div style="width:100%;aspect-ratio:${effectiveRatio};background:${_cardBg(pal)};min-height:120px"></div>`}
+      ${img.caption ? `<p style="font-size:12px;color:${_fgDim(pal)};padding:8px 10px;text-align:center">${_e(img.caption)}</p>` : ''}
     </div>`;
   }).join('');
   return `
@@ -780,7 +787,7 @@ function _renderGaleria(data, pal) {
     ${data.title ? `<h2 class="ld-h2" style="text-align:center;margin-bottom:12px">${_e(data.title)}</h2>` : ''}
     ${data.subtitle ? `<p class="ld-body" style="text-align:center;margin-bottom:40px;max-width:640px;margin-left:auto;margin-right:auto">${_e(data.subtitle)}</p>` : ''}
     <div style="margin:0 auto;width:${gw}">
-      <div style="display:grid;grid-template-columns:repeat(${cols},1fr);grid-auto-rows:1fr;gap:16px;align-items:stretch">${imgHtml}</div>
+      <div style="display:grid;grid-template-columns:repeat(${cols},1fr);gap:16px;align-items:start">${imgHtml}</div>
     </div>
   </div>
 </section>`;
@@ -814,6 +821,7 @@ function renderBlock(type, data, pal) {
 function renderLandingFromBlocks(blocks, paletteId, customFrom, customTo) {
   const palBase = _palById(paletteId);
   const pal = {
+    ...palBase,
     from: customFrom || palBase.from,
     to:   customTo   || palBase.to,
   };
@@ -1036,6 +1044,7 @@ const BLOCK_ICONS = {
 // Expose globals
 if (typeof window !== 'undefined') {
   window.LANDING_PALETTES_DEF = LANDING_PALETTES_DEF;
+  window._palById = _palById;
   window.BLOCK_DEFAULTS = BLOCK_DEFAULTS;
   window.BLOCK_ORDER = BLOCK_ORDER;
   window.BLOCK_FIELDS = BLOCK_FIELDS;
