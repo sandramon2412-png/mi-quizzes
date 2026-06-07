@@ -26,6 +26,8 @@ const LANDING_PALETTES_DEF = [
   { id: 'terracota',      name: 'Terracota → Coral',    primary: '#c2533a', accent: '#9b3a28', bg: '#fef3ee', surface: 'rgba(0,0,0,0.04)',     fg: '#1a0800', mode: 'light' },
   { id: 'madera-sage',    name: 'Madera → Sage',        primary: '#7c6f5b', accent: '#6b8f71', bg: '#f9f6f2', surface: 'rgba(0,0,0,0.04)',     fg: '#1c1a16', mode: 'light' },
   { id: 'arena-tostada',  name: 'Arena → Tostado',      primary: '#a0845c', accent: '#7d6344', bg: '#faf7f2', surface: 'rgba(0,0,0,0.04)',     fg: '#1c1508', mode: 'light' },
+  { id: 'naranja-tierra', name: 'Naranja tierra → Óxido', primary: '#c45c1a', accent: '#9c3d10', bg: '#fef5ee', surface: 'rgba(0,0,0,0.04)',   fg: '#1e0e00', mode: 'light' },
+  { id: 'verde-tierra',   name: 'Verde tierra → Oliva',   primary: '#5a7a35', accent: '#3d5c20', bg: '#f5f8f0', surface: 'rgba(0,0,0,0.04)',   fg: '#101e04', mode: 'light' },
 
   // ── SUAVES Y PASTELES (light/soft) ──────────────────────
   { id: 'lavanda-lila',   name: 'Lavanda → Lila',       primary: '#7c5cbf', accent: '#9d7ce0', bg: '#faf8ff', surface: 'rgba(0,0,0,0.04)',     fg: '#1a0f2e', mode: 'light' },

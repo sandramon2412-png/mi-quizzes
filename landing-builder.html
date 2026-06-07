@@ -399,7 +399,7 @@ function buildSwatches(containerId, onSelect, selected) {
     { label: 'Tierra y cálidas', mode: 'light-warm' },
     { label: 'Suaves y pasteles', mode: 'light-soft' },
   ];
-  const warmIds = ['tierra-cafe','nude-rose','crema-dorado','terracota','madera-sage','arena-tostada','chocolate-miel'];
+  const warmIds = ['tierra-cafe','nude-rose','crema-dorado','terracota','madera-sage','arena-tostada','chocolate-miel','naranja-tierra','verde-tierra'];
   window.LANDING_PALETTES_DEF.forEach(p => {
     const grpLabel = p.mode === 'dark' ? 'Oscuras' : warmIds.includes(p.id) ? 'Tierra y cálidas' : 'Suaves y pasteles';
     let grp = container.querySelector(`[data-grp="${grpLabel}"]`);
