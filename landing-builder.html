@@ -393,18 +393,36 @@ function buildSwatches(containerId, onSelect, selected) {
     return;
   }
   container.innerHTML = '';
+  // Group by mode
+  const groups = [
+    { label: 'Oscuras', mode: 'dark' },
+    { label: 'Tierra y cálidas', mode: 'light-warm' },
+    { label: 'Suaves y pasteles', mode: 'light-soft' },
+  ];
+  const warmIds = ['tierra-cafe','nude-rose','crema-dorado','terracota','madera-sage','arena-tostada','chocolate-miel'];
   window.LANDING_PALETTES_DEF.forEach(p => {
+    const grpLabel = p.mode === 'dark' ? 'Oscuras' : warmIds.includes(p.id) ? 'Tierra y cálidas' : 'Suaves y pasteles';
+    let grp = container.querySelector(`[data-grp="${grpLabel}"]`);
+    if (!grp) {
+      const section = document.createElement('div');
+      section.style.cssText = 'margin-bottom:6px';
+      section.innerHTML = `<div style="font-size:9px;font-weight:700;color:#71717a;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:4px">${grpLabel}</div><div class="swatch-row" data-grp="${grpLabel}" style="display:flex;flex-wrap:wrap;gap:4px"></div>`;
+      container.appendChild(section);
+      grp = section.querySelector('.swatch-row');
+    }
     const s = document.createElement('div');
     s.className = 'swatch' + (selected === p.id ? ' sel' : '');
     s.title = p.name;
     s.style.background = `linear-gradient(135deg, ${p.primary}, ${p.accent})`;
+    // Light palettes: add a subtle border so they don't disappear on light UI
+    if (p.mode === 'light') s.style.boxShadow = 'inset 0 0 0 1px rgba(0,0,0,0.15)';
     s.dataset.id = p.id;
     s.onclick = () => {
       container.querySelectorAll('.swatch').forEach(x => x.classList.remove('sel'));
       s.classList.add('sel');
       onSelect(p.id);
     };
-    container.appendChild(s);
+    grp.appendChild(s);
   });
 }
 
