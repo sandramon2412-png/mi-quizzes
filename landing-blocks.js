@@ -353,12 +353,23 @@ details.ld-faq .faq-body{padding:0 24px 20px;color:${muted};font-size:15px;line-
   .ld-g4{grid-template-columns:repeat(2,1fr)}
   .ld-hero-cols{gap:40px!important}
 }
+/* Responsive — iPad / medium tablet */
+@media(max-width:768px){
+  .ld-h1{font-size:clamp(32px,6vw,52px)!important}
+  .ld-h2{font-size:clamp(26px,5vw,40px)!important}
+  .ld-hero-cols{flex-direction:column!important;gap:32px!important}
+  .ld-hero-cols > *:last-child{width:100%!important;max-width:100%!important}
+  .ld-g3{grid-template-columns:repeat(2,1fr)!important}
+  .ld-nav-links{display:none!important}
+  #ld-nav-ham{display:flex!important}
+  .ld-btn-lg{font-size:17px;padding:18px 32px;white-space:normal;text-align:center;line-height:1.3}
+}
 /* Responsive — mobile */
 @media(max-width:640px){
   .ld-inner{padding:0 16px}
-  .ld-h1{font-size:clamp(28px,8vw,38px)!important}
-  .ld-h2{font-size:clamp(24px,7vw,32px)!important}
-  .ld-h3{font-size:20px!important}
+  .ld-h1{font-size:clamp(26px,7.5vw,36px)!important}
+  .ld-h2{font-size:clamp(22px,7vw,30px)!important}
+  .ld-h3{font-size:19px!important}
   .ld-body{font-size:16px}
   .ld-section{padding:52px 0}
   .ld-section-sm{padding:36px 0}
@@ -368,8 +379,8 @@ details.ld-faq .faq-body{padding:0 24px 20px;color:${muted};font-size:15px;line-
   .ld-hero-cols > *:last-child{order:2;width:100%!important;max-width:100%!important}
   .ld-nav-links{display:none!important}
   #ld-nav-ham{display:flex!important}
-  .ld-btn-lg{font-size:16px;padding:16px 28px;width:100%;justify-content:center}
-  .ld-btn{font-size:15px;padding:14px 24px}
+  .ld-btn-lg{font-size:15px;padding:15px 20px;width:100%;justify-content:center;white-space:normal;text-align:center;line-height:1.3;min-height:52px}
+  .ld-btn{font-size:14px;padding:13px 20px;white-space:normal;line-height:1.3}
   .ld-card{padding:20px}
 }
 `;
@@ -399,10 +410,13 @@ function _renderNav(data, pal) {
   <div class="ld-inner" style="height:64px;display:flex;align-items:center;gap:32px">
     <div style="font-weight:800;font-size:19px;white-space:nowrap;${_gradText(pal)}">${_e(data.logo || 'Mi Brand')}</div>
     <div class="ld-nav-links" style="flex:1;display:flex;gap:28px;justify-content:center">${links}</div>
-    <button id="ld-nav-ham" onclick="var m=document.getElementById('ld-nav-mobile');m.style.display=m.style.display==='flex'?'none':'flex'" style="display:none;flex-direction:column;justify-content:center;gap:5px;width:36px;height:36px;background:${_cardBg(pal)};border:1px solid ${_borderCol(pal)};border-radius:8px;cursor:pointer;padding:6px;margin-left:auto">
-      <div style="height:2px;background:${hamLineColor};border-radius:2px"></div>
-      <div style="height:2px;background:${hamLineColor};border-radius:2px"></div>
-      <div style="height:2px;background:${hamLineColor};border-radius:2px"></div>
+    <button id="ld-nav-ham" onclick="var m=document.getElementById('ld-nav-mobile');var open=m.style.display==='flex';m.style.display=open?'none':'flex';this.querySelector('.ham-label').textContent=open?'Menú':'Cerrar'" style="display:none;flex-direction:row;align-items:center;gap:7px;padding:8px 14px;background:${_cardBg(pal)};border:1px solid ${_borderCol(pal)};border-radius:10px;cursor:pointer;margin-left:auto;color:${hamLineColor}">
+      <div style="display:flex;flex-direction:column;gap:4px;width:18px">
+        <div style="height:2px;background:${hamLineColor};border-radius:2px"></div>
+        <div style="height:2px;background:${hamLineColor};border-radius:2px"></div>
+        <div style="height:2px;background:${hamLineColor};border-radius:2px"></div>
+      </div>
+      <span class="ham-label" style="font-size:13px;font-weight:700;color:${hamLineColor};letter-spacing:0.01em">Menú</span>
     </button>
     <a href="${_e(data.cta_href||'#ld-cta_final')}" class="ld-btn" style="padding:10px 22px;font-size:14px;border-radius:10px;box-shadow:none;${_gradBg(pal)}">${_e(data.cta_text||'Comenzar')}</a>
   </div>
@@ -508,11 +522,17 @@ function _renderProblema(data, pal) {
 }
 
 function _renderMetricas(data, pal) {
-  const items = _arr(data.items).filter(i=>i&&i.value).map((item, idx) =>
-    `<div class="ld-card ld-center" style="padding:40px 24px">
-      <div class="ld-metric-val ld-h1" style="${_gradText(pal)};animation-delay:${idx*0.1}s">${_e(item.value)}</div>
+  const items = _arr(data.items).filter(i=>i&&i.value).map((item, idx) => {
+    const numMatch = String(item.value).match(/([0-9]+(?:[.,][0-9]+)?)/);
+    const numVal = numMatch ? numMatch[1].replace(',','.') : null;
+    const prefix = numMatch ? String(item.value).slice(0, numMatch.index) : '';
+    const suffix = numMatch ? String(item.value).slice(numMatch.index + numMatch[0].length) : '';
+    const countAttr = numVal ? ` data-count="${numVal}" data-prefix="${_e(prefix)}" data-suffix="${_e(suffix)}"` : '';
+    return `<div class="ld-card ld-center ld-animate" style="padding:40px 24px;animation-delay:${idx*0.08}s">
+      <div class="ld-metric-val ld-h1"${countAttr} style="${_gradText(pal)}">${_e(item.value)}</div>
       <div style="margin-top:10px;font-size:15px;font-weight:600;color:${_fgDim(pal)};text-align:center">${_e(item.label)}</div>
-     </div>`).join('');
+     </div>`;
+  }).join('');
   const cols = Math.min(4, _arr(data.items).filter(i=>i&&i.value).length);
   return `
 <section id="ld-metricas" class="ld-section-sm" style="background:linear-gradient(135deg,rgba(${_hexToRgb(pal.from)},0.06) 0%,rgba(${_hexToRgb(pal.to)},0.04) 100%)">
@@ -841,6 +861,49 @@ function renderLandingFromBlocks(blocks, paletteId, customFrom, customTo) {
 </head>
 <body>
 ${htmlBlocks}
+<script>
+// Scroll-triggered fade-in
+(function(){
+  var els = document.querySelectorAll('.ld-animate,[data-animate]');
+  if(!els.length) return;
+  var obs = new IntersectionObserver(function(entries){
+    entries.forEach(function(e){
+      if(e.isIntersecting){ e.target.style.opacity='1'; e.target.style.transform='none'; obs.unobserve(e.target); }
+    });
+  },{threshold:0.12});
+  els.forEach(function(el){ el.style.opacity='0'; el.style.transform='translateY(28px)'; el.style.transition='opacity 0.6s ease, transform 0.6s ease'; obs.observe(el); });
+})();
+// Animated metric counters
+(function(){
+  function animateCounter(el){
+    var target = parseFloat(el.dataset.count || el.textContent.replace(/[^0-9.]/g,''));
+    if(!target) return;
+    var prefix = el.dataset.prefix || '';
+    var suffix = el.dataset.suffix || el.textContent.replace(/[0-9.,]/g,'').replace(prefix,'');
+    var start = 0; var dur = 1400; var step = 16;
+    var timer = setInterval(function(){
+      start += step;
+      var pct = Math.min(start/dur,1);
+      var eased = 1-Math.pow(1-pct,3);
+      var val = target * eased;
+      el.textContent = prefix + (Number.isInteger(target) ? Math.round(val).toLocaleString() : val.toFixed(1)) + suffix;
+      if(pct>=1) clearInterval(timer);
+    },16);
+  }
+  var obs2 = new IntersectionObserver(function(entries){
+    entries.forEach(function(e){
+      if(e.isIntersecting){ animateCounter(e.target); obs2.unobserve(e.target); }
+    });
+  },{threshold:0.5});
+  document.querySelectorAll('.ld-metric-val[data-count]').forEach(function(el){ obs2.observe(el); });
+})();
+// navGuard: prevent links escaping iframe
+document.querySelectorAll('a[href]').forEach(function(a){
+  var h = a.getAttribute('href');
+  if(h && h.startsWith('#')){ a.addEventListener('click',function(e){ e.preventDefault(); var t=document.querySelector(h); if(t) t.scrollIntoView({behavior:'smooth'}); }); }
+  else if(h && !h.startsWith('mailto') && !h.startsWith('tel')){ a.target='_blank'; a.rel='noopener'; }
+});
+</script>
 </body>
 </html>`;
 }
