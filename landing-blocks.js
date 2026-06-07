@@ -344,8 +344,15 @@ details.ld-faq .faq-body{padding:0 24px 22px;color:${muted};font-size:15px;line-
 /* Animations */
 @keyframes fadeUp{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:none}}
 @keyframes fadeIn{from{opacity:0}to{opacity:1}}
-@keyframes scaleIn{from{opacity:0;transform:scale(0.92)}to{opacity:1;transform:none}}
 @keyframes floatOrb{0%,100%{transform:translate(0,0) scale(1)}50%{transform:translate(30px,-20px) scale(1.08)}}
+@keyframes cardFloat{0%,100%{transform:translateY(0px)}50%{transform:translateY(-7px)}}
+@keyframes shimmerMove{0%{transform:translateX(-120%) skewX(-15deg)}100%{transform:translateX(350%) skewX(-15deg)}}
+@keyframes aurora{
+  0%{background-position:0% 50%}
+  33%{background-position:100% 20%}
+  66%{background-position:40% 100%}
+  100%{background-position:0% 50%}
+}
 .ld-animate{opacity:0}
 
 /* Metric counter animation */
@@ -356,33 +363,90 @@ details.ld-faq .faq-body{padding:0 24px 22px;color:${muted};font-size:15px;line-
 .ld-orb{position:fixed;border-radius:50%;filter:blur(80px);pointer-events:none;z-index:0;animation:floatOrb 12s ease-in-out infinite}
 body>*:not(.ld-orb){position:relative;z-index:1}
 
-/* Aurora animated gradient */
-@keyframes aurora{
-  0%{background-position:0% 50%}
-  33%{background-position:100% 30%}
-  66%{background-position:50% 100%}
-  100%{background-position:0% 50%}
+/* Glass Cards — with shimmer sweep + float */
+.ld-card{
+  background:${isLight
+    ? `linear-gradient(135deg, rgba(${_hexToRgb(pal.from)},0.13) 0%, rgba(255,255,255,0.82) 45%, rgba(${_hexToRgb(pal.to)},0.10) 100%)`
+    : 'rgba(255,255,255,0.05)'};
+  border:1px solid ${isLight ? `rgba(${_hexToRgb(pal.from)},0.22)` : 'rgba(255,255,255,0.1)'};
+  border-radius:22px;padding:28px;
+  backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+  box-shadow:${isLight
+    ? `0 8px 32px rgba(${_hexToRgb(pal.from)},0.12), 0 1px 0 rgba(255,255,255,0.95) inset, 0 -1px 0 rgba(${_hexToRgb(pal.from)},0.1) inset`
+    : '0 4px 32px rgba(0,0,0,0.35),inset 0 1px 0 rgba(255,255,255,0.08)'};
+  transition:transform 0.3s cubic-bezier(.34,1.56,.64,1),box-shadow 0.3s,border-color 0.3s;
+  position:relative;overflow:hidden;
+  animation:cardFloat var(--float-dur,6s) ease-in-out infinite;
+  animation-delay:var(--float-delay,0s);
 }
-@keyframes meshMove{
-  0%,100%{background-position:0% 0%,100% 100%}
-  50%{background-position:100% 0%,0% 100%}
+.ld-card::before{
+  content:'';position:absolute;inset:0;border-radius:inherit;pointer-events:none;
+  background:linear-gradient(135deg,rgba(255,255,255,${isLight?'0.55':'0.06'}) 0%,transparent 55%);
 }
+.ld-card::after{
+  content:'';position:absolute;top:0;left:0;width:35%;height:100%;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,${isLight?'0.35':'0.07'}),transparent);
+  animation:shimmerMove 5s ease-in-out infinite;
+  animation-delay:var(--shimmer-delay,0s);
+  pointer-events:none;border-radius:inherit;
+}
+.ld-card:hover{
+  transform:translateY(-6px) scale(1.02);
+  animation-play-state:paused;
+  box-shadow:${isLight
+    ? `0 24px 48px rgba(${_hexToRgb(pal.from)},0.2), 0 1px 0 rgba(255,255,255,1) inset`
+    : '0 20px 56px rgba(0,0,0,0.5),inset 0 1px 0 rgba(255,255,255,0.12)'};
+  border-color:${isLight ? `rgba(${_hexToRgb(pal.from)},0.35)` : 'rgba(255,255,255,0.18)'}
+}
+.ld-card-dark{background:${isLight ? 'rgba(0,0,0,0.05)' : 'rgba(0,0,0,0.4)'};border:1px solid ${border};border-radius:22px;padding:28px;backdrop-filter:blur(12px)}
+
+/* Aurora animated card */
+.ld-aurora-card{
+  background:linear-gradient(-45deg,
+    rgba(${_hexToRgb(pal.from)},${isLight?'0.22':'0.18'}) 0%,
+    ${isLight?'rgba(255,255,255,0.78)':'rgba(18,18,22,0.6)'} 35%,
+    rgba(${_hexToRgb(pal.to)},${isLight?'0.18':'0.16'}) 70%,
+    rgba(${_hexToRgb(pal.from)},${isLight?'0.12':'0.10'}) 100%
+  );
+  background-size:350% 350%;
+  animation:aurora 9s ease infinite, cardFloat var(--float-dur,7s) ease-in-out infinite;
+  animation-delay:0s, var(--float-delay,0s);
+  border:1px solid ${isLight?`rgba(${_hexToRgb(pal.from)},0.28)`:`rgba(${_hexToRgb(pal.from)},0.3)`};
+  border-radius:22px;
+  backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+  box-shadow:${isLight
+    ? `0 8px 32px rgba(${_hexToRgb(pal.from)},0.16), inset 0 1px 0 rgba(255,255,255,0.9)`
+    : `0 4px 32px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.08)`};
+  transition:transform 0.3s cubic-bezier(.34,1.56,.64,1),box-shadow 0.3s;
+  position:relative;overflow:hidden;
+}
+.ld-aurora-card::after{
+  content:'';position:absolute;top:0;left:0;width:35%;height:100%;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,${isLight?'0.4':'0.08'}),transparent);
+  animation:shimmerMove 6s ease-in-out infinite;
+  animation-delay:var(--shimmer-delay,1s);
+  pointer-events:none;
+}
+.ld-aurora-card:hover{
+  transform:translateY(-6px) scale(1.015);
+  animation-play-state:paused,paused;
+  box-shadow:${isLight
+    ? `0 24px 48px rgba(${_hexToRgb(pal.from)},0.24), inset 0 1px 0 rgba(255,255,255,1)`
+    : `0 20px 52px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.12)`};
+}
+
+/* Aurora section bg */
 .ld-aurora{
-  background:linear-gradient(-45deg,${pal.bg||'#09090b'},${pal.from}55,${pal.to}44,${pal.bg||'#09090b'},${pal.from}33);
+  background:linear-gradient(-45deg,
+    ${pal.bg||'#09090b'},
+    rgba(${_hexToRgb(pal.from)},${isLight?'0.55':'0.45'}),
+    rgba(${_hexToRgb(pal.to)},${isLight?'0.45':'0.35'}),
+    ${pal.bg||'#09090b'},
+    rgba(${_hexToRgb(pal.from)},${isLight?'0.35':'0.25'})
+  );
   background-size:400% 400%;
   animation:aurora 14s ease infinite;
 }
-.ld-aurora-card{
-  background:linear-gradient(-45deg,rgba(${_hexToRgb(pal.from)},${isLight?'0.08':'0.14'}) 0%,${isLight?'rgba(255,255,255,0.7)':'rgba(255,255,255,0.03)'} 40%,rgba(${_hexToRgb(pal.to)},${isLight?'0.07':'0.12'}) 100%);
-  background-size:300% 300%;
-  animation:aurora 10s ease infinite;
-  border:1px solid ${isLight?`rgba(${_hexToRgb(pal.from)},0.2)`:`rgba(${_hexToRgb(pal.from)},0.25)`};
-  border-radius:22px;
-  backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);
-  box-shadow:${isLight?`0 4px 24px rgba(${_hexToRgb(pal.from)},0.1),inset 0 1px 0 rgba(255,255,255,0.8)`:`0 4px 32px rgba(0,0,0,0.3),inset 0 1px 0 rgba(255,255,255,0.07)`};
-  transition:transform 0.25s cubic-bezier(.34,1.56,.64,1),box-shadow 0.25s;
-}
-.ld-aurora-card:hover{transform:translateY(-4px);box-shadow:${isLight?`0 16px 40px rgba(${_hexToRgb(pal.from)},0.18),inset 0 1px 0 rgba(255,255,255,0.9)`:`0 16px 48px rgba(0,0,0,0.5),inset 0 1px 0 rgba(255,255,255,0.1)`}}
 
 /* Stack table */
 .ld-table{width:100%;border-collapse:separate;border-spacing:0}
@@ -920,6 +984,18 @@ function renderLandingFromBlocks(blocks, paletteId, customFrom, customTo) {
 <div class="ld-orb" style="width:500px;height:500px;background:radial-gradient(circle,rgba(${_hexToRgb(pal.to)},0.15) 0%,transparent 70%);bottom:10%;right:-100px;animation-duration:18s;animation-delay:-6s"></div>
 ${htmlBlocks}
 <script>
+// Assign random float/shimmer delays so cards don't all move in sync
+(function(){
+  var cards = document.querySelectorAll('.ld-card,.ld-aurora-card');
+  cards.forEach(function(c, i){
+    var floatDur = (5.5 + (i % 4) * 0.8).toFixed(1) + 's';
+    var floatDelay = (-Math.random() * 5).toFixed(1) + 's';
+    var shimmerDelay = (i * 1.3 % 7).toFixed(1) + 's';
+    c.style.setProperty('--float-dur', floatDur);
+    c.style.setProperty('--float-delay', floatDelay);
+    c.style.setProperty('--shimmer-delay', shimmerDelay);
+  });
+})();
 // Scroll-triggered fade-in with stagger
 (function(){
   var els = document.querySelectorAll('.ld-animate,.ld-card,.ld-card-dark,section');
