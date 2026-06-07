@@ -279,20 +279,36 @@ details.ld-faq .faq-body{padding:0 24px 20px;color:rgba(255,255,255,0.7);font-si
 .ld-table .ld-table-val{text-align:right;font-weight:600;text-decoration:line-through;color:rgba(255,255,255,0.35);font-size:14px}
 .ld-table-total{border-top:2px solid rgba(255,255,255,0.12)!important;font-weight:800;font-size:18px}
 
-/* Responsive */
+/* Metrics grid (responsive via CSS var) */
+.ld-metrics-grid{display:grid;gap:16px;grid-template-columns:repeat(var(--mcols,3),1fr)}
+@media(max-width:640px){.ld-metrics-grid{grid-template-columns:repeat(2,1fr)!important}}
+@media(max-width:400px){.ld-metrics-grid{grid-template-columns:1fr!important}}
+
+/* Responsive — tablet */
 @media(max-width:900px){
-  .ld-section,.ld-section-sm{padding:64px 0}
+  .ld-section{padding:72px 0}
+  .ld-section-sm{padding:48px 0}
   .ld-g4{grid-template-columns:repeat(2,1fr)}
+  .ld-hero-cols{gap:40px!important}
 }
+/* Responsive — mobile */
 @media(max-width:640px){
-  .ld-inner{padding:0 18px}
-  .ld-h1{font-size:36px}
-  .ld-h2{font-size:28px}
-  .ld-section,.ld-section-sm{padding:52px 0}
-  .ld-g2,.ld-g3,.ld-g4{grid-template-columns:1fr}
-  .ld-hero-cols{flex-direction:column!important}
+  .ld-inner{padding:0 16px}
+  .ld-h1{font-size:clamp(28px,8vw,38px)!important}
+  .ld-h2{font-size:clamp(24px,7vw,32px)!important}
+  .ld-h3{font-size:20px!important}
+  .ld-body{font-size:16px}
+  .ld-section{padding:52px 0}
+  .ld-section-sm{padding:36px 0}
+  .ld-g2,.ld-g3,.ld-g4{grid-template-columns:1fr!important}
+  .ld-hero-cols{flex-direction:column!important;gap:32px!important}
+  .ld-hero-cols > *:first-child{order:1}
+  .ld-hero-cols > *:last-child{order:2;width:100%!important;max-width:100%!important}
   .ld-nav-links{display:none!important}
-  .ld-btn-lg{font-size:16px;padding:16px 28px}
+  #ld-nav-ham{display:flex!important}
+  .ld-btn-lg{font-size:16px;padding:16px 28px;width:100%;justify-content:center}
+  .ld-btn{font-size:15px;padding:14px 24px}
+  .ld-card{padding:20px}
 }
 `;
 }
@@ -319,9 +335,18 @@ function _renderNav(data, pal) {
   <div class="ld-inner" style="height:64px;display:flex;align-items:center;gap:32px">
     <div style="font-weight:800;font-size:19px;white-space:nowrap;${_gradText(pal)}">${_e(data.logo || 'Mi Brand')}</div>
     <div class="ld-nav-links" style="flex:1;display:flex;gap:28px;justify-content:center">${links}</div>
+    <button id="ld-nav-ham" onclick="var m=document.getElementById('ld-nav-mobile');m.style.display=m.style.display==='flex'?'none':'flex'" style="display:none;flex-direction:column;justify-content:center;gap:5px;width:36px;height:36px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);border-radius:8px;cursor:pointer;padding:6px;margin-left:auto">
+      <div style="height:2px;background:#fff;border-radius:2px"></div>
+      <div style="height:2px;background:#fff;border-radius:2px"></div>
+      <div style="height:2px;background:#fff;border-radius:2px"></div>
+    </button>
     <a href="${_e(data.cta_href||'#ld-cta_final')}" class="ld-btn" style="padding:10px 22px;font-size:14px;border-radius:10px;box-shadow:none;${_gradBg(pal)}">${_e(data.cta_text||'Comenzar')}</a>
   </div>
-</nav>`;
+</nav>
+<div id="ld-nav-mobile" style="display:none;flex-direction:column;gap:0;background:rgba(9,9,11,0.97);border-bottom:1px solid rgba(255,255,255,0.08);padding:8px 0;position:sticky;top:64px;z-index:99">
+  ${_arr(data.links).map(l => `<a href="${_navAnchor(l)}" onclick="document.getElementById('ld-nav-mobile').style.display='none'" style="display:block;padding:14px 24px;font-size:15px;font-weight:600;color:rgba(255,255,255,0.8);border-bottom:1px solid rgba(255,255,255,0.05)">${_e(l)}</a>`).join('')}
+  <div style="padding:12px 16px"><a href="${_e(data.cta_href||'#ld-cta_final')}" class="ld-btn" style="width:100%;justify-content:center;${_gradBg(pal)}">${_e(data.cta_text||'Comenzar')}</a></div>
+</div>`;
 }
 
 function _renderHero(data, pal) {
@@ -382,7 +407,7 @@ function _renderParaQuien(data, pal) {
       <span style="color:#ef4444;flex-shrink:0">${_icon('cancel',20)}</span> ${_e(t)}
      </li>`).join('');
   return `
-<section id="ld-para_quien" class="ld-section">
+<section id="ld-para_quien" class="ld-section" style="background:rgba(${_hexToRgb(pal.from)},0.04)">
   <div class="ld-inner">
     <div class="ld-g2">
       <div class="ld-card">
@@ -426,10 +451,10 @@ function _renderMetricas(data, pal) {
      </div>`).join('');
   const cols = Math.min(4, _arr(data.items).filter(i=>i&&i.value).length);
   return `
-<section id="ld-metricas" class="ld-section-sm">
+<section id="ld-metricas" class="ld-section-sm" style="background:linear-gradient(135deg,rgba(${_hexToRgb(pal.from)},0.06) 0%,rgba(${_hexToRgb(pal.to)},0.04) 100%)">
   <div class="ld-inner">
     ${data.headline ? `<div class="ld-center" style="margin-bottom:40px"><h2 class="ld-h2">${_e(data.headline)}</h2></div>` : ''}
-    <div style="display:grid;grid-template-columns:repeat(${cols},1fr);gap:16px">${items}</div>
+    <div class="ld-metrics-grid" style="--mcols:${cols}">${items}</div>
   </div>
 </section>`;
 }
@@ -468,7 +493,7 @@ function _renderModulos(data, pal) {
       </div>
      </div>`).join('');
   return `
-<section id="ld-modulos" class="ld-section">
+<section id="ld-modulos" class="ld-section" style="background:rgba(255,255,255,0.015)">
   <div class="ld-inner">
     <div class="ld-center" style="margin-bottom:56px">
       ${data.headline ? `<h2 class="ld-h2">${_e(data.headline)}</h2>` : ''}
@@ -523,7 +548,7 @@ function _renderBonos(data, pal) {
       <div style="position:absolute;top:-20px;right:-20px;width:80px;height:80px;border-radius:50%;${_gradBg(pal)};opacity:0.08"></div>
      </div>`).join('');
   return `
-<section id="ld-bonos" class="ld-section">
+<section id="ld-bonos" class="ld-section" style="background:linear-gradient(180deg,rgba(${_hexToRgb(pal.from)},0.07) 0%,transparent 100%)">
   <div class="ld-inner">
     <div class="ld-center" style="margin-bottom:56px">
       <div class="ld-section-tag">${_icon('workspace_premium',16)} <span>Bonos exclusivos</span></div>
@@ -540,7 +565,7 @@ function _renderStack(data, pal) {
     `<tr><td class="ld-table-name">${_icon('check',18,pal.from)} ${_e(item.name||item.label)}</td><td class="ld-table-val">${_e(item.value)}</td></tr>`
   ).join('');
   return `
-<section id="ld-stack" class="ld-section-sm">
+<section id="ld-stack" class="ld-section-sm" style="background:rgba(255,255,255,0.02)">
   <div class="ld-inner">
     <div class="ld-card" style="max-width:680px;margin:0 auto;padding:40px">
       <h2 class="ld-h3" style="margin-bottom:32px;text-align:center">${_e(data.headline||'Todo lo que recibís hoy:')}</h2>
@@ -585,7 +610,7 @@ function _renderFaq(data, pal) {
       <div class="faq-body">${_e(item.answer)}</div>
      </details>`).join('');
   return `
-<section id="ld-faq" class="ld-section">
+<section id="ld-faq" class="ld-section" style="background:rgba(${_hexToRgb(pal.from)},0.03)">
   <div class="ld-inner">
     <div class="ld-center" style="margin-bottom:48px">
       <h2 class="ld-h2">${_e(data.headline||'Preguntas frecuentes')}</h2>
