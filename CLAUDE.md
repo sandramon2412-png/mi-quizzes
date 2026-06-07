@@ -1300,18 +1300,134 @@ Sesión enfocada en el landing-builder: fixes de bugs críticos + mejoras de gal
 
 ---
 
-## BUGS PENDIENTES — Landing Builder (reportados 6 jun 2026)
+## SESIÓN 7 JUN 2026 — branch `claude/great-cerf-Y14qg`
 
-Sandra reportó 10 problemas al probar el landing-builder. Todos en `landing-builder.html` y `landing-blocks.js`. Ninguno corregido aún.
+### Contexto
+Sesión enfocada 100% en el landing-builder: corrección de bugs de layout móvil/tablet, mejoras visuales (glassmorphism, animaciones), y el efecto de gradiente animado tipo aurora en las cards.
 
-### BUG 1 — Links del nav llevan a otra pestaña del builder
-**Síntoma**: Al hacer clic en los subtítulos/links del nav en la preview, abre otra pestaña o navega fuera del builder. Si se regresa, va a la home de Luminous.
-**Causa**: El `navGuard` script inyectado en el iframe intercepta los hash links (`#ld-X`) y usa `scrollIntoView`. El problema puede ser que la sección destino no existe en el iframe al momento del clic, haciendo que `document.querySelector(h)` retorne null y el evento propague.
-**Fix sugerido**: En el `navGuard`, si `!t` hacer scroll a `document.body` en lugar de no hacer nada. Adicionalmente, agregar `target="_self"` a todos los links en `_renderNav()`.
+### 1. Fix generación de landing — silenciosamente rota (commit anterior)
 
-### BUG 2 — Agregar bloque queda abajo y no se puede subir
-**Síntoma**: Cuando se agrega un bloque nuevo, queda al final de la lista. Los botones de subir/bajar (flechas) no responden.
-**Causa**: El evento de clic en `.move-up` / `.move-down` hace `return` pero no llama `e.stopPropagation()`, así que el evento burbujea al listener padre del `.block-item` que llama `openBlockEditor(idx)` y aborta el reorder.
+**Causa raíz combinada**:
+- Renderers con `(data.X || []).filter()` lanzaban TypeError silencioso cuando la IA devolvía string en lugar de array
+- `switchToBuilderMode()` se llamaba ANTES de que los renders terminaran → formulario desaparecía sin mostrar la landing
+- `max_tokens: 5000` truncaba el JSON de 14 bloques
+
+**Fix**: `_arr(v)` helper en todos los renderers + reordenar `switchToBuilderMode()` después de `renderPreview()` + `max_tokens: 8192` + cambio a `claude-haiku` (10-15s vs 60-90s)
+
+### 2. Mejoras visuales del landing-builder (esta sesión)
+
+#### Responsive nav — hamburger siempre visible ✅
+**Causa raíz**: El botón CTA del nav (`display:inline-flex`) estaba en el mismo flex row que el hamburger. Con el logo largo, el CTA empujaba al hamburger y lo cortaba mostrando solo "≡ Mc".
+
+**Fix en 3 capas**:
+1. Logo: `flex-shrink:1` + `text-overflow:ellipsis` — se encoge en lugar de empujar
+2. Hamburger: `flex-shrink:0` + `white-space:nowrap` — nunca cede espacio
+3. CTA nav: `#ld-nav-cta` oculto via CSS (`display:none!important`) en ≤768px
+4. **JS fallback**: `applyNavMode()` mide `window.innerWidth` al cargar y en resize — fuerza los `display` directamente, sin depender de media queries CSS en el iframe
+
+#### Botón "Comenzar ahora" — texto cortado en celular ✅
+**Causa**: `white-space:nowrap` implícito + padding grande en pantallas angostas.
+**Fix**: En ≤640px: `width:100%`, `line-height:1.3`, padding reducido. En ≤768px: `font-size:17px`, padding intermedio. El texto wrappea limpiamente en 2 líneas cuando no cabe.
+
+#### Nuevo breakpoint iPad (768px) ✅
+- Hero columns se apilan (`flex-direction:column`)
+- Nav oculta links y muestra hamburger
+- `.ld-g3` baja a 2 columnas
+
+#### Hamburger con label "Menú"/"Cerrar" ✅
+El botón muestra texto "Menú" al lado de las 3 líneas. Al abrir el menú cambia a "Cerrar" via JS inline. Más claro que solo 3 rayas.
+
+#### Cards glassmorphic ✅
+- **Fondo**: gradiente coloreado con `rgba(from-color, 0.22)` en esquinas y blanco suave al centro — visible contra fondos claros
+- **Borde**: color de paleta (`rgba(from, 0.22)`) en lugar de gris
+- **Sombra**: con color de paleta, da efecto "brillo propio"
+- **Inner highlight**: `inset 0 1px 0 rgba(255,255,255,0.95)` — línea de luz en borde superior
+- **::before**: gradiente de brillo en esquina superior izquierda (efecto vidrio)
+
+#### Animaciones continuas en cards ✅
+- **Float** (`@keyframes cardFloat`): cada card sube y baja ~7px con duración entre 5.5s y 8s. Delay aleatorio por card vía `--float-delay` CSS custom property — no se mueven sincronizadas
+- **Shimmer** (`@keyframes shimmerMove`): franja de luz semitransparente cruza la card cada 5-6 segundos (efecto reflejo en vidrio). Delay distinto por card vía `--shimmer-delay`
+- **Hover pausa ambas**: `animation-play-state:paused` — card se congela levantada mientras el usuario la lee
+- JS asigna los delays al cargar: `c.style.setProperty('--float-dur', ...)` para cada `.ld-card` y `.ld-aurora-card`
+
+#### Aurora cards (testimonios + métricas) ✅
+- Gradiente diagonal con `background-size:350%` + `@keyframes aurora` (14s) — colores se mueven lentamente
+- En modo claro: opacidad 0.22/0.18 (antes 0.08 — invisible). Ahora claramente visible
+- `::after` shimmer sweep encima del gradiente que anima
+
+#### CTA final con aurora ✅
+- `section#ld-cta_final` usa clase `.ld-aurora` con 5 stops de color y `background-size:400%`
+- Overlay de radial gradient centrado para énfasis
+- Visible en modo claro (opacidad 0.55/0.45) y oscuro (0.45/0.35)
+
+#### Hero con mesh grid ✅
+- Fondo SVG con cuadrícula en el color de la paleta (7% opacity) — da profundidad sin distraer
+- Imagen del hero con `box-shadow` coloreado con el gradiente de la paleta
+
+#### Orbes ambientales ✅
+- 2 divs con `position:fixed`, `filter:blur(80px)`, `animation:floatOrb` — glows de fondo
+- Se ocultan en mobile (`display:none`) para no afectar performance
+
+### 3. Estado de bugs originales (10 bugs reportados 6 jun)
+
+| Bug | Estado | Nota |
+|-----|--------|------|
+| BUG 1 — Links nav abren otra pestaña | ✅ | navGuard en JS del landing HTML, hash links hacen scrollIntoView |
+| BUG 2 — Move up/down no funciona | ✅ | `e.stopPropagation()` en handlers |
+| BUG 3 — Imagen solo permite URL | 🟡 Pendiente | No tocado |
+| BUG 4 — Panel no actualiza texto | 🟡 Pendiente | No verificado |
+| BUG 5 — Generación tarda 2 min | ✅ | Haiku model, ahora ~10-15s |
+| BUG 6 — Fondos siempre negros | ✅ | `renderLandingFromBlocks` spread `...palBase` con bg/fg/mode/surface |
+| BUG 7 — Sin control de tipografía | 🟡 Pendiente | No tocado |
+| BUG 8 — Celular/tablet roto | ✅ | Nuevo breakpoint 768px + JS fallback nav |
+| BUG 9 — Vista previa "no existe" | 🟡 Pendiente | No tocado |
+| BUG 10 — Chat IA no hace cambios | 🟡 Pendiente | No tocado |
+
+### 4. Bugs/mejoras pendientes para próxima sesión
+
+#### 🟡 BUG 3 — Bloque `imagen` solo acepta URL, sin upload
+Agregar campo `type:'image'` en `BLOCK_FIELDS.imagen` igual que en `galeria`.
+
+#### 🟡 BUG 4 — Panel derecho no refleja lo guardado
+Verificar orden en `saveActiveBlock()`: `block.data = collectBlockData(block)` → `buildFieldEditor(block, idx)` → `renderPreview()`.
+
+#### 🟡 BUG 7 — Sin selector de tipografía global
+Agregar selector de fuente en el formulario inicial del builder (o en un panel de "Estilo global"). Opciones: Plus Jakarta Sans, Inter, Playfair Display, Lato. Se inyecta como Google Font + variable CSS en `_baseCss()`.
+
+#### 🟡 BUG 9 — Vista previa dice "landing no existe"
+En `landing-view.html`: si el usuario es el owner de la landing, mostrarla aunque `published = false`. Agregar modo `?preview=true` que bypasea el check.
+
+#### 🟡 BUG 10 — Chat de IA no aplica cambios
+- Mostrar claramente qué bloque está activo en el chat
+- Al recibir respuesta de IA: merge solo los campos devueltos (no sobrescribir todo)
+- Botón "Deshacer último cambio del chat"
+
+#### 🟡 Límites ebook — REVERTIR
+`app.js → PlanLimits`: Pro=999, Growth=999 (temporales para testing). **REVERTIR** a Pro→5, Growth→20 cuando Sandra confirme que el flujo de PDF funciona bien.
+
+### Archivos modificados esta sesión
+| Archivo | Cambios clave |
+|---------|---------------|
+| `landing-blocks.js` | `_baseCss()` glass cards, animaciones float+shimmer, aurora cards, aurora section, breakpoints, nav CSS; `_renderNav()` JS fallback applyNavMode; `_renderHero()` mesh grid; `_renderCtaFinal()` aurora bg; `_renderBeneficios()` icon glow; `_renderTestimonios()` aurora-card |
+| `app.js` | `generateLandingBlocks`: haiku model, max_tokens 8192 |
+
+### Commits del branch `claude/great-cerf-Y14qg`
+- `38c3753` — Fix mobile/tablet layout + hamburger menu + interactive animations
+- `518e888` — Landing: glassmorphic cards, mesh hero, mobile nav fix, scroll animations
+- `6293425` — Landing: aurora animated gradients + mobile nav JS fallback
+- `1e3d5d0` — Cards: visible glass effect on light palettes + float + shimmer animations
+
+### Estado al 7 jun 2026
+- ✅ Generación de landing ~10-15s (Haiku)
+- ✅ Nav hamburger siempre visible en mobile/tablet
+- ✅ Botón CTA nunca se corta en celular
+- ✅ Cards glassmorphic con tinte de color visible en paletas claras
+- ✅ Float animation: cards respiran de forma independiente
+- ✅ Shimmer sweep: reflejo de luz cruzando cards cada ~6s
+- ✅ Aurora en CTA final y cards de testimonios/métricas
+- ✅ Hero con mesh grid + glow coloreado en imagen
+- 🟡 Bugs 3, 4, 7, 9, 10 del landing-builder aún pendientes
+- 🟡 PlanLimits ebook: revertir Pro→5, Growth→20
 **Fix**: Agregar `e.stopPropagation()` en los handlers de `.move-up` y `.move-down` (líneas ~498-518 de `landing-builder.html`).
 
 ### BUG 3 — Sección "Imagen" solo permite una imagen y solo con URL
@@ -1361,18 +1477,7 @@ Sandra reportó 10 problemas al probar el landing-builder. Todos en `landing-bui
 - Al recibir la respuesta de la IA, hacer merge SOLO de los campos que devuelve (no sobrescribir campos que la IA no mencionó)
 - Agregar un "undo" para el último cambio del chat
 
-### Prioridad de corrección sugerida
-1. 🔴 **BUG 2** (move up/down) — una línea: `e.stopPropagation()`
-2. 🔴 **BUG 8** (móvil roto) — crítico porque la mayoría ve en celular
-3. 🔴 **BUG 6** (fondos negros repetitivos) — impacto visual grande
-4. 🟡 **BUG 4** (campo no actualiza) — verificar si es el orden en `saveActiveBlock`
-5. 🟡 **BUG 1** (nav links) — agregar `e.stopPropagation()` y verificar `querySelector`
-6. 🟡 **BUG 9** (vista previa) — bypass `published` check para el owner
-7. 🟡 **BUG 7** (tipografía global) — selector de fuente en el formulario
-8. 🟢 **BUG 3** (upload en imagen) — agregar campo `type:'image'` al bloque imagen
-9. 🟢 **BUG 5** (velocidad) — puede aceptarse si se mejora el UX de espera
-10. 🟢 **BUG 10** (chat) — mejora de UX del chat
-
-### Archivos a tocar en la próxima sesión
-- `landing-blocks.js`: `_baseCss()` (responsive + fondos), secciones con background, `_renderNav()` (target links)
-- `landing-builder.html`: `renderBlocksList()` (stopPropagation), `saveActiveBlock()` (orden), `sendChat()` (UX), `landing-view.html` (preview bypass)
+### Archivos a tocar en la próxima sesión para bugs pendientes
+- `landing-blocks.js`: `BLOCK_FIELDS.imagen` (agregar type:'image')
+- `landing-builder.html`: `saveActiveBlock()` (orden de calls), `sendChat()` (UX activo/inactivo, merge parcial)
+- `landing-view.html`: bypass `published` check para owner (agregar `?preview=true` mode)
