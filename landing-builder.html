@@ -224,7 +224,13 @@
 
       <label class="field-label">Paleta de color</label>
       <div id="palette-swatches" class="flex flex-wrap gap-2 mt-1 mb-1"></div>
-      <p class="text-[10px] text-on-surface-variant/60 mb-3" id="palette-name-lbl">Cargando…</p>
+      <p class="text-[10px] text-on-surface-variant/60" id="palette-name-lbl">Cargando…</p>
+      <div style="display:flex;gap:4px;margin-top:6px;margin-bottom:10px">
+        <span style="font-size:10px;color:#71717a;align-self:center;margin-right:2px">Intensidad:</span>
+        <button class="pal-int sel" data-int="normal" onclick="setPaletteIntensity('normal',this)" style="font-size:10px;padding:3px 8px;border-radius:6px;border:1px solid #3f3f46;background:#27272a;color:#e4e4e7;cursor:pointer">Normal</button>
+        <button class="pal-int" data-int="suave" onclick="setPaletteIntensity('suave',this)" style="font-size:10px;padding:3px 8px;border-radius:6px;border:1px solid #3f3f46;background:transparent;color:#a1a1aa;cursor:pointer">Suave</button>
+        <button class="pal-int" data-int="fuerte" onclick="setPaletteIntensity('fuerte',this)" style="font-size:10px;padding:3px 8px;border-radius:6px;border:1px solid #3f3f46;background:transparent;color:#a1a1aa;cursor:pointer">Fuerte</button>
+      </div>
 
       <label class="field-label">Imágenes</label>
       <div class="space-y-1.5">
@@ -380,6 +386,34 @@ let landing = null;       // { id, title, slug, blocks:[], palette:'blue-purple'
 let currentUser = null;
 let activeBlockIdx = -1;  // index in landing.blocks of the block being edited
 let chatOpen = false;
+let paletteIntensity = 'normal'; // 'suave' | 'normal' | 'fuerte'
+
+function setPaletteIntensity(val, btn) {
+  paletteIntensity = val;
+  document.querySelectorAll('.pal-int').forEach(b => {
+    b.classList.remove('sel');
+    b.style.background = 'transparent';
+    b.style.color = '#a1a1aa';
+  });
+  btn.classList.add('sel');
+  btn.style.background = '#27272a';
+  btn.style.color = '#e4e4e7';
+  renderPreview();
+  autosave();
+}
+
+// Adjust palette colors based on intensity
+function applyIntensity(pal) {
+  if (paletteIntensity === 'normal') return pal;
+  // Parse hex to rgb, shift lightness
+  function shiftHex(hex, factor) {
+    const r = parseInt(hex.slice(1,3),16), g = parseInt(hex.slice(3,5),16), b = parseInt(hex.slice(5,7),16);
+    const nr = Math.min(255,Math.round(r*factor)), ng = Math.min(255,Math.round(g*factor)), nb = Math.min(255,Math.round(b*factor));
+    return '#'+[nr,ng,nb].map(v=>v.toString(16).padStart(2,'0')).join('');
+  }
+  const f = paletteIntensity === 'suave' ? 0.72 : 1.22;
+  return { ...pal, from: shiftHex(pal.from, f), to: shiftHex(pal.to, f) };
+}
 
 // ═══════════════════════════════════════════════════════════
 // PALETTE UI
@@ -401,7 +435,7 @@ function buildSwatches(containerId, onSelect, selected) {
   ];
   const warmIds = ['tierra-cafe','nude-rose','crema-dorado','terracota','madera-sage','arena-tostada','chocolate-miel','naranja-tierra','verde-tierra'];
   window.LANDING_PALETTES_DEF.forEach(p => {
-    const grpLabel = p.mode === 'dark' ? 'Oscuras' : warmIds.includes(p.id) ? 'Tierra y cálidas' : 'Suaves y pasteles';
+    const grpLabel = p.solid ? 'Sólidos / Planos' : p.mode === 'dark' ? 'Oscuras' : warmIds.includes(p.id) ? 'Tierra y cálidas' : 'Suaves y pasteles';
     let grp = container.querySelector(`[data-grp="${grpLabel}"]`);
     if (!grp) {
       const section = document.createElement('div');
@@ -471,7 +505,11 @@ function buildBrief() {
 function renderPreview() {
   if (!landing || !landing.blocks) return;
   const frame = document.getElementById('preview-frame');
-  let html = renderLandingFromBlocks(landing.blocks, landing.palette || 'blue-purple');
+  const _palRaw = window._palById ? window._palById(landing.palette || 'blue-purple') : null;
+  const _palAdj = _palRaw ? applyIntensity(_palRaw) : null;
+  let html = _palAdj
+    ? renderLandingFromBlocks(landing.blocks, landing.palette || 'blue-purple', _palAdj.from, _palAdj.to)
+    : renderLandingFromBlocks(landing.blocks, landing.palette || 'blue-purple');
   // Inject a script that intercepts anchor clicks so preview links don't navigate
   const navGuard = '<scr' + 'ipt>document.addEventListener("click",function(e){var a=e.target.closest("a");if(!a)return;var h=a.getAttribute("href")||"";if(h.startsWith("#")){e.preventDefault();var t=document.querySelector(h);if(t)t.scrollIntoView({behavior:"smooth"});}else if(h&&!h.startsWith("javascript")){e.preventDefault();}},true);</scr' + 'ipt>';
   html = html.replace('</body>', navGuard + '</body>');
