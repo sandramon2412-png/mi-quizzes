@@ -253,7 +253,14 @@ function _icon(name, size = 24, color = 'inherit') {
 // ──────────────────────────────────────────────────────────
 // BASE CSS for rendered landings (no Tailwind dependency)
 // ──────────────────────────────────────────────────────────
-function _baseCss(pal) {
+const FONT_DEFS = {
+  'jakarta':  { name:'Plus Jakarta Sans', family:"'Plus Jakarta Sans',system-ui,sans-serif", url:"Plus+Jakarta+Sans:wght@300;400;500;600;700;800" },
+  'inter':    { name:'Inter',             family:"'Inter',system-ui,sans-serif",             url:"Inter:wght@300;400;500;600;700;800" },
+  'playfair': { name:'Playfair Display',  family:"'Playfair Display',Georgia,serif",         url:"Playfair+Display:wght@400;700;800" },
+  'lato':     { name:'Lato',             family:"'Lato',system-ui,sans-serif",              url:"Lato:wght@300;400;700;900" },
+};
+
+function _baseCss(pal, font) {
   const isLight = pal.mode === 'light';
   const bg      = pal.bg      || (isLight ? '#ffffff' : '#09090b');
   const fg      = pal.fg      || (isLight ? '#111111' : '#ffffff');
@@ -267,7 +274,7 @@ function _baseCss(pal) {
   return `
 *{box-sizing:border-box;margin:0;padding:0}
 html{scroll-behavior:smooth;font-size:16px}
-body{font-family:'Plus Jakarta Sans',system-ui,sans-serif;background:${bg};color:${fg};overflow-x:hidden;-webkit-font-smoothing:antialiased}
+body{font-family:${(FONT_DEFS[font]||FONT_DEFS['jakarta']).family};background:${bg};color:${fg};overflow-x:hidden;-webkit-font-smoothing:antialiased}
 a{text-decoration:none;color:inherit}
 img{max-width:100%;height:auto;display:block;border-radius:12px}
 .material-symbols-outlined{font-family:'Material Symbols Outlined';font-variation-settings:'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 24;font-style:normal;line-height:1;letter-spacing:normal;text-transform:none;white-space:nowrap;word-wrap:normal;direction:ltr;-webkit-font-smoothing:antialiased}
@@ -958,7 +965,7 @@ function renderBlock(type, data, pal) {
   return fn ? fn(data || {}, pal) : '';
 }
 
-function renderLandingFromBlocks(blocks, paletteId, customFrom, customTo) {
+function renderLandingFromBlocks(blocks, paletteId, customFrom, customTo, font) {
   const palBase = _palById(paletteId);
   const pal = {
     ...palBase,
@@ -975,9 +982,9 @@ function renderLandingFromBlocks(blocks, paletteId, customFrom, customTo) {
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Landing</title>
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=${(FONT_DEFS[font]||FONT_DEFS['jakarta']).url}&display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com/icon?family=Material+Symbols+Outlined" rel="stylesheet">
-<style>${_baseCss(pal)}</style>
+<style>${_baseCss(pal, font)}</style>
 </head>
 <body>
 <div class="ld-orb" style="width:600px;height:600px;background:radial-gradient(circle,rgba(${_hexToRgb(pal.from)},0.18) 0%,transparent 70%);top:-200px;left:-150px;animation-duration:14s"></div>
@@ -1287,6 +1294,7 @@ if (typeof window !== 'undefined') {
   window._palById = _palById;
   window.BLOCK_DEFAULTS = BLOCK_DEFAULTS;
   window.BLOCK_ORDER = BLOCK_ORDER;
+  window.FONT_DEFS = FONT_DEFS;
   window.BLOCK_FIELDS = BLOCK_FIELDS;
   window.BLOCK_LABELS = BLOCK_LABELS;
   window.BLOCK_ICONS = BLOCK_ICONS;
