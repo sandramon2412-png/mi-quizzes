@@ -323,7 +323,7 @@
             </button>
           </div>
         </div>
-        <div id="chat-log" class="overflow-y-auto p-2 space-y-2" style="max-height:140px;min-height:60px;"></div>
+        <div id="chat-log" class="overflow-y-auto p-2 space-y-2" style="max-height:220px;min-height:80px;"></div>
         <div class="flex gap-2 p-2 border-t border-outline-variant/15">
           <textarea id="chat-input" rows="2" placeholder="Cambia el título del hero, agrega un testimonio de Ana…"
                     class="field-input text-xs resize-none flex-1" style="border-radius:8px;padding:6px 8px;"></textarea>
@@ -1198,6 +1198,7 @@ async function generateLanding() {
       + '-' + Math.random().toString(36).slice(2,5);
 
     const _genFont = document.getElementById('fld-font')?.value || 'jakarta';
+    const _genScale = document.querySelector('[data-scale].sel')?.dataset.scale || 'md';
     landing = {
       id:       null,
       title,
@@ -1207,8 +1208,9 @@ async function generateLanding() {
       blocks:   mergedBlocks,
       messages: [],
       published: false,
-      settings: { font: _genFont },
+      settings: { font: _genFont, typoScale: _genScale },
     };
+    chatHistory = [];
 
     document.getElementById('ld-title').value = title;
     // Render first — if rendering fails (e.g. AI returned bad data) we stay on starter form
@@ -1313,42 +1315,62 @@ async function sendChat() {
   if (!msg || !landing) return;
 
   addChatMsg(msg, 'user');
+  chatHistory.push({ role: 'user', content: msg });
   input.value = '';
 
   const thinkingId = addChatMsg('<span class="dot"></span><span class="dot"></span><span class="dot"></span>', 'assistant', true);
 
   try {
-    let targetIdx = activeBlockIdx >= 0 ? activeBlockIdx : -1;
-    let result;
+    const result = await AI.chatEditLanding(
+      msg,
+      chatHistory.slice(-20),
+      landing.blocks,
+      landing.brief || ''
+    );
 
-    if (targetIdx >= 0) {
-      // Edit specific block
-      const block = landing.blocks[targetIdx];
-      // Save snapshot for undo
-      lastBlockSnapshot = { idx: targetIdx, data: JSON.parse(JSON.stringify(block.data)) };
-      result = await AI.editBlockData(block.type, block.data, msg, landing.brief || '');
-      if (result && typeof result === 'object') {
-        landing.blocks[targetIdx].data = { ...landing.blocks[targetIdx].data, ...result };
+    removeMsg(thinkingId);
+
+    if (result.action === 'edit' && Array.isArray(result.changes) && result.changes.length > 0) {
+      // Save snapshot of ALL changed blocks for undo
+      lastBlockSnapshot = result.changes.map(c => ({
+        idx: c.block_idx,
+        data: landing.blocks[c.block_idx] ? JSON.parse(JSON.stringify(landing.blocks[c.block_idx].data)) : null,
+      }));
+
+      let editedCount = 0;
+      for (const change of result.changes) {
+        const idx = change.block_idx;
+        if (idx >= 0 && idx < landing.blocks.length && change.data) {
+          landing.blocks[idx].data = { ...landing.blocks[idx].data, ...change.data };
+          editedCount++;
+        }
+      }
+
+      if (editedCount > 0) {
         renderPreview();
-        openBlockEditor(targetIdx);
+        renderBlocksList();
         autosave();
-        removeMsg(thinkingId);
-        addChatMsg(`Bloque "${BLOCK_LABELS[block.type]}" actualizado.`, 'assistant');
         // Show undo button
         const undoBtn = document.getElementById('chat-undo-btn');
-        if (undoBtn) undoBtn.classList.remove('hidden');
-        if (undoBtn) undoBtn.style.display = 'inline-flex';
-      } else {
-        throw new Error('Respuesta inesperada de la IA');
+        if (undoBtn) { undoBtn.classList.remove('hidden'); undoBtn.style.display = 'inline-flex'; }
       }
+
+      const replyText = result.reply || `${editedCount} bloque${editedCount !== 1 ? 's' : ''} actualizado${editedCount !== 1 ? 's' : ''}.`;
+      addChatMsg(replyText, 'assistant');
+      chatHistory.push({ role: 'assistant', content: replyText });
+
     } else {
-      // No active block
-      removeMsg(thinkingId);
-      addChatMsg('Seleccioná un bloque de la lista izquierda para editarlo con IA.', 'assistant');
+      // Conversational reply
+      const replyText = result.reply || 'No pude procesar eso.';
+      addChatMsg(replyText, 'assistant');
+      chatHistory.push({ role: 'assistant', content: replyText });
     }
+
   } catch(e) {
     removeMsg(thinkingId);
-    addChatMsg('Error: ' + e.message, 'assistant');
+    const errMsg = 'Error: ' + e.message;
+    addChatMsg(errMsg, 'assistant');
+    chatHistory.push({ role: 'assistant', content: errMsg });
   }
 }
 
@@ -1614,20 +1636,28 @@ function initUI() {
     if (e.target === document.getElementById('add-block-modal'))
       document.getElementById('add-block-modal').classList.add('hidden');
   });
-  document.getElementById('chat-toggle').addEventListener('click', toggleChat);
+  document.getElementById('chat-toggle').addEventListener('click', () => {
+    toggleChat();
+    // Show welcome message on first open
+    const log = document.getElementById('chat-log');
+    if (log && log.children.length === 0 && landing) {
+      addChatMsg('Hola! Decime qué querés cambiar en la landing. Por ejemplo: "cambiá el título del hero", "agregá un testimonio de María", "actualizá los beneficios para ser más directos"…', 'assistant');
+    }
+  });
   document.getElementById('chat-send').addEventListener('click', sendChat);
   document.getElementById('chat-undo-btn').addEventListener('click', () => {
     if (!lastBlockSnapshot || !landing) return;
-    const { idx, data } = lastBlockSnapshot;
-    if (landing.blocks[idx]) {
-      landing.blocks[idx].data = data;
-      renderPreview();
-      openBlockEditor(idx);
-      autosave();
-      addChatMsg('Cambio deshecho.', 'assistant');
-      lastBlockSnapshot = null;
-      document.getElementById('chat-undo-btn').style.display = 'none';
+    for (const snap of lastBlockSnapshot) {
+      if (snap.data !== null && landing.blocks[snap.idx]) {
+        landing.blocks[snap.idx].data = snap.data;
+      }
     }
+    renderPreview();
+    renderBlocksList();
+    autosave();
+    addChatMsg('Cambio deshecho.', 'assistant');
+    lastBlockSnapshot = null;
+    document.getElementById('chat-undo-btn').style.display = 'none';
   });
   document.getElementById('chat-input').addEventListener('keydown', e => {
     if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendChat(); }
