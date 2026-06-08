@@ -258,6 +258,8 @@ const FONT_DEFS = {
   'inter':    { name:'Inter',             family:"'Inter',system-ui,sans-serif",             url:"Inter:wght@300;400;500;600;700;800" },
   'playfair': { name:'Playfair Display',  family:"'Playfair Display',Georgia,serif",         url:"Playfair+Display:wght@400;700;800" },
   'lato':     { name:'Lato',             family:"'Lato',system-ui,sans-serif",              url:"Lato:wght@300;400;700;900" },
+  'dancing':  { name:'Dancing Script',   family:"'Dancing Script',cursive",                 url:"Dancing+Script:wght@400;600;700" },
+  'greatvibes':{ name:'Great Vibes',     family:"'Great Vibes',cursive",                    url:"Great+Vibes" },
 };
 
 const TYPO_SCALES = {
