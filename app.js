@@ -1207,6 +1207,53 @@ REGLAS:
     return this._parseJSONLoose(text);
   },
 
+  async chatEditLanding(userMsg, history, landingBlocks, brief) {
+    const blocksSummary = (landingBlocks || []).map((b, i) =>
+      `[${i}] ${b.type}: ${JSON.stringify(b.data).slice(0, 300)}`
+    ).join('\n');
+
+    const system = `Sos un editor de landing pages conversacional. Podés chatear normalmente Y editar la landing cuando el usuario lo pida.
+
+LANDING ACTUAL (${(landingBlocks||[]).length} bloques):
+${blocksSummary}
+
+PRODUCTO: ${(brief||'').slice(0,400)}
+
+CUANDO EL USUARIO PIDE UN CAMBIO, respondé con este JSON exacto (sin markdown, sin \`\`\`):
+{"action":"edit","changes":[{"block_idx":N,"data":{...solo los campos que cambian...}}],"reply":"Frase corta confirmando qué hiciste"}
+
+CUANDO ES SOLO CONVERSACIÓN (pregunta, sugerencia, feedback sin cambio inmediato):
+{"action":"chat","reply":"Tu respuesta en texto natural"}
+
+REGLAS:
+- Podés editar MÚLTIPLES bloques en una sola respuesta (changes es un array)
+- En "data" incluí SOLO los campos que cambian, no todo el objeto
+- Nunca uses emojis en el contenido de la landing
+- Si el usuario dice "cambiá el título", "actualizá los testimonios", "agregá un bono", etc. → acción "edit"
+- Si el usuario pregunta algo, pide consejo, o es una frase ambigua → acción "chat" y preguntá qué quiere hacer
+- Respondé siempre en español`;
+
+    const apiHistory = (history || [])
+      .filter(m => m.content && m.content.trim())
+      .map(m => ({ role: m.role, content: m.content }))
+      .slice(-20);
+
+    const text = await this._call(
+      [...apiHistory, { role: 'user', content: userMsg }],
+      1500,
+      { model: 'claude-haiku-4-5-20251001', system }
+    );
+
+    // Parse response
+    try {
+      const raw = text.trim().replace(/^```json\s*/,'').replace(/```\s*$/,'');
+      return JSON.parse(raw);
+    } catch(e) {
+      // If not JSON, treat as chat reply
+      return { action: 'chat', reply: text };
+    }
+  },
+
   _ebookSystemPrompt() {
     return `Eres un escritor profesional y editor experto en crear ebooks en español estilo Gamma — con bloques visuales, callouts y stats destacados.
 
@@ -1821,6 +1868,9 @@ const AI = {
   },
   async editBlockData(blockType, currentData, instruction, contextBrief = '') {
     return Claude.editBlockData(blockType, currentData, instruction, contextBrief);
+  },
+  async chatEditLanding(userMsg, history, landingBlocks, brief) {
+    return Claude.chatEditLanding(userMsg, history, landingBlocks, brief);
   },
   // Complejo: ebook estructurado — intenta Claude, cae a Groq si no hay créditos
   async generateEbook(brief, history = [], onProgress, docType = 'ebook') {

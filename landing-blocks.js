@@ -260,7 +260,13 @@ const FONT_DEFS = {
   'lato':     { name:'Lato',             family:"'Lato',system-ui,sans-serif",              url:"Lato:wght@300;400;700;900" },
 };
 
-function _baseCss(pal, font) {
+const TYPO_SCALES = {
+  'sm':  { h1:'clamp(28px,4vw,52px)',   h2:'clamp(22px,2.8vw,40px)', h3:'clamp(16px,1.8vw,24px)', body:'16px' },
+  'md':  { h1:'clamp(38px,5.5vw,76px)', h2:'clamp(30px,3.8vw,56px)', h3:'clamp(20px,2.2vw,30px)', body:'18px' },
+  'lg':  { h1:'clamp(48px,6.5vw,96px)', h2:'clamp(38px,4.5vw,68px)', h3:'clamp(24px,2.6vw,36px)', body:'20px' },
+};
+
+function _baseCss(pal, font, settings) {
   const isLight = pal.mode === 'light';
   const bg      = pal.bg      || (isLight ? '#ffffff' : '#09090b');
   const fg      = pal.fg      || (isLight ? '#111111' : '#ffffff');
@@ -290,10 +296,7 @@ img{max-width:100%;height:auto;display:block;border-radius:12px}
 .ld-section-sm{padding:60px 0}
 
 /* Typography */
-.ld-h1{font-size:clamp(38px,5.5vw,76px);font-weight:800;line-height:1.06;letter-spacing:-0.025em}
-.ld-h2{font-size:clamp(30px,3.8vw,56px);font-weight:800;line-height:1.1;letter-spacing:-0.02em}
-.ld-h3{font-size:clamp(20px,2.2vw,30px);font-weight:700;line-height:1.2;letter-spacing:-0.01em}
-.ld-body{font-size:18px;line-height:1.75;color:${muted}}
+${(() => { const ts = TYPO_SCALES[(settings&&settings.typoScale)||'md'] || TYPO_SCALES.md; return `.ld-h1{font-size:${ts.h1};font-weight:800;line-height:1.06;letter-spacing:-0.025em}\n.ld-h2{font-size:${ts.h2};font-weight:800;line-height:1.1;letter-spacing:-0.02em}\n.ld-h3{font-size:${ts.h3};font-weight:700;line-height:1.2;letter-spacing:-0.01em}\n.ld-body{font-size:${ts.body};line-height:1.75;color:${muted}}`; })()}
 .ld-small{font-size:13px;color:${dim};letter-spacing:0.01em}
 .ld-label{font-size:11px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:${dim}}
 .ld-section-tag{display:inline-flex;align-items:center;gap:8px;padding:8px 20px;border-radius:999px;background:${isLight?'rgba(255,255,255,0.75)':'rgba(255,255,255,0.07)'};border:1px solid ${border};font-size:13px;font-weight:600;margin-bottom:24px;backdrop-filter:blur(10px);box-shadow:0 2px 12px rgba(0,0,0,0.1)}
@@ -965,7 +968,7 @@ function renderBlock(type, data, pal) {
   return fn ? fn(data || {}, pal) : '';
 }
 
-function renderLandingFromBlocks(blocks, paletteId, customFrom, customTo, font) {
+function renderLandingFromBlocks(blocks, paletteId, customFrom, customTo, font, settings) {
   const palBase = _palById(paletteId);
   const pal = {
     ...palBase,
@@ -984,7 +987,7 @@ function renderLandingFromBlocks(blocks, paletteId, customFrom, customTo, font) 
 <title>Landing</title>
 <link href="https://fonts.googleapis.com/css2?family=${(FONT_DEFS[font]||FONT_DEFS['jakarta']).url}&display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com/icon?family=Material+Symbols+Outlined" rel="stylesheet">
-<style>${_baseCss(pal, font)}</style>
+<style>${_baseCss(pal, font, settings)}</style>
 </head>
 <body>
 <div class="ld-orb" style="width:600px;height:600px;background:radial-gradient(circle,rgba(${_hexToRgb(pal.from)},0.18) 0%,transparent 70%);top:-200px;left:-150px;animation-duration:14s"></div>
@@ -1300,5 +1303,6 @@ if (typeof window !== 'undefined') {
   window.BLOCK_ICONS = BLOCK_ICONS;
   window.renderBlock = renderBlock;
   window.renderLandingFromBlocks = renderLandingFromBlocks;
+  window.TYPO_SCALES = TYPO_SCALES;
   window.buildDefaultBlocks = buildDefaultBlocks;
 }
