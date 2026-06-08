@@ -240,6 +240,13 @@
         <option value="lato">Lato — suave / amigable</option>
       </select>
 
+      <label class="field-label" style="margin-top:8px">Tamaño de texto</label>
+      <div style="display:flex;gap:4px;margin-bottom:10px">
+        <button class="pal-int" data-scale="sm" onclick="setTypoScale('sm',this)" style="font-size:10px;padding:3px 8px;border-radius:6px;border:1px solid #3f3f46;background:transparent;color:#a1a1aa;cursor:pointer">Pequeño</button>
+        <button class="pal-int sel" data-scale="md" onclick="setTypoScale('md',this)" style="font-size:10px;padding:3px 8px;border-radius:6px;border:1px solid #3f3f46;background:#27272a;color:#e4e4e7;cursor:pointer">Normal</button>
+        <button class="pal-int" data-scale="lg" onclick="setTypoScale('lg',this)" style="font-size:10px;padding:3px 8px;border-radius:6px;border:1px solid #3f3f46;background:transparent;color:#a1a1aa;cursor:pointer">Grande</button>
+      </div>
+
       <label class="field-label">Imágenes</label>
       <div class="space-y-1.5">
         <label class="img-opt sel" data-img="ai">
@@ -409,6 +416,24 @@ let activeBlockIdx = -1;  // index in landing.blocks of the block being edited
 let chatOpen = false;
 let paletteIntensity = 'normal'; // 'suave' | 'normal' | 'fuerte'
 let lastBlockSnapshot = null;   // { idx, data } — para undo del chat
+let chatHistory = [];           // { role:'user'|'assistant', content:string }
+
+function setTypoScale(val, btn) {
+  document.querySelectorAll('[data-scale]').forEach(b => {
+    b.classList.remove('sel');
+    b.style.background = 'transparent';
+    b.style.color = '#a1a1aa';
+  });
+  btn.classList.add('sel');
+  btn.style.background = '#27272a';
+  btn.style.color = '#e4e4e7';
+  if (landing) {
+    if (!landing.settings) landing.settings = {};
+    landing.settings.typoScale = val;
+    renderPreview();
+    autosave();
+  }
+}
 
 function onFontChange() {
   const val = document.getElementById('fld-font').value;
@@ -554,8 +579,8 @@ function renderPreview() {
   const _palAdj = _palRaw ? applyIntensity(_palRaw) : null;
   const _font = (landing.settings && landing.settings.font) || 'jakarta';
   let html = _palAdj
-    ? renderLandingFromBlocks(landing.blocks, landing.palette || 'blue-purple', _palAdj.from, _palAdj.to, _font)
-    : renderLandingFromBlocks(landing.blocks, landing.palette || 'blue-purple', null, null, _font);
+    ? renderLandingFromBlocks(landing.blocks, landing.palette || 'blue-purple', _palAdj.from, _palAdj.to, _font, landing.settings)
+    : renderLandingFromBlocks(landing.blocks, landing.palette || 'blue-purple', null, null, _font, landing.settings);
   // Inject a script that intercepts anchor clicks so preview links don't navigate
   const navGuard = '<scr' + 'ipt>document.addEventListener("click",function(e){var a=e.target.closest("a");if(!a)return;var h=a.getAttribute("href")||"";if(h.startsWith("#")){e.preventDefault();var t=document.querySelector(h);if(t)t.scrollIntoView({behavior:"smooth"});}else if(h&&!h.startsWith("javascript")){e.preventDefault();}},true);</scr' + 'ipt>';
   html = html.replace('</body>', navGuard + '</body>');
@@ -1466,6 +1491,13 @@ async function loadLanding(id) {
     const savedFont = (landing.settings && landing.settings.font) || 'jakarta';
     const fontSel = document.getElementById('fld-font');
     if (fontSel) fontSel.value = savedFont;
+    const savedScale = (landing.settings && landing.settings.typoScale) || 'md';
+    document.querySelectorAll('[data-scale]').forEach(b => {
+      const isSel = b.dataset.scale === savedScale;
+      b.classList.toggle('sel', isSel);
+      b.style.background = isSel ? '#27272a' : 'transparent';
+      b.style.color = isSel ? '#e4e4e7' : '#a1a1aa';
+    });
 
     if (landing.blocks && landing.blocks.length > 0) {
       // New block-based landing
