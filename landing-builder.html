@@ -232,6 +232,14 @@
         <button class="pal-int" data-int="fuerte" onclick="setPaletteIntensity('fuerte',this)" style="font-size:10px;padding:3px 8px;border-radius:6px;border:1px solid #3f3f46;background:transparent;color:#a1a1aa;cursor:pointer">Fuerte</button>
       </div>
 
+      <label class="field-label" style="margin-top:8px">Tipografía</label>
+      <select id="fld-font" class="field-input" style="margin-bottom:10px" onchange="onFontChange()">
+        <option value="jakarta">Plus Jakarta Sans — moderna (default)</option>
+        <option value="inter">Inter — tech / minimalista</option>
+        <option value="playfair">Playfair Display — editorial / premium</option>
+        <option value="lato">Lato — suave / amigable</option>
+      </select>
+
       <label class="field-label">Imágenes</label>
       <div class="space-y-1.5">
         <label class="img-opt sel" data-img="ai">
@@ -298,7 +306,17 @@
         <span class="material-symbols-outlined ml-auto" style="font-size:14px" id="chat-toggle-icon">expand_less</span>
       </button>
       <div id="chat-area" class="hidden flex-col">
-        <div id="chat-log" class="overflow-y-auto p-2 space-y-2" style="max-height:160px;min-height:60px;"></div>
+        <div id="chat-active-indicator" class="hidden px-2 pt-1.5 pb-0">
+          <div class="flex items-center gap-1.5 px-2 py-1 rounded-lg text-[10px] font-semibold" style="background:rgba(46,91,255,0.12);color:#4d7cff">
+            <span class="material-symbols-outlined" style="font-size:11px">edit_square</span>
+            <span id="chat-active-label">Bloque seleccionado</span>
+            <button id="chat-undo-btn" class="hidden ml-auto items-center gap-1 text-[10px] font-semibold hover:opacity-80 transition" style="color:#a78bfa;background:none;border:none;cursor:pointer;padding:0">
+              <span class="material-symbols-outlined" style="font-size:11px">undo</span>
+              Deshacer
+            </button>
+          </div>
+        </div>
+        <div id="chat-log" class="overflow-y-auto p-2 space-y-2" style="max-height:140px;min-height:60px;"></div>
         <div class="flex gap-2 p-2 border-t border-outline-variant/15">
           <textarea id="chat-input" rows="2" placeholder="Cambia el título del hero, agrega un testimonio de Ana…"
                     class="field-input text-xs resize-none flex-1" style="border-radius:8px;padding:6px 8px;"></textarea>
@@ -390,6 +408,30 @@ let currentUser = null;
 let activeBlockIdx = -1;  // index in landing.blocks of the block being edited
 let chatOpen = false;
 let paletteIntensity = 'normal'; // 'suave' | 'normal' | 'fuerte'
+let lastBlockSnapshot = null;   // { idx, data } — para undo del chat
+
+function onFontChange() {
+  const val = document.getElementById('fld-font').value;
+  if (landing) {
+    if (!landing.settings) landing.settings = {};
+    landing.settings.font = val;
+    renderPreview();
+    autosave();
+  }
+}
+
+function _updateChatIndicator() {
+  const ind = document.getElementById('chat-active-indicator');
+  const lbl = document.getElementById('chat-active-label');
+  if (!ind || !lbl) return;
+  if (activeBlockIdx >= 0 && landing && landing.blocks[activeBlockIdx]) {
+    const b = landing.blocks[activeBlockIdx];
+    ind.classList.remove('hidden');
+    lbl.textContent = (window.BLOCK_LABELS && window.BLOCK_LABELS[b.type]) || b.type;
+  } else {
+    ind.classList.add('hidden');
+  }
+}
 
 function setPaletteIntensity(val, btn) {
   paletteIntensity = val;
@@ -510,9 +552,10 @@ function renderPreview() {
   const frame = document.getElementById('preview-frame');
   const _palRaw = window._palById ? window._palById(landing.palette || 'blue-purple') : null;
   const _palAdj = _palRaw ? applyIntensity(_palRaw) : null;
+  const _font = (landing.settings && landing.settings.font) || 'jakarta';
   let html = _palAdj
-    ? renderLandingFromBlocks(landing.blocks, landing.palette || 'blue-purple', _palAdj.from, _palAdj.to)
-    : renderLandingFromBlocks(landing.blocks, landing.palette || 'blue-purple');
+    ? renderLandingFromBlocks(landing.blocks, landing.palette || 'blue-purple', _palAdj.from, _palAdj.to, _font)
+    : renderLandingFromBlocks(landing.blocks, landing.palette || 'blue-purple', null, null, _font);
   // Inject a script that intercepts anchor clicks so preview links don't navigate
   const navGuard = '<scr' + 'ipt>document.addEventListener("click",function(e){var a=e.target.closest("a");if(!a)return;var h=a.getAttribute("href")||"";if(h.startsWith("#")){e.preventDefault();var t=document.querySelector(h);if(t)t.scrollIntoView({behavior:"smooth"});}else if(h&&!h.startsWith("javascript")){e.preventDefault();}},true);</scr' + 'ipt>';
   html = html.replace('</body>', navGuard + '</body>');
@@ -598,6 +641,7 @@ function renderBlocksList() {
 function openBlockEditor(idx) {
   activeBlockIdx = idx;
   renderBlocksList(); // update active state
+  _updateChatIndicator();
 
   const block = landing.blocks[idx];
   if (!block) return;
@@ -1128,6 +1172,7 @@ async function generateLanding() {
       .replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'').slice(0,60)
       + '-' + Math.random().toString(36).slice(2,5);
 
+    const _genFont = document.getElementById('fld-font')?.value || 'jakarta';
     landing = {
       id:       null,
       title,
@@ -1137,7 +1182,7 @@ async function generateLanding() {
       blocks:   mergedBlocks,
       messages: [],
       published: false,
-      settings: {},
+      settings: { font: _genFont },
     };
 
     document.getElementById('ld-title').value = title;
@@ -1254,6 +1299,8 @@ async function sendChat() {
     if (targetIdx >= 0) {
       // Edit specific block
       const block = landing.blocks[targetIdx];
+      // Save snapshot for undo
+      lastBlockSnapshot = { idx: targetIdx, data: JSON.parse(JSON.stringify(block.data)) };
       result = await AI.editBlockData(block.type, block.data, msg, landing.brief || '');
       if (result && typeof result === 'object') {
         landing.blocks[targetIdx].data = { ...landing.blocks[targetIdx].data, ...result };
@@ -1262,13 +1309,17 @@ async function sendChat() {
         autosave();
         removeMsg(thinkingId);
         addChatMsg(`Bloque "${BLOCK_LABELS[block.type]}" actualizado.`, 'assistant');
+        // Show undo button
+        const undoBtn = document.getElementById('chat-undo-btn');
+        if (undoBtn) undoBtn.classList.remove('hidden');
+        if (undoBtn) undoBtn.style.display = 'inline-flex';
       } else {
         throw new Error('Respuesta inesperada de la IA');
       }
     } else {
-      // No active block — try to infer which block to edit from the message
+      // No active block
       removeMsg(thinkingId);
-      addChatMsg('Seleccioná un bloque en la lista para editar, o describí cuál querés cambiar.', 'assistant');
+      addChatMsg('Seleccioná un bloque de la lista izquierda para editarlo con IA.', 'assistant');
     }
   } catch(e) {
     removeMsg(thinkingId);
@@ -1411,6 +1462,10 @@ async function loadLanding(id) {
     };
 
     document.getElementById('ld-title').value = landing.title;
+    // Restore font selector
+    const savedFont = (landing.settings && landing.settings.font) || 'jakarta';
+    const fontSel = document.getElementById('fld-font');
+    if (fontSel) fontSel.value = savedFont;
 
     if (landing.blocks && landing.blocks.length > 0) {
       // New block-based landing
@@ -1529,6 +1584,19 @@ function initUI() {
   });
   document.getElementById('chat-toggle').addEventListener('click', toggleChat);
   document.getElementById('chat-send').addEventListener('click', sendChat);
+  document.getElementById('chat-undo-btn').addEventListener('click', () => {
+    if (!lastBlockSnapshot || !landing) return;
+    const { idx, data } = lastBlockSnapshot;
+    if (landing.blocks[idx]) {
+      landing.blocks[idx].data = data;
+      renderPreview();
+      openBlockEditor(idx);
+      autosave();
+      addChatMsg('Cambio deshecho.', 'assistant');
+      lastBlockSnapshot = null;
+      document.getElementById('chat-undo-btn').style.display = 'none';
+    }
+  });
   document.getElementById('chat-input').addEventListener('keydown', e => {
     if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendChat(); }
   });
