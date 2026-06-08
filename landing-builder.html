@@ -247,6 +247,13 @@
         <button class="pal-int" data-scale="lg" onclick="setTypoScale('lg',this)" style="font-size:10px;padding:3px 8px;border-radius:6px;border:1px solid #3f3f46;background:transparent;color:#a1a1aa;cursor:pointer">Grande</button>
       </div>
 
+      <label class="field-label" style="margin-top:8px">Espaciado entre secciones</label>
+      <div style="display:flex;gap:4px;margin-bottom:10px">
+        <button class="pal-int" data-spacing="compact" onclick="setSpacing('compact',this)" style="font-size:10px;padding:3px 8px;border-radius:6px;border:1px solid #3f3f46;background:transparent;color:#a1a1aa;cursor:pointer">Compacto</button>
+        <button class="pal-int sel" data-spacing="normal" onclick="setSpacing('normal',this)" style="font-size:10px;padding:3px 8px;border-radius:6px;border:1px solid #3f3f46;background:#27272a;color:#e4e4e7;cursor:pointer">Normal</button>
+        <button class="pal-int" data-spacing="airy" onclick="setSpacing('airy',this)" style="font-size:10px;padding:3px 8px;border-radius:6px;border:1px solid #3f3f46;background:transparent;color:#a1a1aa;cursor:pointer">Aireado</button>
+      </div>
+
       <label class="field-label">Imágenes</label>
       <div class="space-y-1.5">
         <label class="img-opt sel" data-img="ai">
@@ -430,6 +437,23 @@ function setTypoScale(val, btn) {
   if (landing) {
     if (!landing.settings) landing.settings = {};
     landing.settings.typoScale = val;
+    renderPreview();
+    autosave();
+  }
+}
+
+function setSpacing(val, btn) {
+  document.querySelectorAll('[data-spacing]').forEach(b => {
+    b.classList.remove('sel');
+    b.style.background = 'transparent';
+    b.style.color = '#a1a1aa';
+  });
+  btn.classList.add('sel');
+  btn.style.background = '#27272a';
+  btn.style.color = '#e4e4e7';
+  if (landing) {
+    if (!landing.settings) landing.settings = {};
+    landing.settings.spacing = val;
     renderPreview();
     autosave();
   }
@@ -1199,6 +1223,7 @@ async function generateLanding() {
 
     const _genFont = document.getElementById('fld-font')?.value || 'jakarta';
     const _genScale = document.querySelector('[data-scale].sel')?.dataset.scale || 'md';
+    const _genSpacing = document.querySelector('[data-spacing].sel')?.dataset.spacing || 'normal';
     landing = {
       id:       null,
       title,
@@ -1208,7 +1233,7 @@ async function generateLanding() {
       blocks:   mergedBlocks,
       messages: [],
       published: false,
-      settings: { font: _genFont, typoScale: _genScale },
+      settings: { font: _genFont, typoScale: _genScale, spacing: _genSpacing },
     };
     chatHistory = [];
 
@@ -1516,6 +1541,13 @@ async function loadLanding(id) {
     const savedScale = (landing.settings && landing.settings.typoScale) || 'md';
     document.querySelectorAll('[data-scale]').forEach(b => {
       const isSel = b.dataset.scale === savedScale;
+      b.classList.toggle('sel', isSel);
+      b.style.background = isSel ? '#27272a' : 'transparent';
+      b.style.color = isSel ? '#e4e4e7' : '#a1a1aa';
+    });
+    const savedSpacing = (landing.settings && landing.settings.spacing) || 'normal';
+    document.querySelectorAll('[data-spacing]').forEach(b => {
+      const isSel = b.dataset.spacing === savedSpacing;
       b.classList.toggle('sel', isSel);
       b.style.background = isSel ? '#27272a' : 'transparent';
       b.style.color = isSel ? '#e4e4e7' : '#a1a1aa';

@@ -266,6 +266,12 @@ const TYPO_SCALES = {
   'lg':  { h1:'clamp(48px,6.5vw,96px)', h2:'clamp(38px,4.5vw,68px)', h3:'clamp(24px,2.6vw,36px)', body:'20px' },
 };
 
+const SPACING_SCALES = {
+  'compact': { section:'64px 0',  sectionSm:'40px 0', inner:'0 20px' },
+  'normal':  { section:'100px 0', sectionSm:'60px 0', inner:'0 28px' },
+  'airy':    { section:'140px 0', sectionSm:'84px 0', inner:'0 36px' },
+};
+
 function _baseCss(pal, font, settings) {
   const isLight = pal.mode === 'light';
   const bg      = pal.bg      || (isLight ? '#ffffff' : '#09090b');
@@ -291,9 +297,7 @@ img{max-width:100%;height:auto;display:block;border-radius:12px}
 .grad-border{border:1px solid transparent;background-clip:padding-box;position:relative}
 
 /* Layout */
-.ld-inner{max-width:1180px;margin:0 auto;padding:0 28px}
-.ld-section{padding:100px 0}
-.ld-section-sm{padding:60px 0}
+${(() => { const sp = SPACING_SCALES[(settings&&settings.spacing)||'normal'] || SPACING_SCALES.normal; return `.ld-inner{max-width:1180px;margin:0 auto;padding:${sp.inner}}\n.ld-section{padding:${sp.section}}\n.ld-section-sm{padding:${sp.sectionSm}}`; })()}
 
 /* Typography */
 ${(() => { const ts = TYPO_SCALES[(settings&&settings.typoScale)||'md'] || TYPO_SCALES.md; return `.ld-h1{font-size:${ts.h1};font-weight:800;line-height:1.06;letter-spacing:-0.025em}\n.ld-h2{font-size:${ts.h2};font-weight:800;line-height:1.1;letter-spacing:-0.02em}\n.ld-h3{font-size:${ts.h3};font-weight:700;line-height:1.2;letter-spacing:-0.01em}\n.ld-body{font-size:${ts.body};line-height:1.75;color:${muted}}`; })()}
@@ -1298,6 +1302,7 @@ if (typeof window !== 'undefined') {
   window.BLOCK_DEFAULTS = BLOCK_DEFAULTS;
   window.BLOCK_ORDER = BLOCK_ORDER;
   window.FONT_DEFS = FONT_DEFS;
+  window.SPACING_SCALES = SPACING_SCALES;
   window.BLOCK_FIELDS = BLOCK_FIELDS;
   window.BLOCK_LABELS = BLOCK_LABELS;
   window.BLOCK_ICONS = BLOCK_ICONS;
