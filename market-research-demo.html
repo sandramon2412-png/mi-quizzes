@@ -147,11 +147,43 @@
       position: absolute;
       inset: 0;
       background:
-        linear-gradient(90deg, rgba(9,9,17,.92), rgba(21,21,34,.70)),
-        url("https://images.unsplash.com/photo-1559136555-9303baea8ebd?auto=format&fit=crop&w=1500&q=80") center / cover;
-      opacity: .82;
+        radial-gradient(circle at 82% 24%, rgba(49,199,182,.32), transparent 29%),
+        radial-gradient(circle at 72% 72%, rgba(223,79,136,.22), transparent 34%),
+        linear-gradient(90deg, rgba(9,9,17,.96), rgba(21,21,34,.80));
+      opacity: .96;
     }
     .hero-main > * { position: relative; z-index: 1; }
+    .hero-visual {
+      position: absolute;
+      right: 26px;
+      top: 24px;
+      width: min(330px, 42%);
+      min-width: 250px;
+      display: grid;
+      gap: 10px;
+      z-index: 0;
+      opacity: .88;
+      pointer-events: none;
+    }
+    .ad-card {
+      border: 1px solid rgba(255,255,255,.14);
+      border-radius: 8px;
+      background: rgba(11,12,24,.70);
+      box-shadow: 0 24px 70px rgba(0,0,0,.36);
+      padding: 12px;
+      backdrop-filter: blur(16px);
+    }
+    .ad-card:nth-child(2) { transform: translateX(26px); background: rgba(27,23,45,.78); }
+    .ad-card:nth-child(3) { transform: translateX(-10px); background: rgba(17,35,45,.74); }
+    .ad-head { display:flex; align-items:center; justify-content:space-between; gap:8px; margin-bottom:10px; }
+    .ad-brand { display:flex; align-items:center; gap:8px; color:#f7f7fb; font-size:12px; font-weight:900; }
+    .ad-dot { width:24px; height:24px; border-radius:8px; display:grid; place-items:center; background:linear-gradient(135deg,var(--primary),var(--primary2)); color:white; font-size:16px; }
+    .ad-tag { border:1px solid rgba(123,97,255,.34); border-radius:999px; padding:4px 7px; color:#cabfff; font-size:10px; font-weight:900; }
+    .ad-line { height:7px; border-radius:999px; background:rgba(255,255,255,.12); margin:6px 0; }
+    .ad-line.hot { width:72%; background:linear-gradient(90deg,#31c7b6,#7b61ff); }
+    .ad-line.mid { width:54%; }
+    .ad-metrics { display:grid; grid-template-columns:repeat(3,1fr); gap:6px; margin-top:10px; }
+    .ad-metrics span { border-radius:7px; background:rgba(255,255,255,.07); padding:7px 6px; color:rgba(247,247,251,.76); font-size:10px; font-weight:800; }
     .eyebrow {
       width: fit-content;
       display: inline-flex;
@@ -554,6 +586,7 @@
     @media (max-width: 1040px) {
       .hero,
       .layout { grid-template-columns: 1fr; }
+      .hero-visual { width: 300px; opacity: .34; }
       .insight-panel { position: static; }
       .form-grid { grid-template-columns: 1fr 1fr; }
       .asset-grid { grid-template-columns: 1fr; }
@@ -569,6 +602,7 @@
       .scan-progress::before { display: none; }
       .scan-step { grid-template-columns: 24px 1fr; justify-items: start; text-align: left; }
       .hero-main { padding: 22px; }
+      .hero-visual { display: none; }
       h1 { font-size: 38px; }
       .btn { width: 100%; }
       .nav-actions { width: 100%; }
@@ -593,6 +627,34 @@
   <div class="shell">
     <section class="hero">
       <div class="hero-main">
+        <div class="hero-visual" aria-hidden="true">
+          <div class="ad-card">
+            <div class="ad-head">
+              <span class="ad-brand"><span class="ad-dot material-symbols-outlined">campaign</span> Meta Ad Library</span>
+              <span class="ad-tag">Alta traccion</span>
+            </div>
+            <div class="ad-line hot"></div>
+            <div class="ad-line mid"></div>
+            <div class="ad-metrics"><span>Hook</span><span>Dolor</span><span>Oferta</span></div>
+          </div>
+          <div class="ad-card">
+            <div class="ad-head">
+              <span class="ad-brand"><span class="ad-dot material-symbols-outlined">filter_alt</span> Filtros activos</span>
+              <span class="ad-tag">Hotmart</span>
+            </div>
+            <div class="ad-line hot"></div>
+            <div class="ad-line"></div>
+            <div class="ad-metrics"><span>Skincare</span><span>Quiz</span><span>Lead</span></div>
+          </div>
+          <div class="ad-card">
+            <div class="ad-head">
+              <span class="ad-brand"><span class="ad-dot material-symbols-outlined">psychology</span> Insight detectado</span>
+              <span class="ad-tag">Brief</span>
+            </div>
+            <div class="ad-line hot"></div>
+            <div class="ad-line mid"></div>
+          </div>
+        </div>
         <span class="eyebrow"><span class="material-symbols-outlined">radar</span> Area de espionaje etico</span>
         <h1>Buscar anuncios, detectar angulos y convertirlos en oferta</h1>
         <p class="lead">Esta demo muestra como podria sentirse el modulo de investigacion de Luminous: buscar anuncios de la competencia, filtrar por plataforma, destino y categoria, y transformar hallazgos en quiz, landing y creatives para Facebook Ads.</p>
