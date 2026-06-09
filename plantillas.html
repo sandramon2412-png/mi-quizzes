@@ -18,101 +18,35 @@
         theme: {
           extend: {
             colors: {
-              "on-error": "#490013",
-              "primary-fixed-dim": "#6d8cff",
-              "on-tertiary-fixed-variant": "#6a1460",
-              "on-surface": "#ffffff",
-              "surface-container": "#1a1a1a",
-              "on-primary": "#00257d",
-              "error-container": "#a70138",
-              "on-secondary-fixed-variant": "#006544",
-              "on-primary-fixed-variant": "#002377",
-              "on-primary-container": "#001b62",
-              "error-dim": "#d73357",
-              "inverse-primary": "#144fe5",
-              "background": "#0e0e0e",
-              "secondary": "#69f6b8",
-              "secondary-fixed": "#69f6b8",
-              "error": "#ff6e84",
-              "on-surface-variant": "#adaaaa",
-              "surface-tint": "#2E5BFF",
-              "secondary-fixed-dim": "#58e7ab",
-              "on-secondary-fixed": "#00452d",
-              "surface-container-low": "#131313",
-              "secondary-container": "#006c49",
-              "outline": "#767575",
-              "surface-container-lowest": "#000000",
-              "primary-dim": "#3867fb",
-              "secondary-dim": "#58e7ab",
-              "on-secondary": "#005a3c",
-              "surface-container-highest": "#262626",
-              "primary": "#2E5BFF",
-              "on-tertiary-fixed": "#380033",
-              "on-error-container": "#ffb2b9",
-              "tertiary-dim": "#e883d2",
-              "on-primary-fixed": "#000000",
-              "surface-variant": "#262626",
-              "tertiary": "#ffa3e9",
-              "inverse-surface": "#fcf9f8",
-              "tertiary-fixed-dim": "#e883d2",
-              "tertiary-container": "#f790e0",
-              "surface": "#0e0e0e",
-              "primary-fixed": "#819bff",
-              "surface-dim": "#0e0e0e",
-              "on-tertiary-container": "#5f0656",
-              "on-background": "#ffffff",
-              "on-tertiary": "#6c1561",
-              "surface-bright": "#2c2c2c",
-              "primary-container": "#819bff",
-              "on-secondary-container": "#e1ffec",
-              "inverse-on-surface": "#565555",
-              "tertiary-fixed": "#f790e0",
-              "outline-variant": "#484847",
-              "surface-container-high": "#20201f"
+              "on-error": "#490013","primary-fixed-dim": "#6d8cff","on-tertiary-fixed-variant": "#6a1460","on-surface": "#ffffff","surface-container": "#1a1a1a","on-primary": "#00257d","error-container": "#a70138","on-secondary-fixed-variant": "#006544","on-primary-fixed-variant": "#002377","on-primary-container": "#001b62","error-dim": "#d73357","inverse-primary": "#144fe5","background": "#0e0e0e","secondary": "#69f6b8","secondary-fixed": "#69f6b8","error": "#ff6e84","on-surface-variant": "#adaaaa","surface-tint": "#2E5BFF","secondary-fixed-dim": "#58e7ab","on-secondary-fixed": "#00452d","surface-container-low": "#131313","secondary-container": "#006c49","outline": "#767575","surface-container-lowest": "#000000","primary-dim": "#3867fb","secondary-dim": "#58e7ab","on-secondary": "#005a3c","surface-container-highest": "#262626","primary": "#2E5BFF","on-tertiary-fixed": "#380033","on-error-container": "#ffb2b9","tertiary-dim": "#e883d2","on-primary-fixed": "#000000","surface-variant": "#262626","tertiary": "#ffa3e9","inverse-surface": "#fcf9f8","tertiary-fixed-dim": "#e883d2","on-primary-fixed-variant": "#002377","error": "#ff6e84","on-tertiary-container": "#5f0656","on-background": "#ffffff","on-tertiary": "#6c1561","surface-bright": "#2c2c2c","primary-container": "#819bff","on-secondary-container": "#e1ffec","inverse-on-surface": "#565555","tertiary-fixed": "#f790e0","outline-variant": "#484847","surface-container-high": "#20201f"
             },
-            fontFamily: {
-              "headline": ["Plus Jakarta Sans"],
-              "body": ["Plus Jakarta Sans"],
-              "label": ["Plus Jakarta Sans"]
-            },
-            borderRadius: {"DEFAULT": "0.5rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+            fontFamily: {"headline": ["Plus Jakarta Sans"],"body": ["Plus Jakarta Sans"],"label": ["Plus Jakarta Sans"]},
+            borderRadius: {"DEFAULT": "0.5rem","lg": "0.5rem","xl": "0.75rem","full": "9999px"},
           },
         },
       }
     </script>
 <style>
         body { font-family: 'Plus Jakarta Sans', sans-serif; }
-        .material-symbols-outlined {
-            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
-        }
-        .glass-panel {
-            background: rgba(38, 38, 38, 0.6);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-        }
-        .primary-gradient {
-            background: linear-gradient(135deg, #2E5BFF 0%, #144fe5 100%);
-        }
-        .recessed-input {
-            background-color: #000000;
-        }
-        .recessed-input:focus-within {
-            outline: 1px solid #95AAFF;
-        }
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+        .glass-panel { background: rgba(38, 38, 38, 0.6); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); }
+        .primary-gradient { background: linear-gradient(135deg, #2E5BFF 0%, #144fe5 100%); }
+        .recessed-input { background-color: #000000; }
+        .recessed-input:focus-within { outline: 1px solid #95AAFF; }
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .active-cat { background: #2E5BFF; border-color: #2E5BFF; color: #fff; }
-        body {
-            min-height: max(884px, 100dvh);
-        }
+        body { min-height: max(884px, 100dvh); }
     </style>
 <link rel="stylesheet" href="./luminous-polish.css?v=platform-polish1"/>
 </head>
 <body class="bg-background text-on-background min-h-screen">
-<!-- TopAppBar -->
 <header class="bg-[#0E0E0E] dark:bg-[#0E0E0E] w-full top-0 sticky z-50">
 <div class="flex justify-between items-center px-6 py-4 w-full">
 <div class="flex items-center gap-3">
-<a class="text-xl font-bold tracking-tighter text-primary" href="./dashboard.html"><span class="studio-logo-mark" aria-hidden="true"><video autoplay muted loop playsinline preload="metadata"><source src="https://euauqqamrkqwoytveljp.supabase.co/storage/v1/object/public/public-assets/Logo_Reveal_A_purple_and_dark_blue_nebula_swirls_with_7dBpmcoS.mp4" type="video/mp4"></video></span>Luminous Studio</a>
+<a class="studio-brand text-xl font-bold tracking-tighter" href="./dashboard.html">
+<span class="studio-logo-mark" aria-hidden="true"><video autoplay muted loop playsinline preload="metadata"><source src="https://euauqqamrkqwoytveljp.supabase.co/storage/v1/object/public/public-assets/Logo_Reveal_A_purple_and_dark_blue_nebula_swirls_with_7dBpmcoS.mp4" type="video/mp4"></video></span>
+<span>Luminous Studio</span>
+</a>
 </div>
 <div class="flex items-center gap-6">
 <nav class="hidden md:flex items-center gap-8 font-plus-jakarta text-sm font-medium tracking-tight">
@@ -128,7 +62,6 @@
 </div>
 </header>
 <main class="max-w-7xl mx-auto px-6 pt-12 pb-32">
-<!-- Search & Header Section -->
 <section class="mb-12">
 <div class="flex flex-col md:flex-row md:items-end justify-between gap-8 mb-10">
   <div class="space-y-3">
@@ -152,158 +85,46 @@
     </div>
   </div>
 </div>
-<!-- Category Filter Pills -->
 <div class="flex flex-wrap gap-3" id="category-filters">
-  <button onclick="setCategory(this, '')"
-    class="category-pill flex items-center gap-2 px-4 py-2 rounded-full text-sm font-bold border transition-all active-cat"
-    data-cat="">
-    <span class="material-symbols-outlined text-base" style="font-variation-settings:'FILL' 1;">apps</span>
-    Todas
-  </button>
-  <button onclick="setCategory(this, 'Finanzas &amp; Negocios')"
-    class="category-pill flex items-center gap-2 px-4 py-2 rounded-full text-sm font-bold border border-outline-variant/30 text-on-surface-variant hover:border-secondary/50 hover:text-secondary transition-all"
-    data-cat="Finanzas &amp; Negocios">
-    <span class="material-symbols-outlined text-base" style="font-variation-settings:'FILL' 1;">trending_up</span>
-    Finanzas &amp; Negocios
-  </button>
-  <button onclick="setCategory(this, 'Marketing Digital')"
-    class="category-pill flex items-center gap-2 px-4 py-2 rounded-full text-sm font-bold border border-outline-variant/30 text-on-surface-variant hover:border-primary/50 hover:text-primary transition-all"
-    data-cat="Marketing Digital">
-    <span class="material-symbols-outlined text-base" style="font-variation-settings:'FILL' 1;">ads_click</span>
-    Marketing Digital
-  </button>
-  <button onclick="setCategory(this, 'Productividad')"
-    class="category-pill flex items-center gap-2 px-4 py-2 rounded-full text-sm font-bold border border-outline-variant/30 text-on-surface-variant hover:border-tertiary/50 hover:text-tertiary transition-all"
-    data-cat="Productividad">
-    <span class="material-symbols-outlined text-base" style="font-variation-settings:'FILL' 1;">rocket_launch</span>
-    Productividad
-  </button>
-  <button onclick="setCategory(this, 'Bienestar')"
-    class="category-pill flex items-center gap-2 px-4 py-2 rounded-full text-sm font-bold border border-outline-variant/30 text-on-surface-variant hover:border-purple-300/50 hover:text-purple-300 transition-all"
-    data-cat="Bienestar">
-    <span class="material-symbols-outlined text-base" style="font-variation-settings:'FILL' 1;">self_improvement</span>
-    Bienestar
-  </button>
-  <button onclick="setCategory(this, 'Fitness')"
-    class="category-pill flex items-center gap-2 px-4 py-2 rounded-full text-sm font-bold border border-outline-variant/30 text-on-surface-variant hover:border-blue-300/50 hover:text-blue-300 transition-all"
-    data-cat="Fitness">
-    <span class="material-symbols-outlined text-base" style="font-variation-settings:'FILL' 1;">fitness_center</span>
-    Fitness
-  </button>
-  <button onclick="setCategory(this, 'Nutrición')"
-    class="category-pill flex items-center gap-2 px-4 py-2 rounded-full text-sm font-bold border border-outline-variant/30 text-on-surface-variant hover:border-cyan-300/50 hover:text-cyan-300 transition-all"
-    data-cat="Nutrición">
-    <span class="material-symbols-outlined text-base" style="font-variation-settings:'FILL' 1;">restaurant</span>
-    Nutrición
-  </button>
-  <button onclick="setCategory(this, 'Relaciones')"
-    class="category-pill flex items-center gap-2 px-4 py-2 rounded-full text-sm font-bold border border-outline-variant/30 text-on-surface-variant hover:border-pink-300/50 hover:text-pink-300 transition-all"
-    data-cat="Relaciones">
-    <span class="material-symbols-outlined text-base" style="font-variation-settings:'FILL' 1;">diversity_1</span>
-    Relaciones
-  </button>
-  <button onclick="setCategory(this, 'Fe y Espiritualidad')"
-    class="category-pill flex items-center gap-2 px-4 py-2 rounded-full text-sm font-bold border border-outline-variant/30 text-on-surface-variant hover:border-amber-300/50 hover:text-amber-300 transition-all"
-    data-cat="Fe y Espiritualidad">
-    <span class="material-symbols-outlined text-base" style="font-variation-settings:'FILL' 1;">auto_awesome</span>
-    Fe y Espiritualidad
-  </button>
-  <button onclick="setCategory(this, 'Educación')"
-    class="category-pill flex items-center gap-2 px-4 py-2 rounded-full text-sm font-bold border border-outline-variant/30 text-on-surface-variant hover:border-violet-300/50 hover:text-violet-300 transition-all"
-    data-cat="Educación">
-    <span class="material-symbols-outlined text-base" style="font-variation-settings:'FILL' 1;">school</span>
-    Educación
-  </button>
-  <button onclick="setCategory(this, 'Belleza')"
-    class="category-pill flex items-center gap-2 px-4 py-2 rounded-full text-sm font-bold border border-outline-variant/30 text-on-surface-variant hover:border-fuchsia-300/50 hover:text-fuchsia-300 transition-all"
-    data-cat="Belleza">
-    <span class="material-symbols-outlined text-base" style="font-variation-settings:'FILL' 1;">spa</span>
-    Belleza
-  </button>
-  <button onclick="setCategory(this, 'Mascotas')"
-    class="category-pill flex items-center gap-2 px-4 py-2 rounded-full text-sm font-bold border border-outline-variant/30 text-on-surface-variant hover:border-sky-300/50 hover:text-sky-300 transition-all"
-    data-cat="Mascotas">
-    <span class="material-symbols-outlined text-base" style="font-variation-settings:'FILL' 1;">pets</span>
-    Mascotas
-  </button>
+  <button onclick="setCategory(this, '')" class="category-pill flex items-center gap-2 px-4 py-2 rounded-full text-sm font-bold border transition-all active-cat" data-cat=""><span class="material-symbols-outlined text-base" style="font-variation-settings:'FILL' 1;">apps</span>Todas</button>
+  <button onclick="setCategory(this, 'Finanzas &amp; Negocios')" class="category-pill flex items-center gap-2 px-4 py-2 rounded-full text-sm font-bold border border-outline-variant/30 text-on-surface-variant hover:border-secondary/50 hover:text-secondary transition-all" data-cat="Finanzas &amp; Negocios"><span class="material-symbols-outlined text-base" style="font-variation-settings:'FILL' 1;">trending_up</span>Finanzas &amp; Negocios</button>
+  <button onclick="setCategory(this, 'Marketing Digital')" class="category-pill flex items-center gap-2 px-4 py-2 rounded-full text-sm font-bold border border-outline-variant/30 text-on-surface-variant hover:border-primary/50 hover:text-primary transition-all" data-cat="Marketing Digital"><span class="material-symbols-outlined text-base" style="font-variation-settings:'FILL' 1;">ads_click</span>Marketing Digital</button>
+  <button onclick="setCategory(this, 'Productividad')" class="category-pill flex items-center gap-2 px-4 py-2 rounded-full text-sm font-bold border border-outline-variant/30 text-on-surface-variant hover:border-tertiary/50 hover:text-tertiary transition-all" data-cat="Productividad"><span class="material-symbols-outlined text-base" style="font-variation-settings:'FILL' 1;">rocket_launch</span>Productividad</button>
+  <button onclick="setCategory(this, 'Bienestar')" class="category-pill flex items-center gap-2 px-4 py-2 rounded-full text-sm font-bold border border-outline-variant/30 text-on-surface-variant hover:border-purple-300/50 hover:text-purple-300 transition-all" data-cat="Bienestar"><span class="material-symbols-outlined text-base" style="font-variation-settings:'FILL' 1;">self_improvement</span>Bienestar</button>
+  <button onclick="setCategory(this, 'Fitness')" class="category-pill flex items-center gap-2 px-4 py-2 rounded-full text-sm font-bold border border-outline-variant/30 text-on-surface-variant hover:border-blue-300/50 hover:text-blue-300 transition-all" data-cat="Fitness"><span class="material-symbols-outlined text-base" style="font-variation-settings:'FILL' 1;">fitness_center</span>Fitness</button>
+  <button onclick="setCategory(this, 'Nutrición')" class="category-pill flex items-center gap-2 px-4 py-2 rounded-full text-sm font-bold border border-outline-variant/30 text-on-surface-variant hover:border-cyan-300/50 hover:text-cyan-300 transition-all" data-cat="Nutrición"><span class="material-symbols-outlined text-base" style="font-variation-settings:'FILL' 1;">restaurant</span>Nutrición</button>
+  <button onclick="setCategory(this, 'Relaciones')" class="category-pill flex items-center gap-2 px-4 py-2 rounded-full text-sm font-bold border border-outline-variant/30 text-on-surface-variant hover:border-pink-300/50 hover:text-pink-300 transition-all" data-cat="Relaciones"><span class="material-symbols-outlined text-base" style="font-variation-settings:'FILL' 1;">diversity_1</span>Relaciones</button>
+  <button onclick="setCategory(this, 'Fe y Espiritualidad')" class="category-pill flex items-center gap-2 px-4 py-2 rounded-full text-sm font-bold border border-outline-variant/30 text-on-surface-variant hover:border-amber-300/50 hover:text-amber-300 transition-all" data-cat="Fe y Espiritualidad"><span class="material-symbols-outlined text-base" style="font-variation-settings:'FILL' 1;">auto_awesome</span>Fe y Espiritualidad</button>
+  <button onclick="setCategory(this, 'Educación')" class="category-pill flex items-center gap-2 px-4 py-2 rounded-full text-sm font-bold border border-outline-variant/30 text-on-surface-variant hover:border-violet-300/50 hover:text-violet-300 transition-all" data-cat="Educación"><span class="material-symbols-outlined text-base" style="font-variation-settings:'FILL' 1;">school</span>Educación</button>
+  <button onclick="setCategory(this, 'Belleza')" class="category-pill flex items-center gap-2 px-4 py-2 rounded-full text-sm font-bold border border-outline-variant/30 text-on-surface-variant hover:border-fuchsia-300/50 hover:text-fuchsia-300 transition-all" data-cat="Belleza"><span class="material-symbols-outlined text-base" style="font-variation-settings:'FILL' 1;">spa</span>Belleza</button>
+  <button onclick="setCategory(this, 'Mascotas')" class="category-pill flex items-center gap-2 px-4 py-2 rounded-full text-sm font-bold border border-outline-variant/30 text-on-surface-variant hover:border-sky-300/50 hover:text-sky-300 transition-all" data-cat="Mascotas"><span class="material-symbols-outlined text-base" style="font-variation-settings:'FILL' 1;">pets</span>Mascotas</button>
 </div>
 </section>
-<!-- Templates Grid Section -->
 <section class="space-y-12">
 <div>
 <div class="flex items-center justify-between mb-8">
-<h4 class="text-xl font-bold flex items-center gap-3">
-<span class="w-1 h-6 bg-secondary rounded-full"></span>
-Plantillas de Quiz
-</h4>
+<h4 class="text-xl font-bold flex items-center gap-3"><span class="w-1 h-6 bg-secondary rounded-full"></span>Plantillas de Quiz</h4>
 <a class="text-on-surface-variant text-sm hover:text-primary transition-colors" href="./generador-ia.html">+ Crear desde cero</a>
 </div>
-<div id="templates-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-<!-- Populated by JS -->
-</div>
+<div id="templates-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6"></div>
 </div>
 </section>
 </main>
-<!-- BottomNavBar -->
 <nav class="fixed bottom-8 left-0 right-0 z-50 flex justify-around items-center p-2 pointer-events-none">
 <div class="fixed bottom-8 left-1/2 -translate-x-1/2 w-[90%] max-w-md rounded-2xl border border-[#484847]/15 bg-[#262626]/60 backdrop-blur-xl shadow-[0_20px_40px_rgba(20,79,229,0.08)] flex justify-around items-center p-2 pointer-events-auto">
-<!-- Build -->
-<a class="flex flex-col items-center justify-center text-[#ADAAAA] px-4 py-2 hover:bg-[#131313] rounded-xl transition-all duration-400 scale-95 active:scale-90" href="./generador-ia.html">
-<span class="material-symbols-outlined" data-icon="handhammer">hand_package</span>
-<span class="font-plus-jakarta text-[10px] font-medium uppercase tracking-widest mt-1">Build</span>
-</a>
-<!-- Library (Active) -->
-<a class="flex flex-col items-center justify-center text-primary bg-[#2C2C2C] rounded-xl px-4 py-2 transition-all duration-400 scale-100" href="./plantillas.html">
-<span class="material-symbols-outlined" data-icon="local_library" style="font-variation-settings: 'FILL' 1;">local_library</span>
-<span class="font-plus-jakarta text-[10px] font-medium uppercase tracking-widest mt-1">Library</span>
-</a>
-<!-- Sales -->
-<a class="flex flex-col items-center justify-center text-[#ADAAAA] px-4 py-2 hover:bg-[#131313] rounded-xl transition-all duration-400 scale-95 active:scale-90" href="./dashboard.html">
-<span class="material-symbols-outlined" data-icon="leaderboard">leaderboard</span>
-<span class="font-plus-jakarta text-[10px] font-medium uppercase tracking-widest mt-1">Sales</span>
-</a>
-<!-- Account -->
-<a class="flex flex-col items-center justify-center text-[#ADAAAA] px-4 py-2 hover:bg-[#131313] rounded-xl transition-all duration-400 scale-95 active:scale-90" href="./precios.html">
-<span class="material-symbols-outlined" data-icon="person">person</span>
-<span class="font-plus-jakarta text-[10px] font-medium uppercase tracking-widest mt-1">Account</span>
-</a>
+<a class="flex flex-col items-center justify-center text-[#ADAAAA] px-4 py-2 hover:bg-[#131313] rounded-xl transition-all duration-400 scale-95 active:scale-90" href="./generador-ia.html"><span class="material-symbols-outlined" data-icon="handhammer">hand_package</span><span class="font-plus-jakarta text-[10px] font-medium uppercase tracking-widest mt-1">Build</span></a>
+<a class="flex flex-col items-center justify-center text-primary bg-[#2C2C2C] rounded-xl px-4 py-2 transition-all duration-400 scale-100" href="./plantillas.html"><span class="material-symbols-outlined" data-icon="local_library" style="font-variation-settings: 'FILL' 1;">local_library</span><span class="font-plus-jakarta text-[10px] font-medium uppercase tracking-widest mt-1">Library</span></a>
+<a class="flex flex-col items-center justify-center text-[#ADAAAA] px-4 py-2 hover:bg-[#131313] rounded-xl transition-all duration-400 scale-95 active:scale-90" href="./dashboard.html"><span class="material-symbols-outlined" data-icon="leaderboard">leaderboard</span><span class="font-plus-jakarta text-[10px] font-medium uppercase tracking-widest mt-1">Sales</span></a>
+<a class="flex flex-col items-center justify-center text-[#ADAAAA] px-4 py-2 hover:bg-[#131313] rounded-xl transition-all duration-400 scale-95 active:scale-90" href="./precios.html"><span class="material-symbols-outlined" data-icon="person">person</span><span class="font-plus-jakarta text-[10px] font-medium uppercase tracking-widest mt-1">Account</span></a>
 </div>
 </nav>
 <script>
-const CATEGORY_COLORS = {
-  'Finanzas & Negocios':   'text-secondary bg-secondary/10',
-  'Marketing Digital':     'text-primary bg-primary/10',
-  'Productividad':         'text-tertiary bg-tertiary/10',
-  'Bienestar':             'text-purple-300 bg-purple-400/10',
-  'Fitness':               'text-blue-300 bg-blue-400/10',
-  'Nutrición':             'text-cyan-300 bg-cyan-400/10',
-  'Relaciones':            'text-pink-300 bg-pink-400/10',
-  'Fe y Espiritualidad':   'text-amber-300 bg-amber-400/10',
-  'Educación':             'text-violet-300 bg-violet-400/10',
-  'Belleza':               'text-fuchsia-300 bg-fuchsia-400/10',
-  'Mascotas':              'text-sky-300 bg-sky-400/10',
-};
-
-const CATEGORY_BG = {
-  'Finanzas & Negocios':   'background: linear-gradient(135deg, #006c49 0%, #004d34 100%)',
-  'Marketing Digital':     'background: linear-gradient(135deg, #1a3a8f 0%, #0d1f5c 100%)',
-  'Productividad':         'background: linear-gradient(135deg, #5b1f8a 0%, #3a0f6b 100%)',
-  'Bienestar':             'background: linear-gradient(135deg, #4c1d95 0%, #2e1065 100%)',
-  'Fitness':               'background: linear-gradient(135deg, #1e40af 0%, #1e3a8a 100%)',
-  'Nutrición':             'background: linear-gradient(135deg, #0e7490 0%, #164e63 100%)',
-  'Relaciones':            'background: linear-gradient(135deg, #9d174d 0%, #701a3e 100%)',
-  'Fe y Espiritualidad':   'background: linear-gradient(135deg, #b45309 0%, #78350f 100%)',
-  'Educación':             'background: linear-gradient(135deg, #6d28d9 0%, #4c1d95 100%)',
-  'Belleza':               'background: linear-gradient(135deg, #a21caf 0%, #6b21a8 100%)',
-  'Mascotas':              'background: linear-gradient(135deg, #0369a1 0%, #075985 100%)',
-};
-
+const CATEGORY_COLORS = {'Finanzas & Negocios':'text-secondary bg-secondary/10','Marketing Digital':'text-primary bg-primary/10','Productividad':'text-tertiary bg-tertiary/10','Bienestar':'text-purple-300 bg-purple-400/10','Fitness':'text-blue-300 bg-blue-400/10','Nutrición':'text-cyan-300 bg-cyan-400/10','Relaciones':'text-pink-300 bg-pink-400/10','Fe y Espiritualidad':'text-amber-300 bg-amber-400/10','Educación':'text-violet-300 bg-violet-400/10','Belleza':'text-fuchsia-300 bg-fuchsia-400/10','Mascotas':'text-sky-300 bg-sky-400/10'};
 document.addEventListener('DOMContentLoaded', async () => {
   const user = await Auth.requireAuth();
   if (!user) return;
   renderTemplates(getBuiltinTemplates());
 });
-
 function renderTemplates(templates) {
   const grid = document.getElementById('templates-grid');
   grid.innerHTML = templates.map(t => {
@@ -311,19 +132,14 @@ function renderTemplates(templates) {
     const brand = theme?.brandColor || '#2E5BFF';
     const accent = theme?.accentColor || '#7c3aed';
     const image = theme?.coverImage || '';
-    return `
-    <div class="group bg-surface-container-low rounded-xl overflow-hidden border border-outline-variant/5 hover:border-primary/20 transition-all duration-400 flex flex-col">
+    return `<div class="group bg-surface-container-low rounded-xl overflow-hidden border border-outline-variant/5 hover:border-primary/20 transition-all duration-400 flex flex-col">
       <div class="aspect-video relative overflow-hidden flex items-center justify-center" style="background:linear-gradient(135deg,${brand},${accent})">
         ${image ? `<img src="${image}" alt="" loading="lazy" class="absolute inset-0 w-full h-full object-cover opacity-50 group-hover:scale-105 transition-transform duration-700"/>` : ''}
         <div class="absolute inset-0" style="background:linear-gradient(135deg,${brand}cc,rgba(0,0,0,.36));"></div>
         <span class="material-symbols-outlined text-white/10 relative" style="font-size:120px; font-variation-settings:'FILL' 1,'wght' 200;">${t.icon}</span>
-        <div class="absolute inset-0 flex items-center justify-center">
-          <span class="material-symbols-outlined text-white drop-shadow-lg" style="font-size:52px; font-variation-settings:'FILL' 1,'wght' 400;">${t.icon}</span>
-        </div>
+        <div class="absolute inset-0 flex items-center justify-center"><span class="material-symbols-outlined text-white drop-shadow-lg" style="font-size:52px; font-variation-settings:'FILL' 1,'wght' 400;">${t.icon}</span></div>
         <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-4">
-          <a href="./generador-ia.html?template=${t.id}" class="primary-gradient w-full py-2 rounded-lg text-xs font-bold text-white text-center block">
-            Usar Plantilla
-          </a>
+          <a href="./generador-ia.html?template=${t.id}" class="primary-gradient w-full py-2 rounded-lg text-xs font-bold text-white text-center block">Usar Plantilla</a>
         </div>
         <div class="absolute top-3 left-3 flex items-center gap-1.5 rounded-full bg-black/35 backdrop-blur px-2.5 py-1">
           <span class="w-2 h-2 rounded-full" style="background:${accent}"></span>
@@ -331,61 +147,32 @@ function renderTemplates(templates) {
         </div>
       </div>
       <div class="p-5 flex-1 flex flex-col">
-        <div class="flex justify-between items-start mb-2">
-          <h5 class="font-semibold text-on-surface text-sm">${esc(t.title)}</h5>
-        </div>
+        <div class="flex justify-between items-start mb-2"><h5 class="font-semibold text-on-surface text-sm">${esc(t.title)}</h5></div>
         <p class="text-xs text-on-surface-variant flex-1">${esc(t.product)}</p>
         <div class="flex items-center justify-between mt-3">
           <span class="text-[10px] font-bold px-2 py-0.5 rounded-full ${CATEGORY_COLORS[t.category] || 'text-primary bg-primary/10'}">${esc(t.category)}</span>
           <span class="text-[10px] text-on-surface-variant">${t.questions.length} preguntas</span>
         </div>
-        <a href="./generador-ia.html?template=${t.id}"
-          class="mt-3 w-full py-2 rounded-lg border border-primary/20 text-primary text-xs font-bold text-center hover:bg-primary/5 transition-colors block">
-          Usar esta plantilla
-        </a>
+        <a href="./generador-ia.html?template=${t.id}" class="mt-3 w-full py-2 rounded-lg border border-primary/20 text-primary text-xs font-bold text-center hover:bg-primary/5 transition-colors block">Usar esta plantilla</a>
       </div>
     </div>`;
   }).join('');
 }
-
-let _activeCategory = '';
-let _activeSearch = '';
-
+let _activeCategory = '', _activeSearch = '';
 function applyFilters() {
   const all = getBuiltinTemplates();
   const filtered = all.filter(t => {
     const matchCat = !_activeCategory || t.category === _activeCategory;
     const q = _activeSearch.toLowerCase().trim();
-    const matchSearch = !q ||
-      t.title.toLowerCase().includes(q) ||
-      t.product.toLowerCase().includes(q) ||
-      t.category.toLowerCase().includes(q) ||
-      t.niche.toLowerCase().includes(q);
+    const matchSearch = !q || t.title.toLowerCase().includes(q) || t.product.toLowerCase().includes(q) || t.category.toLowerCase().includes(q) || t.niche.toLowerCase().includes(q);
     return matchCat && matchSearch;
   });
   renderTemplates(filtered);
-  if (!filtered.length) {
-    document.getElementById('templates-grid').innerHTML =
-      `<p class="text-on-surface-variant text-center py-12 col-span-4">No se encontraron plantillas.</p>`;
-  }
+  if (!filtered.length) document.getElementById('templates-grid').innerHTML = `<p class="text-on-surface-variant text-center py-12 col-span-4">No se encontraron plantillas.</p>`;
 }
-
-function filterBySearch(query) {
-  _activeSearch = query;
-  applyFilters();
-}
-
-function setCategory(btn, cat) {
-  _activeCategory = cat;
-  document.querySelectorAll('.category-pill').forEach(p => p.classList.remove('active-cat'));
-  btn.classList.add('active-cat');
-  applyFilters();
-}
-
-function filterTemplates(query) {
-  filterBySearch(query);
-}
-
+function filterBySearch(query) { _activeSearch = query; applyFilters(); }
+function setCategory(btn, cat) { _activeCategory = cat; document.querySelectorAll('.category-pill').forEach(p => p.classList.remove('active-cat')); btn.classList.add('active-cat'); applyFilters(); }
+function filterTemplates(query) { filterBySearch(query); }
 function esc(s) { return String(s||'').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 </script>
 </body></html>
