@@ -11,7 +11,7 @@
 </script>
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="./supabase-config.js"></script>
+<script src="./supabase-config.js?v=authhandoff1"></script>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
 <script id="tailwind-config">
@@ -42,21 +42,20 @@
   .glow { box-shadow: 0 0 80px rgba(46,91,255,0.15); }
   input:-webkit-autofill { -webkit-box-shadow: 0 0 0 100px #1a1a1a inset; -webkit-text-fill-color: #fff; }
 </style>
+<link rel="stylesheet" href="./luminous-polish.css?v=platform-polish1"/>
 </head>
 <body class="bg-surface text-on-surface flex min-h-screen">
 
 <!-- Left panel — branding -->
 <div class="hidden lg:flex lg:w-1/2 bg-surface-container-lowest relative overflow-hidden flex-col justify-between p-12">
-  <!-- Background glow -->
   <div class="absolute inset-0 bg-gradient-to-br from-primary/10 via-transparent to-secondary/5 pointer-events-none"></div>
   <div class="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-primary/10 rounded-full blur-3xl pointer-events-none"></div>
-
-  <!-- Logo -->
   <div class="relative z-10">
-    <a href="./index.html" class="text-xl font-extrabold tracking-tighter text-primary">Luminous Studio</a>
+    <a href="./index.html" class="studio-brand text-xl font-extrabold tracking-tighter">
+      <span class="studio-logo-mark" aria-hidden="true"><video autoplay muted loop playsinline preload="metadata"><source src="https://euauqqamrkqwoytveljp.supabase.co/storage/v1/object/public/public-assets/Logo_Reveal_A_purple_and_dark_blue_nebula_swirls_with_7dBpmcoS.mp4" type="video/mp4"></video></span>
+      <span>Luminous Studio</span>
+    </a>
   </div>
-
-  <!-- Testimonial / value prop -->
   <div class="relative z-10 space-y-8">
     <blockquote class="text-2xl font-bold leading-snug tracking-tight">
       "Pasé de cero ventas a mi primer $1,000 en el primer mes usando los quizzes de Luminous."
@@ -68,35 +67,18 @@
         <p class="text-on-surface-variant text-xs">Creadora de infoproductos · México</p>
       </div>
     </div>
-
-    <!-- Stats -->
     <div class="grid grid-cols-3 gap-4 pt-4 border-t border-outline-variant/20">
-      <div>
-        <p class="text-2xl font-extrabold text-primary">+3.2x</p>
-        <p class="text-xs text-on-surface-variant mt-1">Conversión promedio</p>
-      </div>
-      <div>
-        <p class="text-2xl font-extrabold text-secondary">500+</p>
-        <p class="text-xs text-on-surface-variant mt-1">Creadores activos</p>
-      </div>
-      <div>
-        <p class="text-2xl font-extrabold text-tertiary">2 min</p>
-        <p class="text-xs text-on-surface-variant mt-1">Para crear un quiz</p>
-      </div>
+      <div><p class="text-2xl font-extrabold text-primary">+3.2x</p><p class="text-xs text-on-surface-variant mt-1">Conversión promedio</p></div>
+      <div><p class="text-2xl font-extrabold text-secondary">500+</p><p class="text-xs text-on-surface-variant mt-1">Creadores activos</p></div>
+      <div><p class="text-2xl font-extrabold text-tertiary">2 min</p><p class="text-xs text-on-surface-variant mt-1">Para crear un quiz</p></div>
     </div>
   </div>
-
-  <!-- Bottom -->
-  <div class="relative z-10 text-xs text-on-surface-variant">
-    © 2026 Luminous Studio. Todos los derechos reservados.
-  </div>
+  <div class="relative z-10 text-xs text-on-surface-variant">© 2026 Luminous Studio. Todos los derechos reservados.</div>
 </div>
 
 <!-- Right panel — form -->
 <div class="flex-1 flex items-center justify-center px-6 py-16">
   <div class="w-full max-w-md space-y-8">
-
-    <!-- Header -->
     <div class="space-y-2">
       <div class="lg:hidden mb-8">
         <a href="./index.html" class="text-xl font-extrabold tracking-tighter text-primary">Luminous Studio</a>
@@ -104,30 +86,18 @@
       <h1 class="text-3xl font-extrabold tracking-tight">Bienvenido de vuelta</h1>
       <p class="text-on-surface-variant">Accede a tu workspace y gestiona tus quizzes.</p>
     </div>
-
-    <!-- Form -->
     <form id="login-form" class="space-y-5" onsubmit="handleLogin(event)">
-
-      <!-- Error banner -->
       <div id="error-banner" class="hidden bg-error/10 border border-error/30 text-error text-sm px-4 py-3 rounded-xl flex items-center gap-2">
         <span class="material-symbols-outlined text-base">error</span>
         <span id="error-msg">Error</span>
       </div>
-
-      <!-- Email -->
       <div class="space-y-1.5">
         <label class="text-sm font-semibold text-on-surface-variant" for="email">Correo electrónico</label>
         <div class="relative">
           <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-xl">mail</span>
-          <input
-            id="email" name="email" type="email" required autocomplete="email"
-            placeholder="tu@email.com"
-            class="w-full bg-surface-container border border-outline-variant/40 rounded-xl pl-10 pr-4 py-3.5 text-sm text-on-surface placeholder:text-on-surface-variant/50 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors"
-          />
+          <input id="email" name="email" type="email" required autocomplete="email" placeholder="tu@email.com" class="w-full bg-surface-container border border-outline-variant/40 rounded-xl pl-10 pr-4 py-3.5 text-sm text-on-surface placeholder:text-on-surface-variant/50 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors"/>
         </div>
       </div>
-
-      <!-- Password -->
       <div class="space-y-1.5">
         <div class="flex items-center justify-between">
           <label class="text-sm font-semibold text-on-surface-variant" for="password">Contraseña</label>
@@ -135,41 +105,26 @@
         </div>
         <div class="relative">
           <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-xl">lock</span>
-          <input
-            id="password" name="password" type="password" required autocomplete="current-password"
-            placeholder="••••••••"
-            class="w-full bg-surface-container border border-outline-variant/40 rounded-xl pl-10 pr-12 py-3.5 text-sm text-on-surface placeholder:text-on-surface-variant/50 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors"
-          />
+          <input id="password" name="password" type="password" required autocomplete="current-password" placeholder="••••••••" class="w-full bg-surface-container border border-outline-variant/40 rounded-xl pl-10 pr-12 py-3.5 text-sm text-on-surface placeholder:text-on-surface-variant/50 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors"/>
           <button type="button" onclick="togglePass()" class="absolute right-3 top-1/2 -translate-y-1/2 text-on-surface-variant hover:text-on-surface transition-colors">
             <span class="material-symbols-outlined text-xl" id="eye-icon">visibility</span>
           </button>
         </div>
       </div>
-
-      <!-- Submit -->
-      <button
-        type="submit" id="btn-submit"
-        class="w-full primary-gradient py-4 rounded-xl font-bold text-white text-sm tracking-wide hover:brightness-110 active:scale-[0.98] transition-all duration-300 flex items-center justify-center gap-2 mt-2"
-      >
+      <button type="submit" id="btn-submit" class="w-full primary-gradient py-4 rounded-xl font-bold text-white text-sm tracking-wide hover:brightness-110 active:scale-[0.98] transition-all duration-300 flex items-center justify-center gap-2 mt-2">
         <span id="btn-text">Iniciar sesión</span>
         <span id="btn-spinner" class="hidden w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
       </button>
     </form>
-
-    <!-- Divider -->
     <div class="flex items-center gap-3">
       <div class="flex-1 h-px bg-outline-variant/30"></div>
       <span class="text-xs text-on-surface-variant">¿No tienes cuenta?</span>
       <div class="flex-1 h-px bg-outline-variant/30"></div>
     </div>
-
-    <!-- Register link -->
     <a href="./registro.html" class="w-full flex items-center justify-center gap-2 py-4 rounded-xl border border-outline-variant/40 text-sm font-bold text-on-surface hover:bg-surface-container transition-colors">
       <span class="material-symbols-outlined text-base">person_add</span>
       Crear cuenta gratis
     </a>
-
-    <!-- Back to home -->
     <p class="text-center text-xs text-on-surface-variant">
       <a href="./index.html" class="hover:text-on-surface transition-colors">← Volver al inicio</a>
     </p>
@@ -178,93 +133,58 @@
 
 <script>
   const LOGIN_TIMEOUT_MS = 18000;
-
   function withTimeout(promise, ms, message) {
     let timeoutId;
-    const timeout = new Promise((_, reject) => {
-      timeoutId = setTimeout(() => reject(new Error(message)), ms);
-    });
+    const timeout = new Promise((_, reject) => { timeoutId = setTimeout(() => reject(new Error(message)), ms); });
     return Promise.race([promise, timeout]).finally(() => clearTimeout(timeoutId));
   }
-
-  // Redirect if already logged in
   if (window.Auth) {
     withTimeout(Auth.redirectIfAuth((() => {
       const raw = new URLSearchParams(location.search).get('next') || './dashboard.html';
-      try {
-        const url = new URL(raw, location.href);
-        if (url.origin === location.origin) return url.pathname + url.search + url.hash;
-      } catch {}
+      try { const url = new URL(raw, location.href); if (url.origin === location.origin) return url.pathname + url.search + url.hash; } catch {}
       return './dashboard.html';
-    })()), 8000, 'No se pudo verificar la sesión automáticamente.')
-      .catch(() => {});
+    })()), 8000, 'No se pudo verificar la sesión automáticamente.').catch(() => {});
   }
-
-  // Handle next param after login
   const nextUrl = new URLSearchParams(location.search).get('next') || './dashboard.html';
-
   function safeNextUrl(raw) {
-    try {
-      const url = new URL(raw, location.href);
-      if (url.origin === location.origin) return url.pathname + url.search + url.hash;
-    } catch {}
+    try { const url = new URL(raw, location.href); if (url.origin === location.origin) return url.pathname + url.search + url.hash; } catch {}
     return './dashboard.html';
   }
-
+  function withAuthHandoff(dest, session) {
+    try { sessionStorage.setItem('ls_auth_handoff', JSON.stringify(session)); } catch {}
+    try { window.name = JSON.stringify({ type: 'luminous-auth-handoff', session }); } catch {}
+    try { const url = new URL(dest, location.href); url.searchParams.set('auth_handoff', '1'); return url.pathname + url.search + url.hash; } catch { return dest; }
+  }
   async function handleLogin(e) {
     e.preventDefault();
-    const email    = document.getElementById('email').value.trim();
+    const email = document.getElementById('email').value.trim();
     const password = document.getElementById('password').value;
-    setLoading(true);
-    hideError();
+    setLoading(true); hideError();
     try {
       if (!window.Auth) throw new Error('No se cargó el servicio de autenticación. Revisa tu conexión y recarga la página.');
-      const result = await withTimeout(
-        Auth.signIn(email, password),
-        LOGIN_TIMEOUT_MS,
-        'La conexión tardó demasiado. Revisa internet, recarga la página e inténtalo de nuevo.'
-      );
-      const session = await Auth.waitForSession?.(6000)
-        || result?.session
-        || await Auth.session({ timeoutMs: 3000 });
+      const result = await withTimeout(Auth.signIn(email, password), LOGIN_TIMEOUT_MS, 'La conexión tardó demasiado. Revisa internet, recarga la página e inténtalo de nuevo.');
+      const session = await Auth.waitForSession?.(6000) || result?.session || await Auth.session({ timeoutMs: 3000 });
       if (!session) throw new Error('La sesión no quedó activa. Inténtalo de nuevo.');
-      window.location.assign(safeNextUrl(nextUrl));
-    } catch (err) {
-      showError(friendlyLoginError(err.message));
-    } finally {
-      setLoading(false);
-    }
+      window.location.assign(withAuthHandoff(safeNextUrl(nextUrl), session));
+    } catch (err) { showError(friendlyLoginError(err.message)); } finally { setLoading(false); }
   }
-
   function setLoading(on) {
     document.getElementById('btn-submit').disabled = on;
     document.getElementById('btn-text').textContent = on ? 'Entrando...' : 'Iniciar sesión';
     document.getElementById('btn-spinner').classList.toggle('hidden', !on);
   }
-
-  function showError(msg) {
-    const b = document.getElementById('error-banner');
-    document.getElementById('error-msg').textContent = msg;
-    b.classList.remove('hidden');
-  }
-
-  function hideError() {
-    document.getElementById('error-banner').classList.add('hidden');
-  }
-
+  function showError(msg) { const b = document.getElementById('error-banner'); document.getElementById('error-msg').textContent = msg; b.classList.remove('hidden'); }
+  function hideError() { document.getElementById('error-banner').classList.add('hidden'); }
   function togglePass() {
-    const inp = document.getElementById('password');
-    const ico = document.getElementById('eye-icon');
+    const inp = document.getElementById('password'); const ico = document.getElementById('eye-icon');
     if (inp.type === 'password') { inp.type = 'text'; ico.textContent = 'visibility_off'; }
     else { inp.type = 'password'; ico.textContent = 'visibility'; }
   }
-
   function friendlyLoginError(msg) {
     if (msg.includes('tardó demasiado') || msg.includes('Failed to fetch') || msg.includes('NetworkError')) return 'No pude conectar con el servidor. Revisa internet, desactiva VPN/bloqueadores si usas alguno y vuelve a intentar.';
     if (msg.includes('autenticación')) return msg;
     return friendlyError(msg);
   }
-
   function friendlyError(msg) {
     if (msg.includes('Invalid login')) return 'Correo o contraseña incorrectos.';
     if (msg.includes('Email not confirmed')) return 'Confirma tu correo antes de iniciar sesión.';

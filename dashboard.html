@@ -204,7 +204,10 @@
 
 <!-- ── TOP BAR ── -->
 <header class="fixed top-0 w-full z-50 flex items-center justify-between px-6 h-14 bg-[#0e0e0e] border-b border-white/5">
-  <a class="text-base font-extrabold tracking-tight text-primary" href="./dashboard.html"><span class="studio-logo-mark" aria-hidden="true"><video autoplay muted loop playsinline preload="metadata"><source src="https://euauqqamrkqwoytveljp.supabase.co/storage/v1/object/public/public-assets/Logo_Reveal_A_purple_and_dark_blue_nebula_swirls_with_7dBpmcoS.mp4" type="video/mp4"></video></span>Luminous Studio</a>
+  <a class="studio-brand text-base font-extrabold tracking-tight" href="./dashboard.html">
+    <span class="studio-logo-mark" aria-hidden="true"><video autoplay muted loop playsinline preload="metadata"><source src="https://euauqqamrkqwoytveljp.supabase.co/storage/v1/object/public/public-assets/Logo_Reveal_A_purple_and_dark_blue_nebula_swirls_with_7dBpmcoS.mp4" type="video/mp4"></video></span>
+    <span>Luminous Studio</span>
+  </a>
   <nav class="hidden md:flex items-center gap-5 text-sm">
     <a class="text-primary font-semibold" href="./dashboard.html">Dashboard</a>
     <a class="text-on-surface-variant hover:text-primary transition-colors" href="./generador-ia.html">Crear Quiz</a>
@@ -858,15 +861,15 @@ function toggleFbGuide() {
 </div>
 
 <!-- ══════════════ MODAL: NUEVA MINI-APP ══════════════ -->
-<div id="modal-overlay" class="fixed inset-0 z-[100] flex items-center justify-center bg-black/70 backdrop-blur-md hidden" onclick="handleOverlayClick(event)">
-  <div id="modal-box" class="modal-premium rounded-2xl w-full max-w-5xl mx-4 p-6 md:p-7 max-h-[calc(100vh-2rem)] overflow-y-auto">
+<div id="modal-overlay" class="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 hidden" onclick="handleOverlayClick(event)">
+  <div id="modal-box" class="modal-premium rounded-2xl w-full max-w-lg mx-4 p-6 max-h-[calc(100vh-3rem)] overflow-y-auto">
     <div class="flex items-start justify-between mb-6">
       <div class="flex items-center gap-3">
         <div class="modal-hero-icon">
           <span class="material-symbols-outlined" style="font-size:22px;color:#a5b4fc;font-variation-settings:'FILL' 1">deployed_code</span>
         </div>
         <div>
-          <h3 class="text-lg font-extrabold leading-tight">Mini-App Builder</h3>
+          <h3 class="text-lg font-extrabold leading-tight">Nueva Mini-App</h3>
           <p class="text-[11px] text-on-surface-variant mt-0.5">Combina tipos para crear una experiencia única</p>
         </div>
       </div>
@@ -1081,17 +1084,16 @@ document.addEventListener('DOMContentLoaded', async () => {
   if (!_currentUser) return;
   // Load profile first so plan is synced to Settings before renders gate by it.
   await loadUserInfo();
-  const pageParams = new URLSearchParams(window.location.search);
-  // If a template is pending, create it locally BEFORE the Supabase renders
-  // so the new app appears immediately in the grid without waiting for DB.
-  if (pageParams.get('miniapp_template')) {
-    await applyPendingMiniAppTemplate();
-  }
   await Promise.all([renderMiniApps(), renderQuizzes(), renderLandings(), renderEbooks(), renderProjects()]);
   loadLeadsCount();
   loadUsageWidget();
+  const pageParams = new URLSearchParams(window.location.search);
   const requestedTab = pageParams.get('tab');
   if (requestedTab) switchDashTab(requestedTab);
+  // Apply mini-app template if coming from plantillas-miniapps.html
+  if (pageParams.get('miniapp_template')) {
+    await applyPendingMiniAppTemplate();
+  }
   // Auto-open mini-app creation modal if ?create_miniapp=1
   if (pageParams.get('create_miniapp')) {
     setTimeout(() => openCreateModal(), 700);
@@ -1159,22 +1161,23 @@ async function applyPendingMiniAppTemplate() {
       _templateId: templateId || '',
     };
 
-    // Create locally first — instant, no Supabase wait
-    const localApp = MiniApps.create(appFromTemplate);
+    let localApp = null;
+    try {
+      const saved = await DB.miniApps.save(appFromTemplate, _currentUser.id);
+      localApp = { id: saved.id, ...saved, ...appFromTemplate };
+      try { MiniApps.save(localApp); } catch (cacheErr) { console.warn('Template local cache skipped:', cacheErr.message); }
+    } catch (dbErr) {
+      console.warn('Template DB save failed:', dbErr.message);
+      localApp = MiniApps.create(appFromTemplate);
+    }
 
-    // Show in grid immediately (optimistic)
-    window._miniAppsCache = [localApp, ...(window._miniAppsCache || []).filter(a => a.id !== localApp.id)];
-    _renderMiniAppsGrid(window._miniAppsCache);
+    await renderMiniApps();
     switchDashTab('miniapps');
     history.replaceState(null, '', './dashboard.html?tab=miniapps');
     showToast(`Mini-App "${localApp.name}" creada desde plantilla.`);
     setTimeout(() => {
       document.getElementById('section-miniapps')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }, 150);
-
-    // Save to DB in background — upsert with same UUID so IDs stay in sync
-    DB.miniApps.save(localApp, _currentUser.id)
-      .catch(err => console.warn('Template DB save (background):', err.message));
   } catch (e) {
     console.warn('applyPendingMiniAppTemplate:', e);
     showToast('No pude crear la mini-app desde la plantilla.', 'error');
@@ -1377,10 +1380,7 @@ function _dbWithTimeout(promise, ms = 6000) {
 
 async function renderMiniApps() {
   const container = document.getElementById('mini-apps-grid');
-  // Don't flash "Cargando..." if the grid already shows an optimistic result
-  if (!window._miniAppsCache?.length) {
-    container.innerHTML = '<p class="text-xs text-on-surface-variant col-span-3 py-6 text-center animate-pulse">Cargando...</p>';
-  }
+  container.innerHTML = '<p class="text-xs text-on-surface-variant col-span-3 py-6 text-center animate-pulse">Cargando...</p>';
   let apps = [];
   try {
     apps = await _dbWithTimeout(DB.miniApps.getAll(_currentUser.id));
@@ -1393,31 +1393,6 @@ async function renderMiniApps() {
   } catch (err) {
     // Supabase unreachable — fall back entirely to localStorage
     apps = MiniApps.getAll();
-  }
-  // Filter out user-deleted apps (handles Supabase RLS blocking deletes)
-  apps = apps.filter(app => !_hiddenAppIds.has(app.id));
-  // Repair accent-stripped names/descriptions from clean templates
-  if (typeof getBuiltinMiniAppTemplates === 'function') {
-    const tplMap = new Map(getBuiltinMiniAppTemplates().map(t => [t.id, t]));
-    apps = apps.map(app => {
-      const tid = app._templateId;
-      if (!tid) return app;
-      const tpl = tplMap.get(tid);
-      if (!tpl) return app;
-      const repaired = {};
-      // Restore name if it looks accent-stripped (shorter than template or has no accents when template does)
-      if (tpl.name && app.name && app.name !== tpl.name) {
-        const stripped = tpl.name.normalize('NFD').replace(/[̀-ͯ]/g, '');
-        if (app.name === stripped || app.name.replace(/["\s]/g,'') === stripped.replace(/\s/g,'')) {
-          repaired.name = tpl.name;
-        }
-      }
-      if (tpl.description && app.description && app.description !== tpl.description) {
-        const stripped = tpl.description.normalize('NFD').replace(/[̀-ͯ]/g, '');
-        if (app.description === stripped) repaired.description = tpl.description;
-      }
-      return Object.keys(repaired).length ? { ...app, ...repaired } : app;
-    });
   }
   window._miniAppsCache = apps;
 
@@ -1448,12 +1423,14 @@ async function renderLandings() {
 
   const caps = getPlanCaps(Settings.get().plan || 'free');
   const maxLandings = caps.landings || 0;
+  const isLocalDev = ['127.0.0.1', 'localhost', '::1'].includes(location.hostname);
 
   // Hide the section entirely for plans with zero landings allowed
-  if (maxLandings < 1) {
+  if (maxLandings < 1 && !isLocalDev) {
     if (section) section.style.display = 'none';
     return;
   }
+  if (section) section.style.display = '';
 
   container.innerHTML = '<p class="text-xs text-on-surface-variant py-6 col-span-full text-center animate-pulse">Cargando landings...</p>';
 
@@ -1471,7 +1448,7 @@ async function renderLandings() {
     catch { summaries[l.id] = { views: 0, uniqueViews: 0, ctaClicks: 0 }; }
   }));
 
-  const atLimit = landings.length >= maxLandings;
+  const atLimit = !isLocalDev && landings.length >= maxLandings;
   if (newBtn) {
     if (atLimit) {
       newBtn.classList.add('opacity-40', 'cursor-not-allowed', 'pointer-events-none');
@@ -1823,13 +1800,13 @@ function buildAppCard(app) {
       </div>
       <div class="flex gap-2 mt-auto">
         <a href="${appUrl}" class="flex-1 py-2 bg-primary text-white text-xs font-bold rounded-xl text-center hover:opacity-90 transition-opacity">Abrir App</a>
-        ${hasEditableContent ? `<button type="button" data-edit-app-id="${esc(app.id)}" class="w-9 h-9 rounded-xl bg-surface-container-high flex items-center justify-center hover:bg-primary/10 transition-colors" title="Editar contenido">
+        ${hasEditableContent ? `<button type="button" id="edit-btn-${app.id}" data-edit-app-id="${esc(app.id)}" class="w-9 h-9 rounded-xl bg-surface-container-high flex items-center justify-center hover:bg-primary/10 transition-colors" title="Editar contenido">
           <span class="material-symbols-outlined text-sm text-on-surface-variant">edit</span>
         </button>` : ''}
-        <button data-copy-app-id="${esc(app.id)}" class="w-9 h-9 rounded-xl bg-surface-container-high flex items-center justify-center hover:bg-primary/10 transition-colors" title="Copiar enlace">
+        <button onclick="copyToClipboard(buildMiniAppUrl('${app.id}'))" class="w-9 h-9 rounded-xl bg-surface-container-high flex items-center justify-center hover:bg-primary/10 transition-colors" title="Copiar enlace">
           <span class="material-symbols-outlined text-sm text-on-surface-variant">share</span>
         </button>
-        <button data-delete-app-id="${esc(app.id)}" class="w-9 h-9 rounded-xl bg-surface-container-high flex items-center justify-center hover:bg-error/10 transition-colors" title="Eliminar">
+        <button onclick="deleteApp('${app.id}')" class="w-9 h-9 rounded-xl bg-surface-container-high flex items-center justify-center hover:bg-error/10 transition-colors" title="Eliminar">
           <span class="material-symbols-outlined text-sm text-on-surface-variant">delete</span>
         </button>
       </div>
@@ -1840,36 +1817,18 @@ function buildMiniAppUrl(appId) {
   return `${window.location.origin}/mini-app-player.html?id=${encodeURIComponent(appId)}`;
 }
 
-// IDs permanently hidden by user — survives Supabase re-fetch
-const _hiddenAppIds = new Set(JSON.parse(localStorage.getItem('ls_hidden_app_ids') || '[]'));
-function _hideApp(id) {
-  _hiddenAppIds.add(id);
-  localStorage.setItem('ls_hidden_app_ids', JSON.stringify([..._hiddenAppIds]));
-}
-
 async function deleteApp(id) {
-  if (!id) return;
-  // Remove locally + add to permanent blacklist (survives page refresh even if Supabase delete fails)
+  if (!confirm('¿Eliminar esta mini-app? No se puede deshacer.')) return;
   MiniApps.delete(id);
-  _hideApp(id);
   window._miniAppsCache = (window._miniAppsCache || []).filter(app => app.id !== id);
-  _renderMiniAppsGrid(window._miniAppsCache);
-  showToast('Mini-App eliminada.');
-  // Attempt Supabase delete silently in background
-  try { await DB.miniApps.delete(id); } catch (err) { console.warn('deleteApp DB sync:', err); }
-}
-
-function _renderMiniAppsGrid(apps) {
-  const container = document.getElementById('mini-apps-grid');
-  if (!container) return;
-  const addCard = `
-    <div onclick="openCreateModal()" class="rounded-2xl flex flex-col items-center justify-center text-center gap-2 cursor-pointer border border-dashed border-outline-variant/20 hover:border-secondary/50 hover:bg-secondary/[0.04] transition-all min-h-[130px] group">
-      <div class="w-8 h-8 rounded-lg bg-surface-container-high border border-outline-variant/20 flex items-center justify-center group-hover:bg-secondary/10 group-hover:border-secondary/30 transition-all">
-        <span class="material-symbols-outlined text-base text-on-surface-variant/40 group-hover:text-secondary transition-colors">add</span>
-      </div>
-      <p class="text-xs font-semibold text-on-surface-variant/40 group-hover:text-secondary/70 transition-colors">Nueva Mini-App</p>
-    </div>`;
-  container.innerHTML = apps.map(app => buildAppCard(app)).join('') + addCard;
+  try {
+    await DB.miniApps.delete(id);
+    showToast('Mini-App eliminada.');
+  } catch (err) {
+    console.warn('deleteApp:', err);
+    showToast('Mini-App eliminada de este navegador. Revisa conexión para sincronizar.', 'info');
+  }
+  renderMiniApps();
 }
 
 function copyLink(quizId, isLocal) {
@@ -2920,15 +2879,10 @@ async function saveEditContent() {
 window.saveEditContent = saveEditContent;
 
 document.addEventListener('click', (event) => {
-  // Edit
-  const editBtn = event.target.closest('[data-edit-app-id]');
-  if (editBtn) { event.preventDefault(); openEditContent(editBtn.dataset.editAppId); return; }
-  // Copy link
-  const copyBtn = event.target.closest('[data-copy-app-id]');
-  if (copyBtn) { event.preventDefault(); copyToClipboard(buildMiniAppUrl(copyBtn.dataset.copyAppId)); return; }
-  // Delete
-  const delBtn = event.target.closest('[data-delete-app-id]');
-  if (delBtn) { event.preventDefault(); deleteApp(delBtn.dataset.deleteAppId); return; }
+  const btn = event.target.closest('[data-edit-app-id]');
+  if (!btn) return;
+  event.preventDefault();
+  openEditContent(btn.dataset.editAppId);
 });
 
 </script>
