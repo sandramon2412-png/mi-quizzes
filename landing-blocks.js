@@ -525,6 +525,25 @@ body>*:not(.ld-orb){position:relative;z-index:1}
 // Guard: AI sometimes returns a string/object instead of an array
 function _arr(v) { return Array.isArray(v) ? v : []; }
 
+// Returns inline style overrides from data._style object
+function _blockStyle(data) {
+  if (!data || !data._style) return '';
+  const s = data._style;
+  const parts = [];
+  if (s.text_align) parts.push(`text-align:${s.text_align}`);
+  if (s.padding === 'compact') parts.push('padding-top:48px;padding-bottom:48px');
+  if (s.padding === 'spacious') parts.push('padding-top:160px;padding-bottom:160px');
+  return parts.length ? parts.join(';') + ';' : '';
+}
+
+// Returns title size multiplier style
+function _titleStyle(data) {
+  if (!data || !data._style || !data._style.title_size) return '';
+  const sizes = { xs:'0.65em', sm:'0.8em', md:'1em', lg:'1.25em', xl:'1.6em' };
+  const sz = sizes[data._style.title_size];
+  return sz ? `font-size:${sz}!important;` : '';
+}
+
 function _renderNav(data, pal) {
   // Map nav link text to correct section IDs (text can be in any language/case)
   function _navAnchor(text) {
@@ -590,12 +609,12 @@ function _renderHero(data, pal) {
   // mesh grid overlay for premium look
   const meshSvg = `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='60'%3E%3Cpath d='M 60 0 L 0 0 0 60' fill='none' stroke='rgba(${_hexToRgb(pal.from)},0.07)' stroke-width='1'/%3E%3C/svg%3E")`;
   return `
-<section id="ld-hero" style="padding:90px 0 72px;overflow:hidden;position:relative;background-image:${meshSvg};background-size:60px 60px">
+<section id="ld-hero" style="padding:90px 0 72px;overflow:hidden;position:relative;background-image:${meshSvg};background-size:60px 60px;${_blockStyle(data)}">
   <div class="ld-inner" style="position:relative;z-index:2">
     ${data.badge ? `<div style="display:inline-flex;align-items:center;gap:8px;padding:7px 18px;border-radius:999px;${_gradBg(pal)};font-size:12px;font-weight:700;letter-spacing:0.06em;margin-bottom:32px;box-shadow:0 4px 20px rgba(${_hexToRgb(pal.from)},0.4)">${_e(data.badge)}</div>` : ''}
     ${heroCols}
       <div style="${sz==='centrado'?'max-width:720px':'flex:1;min-width:0'}">
-        <h1 class="ld-h1" style="margin-bottom:22px">${headline}</h1>
+        <h1 class="ld-h1" style="margin-bottom:22px;${_titleStyle(data)}">${headline}</h1>
         <p class="ld-body" style="font-size:19px;margin-bottom:40px;max-width:580px">${_e(data.subheadline)}</p>
         <div style="display:flex;flex-wrap:wrap;gap:14px;align-items:center${sz==='centrado'?';justify-content:center':''}">
           <a href="${_e(data.cta_href||'#ld-cta_final')}" class="ld-btn ld-btn-lg">${_icon('bolt',22,'#fff')} ${_e(data.cta_text||'Comenzar ahora')}</a>
@@ -669,7 +688,7 @@ function _renderMetricas(data, pal) {
   }).join('');
   const cols = Math.min(4, _arr(data.items).filter(i=>i&&i.value).length);
   return `
-<section id="ld-metricas" class="ld-section-sm" style="background:linear-gradient(135deg,rgba(${_hexToRgb(pal.from)},0.06) 0%,rgba(${_hexToRgb(pal.to)},0.04) 100%)">
+<section id="ld-metricas" class="ld-section-sm" style="background:linear-gradient(135deg,rgba(${_hexToRgb(pal.from)},0.06) 0%,rgba(${_hexToRgb(pal.to)},0.04) 100%);${_blockStyle(data)}">
   <div class="ld-inner">
     ${data.headline ? `<div class="ld-center" style="margin-bottom:40px"><h2 class="ld-h2">${_e(data.headline)}</h2></div>` : ''}
     <div class="ld-metrics-grid" style="--mcols:${cols}">${items}</div>
@@ -689,10 +708,10 @@ function _renderBeneficios(data, pal) {
       </div>
      </div>`).join('');
   return `
-<section id="ld-beneficios" class="ld-section">
+<section id="ld-beneficios" class="ld-section" style="${_blockStyle(data)}">
   <div class="ld-inner">
     <div class="ld-center" style="margin-bottom:56px">
-      ${data.headline ? `<h2 class="ld-h2">${_e(data.headline)}</h2>` : ''}
+      ${data.headline ? `<h2 class="ld-h2" style="${_titleStyle(data)}">${_e(data.headline)}</h2>` : ''}
       ${data.subheadline ? `<p class="ld-body" style="margin-top:16px;max-width:640px">${_e(data.subheadline)}</p>` : ''}
     </div>
     <div class="ld-g3">${items}</div>
@@ -711,10 +730,10 @@ function _renderModulos(data, pal) {
       </div>
      </div>`).join('');
   return `
-<section id="ld-modulos" class="ld-section" style="background:rgba(255,255,255,0.015)">
+<section id="ld-modulos" class="ld-section" style="background:rgba(255,255,255,0.015);${_blockStyle(data)}">
   <div class="ld-inner">
     <div class="ld-center" style="margin-bottom:56px">
-      ${data.headline ? `<h2 class="ld-h2">${_e(data.headline)}</h2>` : ''}
+      ${data.headline ? `<h2 class="ld-h2" style="${_titleStyle(data)}">${_e(data.headline)}</h2>` : ''}
       ${data.subheadline ? `<p class="ld-body" style="margin-top:16px;max-width:640px">${_e(data.subheadline)}</p>` : ''}
     </div>
     <div class="ld-g2">${items}</div>
@@ -739,10 +758,10 @@ function _renderTestimonios(data, pal) {
      </div>`;
   }).join('');
   return `
-<section id="ld-testimonios" class="ld-section" style="background:linear-gradient(135deg,rgba(${_hexToRgb(pal.from)},0.06) 0%,transparent 50%,rgba(${_hexToRgb(pal.to)},0.06) 100%)">
+<section id="ld-testimonios" class="ld-section" style="background:linear-gradient(135deg,rgba(${_hexToRgb(pal.from)},0.06) 0%,transparent 50%,rgba(${_hexToRgb(pal.to)},0.06) 100%);${_blockStyle(data)}">
   <div class="ld-inner">
     <div class="ld-center" style="margin-bottom:56px">
-      <h2 class="ld-h2">${_e(data.headline||'Lo que dicen nuestros alumnos')}</h2>
+      <h2 class="ld-h2" style="${_titleStyle(data)}">${_e(data.headline||'Lo que dicen nuestros alumnos')}</h2>
     </div>
     <div class="ld-g3">${items}</div>
   </div>
