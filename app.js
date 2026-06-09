@@ -1208,30 +1208,36 @@ REGLAS:
   },
 
   async chatEditLanding(userMsg, history, landingBlocks, brief) {
-    const blocksSummary = (landingBlocks || []).map((b, i) =>
-      `[${i}] ${b.type}: ${JSON.stringify(b.data).slice(0, 300)}`
-    ).join('\n');
+    // Build a precise summary: for each block, show type + exact field keys + current values (truncated)
+    const blocksSummary = (landingBlocks || []).map((b, i) => {
+      const fields = Object.keys(b.data || {}).join(', ');
+      const preview = JSON.stringify(b.data || {}).slice(0, 250);
+      return `[${i}] ${b.type}\n  Campos disponibles: ${fields}\n  Datos: ${preview}`;
+    }).join('\n\n');
 
     const system = `Sos un editor de landing pages conversacional. Podés chatear normalmente Y editar la landing cuando el usuario lo pida.
 
-LANDING ACTUAL (${(landingBlocks||[]).length} bloques):
+LANDING ACTUAL — ${(landingBlocks||[]).length} bloques:
 ${blocksSummary}
 
-PRODUCTO: ${(brief||'').slice(0,400)}
+PRODUCTO: ${(brief||'').slice(0,300)}
 
-CUANDO EL USUARIO PIDE UN CAMBIO, respondé con este JSON exacto (sin markdown, sin \`\`\`):
-{"action":"edit","changes":[{"block_idx":N,"data":{...solo los campos que cambian...}}],"reply":"Frase corta confirmando qué hiciste"}
+═══════════════════════════════════════
+REGLAS ABSOLUTAS:
+1. SOLO podés editar campos que YA EXISTEN en los datos del bloque (los que aparecen en "Campos disponibles").
+   NUNCA inventes campos nuevos como headline_font, style, css, etc.
+2. Para cambiar texto/contenido: editá los campos de texto existentes (headline, subheadline, items, etc.)
+3. Para cambios visuales que piden una fuente específica: cambiá el TEXTO del campo para que describa ese estilo, o respondé que ese cambio se hace desde el selector de Tipografía global del panel izquierdo
+═══════════════════════════════════════
 
-CUANDO ES SOLO CONVERSACIÓN (pregunta, sugerencia, feedback sin cambio inmediato):
-{"action":"chat","reply":"Tu respuesta en texto natural"}
+CUANDO EL USUARIO PIDE UN CAMBIO DE CONTENIDO, respondé SOLO con este JSON (sin texto extra, sin markdown, sin \`\`\`):
+{"action":"edit","changes":[{"block_idx":N,"data":{...SOLO los campos que cambian, con sus nombres exactos...}}],"reply":"Descripción breve de qué cambié"}
 
-REGLAS:
-- Podés editar MÚLTIPLES bloques en una sola respuesta (changes es un array)
-- En "data" incluí SOLO los campos que cambian, no todo el objeto
-- Nunca uses emojis en el contenido de la landing
-- Si el usuario dice "cambiá el título", "actualizá los testimonios", "agregá un bono", etc. → acción "edit"
-- Si el usuario pregunta algo, pide consejo, o es una frase ambigua → acción "chat" y preguntá qué quiere hacer
-- Respondé siempre en español`;
+CUANDO ES CONVERSACIÓN, pregunta, o cambio visual que no podés hacer via campos de datos:
+{"action":"chat","reply":"Tu respuesta en español. Si piden cambiar tipografía/fuente, deciles que lo pueden hacer desde el selector de Tipografía en el panel izquierdo."}
+
+PODÉS EDITAR MÚLTIPLES BLOQUES en un solo cambio (changes es un array con varios objetos).
+Respondé SIEMPRE en español.`;
 
     const apiHistory = (history || [])
       .filter(m => m.content && m.content.trim())
@@ -1244,14 +1250,17 @@ REGLAS:
       { model: 'claude-haiku-4-5-20251001', system }
     );
 
-    // Parse response
-    try {
-      const raw = text.trim().replace(/^```json\s*/,'').replace(/```\s*$/,'');
-      return JSON.parse(raw);
-    } catch(e) {
-      // If not JSON, treat as chat reply
-      return { action: 'chat', reply: text };
+    // Robust JSON extraction — handles cases where AI wraps JSON in text
+    const raw = text.trim();
+    // Try direct parse first
+    try { return JSON.parse(raw); } catch(e) {}
+    // Try extracting JSON object from text
+    const jsonMatch = raw.match(/\{[\s\S]*"action"[\s\S]*\}/);
+    if (jsonMatch) {
+      try { return JSON.parse(jsonMatch[0]); } catch(e) {}
     }
+    // Fallback: treat entire response as chat reply
+    return { action: 'chat', reply: raw };
   },
 
   _ebookSystemPrompt() {
