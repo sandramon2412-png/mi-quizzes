@@ -8,6 +8,7 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="./supabase-config.js"></script>
 <script src="./app.js"></script>
+<script src="./ai-assistant.js?v=page-context1" defer></script>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
 <script id="tailwind-config">
@@ -194,12 +195,13 @@
   /* Header nav active */
   .nav-active { color: #2E5BFF !important; font-weight: 700; }
 </style>
+<link rel="stylesheet" href="./luminous-polish.css?v=platform-polish1"/>
 </head>
 <body class="bg-[#080810] text-on-surface min-h-screen">
 
 <!-- ── TOP BAR ── -->
 <header class="fixed top-0 w-full z-50 flex items-center justify-between px-6 h-14 bg-[#080810]/95 border-b border-white/5" style="backdrop-filter:blur(20px);">
-  <a class="text-base font-extrabold tracking-tight text-primary" href="./dashboard.html">Luminous Studio</a>
+  <a class="text-base font-extrabold tracking-tight text-primary" href="./dashboard.html"><span class="studio-logo-mark" aria-hidden="true"><video autoplay muted loop playsinline preload="metadata"><source src="https://euauqqamrkqwoytveljp.supabase.co/storage/v1/object/public/public-assets/Logo_Reveal_A_purple_and_dark_blue_nebula_swirls_with_7dBpmcoS.mp4" type="video/mp4"></video></span>Luminous Studio</a>
   <nav class="hidden md:flex items-center gap-5 text-sm">
     <a class="text-on-surface-variant hover:text-primary transition-colors" href="./dashboard.html">Dashboard</a>
     <a class="text-on-surface-variant hover:text-primary transition-colors" href="./generador-ia.html">Crear Quiz</a>

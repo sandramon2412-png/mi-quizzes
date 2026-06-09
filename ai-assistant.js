@@ -95,6 +95,109 @@ INFORMACIÓN SOBRE LUMINOUS STUDIO:
 TONO: cercano, directo, entusiasta pero sin exagerar. Respuestas cortas (2-4 oraciones). Cuando tenga sentido, invita al visitante a crear cuenta gratis o a ver los planes. No uses jerga técnica innecesaria. Responde siempre en español.`
   };
 
+  const PAGE_CONTEXTS = [
+    {
+      key: 'market-research-demo',
+      mode: {
+        id: 'spy-lab',
+        label: 'Spy Lab',
+        icon: 'travel_explore',
+        prompt: `Eres Lloyd dentro de Luminous Spy Lab. Ayudas a la creadora a investigar anuncios, detectar angulos de mercado, interpretar patrones de competencia y convertir hallazgos en brief de oferta, quiz, landing y creativos para Facebook Ads. No prometas que se conecta a Meta real si la pantalla es demo; explica con claridad cuando algo es simulacion y que una version real requeriria API, scraping permitido o integracion autorizada. Responde en espanol, concreto y accionable.`
+      },
+      chips: ['Como investigo un nicho?', 'Que filtros debo usar?', 'Convierte estos insights en oferta', 'Que anuncio deberia probar?']
+    },
+    {
+      key: 'bots',
+      mode: {
+        id: 'bot-lab',
+        label: 'Bot Lab',
+        icon: 'smart_toy',
+        prompt: `Eres Lloyd dentro del Bot Lab de Luminous. Ayudas a elegir el bot correcto para copywriting, oferta, VSL, Facebook Ads, prompts, leads y estrategia. Explica para que sirve cada bot, que datos necesita y como usar mejor sus respuestas. Responde en espanol y con pasos cortos.`
+      },
+      chips: ['Que bot uso para mi oferta?', 'Que bot sirve para anuncios?', 'Como preparo un buen prompt?', 'Orden recomendado de bots']
+    },
+    {
+      key: 'dashboard',
+      mode: {
+        id: 'workspace',
+        label: 'Workspace',
+        icon: 'dashboard_customize',
+        prompt: `Eres Lloyd dentro del dashboard de Luminous Studio. Ayudas a la creadora a orientarse en su workspace: quizzes, mini apps, landings, ebooks, leads, plantillas y demos. Si pregunta por botones o flujo, explica donde entrar y que revisar primero. Responde en espanol, breve y practico.`
+      },
+      chips: ['Que reviso primero?', 'Como creo una mini app?', 'Donde edito mi landing?', 'Como pruebo como cliente final?']
+    },
+    {
+      key: 'generador-ia',
+      mode: {
+        id: 'quiz-builder',
+        label: 'Quiz Builder',
+        icon: 'quiz',
+        prompt: `Eres Lloyd dentro del Quiz Builder. Ayudas a crear, mejorar y revisar quizzes de diagnostico para captar leads y segmentar compradores. Da recomendaciones sobre preguntas, resultados, colores, CTA, pixel, captura de leads y redireccion. Responde en espanol.`
+      },
+      chips: ['Mejora mis preguntas', 'Que resultados debo crear?', 'Revisa mi CTA', 'Como conecto la landing?']
+    },
+    {
+      key: 'landing-builder',
+      mode: MODES.find(m => m.id === 'landing') || MODES[0],
+      chips: ['Dame estructura de landing', 'Mejora mi hero', 'Que CTA uso?', 'Que secciones faltan?']
+    },
+    {
+      key: 'ebook-builder',
+      mode: {
+        id: 'ebook-builder',
+        label: 'Ebook Builder',
+        icon: 'auto_stories',
+        prompt: `Eres Lloyd dentro del Ebook Builder. Ayudas a estructurar ebooks, guias, checklists y lead magnets para infoproductos. Sugiere capitulos, mejora titulos, recomienda imagenes, portada, bonus y flujo de entrega. Responde en espanol.`
+      },
+      chips: ['Mejora el indice', 'Dame titulos de capitulos', 'Que bonus agrego?', 'Como hacerlo mas premium?']
+    },
+    {
+      key: 'plantillas-miniapps',
+      mode: {
+        id: 'miniapps',
+        label: 'Mini Apps',
+        icon: 'deployed_code',
+        prompt: `Eres Lloyd en la biblioteca de mini apps. Ayudas a elegir plantillas segun nicho, oferta y etapa del embudo. Recomienda combinaciones de herramientas: diario, tracker, checklist, asistente IA, roadmap, calculadora, test, FAQ y contenido premium. Responde en espanol.`
+      },
+      chips: ['Cual plantilla uso?', 'Mini app para skincare', 'Mini app para ingles', 'Como subir valor percibido?']
+    },
+    {
+      key: 'plantillas-landings',
+      mode: {
+        id: 'landing-templates',
+        label: 'Landings',
+        icon: 'web',
+        prompt: `Eres Lloyd en la biblioteca de landings. Ayudas a escoger una plantilla segun tipo de oferta, nicho, trafico, precio y objetivo: captura, venta, WhatsApp o checkout. Responde en espanol, con recomendaciones concretas.`
+      },
+      chips: ['Que plantilla conviene?', 'Landing para reto', 'Landing para ebook', 'Que secciones necesita?']
+    },
+    {
+      key: 'plantillas',
+      mode: {
+        id: 'templates',
+        label: 'Plantillas',
+        icon: 'auto_stories',
+        prompt: `Eres Lloyd en la biblioteca de plantillas de Luminous. Ayudas a elegir entre quizzes, mini apps, landings y recursos segun el objetivo del creador. Responde en espanol y orienta hacia el siguiente paso.`
+      },
+      chips: ['Que plantilla uso?', 'Quiero vender un reto', 'Quiero captar leads', 'Quiero hacer un demo premium']
+    },
+    {
+      key: 'leads',
+      mode: MODES.find(m => m.id === 'leads') || MODES[0],
+      chips: ['Analiza mis leads', 'Mensaje para WhatsApp', 'Segmenta por perfil', 'Como recupero abandonos?']
+    },
+    {
+      key: 'settings',
+      mode: {
+        id: 'settings-help',
+        label: 'Configuracion',
+        icon: 'settings',
+        prompt: `Eres Lloyd en configuracion de Luminous. Ayudas con API keys, integraciones, dominio, pixel, cuenta, plan y ajustes tecnicos basicos. Responde en espanol y avisa cuando algo depende de credenciales externas.`
+      },
+      chips: ['Configurar API', 'Conectar Meta Pixel', 'Dominio propio', 'Que plan necesito?']
+    },
+  ];
+
   // ── Estado ────────────────────────────────────────────────
   const SESSIONS_KEY = 'lsa_sessions';
   let _sessions = JSON.parse(localStorage.getItem(SESSIONS_KEY) || '[]');
@@ -106,6 +209,7 @@ TONO: cercano, directo, entusiasta pero sin exagerar. Respuestas cortas (2-4 ora
   let _showSessions = false;
   let _recognition = null;
   let _isListening = false;
+  let _pageContext = null;
 
   // posición de la ventana
   let _pos = { x: null, y: null };
@@ -542,8 +646,14 @@ TONO: cercano, directo, entusiasta pero sin exagerar. Respuestas cortas (2-4 ora
     '¿Cómo empiezo?',
   ];
 
+  function _detectPageContext() {
+    const path = (window.location.pathname || '').split('/').pop() || 'index.html';
+    return PAGE_CONTEXTS.find(ctx => path.includes(ctx.key)) || null;
+  }
+
   function _getChips() {
     if (_isPublic) return PUBLIC_CHIPS;
+    if (_pageContext?.chips?.length) return _pageContext.chips;
     const path = window.location.pathname;
     for (const [k, v] of Object.entries(PAGE_CHIPS)) {
       if (path.includes(k)) return v;
@@ -562,7 +672,7 @@ TONO: cercano, directo, entusiasta pero sin exagerar. Respuestas cortas (2-4 ora
         <div class="lsa-empty">
           <div class="lsa-empty-logo">✦</div>
           <h4>${welcomeTitle}</h4>
-          <p>${welcomeBody}</p>
+          <p>${(!_isPublic && _pageContext) ? `Estoy en modo ${_currentMode.label}. Te ayudo con esta pagina sin mezclar el contexto.` : welcomeBody}</p>
           <div class="lsa-chips">
             ${_getChips().map(c => `<button class="lsa-chip" onclick="LSA._chip('${c.replace(/'/g,"\\'")}')">${c}</button>`).join('')}
           </div>
@@ -894,6 +1004,7 @@ TONO: cercano, directo, entusiasta pero sin exagerar. Respuestas cortas (2-4 ora
 
   // ── Init ──────────────────────────────────────────────────
   async function _checkAccess() {
+    _pageContext = _detectPageContext();
     // Si hay body[data-lloyd-public], Lloyd corre en modo público (solo info de Luminous).
     if (document.body?.dataset?.lloydPublic === 'true') {
       _isPublic = true;
@@ -902,6 +1013,11 @@ TONO: cercano, directo, entusiasta pero sin exagerar. Respuestas cortas (2-4 ora
     }
     try {
       if (typeof Auth === 'undefined') return false;
+      const isLocal = ['127.0.0.1', 'localhost', '::1'].includes(location.hostname);
+      if (_pageContext?.mode) {
+        _currentMode = _pageContext.mode;
+        if (isLocal) return true;
+      }
       const user = await Auth.user();
       if (!user) return false;
       // Permite pre-seleccionar un modo via data-lloyd-default-mode="landing"
@@ -926,6 +1042,14 @@ TONO: cercano, directo, entusiasta pero sin exagerar. Respuestas cortas (2-4 ora
       if (floatBtn) floatBtn.title = 'Lloyd · ¿Dudas sobre Luminous? (Ctrl+Space)';
       const input = document.getElementById('lsa-input');
       if (input) input.placeholder = '¿En qué te puedo ayudar?';
+    }
+    if (!_isPublic && _pageContext) {
+      const sub = document.querySelector('.lsa-header-sub');
+      if (sub) sub.innerHTML = `<span class="lsa-status-dot"></span> Modo ${_currentMode.label} - esta pagina`;
+      const floatBtn = document.getElementById('lsa-float-btn');
+      if (floatBtn) floatBtn.title = `Lloyd - ${_currentMode.label} (Ctrl+Space)`;
+      const input = document.getElementById('lsa-input');
+      if (input) input.placeholder = `Pregunta sobre ${_currentMode.label}...`;
     }
     _initVoice();
     document.getElementById('lsa-float-btn').onclick = () => LSA.toggle();
