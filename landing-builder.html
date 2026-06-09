@@ -444,6 +444,20 @@ function setTypoScale(val, btn) {
   }
 }
 
+function setBlockStyle(idx, key, val, btn) {
+  if (!landing || !landing.blocks[idx]) return;
+  if (!landing.blocks[idx].data._style) landing.blocks[idx].data._style = {};
+  landing.blocks[idx].data._style[key] = val;
+  // Update button states for the same group
+  const attr = key === 'text_align' ? 'data-align' : key === 'title_size' ? 'data-tsize' : 'data-pad';
+  btn.closest('div').querySelectorAll('[' + attr + ']').forEach(function(b) {
+    b.style.background = b === btn ? '#27272a' : 'transparent';
+    b.style.color = b === btn ? '#e4e4e7' : '#a1a1aa';
+  });
+  renderPreview();
+  autosave();
+}
+
 function setSpacing(val, btn) {
   document.querySelectorAll('[data-spacing]').forEach(b => {
     b.classList.remove('sel');
@@ -994,6 +1008,61 @@ function buildFieldEditor(block, idx) {
 
     container.appendChild(wrap);
   });
+
+  // Style controls section — always shown at bottom of right panel
+  const styleTitle = document.createElement('div');
+  styleTitle.className = 'field-section-title';
+  styleTitle.style.cssText = 'margin-top:16px';
+  styleTitle.textContent = 'Estilo del bloque';
+  container.appendChild(styleTitle);
+
+  const styleCard = document.createElement('div');
+  styleCard.style.cssText = 'background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);border-radius:8px;padding:10px';
+  const curStyle = (block.data && block.data._style) || {};
+
+  const btnBase = 'flex:1;padding:4px;border-radius:6px;border:1px solid #3f3f46;cursor:pointer;';
+  const btnSel = btnBase + 'background:#27272a;color:#e4e4e7';
+  const btnOff = btnBase + 'background:transparent;color:#a1a1aa';
+
+  // Text alignment
+  const alignDiv = document.createElement('div');
+  alignDiv.style.cssText = 'margin-bottom:8px';
+  alignDiv.innerHTML = '<span class="field-label">Alineación del texto</span>'
+    + '<div style="display:flex;gap:4px;margin-top:4px">'
+    + ['left','center','right'].map(function(a) {
+        const label = a === 'left' ? 'Izquierda' : a === 'center' ? 'Centro' : 'Derecha';
+        const sel = (curStyle.text_align || 'left') === a;
+        return '<button data-align="' + a + '" onclick="setBlockStyle(' + idx + ',\'text_align\',\'' + a + '\',this)" style="' + (sel ? btnSel : btnOff) + ';font-size:11px">' + label + '</button>';
+      }).join('')
+    + '</div>';
+  styleCard.appendChild(alignDiv);
+
+  // Title size
+  const sizeDiv = document.createElement('div');
+  sizeDiv.style.cssText = 'margin-bottom:8px';
+  sizeDiv.innerHTML = '<span class="field-label">Tamaño del título</span>'
+    + '<div style="display:flex;gap:4px;margin-top:4px">'
+    + [['xs','XS'],['sm','S'],['md','M'],['lg','L'],['xl','XL']].map(function(pair) {
+        const v = pair[0], l = pair[1];
+        const sel = (curStyle.title_size || 'md') === v;
+        return '<button data-tsize="' + v + '" onclick="setBlockStyle(' + idx + ',\'title_size\',\'' + v + '\',this)" style="' + (sel ? btnSel : btnOff) + ';font-size:11px">' + l + '</button>';
+      }).join('')
+    + '</div>';
+  styleCard.appendChild(sizeDiv);
+
+  // Padding
+  const padDiv = document.createElement('div');
+  padDiv.innerHTML = '<span class="field-label">Espacio interno de la sección</span>'
+    + '<div style="display:flex;gap:4px;margin-top:4px">'
+    + [['compact','Compacto'],['normal','Normal'],['spacious','Espacioso']].map(function(pair) {
+        const v = pair[0], l = pair[1];
+        const sel = (curStyle.padding || 'normal') === v;
+        return '<button data-pad="' + v + '" onclick="setBlockStyle(' + idx + ',\'padding\',\'' + v + '\',this)" style="' + (sel ? btnSel : btnOff) + ';font-size:10px">' + l + '</button>';
+      }).join('')
+    + '</div>';
+  styleCard.appendChild(padDiv);
+
+  container.appendChild(styleCard);
 }
 
 function addSubItem(btn, type) {

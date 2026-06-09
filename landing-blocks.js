@@ -515,6 +515,11 @@ body>*:not(.ld-orb){position:relative;z-index:1}
   .ld-card{padding:20px}
   .ld-orb{display:none}
 }
+${isLight ? `
+/* Light mode: alternating section tints for visual separation */
+.ld-section:nth-child(even){background:rgba(0,0,0,0.025)}
+.ld-section-sm:nth-child(even){background:rgba(0,0,0,0.025)}
+` : ''}
 `;
 }
 
