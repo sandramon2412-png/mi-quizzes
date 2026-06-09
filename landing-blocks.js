@@ -91,6 +91,7 @@ const BLOCK_DEFAULTS = {
     image_url: '',
     image_size: 'grande',
     image_ratio: '4/3',
+    video_url: '',
     social_proof_count: '',
     social_proof_label: '',
     microcopy: 'Sin tarjeta de crédito · Acceso inmediato · Garantía 30 días'
@@ -643,8 +644,12 @@ function _renderHero(data, pal) {
     : '';
   // mesh grid overlay for premium look
   const meshSvg = `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='60'%3E%3Cpath d='M 60 0 L 0 0 0 60' fill='none' stroke='rgba(${_hexToRgb(pal.from)},0.07)' stroke-width='1'/%3E%3C/svg%3E")`;
+  const videoBg = data.video_url
+    ? `<video autoplay muted loop playsinline style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0.45;z-index:0" src="${_e(data.video_url)}"></video><div style="position:absolute;inset:0;background:rgba(0,0,0,0.5);z-index:1"></div>`
+    : '';
   return `
-<section id="ld-hero" style="padding:90px 0 72px;overflow:hidden;position:relative;background-image:${meshSvg};background-size:60px 60px;${_blockStyle(data)}">
+<section id="ld-hero" style="padding:90px 0 72px;overflow:hidden;position:relative;${data.video_url ? '' : 'background-image:' + meshSvg + ';background-size:60px 60px;'}${_blockStyle(data)}">
+  ${videoBg}
   <div class="ld-inner" style="position:relative;z-index:2">
     ${data.badge ? `<div style="display:inline-flex;align-items:center;gap:8px;padding:7px 18px;border-radius:999px;${_gradBg(pal)};font-size:12px;font-weight:700;letter-spacing:0.06em;margin-bottom:32px;box-shadow:0 4px 20px rgba(${_hexToRgb(pal.from)},0.4)">${_e(data.badge)}</div>` : ''}
     ${heroCols}
@@ -1182,6 +1187,7 @@ const BLOCK_FIELDS = {
     { key: 'cta_href', label: 'URL del botón CTA', type: 'text' },
   ],
   hero: [
+    { key: 'video_url', label: 'Video de fondo del hero (URL .mp4)', type: 'text' },
     { key: 'badge', label: 'Badge superior (ej: "🚀 Lanzamiento · Junio 2026")', type: 'text' },
     { key: 'headline', label: 'Titular principal', type: 'textarea' },
     { key: 'headline_gradient', label: 'Parte del titular en gradiente (opcional)', type: 'text' },
