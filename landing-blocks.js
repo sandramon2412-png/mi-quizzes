@@ -252,8 +252,8 @@ function _safeHtml(str) {
     .replace(/>/g, '\x00GT\x00')
     // Restore safe tags: strong, em (open/close)
     .replace(/\x00LT\x00(\/?(strong|em))\x00GT\x00/g, '<$1>')
-    // Restore <span style="color:X"> and <span style="font-size:Xpx"> (and combinations)
-    .replace(/\x00LT\x00span style="((?:color:[#a-zA-Z0-9(),. %]+|font-size:\d+(?:\.\d+)?px)(?:;(?:color:[#a-zA-Z0-9(),. %]+|font-size:\d+(?:\.\d+)?px))*?)"\x00GT\x00/g, '<span style="$1">')
+    // Restore <span style="color:X / font-size:Xpx / font-family:X"> (and combinations)
+    .replace(/\x00LT\x00span style="((?:color:[#a-zA-Z0-9(),. %]+|font-size:\d+(?:\.\d+)?px|font-family:[^"]+)(?:;(?:color:[#a-zA-Z0-9(),. %]+|font-size:\d+(?:\.\d+)?px|font-family:[^"]+))*)"\x00GT\x00/g, '<span style="$1">')
     .replace(/\x00LT\x00\/span\x00GT\x00/g, '</span>')
     // Remaining unrecognized tags become escaped
     .replace(/\x00LT\x00/g, '&lt;')
