@@ -240,6 +240,25 @@ const BLOCK_ORDER = [
 function _e(s) {
   return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
+
+// Allow safe inline HTML tags: strong, em, span (only style attr with color/font-size)
+function _safeHtml(str) {
+  if (!str) return '';
+  // If no HTML tags present, escape normally
+  if (!/<[a-z]/i.test(str)) return _e(str);
+  return str
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '\x00LT\x00')
+    .replace(/>/g, '\x00GT\x00')
+    // Restore safe tags: strong, em (open/close)
+    .replace(/\x00LT\x00(\/?(strong|em))\x00GT\x00/g, '<$1>')
+    // Restore <span style="color:X"> and <span style="font-size:Xpx"> (and combinations)
+    .replace(/\x00LT\x00span style="((?:color:[#a-zA-Z0-9(),. %]+|font-size:\d+(?:\.\d+)?px)(?:;(?:color:[#a-zA-Z0-9(),. %]+|font-size:\d+(?:\.\d+)?px))*?)"\x00GT\x00/g, '<span style="$1">')
+    .replace(/\x00LT\x00\/span\x00GT\x00/g, '</span>')
+    // Remaining unrecognized tags become escaped
+    .replace(/\x00LT\x00/g, '&lt;')
+    .replace(/\x00GT\x00/g, '&gt;');
+}
 function _gradBg(pal) {
   return `background:linear-gradient(135deg,${pal.from} 0%,${pal.to} 100%)`;
 }
@@ -539,6 +558,10 @@ function _blockStyle(data) {
   if (s.padding === 'compact') parts.push('padding-top:48px;padding-bottom:48px');
   if (s.padding === 'spacious') parts.push('padding-top:160px;padding-bottom:160px');
   if (s.font && FONT_DEFS[s.font]) parts.push(`font-family:${FONT_DEFS[s.font].family}`);
+  if (s.bg_color) parts.push(`background-color:${s.bg_color}`);
+  // Cursive fonts should render at weight 400
+  const cursiveFonts = ['dancing', 'greatvibes'];
+  if (s.font && cursiveFonts.includes(s.font)) parts.push('font-weight:400');
   return parts.length ? parts.join(';') + ';' : '';
 }
 
@@ -550,6 +573,9 @@ function _titleStyle(data) {
   const sizes = { xs:'0.65em', sm:'0.8em', md:'1em', lg:'1.25em', xl:'1.6em' };
   if (s.title_size && sizes[s.title_size]) parts.push(`font-size:${sizes[s.title_size]}!important`);
   if (s.font && FONT_DEFS[s.font]) parts.push(`font-family:${FONT_DEFS[s.font].family}`);
+  // Cursive fonts should render at weight 400
+  const cursiveFonts = ['dancing', 'greatvibes'];
+  if (s.font && cursiveFonts.includes(s.font)) parts.push('font-weight:400!important');
   return parts.length ? parts.join(';') + ';' : '';
 }
 
@@ -589,8 +615,8 @@ function _renderNav(data, pal) {
 
 function _renderHero(data, pal) {
   const headline = data.headline_gradient
-    ? `${_e(data.headline)} <span style="${_gradText(pal)}">${_e(data.headline_gradient)}</span>`
-    : `<span style="${_gradText(pal)}">${_e(data.headline)}</span>`;
+    ? `${_safeHtml(data.headline)} <span style="${_gradText(pal)}">${_e(data.headline_gradient)}</span>`
+    : `<span style="${_gradText(pal)}">${_safeHtml(data.headline)}</span>`;
 
   // Image size controls both flex width and layout
   const sz = data.image_size || 'grande';
@@ -624,7 +650,7 @@ function _renderHero(data, pal) {
     ${heroCols}
       <div style="${sz==='centrado'?'max-width:720px':'flex:1;min-width:0'}">
         <h1 class="ld-h1" style="margin-bottom:22px;${_titleStyle(data)}">${headline}</h1>
-        <p class="ld-body" style="font-size:19px;margin-bottom:40px;max-width:580px">${_e(data.subheadline)}</p>
+        <p class="ld-body" style="font-size:19px;margin-bottom:40px;max-width:580px">${_safeHtml(data.subheadline)}</p>
         <div style="display:flex;flex-wrap:wrap;gap:14px;align-items:center${sz==='centrado'?';justify-content:center':''}">
           <a href="${_e(data.cta_href||'#ld-cta_final')}" class="ld-btn ld-btn-lg">${_icon('bolt',22,'#fff')} ${_e(data.cta_text||'Comenzar ahora')}</a>
         </div>
@@ -675,8 +701,8 @@ function _renderProblema(data, pal) {
 <section id="ld-problema" class="ld-section" style="background:linear-gradient(to bottom,transparent,rgba(239,68,68,0.04) 30%,rgba(239,68,68,0.04) 70%,transparent)">
   <div class="ld-inner">
     <div class="ld-center" style="margin-bottom:56px">
-      ${data.headline ? `<h2 class="ld-h2">${_e(data.headline)}</h2>` : ''}
-      ${data.subheadline ? `<p class="ld-body" style="margin-top:16px;max-width:640px">${_e(data.subheadline)}</p>` : ''}
+      ${data.headline ? `<h2 class="ld-h2">${_safeHtml(data.headline)}</h2>` : ''}
+      ${data.subheadline ? `<p class="ld-body" style="margin-top:16px;max-width:640px">${_safeHtml(data.subheadline)}</p>` : ''}
     </div>
     <div class="ld-g2">${items}</div>
   </div>
@@ -699,7 +725,7 @@ function _renderMetricas(data, pal) {
   return `
 <section id="ld-metricas" class="ld-section-sm" style="background:linear-gradient(135deg,rgba(${_hexToRgb(pal.from)},0.06) 0%,rgba(${_hexToRgb(pal.to)},0.04) 100%);${_blockStyle(data)}">
   <div class="ld-inner">
-    ${data.headline ? `<div class="ld-center" style="margin-bottom:40px"><h2 class="ld-h2">${_e(data.headline)}</h2></div>` : ''}
+    ${data.headline ? `<div class="ld-center" style="margin-bottom:40px"><h2 class="ld-h2">${_safeHtml(data.headline)}</h2></div>` : ''}
     <div class="ld-metrics-grid" style="--mcols:${cols}">${items}</div>
   </div>
 </section>`;
@@ -720,8 +746,8 @@ function _renderBeneficios(data, pal) {
 <section id="ld-beneficios" class="ld-section" style="${_blockStyle(data)}">
   <div class="ld-inner">
     <div class="ld-center" style="margin-bottom:56px">
-      ${data.headline ? `<h2 class="ld-h2" style="${_titleStyle(data)}">${_e(data.headline)}</h2>` : ''}
-      ${data.subheadline ? `<p class="ld-body" style="margin-top:16px;max-width:640px">${_e(data.subheadline)}</p>` : ''}
+      ${data.headline ? `<h2 class="ld-h2" style="${_titleStyle(data)}">${_safeHtml(data.headline)}</h2>` : ''}
+      ${data.subheadline ? `<p class="ld-body" style="margin-top:16px;max-width:640px">${_safeHtml(data.subheadline)}</p>` : ''}
     </div>
     <div class="ld-g3">${items}</div>
   </div>
@@ -742,8 +768,8 @@ function _renderModulos(data, pal) {
 <section id="ld-modulos" class="ld-section" style="background:rgba(255,255,255,0.015);${_blockStyle(data)}">
   <div class="ld-inner">
     <div class="ld-center" style="margin-bottom:56px">
-      ${data.headline ? `<h2 class="ld-h2" style="${_titleStyle(data)}">${_e(data.headline)}</h2>` : ''}
-      ${data.subheadline ? `<p class="ld-body" style="margin-top:16px;max-width:640px">${_e(data.subheadline)}</p>` : ''}
+      ${data.headline ? `<h2 class="ld-h2" style="${_titleStyle(data)}">${_safeHtml(data.headline)}</h2>` : ''}
+      ${data.subheadline ? `<p class="ld-body" style="margin-top:16px;max-width:640px">${_safeHtml(data.subheadline)}</p>` : ''}
     </div>
     <div class="ld-g2">${items}</div>
   </div>
@@ -770,7 +796,7 @@ function _renderTestimonios(data, pal) {
 <section id="ld-testimonios" class="ld-section" style="background:linear-gradient(135deg,rgba(${_hexToRgb(pal.from)},0.06) 0%,transparent 50%,rgba(${_hexToRgb(pal.to)},0.06) 100%);${_blockStyle(data)}">
   <div class="ld-inner">
     <div class="ld-center" style="margin-bottom:56px">
-      <h2 class="ld-h2" style="${_titleStyle(data)}">${_e(data.headline||'Lo que dicen nuestros alumnos')}</h2>
+      <h2 class="ld-h2" style="${_titleStyle(data)}">${_safeHtml(data.headline||'Lo que dicen nuestros alumnos')}</h2>
     </div>
     <div class="ld-g3">${items}</div>
   </div>
@@ -798,8 +824,8 @@ function _renderBonos(data, pal) {
   <div class="ld-inner">
     <div class="ld-center" style="margin-bottom:56px">
       <div class="ld-section-tag">${_icon('workspace_premium',16)} <span>Bonos exclusivos</span></div>
-      <h2 class="ld-h2">${_e(data.headline||'Además, cuando te inscribís hoy recibís:')}</h2>
-      ${data.subheadline ? `<p class="ld-body" style="margin-top:16px;max-width:640px">${_e(data.subheadline)}</p>` : ''}
+      <h2 class="ld-h2">${_safeHtml(data.headline||'Además, cuando te inscribís hoy recibís:')}</h2>
+      ${data.subheadline ? `<p class="ld-body" style="margin-top:16px;max-width:640px">${_safeHtml(data.subheadline)}</p>` : ''}
     </div>
     <div class="ld-flex-col">${items}</div>
   </div>
@@ -859,7 +885,7 @@ function _renderFaq(data, pal) {
 <section id="ld-faq" class="ld-section" style="background:rgba(${_hexToRgb(pal.from)},0.03)">
   <div class="ld-inner">
     <div class="ld-center" style="margin-bottom:48px">
-      <h2 class="ld-h2">${_e(data.headline||'Preguntas frecuentes')}</h2>
+      <h2 class="ld-h2">${_safeHtml(data.headline||'Preguntas frecuentes')}</h2>
     </div>
     <div style="max-width:740px;margin:0 auto">${items}</div>
   </div>
@@ -873,8 +899,8 @@ function _renderCtaFinal(data, pal) {
   <div style="position:absolute;inset:0;background:radial-gradient(ellipse 80% 60% at 50% 50%,rgba(${_hexToRgb(pal.from)},${isDark?'0.35':'0.18'}) 0%,transparent 70%);pointer-events:none"></div>
   <div class="ld-inner ld-center" style="position:relative;z-index:2">
     ${data.urgency ? `<div style="display:inline-flex;align-items:center;gap:8px;padding:8px 18px;border-radius:999px;background:rgba(239,68,68,0.14);border:1px solid rgba(239,68,68,0.25);font-size:13px;font-weight:700;color:#f87171;margin-bottom:24px">${_icon('timer',16,'#f87171')} ${_e(data.urgency)}</div>` : ''}
-    <h2 class="ld-h2" style="margin-bottom:16px;max-width:720px">${_e(data.headline)}</h2>
-    ${data.subheadline ? `<p class="ld-body" style="margin-bottom:32px;max-width:560px">${_e(data.subheadline)}</p>` : ''}
+    <h2 class="ld-h2" style="margin-bottom:16px;max-width:720px">${_safeHtml(data.headline)}</h2>
+    ${data.subheadline ? `<p class="ld-body" style="margin-bottom:32px;max-width:560px">${_safeHtml(data.subheadline)}</p>` : ''}
     <div style="display:flex;flex-direction:column;align-items:center;gap:12px;margin-bottom:28px">
       ${data.original_price ? `<p style="font-size:15px;text-decoration:line-through;color:${_fgDim(pal)}">Antes: ${_e(data.original_price)}</p>` : ''}
       ${data.price ? `<div class="ld-h2" style="${_gradText(pal)}">${_e(data.price)}</div>` : ''}
