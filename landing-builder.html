@@ -453,6 +453,59 @@ function setBlockStyleFont(idx, val) {
   autosave();
 }
 
+function setBlockStyleBg(idx, val) {
+  if (!landing || !landing.blocks[idx]) return;
+  if (!landing.blocks[idx].data._style) landing.blocks[idx].data._style = {};
+  if (val) {
+    landing.blocks[idx].data._style.bg_color = val;
+  } else {
+    delete landing.blocks[idx].data._style.bg_color;
+  }
+  const preview = document.getElementById('block-bg-preview');
+  if (preview) preview.style.background = val || 'transparent';
+  renderPreview();
+  autosave();
+}
+
+function fmtField(btn, action) {
+  // Find nearest textarea or input[data-key] from btn's parent hierarchy
+  let el = null;
+  let p = btn.parentElement;
+  while (p && !el) {
+    const found = p.querySelector('textarea[data-key], input[type=text][data-key]');
+    if (found) { el = found; break; }
+    p = p.parentElement;
+  }
+  if (!el) return;
+
+  const val = el.value;
+
+  if (action === 'clear') {
+    el.value = val.replace(/<[^>]+>/g, '');
+    el.dispatchEvent(new Event('input'));
+    return;
+  }
+
+  const start = el.selectionStart;
+  const end = el.selectionEnd;
+  const selected = val.slice(start, end);
+  if (!selected) return;
+
+  let wrapped = selected;
+  if (action === 'b') wrapped = '<strong>' + selected + '</strong>';
+  else if (action === 'i') wrapped = '<em>' + selected + '</em>';
+  else if (action === 'color') wrapped = '<span style="color:' + btn.value + '">' + selected + '</span>';
+  else if (action === 'size') {
+    if (!btn.value) return;
+    wrapped = '<span style="font-size:' + btn.value + '">' + selected + '</span>';
+    btn.value = '';
+  }
+
+  el.value = val.slice(0, start) + wrapped + val.slice(end);
+  el.setSelectionRange(start, start + wrapped.length);
+  el.dispatchEvent(new Event('input'));
+}
+
 function setBlockStyle(idx, key, val, btn) {
   if (!landing || !landing.blocks[idx]) return;
   if (!landing.blocks[idx].data._style) landing.blocks[idx].data._style = {};
@@ -746,6 +799,20 @@ function buildFieldEditor(block, idx) {
 
     if (field.type === 'text' || field.type === 'textarea') {
       wrap.innerHTML = `<label class="field-label">${field.label}</label>`;
+      // Format toolbar
+      const toolbar = document.createElement('div');
+      toolbar.style.cssText = 'display:flex;gap:3px;margin-bottom:4px;flex-wrap:wrap;align-items:center';
+      const btnS = 'width:24px;height:24px;border-radius:4px;border:1px solid #3f3f46;background:transparent;color:#e0e0e0;font-size:12px;cursor:pointer';
+      toolbar.innerHTML =
+        '<button type="button" title="Negrita" onclick="fmtField(this,\'b\')" style="' + btnS + ';font-weight:700">B</button>'
+        + '<button type="button" title="Cursiva" onclick="fmtField(this,\'i\')" style="' + btnS + ';font-style:italic">I</button>'
+        + '<select onchange="fmtField(this,\'size\')" title="Tamaño" style="height:24px;border-radius:4px;border:1px solid #3f3f46;background:#0e0e0e;color:#a1a1aa;font-size:10px;cursor:pointer;padding:0 4px">'
+        + '<option value="">Tamaño</option>'
+        + ['12px','14px','16px','18px','20px','24px','28px','32px','40px','48px'].map(function(s){return '<option value="'+s+'">'+s.replace('px','')+'</option>';}).join('')
+        + '</select>'
+        + '<input type="color" value="#ffffff" title="Color del texto" onchange="fmtField(this,\'color\')" style="width:24px;height:24px;border:1px solid #3f3f46;border-radius:4px;background:none;cursor:pointer;padding:1px">'
+        + '<button type="button" title="Quitar formato" onclick="fmtField(this,\'clear\')" style="height:24px;padding:0 6px;border-radius:4px;border:1px solid #3f3f46;background:transparent;color:#a1a1aa;font-size:10px;cursor:pointer">Sin formato</button>';
+      wrap.appendChild(toolbar);
       if (field.type === 'textarea') {
         const ta = document.createElement('textarea');
         ta.rows = 3;
@@ -1081,7 +1148,36 @@ function buildFieldEditor(block, idx) {
     + '</div>';
   styleCard.appendChild(padDiv);
 
+  // Background color picker
+  const bgDiv = document.createElement('div');
+  bgDiv.style.cssText = 'margin-top:8px';
+  bgDiv.innerHTML = '<span class="field-label">Color de fondo de la sección</span>'
+    + '<div style="display:flex;gap:6px;align-items:center;margin-top:4px">'
+    + '<input type="color" id="block-bg-color" value="' + (curStyle.bg_color || '#09090b') + '" '
+    + 'oninput="setBlockStyleBg(' + idx + ',this.value)" '
+    + 'style="width:36px;height:28px;border:none;background:none;cursor:pointer;border-radius:4px;padding:0">'
+    + '<button onclick="setBlockStyleBg(' + idx + ',\'\')" style="font-size:10px;padding:3px 8px;border-radius:6px;border:1px solid #3f3f46;background:transparent;color:#a1a1aa;cursor:pointer">Quitar</button>'
+    + '<span id="block-bg-preview" style="flex:1;height:20px;border-radius:4px;background:' + (curStyle.bg_color || 'transparent') + ';border:1px solid rgba(255,255,255,0.1)"></span>'
+    + '</div>';
+  styleCard.appendChild(bgDiv);
+
   container.appendChild(styleCard);
+
+  // Wire real-time sync for all text/select inputs
+  setTimeout(function() {
+    document.querySelectorAll('#rp-fields [data-key]').forEach(function(el) {
+      if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') {
+        el.addEventListener('input', function() {
+          if (activeBlockIdx < 0 || !landing) return;
+          const b = landing.blocks[activeBlockIdx];
+          if (!b) return;
+          b.data[el.dataset.key] = el.value;
+          clearTimeout(el._rt);
+          el._rt = setTimeout(function(){ renderPreview(); autosave(); }, 400);
+        });
+      }
+    });
+  }, 0);
 }
 
 function addSubItem(btn, type) {
