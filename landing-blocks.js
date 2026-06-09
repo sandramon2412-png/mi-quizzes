@@ -538,15 +538,19 @@ function _blockStyle(data) {
   if (s.text_align) parts.push(`text-align:${s.text_align}`);
   if (s.padding === 'compact') parts.push('padding-top:48px;padding-bottom:48px');
   if (s.padding === 'spacious') parts.push('padding-top:160px;padding-bottom:160px');
+  if (s.font && FONT_DEFS[s.font]) parts.push(`font-family:${FONT_DEFS[s.font].family}`);
   return parts.length ? parts.join(';') + ';' : '';
 }
 
-// Returns title size multiplier style
+// Returns title size + font family style for headings
 function _titleStyle(data) {
-  if (!data || !data._style || !data._style.title_size) return '';
+  if (!data || !data._style) return '';
+  const s = data._style;
+  const parts = [];
   const sizes = { xs:'0.65em', sm:'0.8em', md:'1em', lg:'1.25em', xl:'1.6em' };
-  const sz = sizes[data._style.title_size];
-  return sz ? `font-size:${sz}!important;` : '';
+  if (s.title_size && sizes[s.title_size]) parts.push(`font-size:${sizes[s.title_size]}!important`);
+  if (s.font && FONT_DEFS[s.font]) parts.push(`font-family:${FONT_DEFS[s.font].family}`);
+  return parts.length ? parts.join(';') + ';' : '';
 }
 
 function _renderNav(data, pal) {
@@ -1009,6 +1013,11 @@ function renderLandingFromBlocks(blocks, paletteId, customFrom, customTo, font, 
     .filter(b => b && !b.disabled && !b.hidden)
     .map(b => renderBlock(b.type, b.data, pal))
     .join('\n');
+  // Extra Google Fonts needed by per-block font overrides
+  const blockFonts = [...new Set((blocks||[])
+    .map(b => b.data && b.data._style && b.data._style.font)
+    .filter(f => f && f !== font && FONT_DEFS[f])
+  )].map(f => `<link href="https://fonts.googleapis.com/css2?family=${FONT_DEFS[f].url}&display=swap" rel="stylesheet">`).join('\n');
   return `<!DOCTYPE html>
 <html lang="es">
 <head>
@@ -1016,6 +1025,7 @@ function renderLandingFromBlocks(blocks, paletteId, customFrom, customTo, font, 
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Landing</title>
 <link href="https://fonts.googleapis.com/css2?family=${(FONT_DEFS[font]||FONT_DEFS['jakarta']).url}&display=swap" rel="stylesheet">
+${blockFonts}
 <link href="https://fonts.googleapis.com/icon?family=Material+Symbols+Outlined" rel="stylesheet">
 <style>${_baseCss(pal, font, settings)}</style>
 </head>
