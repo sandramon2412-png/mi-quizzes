@@ -285,6 +285,71 @@
       </div>
     </div>
 
+    <!-- DISEÑO AVANZADO -->
+    <div class="starter-card">
+      <div class="text-[10px] font-bold text-on-surface-variant/50 uppercase tracking-widest mb-3">Diseño avanzado</div>
+
+      <!-- Fondo del hero -->
+      <label class="field-label">Fondo del hero</label>
+      <select id="fld-hero-bg-type" class="field-input mb-2" onchange="document.getElementById('hero-video-section').classList.toggle('hidden',this.value!=='video')">
+        <option value="">Gradiente de la paleta (default)</option>
+        <option value="video">Video de fondo (loop)</option>
+      </select>
+
+      <div id="hero-video-section" class="hidden">
+        <input id="fld-hero-video-url" type="text" class="field-input mb-2" placeholder="URL de video .mp4 de fondo" oninput="_vtgSelectedId=null;renderVideoGallery()"/>
+        <p class="text-[10px] text-on-surface-variant/60 mb-2">Galería — hover para preview, clic para usar:</p>
+        <!-- Category filter -->
+        <div style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:8px" id="vtg-cat-bar">
+          <button class="vtg-cat-btn" onclick="filterVideoCategory('all',this)" style="font-size:9px;font-weight:700;padding:3px 8px;border-radius:4px;border:none;cursor:pointer;letter-spacing:.04em;background:rgba(255,255,255,0.07);color:#9a9a9a">TODOS</button>
+          <button class="vtg-cat-btn" onclick="filterVideoCategory('mine',this)" style="font-size:9px;font-weight:700;padding:3px 8px;border-radius:4px;border:none;cursor:pointer;letter-spacing:.04em;background:linear-gradient(135deg,#2E5BFF,#7c3aed);color:#fff">MIS VIDEOS</button>
+          <button class="vtg-cat-btn" onclick="filterVideoCategory('people',this)" style="font-size:9px;font-weight:700;padding:3px 8px;border-radius:4px;border:none;cursor:pointer;letter-spacing:.04em;background:rgba(255,255,255,0.07);color:#9a9a9a">PERSONAS</button>
+          <button class="vtg-cat-btn" onclick="filterVideoCategory('tech',this)" style="font-size:9px;font-weight:700;padding:3px 8px;border-radius:4px;border:none;cursor:pointer;letter-spacing:.04em;background:rgba(255,255,255,0.07);color:#9a9a9a">TECH</button>
+          <button class="vtg-cat-btn" onclick="filterVideoCategory('abstract',this)" style="font-size:9px;font-weight:700;padding:3px 8px;border-radius:4px;border:none;cursor:pointer;letter-spacing:.04em;background:rgba(255,255,255,0.07);color:#9a9a9a">ABSTRACT</button>
+          <button class="vtg-cat-btn" onclick="filterVideoCategory('city',this)" style="font-size:9px;font-weight:700;padding:3px 8px;border-radius:4px;border:none;cursor:pointer;letter-spacing:.04em;background:rgba(255,255,255,0.07);color:#9a9a9a">CIUDAD</button>
+          <button class="vtg-cat-btn" onclick="filterVideoCategory('nature',this)" style="font-size:9px;font-weight:700;padding:3px 8px;border-radius:4px;border:none;cursor:pointer;letter-spacing:.04em;background:rgba(255,255,255,0.07);color:#9a9a9a">NATURALEZA</button>
+        </div>
+        <div id="vtg-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:6px;max-height:300px;overflow-y:auto"></div>
+        <p class="text-[10px] text-on-surface-variant/50 mt-1">O pegá tu URL arriba. Videos de Pexels (gratis, sin atribución).</p>
+      </div>
+
+      <!-- Prompt exacto -->
+      <label class="field-label mt-3">Prompt o instrucción exacta <span style="font-size:9px;color:#4d7cff">(máxima prioridad para la IA)</span></label>
+      <textarea id="fld-prompt" rows="3" class="field-input mb-1"
+        placeholder="Ej: quiero una landing premium para vender un reto de 21 días, con hero con video de fondo, sección antes/después, bonos, garantía y CTA a WhatsApp…"></textarea>
+      <p class="text-[10px] text-on-surface-variant/50 mb-2">Pedí estructura, estilo visual, secciones obligatorias o cosas que no querés que aparezcan.</p>
+
+      <!-- URL de referencia -->
+      <label class="field-label">URL de referencia (opcional)</label>
+      <input id="fld-ref-url" type="text" class="field-input mb-1" placeholder="Ej: https://apple.com o https://framer.com/templates"/>
+      <p class="text-[10px] text-on-surface-variant/50 mb-2">La IA usará el estilo visual del sitio como inspiración.</p>
+
+      <!-- PDF / texto base -->
+      <label class="field-label">Subir PDF o texto base</label>
+      <label style="display:flex;align-items:center;gap:8px;padding:8px 10px;background:rgba(255,255,255,0.04);border:1px dashed rgba(255,255,255,0.15);border-radius:8px;cursor:pointer;margin-bottom:4px">
+        <span class="material-symbols-outlined" style="font-size:16px;color:#4d7cff">upload_file</span>
+        <span style="font-size:12px;color:#9a9a9a">Elegir archivo</span>
+        <span style="font-size:10px;color:#555;margin-left:auto">PDF, TXT o MD</span>
+        <input id="fld-paste-file" type="file" accept=".pdf,.txt,.md" class="hidden" onchange="handleFileUpload(this)"/>
+      </label>
+      <textarea id="fld-paste-content" rows="3" class="field-input mb-1"
+        placeholder="Aquí aparecerá el texto extraído del PDF. También podés pegar contenido manualmente."></textarea>
+      <p class="text-[10px] text-on-surface-variant/50 mb-2">Este contenido se suma al prompt para crear una landing más fiel al producto.</p>
+
+      <!-- Landing interactiva -->
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-top:1px solid rgba(255,255,255,0.06);margin-top:4px">
+        <div>
+          <p style="font-size:12px;font-weight:600;color:#e4e4e7">Landing interactiva</p>
+          <p style="font-size:10px;color:#71717a">Animaciones, FAQ expand suave, contadores animados</p>
+        </div>
+        <button id="toggle-interactive" onclick="toggleInteractiveLanding(this)"
+          style="width:36px;height:20px;border-radius:10px;border:none;cursor:pointer;background:rgba(255,255,255,0.12);transition:background .2s;position:relative;flex-shrink:0"
+          data-active="false">
+          <span style="position:absolute;top:2px;left:2px;width:16px;height:16px;border-radius:50%;background:#fff;transition:transform .2s"></span>
+        </button>
+      </div>
+    </div>
+
     <div id="gen-progress" class="hidden mb-2 rounded-lg overflow-hidden" style="height:3px;background:rgba(255,255,255,0.08)">
       <div id="gen-progress-bar" style="height:100%;background:linear-gradient(90deg,#2E5BFF,#7c3aed);width:0%;transition:width 1s ease;border-radius:2px"></div>
     </div>
@@ -416,6 +481,108 @@
 <div id="toast" class="hidden fixed top-4 left-1/2 -translate-x-1/2 z-50 px-4 py-2 rounded-xl text-sm font-semibold shadow-xl toast" style="background:#1e2a45;border:1px solid #2E5BFF44;"></div>
 
 <script>
+// ═══════════════════════════════════════════════════════════
+// VIDEO GALLERY DATA
+// ═══════════════════════════════════════════════════════════
+const VIDEO_CATEGORIES = [
+  { key: 'all',      label: 'TODOS' },
+  { key: 'mine',     label: 'MIS VIDEOS' },
+  { key: 'people',   label: 'PERSONAS' },
+  { key: 'tech',     label: 'TECH' },
+  { key: 'abstract', label: 'ABSTRACT' },
+  { key: 'city',     label: 'CIUDAD' },
+  { key: 'nature',   label: 'NATURALEZA' },
+];
+const VIDEO_TEMPLATES = [
+  { id: 'mine-1',  category: 'mine', label: 'Mi video 1',  url: 'https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260307_083826_e938b29f-a43a-41ec-a153-3d4730578ab8.mp4' },
+  { id: 'mine-2',  category: 'mine', label: 'Mi video 2',  url: 'https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260418_094631_d30ab262-45ee-4b7d-99f3-5d5848c8ef13.mp4' },
+  { id: 'mine-3',  category: 'mine', label: 'Mi video 3',  url: 'https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260328_065045_c44942da-53c6-4804-b734-f9e07fc22e08.mp4' },
+  { id: 'mine-4',  category: 'mine', label: 'Mi video 4',  url: 'https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260319_165750_358b1e72-c921-48b7-aaac-f200994f32fb.mp4' },
+  { id: 'mine-5',  category: 'mine', label: 'Mi video 5',  url: 'https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260328_105406_16f4600d-7a92-4292-b96e-b19156c7830a.mp4' },
+  { id: 'mine-6',  category: 'mine', label: 'Mi video 6',  url: 'https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260328_083109_283f3553-e28f-428b-a723-d639c617eb2b.mp4' },
+  { id: 'mine-7',  category: 'mine', label: 'Mi video 7',  url: 'https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260319_015952_e1deeb12-8fb7-4071-a42a-60779fc64ab6.mp4' },
+  { id: 'mine-8',  category: 'mine', label: 'Mi video 8',  url: 'https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260325_132944_a0d124bb-eaa1-4082-aa30-2310efb42b4b.mp4' },
+  { id: 'mine-9',  category: 'mine', label: 'Mi video 9',  url: 'https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260325_125119_8e5ae31c-0021-4396-bc08-f7aebeb877a2.mp4' },
+  { id: 'mine-10', category: 'mine', label: 'Mi video 10', url: 'https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260210_031346_d87182fb-b0af-4273-84d1-c6fd17d6bf0f.mp4' },
+  { id: 'mine-11', category: 'mine', label: 'Mi video 11', url: 'https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260423_161253_c72b1869-400f-45ed-ac0c-52f68c2ed5bd.mp4' },
+  { id: 'mine-12', category: 'mine', label: 'Mi video 12', url: 'https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260424_064411_9e9d7f84-9277-41f4-ab10-59172d89e6be.mp4' },
+  { id: 'mine-13', category: 'mine', label: 'Mi video 13', url: 'https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260419_064822_f120e48a-d545-45dd-a02d-facb07829888.mp4' },
+  { id: 'mine-14', category: 'mine', label: 'Mi video 14', url: 'https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260419_065931_e3ca7b53-d32e-4ad5-81de-dc9d6fcfda6d.mp4' },
+  { id: 'mine-15', category: 'mine', label: 'Mi video 15', url: 'https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260417_110451_9f82b157-dc92-4a9f-a341-c25594ec20e1.mp4' },
+  { id: 'mine-16', category: 'mine', label: 'Mi video 16', url: 'https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260302_085640_276ea93b-d7da-4418-a09b-2aa5b490e838.mp4' },
+  { id: 'mine-17', category: 'mine', label: 'Mi video 17', url: 'https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260306_074215_04640ca7-042c-45d6-bb56-58b1e8a42489.mp4' },
+  { id: 'mine-18', category: 'mine', label: 'Mi video 18', url: 'https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260315_073750_51473149-4350-4920-ae24-c8214286f323.mp4' },
+  { id: 'mine-19', category: 'mine', label: 'Mi video 19', url: 'https://stream.mux.com/hUT6X11m1Vkw1QMxPOLgI761x2cfpi9bHFbi5cNg4014/high.mp4' },
+  { id: 'mine-20', category: 'mine', label: 'Mi video 20', url: 'https://stream.mux.com/9JXDljEVWYwWu01PUkAemafDugK89o01BR6zqJ3aS9u00A/high.mp4' },
+  { id: 'mine-21', category: 'mine', label: 'Mi video 21', url: 'https://stream.mux.com/s8pMcOvMQXc4GD6AX4e1o01xFogFxipmuKltNfSYza0200/high.mp4' },
+  { id: 'mine-22', category: 'mine', label: 'Mi video 22', url: 'https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260217_030345_246c0224-10a4-422c-b324-070b7c0eceda.mp4' },
+  { id: 'mine-23', category: 'mine', label: 'Mi video 23', url: 'https://stream.mux.com/T6oQJQ02cQ6N01TR6iHwZkKFkbepS34dkkIc9iukgy400g/high.mp4' },
+  { id: 'mine-24', category: 'mine', label: 'Mi video 24', url: 'https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260329_050842_be71947f-f16e-4a14-810c-06e83d23ddb5.mp4' },
+  { id: 'mine-25', category: 'mine', label: 'Mi video 25', url: 'https://res.cloudinary.com/dqd6gdwda/video/upload/v1777261664/Dise%C3%B1o_sin_t%C3%ADtulo_27_usnghs.mp4' },
+  { id: '4871',  category: 'people', label: 'Negocios' },
+  { id: '5285',  category: 'people', label: 'Equipo trabajando' },
+  { id: '4608',  category: 'people', label: 'Profesional oficina' },
+  { id: '49583', category: 'people', label: 'Lifestyle moderno' },
+  { id: '4503',  category: 'people', label: 'Trabajo creativo' },
+  { id: '4957',  category: 'people', label: 'Estudio profesional' },
+  { id: '308',   category: 'people', label: 'Hombre laptop ciudad' },
+  { id: '4809',  category: 'people', label: 'Reunión coworkers' },
+  { id: '42648', category: 'people', label: 'Presentación gráficos' },
+  { id: '914',   category: 'people', label: 'Oficina abierta' },
+  { id: '4907',  category: 'people', label: 'Manos teclado' },
+  { id: '42664', category: 'people', label: 'Mujer profesional' },
+  { id: '30012', category: 'people', label: 'Apretón de manos' },
+  { id: '4547',  category: 'people', label: 'Reunión exitosa' },
+  { id: '918',   category: 'people', label: 'Startup activa' },
+  { id: '4948',  category: 'people', label: 'Lectura tranquila' },
+  { id: '4800',  category: 'people', label: 'Mujer meditando' },
+  { id: '4074',  category: 'tech', label: 'Tecnología digital' },
+  { id: '6168',  category: 'tech', label: 'Pantalla código' },
+  { id: '50264', category: 'tech', label: 'Interfaz futurista' },
+  { id: '4068',  category: 'tech', label: 'Red conectada' },
+  { id: '46635', category: 'tech', label: 'Programación' },
+  { id: '99786', category: 'tech', label: 'Dispositivos futuros' },
+  { id: '9757',  category: 'tech', label: 'Código en pantalla' },
+  { id: '47051', category: 'tech', label: 'Placa circuito' },
+  { id: '12748', category: 'tech', label: 'Mapa digital mundial' },
+  { id: '51214', category: 'tech', label: 'Gafas VR' },
+  { id: '50748', category: 'tech', label: 'Pantallas matrix' },
+  { id: '23282', category: 'tech', label: 'Centro de datos' },
+  { id: '31771', category: 'tech', label: 'Red de puntos' },
+  { id: '47323', category: 'tech', label: 'Huella digital' },
+  { id: '45378', category: 'tech', label: 'Código HTML' },
+  { id: '31562', category: 'abstract', label: 'Túnel fractal' },
+  { id: '47282', category: 'abstract', label: 'Fuga de luz' },
+  { id: '44818', category: 'abstract', label: 'Tinta fluida' },
+  { id: '3524',  category: 'abstract', label: 'Glitch digital' },
+  { id: '4974',  category: 'abstract', label: 'Formas mono' },
+  { id: '45298', category: 'abstract', label: 'Humo abstracto' },
+  { id: '31497', category: 'abstract', label: 'Túnel cubos 3D' },
+  { id: '49845', category: 'city', label: 'Edificios nocturnos' },
+  { id: '4231',  category: 'city', label: 'Tokio luces neón' },
+  { id: '49878', category: 'city', label: 'Rascacielos aérea' },
+  { id: '4332',  category: 'city', label: 'Times Square lluvia' },
+  { id: '4067',  category: 'city', label: 'Túnel tráfico' },
+  { id: '34562', category: 'city', label: 'Avenidas nocturnas' },
+  { id: '41161', category: 'city', label: 'Avenida principal' },
+  { id: '4308',  category: 'city', label: 'Tokio atardecer' },
+  { id: '42343', category: 'city', label: 'Tráfico aéreo noche' },
+  { id: '4451',  category: 'city', label: 'Calle Tokio' },
+  { id: '41576', category: 'nature', label: 'Carretera montaña' },
+  { id: '4075',  category: 'nature', label: 'Pradera flores' },
+  { id: '2213',  category: 'nature', label: 'Cascada bosque' },
+  { id: '51502', category: 'nature', label: 'Costa rocosa' },
+  { id: '51445', category: 'nature', label: 'Atardecer playa' },
+  { id: '4881',  category: 'nature', label: 'Campo girasoles' },
+  { id: '5016',  category: 'nature', label: 'Olas espuma' },
+  { id: '1610',  category: 'nature', label: 'Estrellas espacio' },
+  { id: '26108', category: 'nature', label: 'Cielo y nubes' },
+  { id: '4645',  category: 'nature', label: 'Palmera soleada' },
+  { id: '4633',  category: 'nature', label: 'Carretera 1ra persona' },
+];
+let _vtgActiveCat = 'mine';
+let _vtgSelectedId = null;
+
 // ═══════════════════════════════════════════════════════════
 // STATE
 // ═══════════════════════════════════════════════════════════
@@ -673,6 +840,12 @@ function buildBrief() {
   } else {
     brief += `\nImágenes: NO incluir imágenes, dejar todos los image_url vacíos`;
   }
+  const prompt = document.getElementById('fld-prompt')?.value.trim();
+  const refUrl = document.getElementById('fld-ref-url')?.value.trim();
+  const pasteContent = document.getElementById('fld-paste-content')?.value.trim();
+  if (prompt) brief += `\nINSTRUCCION EXACTA (máxima prioridad): ${prompt}`;
+  if (refUrl) brief += `\nURL de referencia visual: ${refUrl}`;
+  if (pasteContent) brief += `\nContenido base del producto:\n${pasteContent.slice(0, 1500)}`;
   return brief;
 }
 
@@ -1419,6 +1592,8 @@ async function generateLanding() {
     const _genFont = document.getElementById('fld-font')?.value || 'jakarta';
     const _genScale = document.querySelector('[data-scale].sel')?.dataset.scale || 'md';
     const _genSpacing = document.querySelector('[data-spacing].sel')?.dataset.spacing || 'normal';
+    const heroVideoUrl = document.getElementById('fld-hero-video-url')?.value.trim() || '';
+    const heroInteractive = document.getElementById('toggle-interactive')?.dataset.active === 'true';
     landing = {
       id:       null,
       title,
@@ -1428,8 +1603,13 @@ async function generateLanding() {
       blocks:   mergedBlocks,
       messages: [],
       published: false,
-      settings: { font: _genFont, typoScale: _genScale, spacing: _genSpacing },
+      settings: { font: _genFont, typoScale: _genScale, spacing: _genSpacing, hero_video_url: heroVideoUrl, interactive: heroInteractive },
     };
+    // Apply hero video URL to the hero block directly
+    if (heroVideoUrl) {
+      const heroBlock = mergedBlocks.find(b => b.type === 'hero');
+      if (heroBlock) heroBlock.data.video_url = heroVideoUrl;
+    }
     chatHistory = [];
 
     document.getElementById('ld-title').value = title;
@@ -1747,6 +1927,15 @@ async function loadLanding(id) {
       b.style.background = isSel ? '#27272a' : 'transparent';
       b.style.color = isSel ? '#e4e4e7' : '#a1a1aa';
     });
+    // Restore hero video URL
+    const savedVideoUrl = (landing.settings && landing.settings.hero_video_url) || '';
+    const videoUrlInput = document.getElementById('fld-hero-video-url');
+    if (videoUrlInput) videoUrlInput.value = savedVideoUrl;
+    if (savedVideoUrl) {
+      const bgSel = document.getElementById('fld-hero-bg-type');
+      if (bgSel) bgSel.value = 'video';
+      document.getElementById('hero-video-section')?.classList.remove('hidden');
+    }
 
     if (landing.blocks && landing.blocks.length > 0) {
       // New block-based landing
@@ -1830,6 +2019,85 @@ function saveActiveBlock() {
 }
 
 // ═══════════════════════════════════════════════════════════
+// VIDEO GALLERY HELPERS
+// ═══════════════════════════════════════════════════════════
+function _videoUrl(v) {
+  if (v.url) return v.url;
+  return `https://videos.pexels.com/video-files/${v.id}/${v.id}-hd_1280_720_30fps.mp4`;
+}
+function _videoThumb(v) {
+  if (v.url) return '';
+  return `https://images.pexels.com/videos/${v.id}/pictures/preview-0.jpg`;
+}
+
+function renderVideoGallery() {
+  const grid = document.getElementById('vtg-grid');
+  if (!grid) return;
+  const filtered = _vtgActiveCat === 'all'
+    ? VIDEO_TEMPLATES
+    : VIDEO_TEMPLATES.filter(v => v.category === _vtgActiveCat);
+  grid.innerHTML = filtered.map(v => {
+    const isSel = _vtgSelectedId === v.id;
+    const thumb = _videoThumb(v);
+    const thumbHtml = thumb
+      ? `<img src="${thumb}" alt="${v.label}" style="width:100%;height:100%;object-fit:cover;border-radius:6px" loading="lazy">`
+      : `<video src="${_videoUrl(v)}" muted loop style="width:100%;height:100%;object-fit:cover;border-radius:6px" preload="none"></video>`;
+    return `<div class="vtg-item" data-id="${v.id}" onclick="selectVideo('${v.id}')"
+      onmouseenter="hoverVideo(this,true)"
+      onmouseleave="hoverVideo(this,false)"
+      style="position:relative;cursor:pointer;border-radius:8px;overflow:hidden;aspect-ratio:16/9;background:#111;border:2px solid ${isSel?'#4d7cff':'transparent'};transition:border-color .15s">
+      ${thumbHtml}
+      <div style="position:absolute;bottom:0;left:0;right:0;background:linear-gradient(transparent,rgba(0,0,0,.7));padding:4px 6px;font-size:9px;color:#fff;font-weight:600">${v.label}</div>
+      ${isSel?'<div style="position:absolute;top:4px;right:4px;background:#4d7cff;border-radius:4px;padding:1px 5px;font-size:9px;font-weight:700;color:#fff">✓</div>':''}
+    </div>`;
+  }).join('');
+}
+
+function hoverVideo(el, enter) {
+  const vid = el.querySelector('video');
+  if (!vid) return;
+  if (enter) { vid.play().catch(()=>{}); }
+  else { vid.pause(); vid.currentTime = 0; }
+}
+
+function selectVideo(id) {
+  _vtgSelectedId = _vtgSelectedId === id ? null : id;
+  const v = VIDEO_TEMPLATES.find(x => x.id === id);
+  const urlInput = document.getElementById('fld-hero-video-url');
+  if (urlInput && v) {
+    urlInput.value = _vtgSelectedId ? _videoUrl(v) : '';
+  }
+  renderVideoGallery();
+}
+
+function filterVideoCategory(key, btn) {
+  _vtgActiveCat = key;
+  document.querySelectorAll('.vtg-cat-btn').forEach(b => {
+    b.style.background = b === btn ? 'linear-gradient(135deg,#2E5BFF,#7c3aed)' : 'rgba(255,255,255,0.07)';
+    b.style.color = b === btn ? '#fff' : '#9a9a9a';
+  });
+  renderVideoGallery();
+}
+
+function toggleInteractiveLanding(btn) {
+  const active = btn.dataset.active === 'true';
+  btn.dataset.active = String(!active);
+  btn.style.background = !active ? 'linear-gradient(135deg,#2E5BFF,#7c3aed)' : 'rgba(255,255,255,0.12)';
+  btn.querySelector('span').style.transform = !active ? 'translateX(16px)' : 'none';
+}
+
+function handleFileUpload(input) {
+  const file = input.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = (ev) => {
+    const ta = document.getElementById('fld-paste-content');
+    if (ta) ta.value = ev.target.result || '';
+  };
+  reader.readAsText(file);
+}
+
+// ═══════════════════════════════════════════════════════════
 // UI INIT — runs synchronously on DOMContentLoaded
 // (no awaits — all buttons/swatches wired before auth check)
 // ═══════════════════════════════════════════════════════════
@@ -1841,6 +2109,9 @@ function initUI() {
   }, 'blue-purple');
   const defPal = (window.LANDING_PALETTES_DEF || []).find(p => p.id === 'blue-purple');
   document.getElementById('palette-name-lbl').textContent = defPal ? defPal.name : 'Azul → Púrpura';
+
+  // Video gallery
+  renderVideoGallery();
 
   // Image strategy radio
   document.querySelectorAll('.img-opt').forEach(opt => {
