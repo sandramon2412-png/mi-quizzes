@@ -31,16 +31,17 @@
   .icon-gradient { background: linear-gradient(135deg, #4d7cff, #a78bfa); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
   .primary-gradient { background: linear-gradient(135deg, #2E5BFF 0%, #7c3aed 100%); }
 </style>
-<link rel="stylesheet" href="./luminous-polish.css?v=platform-polish1"/>
+<link rel="stylesheet" href="./luminous-polish.css?v=studio-pages2"/>
 </head>
-<body class="bg-background text-on-background">
+<body class="studio-page bg-background text-on-background">
 
 <header class="h-14 border-b border-outline-variant/20 bg-surface-container-low flex items-center px-6 gap-3 sticky top-0 z-30">
-  <span class="studio-logo-mark" aria-hidden="true"><video autoplay muted loop playsinline preload="metadata"><source src="https://euauqqamrkqwoytveljp.supabase.co/storage/v1/object/public/public-assets/Logo_Reveal_A_purple_and_dark_blue_nebula_swirls_with_7dBpmcoS.mp4" type="video/mp4"></video></span>
   <a href="./dashboard.html" class="h-9 w-9 rounded-lg bg-surface-container-high hover:bg-surface-container-highest flex items-center justify-center transition-colors" title="Volver">
     <span class="material-symbols-outlined" style="font-size:18px">arrow_back</span>
   </a>
   <div class="w-px h-6 bg-outline-variant/30"></div>
+  <a class="studio-brand text-sm font-extrabold tracking-tight" href="./dashboard.html"><span class="studio-logo-mark" aria-hidden="true"><video autoplay muted loop playsinline preload="metadata"><source src="https://euauqqamrkqwoytveljp.supabase.co/storage/v1/object/public/public-assets/Logo_Reveal_A_purple_and_dark_blue_nebula_swirls_with_7dBpmcoS.mp4" type="video/mp4"></video></span><span>Luminous Studio<span class="studio-brand-sub">Landings</span></span></a>
+  <div class="w-px h-6 bg-outline-variant/30 hidden md:block"></div>
   <div class="flex items-center gap-2 min-w-0 flex-1">
     <div class="w-8 h-8 rounded-lg primary-gradient flex items-center justify-center shrink-0">
       <span class="material-symbols-outlined text-white" style="font-size:16px">web</span>
@@ -56,22 +57,14 @@
 <main class="max-w-7xl mx-auto px-6 py-10">
   <div class="mb-8">
     <h2 class="text-2xl font-extrabold tracking-tight mb-2">Elegí un punto de partida</h2>
-    <p class="text-sm text-on-surface-variant max-w-2xl">Plantillas con briefs pre-armados por nicho. Seleccioná una y Claude genera tu landing personalizada en segundos — después podés editarla por chat.</p>
+    <p class="text-sm text-on-surface-variant max-w-2xl">Plantillas con briefs pre-armados por nicho. Selección una y Claude genera tu landing personalizada en segundos — después podés editarla por chat.</p>
   </div>
-
-  <!-- Filters -->
   <div id="filters" class="flex flex-wrap gap-2 mb-8"></div>
-
-  <!-- Search -->
   <div class="relative mb-6 max-w-md">
     <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant" style="font-size:18px">search</span>
-    <input id="search" type="text" placeholder="Buscar plantilla…"
-           class="w-full pl-10 pr-4 py-2.5 bg-surface-container border border-outline-variant/40 rounded-lg text-sm focus:border-primary focus:ring-0 outline-none"/>
+    <input id="search" type="text" placeholder="Buscar plantilla…" class="w-full pl-10 pr-4 py-2.5 bg-surface-container border border-outline-variant/40 rounded-lg text-sm focus:border-primary focus:ring-0 outline-none"/>
   </div>
-
-  <!-- Grid -->
   <div id="grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5"></div>
-
   <div id="empty" class="hidden text-center py-20 text-on-surface-variant">
     <span class="material-symbols-outlined block mb-3" style="font-size:48px;opacity:0.4">search_off</span>
     <p class="text-sm">No encontramos plantillas con ese filtro</p>
@@ -80,123 +73,57 @@
 
 <script src="./app.js?v=offer-demo-1"></script>
 <script src="./supabase-config.js"></script>
-<script src="./ai-assistant.js?v=page-context1" defer></script>
 <script src="./landing-templates.js"></script>
 <script>
   (async () => {
     const user = await Auth.requireAuth();
     if (!user) return;
-
-    const _withTimeout = (p, ms = 6000) => Promise.race([
-      p, new Promise((_, rej) => setTimeout(() => rej(new Error('db_timeout')), ms))
-    ]);
-
-    try {
-      const profile = await _withTimeout(DB.profiles.get(user.id));
-      if (profile?.plan) Settings.save({ plan: profile.plan });
-    } catch {}
-
+    const _withTimeout = (p, ms = 6000) => Promise.race([p, new Promise((_, rej) => setTimeout(() => rej(new Error('db_timeout')), ms))]);
+    try { const profile = await _withTimeout(DB.profiles.get(user.id)); if (profile?.plan) Settings.save({ plan: profile.plan }); } catch {}
     const plan = Settings.get().plan || 'free';
     const caps = getPlanCaps(plan);
     if ((caps.landings || 0) < 1) {
-      document.querySelector('main').innerHTML = `
-        <div class="text-center py-20">
-          <div class="w-16 h-16 rounded-2xl primary-gradient flex items-center justify-center mx-auto mb-6">
-            <span class="material-symbols-outlined text-white" style="font-size:36px">web</span>
-          </div>
-          <h2 class="text-2xl font-extrabold tracking-tight mb-2">Landings requiere plan Pro</h2>
-          <p class="text-on-surface-variant max-w-md mx-auto mb-6">Accedé a todas las plantillas y generá landings completas con IA desde el plan Pro.</p>
-          <a href="./precios.html" class="inline-flex h-11 px-6 rounded-lg primary-gradient text-white font-bold text-sm items-center gap-2">Ver planes</a>
-        </div>`;
+      document.querySelector('main').innerHTML = `<div class="text-center py-20"><div class="w-16 h-16 rounded-2xl primary-gradient flex items-center justify-center mx-auto mb-6"><span class="material-symbols-outlined text-white" style="font-size:36px">web</span></div><h2 class="text-2xl font-extrabold tracking-tight mb-2">Landings requiere plan Pro</h2><p class="text-on-surface-variant max-w-md mx-auto mb-6">Accedé a todas las plantillas y generá landings completas con IA desde el plan Pro.</p><a href="./precios.html" class="inline-flex h-11 px-6 rounded-lg primary-gradient text-white font-bold text-sm items-center gap-2">Ver planes</a></div>`;
       return;
     }
-
     const templates = getBuiltinLandingTemplates();
     const categories = ['Todas', ...new Set(templates.map(t => t.category))];
     let activeCategory = 'Todas';
     let searchQuery = '';
-
     const filtersEl = document.getElementById('filters');
     const gridEl = document.getElementById('grid');
     const emptyEl = document.getElementById('empty');
     const searchEl = document.getElementById('search');
-
     const renderFilters = () => {
-      filtersEl.innerHTML = categories.map(cat => `
-        <button data-cat="${cat}" class="px-4 py-2 rounded-full text-xs font-semibold transition-colors ${cat === activeCategory ? 'primary-gradient text-white' : 'bg-surface-container-high hover:bg-surface-container-highest text-on-surface-variant'}">
-          ${cat}
-        </button>
-      `).join('');
-      filtersEl.querySelectorAll('button').forEach(btn => {
-        btn.onclick = () => { activeCategory = btn.dataset.cat; renderFilters(); renderGrid(); };
-      });
+      filtersEl.innerHTML = categories.map(cat => `<button data-cat="${cat}" class="px-4 py-2 rounded-full text-xs font-semibold transition-colors ${cat === activeCategory ? 'primary-gradient text-white' : 'bg-surface-container-high hover:bg-surface-container-highest text-on-surface-variant'}">${cat}</button>`).join('');
+      filtersEl.querySelectorAll('button').forEach(btn => { btn.onclick = () => { activeCategory = btn.dataset.cat; renderFilters(); renderGrid(); }; });
     };
-
     const escapeHtml = (s) => (s || '').toString().replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-
     const renderGrid = () => {
       const filtered = templates.filter(t => {
         if (activeCategory !== 'Todas' && t.category !== activeCategory) return false;
         if (searchQuery && !(`${t.name} ${t.description} ${t.category}`.toLowerCase().includes(searchQuery))) return false;
         return true;
       });
-
-      if (!filtered.length) {
-        gridEl.innerHTML = '';
-        emptyEl.classList.remove('hidden');
-        return;
-      }
+      if (!filtered.length) { gridEl.innerHTML = ''; emptyEl.classList.remove('hidden'); return; }
       emptyEl.classList.add('hidden');
-
       gridEl.innerHTML = filtered.map(t => {
-        const theme = window.getSuggestedOfferTheme
-          ? window.getSuggestedOfferTheme(`${t.category} ${t.form?.audience || ''}`, t.form?.product || t.name)
-          : null;
+        const theme = window.getSuggestedOfferTheme ? window.getSuggestedOfferTheme(`${t.category} ${t.form?.audience || ''}`, t.form?.product || t.name) : null;
         const brand = theme?.brandColor || '#2E5BFF';
         const accent = theme?.accentColor || '#7c3aed';
         const image = theme?.coverImage || '';
-        return `
-        <div class="rounded-2xl border border-outline-variant/20 bg-surface-container overflow-hidden hover:border-primary/40 transition-all group flex flex-col">
-          <div class="h-36 flex items-center justify-center relative overflow-hidden" style="background:linear-gradient(135deg,${brand},${accent})">
-            ${image ? `<img src="${image}" alt="" loading="lazy" class="absolute inset-0 w-full h-full object-cover opacity-45 group-hover:scale-105 transition-transform duration-700"/>` : ''}
-            <div class="absolute inset-0" style="background:linear-gradient(135deg,${brand}dd,rgba(0,0,0,.28));"></div>
-            <span class="material-symbols-outlined text-white/90 relative" style="font-size:56px;font-variation-settings:'FILL' 1">${t.icon}</span>
-            <div class="absolute top-2 right-2">
-              <span class="text-[9px] px-1.5 py-0.5 rounded-full bg-white/15 backdrop-blur text-white font-bold uppercase tracking-wider">${escapeHtml(t.category)}</span>
-            </div>
-            <div class="absolute bottom-2 left-2 flex items-center gap-1.5 rounded-full bg-black/30 backdrop-blur px-2.5 py-1">
-              <span class="w-2 h-2 rounded-full" style="background:${accent}"></span>
-              <span class="text-[9px] uppercase tracking-widest font-black text-white/80">${theme?.id || 'premium'}</span>
-            </div>
-          </div>
-          <div class="p-5 flex-1 flex flex-col">
-            <h3 class="text-sm font-extrabold tracking-tight mb-1.5">${escapeHtml(t.name)}</h3>
-            <p class="text-[11px] text-on-surface-variant leading-relaxed mb-4 flex-1">${escapeHtml(t.description)}</p>
-            <button data-id="${t.id}" class="use-btn h-9 rounded-lg primary-gradient text-white text-xs font-bold flex items-center justify-center gap-1.5 hover:opacity-90 transition">
-              <span class="material-symbols-outlined" style="font-size:15px">bolt</span>
-              Usar plantilla
-            </button>
-          </div>
-        </div>
-      `;
+        return `<div class="rounded-2xl border border-outline-variant/20 bg-surface-container overflow-hidden hover:border-primary/40 transition-all group flex flex-col"><div class="h-36 flex items-center justify-center relative overflow-hidden" style="background:linear-gradient(135deg,${brand},${accent})">${image ? `<img src="${image}" alt="" loading="lazy" class="absolute inset-0 w-full h-full object-cover opacity-45 group-hover:scale-105 transition-transform duration-700"/>` : ''}<div class="absolute inset-0" style="background:linear-gradient(135deg,${brand}dd,rgba(0,0,0,.28));"></div><span class="material-symbols-outlined text-white/90 relative" style="font-size:56px;font-variation-settings:'FILL' 1">${t.icon}</span><div class="absolute top-2 right-2"><span class="text-[9px] px-1.5 py-0.5 rounded-full bg-white/15 backdrop-blur text-white font-bold uppercase tracking-wider">${escapeHtml(t.category)}</span></div><div class="absolute bottom-2 left-2 flex items-center gap-1.5 rounded-full bg-black/30 backdrop-blur px-2.5 py-1"><span class="w-2 h-2 rounded-full" style="background:${accent}"></span><span class="text-[9px] uppercase tracking-widest font-black text-white/80">${theme?.id || 'premium'}</span></div></div><div class="p-5 flex-1 flex flex-col"><h3 class="text-sm font-extrabold tracking-tight mb-1.5">${escapeHtml(t.name)}</h3><p class="text-[11px] text-on-surface-variant leading-relaxed mb-4 flex-1">${escapeHtml(t.description)}</p><button data-id="${t.id}" class="use-btn h-9 rounded-lg primary-gradient text-white text-xs font-bold flex items-center justify-center gap-1.5 hover:opacity-90 transition"><span class="material-symbols-outlined" style="font-size:15px">bolt</span>Usar plantilla</button></div></div>`;
       }).join('');
-
       gridEl.querySelectorAll('.use-btn').forEach(btn => {
         btn.onclick = () => {
           const tpl = templates.find(t => t.id === btn.dataset.id);
           if (!tpl) return;
-          // Pass template via localStorage + query param; builder reads it on load
           try { sessionStorage.setItem('ls_landing_template', JSON.stringify(tpl)); } catch {}
           window.location.href = `./landing-builder.html?template=${encodeURIComponent(tpl.id)}`;
         };
       });
     };
-
-    searchEl.addEventListener('input', () => {
-      searchQuery = searchEl.value.trim().toLowerCase();
-      renderGrid();
-    });
-
+    searchEl.addEventListener('input', () => { searchQuery = searchEl.value.trim().toLowerCase(); renderGrid(); });
     renderFilters();
     renderGrid();
   })();
