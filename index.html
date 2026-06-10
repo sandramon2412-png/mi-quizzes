@@ -1,3 +1,5 @@
+<!DOCTYPE html>
+
 <html class="dark" lang="es"><head>
 <title>Luminous Studio | Quizzes · Mini-Apps · Bots · Ebooks con IA</title>
 <meta charset="utf-8"/>
@@ -220,16 +222,671 @@
         }
     </style>
 <link rel="stylesheet" href="./luminous-polish.css?v=platform-polish1"/>
+<style>
+  /* Home-specific premium pass: keep the video hero, refine depth and consistency. */
+  body.home-polish {
+    background:
+      radial-gradient(circle at 18% 10%, rgba(79,124,255,0.18), transparent 28rem),
+      radial-gradient(circle at 80% 6%, rgba(236,72,153,0.14), transparent 30rem),
+      #090a0f !important;
+  }
+  body.home-polish main {
+    background:
+      radial-gradient(circle at 50% 18%, rgba(45,212,191,0.08), transparent 30rem),
+      linear-gradient(180deg, rgba(8,8,16,0) 0%, rgba(9,10,15,0.88) 18%, rgba(9,10,15,1) 100%) !important;
+  }
+  body.home-polish header {
+    background: rgba(8, 8, 16, 0.66) !important;
+    border-bottom-color: rgba(255,255,255,0.09) !important;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.28) !important;
+  }
+  body.home-polish h1,
+  body.home-polish h2 {
+    text-wrap: balance;
+  }
+  body.home-polish .hero-glow {
+    box-shadow:
+      0 0 0 1px rgba(255,255,255,0.08),
+      0 36px 110px rgba(0,0,0,0.62),
+      0 0 110px rgba(79,124,255,0.22),
+      0 0 80px rgba(139,92,246,0.15) !important;
+  }
+  body.home-polish .glass-card,
+  body.home-polish .premium-testimonial,
+  body.home-polish .feat-card-inner,
+  body.home-polish [class*="bg-[#0"],
+  body.home-polish [class*="bg-surface"] {
+    border-color: rgba(255,255,255,0.09) !important;
+  }
+  body.home-polish .glass-card {
+    background:
+      linear-gradient(145deg, rgba(26,28,42,0.78), rgba(9,10,17,0.82)) !important;
+    box-shadow: 0 18px 58px rgba(0,0,0,0.28), inset 0 1px 0 rgba(255,255,255,0.045);
+  }
+  body.home-polish .feat-card {
+    background: linear-gradient(135deg, rgba(79,124,255,0.30), rgba(45,212,191,0.12), rgba(236,72,153,0.18)) !important;
+  }
+  body.home-polish .feat-card-inner,
+  body.home-polish .premium-testimonial {
+    background: linear-gradient(145deg, rgba(22,24,36,0.92), rgba(10,11,18,0.88)) !important;
+    box-shadow: 0 18px 55px rgba(0,0,0,0.28), inset 0 1px 0 rgba(255,255,255,0.04);
+  }
+  body.home-polish .premium-testimonial {
+    isolation: isolate;
+    background:
+      radial-gradient(circle at 12% 12%, rgba(79,124,255,0.24), transparent 19rem),
+      radial-gradient(circle at 88% 18%, rgba(139,92,246,0.22), transparent 20rem),
+      linear-gradient(145deg, rgba(30,32,49,0.76), rgba(9,10,18,0.9)) !important;
+    border: 1px solid rgba(255,255,255,0.12) !important;
+    box-shadow:
+      0 36px 110px rgba(0,0,0,0.54),
+      0 0 100px rgba(79,124,255,0.12),
+      inset 0 1px 0 rgba(255,255,255,0.11) !important;
+    backdrop-filter: blur(26px) saturate(1.25);
+    -webkit-backdrop-filter: blur(26px) saturate(1.25);
+  }
+  body.home-polish .premium-testimonial::before {
+    top: -72px;
+    left: 22px;
+    color: rgba(255,255,255,0.055);
+    font-size: 250px;
+  }
+  body.home-polish .premium-testimonial::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    background:
+      linear-gradient(90deg, rgba(255,255,255,0.11), transparent 16%, transparent 84%, rgba(255,255,255,0.06)),
+      radial-gradient(circle at 78% 50%, rgba(79,124,255,0.14), transparent 14rem);
+    opacity: .75;
+  }
+  body.home-polish .testimonial-avatar {
+    box-shadow: 0 18px 40px rgba(79,124,255,0.30), inset 0 1px 0 rgba(255,255,255,0.22);
+  }
+  body.home-polish .testimonial-metric {
+    background: linear-gradient(145deg, rgba(255,255,255,0.09), rgba(255,255,255,0.025));
+    border: 1px solid rgba(255,255,255,0.095);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.07), 0 18px 48px rgba(0,0,0,0.26);
+  }
+  body.home-polish .testimonial-pill {
+    background: rgba(255,255,255,0.065);
+    border: 1px solid rgba(255,255,255,0.095);
+  }
+  body.home-polish .home-tilt-card {
+    --card-glow-x: 50%;
+    --card-glow-y: 0%;
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    transform: perspective(1000px) rotateX(var(--card-tilt-x, 0deg)) rotateY(var(--card-tilt-y, 0deg)) translateY(0);
+    transition: transform .26s ease, border-color .26s ease, box-shadow .26s ease, filter .26s ease;
+    will-change: transform;
+  }
+  body.home-polish .home-tilt-card::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    pointer-events: none;
+    background:
+      radial-gradient(circle at var(--card-glow-x) var(--card-glow-y), rgba(124,58,237,0.18), transparent 18rem),
+      linear-gradient(120deg, rgba(255,255,255,0.10), transparent 24%, transparent 74%, rgba(255,255,255,0.055));
+    opacity: 0;
+    transition: opacity .26s ease;
+  }
+  body.home-polish .home-tilt-card:hover,
+  body.home-polish .home-tilt-card:focus-within {
+    border-color: rgba(139,92,246,0.34) !important;
+    box-shadow:
+      0 30px 90px rgba(0,0,0,0.44),
+      0 0 72px rgba(79,124,255,0.16),
+      inset 0 1px 0 rgba(255,255,255,0.12) !important;
+    filter: brightness(1.055);
+  }
+  body.home-polish .home-tilt-card:hover::after,
+  body.home-polish .home-tilt-card:focus-within::after {
+    opacity: 1;
+  }
+  body.home-polish .feat-card.home-tilt-card {
+    overflow: visible;
+  }
+  body.home-polish .feat-card.home-tilt-card::after {
+    inset: 2px;
+    border-radius: 18px;
+    overflow: hidden;
+  }
+  body.home-polish .faq-item.home-tilt-card:hover {
+    transform: perspective(1000px) rotateX(var(--card-tilt-x, 0deg)) rotateY(var(--card-tilt-y, 0deg)) translateY(-2px);
+  }
+  body.home-polish #pricing .home-tilt-card {
+    transform: translateY(0);
+  }
+  body.home-polish #pricing .home-tilt-card:hover,
+  body.home-polish #pricing .home-tilt-card:focus-within {
+    transform: translateY(-4px);
+  }
+  body.home-polish .pricing-grid {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    align-items: stretch;
+  }
+  body.home-polish .pricing-grid .glass-card {
+    min-height: 0;
+  }
+  body.home-polish .pricing-grid .glass-card > a {
+    margin-top: auto;
+  }
+  body.home-polish .features-bento-section {
+    background:
+      radial-gradient(ellipse at 14% 14%, rgba(45,212,191,0.20), transparent 28rem),
+      radial-gradient(ellipse at 80% 18%, rgba(236,72,153,0.18), transparent 28rem),
+      radial-gradient(ellipse at 50% 82%, rgba(79,124,255,0.24), transparent 34rem),
+      linear-gradient(135deg, #0b111f 0%, #101328 38%, #17112a 66%, #07111a 100%) !important;
+  }
+  body.home-polish .features-bento-section::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background:
+      linear-gradient(115deg, transparent 0 28%, rgba(255,255,255,0.10) 28.2%, transparent 29%, transparent 62%, rgba(45,212,191,0.08) 62.2%, transparent 63%),
+      linear-gradient(rgba(255,255,255,0.035) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.024) 1px, transparent 1px);
+    background-size: 100% 100%, 72px 72px, 72px 72px;
+    mask-image: linear-gradient(to bottom, transparent, black 10%, black 88%, transparent);
+    opacity: .85;
+  }
+  body.home-polish .features-bento-section::after {
+    content: "";
+    position: absolute;
+    left: 7%;
+    right: 7%;
+    top: 16rem;
+    height: 24rem;
+    pointer-events: none;
+    border-radius: 999px;
+    background:
+      conic-gradient(from 180deg, rgba(45,212,191,0.00), rgba(45,212,191,0.22), rgba(139,92,246,0.20), rgba(236,72,153,0.12), rgba(45,212,191,0.00));
+    filter: blur(70px);
+    opacity: .55;
+    transform: rotate(-4deg);
+  }
+  body.home-polish .bento-grid > div {
+    background:
+      linear-gradient(145deg, rgba(255,255,255,0.16), rgba(255,255,255,0.055) 45%, rgba(4,9,18,0.70)),
+      radial-gradient(circle at 0% 0%, rgba(45,212,191,0.18), transparent 16rem),
+      radial-gradient(circle at 100% 12%, rgba(139,92,246,0.20), transparent 15rem) !important;
+    border-color: rgba(255,255,255,0.24) !important;
+    border-radius: 28px !important;
+    box-shadow:
+      0 34px 95px rgba(0,0,0,0.42),
+      0 0 0 1px rgba(45,212,191,0.06),
+      inset 0 1px 0 rgba(255,255,255,0.20);
+    backdrop-filter: blur(24px) saturate(1.45);
+    -webkit-backdrop-filter: blur(24px) saturate(1.45);
+    transition: transform .28s ease, border-color .28s ease, box-shadow .28s ease, filter .28s ease;
+  }
+  body.home-polish .bento-grid > div:hover {
+    transform: translateY(-6px);
+    border-color: rgba(45,212,191,0.42) !important;
+    box-shadow:
+      0 42px 120px rgba(0,0,0,0.48),
+      0 0 90px rgba(45,212,191,0.15),
+      0 0 80px rgba(139,92,246,0.12),
+      inset 0 1px 0 rgba(255,255,255,0.23);
+  }
+  body.home-polish .bento-grid > div:first-child {
+    background:
+      linear-gradient(145deg, rgba(41,82,160,0.78), rgba(20,36,86,0.92) 52%, rgba(8,24,47,0.96)),
+      radial-gradient(circle at 86% 0%, rgba(45,212,191,0.34), transparent 25rem),
+      radial-gradient(circle at 12% 100%, rgba(139,92,246,0.30), transparent 23rem) !important;
+    border-color: rgba(95,220,215,0.44) !important;
+    box-shadow:
+      0 42px 130px rgba(0,0,0,0.50),
+      0 0 110px rgba(45,212,191,0.20),
+      0 0 80px rgba(79,124,255,0.16),
+      inset 0 1px 0 rgba(255,255,255,0.22);
+  }
+  body.home-polish .bento-grid > div:nth-child(2),
+  body.home-polish .bento-grid > div:nth-child(6) {
+    background:
+      linear-gradient(145deg, rgba(255,255,255,0.14), rgba(255,255,255,0.045) 48%, rgba(10,10,26,0.82)),
+      radial-gradient(circle at 88% 18%, rgba(236,72,153,0.20), transparent 18rem) !important;
+  }
+  body.home-polish .bento-grid > div:nth-child(4),
+  body.home-polish .bento-grid > div:nth-child(5) {
+    background:
+      linear-gradient(145deg, rgba(255,255,255,0.14), rgba(255,255,255,0.045) 48%, rgba(7,17,26,0.82)),
+      radial-gradient(circle at 12% 8%, rgba(45,212,191,0.18), transparent 18rem) !important;
+  }
+  body.home-polish .bento-grid > div :where(p, span):not(.material-symbols-outlined) {
+    text-shadow: 0 1px 0 rgba(0,0,0,0.1);
+  }
+  body.home-polish .bento-grid > div [style*="rgba(255,255,255,0.4)"],
+  body.home-polish .bento-grid > div [style*="rgba(255,255,255,0.35)"],
+  body.home-polish .bento-grid > div [style*="rgba(255,255,255,0.3)"] {
+    color: rgba(226,232,240,0.62) !important;
+  }
+  body.home-polish .bento-grid > div [style*="background:rgba(255,255,255,0.03)"],
+  body.home-polish .bento-grid > div [style*="background:rgba(0,0,0,0.3)"] {
+    background: rgba(255,255,255,0.055) !important;
+    border-color: rgba(255,255,255,0.095) !important;
+  }
+  body.home-polish .integrations-section {
+    background:
+      radial-gradient(circle at 16% 20%, rgba(79,124,255,0.16), transparent 24rem),
+      radial-gradient(circle at 82% 26%, rgba(45,212,191,0.12), transparent 26rem),
+      linear-gradient(180deg, rgba(18,20,34,0.72), rgba(10,12,20,0.96) 55%, rgba(12,15,25,0.88)) !important;
+  }
+  body.home-polish .integrations-section::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background:
+      linear-gradient(rgba(255,255,255,0.026) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.018) 1px, transparent 1px);
+    background-size: 62px 62px;
+    mask-image: linear-gradient(to bottom, transparent, black 18%, black 82%, transparent);
+  }
+  body.home-polish .integrations-section .integration-copy {
+    color: rgba(226,232,240,0.72) !important;
+  }
+  body.home-polish .integrations-section .integration-category-label {
+    color: rgba(226,232,240,0.58) !important;
+  }
+  body.home-polish .integrations-section .integration-line {
+    background: linear-gradient(90deg, rgba(79,124,255,0.22), rgba(45,212,191,0.13), transparent) !important;
+  }
+  body.home-polish .integrations-section :where(.integration-card, a.rounded-2xl[href="./settings.html#integrations"]) {
+    background:
+      linear-gradient(145deg, rgba(255,255,255,0.092), rgba(255,255,255,0.028) 48%, rgba(8,10,18,0.62)) !important;
+    border-color: rgba(255,255,255,0.12) !important;
+    box-shadow: 0 20px 58px rgba(0,0,0,0.30), inset 0 1px 0 rgba(255,255,255,0.08);
+    backdrop-filter: blur(18px) saturate(1.22);
+    -webkit-backdrop-filter: blur(18px) saturate(1.22);
+  }
+  body.home-polish .integrations-section :where(.integration-card, a.rounded-2xl[href="./settings.html#integrations"]):hover {
+    border-color: rgba(79,124,255,0.34) !important;
+    box-shadow: 0 28px 78px rgba(0,0,0,0.42), 0 0 54px rgba(79,124,255,0.14), inset 0 1px 0 rgba(255,255,255,0.12);
+    transform: translateY(-4px) scale(1.015);
+  }
+  body.home-polish .integrations-section :where(.integration-card, a.rounded-2xl[href="./settings.html#integrations"]) p:first-of-type {
+    color: #ffffff !important;
+  }
+  body.home-polish .integrations-section :where(.integration-card, a.rounded-2xl[href="./settings.html#integrations"]) p:last-of-type {
+    color: rgba(226,232,240,0.60) !important;
+  }
+  body.home-polish .integrations-section :where(.integration-card, a.rounded-2xl[href="./settings.html#integrations"]) .w-10 {
+    background: linear-gradient(135deg, rgba(79,124,255,0.24), rgba(45,212,191,0.14)) !important;
+    border-color: rgba(139,92,246,0.28) !important;
+    box-shadow: 0 12px 26px rgba(79,124,255,0.18), inset 0 1px 0 rgba(255,255,255,0.12);
+  }
+  @media (max-width: 1180px) {
+    body.home-polish .pricing-grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+  @media (max-width: 780px) {
+    body.home-polish .pricing-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+  @media (max-width: 560px) {
+    body.home-polish .pricing-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+  body.home-polish .faq-item {
+    background: linear-gradient(145deg, rgba(24,26,39,0.84), rgba(11,12,20,0.88)) !important;
+  }
+  body.home-polish .pain-card {
+    isolation: isolate;
+    min-height: 350px;
+    cursor: default;
+    transform: perspective(900px) rotateX(var(--tilt-x, 0deg)) rotateY(var(--tilt-y, 0deg)) translateY(0);
+    background:
+      linear-gradient(145deg, rgba(255,255,255,0.105), rgba(255,255,255,0.026) 42%, rgba(10,12,22,0.76)),
+      radial-gradient(circle at var(--glow-x, 50%) var(--glow-y, 0%), rgba(124,58,237,0.22), transparent 34rem) !important;
+    border: 1px solid rgba(255,255,255,0.105) !important;
+    box-shadow:
+      0 28px 85px rgba(0,0,0,0.42),
+      0 0 0 1px rgba(255,255,255,0.035) inset,
+      0 1px 0 rgba(255,255,255,0.12) inset;
+    backdrop-filter: blur(24px) saturate(1.35);
+    -webkit-backdrop-filter: blur(24px) saturate(1.35);
+    transition: transform .28s ease, border-color .28s ease, box-shadow .28s ease, filter .28s ease;
+  }
+  body.home-polish .pain-card::before {
+    content: "";
+    position: absolute;
+    inset: 1px;
+    z-index: -1;
+    border-radius: 15px;
+    background:
+      linear-gradient(120deg, rgba(255,255,255,0.18), transparent 22%, transparent 72%, rgba(255,255,255,0.06)),
+      radial-gradient(circle at 18% 0%, rgba(79,124,255,0.18), transparent 18rem);
+    opacity: .72;
+    pointer-events: none;
+  }
+  body.home-polish .pain-card::after {
+    content: "";
+    position: absolute;
+    inset: auto 24px -1px 24px;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.42), transparent);
+    opacity: 0;
+    transition: opacity .28s ease;
+  }
+  body.home-polish .pain-card:hover {
+    border-color: rgba(139,92,246,0.34) !important;
+    box-shadow:
+      0 34px 105px rgba(0,0,0,0.54),
+      0 0 72px rgba(79,124,255,0.18),
+      0 0 0 1px rgba(255,255,255,0.075) inset,
+      0 1px 0 rgba(255,255,255,0.18) inset;
+    filter: brightness(1.06);
+  }
+  body.home-polish .pain-card:hover::after {
+    opacity: 1;
+  }
+  body.home-polish .pain-card .pain-mock {
+    background: linear-gradient(145deg, rgba(4,5,12,0.62), rgba(17,18,31,0.56)) !important;
+    border-color: rgba(255,255,255,0.08) !important;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.05), 0 14px 38px rgba(0,0,0,0.22);
+  }
+  body.home-polish .pain-card .pain-row {
+    background: linear-gradient(135deg, rgba(255,255,255,0.055), rgba(255,255,255,0.018)) !important;
+    border-color: rgba(255,255,255,0.075) !important;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.035);
+  }
+  body.home-polish .section-divider {
+    opacity: 0.95;
+    background: linear-gradient(90deg, transparent 0%, rgba(79,124,255,0.18) 22%, rgba(236,72,153,0.34) 50%, rgba(45,212,191,0.18) 78%, transparent 100%) !important;
+  }
+  body.home-polish .solution-launch-card {
+    isolation: isolate;
+    background:
+      radial-gradient(circle at 8% 18%, rgba(45,212,191,0.18), transparent 20rem),
+      radial-gradient(circle at 76% 8%, rgba(236,72,153,0.22), transparent 21rem),
+      radial-gradient(circle at 55% 100%, rgba(79,124,255,0.24), transparent 24rem),
+      linear-gradient(135deg, rgba(255,255,255,0.13), rgba(255,255,255,0.035)) !important;
+    border: 1px solid rgba(255,255,255,0.18) !important;
+    box-shadow:
+      0 34px 110px rgba(0,0,0,0.56),
+      0 0 0 1px rgba(255,255,255,0.04) inset,
+      0 1px 0 rgba(255,255,255,0.22) inset,
+      0 0 120px rgba(124,58,237,0.18);
+    backdrop-filter: blur(24px) saturate(145%);
+  }
+  body.home-polish .solution-launch-card::before {
+    content: "";
+    position: absolute;
+    inset: -2px;
+    z-index: -2;
+    border-radius: inherit;
+    background:
+      conic-gradient(from 210deg at 50% 50%, rgba(79,124,255,0), rgba(79,124,255,0.55), rgba(236,72,153,0.5), rgba(45,212,191,0.5), rgba(79,124,255,0));
+    filter: blur(22px);
+    opacity: .58;
+    animation: solutionAura 8s linear infinite;
+  }
+  body.home-polish .solution-launch-card::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    pointer-events: none;
+    background:
+      linear-gradient(115deg, transparent 0%, transparent 34%, rgba(255,255,255,0.20) 44%, transparent 56%, transparent 100%),
+      repeating-linear-gradient(90deg, rgba(255,255,255,0.04) 0 1px, transparent 1px 72px);
+    mix-blend-mode: screen;
+    opacity: .38;
+    transform: translateX(-24%);
+    animation: solutionSweep 7s ease-in-out infinite;
+  }
+  @keyframes solutionAura {
+    to { transform: rotate(360deg); }
+  }
+  @keyframes solutionSweep {
+    0%, 100% { transform: translateX(-30%); opacity: .18; }
+    46%, 56% { transform: translateX(26%); opacity: .45; }
+  }
+  body.home-polish .solution-orb {
+    position: absolute;
+    right: clamp(2.75rem, 7vw, 6.5rem);
+    top: 50%;
+    width: 6.5rem;
+    height: 6.5rem;
+    transform: translateY(-50%);
+    border-radius: 999px;
+    background:
+      radial-gradient(circle at 35% 32%, rgba(255,255,255,0.45), rgba(255,255,255,0.08) 18%, transparent 42%),
+      conic-gradient(from 160deg, rgba(77,124,255,0.55), rgba(167,139,250,0.42), rgba(236,72,153,0.40), rgba(45,212,191,0.34), rgba(77,124,255,0.55));
+    opacity: .16;
+    filter: blur(.2px);
+    box-shadow: 0 0 70px rgba(124,58,237,0.35);
+    animation: solutionFloat 5s ease-in-out infinite;
+  }
+  @keyframes solutionFloat {
+    0%, 100% { transform: translateY(-50%) translateX(0) scale(1); }
+    50% { transform: translateY(-57%) translateX(-8px) scale(1.04); }
+  }
+  body.home-polish .solution-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: .45rem;
+    padding: .55rem .75rem;
+    border-radius: 999px;
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.13);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.10);
+  }
+  body.home-polish .solution-chip span:last-child {
+    color: rgba(255,255,255,0.82) !important;
+  }
+  body.home-polish .solution-cta {
+    position: relative;
+    overflow: hidden;
+    background: linear-gradient(135deg, #5b7cff 0%, #874dff 48%, #f044a8 100%) !important;
+    border: 1px solid rgba(255,255,255,0.24);
+    box-shadow: 0 18px 55px rgba(79,124,255,0.38), 0 0 54px rgba(236,72,153,0.20), inset 0 1px 0 rgba(255,255,255,0.23) !important;
+    z-index: 2;
+  }
+  body.home-polish .solution-cta::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(100deg, transparent 0%, rgba(255,255,255,0.22) 48%, transparent 70%);
+    transform: translateX(-120%);
+    transition: transform .65s ease;
+  }
+  body.home-polish .solution-cta:hover::before {
+    transform: translateX(120%);
+  }
+  body.home-polish .solution-trust-section {
+    background:
+      radial-gradient(circle at 50% 0%, rgba(79,124,255,0.12), transparent 26rem),
+      linear-gradient(180deg,#080810 0%,#0a0a15 100%) !important;
+  }
+  body.home-polish .solution-trust-strip {
+    width: min(100%, 1050px);
+    margin-inline: auto;
+    padding: 1rem;
+    border-radius: 999px;
+    background: linear-gradient(135deg, rgba(255,255,255,0.075), rgba(255,255,255,0.025));
+    border: 1px solid rgba(255,255,255,0.10);
+    box-shadow: 0 24px 90px rgba(0,0,0,0.38), inset 0 1px 0 rgba(255,255,255,0.08);
+  }
+  body.home-polish .solution-trust-section .brand-logo-item {
+    color: rgba(255,255,255,0.58);
+    padding: .5rem .7rem;
+    border-radius: 999px;
+  }
+  body.home-polish .solution-trust-section .brand-logo-item:hover {
+    color: #fff;
+    background: rgba(255,255,255,0.07);
+    transform: translateY(-1px);
+  }
+  body.home-polish .process-runway-section {
+    background:
+      linear-gradient(115deg, rgba(77,124,255,0.10) 0 1px, transparent 1px 12px),
+      radial-gradient(circle at 15% 18%, rgba(45,212,191,0.13), transparent 24rem),
+      radial-gradient(circle at 88% 8%, rgba(236,72,153,0.16), transparent 26rem),
+      linear-gradient(180deg, #090914 0%, #111028 48%, #080810 100%) !important;
+  }
+  body.home-polish .process-runway-section::before {
+    content: "";
+    position: absolute;
+    inset: 4rem 0 auto 0;
+    height: 22rem;
+    pointer-events: none;
+    background:
+      linear-gradient(90deg, transparent, rgba(255,255,255,0.08), transparent),
+      radial-gradient(ellipse at 50% 0%, rgba(124,58,237,0.20), transparent 62%);
+    opacity: .72;
+  }
+  body.home-polish .process-runway {
+    position: relative;
+    padding-left: clamp(0rem, 2vw, 2rem);
+  }
+  body.home-polish .process-runway::before {
+    content: "";
+    position: absolute;
+    left: clamp(1rem, 4vw, 3.2rem);
+    top: 1rem;
+    bottom: 1rem;
+    width: 2px;
+    background: linear-gradient(180deg, transparent, rgba(77,124,255,0.65), rgba(236,72,153,0.45), transparent);
+    box-shadow: 0 0 30px rgba(77,124,255,0.38);
+  }
+  body.home-polish .process-step {
+    position: relative;
+    isolation: isolate;
+    padding: clamp(1rem, 2.4vw, 1.6rem);
+    border-radius: 30px;
+    background:
+      linear-gradient(135deg, rgba(255,255,255,0.075), rgba(255,255,255,0.018)),
+      radial-gradient(circle at 88% 16%, rgba(77,124,255,0.10), transparent 18rem);
+    border: 1px solid rgba(255,255,255,0.10);
+    box-shadow: 0 24px 90px rgba(0,0,0,0.32), inset 0 1px 0 rgba(255,255,255,0.08);
+    backdrop-filter: blur(18px);
+  }
+  body.home-polish .process-step::before {
+    content: "";
+    position: absolute;
+    left: clamp(.78rem, 3vw, 1.6rem);
+    top: 50%;
+    width: .8rem;
+    height: .8rem;
+    transform: translateY(-50%);
+    border-radius: 999px;
+    background: #77f7e3;
+    box-shadow: 0 0 0 7px rgba(119,247,227,0.10), 0 0 34px rgba(119,247,227,0.42);
+  }
+  body.home-polish .process-copy {
+    padding-left: clamp(1.35rem, 2.4vw, 2rem);
+  }
+  body.home-polish .process-num {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 8.4rem;
+    padding: .18em .16em .22em;
+    line-height: 1.05 !important;
+    overflow: visible;
+    text-shadow: 0 0 34px rgba(124,58,237,0.24);
+  }
+  body.home-polish .process-minute {
+    align-self: center;
+    padding: .4rem .65rem;
+    border-radius: 999px;
+    background: rgba(255,255,255,0.07);
+    border: 1px solid rgba(255,255,255,0.10);
+    color: rgba(255,255,255,0.60) !important;
+    white-space: nowrap;
+  }
+  body.home-polish .process-screen {
+    background:
+      linear-gradient(135deg, rgba(5,9,28,0.92), rgba(19,15,47,0.86)) !important;
+    border-color: rgba(139,157,255,0.22) !important;
+    box-shadow: 0 22px 70px rgba(0,0,0,0.36), 0 0 60px rgba(77,124,255,0.11), inset 0 1px 0 rgba(255,255,255,0.08);
+  }
+  body.home-polish .process-screen::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background:
+      linear-gradient(180deg, rgba(255,255,255,0.06), transparent 32%),
+      repeating-linear-gradient(0deg, rgba(255,255,255,0.018) 0 1px, transparent 1px 8px);
+    opacity: .55;
+  }
+  body.home-polish .process-screen > * {
+    position: relative;
+    z-index: 1;
+  }
+  body.home-polish .process-header-note {
+    padding: 1.25rem 1.4rem;
+    border-radius: 24px;
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.10);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.08);
+  }
+  body.home-polish footer {
+    background: rgba(6,7,12,0.88) !important;
+    border-top: 1px solid rgba(255,255,255,0.08);
+  }
+  @media (max-width: 720px) {
+    body.home-polish .hero-glow {
+      border-radius: 18px !important;
+      box-shadow: 0 20px 70px rgba(0,0,0,0.58), 0 0 55px rgba(79,124,255,0.18) !important;
+    }
+    body.home-polish .glass-card,
+    body.home-polish .feat-card-inner {
+      box-shadow: 0 14px 38px rgba(0,0,0,0.24), inset 0 1px 0 rgba(255,255,255,0.04);
+    }
+    body.home-polish .pain-card {
+      min-height: auto;
+      transform: none !important;
+    }
+    body.home-polish .solution-launch-card {
+      border-radius: 24px !important;
+    }
+    body.home-polish .solution-orb {
+      right: -1.5rem;
+      top: 1.25rem;
+      width: 5.5rem;
+      height: 5.5rem;
+      transform: none;
+    }
+    body.home-polish .solution-trust-strip {
+      border-radius: 24px;
+    }
+    body.home-polish .process-runway::before,
+    body.home-polish .process-step::before {
+      display: none;
+    }
+    body.home-polish .process-copy {
+      padding-left: 0;
+    }
+    body.home-polish .process-num {
+      min-width: 6.2rem;
+      justify-content: flex-start;
+    }
+    body.home-polish .home-tilt-card {
+      transform: none !important;
+    }
+  }
+</style>
 </head>
-<body class="bg-background text-on-background selection:bg-primary/30 selection:text-primary" data-lloyd-public="true">
+<body class="home-polish bg-background text-on-background selection:bg-primary/30 selection:text-primary" data-lloyd-public="true">
 
 <header class="w-full top-0 sticky z-50 transition-colors duration-300" style="background:rgba(8,8,16,0.85);backdrop-filter:blur(20px);border-bottom:1px solid rgba(255,255,255,0.05);box-shadow:0 20px 40px rgba(0,0,0,0.3);">
 <nav class="flex justify-between items-center px-6 py-4 w-full">
 <div class="flex items-center gap-3">
-<a class="studio-brand text-xl font-bold tracking-tighter" href="./index.html">
-  <span class="studio-logo-mark" aria-hidden="true"><video autoplay muted loop playsinline preload="metadata"><source src="https://euauqqamrkqwoytveljp.supabase.co/storage/v1/object/public/public-assets/Logo_Reveal_A_purple_and_dark_blue_nebula_swirls_with_7dBpmcoS.mp4" type="video/mp4"></video></span>
-  <span>Luminous Studio</span>
-</a>
+<a class="text-xl font-bold tracking-tighter text-primary" href="./index.html">Luminous Studio</a>
 </div>
 <div class="hidden md:flex items-center gap-8 font-['Plus_Jakarta_Sans'] font-medium tracking-tight">
 <a class="text-[#adaaaa] hover:text-primary transition-all duration-400" href="./dashboard.html">Workspace</a>
@@ -694,7 +1351,7 @@
     <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
 
       <!-- Card 1: PDFs -->
-      <div class="rounded-2xl p-6 border relative overflow-hidden" style="background:linear-gradient(180deg,rgba(255,255,255,0.025) 0%,rgba(255,255,255,0.01) 100%);border-color:rgba(255,255,255,0.07);">
+      <div class="pain-card rounded-2xl p-6 border relative overflow-hidden" tabindex="0" style="background:linear-gradient(180deg,rgba(255,255,255,0.025) 0%,rgba(255,255,255,0.01) 100%);border-color:rgba(255,255,255,0.07);">
         <div class="absolute top-0 left-0 right-0 h-px" style="background:linear-gradient(90deg,transparent,rgba(124,58,237,0.5),transparent);"></div>
         <div class="flex items-center justify-between mb-4">
           <span class="text-[10px] font-bold uppercase tracking-[0.2em]" style="color:rgba(255,255,255,0.35);">Problema 01</span>
@@ -702,7 +1359,7 @@
         </div>
         <h3 class="text-lg font-extrabold text-white mb-4 leading-tight tracking-tight">Publicas PDFs que <span class="font-serif-italic" style="color:#c084fc;font-weight:400;">nadie</span> lee.</h3>
         <!-- Visual mock: email inbox with ignored PDF -->
-        <div class="rounded-lg p-3 mb-4" style="background:rgba(0,0,0,0.3);border:1px solid rgba(255,255,255,0.05);">
+        <div class="pain-mock rounded-lg p-3 mb-4" style="background:rgba(0,0,0,0.3);border:1px solid rgba(255,255,255,0.05);">
           <div class="flex items-center gap-2 mb-2 pb-2" style="border-bottom:1px solid rgba(255,255,255,0.05);">
             <span class="material-symbols-outlined" style="font-size:13px;color:rgba(255,255,255,0.4);">inbox</span>
             <span class="text-[10px] font-semibold" style="color:rgba(255,255,255,0.45);">Bandeja de entrada</span>
@@ -722,7 +1379,7 @@
       </div>
 
       <!-- Card 2: 4 tools - FEATURED -->
-      <div class="rounded-2xl p-6 border relative overflow-hidden" style="background:linear-gradient(180deg,rgba(46,91,255,0.04) 0%,rgba(255,255,255,0.01) 100%);border-color:rgba(46,91,255,0.15);">
+      <div class="pain-card rounded-2xl p-6 border relative overflow-hidden" tabindex="0" style="background:linear-gradient(180deg,rgba(46,91,255,0.04) 0%,rgba(255,255,255,0.01) 100%);border-color:rgba(46,91,255,0.15);">
         <div class="absolute top-0 left-0 right-0 h-px" style="background:linear-gradient(90deg,transparent,rgba(46,91,255,0.6),transparent);"></div>
         <div class="flex items-center justify-between mb-4">
           <span class="text-[10px] font-bold uppercase tracking-[0.2em]" style="color:rgba(255,255,255,0.35);">Problema 02</span>
@@ -731,28 +1388,28 @@
         <h3 class="text-lg font-extrabold text-white mb-4 leading-tight tracking-tight">Pagas <span class="font-serif-italic" style="color:#4d7cff;font-weight:400;">cuatro</span> suscripciones.</h3>
         <!-- Visual mock: stacked tool costs -->
         <div class="space-y-1.5 mb-4">
-          <div class="flex items-center gap-2 px-3 py-2 rounded-lg" style="background:rgba(0,0,0,0.25);border:1px solid rgba(255,255,255,0.05);">
+          <div class="pain-row flex items-center gap-2 px-3 py-2 rounded-lg" style="background:rgba(0,0,0,0.25);border:1px solid rgba(255,255,255,0.05);">
             <div class="w-5 h-5 rounded-md flex items-center justify-center" style="background:rgba(255,100,100,0.15);">
               <span class="material-symbols-outlined" style="font-size:12px;color:rgba(255,150,150,0.7);">quiz</span>
             </div>
             <span class="text-[10px] flex-1" style="color:rgba(255,255,255,0.7);">Typeform</span>
             <span class="text-[10px] font-mono font-bold" style="color:rgba(255,150,150,0.8);">−$59</span>
           </div>
-          <div class="flex items-center gap-2 px-3 py-2 rounded-lg" style="background:rgba(0,0,0,0.25);border:1px solid rgba(255,255,255,0.05);">
+          <div class="pain-row flex items-center gap-2 px-3 py-2 rounded-lg" style="background:rgba(0,0,0,0.25);border:1px solid rgba(255,255,255,0.05);">
             <div class="w-5 h-5 rounded-md flex items-center justify-center" style="background:rgba(255,100,100,0.15);">
               <span class="material-symbols-outlined" style="font-size:12px;color:rgba(255,150,150,0.7);">mail</span>
             </div>
             <span class="text-[10px] flex-1" style="color:rgba(255,255,255,0.7);">Mailchimp</span>
             <span class="text-[10px] font-mono font-bold" style="color:rgba(255,150,150,0.8);">−$69</span>
           </div>
-          <div class="flex items-center gap-2 px-3 py-2 rounded-lg" style="background:rgba(0,0,0,0.25);border:1px solid rgba(255,255,255,0.05);">
+          <div class="pain-row flex items-center gap-2 px-3 py-2 rounded-lg" style="background:rgba(0,0,0,0.25);border:1px solid rgba(255,255,255,0.05);">
             <div class="w-5 h-5 rounded-md flex items-center justify-center" style="background:rgba(255,100,100,0.15);">
               <span class="material-symbols-outlined" style="font-size:12px;color:rgba(255,150,150,0.7);">smart_toy</span>
             </div>
             <span class="text-[10px] flex-1" style="color:rgba(255,255,255,0.7);">ChatBot Pro</span>
             <span class="text-[10px] font-mono font-bold" style="color:rgba(255,150,150,0.8);">−$49</span>
           </div>
-          <div class="flex items-center gap-2 px-3 py-2 rounded-lg" style="background:rgba(0,0,0,0.25);border:1px solid rgba(255,255,255,0.05);">
+          <div class="pain-row flex items-center gap-2 px-3 py-2 rounded-lg" style="background:rgba(0,0,0,0.25);border:1px solid rgba(255,255,255,0.05);">
             <div class="w-5 h-5 rounded-md flex items-center justify-center" style="background:rgba(255,100,100,0.15);">
               <span class="material-symbols-outlined" style="font-size:12px;color:rgba(255,150,150,0.7);">auto_stories</span>
             </div>
@@ -764,7 +1421,7 @@
       </div>
 
       <!-- Card 3: IA en inglés -->
-      <div class="rounded-2xl p-6 border relative overflow-hidden" style="background:linear-gradient(180deg,rgba(255,255,255,0.025) 0%,rgba(255,255,255,0.01) 100%);border-color:rgba(255,255,255,0.07);">
+      <div class="pain-card rounded-2xl p-6 border relative overflow-hidden" tabindex="0" style="background:linear-gradient(180deg,rgba(255,255,255,0.025) 0%,rgba(255,255,255,0.01) 100%);border-color:rgba(255,255,255,0.07);">
         <div class="absolute top-0 left-0 right-0 h-px" style="background:linear-gradient(90deg,transparent,rgba(167,139,250,0.5),transparent);"></div>
         <div class="flex items-center justify-between mb-4">
           <span class="text-[10px] font-bold uppercase tracking-[0.2em]" style="color:rgba(255,255,255,0.35);">Problema 03</span>
@@ -772,7 +1429,7 @@
         </div>
         <h3 class="text-lg font-extrabold text-white mb-4 leading-tight tracking-tight">La IA habla <span class="font-serif-italic" style="color:#a78bfa;font-weight:400;">gringo</span>, no tú.</h3>
         <!-- Visual mock: translate flow with awkward output -->
-        <div class="rounded-lg p-3 mb-4" style="background:rgba(0,0,0,0.3);border:1px solid rgba(255,255,255,0.05);">
+        <div class="pain-mock rounded-lg p-3 mb-4" style="background:rgba(0,0,0,0.3);border:1px solid rgba(255,255,255,0.05);">
           <div class="flex items-center gap-2 mb-2 pb-2" style="border-bottom:1px solid rgba(255,255,255,0.05);">
             <span class="material-symbols-outlined" style="font-size:13px;color:rgba(255,255,255,0.4);">translate</span>
             <span class="text-[10px] font-semibold" style="color:rgba(255,255,255,0.45);">ChatGPT → ES</span>
@@ -803,9 +1460,10 @@
     </div>
 
     <!-- Solution bridge + CTA -->
-    <div class="relative rounded-3xl p-8 md:p-10 overflow-hidden" style="background:linear-gradient(135deg,rgba(46,91,255,0.08) 0%,rgba(124,58,237,0.05) 100%);border:1px solid rgba(167,139,250,0.18);">
+    <div class="solution-launch-card relative rounded-3xl p-8 md:p-10 overflow-hidden">
       <!-- Ambient glow -->
       <div class="absolute inset-0 pointer-events-none" style="background:radial-gradient(ellipse 60% 80% at 50% 0%,rgba(46,91,255,0.15) 0%,transparent 70%);"></div>
+      <div class="solution-orb pointer-events-none"></div>
 
       <div class="relative grid md:grid-cols-[1fr_auto] gap-8 items-center">
         <div>
@@ -813,23 +1471,23 @@
           <h3 class="text-2xl md:text-3xl lg:text-4xl font-extrabold tracking-[-0.02em] leading-[1.1] text-white">
             Una plataforma. Un pago. <br class="hidden md:block"><span class="font-serif-italic" style="background:linear-gradient(135deg,#4d7cff,#a78bfa);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;font-weight:400;">IA que piensa en español.</span>
           </h3>
-          <div class="flex flex-wrap items-center gap-x-5 gap-y-2 mt-5 text-xs">
-            <div class="flex items-center gap-1.5">
+          <div class="flex flex-wrap items-center gap-2 mt-5 text-xs">
+            <div class="solution-chip">
               <span class="material-symbols-outlined" style="font-size:14px;color:#4d7cff;font-variation-settings:'FILL' 1">check_circle</span>
               <span style="color:rgba(255,255,255,0.7);">Todo en un solo login</span>
             </div>
-            <div class="flex items-center gap-1.5">
+            <div class="solution-chip">
               <span class="material-symbols-outlined" style="font-size:14px;color:#4d7cff;font-variation-settings:'FILL' 1">check_circle</span>
               <span style="color:rgba(255,255,255,0.7);">Entrenada en tu nicho</span>
             </div>
-            <div class="flex items-center gap-1.5">
+            <div class="solution-chip">
               <span class="material-symbols-outlined" style="font-size:14px;color:#4d7cff;font-variation-settings:'FILL' 1">check_circle</span>
-              <span style="color:rgba(255,255,255,0.7);">Desde $9/mes</span>
+              <span style="color:rgba(255,255,255,0.7);">Desde $5/mes</span>
             </div>
           </div>
         </div>
-        <div class="flex flex-col items-start md:items-end gap-3">
-          <a href="./registro.html" class="primary-gradient inline-flex items-center gap-2 px-8 py-4 rounded-xl font-bold text-white text-sm hover:scale-[1.02] active:scale-95 transition-all shrink-0" style="box-shadow:0 0 36px rgba(46,91,255,0.4);">
+        <div class="relative z-10 flex flex-col items-start md:items-center gap-3 min-w-[240px]">
+          <a href="./registro.html" class="solution-cta primary-gradient inline-flex items-center gap-2 px-8 py-4 rounded-xl font-bold text-white text-sm hover:scale-[1.02] active:scale-95 transition-all shrink-0" style="box-shadow:0 0 36px rgba(46,91,255,0.4);">
             <span class="material-symbols-outlined" style="font-size:18px;font-variation-settings:'FILL' 1">bolt</span>
             Empezar gratis ahora
           </a>
@@ -844,12 +1502,12 @@
 <div class="section-divider mx-auto max-w-5xl"></div>
 
 <!-- ===== FEATURED / SOCIAL PROOF PREMIUM ===== -->
-<section class="pt-20 pb-16 px-6" style="background:#080810;">
+<section class="solution-trust-section pt-20 pb-16 px-6" style="background:#080810;">
   <div class="max-w-6xl mx-auto">
     <!-- "Usado por" strip -->
     <div class="text-center mb-14">
       <p class="text-[10px] font-bold tracking-[0.25em] uppercase mb-6" style="color:rgba(255,255,255,0.3);">Usado por creadores de toda la región</p>
-      <div class="flex items-center justify-center gap-x-10 gap-y-4 flex-wrap">
+      <div class="solution-trust-strip flex items-center justify-center gap-x-4 gap-y-3 flex-wrap">
         <span class="brand-logo-item flex items-center gap-2">
           <span class="material-symbols-outlined" style="font-size:18px;">self_improvement</span>
           Coaches &amp; Mentores
@@ -873,12 +1531,12 @@
     </div>
 
     <!-- Premium featured testimonial -->
-    <div class="premium-testimonial rounded-3xl p-8 md:p-12 relative">
-      <div class="grid md:grid-cols-[auto_1fr_auto] gap-8 md:gap-10 items-center relative z-10">
+    <div class="premium-testimonial rounded-3xl p-7 md:p-10 relative">
+      <div class="grid md:grid-cols-[auto_1fr_260px] gap-8 md:gap-10 items-center relative z-10">
         <!-- Avatar -->
         <div class="flex md:flex-col items-center gap-4 md:gap-3">
           <div class="relative shrink-0">
-            <div class="w-20 h-20 md:w-24 md:h-24 rounded-full flex items-center justify-center text-2xl md:text-3xl font-black text-white" style="background:linear-gradient(135deg,#2E5BFF,#7c3aed);border:3px solid rgba(255,255,255,0.1);">CM</div>
+            <div class="testimonial-avatar w-20 h-20 md:w-24 md:h-24 rounded-full flex items-center justify-center text-2xl md:text-3xl font-black text-white" style="background:linear-gradient(135deg,#2E5BFF,#7c3aed);border:3px solid rgba(255,255,255,0.1);">CM</div>
             <div class="absolute -bottom-1 -right-1 w-7 h-7 rounded-full flex items-center justify-center" style="background:linear-gradient(135deg,#2E5BFF,#7c3aed);border:2px solid #080810;">
               <span class="material-symbols-outlined text-white" style="font-size:14px;font-variation-settings:'FILL' 1">verified</span>
             </div>
@@ -891,24 +1549,34 @@
         </div>
         <!-- Quote -->
         <div class="min-w-0">
-          <div class="flex gap-0.5 mb-3">
-            <span class="material-symbols-outlined" style="font-size:16px;font-variation-settings:'FILL' 1;background:linear-gradient(135deg,#4d7cff,#a78bfa);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">star</span>
-            <span class="material-symbols-outlined" style="font-size:16px;font-variation-settings:'FILL' 1;background:linear-gradient(135deg,#4d7cff,#a78bfa);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">star</span>
-            <span class="material-symbols-outlined" style="font-size:16px;font-variation-settings:'FILL' 1;background:linear-gradient(135deg,#4d7cff,#a78bfa);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">star</span>
-            <span class="material-symbols-outlined" style="font-size:16px;font-variation-settings:'FILL' 1;background:linear-gradient(135deg,#4d7cff,#a78bfa);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">star</span>
-            <span class="material-symbols-outlined" style="font-size:16px;font-variation-settings:'FILL' 1;background:linear-gradient(135deg,#4d7cff,#a78bfa);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">star</span>
+          <div class="flex flex-wrap items-center gap-2 mb-4">
+            <span class="testimonial-pill inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[11px] font-bold" style="color:#d8d7ff;">
+              <span class="material-symbols-outlined" style="font-size:14px;font-variation-settings:'FILL' 1;color:#8b5cf6;">workspace_premium</span>
+              Caso real
+            </span>
+            <span class="testimonial-pill inline-flex items-center gap-0.5 px-3 py-1.5 rounded-full">
+              <span class="material-symbols-outlined" style="font-size:13px;font-variation-settings:'FILL' 1;color:#7c8cff;">star</span>
+              <span class="material-symbols-outlined" style="font-size:13px;font-variation-settings:'FILL' 1;color:#7c8cff;">star</span>
+              <span class="material-symbols-outlined" style="font-size:13px;font-variation-settings:'FILL' 1;color:#7c8cff;">star</span>
+              <span class="material-symbols-outlined" style="font-size:13px;font-variation-settings:'FILL' 1;color:#7c8cff;">star</span>
+              <span class="material-symbols-outlined" style="font-size:13px;font-variation-settings:'FILL' 1;color:#7c8cff;">star</span>
+            </span>
           </div>
-          <p class="text-xl md:text-2xl leading-[1.45] font-light" style="color:rgba(255,255,255,0.9);">
+          <p class="text-xl md:text-[26px] leading-[1.42] font-light tracking-[-0.02em]" style="color:rgba(255,255,255,0.92);">
             <span class="font-serif-italic" style="color:#a78bfa;">"</span>Pasé de <span class="font-semibold text-white">4 herramientas distintas</span> y pagar $180/mes a tener todo en un solo lugar. El quiz que creé en 8 minutos me trajo <span class="font-semibold" style="background:linear-gradient(135deg,#4d7cff,#a78bfa);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">340 leads en su primera semana</span>.<span class="font-serif-italic" style="color:#a78bfa;">"</span>
           </p>
         </div>
         <!-- Metric -->
-        <div class="shrink-0 md:border-l md:pl-10" style="border-color:rgba(255,255,255,0.08);">
+        <div class="testimonial-metric shrink-0 rounded-2xl p-5 md:p-6">
+          <p class="text-[10px] font-bold uppercase tracking-[0.22em] mb-3" style="color:rgba(255,255,255,0.46);">Resultado medible</p>
           <p class="stat-number text-6xl md:text-7xl">340</p>
-          <p class="text-xs font-bold uppercase tracking-widest mt-2" style="color:rgba(255,255,255,0.5);">leads / 7 días</p>
-          <div class="flex items-center gap-1 mt-2">
-            <span class="material-symbols-outlined" style="font-size:14px;color:#4d7cff;font-variation-settings:'FILL' 1">trending_up</span>
-            <span class="text-xs font-bold" style="color:#4d7cff;">127 leads/mes que antes no tenía</span>
+          <p class="text-xs font-bold uppercase tracking-widest mt-2" style="color:rgba(255,255,255,0.62);">leads en 7 días</p>
+          <div class="mt-4 pt-4" style="border-top:1px solid rgba(255,255,255,0.08);">
+            <div class="flex items-center gap-2">
+              <span class="material-symbols-outlined" style="font-size:16px;color:#4d7cff;font-variation-settings:'FILL' 1">trending_up</span>
+              <span class="text-xs font-bold" style="color:#8ea2ff;">+127 leads/mes</span>
+            </div>
+            <p class="text-[11px] mt-1" style="color:rgba(255,255,255,0.42);">que antes se perdían sin seguimiento.</p>
           </div>
         </div>
       </div>
@@ -962,7 +1630,7 @@
 </div>
 
 <!-- ===== CÓMO FUNCIONA — EDITORIAL TIMELINE ===== -->
-<section class="py-32 px-6 relative overflow-hidden">
+<section class="process-runway-section py-32 px-6 relative overflow-hidden">
   <!-- Ambient background accent -->
   <div class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none" style="width:800px;height:800px;background:radial-gradient(circle,rgba(124,58,237,0.08) 0%,transparent 70%);filter:blur(60px);"></div>
 
@@ -973,7 +1641,7 @@
         <span class="text-[10px] font-bold uppercase tracking-[0.25em] block mb-4" style="background:linear-gradient(90deg,#7a9aff,#a78bfa);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">El proceso · 3 pasos</span>
         <h2 class="text-5xl md:text-6xl lg:text-7xl font-extrabold tracking-[-0.035em] leading-[0.95] text-white">De cero<br>a tu primer lead</h2>
       </div>
-      <div class="md:pb-4 md:border-l md:pl-10" style="border-color:rgba(255,255,255,0.08);">
+      <div class="process-header-note md:pb-4">
         <p class="text-lg md:text-xl leading-[1.5] font-light" style="color:rgba(255,255,255,0.55);">
           <span class="font-serif-italic" style="color:#a78bfa;font-size:1.3em;">8 minutos.</span> Eso es lo que tarda un creador promedio desde que se registra hasta que recibe su primer lead en Luminous Studio.
         </p>
@@ -981,20 +1649,20 @@
     </div>
 
     <!-- Timeline with alternating rows -->
-    <div class="space-y-20 md:space-y-24">
+    <div class="process-runway space-y-12 md:space-y-14">
 
       <!-- Step 1 -->
-      <div class="grid md:grid-cols-12 gap-6 md:gap-10 items-center">
-        <div class="md:col-span-5 md:order-1">
+      <div class="process-step grid md:grid-cols-12 gap-6 md:gap-10 items-center">
+        <div class="process-copy md:col-span-5 md:order-1">
           <div class="flex items-baseline gap-4 mb-4">
-            <span class="font-serif-italic text-[90px] md:text-[120px] leading-none" style="background:linear-gradient(135deg,#4d7cff,#a78bfa);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;font-weight:400;">01</span>
-            <span class="text-[11px] font-bold uppercase tracking-[0.25em]" style="color:rgba(255,255,255,0.35);">Minuto 0–2</span>
+            <span class="process-num font-serif-italic text-[90px] md:text-[120px] leading-none" style="background:linear-gradient(135deg,#4d7cff,#a78bfa);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;font-weight:400;">01</span>
+            <span class="process-minute text-[11px] font-bold uppercase tracking-[0.25em]" style="color:rgba(255,255,255,0.35);">Minuto 0–2</span>
           </div>
           <h3 class="text-3xl md:text-4xl font-extrabold tracking-tight text-white mb-4 leading-tight">Describe tu nicho en una frase</h3>
           <p class="text-base leading-relaxed font-light" style="color:rgba(255,255,255,0.6);">Escribe a quién le hablas y qué quieres lograr. La IA entiende español, modismos y contexto cultural — no necesitas prompts perfectos.</p>
         </div>
         <div class="md:col-span-7 md:order-2">
-          <div class="rounded-2xl p-6 md:p-7 relative overflow-hidden" style="background:linear-gradient(135deg,rgba(46,91,255,0.06),rgba(124,58,237,0.04));border:1px solid rgba(255,255,255,0.08);">
+          <div class="process-screen rounded-2xl p-6 md:p-7 relative overflow-hidden" style="background:linear-gradient(135deg,rgba(46,91,255,0.06),rgba(124,58,237,0.04));border:1px solid rgba(255,255,255,0.08);">
             <div class="flex items-center gap-2 mb-4">
               <div class="flex gap-1.5">
                 <div class="w-2.5 h-2.5 rounded-full" style="background:rgba(255,255,255,0.15);"></div>
@@ -1014,17 +1682,17 @@
       </div>
 
       <!-- Step 2 (reversed) -->
-      <div class="grid md:grid-cols-12 gap-6 md:gap-10 items-center">
-        <div class="md:col-span-5 md:col-start-8 md:order-2">
+      <div class="process-step grid md:grid-cols-12 gap-6 md:gap-10 items-center">
+        <div class="process-copy md:col-span-5 md:col-start-8 md:order-2">
           <div class="flex items-baseline gap-4 mb-4">
-            <span class="font-serif-italic text-[90px] md:text-[120px] leading-none" style="background:linear-gradient(135deg,#a78bfa,#7c3aed);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;font-weight:400;">02</span>
-            <span class="text-[11px] font-bold uppercase tracking-[0.25em]" style="color:rgba(255,255,255,0.35);">Minuto 2–4</span>
+            <span class="process-num font-serif-italic text-[90px] md:text-[120px] leading-none" style="background:linear-gradient(135deg,#a78bfa,#7c3aed);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;font-weight:400;">02</span>
+            <span class="process-minute text-[11px] font-bold uppercase tracking-[0.25em]" style="color:rgba(255,255,255,0.35);">Minuto 2–4</span>
           </div>
           <h3 class="text-3xl md:text-4xl font-extrabold tracking-tight text-white mb-4 leading-tight">La IA genera todo en <span class="font-serif-italic" style="color:#a78bfa;font-weight:400;">8 segundos</span></h3>
           <p class="text-base leading-relaxed font-light" style="color:rgba(255,255,255,0.6);">Preguntas, resultados, copy de email, diseño y captura de leads — todo listo y editable. No empiezas desde cero nunca más.</p>
         </div>
         <div class="md:col-span-7 md:col-start-1 md:row-start-1 md:order-1">
-          <div class="rounded-2xl p-6 md:p-7 relative overflow-hidden" style="background:linear-gradient(135deg,rgba(124,58,237,0.08),rgba(46,91,255,0.04));border:1px solid rgba(167,139,250,0.15);">
+          <div class="process-screen rounded-2xl p-6 md:p-7 relative overflow-hidden" style="background:linear-gradient(135deg,rgba(124,58,237,0.08),rgba(46,91,255,0.04));border:1px solid rgba(167,139,250,0.15);">
             <div class="flex items-center justify-between mb-4">
               <div class="flex items-center gap-2">
                 <span class="material-symbols-outlined icon-gradient" style="font-size:16px;font-variation-settings:'FILL' 1">auto_awesome</span>
@@ -1059,17 +1727,17 @@
       </div>
 
       <!-- Step 3 -->
-      <div class="grid md:grid-cols-12 gap-6 md:gap-10 items-center">
-        <div class="md:col-span-5 md:order-1">
+      <div class="process-step grid md:grid-cols-12 gap-6 md:gap-10 items-center">
+        <div class="process-copy md:col-span-5 md:order-1">
           <div class="flex items-baseline gap-4 mb-4">
-            <span class="font-serif-italic text-[90px] md:text-[120px] leading-none" style="background:linear-gradient(135deg,#7c3aed,#a78bfa);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;font-weight:400;">03</span>
-            <span class="text-[11px] font-bold uppercase tracking-[0.25em]" style="color:rgba(255,255,255,0.35);">Minuto 5–8</span>
+            <span class="process-num font-serif-italic text-[90px] md:text-[120px] leading-none" style="background:linear-gradient(135deg,#7c3aed,#a78bfa);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;font-weight:400;">03</span>
+            <span class="process-minute text-[11px] font-bold uppercase tracking-[0.25em]" style="color:rgba(255,255,255,0.35);">Minuto 5–8</span>
           </div>
           <h3 class="text-3xl md:text-4xl font-extrabold tracking-tight text-white mb-4 leading-tight">Publica, comparte, <span class="font-serif-italic" style="color:#a78bfa;font-weight:400;">convierte.</span></h3>
           <p class="text-base leading-relaxed font-light" style="color:rgba(255,255,255,0.6);">Tu link estaba listo desde el minuto 1. Compártelo en WhatsApp, Instagram o tu bio — los leads llegan segmentados a tu panel, listos para vender.</p>
         </div>
         <div class="md:col-span-7 md:order-2">
-          <div class="rounded-2xl p-6 md:p-7 relative overflow-hidden" style="background:linear-gradient(135deg,rgba(46,91,255,0.05),rgba(124,58,237,0.08));border:1px solid rgba(255,255,255,0.08);">
+          <div class="process-screen rounded-2xl p-6 md:p-7 relative overflow-hidden" style="background:linear-gradient(135deg,rgba(46,91,255,0.05),rgba(124,58,237,0.08));border:1px solid rgba(255,255,255,0.08);">
             <div class="flex items-center justify-between mb-5">
               <span class="text-xs font-bold text-white flex items-center gap-2">
                 <span class="material-symbols-outlined" style="font-size:14px;color:#4d7cff;font-variation-settings:'FILL' 1">rocket_launch</span>
@@ -1140,7 +1808,7 @@
 </section>
 
 <!-- ===== FEATURES BENTO GRID ===== -->
-<section class="py-24 px-6" style="background:linear-gradient(180deg,#080810 0%,#0a0820 50%,#080810 100%);">
+<section class="features-bento-section py-24 px-6 relative overflow-hidden" style="background:linear-gradient(180deg,#080810 0%,#0a0820 50%,#080810 100%);">
 <div class="max-w-7xl mx-auto space-y-12">
   <div class="text-center space-y-4 max-w-3xl mx-auto">
     <span class="text-[10px] font-bold uppercase tracking-[0.25em]" style="background:linear-gradient(90deg,#7a9aff,#a78bfa);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">Por qué Luminous Studio</span>
@@ -1149,7 +1817,7 @@
   </div>
 
   <!-- Bento Grid -->
-  <div class="grid grid-cols-1 md:grid-cols-12 gap-4">
+  <div class="bento-grid grid grid-cols-1 md:grid-cols-12 gap-4">
 
     <!-- MAIN: Quiz IA demo (col-span-8) -->
     <div class="md:col-span-8 rounded-2xl border border-primary/20 relative overflow-hidden" style="background:linear-gradient(150deg,#060d2e 0%,#0d1a4a 60%,#080d30 100%);min-height:320px;">
@@ -1508,7 +2176,7 @@
 </section>
 
 <!-- ===== INTEGRACIONES ===== -->
-<section class="py-32 px-6 relative overflow-hidden">
+<section class="integrations-section py-32 px-6 relative overflow-hidden">
   <!-- Ambient bg -->
   <div class="absolute inset-0 pointer-events-none" style="background:radial-gradient(ellipse 80% 50% at 50% 100%,rgba(46,91,255,0.07) 0%,transparent 70%);"></div>
 
@@ -1520,7 +2188,7 @@
         <h2 class="text-5xl md:text-6xl font-extrabold tracking-[-0.03em] leading-[0.95] text-white">Conecta con las<br>herramientas que<br><span class="font-serif-italic" style="background:linear-gradient(135deg,#4d7cff,#a78bfa);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;font-weight:400;">ya usas.</span></h2>
       </div>
       <div class="md:pb-3 md:max-w-xs">
-        <p class="text-base leading-relaxed font-light" style="color:rgba(255,255,255,0.55);">Sin fricción. Un clic para conectar con las plataformas que ya usas para vender, automatizar y escalar.</p>
+        <p class="integration-copy text-base leading-relaxed font-light" style="color:rgba(255,255,255,0.55);">Sin fricción. Un clic para conectar con las plataformas que ya usas para vender, automatizar y escalar.</p>
         <a href="./settings.html#integrations" class="inline-flex items-center gap-2 mt-5 text-sm font-semibold group" style="color:rgba(255,255,255,0.6);">
           <span>Ver todas las integraciones</span>
           <span class="material-symbols-outlined group-hover:translate-x-1 transition-transform" style="font-size:18px;background:linear-gradient(135deg,#4d7cff,#a78bfa);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">arrow_forward</span>
@@ -1531,8 +2199,8 @@
     <!-- Category: Pagos & Ventas -->
     <div>
       <div class="flex items-center gap-3 mb-5">
-        <span class="text-[10px] font-bold uppercase tracking-[0.2em]" style="color:rgba(255,255,255,0.35);">Pagos & Ventas</span>
-        <div class="flex-1 h-px" style="background:rgba(255,255,255,0.06);"></div>
+        <span class="integration-category-label text-[10px] font-bold uppercase tracking-[0.2em]" style="color:rgba(255,255,255,0.35);">Pagos & Ventas</span>
+        <div class="integration-line flex-1 h-px" style="background:rgba(255,255,255,0.06);"></div>
       </div>
       <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
         <a href="./settings.html#integrations" class="group rounded-2xl p-4 border relative overflow-hidden transition-all hover:scale-[1.02]" style="background:rgba(255,255,255,0.02);border-color:rgba(255,255,255,0.07);">
@@ -1852,7 +2520,7 @@
         <span class="text-sm font-medium text-on-surface" id="label-annual">Anual <span class="text-xs font-bold" style="color:#4d7cff;">-20%</span></span>
       </div>
     </div>
-    <div class="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-5">
+    <div class="pricing-grid grid gap-5">
       <!-- FREE -->
       <div class="glass-card border border-outline-variant/10 rounded-xl p-6 flex flex-col gap-5 hover:border-outline-variant/30 transition-colors">
         <div>
@@ -2218,6 +2886,33 @@
   Empezar gratis
 </a>
 <script>
+  (function(){
+    if (window.matchMedia && window.matchMedia('(pointer: coarse)').matches) return;
+    document.querySelectorAll('.feat-card, .glass-card, .premium-testimonial, .faq-item').forEach(function(card){
+      if (!card.classList.contains('pain-card')) card.classList.add('home-tilt-card');
+    });
+    var cards = document.querySelectorAll('.pain-card, .home-tilt-card');
+    cards.forEach(function(card){
+      card.addEventListener('pointermove', function(event){
+        var rect = card.getBoundingClientRect();
+        var x = (event.clientX - rect.left) / rect.width;
+        var y = (event.clientY - rect.top) / rect.height;
+        var isPain = card.classList.contains('pain-card');
+        card.style.setProperty(isPain ? '--glow-x' : '--card-glow-x', (x * 100).toFixed(1) + '%');
+        card.style.setProperty(isPain ? '--glow-y' : '--card-glow-y', (y * 100).toFixed(1) + '%');
+        card.style.setProperty(isPain ? '--tilt-y' : '--card-tilt-y', ((x - 0.5) * 7).toFixed(2) + 'deg');
+        card.style.setProperty(isPain ? '--tilt-x' : '--card-tilt-x', ((0.5 - y) * 6).toFixed(2) + 'deg');
+      });
+      card.addEventListener('pointerleave', function(){
+        var isPain = card.classList.contains('pain-card');
+        card.style.setProperty(isPain ? '--tilt-x' : '--card-tilt-x', '0deg');
+        card.style.setProperty(isPain ? '--tilt-y' : '--card-tilt-y', '0deg');
+        card.style.setProperty(isPain ? '--glow-x' : '--card-glow-x', '50%');
+        card.style.setProperty(isPain ? '--glow-y' : '--card-glow-y', '0%');
+      });
+    });
+  })();
+
   (function(){
     var cta = document.getElementById('sticky-cta');
     if(!cta) return;
