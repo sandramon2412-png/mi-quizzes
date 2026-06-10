@@ -8,7 +8,6 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="./supabase-config.js"></script>
 <script src="./app.js"></script>
-<script src="./ai-assistant.js?v=page-context1" defer></script>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
 <script id="tailwind-config">
@@ -47,8 +46,6 @@
   ::-webkit-scrollbar { width: 4px; }
   ::-webkit-scrollbar-track { background: transparent; }
   ::-webkit-scrollbar-thumb { background: #484847; border-radius: 10px; }
-
-  /* Bot card */
   .bot-card {
     position: relative;
     background: #0d0d1a;
@@ -72,136 +69,33 @@
     opacity: 0;
     transition: opacity 0.25s;
   }
-  .bot-card:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 16px 48px rgba(46,91,255,0.18), 0 0 0 1px rgba(124,58,237,0.25);
-    border-color: transparent;
-  }
+  .bot-card:hover { transform: translateY(-4px); box-shadow: 0 16px 48px rgba(46,91,255,0.18), 0 0 0 1px rgba(124,58,237,0.25); border-color: transparent; }
   .bot-card:hover::before { opacity: 1; }
-
-  /* Plan badge */
-  .badge-free {
-    background: linear-gradient(135deg, rgba(77,124,255,0.15), rgba(167,139,250,0.15));
-    border: 1px solid rgba(77,124,255,0.3);
-    color: #a78bfa;
-  }
-  .badge-pro {
-    background: linear-gradient(135deg, rgba(46,91,255,0.15), rgba(124,58,237,0.15));
-    border: 1px solid rgba(124,58,237,0.4);
-    color: #b388ff;
-  }
-  .badge-starter {
-    background: linear-gradient(135deg, rgba(8,145,178,0.15), rgba(14,116,144,0.15));
-    border: 1px solid rgba(8,145,178,0.4);
-    color: #67e8f9;
-  }
-
-  /* Category pills */
-  .cat-pill {
-    padding: 6px 16px;
-    border-radius: 999px;
-    font-size: 12px;
-    font-weight: 700;
-    border: 1px solid rgba(255,255,255,0.08);
-    background: rgba(255,255,255,0.04);
-    color: rgba(255,255,255,0.45);
-    cursor: pointer;
-    transition: all 0.18s;
-    white-space: nowrap;
-  }
-  .cat-pill:hover {
-    background: rgba(46,91,255,0.12);
-    border-color: rgba(46,91,255,0.3);
-    color: #7a9aff;
-  }
-  .cat-pill.active {
-    background: rgba(46,91,255,0.18);
-    border-color: rgba(46,91,255,0.5);
-    color: #7a9aff;
-  }
-
-  /* Bot icon bg */
-  .bot-icon {
-    width: 48px; height: 48px;
-    border-radius: 14px;
-    background: linear-gradient(135deg, rgba(46,91,255,0.15) 0%, rgba(124,58,237,0.15) 100%);
-    border: 1px solid rgba(46,91,255,0.15);
-    display: flex; align-items: center; justify-content: center;
-    font-size: 22px;
-    flex-shrink: 0;
-  }
-
-  /* Run button */
-  .btn-run {
-    display: inline-flex; align-items: center; gap: 6px;
-    width: 100%;
-    justify-content: center;
-    padding: 9px 16px;
-    border-radius: 10px;
-    font-size: 13px;
-    font-weight: 700;
-    background: rgba(46,91,255,0.1);
-    border: 1px solid rgba(46,91,255,0.25);
-    color: #7a9aff;
-    transition: all 0.18s;
-  }
-  .btn-run:hover {
-    background: rgba(46,91,255,0.2);
-    border-color: rgba(46,91,255,0.5);
-    color: #fff;
-    box-shadow: 0 4px 16px rgba(46,91,255,0.25);
-  }
-
-  /* Search input */
-  .search-input {
-    background: rgba(255,255,255,0.05);
-    border: 1px solid rgba(255,255,255,0.1);
-    border-radius: 12px;
-    color: #fff;
-    padding: 10px 16px 10px 42px;
-    font-size: 14px;
-    font-family: inherit;
-    outline: none;
-    transition: border-color 0.18s, background 0.18s;
-    width: 100%;
-  }
-  .search-input:focus {
-    border-color: rgba(46,91,255,0.5);
-    background: rgba(46,91,255,0.06);
-  }
+  .badge-free { background: linear-gradient(135deg, rgba(77,124,255,0.15), rgba(167,139,250,0.15)); border: 1px solid rgba(77,124,255,0.3); color: #a78bfa; }
+  .badge-pro { background: linear-gradient(135deg, rgba(46,91,255,0.15), rgba(124,58,237,0.15)); border: 1px solid rgba(124,58,237,0.4); color: #b388ff; }
+  .badge-starter { background: linear-gradient(135deg, rgba(8,145,178,0.15), rgba(14,116,144,0.15)); border: 1px solid rgba(8,145,178,0.4); color: #67e8f9; }
+  .cat-pill { padding: 6px 16px; border-radius: 999px; font-size: 12px; font-weight: 700; border: 1px solid rgba(255,255,255,0.08); background: rgba(255,255,255,0.04); color: rgba(255,255,255,0.45); cursor: pointer; transition: all 0.18s; white-space: nowrap; }
+  .cat-pill:hover { background: rgba(46,91,255,0.12); border-color: rgba(46,91,255,0.3); color: #7a9aff; }
+  .cat-pill.active { background: rgba(46,91,255,0.18); border-color: rgba(46,91,255,0.5); color: #7a9aff; }
+  .bot-icon { width: 48px; height: 48px; border-radius: 14px; background: linear-gradient(135deg, rgba(46,91,255,0.15) 0%, rgba(124,58,237,0.15) 100%); border: 1px solid rgba(46,91,255,0.15); display: flex; align-items: center; justify-content: center; font-size: 22px; flex-shrink: 0; }
+  .btn-run { display: inline-flex; align-items: center; gap: 6px; width: 100%; justify-content: center; padding: 9px 16px; border-radius: 10px; font-size: 13px; font-weight: 700; background: rgba(46,91,255,0.1); border: 1px solid rgba(46,91,255,0.25); color: #7a9aff; transition: all 0.18s; }
+  .btn-run:hover { background: rgba(46,91,255,0.2); border-color: rgba(46,91,255,0.5); color: #fff; box-shadow: 0 4px 16px rgba(46,91,255,0.25); }
+  .search-input { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; color: #fff; padding: 10px 16px 10px 42px; font-size: 14px; font-family: inherit; outline: none; transition: border-color 0.18s, background 0.18s; width: 100%; }
+  .search-input:focus { border-color: rgba(46,91,255,0.5); background: rgba(46,91,255,0.06); }
   .search-input::placeholder { color: rgba(255,255,255,0.25); }
-
-  /* Header gradient strip */
-  .page-hero {
-    background: radial-gradient(ellipse at 50% 0%, rgba(46,91,255,0.12) 0%, transparent 70%),
-                radial-gradient(ellipse at 80% 50%, rgba(124,58,237,0.08) 0%, transparent 50%);
-  }
-
-  /* Animate cards in */
-  @keyframes fadeUp {
-    from { opacity: 0; transform: translateY(12px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
+  .page-hero { background: radial-gradient(ellipse at 50% 0%, rgba(46,91,255,0.12) 0%, transparent 70%), radial-gradient(ellipse at 80% 50%, rgba(124,58,237,0.08) 0%, transparent 50%); }
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
   .bot-card { animation: fadeUp 0.3s ease both; }
-
-  /* Empty state */
-  .empty-state {
-    grid-column: 1 / -1;
-    display: flex; flex-direction: column; align-items: center; justify-content: center;
-    padding: 64px 20px; text-align: center; gap: 12px;
-  }
-
+  .empty-state { grid-column: 1 / -1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 64px 20px; text-align: center; gap: 12px; }
   .icon-gradient { background: linear-gradient(135deg, #4d7cff, #a78bfa); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
-  /* Header nav active */
   .nav-active { color: #2E5BFF !important; font-weight: 700; }
 </style>
-<link rel="stylesheet" href="./luminous-polish.css?v=platform-polish1"/>
+<link rel="stylesheet" href="./luminous-polish.css?v=studio-pages2"/>
 </head>
-<body class="bg-[#080810] text-on-surface min-h-screen">
+<body class="studio-page bg-[#080810] text-on-surface min-h-screen">
 
-<!-- ── TOP BAR ── -->
 <header class="fixed top-0 w-full z-50 flex items-center justify-between px-6 h-14 bg-[#080810]/95 border-b border-white/5" style="backdrop-filter:blur(20px);">
-  <a class="text-base font-extrabold tracking-tight text-primary" href="./dashboard.html"><span class="studio-logo-mark" aria-hidden="true"><video autoplay muted loop playsinline preload="metadata"><source src="https://euauqqamrkqwoytveljp.supabase.co/storage/v1/object/public/public-assets/Logo_Reveal_A_purple_and_dark_blue_nebula_swirls_with_7dBpmcoS.mp4" type="video/mp4"></video></span>Luminous Studio</a>
+  <a class="studio-brand text-base font-extrabold tracking-tight text-primary" href="./dashboard.html"><span class="studio-logo-mark" aria-hidden="true"><video autoplay muted loop playsinline preload="metadata"><source src="https://euauqqamrkqwoytveljp.supabase.co/storage/v1/object/public/public-assets/Logo_Reveal_A_purple_and_dark_blue_nebula_swirls_with_7dBpmcoS.mp4" type="video/mp4"></video></span><span>Luminous Studio<span class="studio-brand-sub">Bot Lab</span></span></a>
   <nav class="hidden md:flex items-center gap-5 text-sm">
     <a class="text-on-surface-variant hover:text-primary transition-colors" href="./dashboard.html">Dashboard</a>
     <a class="text-on-surface-variant hover:text-primary transition-colors" href="./generador-ia.html">Crear Quiz</a>
@@ -220,10 +114,7 @@
   </div>
 </header>
 
-<!-- ── MAIN ── -->
 <main class="pt-14 min-h-screen">
-
-  <!-- ── Hero ── -->
   <div class="page-hero px-4 md:px-8 pt-10 pb-8 max-w-6xl mx-auto">
     <div class="flex items-start justify-between gap-4 flex-wrap">
       <div>
@@ -231,12 +122,8 @@
           <div class="w-8 h-8 rounded-lg flex items-center justify-center" style="background:linear-gradient(135deg,#2E5BFF,#7c3aed);"><span class="material-symbols-outlined text-white" style="font-size:18px;font-variation-settings:'FILL' 1">smart_toy</span></div>
           <span class="text-xs font-bold text-primary/60 uppercase tracking-[.15em]">Bot Lab</span>
         </div>
-        <h1 class="text-3xl md:text-4xl font-black tracking-tight leading-tight mb-2">
-          Bot Library
-        </h1>
-        <p class="text-on-surface-variant/70 text-sm md:text-base max-w-lg">
-          Herramientas de IA especializadas para creadores de infoproductos
-        </p>
+        <h1 class="text-3xl md:text-4xl font-black tracking-tight leading-tight mb-2">Bot Library</h1>
+        <p class="text-on-surface-variant/70 text-sm md:text-base max-w-lg">Herramientas de IA especializadas para creadores de infoproductos</p>
       </div>
       <div class="flex items-center gap-2 text-xs text-on-surface-variant/50">
         <span class="w-2 h-2 rounded-full bg-primary/70 animate-pulse inline-block"></span>
@@ -244,22 +131,12 @@
       </div>
     </div>
   </div>
-
-  <!-- ── Filter/Search Bar ── -->
   <div class="px-4 md:px-8 pb-6 max-w-6xl mx-auto">
     <div class="flex flex-col sm:flex-row gap-3 items-start sm:items-center">
-      <!-- Search -->
       <div class="relative flex-1 max-w-xs">
         <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant/40 text-lg">search</span>
-        <input
-          class="search-input"
-          id="search-input"
-          placeholder="Buscar bot..."
-          type="text"
-          oninput="filterBots()"
-        />
+        <input class="search-input" id="search-input" placeholder="Buscar bot..." type="text" oninput="filterBots()"/>
       </div>
-      <!-- Category pills -->
       <div class="flex items-center gap-2 flex-wrap" id="cat-pills">
         <button class="cat-pill active" data-cat="Todos" onclick="selectCat(this)">Todos</button>
         <button class="cat-pill" data-cat="Copywriting" onclick="selectCat(this)"><span class="material-symbols-outlined icon-gradient" style="font-size:14px;vertical-align:middle;font-variation-settings:'FILL' 1">edit_note</span> Copywriting</button>
@@ -270,17 +147,11 @@
       </div>
     </div>
   </div>
-
-  <!-- ── Grid ── -->
   <div class="px-4 md:px-8 pb-20 max-w-6xl mx-auto">
-    <div id="bots-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-      <!-- populated by JS -->
-    </div>
+    <div id="bots-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4"></div>
   </div>
-
 </main>
 
-<!-- ── Upgrade modal ── -->
 <div id="upgrade-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 hidden">
   <div class="absolute inset-0 bg-black/70" onclick="closeUpgradeModal()"></div>
   <div class="relative z-10 rounded-2xl p-8 max-w-sm w-full text-center" style="background:#0d0d1a;border:1px solid rgba(124,58,237,0.4);box-shadow:0 32px 80px rgba(0,0,0,0.8);">
@@ -295,7 +166,6 @@
 </div>
 
 <script>
-// ── Auth guard ──────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', async () => {
   await Auth.requireAuth();
   initHeader();
@@ -316,12 +186,9 @@ function initHeader() {
       badge.style.background = 'rgba(124,58,237,0.1)';
     }
   }
-  if (avatar && s.name) {
-    avatar.textContent = s.name.charAt(0).toUpperCase();
-  }
+  if (avatar && s.name) avatar.textContent = s.name.charAt(0).toUpperCase();
 }
 
-// ── Bot data ────────────────────────────────────────────────
 const BOT_ICONS = {
   'quiz-creator': 'quiz', 'sales-letter': 'description', 'oferta': 'paid', 'vsl-script': 'videocam',
   'hook-gen': 'link', 'email-seq': 'mail', 'andromeda': 'rocket_launch', 'meta-decision': 'bar_chart',
@@ -333,95 +200,49 @@ function botIcon(id) {
   return `<span class="material-symbols-outlined icon-gradient" style="font-size:22px;font-variation-settings:'FILL' 1">${icon}</span>`;
 }
 const BOTS = [
-  // COPYWRITING
-  { id: 'quiz-creator',        name: 'Quiz Creator',         desc: 'Crea quizzes completos con preguntas, perfiles y CTAs para tu nicho.',                          category: 'Quiz',        plan: 'free' },
-  { id: 'sales-letter',        name: 'Sales Letter Weapon',  desc: 'Carta de venta persuasiva larga para cerrar ventas de infoproductos.',                          category: 'Copywriting', plan: 'pro'  },
-  { id: 'oferta',              name: 'Oferta Irresistible',   desc: 'Estructura tu oferta con el método Hormozi: stack, garantía y precio.',                         category: 'Copywriting', plan: 'pro'  },
-  { id: 'vsl-script',          name: 'VSL Script',            desc: 'Guión completo de Video Sales Letter para vender tu curso o servicio.',                         category: 'Copywriting', plan: 'pro'  },
-  { id: 'hook-gen',            name: 'Hook Generator',        desc: 'Genera 10 hooks virales para Reels, TikTok y anuncios en segundos.',                            category: 'Copywriting', plan: 'free' },
-  { id: 'email-seq',           name: 'Email Sequence',        desc: 'Secuencia de 5 emails de nurturing adaptada a cada perfil del quiz.',                           category: 'Copywriting', plan: 'pro'  },
-  // ADS
-  { id: 'andromeda',           name: 'Andromeda Meta Ads',    desc: 'Campañas de FB/IG con el Método Andromeda usando quiz como landing.',                           category: 'Ads',         plan: 'starter' },
-  { id: 'meta-decision',       name: 'Meta Ads Decision',     desc: 'Toma decisiones sobre tus campañas basadas en datos y métricas reales.',                        category: 'Ads',         plan: 'pro'  },
-  { id: 'ad-copy',             name: 'Master Script Ads',     desc: 'Scripts y copies de anuncios UGC, testimonial y problema-solución.',                            category: 'Ads',         plan: 'pro'  },
-  { id: 'ad-library',          name: 'Ad Library Analyzer',   desc: 'Analiza anuncios de tu competencia y extrae las mejores estrategias.',                          category: 'Ads',         plan: 'pro'  },
-  // PRODUCTO
-  { id: 'product-builder',     name: 'AI Product Builder',    desc: 'Estructura tu infoproducto digital completo: módulos, contenido y precio.',                    category: 'Producto',    plan: 'pro'  },
-  { id: 'ebook-writer',        name: 'Ebook Writer',           desc: 'Contenido completo de tu ebook capítulo por capítulo con IA.',                                 category: 'Producto',    plan: 'pro'  },
-  { id: 'lead-magnet',         name: 'Lead Magnet Creator',   desc: 'Crea lead magnets irresistibles que conviertan visitas en leads calificados.',                  category: 'Producto',    plan: 'free' },
-  { id: 'prompt-builder',      name: 'Prompt Builder',         desc: 'Prompts listos para usar en ChatGPT y Claude para tu negocio digital.',                        category: 'Contenido',   plan: 'pro'  },
-  // CONTENIDO
-  { id: 'whatsapp-closer',     name: 'WhatsApp Closer',        desc: 'Secuencias de cierre por WhatsApp adaptadas al perfil de cada lead.',                          category: 'Contenido',   plan: 'pro'  },
-  { id: 'identity-persuasion', name: 'Identity Persuasion',    desc: 'Marketing de identidad: conecta tu oferta con quién quiere ser tu cliente.',                   category: 'Copywriting', plan: 'pro'  },
+  { id: 'quiz-creator', name: 'Quiz Creator', desc: 'Crea quizzes completos con preguntas, perfiles y CTAs para tu nicho.', category: 'Quiz', plan: 'free' },
+  { id: 'sales-letter', name: 'Sales Letter Weapon', desc: 'Carta de venta persuasiva larga para cerrar ventas de infoproductos.', category: 'Copywriting', plan: 'pro' },
+  { id: 'oferta', name: 'Oferta Irresistible', desc: 'Estructura tu oferta con el método Hormozi: stack, garantía y precio.', category: 'Copywriting', plan: 'pro' },
+  { id: 'vsl-script', name: 'VSL Script', desc: 'Guión completo de Video Sales Letter para vender tu curso o servicio.', category: 'Copywriting', plan: 'pro' },
+  { id: 'hook-gen', name: 'Hook Generator', desc: 'Genera 10 hooks virales para Reels, TikTok y anuncios en segundos.', category: 'Copywriting', plan: 'free' },
+  { id: 'email-seq', name: 'Email Sequence', desc: 'Secuencia de 5 emails de nurturing adaptada a cada perfil del quiz.', category: 'Copywriting', plan: 'pro' },
+  { id: 'andromeda', name: 'Andromeda Meta Ads', desc: 'Campañas de FB/IG con el Método Andromeda usando quiz como landing.', category: 'Ads', plan: 'starter' },
+  { id: 'meta-decision', name: 'Meta Ads Decision', desc: 'Toma decisiones sobre tus campañas basadas en datos y métricas reales.', category: 'Ads', plan: 'pro' },
+  { id: 'ad-copy', name: 'Master Script Ads', desc: 'Scripts y copies de anuncios UGC, testimonial y problema-solución.', category: 'Ads', plan: 'pro' },
+  { id: 'ad-library', name: 'Ad Library Analyzer', desc: 'Analiza anuncios de tu competencia y extrae las mejores estrategias.', category: 'Ads', plan: 'pro' },
+  { id: 'product-builder', name: 'AI Product Builder', desc: 'Estructura tu infoproducto digital completo: módulos, contenido y precio.', category: 'Producto', plan: 'pro' },
+  { id: 'ebook-writer', name: 'Ebook Writer', desc: 'Contenido completo de tu ebook capítulo por capítulo con IA.', category: 'Producto', plan: 'pro' },
+  { id: 'lead-magnet', name: 'Lead Magnet Creator', desc: 'Crea lead magnets irresistibles que conviertan visitas en leads calificados.', category: 'Producto', plan: 'free' },
+  { id: 'prompt-builder', name: 'Prompt Builder', desc: 'Prompts listos para usar en ChatGPT y Claude para tu negocio digital.', category: 'Contenido', plan: 'pro' },
+  { id: 'whatsapp-closer', name: 'WhatsApp Closer', desc: 'Secuencias de cierre por WhatsApp adaptadas al perfil de cada lead.', category: 'Contenido', plan: 'pro' },
+  { id: 'identity-persuasion', name: 'Identity Persuasion', desc: 'Marketing de identidad: conecta tu oferta con quién quiere ser tu cliente.', category: 'Copywriting', plan: 'pro' },
 ];
 
-// ── State ───────────────────────────────────────────────────
 let activeCategory = 'Todos';
 let searchQuery = '';
 
-// ── Render ──────────────────────────────────────────────────
 function renderBots() {
   const grid = document.getElementById('bots-grid');
   const s = Settings.get();
   const userPlan = s.plan || 'free';
-
   let filtered = BOTS.filter(bot => {
     const matchCat = activeCategory === 'Todos' || bot.category === activeCategory;
-    const matchSearch = !searchQuery ||
-      bot.name.toLowerCase().includes(searchQuery) ||
-      bot.desc.toLowerCase().includes(searchQuery) ||
-      bot.category.toLowerCase().includes(searchQuery);
+    const matchSearch = !searchQuery || bot.name.toLowerCase().includes(searchQuery) || bot.desc.toLowerCase().includes(searchQuery) || bot.category.toLowerCase().includes(searchQuery);
     return matchCat && matchSearch;
   });
-
   document.getElementById('bot-count').textContent = `${filtered.length} bot${filtered.length !== 1 ? 's' : ''} disponible${filtered.length !== 1 ? 's' : ''}`;
-
   if (filtered.length === 0) {
-    grid.innerHTML = `
-      <div class="empty-state">
-        <div style="margin-bottom:8px;"><span class="material-symbols-outlined icon-gradient" style="font-size:48px;font-variation-settings:'FILL' 1">search</span></div>
-        <p class="text-on-surface-variant/50 text-sm">No se encontraron bots con esos filtros.</p>
-        <button onclick="resetFilters()" class="mt-2 text-primary text-sm font-semibold hover:underline">Ver todos</button>
-      </div>`;
+    grid.innerHTML = `<div class="empty-state"><div style="margin-bottom:8px;"><span class="material-symbols-outlined icon-gradient" style="font-size:48px;font-variation-settings:'FILL' 1">search</span></div><p class="text-on-surface-variant/50 text-sm">No se encontraron bots con esos filtros.</p><button onclick="resetFilters()" class="mt-2 text-primary text-sm font-semibold hover:underline">Ver todos</button></div>`;
     return;
   }
-
   const planRank = { free: 0, starter: 1, pro: 2, growth: 3, elite: 4 };
   const userRank = planRank[userPlan] ?? 0;
-
   grid.innerHTML = filtered.map((bot, i) => {
     const botRank = planRank[bot.plan] ?? 0;
     const locked = botRank > userRank;
     const badgeLabel = bot.plan === 'pro' ? 'PRO' : bot.plan === 'starter' ? 'STARTER' : 'FREE';
     const badgeClass = bot.plan === 'pro' ? 'badge-pro' : bot.plan === 'starter' ? 'badge-starter' : 'badge-free';
-    return `
-    <div class="bot-card" style="animation-delay:${i * 40}ms" onclick="runBot('${bot.id}', ${locked})">
-      <!-- Plan badge -->
-      <div class="absolute top-3 right-3">
-        <span class="text-[10px] font-black px-2 py-0.5 rounded-full ${badgeClass}">
-          ${badgeLabel}
-        </span>
-      </div>
-
-      <!-- Icon + Name -->
-      <div class="flex items-start gap-3 mb-3">
-        <div class="bot-icon">
-          ${botIcon(bot.id)}
-        </div>
-        <div class="flex-1 min-w-0 pr-10">
-          <h3 class="font-bold text-sm text-white leading-tight mb-0.5">${bot.name}</h3>
-          <span class="text-[10px] font-semibold px-2 py-0.5 rounded-full" style="background:rgba(255,255,255,0.06);color:rgba(255,255,255,0.35);">${bot.category}</span>
-        </div>
-      </div>
-
-      <!-- Description -->
-      <p class="text-xs text-on-surface-variant/60 leading-relaxed mb-4" style="min-height:42px;">${bot.desc}</p>
-
-      <!-- Run button -->
-      <button class="btn-run ${locked ? 'opacity-70' : ''}" onclick="event.stopPropagation(); runBot('${bot.id}', ${locked})">
-        ${locked ? `<span class="material-symbols-outlined" style="font-size:14px;font-variation-settings:'FILL' 1">lock</span> Requiere ${bot.plan === 'starter' ? 'STARTER' : 'PRO'}` : '<span class="material-symbols-outlined" style="font-size:14px;font-variation-settings:\'FILL\' 1">play_arrow</span> Ejecutar Bot'}
-      </button>
-    </div>`;
+    return `<div class="bot-card" style="animation-delay:${i * 40}ms" onclick="runBot('${bot.id}', ${locked})"><div class="absolute top-3 right-3"><span class="text-[10px] font-black px-2 py-0.5 rounded-full ${badgeClass}">${badgeLabel}</span></div><div class="flex items-start gap-3 mb-3"><div class="bot-icon">${botIcon(bot.id)}</div><div class="flex-1 min-w-0 pr-10"><h3 class="font-bold text-sm text-white leading-tight mb-0.5">${bot.name}</h3><span class="text-[10px] font-semibold px-2 py-0.5 rounded-full" style="background:rgba(255,255,255,0.06);color:rgba(255,255,255,0.35);">${bot.category}</span></div></div><p class="text-xs text-on-surface-variant/60 leading-relaxed mb-4" style="min-height:42px;">${bot.desc}</p><button class="btn-run ${locked ? 'opacity-70' : ''}" onclick="event.stopPropagation(); runBot('${bot.id}', ${locked})">${locked ? `<span class="material-symbols-outlined" style="font-size:14px;font-variation-settings:'FILL' 1">lock</span> Requiere ${bot.plan === 'starter' ? 'STARTER' : 'PRO'}` : '<span class="material-symbols-outlined" style="font-size:14px;font-variation-settings:\'FILL\' 1">play_arrow</span> Ejecutar Bot'}</button></div>`;
   }).join('');
 }
 
@@ -439,30 +260,10 @@ function runBot(id, locked) {
   window.location.href = `./bot-chat.html?bot=${id}`;
 }
 
-function closeUpgradeModal() {
-  document.getElementById('upgrade-modal').classList.add('hidden');
-}
-
-function selectCat(el) {
-  document.querySelectorAll('.cat-pill').forEach(p => p.classList.remove('active'));
-  el.classList.add('active');
-  activeCategory = el.dataset.cat;
-  renderBots();
-}
-
-function filterBots() {
-  searchQuery = document.getElementById('search-input').value.toLowerCase().trim();
-  renderBots();
-}
-
-function resetFilters() {
-  searchQuery = '';
-  activeCategory = 'Todos';
-  document.getElementById('search-input').value = '';
-  document.querySelectorAll('.cat-pill').forEach(p => p.classList.remove('active'));
-  document.querySelector('[data-cat="Todos"]').classList.add('active');
-  renderBots();
-}
+function closeUpgradeModal() { document.getElementById('upgrade-modal').classList.add('hidden'); }
+function selectCat(el) { document.querySelectorAll('.cat-pill').forEach(p => p.classList.remove('active')); el.classList.add('active'); activeCategory = el.dataset.cat; renderBots(); }
+function filterBots() { searchQuery = document.getElementById('search-input').value.toLowerCase().trim(); renderBots(); }
+function resetFilters() { searchQuery = ''; activeCategory = 'Todos'; document.getElementById('search-input').value = ''; document.querySelectorAll('.cat-pill').forEach(p => p.classList.remove('active')); document.querySelector('[data-cat="Todos"]').classList.add('active'); renderBots(); }
 </script>
 </body>
 </html>
