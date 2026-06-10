@@ -197,17 +197,234 @@
   }
   .btn-submit-premium:active { transform: translateY(0); }
 
+  /* Dashboard premium command-center polish */
+  body.dashboard-polish {
+    background:
+      radial-gradient(circle at 8% -6%, rgba(77,124,255,.22), transparent 30rem),
+      radial-gradient(circle at 88% 2%, rgba(105,246,184,.12), transparent 27rem),
+      radial-gradient(circle at 52% 18%, rgba(124,58,237,.16), transparent 32rem),
+      linear-gradient(180deg, #070812 0%, #0b0c16 42%, #080810 100%) !important;
+  }
+  body.dashboard-polish::after {
+    content: "";
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: -1;
+    background:
+      linear-gradient(90deg, rgba(255,255,255,.035) 1px, transparent 1px),
+      linear-gradient(180deg, rgba(255,255,255,.026) 1px, transparent 1px);
+    background-size: 78px 78px;
+    mask-image: linear-gradient(180deg, rgba(0,0,0,.85), transparent 72%);
+    opacity: .45;
+  }
+  body.dashboard-polish header {
+    height: 66px !important;
+    padding-inline: clamp(1rem, 3vw, 2rem) !important;
+    background: rgba(8,9,18,.72) !important;
+    border-bottom: 1px solid rgba(255,255,255,.08) !important;
+    box-shadow: 0 24px 70px rgba(0,0,0,.36);
+    backdrop-filter: blur(22px) saturate(145%);
+  }
+  body.dashboard-polish header > a {
+    color: #fff !important;
+    letter-spacing: -.03em;
+    display: inline-flex;
+    align-items: center;
+    gap: .65rem;
+  }
+  body.dashboard-polish header > a::before {
+    content: "";
+    width: 2.1rem;
+    height: 2.1rem;
+    border-radius: 14px;
+    background:
+      radial-gradient(circle at 35% 25%, rgba(255,255,255,.62), transparent 19%),
+      linear-gradient(135deg, #2E5BFF, #7c3aed 58%, #69f6b8);
+    box-shadow: 0 14px 34px rgba(46,91,255,.32);
+  }
+  body.dashboard-polish header nav {
+    padding: .42rem;
+    border-radius: 999px;
+    background: rgba(255,255,255,.045);
+    border: 1px solid rgba(255,255,255,.075);
+  }
+  body.dashboard-polish header nav a {
+    padding: .45rem .72rem;
+    border-radius: 999px;
+  }
+  body.dashboard-polish header nav a.text-primary {
+    background: rgba(77,124,255,.14);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.08);
+  }
+  body.dashboard-polish main {
+    max-width: 1180px !important;
+    padding-top: 92px !important;
+  }
+  body.dashboard-polish .welcome-card {
+    border-radius: 30px !important;
+    padding: clamp(1.45rem, 3vw, 2.15rem) !important;
+    background:
+      radial-gradient(circle at 14% 0%, rgba(105,246,184,.18), transparent 22rem),
+      radial-gradient(circle at 90% 20%, rgba(124,58,237,.22), transparent 24rem),
+      linear-gradient(135deg, rgba(255,255,255,.12), rgba(255,255,255,.035)) !important;
+    border: 1px solid rgba(255,255,255,.16) !important;
+    box-shadow: 0 32px 110px rgba(0,0,0,.44), inset 0 1px 0 rgba(255,255,255,.14);
+  }
+  body.dashboard-polish .welcome-card h1 {
+    font-size: clamp(2rem, 4vw, 4rem);
+    letter-spacing: -.055em;
+  }
+  body.dashboard-polish .welcome-card p:last-child {
+    max-width: 34rem;
+    font-size: .98rem;
+  }
+  body.dashboard-polish .welcome-card .flex.items-center.gap-3 a,
+  body.dashboard-polish .welcome-card .flex.items-center.gap-3 button {
+    border-radius: 999px !important;
+    min-height: 44px;
+    box-shadow: 0 16px 42px rgba(0,0,0,.25), inset 0 1px 0 rgba(255,255,255,.16) !important;
+  }
+  body.dashboard-polish #skinglow-project-card,
+  body.dashboard-polish #skinglow-showcase-card {
+    border-radius: 28px !important;
+    background:
+      linear-gradient(135deg, rgba(255,255,255,.10), rgba(255,255,255,.025)),
+      radial-gradient(circle at 12% 0%, rgba(236,72,153,.24), transparent 20rem),
+      radial-gradient(circle at 95% 10%, rgba(45,212,191,.16), transparent 22rem) !important;
+    border-color: rgba(255,255,255,.13) !important;
+    box-shadow: 0 24px 90px rgba(0,0,0,.35), inset 0 1px 0 rgba(255,255,255,.10);
+  }
+  body.dashboard-polish #skinglow-project-card .grid > a,
+  body.dashboard-polish #skinglow-project-card .grid > button {
+    border-radius: 20px !important;
+    background: rgba(255,255,255,.065) !important;
+    border-color: rgba(255,255,255,.12) !important;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.08);
+  }
+  body.dashboard-polish #skinglow-project-card .grid > a:hover,
+  body.dashboard-polish #skinglow-project-card .grid > button:hover {
+    transform: translateY(-2px);
+    background: rgba(255,255,255,.095) !important;
+  }
+  body.dashboard-polish .stats-bar {
+    display: grid !important;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: .8rem;
+    background: transparent !important;
+    border: 0 !important;
+    overflow: visible !important;
+  }
+  body.dashboard-polish .stats-bar::before {
+    display: none;
+  }
+  body.dashboard-polish .stats-bar .stat-item {
+    position: relative;
+    overflow: hidden;
+    border-radius: 24px !important;
+    min-height: 138px;
+    background:
+      linear-gradient(145deg, rgba(255,255,255,.105), rgba(255,255,255,.026)) !important;
+    border: 1px solid rgba(255,255,255,.105) !important;
+    box-shadow: 0 22px 72px rgba(0,0,0,.28), inset 0 1px 0 rgba(255,255,255,.10) !important;
+  }
+  body.dashboard-polish .stats-bar .stat-item::after {
+    content: "";
+    position: absolute;
+    inset: auto 16px 14px 16px;
+    height: 4px;
+    border-radius: 999px;
+    background: linear-gradient(90deg, #2E5BFF, #69f6b8);
+    opacity: .78;
+  }
+  body.dashboard-polish .stats-bar .stat-item:hover {
+    transform: translateY(-4px);
+    border-color: rgba(105,246,184,.26) !important;
+  }
+  body.dashboard-polish .stats-bar .stat-item p[id^="stat-"] {
+    font-size: clamp(2.25rem, 4vw, 3.4rem) !important;
+    letter-spacing: -.055em;
+  }
+  body.dashboard-polish #dashboard-tabs {
+    position: sticky;
+    top: 76px;
+    z-index: 35;
+    padding: .55rem;
+    margin-inline: auto;
+    width: fit-content;
+    max-width: 100%;
+    border-radius: 999px;
+    background: rgba(8,9,18,.76);
+    border: 1px solid rgba(255,255,255,.10);
+    box-shadow: 0 18px 60px rgba(0,0,0,.34), inset 0 1px 0 rgba(255,255,255,.08);
+    backdrop-filter: blur(18px);
+  }
+  body.dashboard-polish .dash-tab {
+    border-radius: 999px !important;
+    background: transparent !important;
+    border-color: transparent !important;
+    color: rgba(255,255,255,.58) !important;
+  }
+  body.dashboard-polish .dash-tab.active-tab {
+    background: linear-gradient(135deg,#2E5BFF,#7c3aed) !important;
+    color: #fff !important;
+    box-shadow: 0 12px 30px rgba(46,91,255,.30) !important;
+  }
+  body.dashboard-polish .section-head {
+    border-left: 0 !important;
+    padding-left: 0 !important;
+  }
+  body.dashboard-polish .section-head h2 {
+    font-size: 1.35rem;
+    letter-spacing: -.035em;
+  }
+  body.dashboard-polish .section-head p {
+    color: rgba(255,255,255,.50) !important;
+  }
+  body.dashboard-polish #mini-apps-grid > *,
+  body.dashboard-polish #quizzes-grid > *,
+  body.dashboard-polish #landings-grid > *,
+  body.dashboard-polish #ebooks-grid > *,
+  body.dashboard-polish #installed-projects-grid > * {
+    border-radius: 24px !important;
+    background: linear-gradient(145deg, rgba(255,255,255,.08), rgba(255,255,255,.025)) !important;
+    border-color: rgba(255,255,255,.10) !important;
+    box-shadow: 0 18px 60px rgba(0,0,0,.24), inset 0 1px 0 rgba(255,255,255,.08);
+  }
+  @media (max-width: 860px) {
+    body.dashboard-polish main {
+      padding-top: 82px !important;
+    }
+    body.dashboard-polish .stats-bar {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+    body.dashboard-polish #dashboard-tabs {
+      width: 100%;
+      justify-content: flex-start;
+      border-radius: 24px;
+      overflow-x: auto;
+      flex-wrap: nowrap;
+    }
+  }
+  @media (max-width: 560px) {
+    body.dashboard-polish .stats-bar {
+      grid-template-columns: 1fr;
+    }
+    body.dashboard-polish .welcome-card .flex.items-center.gap-3 {
+      width: 100%;
+      flex-direction: column;
+      align-items: stretch;
+    }
+  }
+
 </style>
-<link rel="stylesheet" href="./luminous-polish.css?v=platform-polish1"/>
+<link rel="stylesheet" href="./luminous-polish.css?v=studio-pages2"/>
 </head>
-<body class="bg-surface text-on-surface min-h-screen">
+<body class="dashboard-polish studio-page bg-surface text-on-surface min-h-screen">
 
 <!-- ── TOP BAR ── -->
 <header class="fixed top-0 w-full z-50 flex items-center justify-between px-6 h-14 bg-[#0e0e0e] border-b border-white/5">
-  <a class="studio-brand text-base font-extrabold tracking-tight" href="./dashboard.html">
-    <span class="studio-logo-mark" aria-hidden="true"><video autoplay muted loop playsinline preload="metadata"><source src="https://euauqqamrkqwoytveljp.supabase.co/storage/v1/object/public/public-assets/Logo_Reveal_A_purple_and_dark_blue_nebula_swirls_with_7dBpmcoS.mp4" type="video/mp4"></video></span>
-    <span>Luminous Studio</span>
-  </a>
+  <a class="studio-brand text-base font-extrabold tracking-tight text-primary" href="./dashboard.html"><span class="studio-logo-mark" aria-hidden="true"><video autoplay muted loop playsinline preload="metadata"><source src="https://euauqqamrkqwoytveljp.supabase.co/storage/v1/object/public/public-assets/Logo_Reveal_A_purple_and_dark_blue_nebula_swirls_with_7dBpmcoS.mp4" type="video/mp4"></video></span><span>Luminous Studio<span class="studio-brand-sub">Workspace</span></span></a>
   <nav class="hidden md:flex items-center gap-5 text-sm">
     <a class="text-primary font-semibold" href="./dashboard.html">Dashboard</a>
     <a class="text-on-surface-variant hover:text-primary transition-colors" href="./generador-ia.html">Crear Quiz</a>
@@ -861,15 +1078,15 @@ function toggleFbGuide() {
 </div>
 
 <!-- ══════════════ MODAL: NUEVA MINI-APP ══════════════ -->
-<div id="modal-overlay" class="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 hidden" onclick="handleOverlayClick(event)">
-  <div id="modal-box" class="modal-premium rounded-2xl w-full max-w-lg mx-4 p-6 max-h-[calc(100vh-3rem)] overflow-y-auto">
+<div id="modal-overlay" class="fixed inset-0 z-[100] flex items-center justify-center bg-black/70 backdrop-blur-md hidden" onclick="handleOverlayClick(event)">
+  <div id="modal-box" class="modal-premium rounded-2xl w-full max-w-5xl mx-4 p-6 md:p-7 max-h-[calc(100vh-2rem)] overflow-y-auto">
     <div class="flex items-start justify-between mb-6">
       <div class="flex items-center gap-3">
         <div class="modal-hero-icon">
           <span class="material-symbols-outlined" style="font-size:22px;color:#a5b4fc;font-variation-settings:'FILL' 1">deployed_code</span>
         </div>
         <div>
-          <h3 class="text-lg font-extrabold leading-tight">Nueva Mini-App</h3>
+          <h3 class="text-lg font-extrabold leading-tight">Mini-App Builder</h3>
           <p class="text-[11px] text-on-surface-variant mt-0.5">Combina tipos para crear una experiencia única</p>
         </div>
       </div>

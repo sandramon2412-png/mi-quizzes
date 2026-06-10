@@ -50,17 +50,14 @@
   .active-num { border-color: #2E5BFF !important; color: #2E5BFF !important; background: rgba(46,91,255,0.08); }
   .tpl-q-card:hover { border-color: #2E5BFF; background: rgba(46,91,255,0.04); }
 </style>
-<link rel="stylesheet" href="./luminous-polish.css?v=platform-polish1"/>
+<link rel="stylesheet" href="./luminous-polish.css?v=studio-pages2"/>
 </head>
-<body class="bg-background text-on-background">
+<body class="studio-page bg-background text-on-background">
 
 <!-- TopAppBar -->
 <header class="fixed top-0 w-full z-50 flex justify-between items-center px-8 h-16 bg-[#0E0E0E] shadow-[0_40px_40px_-15px_rgba(46,91,255,0.08)]">
   <div class="flex items-center gap-8">
-    <a class="studio-brand text-xl font-bold tracking-tighter" href="./dashboard.html">
-      <span class="studio-logo-mark" aria-hidden="true"><video autoplay muted loop playsinline preload="metadata"><source src="https://euauqqamrkqwoytveljp.supabase.co/storage/v1/object/public/public-assets/Logo_Reveal_A_purple_and_dark_blue_nebula_swirls_with_7dBpmcoS.mp4" type="video/mp4"></video></span>
-      <span>Luminous Studio</span>
-    </a>
+  <a class="studio-brand text-xl font-bold tracking-tighter text-primary" href="./dashboard.html"><span class="studio-logo-mark" aria-hidden="true"><video autoplay muted loop playsinline preload="metadata"><source src="https://euauqqamrkqwoytveljp.supabase.co/storage/v1/object/public/public-assets/Logo_Reveal_A_purple_and_dark_blue_nebula_swirls_with_7dBpmcoS.mp4" type="video/mp4"></video></span><span>Luminous Studio<span class="studio-brand-sub">Quiz Builder</span></span></a>
     <nav class="hidden md:flex items-center gap-6">
       <a class="text-[#ADAAAA] hover:text-primary text-sm tracking-tight transition-colors" href="./dashboard.html">Projects</a>
       <a class="text-[#ADAAAA] hover:text-primary text-sm tracking-tight transition-colors" href="./plantillas.html">Templates</a>
@@ -534,7 +531,7 @@
 
       <!-- Save / Share -->
       <div id="action-buttons" class="grid grid-cols-1 sm:grid-cols-3 gap-3">
-        <button id="btn-save-bottom" onclick="saveQuiz()" class="py-3 bg-secondary font-bold text-sm rounded-xl hover:opacity-90 transition-all flex items-center justify-center gap-2" style="color:#00452d">
+        <button id="btn-save-bottom" onclick="saveQuiz()" class="py-3 font-extrabold text-sm rounded-xl transition-all flex items-center justify-center gap-2 text-white shadow-[0_18px_45px_rgba(91,99,255,.28)] hover:-translate-y-0.5 hover:shadow-[0_24px_55px_rgba(196,61,166,.34)]" style="background:linear-gradient(135deg,#315bff 0%,#7b61ff 48%,#df4f88 100%);">
           <span class="material-symbols-outlined text-base">save</span>Guardar Quiz
         </button>
         <button onclick="previewQuiz()" class="py-3 border border-primary/30 text-primary rounded-xl font-bold text-sm hover:bg-primary/5 transition-all flex items-center justify-center gap-2">
