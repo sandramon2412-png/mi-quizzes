@@ -851,12 +851,6 @@ function buildBrief() {
   if (price)    brief += `\nPrecio: ${price}`;
   if (bonuses)  brief += `\nBonos:\n${bonuses}`;
   if (stats)    brief += `\nEstadísticas reales: ${stats}`;
-
-  let brief = `Producto: ${product}`;
-  if (audience) brief += `\nAudiencia: ${audience}`;
-  if (price)    brief += `\nPrecio: ${price}`;
-  if (bonuses)  brief += `\nBonos:\n${bonuses}`;
-  if (stats)    brief += `\nEstadísticas reales: ${stats}`;
   if (extras)   brief += `\nDetalles extra: ${extras}`;
   if (imgMode === 'ai') {
     brief += `\nImágenes: GENERAR con Pollinations.ai usando https://image.pollinations.ai/prompt/[descripcion-en-ingles]?width=1200&height=800&nologo=true`;
