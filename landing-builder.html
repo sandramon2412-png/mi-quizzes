@@ -295,10 +295,18 @@
 
       <!-- Fondo del hero -->
       <label class="field-label">Fondo del hero</label>
-      <select id="fld-hero-bg-type" class="field-input mb-2" onchange="document.getElementById('hero-video-section').classList.toggle('hidden',this.value!=='video')">
+      <p class="text-[10px] text-on-surface-variant/50 mb-1">Para premium: elegí <strong class="text-on-surface/80">Video de fondo</strong> y seleccioná de la galería.</p>
+      <select id="fld-hero-bg-type" class="field-input mb-2" onchange="onHeroBgChange()">
         <option value="">Gradiente de la paleta (default)</option>
+        <option value="color">Color sólido</option>
+        <option value="image">Imagen de fondo</option>
         <option value="video">Video de fondo (loop)</option>
       </select>
+
+      <!-- Color / imagen URL input -->
+      <div id="hero-bg-value-section" class="hidden mb-2">
+        <input id="fld-hero-bg-value" type="text" class="field-input" placeholder="Color hex (#1a1a2e) o URL de imagen"/>
+      </div>
 
       <div id="hero-video-section" class="hidden">
         <input id="fld-hero-video-url" type="text" class="field-input mb-2" placeholder="URL de video .mp4 de fondo" oninput="_vtgSelectedId=null;renderVideoGallery()"/>
@@ -856,6 +864,16 @@ function buildBrief() {
     brief += `\nImágenes: dejar image_url vacío para que el usuario suba las suyas después`;
   } else {
     brief += `\nImágenes: NO incluir imágenes, dejar todos los image_url vacíos`;
+  }
+  const heroBgType  = document.getElementById('fld-hero-bg-type')?.value || '';
+  const heroBgValue = document.getElementById('fld-hero-bg-value')?.value.trim() || '';
+  if (heroBgType === 'video') {
+    const vurl = document.getElementById('fld-hero-video-url')?.value.trim();
+    if (vurl) brief += `\nHero background video: ${vurl}`;
+  } else if (heroBgType === 'image' && heroBgValue) {
+    brief += `\nHero background image URL: ${heroBgValue}`;
+  } else if (heroBgType === 'color' && heroBgValue) {
+    brief += `\nHero background color: ${heroBgValue}`;
   }
   if (prompt) brief += `\nINSTRUCCION EXACTA (máxima prioridad): ${prompt}`;
   if (refUrl) brief += `\nURL de referencia visual: ${refUrl}`;
@@ -2049,6 +2067,17 @@ function _videoThumb(v) {
   if (!v.url) return `https://images.pexels.com/videos/${v.id}/pictures/preview-0.jpg`;
   // CloudFront / Cloudinary personal videos → use video element with metadata preload
   return '';
+}
+
+function onHeroBgChange() {
+  const type = document.getElementById('fld-hero-bg-type').value;
+  const valueSec = document.getElementById('hero-bg-value-section');
+  const videoSec = document.getElementById('hero-video-section');
+  const valueInput = document.getElementById('fld-hero-bg-value');
+  valueSec.classList.toggle('hidden', type !== 'color' && type !== 'image');
+  videoSec.classList.toggle('hidden', type !== 'video');
+  if (type === 'color') valueInput.placeholder = 'Color hex, ej: #1a1a2e';
+  if (type === 'image') valueInput.placeholder = 'URL de imagen de fondo (JPG/PNG/WebP)';
 }
 
 function renderVideoGallery() {
