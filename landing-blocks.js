@@ -373,9 +373,11 @@ details.ld-faq{background:${isLight?'rgba(255,255,255,0.6)':'rgba(255,255,255,0.
 details.ld-faq[open]{background:${isLight?'rgba(255,255,255,0.85)':'rgba(255,255,255,0.06)'};box-shadow:0 8px 32px rgba(0,0,0,0.12)}
 details.ld-faq summary{padding:20px 24px;font-weight:700;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:space-between;list-style:none;user-select:none}
 details.ld-faq summary::-webkit-details-marker{display:none}
-details.ld-faq summary::after{content:'▾';font-size:20px;opacity:0.45;transition:transform 0.3s cubic-bezier(.34,1.56,.64,1)}
-details.ld-faq[open] summary::after{transform:rotate(180deg)}
-details.ld-faq .faq-body{padding:0 24px 22px;color:${muted};font-size:15px;line-height:1.8}
+details.ld-faq summary:hover{background:rgba(${_hexToRgb(pal.from)},0.06);border-radius:16px}
+details.ld-faq summary::after{content:'▾';font-size:22px;color:${pal.from};opacity:0.7;transition:transform 0.35s cubic-bezier(.34,1.56,.64,1),opacity 0.2s}
+details.ld-faq[open] summary::after{transform:rotate(180deg);opacity:1}
+details.ld-faq .faq-body{padding:0 24px 22px;color:${muted};font-size:15px;line-height:1.8;animation:faqOpen 0.25s ease}
+@keyframes faqOpen{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:none}}
 
 /* Animations */
 @keyframes fadeUp{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:none}}
@@ -595,7 +597,9 @@ function _renderNav(data, pal) {
   return `
 <nav id="ld-nav" style="position:sticky;top:0;z-index:100;backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-bottom:1px solid ${_borderCol(pal)}">
   <div class="ld-inner" style="height:64px;display:flex;align-items:center;gap:20px;min-width:0">
-    <div style="font-weight:800;font-size:18px;flex-shrink:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;${_gradText(pal)}">${_e(data.logo || 'Mi Brand')}</div>
+    ${data.logo_img
+      ? `<img src="${_e(data.logo_img)}" alt="${_e(data.logo||'Logo')}" style="height:36px;max-width:160px;object-fit:contain;flex-shrink:1">`
+      : `<div style="font-weight:800;font-size:18px;flex-shrink:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;${_gradText(pal)}">${_e(data.logo || 'Mi Brand')}</div>`}
     <div class="ld-nav-links" style="flex:1;display:flex;gap:24px;justify-content:center;min-width:0">${links}</div>
     <button id="ld-nav-ham" onclick="var m=document.getElementById('ld-nav-mobile');var open=m.style.display==='flex';m.style.display=open?'none':'flex';this.querySelector('.ham-label').textContent=open?'Menú':'Cerrar'" style="display:none;flex-direction:row;align-items:center;gap:5px;padding:8px 12px;background:${_cardBg(pal)};border:1px solid ${_borderCol(pal)};border-radius:10px;cursor:pointer;flex-shrink:0;white-space:nowrap">
       <div style="display:flex;flex-direction:column;gap:3px;width:15px;flex-shrink:0">
@@ -1181,7 +1185,8 @@ function buildDefaultBlocks(brief) {
 // ──────────────────────────────────────────────────────────
 const BLOCK_FIELDS = {
   nav: [
-    { key: 'logo', label: 'Nombre / logo', type: 'text' },
+    { key: 'logo', label: 'Nombre del brand (si no hay imagen)', type: 'text' },
+    { key: 'logo_img', label: 'Imagen del logo (URL o subir)', type: 'image' },
     { key: 'links', label: 'Links de navegación (uno por línea)', type: 'list-simple' },
     { key: 'cta_text', label: 'Texto del botón CTA', type: 'text' },
     { key: 'cta_href', label: 'URL del botón CTA', type: 'text' },
