@@ -2122,11 +2122,15 @@ function renderVideoGallery() {
     : VIDEO_TEMPLATES.filter(v => v.category === _vtgActiveCat);
   grid.innerHTML = filtered.map(v => {
     const isSel = _vtgSelectedId === v.id;
-    const thumb = _videoThumb(v);
-    const fallbackPoster = `https://picsum.photos/seed/${encodeURIComponent(v.label||v.id)}/400/225`;
-    const thumbHtml = thumb
-      ? `<img src="${thumb}" alt="${v.label}" style="width:100%;height:100%;object-fit:cover;border-radius:6px" loading="lazy">`
-      : `<video src="${_videoUrl(v)}" poster="${fallbackPoster}" muted style="width:100%;height:100%;object-fit:cover;border-radius:6px" preload="metadata" onloadedmetadata="this.currentTime=Math.min(2,this.duration*0.1||2)"></video>`;
+    const staticThumb = _videoThumb(v);   // Mux img OR Unsplash category img
+    const catPoster = _categoryThumb(v);  // Unsplash as poster fallback while video loads
+    // For Mux: use <img> (thumbnail is instant and precise)
+    // For all others (Pexels/CloudFront): use <video> with Unsplash poster so it looks good
+    // immediately, then onloadedmetadata seeks to 2s to show the real frame
+    const isMux = v.url && v.url.includes('stream.mux.com');
+    const thumbHtml = isMux
+      ? `<img src="${staticThumb}" alt="${v.label}" style="width:100%;height:100%;object-fit:cover;border-radius:6px" loading="lazy">`
+      : `<video src="${_videoUrl(v)}" poster="${catPoster || staticThumb}" muted style="width:100%;height:100%;object-fit:cover;border-radius:6px" preload="metadata" onloadedmetadata="this.currentTime=Math.min(2,(this.duration||20)*0.08)"></video>`;
     return `<div class="vtg-item" data-id="${v.id}" onclick="selectVideo('${v.id}')"
       onmouseenter="hoverVideo(this,true)"
       onmouseleave="hoverVideo(this,false)"
