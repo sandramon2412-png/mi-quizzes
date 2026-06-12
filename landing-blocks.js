@@ -597,9 +597,10 @@ function _renderNav(data, pal) {
   return `
 <nav id="ld-nav" style="position:sticky;top:0;z-index:100;backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-bottom:1px solid ${_borderCol(pal)}">
   <div class="ld-inner" style="height:64px;display:flex;align-items:center;gap:20px;min-width:0">
-    ${data.logo_img
-      ? `<img src="${_e(data.logo_img)}" alt="${_e(data.logo||'Logo')}" style="height:36px;max-width:160px;object-fit:contain;flex-shrink:1">`
-      : `<div style="font-weight:800;font-size:18px;flex-shrink:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;${_gradText(pal)}">${_e(data.logo || 'Mi Brand')}</div>`}
+    <div style="display:flex;align-items:center;gap:8px;flex-shrink:1;min-width:0;overflow:hidden">
+      ${data.logo_img ? `<img src="${_e(data.logo_img)}" alt="${_e(data.logo||'Logo')}" style="height:32px;max-width:120px;object-fit:contain;flex-shrink:0">` : ''}
+      <span style="font-weight:800;font-size:18px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;${_gradText(pal)}">${_e(data.logo || 'Mi Brand')}</span>
+    </div>
     <div class="ld-nav-links" style="flex:1;display:flex;gap:24px;justify-content:center;min-width:0">${links}</div>
     <button id="ld-nav-ham" onclick="var m=document.getElementById('ld-nav-mobile');var open=m.style.display==='flex';m.style.display=open?'none':'flex';this.querySelector('.ham-label').textContent=open?'Menú':'Cerrar'" style="display:none;flex-direction:row;align-items:center;gap:5px;padding:8px 12px;background:${_cardBg(pal)};border:1px solid ${_borderCol(pal)};border-radius:10px;cursor:pointer;flex-shrink:0;white-space:nowrap">
       <div style="display:flex;flex-direction:column;gap:3px;width:15px;flex-shrink:0">
@@ -682,7 +683,7 @@ function _renderParaQuien(data, pal) {
       <span style="color:#ef4444;flex-shrink:0">${_icon('cancel',20)}</span> ${_e(t)}
      </li>`).join('');
   return `
-<section id="ld-para_quien" class="ld-section" style="background:rgba(${_hexToRgb(pal.from)},0.04)">
+<section id="ld-para_quien" class="ld-section" style="background:rgba(${_hexToRgb(pal.from)},0.04);${_blockStyle(data)}">
   <div class="ld-inner">
     <div class="ld-g2">
       <div class="ld-card">
@@ -707,10 +708,10 @@ function _renderProblema(data, pal) {
       <p style="font-size:15px;line-height:1.65;color:${_fgMuted(pal)};padding-top:10px">${_e(item.text)}</p>
      </div>`).join('');
   return `
-<section id="ld-problema" class="ld-section" style="background:linear-gradient(to bottom,transparent,rgba(239,68,68,0.04) 30%,rgba(239,68,68,0.04) 70%,transparent)">
+<section id="ld-problema" class="ld-section" style="background:linear-gradient(to bottom,transparent,rgba(239,68,68,0.04) 30%,rgba(239,68,68,0.04) 70%,transparent);${_blockStyle(data)}">
   <div class="ld-inner">
     <div class="ld-center" style="margin-bottom:56px">
-      ${data.headline ? `<h2 class="ld-h2">${_safeHtml(data.headline)}</h2>` : ''}
+      ${data.headline ? `<h2 class="ld-h2" style="${_titleStyle(data)}">${_safeHtml(data.headline)}</h2>` : ''}
       ${data.subheadline ? `<p class="ld-body" style="margin-top:16px;max-width:640px">${_safeHtml(data.subheadline)}</p>` : ''}
     </div>
     <div class="ld-g2">${items}</div>
@@ -829,7 +830,7 @@ function _renderBonos(data, pal) {
       <div style="position:absolute;top:-20px;right:-20px;width:80px;height:80px;border-radius:50%;${_gradBg(pal)};opacity:0.08"></div>
      </div>`).join('');
   return `
-<section id="ld-bonos" class="ld-section" style="background:linear-gradient(180deg,rgba(${_hexToRgb(pal.from)},0.07) 0%,transparent 100%)">
+<section id="ld-bonos" class="ld-section" style="background:linear-gradient(180deg,rgba(${_hexToRgb(pal.from)},0.07) 0%,transparent 100%);${_blockStyle(data)}">
   <div class="ld-inner">
     <div class="ld-center" style="margin-bottom:56px">
       <div class="ld-section-tag">${_icon('workspace_premium',16)} <span>Bonos exclusivos</span></div>
@@ -846,7 +847,7 @@ function _renderStack(data, pal) {
     `<tr><td class="ld-table-name">${_icon('check',18,pal.from)} ${_e(item.name||item.label)}</td><td class="ld-table-val">${_e(item.value)}</td></tr>`
   ).join('');
   return `
-<section id="ld-stack" class="ld-section-sm" style="background:rgba(255,255,255,0.02)">
+<section id="ld-stack" class="ld-section-sm" style="background:rgba(255,255,255,0.02);${_blockStyle(data)}">
   <div class="ld-inner">
     <div class="ld-card" style="max-width:680px;margin:0 auto;padding:40px">
       <h2 class="ld-h3" style="margin-bottom:32px;text-align:center">${_e(data.headline||'Todo lo que recibís hoy:')}</h2>
@@ -869,7 +870,7 @@ function _renderStack(data, pal) {
 
 function _renderGarantia(data, pal) {
   return `
-<section id="ld-garantia" class="ld-section-sm">
+<section id="ld-garantia" class="ld-section-sm" style="${_blockStyle(data)}">
   <div class="ld-inner">
     <div class="ld-card ld-center" style="max-width:680px;margin:0 auto;padding:52px 40px;background:rgba(34,197,94,0.04);border-color:rgba(34,197,94,0.15)">
       <div style="width:80px;height:80px;border-radius:50%;background:rgba(34,197,94,0.12);display:flex;align-items:center;justify-content:center;margin-bottom:24px">
@@ -891,7 +892,7 @@ function _renderFaq(data, pal) {
       <div class="faq-body">${_e(item.answer)}</div>
      </details>`).join('');
   return `
-<section id="ld-faq" class="ld-section" style="background:rgba(${_hexToRgb(pal.from)},0.03)">
+<section id="ld-faq" class="ld-section" style="background:rgba(${_hexToRgb(pal.from)},0.03);${_blockStyle(data)}">
   <div class="ld-inner">
     <div class="ld-center" style="margin-bottom:48px">
       <h2 class="ld-h2">${_safeHtml(data.headline||'Preguntas frecuentes')}</h2>
@@ -904,7 +905,7 @@ function _renderFaq(data, pal) {
 function _renderCtaFinal(data, pal) {
   const isDark = pal.mode !== 'light';
   return `
-<section id="ld-cta_final" class="ld-section ld-aurora" style="overflow:hidden;position:relative">
+<section id="ld-cta_final" class="ld-section ld-aurora" style="overflow:hidden;position:relative;${_blockStyle(data)}">
   <div style="position:absolute;inset:0;background:radial-gradient(ellipse 80% 60% at 50% 50%,rgba(${_hexToRgb(pal.from)},${isDark?'0.35':'0.18'}) 0%,transparent 70%);pointer-events:none"></div>
   <div class="ld-inner ld-center" style="position:relative;z-index:2">
     ${data.urgency ? `<div style="display:inline-flex;align-items:center;gap:8px;padding:8px 18px;border-radius:999px;background:rgba(239,68,68,0.14);border:1px solid rgba(239,68,68,0.25);font-size:13px;font-weight:700;color:#f87171;margin-bottom:24px">${_icon('timer',16,'#f87171')} ${_e(data.urgency)}</div>` : ''}
@@ -925,7 +926,7 @@ function _renderFooter(data, pal) {
     `<a href="${_e(l.href||'#')}" style="font-size:13px;color:${_fgDim(pal)};transition:color 0.2s" onmouseover="this.style.color='rgba(255,255,255,0.7)'" onmouseout="this.style.color='rgba(255,255,255,0.4)'">${_e(l.text)}</a>`
   ).join('');
   return `
-<footer id="ld-footer" style="border-top:1px solid rgba(255,255,255,0.07);padding:48px 0 32px">
+<footer id="ld-footer" style="border-top:1px solid rgba(255,255,255,0.07);padding:48px 0 32px;${_blockStyle(data)}">
   <div class="ld-inner">
     <div style="display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:20px;margin-bottom:24px">
       <div>
@@ -954,7 +955,7 @@ function _renderImagen(data, pal) {
   // natural: image shows at its own size (no forced ratio, no crop)
   if (sz === 'natural') {
     return `
-<section id="ld-imagen-${Math.random().toString(36).slice(2,5)}" class="ld-section-sm">
+<section id="ld-imagen-${Math.random().toString(36).slice(2,5)}" class="ld-section-sm" style="${_blockStyle(data)}">
   <div class="ld-inner" style="display:flex;flex-direction:column;align-items:center">
     ${data.title ? `<h2 class="ld-h2" style="text-align:center;margin-bottom:16px">${_e(data.title)}</h2>` : ''}
     ${data.subtitle ? `<p class="ld-body" style="text-align:center;margin-bottom:32px;max-width:700px">${_e(data.subtitle)}</p>` : ''}
@@ -968,7 +969,7 @@ function _renderImagen(data, pal) {
   const w  = wMap[sz]  || '100%';
   const ar = arMap[sz] || '16/7';
   return `
-<section id="ld-imagen-${Math.random().toString(36).slice(2,5)}" class="ld-section-sm">
+<section id="ld-imagen-${Math.random().toString(36).slice(2,5)}" class="ld-section-sm" style="${_blockStyle(data)}">
   <div class="ld-inner">
     ${data.title ? `<h2 class="ld-h2" style="text-align:center;margin-bottom:16px">${_e(data.title)}</h2>` : ''}
     ${data.subtitle ? `<p class="ld-body" style="text-align:center;margin-bottom:32px;max-width:700px;margin-left:auto;margin-right:auto">${_e(data.subtitle)}</p>` : ''}
@@ -1001,7 +1002,7 @@ function _renderGaleria(data, pal) {
     </div>`;
   }).join('');
   return `
-<section id="ld-galeria-${Math.random().toString(36).slice(2,5)}" class="ld-section-sm">
+<section id="ld-galeria-${Math.random().toString(36).slice(2,5)}" class="ld-section-sm" style="${_blockStyle(data)}">
   <div class="ld-inner">
     ${data.title ? `<h2 class="ld-h2" style="text-align:center;margin-bottom:12px">${_e(data.title)}</h2>` : ''}
     ${data.subtitle ? `<p class="ld-body" style="text-align:center;margin-bottom:40px;max-width:640px;margin-left:auto;margin-right:auto">${_e(data.subtitle)}</p>` : ''}

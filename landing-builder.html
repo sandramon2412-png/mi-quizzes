@@ -647,7 +647,6 @@ function setBlockStyleBg(idx, val) {
 }
 
 function fmtField(btn, action) {
-  // Find nearest textarea or input[data-key] from btn's parent hierarchy
   let el = null;
   let p = btn.parentElement;
   while (p && !el) {
@@ -666,27 +665,58 @@ function fmtField(btn, action) {
   }
 
   const start = el.selectionStart;
-  const end = el.selectionEnd;
+  const end   = el.selectionEnd;
   const selected = val.slice(start, end);
-  if (!selected) return;
+  if (!selected.trim()) return;
 
-  let wrapped = selected;
-  if (action === 'b') wrapped = '<strong>' + selected + '</strong>';
-  else if (action === 'i') wrapped = '<em>' + selected + '</em>';
-  else if (action === 'color') wrapped = '<span style="color:' + btn.value + '">' + selected + '</span>';
-  else if (action === 'font') {
-    if (!btn.value) return;
-    wrapped = '<span style="font-family:' + btn.value + '">' + selected + '</span>';
-    btn.value = '';
+  // Strip all existing span/strong/em tags from selected text, keep only raw content
+  function stripTags(s) {
+    let r = s, prev;
+    do { prev = r; r = r.replace(/<\/?(?:span|strong|em)[^>]*>/gi, ''); } while (r !== prev);
+    return r;
   }
-  else if (action === 'size') {
+
+  // Extract existing inline styles from the outermost <span style="..."> wrapping the full selection
+  function outerStyle(s) {
+    const m = s.match(/^<span\s+style="([^"]*)"[^>]*>[\s\S]*<\/span>$/);
+    return m ? m[1] : '';
+  }
+
+  // Merge a CSS property into a style string (replaces existing value of same prop)
+  function mergeCss(existing, prop, value) {
+    const cleaned = existing.replace(new RegExp(prop + '\\s*:[^;]+;?\\s*', 'g'), '').replace(/;\s*$/, '').trim();
+    return (cleaned ? cleaned + ';' : '') + prop + ':' + value;
+  }
+
+  const cleanText = stripTags(selected);
+  let existing = outerStyle(selected.trim());
+
+  let wrapped;
+  if (action === 'b') {
+    wrapped = '<strong>' + cleanText + '</strong>';
+  } else if (action === 'i') {
+    wrapped = '<em>' + cleanText + '</em>';
+  } else if (action === 'color') {
+    existing = mergeCss(existing, 'color', btn.value);
+    wrapped = '<span style="' + existing + '">' + cleanText + '</span>';
+  } else if (action === 'font') {
     if (!btn.value) return;
-    wrapped = '<span style="font-size:' + btn.value + '">' + selected + '</span>';
+    existing = mergeCss(existing, 'font-family', btn.value);
+    wrapped = '<span style="' + existing + '">' + cleanText + '</span>';
     btn.value = '';
+  } else if (action === 'size') {
+    if (!btn.value) return;
+    existing = mergeCss(existing, 'font-size', btn.value);
+    wrapped = '<span style="' + existing + '">' + cleanText + '</span>';
+    btn.value = '';
+  } else {
+    return;
   }
 
   el.value = val.slice(0, start) + wrapped + val.slice(end);
+  // Re-select the newly inserted text so the user can keep applying more formats
   el.setSelectionRange(start, start + wrapped.length);
+  el.focus();
   el.dispatchEvent(new Event('input'));
 }
 
