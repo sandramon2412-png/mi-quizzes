@@ -2057,8 +2057,11 @@ function _videoThumb(v) {
     const playbackId = v.url.replace('https://stream.mux.com/', '').replace('/high.mp4', '').replace('/low.mp4', '');
     return `https://image.mux.com/${playbackId}/thumbnail.jpg?time=2`;
   }
-  // All other videos (Pexels, CloudFront, Cloudinary) → use video element with preload="metadata"
-  // Pexels preview-0.jpg URLs are unreliable for many IDs; video element is more consistent
+  // Explicit thumb property
+  if (v.thumb) return v.thumb;
+  // Pexels (numeric id only) → picsum with video id as seed for unique stable image
+  if (!v.url && v.id) return `https://picsum.photos/seed/v${v.id}/400/225`;
+  // CloudFront / other URL videos → use video element with preload="metadata"
   return '';
 }
 
@@ -2082,9 +2085,10 @@ function renderVideoGallery() {
   grid.innerHTML = filtered.map(v => {
     const isSel = _vtgSelectedId === v.id;
     const thumb = _videoThumb(v);
+    const fallbackPoster = `https://picsum.photos/seed/${encodeURIComponent(v.label||v.id)}/400/225`;
     const thumbHtml = thumb
       ? `<img src="${thumb}" alt="${v.label}" style="width:100%;height:100%;object-fit:cover;border-radius:6px" loading="lazy">`
-      : `<video src="${_videoUrl(v)}#t=0.5" muted loop style="width:100%;height:100%;object-fit:cover;border-radius:6px" preload="metadata"></video>`;
+      : `<video src="${_videoUrl(v)}" poster="${fallbackPoster}" muted style="width:100%;height:100%;object-fit:cover;border-radius:6px" preload="metadata" onloadedmetadata="this.currentTime=Math.min(2,this.duration*0.1||2)"></video>`;
     return `<div class="vtg-item" data-id="${v.id}" onclick="selectVideo('${v.id}')"
       onmouseenter="hoverVideo(this,true)"
       onmouseleave="hoverVideo(this,false)"
