@@ -9,9 +9,9 @@
 <script src="https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.min.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
 <link href="https://fonts.googleapis.com/icon?family=Material+Symbols+Outlined" rel="stylesheet"/>
-<script src="./supabase-config.js?v=20260605b"></script>
-<script src="./app.js?v=20260605b"></script>
-<script src="./landing-blocks.js?v=20260605b"></script>
+<script src="./supabase-config.js?v=20260613a"></script>
+<script src="./app.js?v=20260613a"></script>
+<script src="./landing-blocks.js?v=20260613a"></script>
 <script>
   tailwind.config = {
     theme: {
@@ -717,7 +717,8 @@ function fmtField(btn, action) {
   // Re-select the newly inserted text so the user can keep applying more formats
   el.setSelectionRange(start, start + wrapped.length);
   el.focus();
-  el.dispatchEvent(new Event('input'));
+  // Update block data and re-render preview without rebuilding the field editor
+  _applyFieldToPreview(el);
 }
 
 function setBlockStyle(idx, key, val, btn) {
@@ -911,6 +912,8 @@ function buildBrief() {
 function renderPreview() {
   if (!landing || !landing.blocks) return;
   const frame = document.getElementById('preview-frame');
+  // Preserve scroll position so the user stays on the section they're editing
+  const savedScroll = (() => { try { return frame.contentWindow?.scrollY || 0; } catch(e) { return 0; } })();
   const _palRaw = window._palById ? window._palById(landing.palette || 'blue-purple') : null;
   const _palAdj = _palRaw ? applyIntensity(_palRaw) : null;
   const _font = (landing.settings && landing.settings.font) || 'jakarta';
@@ -919,7 +922,11 @@ function renderPreview() {
     : renderLandingFromBlocks(landing.blocks, landing.palette || 'blue-purple', null, null, _font, landing.settings);
   // Inject a script that intercepts anchor clicks so preview links don't navigate
   const navGuard = '<scr' + 'ipt>document.addEventListener("click",function(e){var a=e.target.closest("a");if(!a)return;var h=a.getAttribute("href")||"";if(h.startsWith("#")){e.preventDefault();var t=document.querySelector(h);if(t)t.scrollIntoView({behavior:"smooth"});}else if(h&&!h.startsWith("javascript")){e.preventDefault();}},true);</scr' + 'ipt>';
-  html = html.replace('</body>', navGuard + '</body>');
+  // Restore scroll after load
+  const scrollScript = savedScroll > 20
+    ? `<scr` + `ipt>window.addEventListener('load',function(){window.scrollTo(0,${savedScroll});});</scr` + `ipt>`
+    : '';
+  html = html.replace('</body>', navGuard + scrollScript + '</body>');
   frame.srcdoc = html;
   frame.classList.remove('hidden');
   document.getElementById('preview-placeholder').classList.add('hidden');
@@ -2061,6 +2068,17 @@ async function regenAll() {
   document.getElementById('palette-name-lbl').textContent = _p ? _p.name : '';
 
   await generateLanding();
+}
+
+// Lightweight update: saves one field to block.data and re-renders preview only
+// Used by fmtField and other inline edits — does NOT rebuild the field editor
+function _applyFieldToPreview(el) {
+  if (activeBlockIdx < 0 || !landing) return;
+  const block = landing.blocks[activeBlockIdx];
+  const key = el.dataset.key;
+  if (key) block.data[key] = el.value;
+  renderPreview();
+  autosave();
 }
 
 function saveActiveBlock() {
