@@ -242,19 +242,24 @@ function _e(s) {
   return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
 
-// Allow safe inline HTML tags: strong, em, span (only style attr with color/font-size)
+// Allow safe inline HTML tags: strong, em, span (only style attr with color/font-size/font-family)
+// Also converts \n to <br> so users can add line breaks by pressing Enter in the textarea
 function _safeHtml(str) {
   if (!str) return '';
-  // If no HTML tags present, escape normally
-  if (!/<[a-z]/i.test(str)) return _e(str);
+  // Convert \n to <br> first (must happen before any escaping)
+  str = str.replace(/\n/g, '<br>');
+  // If no HTML tags present, escape normally (but keep the <br> we just added)
+  if (!/<[a-z]/i.test(str)) return str.replace(/&/g,'&amp;').replace(/<br>/g,'\x00BR\x00').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\x00BR\x00/g,'<br>');
   return str
     .replace(/&/g, '&amp;')
+    .replace(/<br>/g, '\x00BR\x00')
     .replace(/</g, '\x00LT\x00')
     .replace(/>/g, '\x00GT\x00')
+    .replace(/\x00BR\x00/g, '<br>')
     // Restore safe tags: strong, em (open/close)
-    .replace(/\x00LT\x00(\/?(strong|em))\x00GT\x00/g, '<$1>')
+    .replace(/\x00LT\x00(\/?(strong|em|b|i))\x00GT\x00/g, '<$1>')
     // Restore <span style="color:X / font-size:Xpx / font-family:X"> (and combinations)
-    .replace(/\x00LT\x00span style="((?:color:[#a-zA-Z0-9(),. %]+|font-size:\d+(?:\.\d+)?px|font-family:[^"]+)(?:;(?:color:[#a-zA-Z0-9(),. %]+|font-size:\d+(?:\.\d+)?px|font-family:[^"]+))*)"\x00GT\x00/g, '<span style="$1">')
+    .replace(/\x00LT\x00span style="((?:color:[#a-zA-Z0-9(),. %]+|font-size:\d+(?:\.\d+)?(?:px|em|rem)|font-family:[^"]+)(?:;(?:color:[#a-zA-Z0-9(),. %]+|font-size:\d+(?:\.\d+)?(?:px|em|rem)|font-family:[^"]+))*)"\x00GT\x00/g, '<span style="$1">')
     .replace(/\x00LT\x00\/span\x00GT\x00/g, '</span>')
     // Remaining unrecognized tags become escaped
     .replace(/\x00LT\x00/g, '&lt;')
@@ -1046,8 +1051,9 @@ function renderLandingFromBlocks(blocks, paletteId, customFrom, customTo, font, 
     to:   customTo   || palBase.to,
   };
   const htmlBlocks = (blocks || [])
-    .filter(b => b && !b.disabled && !b.hidden)
-    .map(b => renderBlock(b.type, b.data, pal))
+    .map((b, i) => b && !b.disabled && !b.hidden
+      ? `<div data-bi="${i}">${renderBlock(b.type, b.data, pal)}</div>`
+      : '')
     .join('\n');
   // Extra Google Fonts needed by per-block font overrides
   const blockFonts = [...new Set((blocks||[])
