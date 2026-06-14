@@ -9,9 +9,9 @@
 <script src="https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.min.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
 <link href="https://fonts.googleapis.com/icon?family=Material+Symbols+Outlined" rel="stylesheet"/>
-<script src="./supabase-config.js?v=20260613a"></script>
-<script src="./app.js?v=20260613a"></script>
-<script src="./landing-blocks.js?v=20260613a"></script>
+<script src="./supabase-config.js?v=20260614a"></script>
+<script src="./app.js?v=20260614a"></script>
+<script src="./landing-blocks.js?v=20260614a"></script>
 <script>
   tailwind.config = {
     theme: {
@@ -647,6 +647,7 @@ function setBlockStyleBg(idx, val) {
 }
 
 function fmtField(btn, action) {
+  // Find the closest textarea/input with data-key
   let el = null;
   let p = btn.parentElement;
   while (p && !el) {
@@ -656,68 +657,51 @@ function fmtField(btn, action) {
   }
   if (!el) return;
 
-  const val = el.value;
-
-  if (action === 'clear') {
-    el.value = val.replace(/<[^>]+>/g, '');
-    el.dispatchEvent(new Event('input'));
-    return;
-  }
-
-  const start = el.selectionStart;
-  const end   = el.selectionEnd;
-  const selected = val.slice(start, end);
-  if (!selected.trim()) return;
-
-  // Strip all existing span/strong/em tags from selected text, keep only raw content
-  function stripTags(s) {
+  // Strip ALL format tags to get the raw plain text (preserves \n line breaks)
+  function stripFmt(s) {
     let r = s, prev;
-    do { prev = r; r = r.replace(/<\/?(?:span|strong|em)[^>]*>/gi, ''); } while (r !== prev);
+    do { prev = r; r = r.replace(/<\/?(?:span|strong|em|b|i)[^>]*>/gi, ''); } while (r !== prev);
     return r;
   }
 
-  // Extract existing inline styles from the outermost <span style="..."> wrapping the full selection
-  function outerStyle(s) {
-    const m = s.match(/^<span\s+style="([^"]*)"[^>]*>[\s\S]*<\/span>$/);
+  // Extract existing accumulated styles from the outermost span (if field starts with one)
+  function getStyles(s) {
+    const m = s.trim().match(/^<span\s+style="([^"]*)"[^>]*>[\s\S]*<\/span>$/);
     return m ? m[1] : '';
   }
 
-  // Merge a CSS property into a style string (replaces existing value of same prop)
+  // Merge/replace a single CSS property in a style string
   function mergeCss(existing, prop, value) {
     const cleaned = existing.replace(new RegExp(prop + '\\s*:[^;]+;?\\s*', 'g'), '').replace(/;\s*$/, '').trim();
     return (cleaned ? cleaned + ';' : '') + prop + ':' + value;
   }
 
-  const cleanText = stripTags(selected);
-  let existing = outerStyle(selected.trim());
+  const plain = stripFmt(el.value);   // raw text with \n intact
+  const styles = getStyles(el.value); // accumulated CSS from previous formats
 
-  let wrapped;
-  if (action === 'b') {
-    wrapped = '<strong>' + cleanText + '</strong>';
+  let result;
+  if (action === 'clear') {
+    result = plain;
+  } else if (action === 'b') {
+    result = '<strong>' + (styles ? '<span style="' + styles + '">' + plain + '</span>' : plain) + '</strong>';
   } else if (action === 'i') {
-    wrapped = '<em>' + cleanText + '</em>';
+    result = '<em>' + (styles ? '<span style="' + styles + '">' + plain + '</span>' : plain) + '</em>';
   } else if (action === 'color') {
-    existing = mergeCss(existing, 'color', btn.value);
-    wrapped = '<span style="' + existing + '">' + cleanText + '</span>';
+    result = '<span style="' + mergeCss(styles, 'color', btn.value) + '">' + plain + '</span>';
   } else if (action === 'font') {
     if (!btn.value) return;
-    existing = mergeCss(existing, 'font-family', btn.value);
-    wrapped = '<span style="' + existing + '">' + cleanText + '</span>';
+    result = '<span style="' + mergeCss(styles, 'font-family', btn.value) + '">' + plain + '</span>';
     btn.value = '';
   } else if (action === 'size') {
     if (!btn.value) return;
-    existing = mergeCss(existing, 'font-size', btn.value);
-    wrapped = '<span style="' + existing + '">' + cleanText + '</span>';
+    result = '<span style="' + mergeCss(styles, 'font-size', btn.value) + '">' + plain + '</span>';
     btn.value = '';
   } else {
     return;
   }
 
-  el.value = val.slice(0, start) + wrapped + val.slice(end);
-  // Re-select the newly inserted text so the user can keep applying more formats
-  el.setSelectionRange(start, start + wrapped.length);
+  el.value = result;
   el.focus();
-  // Update block data and re-render preview without rebuilding the field editor
   _applyFieldToPreview(el);
 }
 
@@ -1021,6 +1005,18 @@ function openBlockEditor(idx) {
   document.getElementById('rp-title').textContent = BLOCK_LABELS[block.type] || block.type;
 
   buildFieldEditor(block, idx);
+
+  // Scroll the preview iframe to the selected section
+  _scrollPreviewToBlock(idx);
+}
+
+function _scrollPreviewToBlock(idx) {
+  try {
+    const frame = document.getElementById('preview-frame');
+    if (!frame || !frame.contentWindow) return;
+    const el = frame.contentDocument.querySelector('[data-bi="' + idx + '"]');
+    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  } catch(e) {}
 }
 
 function buildFieldEditor(block, idx) {
