@@ -9,9 +9,9 @@
 <script src="https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.min.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
 <link href="https://fonts.googleapis.com/icon?family=Material+Symbols+Outlined" rel="stylesheet"/>
-<script src="./supabase-config.js?v=20260614a"></script>
-<script src="./app.js?v=20260614a"></script>
-<script src="./landing-blocks.js?v=20260614a"></script>
+<script src="./supabase-config.js?v=20260616a"></script>
+<script src="./app.js?v=20260616a"></script>
+<script src="./landing-blocks.js?v=20260616a"></script>
 <script>
   tailwind.config = {
     theme: {
@@ -61,6 +61,10 @@
     transition:border-color .15s,background .15s;
   }
   .field-input::placeholder{color:rgba(255,255,255,.28) !important;}
+  /* Rich-text contentEditable editor */
+  .rt-edit{min-height:38px;white-space:pre-wrap;word-break:break-word;line-height:1.4;overflow-y:auto;max-height:220px;cursor:text;}
+  .rt-edit:empty:before{content:attr(data-placeholder);color:rgba(255,255,255,.28);pointer-events:none;}
+  .rt-edit:focus{border-color:#2E5BFF !important;background:#131316 !important;box-shadow:0 0 0 3px rgba(46,91,255,.12) !important;}
   .field-input:focus{border-color:#2E5BFF !important;background:#131316 !important;box-shadow:0 0 0 3px rgba(46,91,255,.12) !important;}
   /* Autofill: Chrome paints inputs yellow/white by default — override */
   .field-input:-webkit-autofill,
@@ -646,62 +650,92 @@ function setBlockStyleBg(idx, val) {
   autosave();
 }
 
+// Remembers the last contentEditable that had focus + its selection range,
+// so toolbar clicks (which steal focus) still know what text to format.
+let _lastRtEl = null;
+let _lastRtRange = null;
+function _trackRtSelection(el) {
+  const sel = window.getSelection();
+  if (sel && sel.rangeCount && el.contains(sel.anchorNode)) {
+    _lastRtEl = el;
+    _lastRtRange = sel.getRangeAt(0).cloneRange();
+  }
+}
+
+// Wrap the current selection inside the editor with a styled <span> (or strong/em).
+// Works on partial selections, repeatedly, and shows the result visually — no raw code.
+function _wrapRtSelection(el, tag, styleProp, styleVal) {
+  el.focus();
+  const sel = window.getSelection();
+  // Restore the saved range if the click moved focus off the editor
+  if ((!sel.rangeCount || !el.contains(sel.anchorNode)) && _lastRtRange && _lastRtEl === el) {
+    sel.removeAllRanges();
+    sel.addRange(_lastRtRange);
+  }
+  if (!sel.rangeCount) return false;
+  const range = sel.getRangeAt(0);
+  if (range.collapsed) return false; // nothing selected
+
+  const node = tag === 'span' ? document.createElement('span') : document.createElement(tag);
+  if (styleProp) node.style[styleProp] = styleVal;
+  try {
+    range.surroundContents(node);
+  } catch (e) {
+    // Selection crosses element boundaries — extract + re-insert
+    const frag = range.extractContents();
+    node.appendChild(frag);
+    range.insertNode(node);
+  }
+  // Reselect the formatted content so the user can keep applying formats
+  const newRange = document.createRange();
+  newRange.selectNodeContents(node);
+  sel.removeAllRanges();
+  sel.addRange(newRange);
+  _lastRtEl = el;
+  _lastRtRange = newRange.cloneRange();
+  return true;
+}
+
 function fmtField(btn, action) {
-  // Find the closest textarea/input with data-key
+  // Find the contentEditable rich-text field this toolbar belongs to
   let el = null;
   let p = btn.parentElement;
   while (p && !el) {
-    const found = p.querySelector('textarea[data-key], input[type=text][data-key]');
+    const found = p.querySelector('.rt-edit[data-key]');
     if (found) { el = found; break; }
     p = p.parentElement;
   }
   if (!el) return;
 
-  // Strip ALL format tags to get the raw plain text (preserves \n line breaks)
-  function stripFmt(s) {
-    let r = s, prev;
-    do { prev = r; r = r.replace(/<\/?(?:span|strong|em|b|i)[^>]*>/gi, ''); } while (r !== prev);
-    return r;
-  }
-
-  // Extract existing accumulated styles from the outermost span (if field starts with one)
-  function getStyles(s) {
-    const m = s.trim().match(/^<span\s+style="([^"]*)"[^>]*>[\s\S]*<\/span>$/);
-    return m ? m[1] : '';
-  }
-
-  // Merge/replace a single CSS property in a style string
-  function mergeCss(existing, prop, value) {
-    const cleaned = existing.replace(new RegExp(prop + '\\s*:[^;]+;?\\s*', 'g'), '').replace(/;\s*$/, '').trim();
-    return (cleaned ? cleaned + ';' : '') + prop + ':' + value;
-  }
-
-  const plain = stripFmt(el.value);   // raw text with \n intact
-  const styles = getStyles(el.value); // accumulated CSS from previous formats
-
-  let result;
   if (action === 'clear') {
-    result = plain;
+    // Strip formatting from the selection (or whole field if nothing selected)
+    const sel = window.getSelection();
+    if (sel.rangeCount && el.contains(sel.anchorNode) && !sel.getRangeAt(0).collapsed) {
+      const range = sel.getRangeAt(0);
+      const text = range.toString();
+      range.deleteContents();
+      range.insertNode(document.createTextNode(text));
+    } else {
+      el.textContent = el.textContent; // flatten everything
+    }
   } else if (action === 'b') {
-    result = '<strong>' + (styles ? '<span style="' + styles + '">' + plain + '</span>' : plain) + '</strong>';
+    _wrapRtSelection(el, 'span', 'fontWeight', '700');
   } else if (action === 'i') {
-    result = '<em>' + (styles ? '<span style="' + styles + '">' + plain + '</span>' : plain) + '</em>';
+    _wrapRtSelection(el, 'span', 'fontStyle', 'italic');
   } else if (action === 'color') {
-    result = '<span style="' + mergeCss(styles, 'color', btn.value) + '">' + plain + '</span>';
+    _wrapRtSelection(el, 'span', 'color', btn.value);
   } else if (action === 'font') {
     if (!btn.value) return;
-    result = '<span style="' + mergeCss(styles, 'font-family', btn.value) + '">' + plain + '</span>';
+    _wrapRtSelection(el, 'span', 'fontFamily', btn.value);
     btn.value = '';
   } else if (action === 'size') {
     if (!btn.value) return;
-    result = '<span style="' + mergeCss(styles, 'font-size', btn.value) + '">' + plain + '</span>';
+    _wrapRtSelection(el, 'span', 'fontSize', btn.value);
     btn.value = '';
   } else {
     return;
   }
 
-  el.value = result;
-  el.focus();
   _applyFieldToPreview(el);
 }
 
@@ -1054,23 +1088,15 @@ function buildFieldEditor(block, idx) {
         + '<input type="color" value="#ffffff" title="Color del texto" onchange="fmtField(this,\'color\')" style="width:24px;height:24px;border:1px solid #3f3f46;border-radius:4px;background:none;cursor:pointer;padding:1px">'
         + '<button type="button" title="Quitar formato" onclick="fmtField(this,\'clear\')" style="height:24px;padding:0 6px;border-radius:4px;border:1px solid #3f3f46;background:transparent;color:#a1a1aa;font-size:10px;cursor:pointer">Sin formato</button>';
       wrap.appendChild(toolbar);
-      if (field.type === 'textarea') {
-        const ta = document.createElement('textarea');
-        ta.rows = 3;
-        ta.className = 'field-input';
-        ta.dataset.key = field.key;
-        ta.placeholder = field.placeholder || '';
-        ta.value = data[field.key] || '';
-        wrap.appendChild(ta);
-      } else {
-        const inp = document.createElement('input');
-        inp.type = 'text';
-        inp.className = 'field-input';
-        inp.dataset.key = field.key;
-        inp.placeholder = field.placeholder || '';
-        inp.value = data[field.key] || '';
-        wrap.appendChild(inp);
-      }
+      // Rich-text editor: contentEditable div shows formatted text directly (never raw HTML code)
+      const ce = document.createElement('div');
+      ce.className = 'field-input rt-edit';
+      ce.dataset.key = field.key;
+      ce.contentEditable = 'true';
+      ce.setAttribute('data-placeholder', field.placeholder || '');
+      if (field.type === 'textarea') ce.style.minHeight = '64px';
+      ce.innerHTML = data[field.key] || '';
+      wrap.appendChild(ce);
     } else if (field.type === 'image') {
       const currentUrl = data[field.key] || '';
       wrap.innerHTML = `
@@ -1404,7 +1430,7 @@ function buildFieldEditor(block, idx) {
 
   container.appendChild(styleCard);
 
-  // Wire real-time sync for all text/select inputs
+  // Wire real-time sync for all text/select inputs and rich-text editors
   setTimeout(function() {
     document.querySelectorAll('#rp-fields [data-key]').forEach(function(el) {
       if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') {
@@ -1416,6 +1442,19 @@ function buildFieldEditor(block, idx) {
           clearTimeout(el._rt);
           el._rt = setTimeout(function(){ renderPreview(); autosave(); }, 400);
         });
+      } else if (el.classList.contains('rt-edit')) {
+        // Rich-text contentEditable: sync innerHTML + remember selection for the toolbar
+        el.addEventListener('input', function() {
+          if (activeBlockIdx < 0 || !landing) return;
+          const b = landing.blocks[activeBlockIdx];
+          if (!b) return;
+          b.data[el.dataset.key] = el.innerHTML;
+          clearTimeout(el._rt);
+          el._rt = setTimeout(function(){ renderPreview(); autosave(); }, 400);
+        });
+        el.addEventListener('keyup', function(){ _trackRtSelection(el); });
+        el.addEventListener('mouseup', function(){ _trackRtSelection(el); });
+        el.addEventListener('blur', function(){ _trackRtSelection(el); });
       }
     });
   }, 0);
@@ -1547,7 +1586,9 @@ function collectBlockData(block) {
     const key = el.dataset.key;
     if (!key) return;
 
-    if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA' || el.tagName === 'SELECT') {
+    if (el.classList.contains('rt-edit')) {
+      data[key] = el.innerHTML;
+    } else if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA' || el.tagName === 'SELECT') {
       data[key] = el.value;
     } else if (el.classList.contains('sublist')) {
       const type = el.dataset.type;
@@ -2072,7 +2113,7 @@ function _applyFieldToPreview(el) {
   if (activeBlockIdx < 0 || !landing) return;
   const block = landing.blocks[activeBlockIdx];
   const key = el.dataset.key;
-  if (key) block.data[key] = el.value;
+  if (key) block.data[key] = el.isContentEditable ? el.innerHTML : el.value;
   renderPreview();
   autosave();
 }

@@ -242,28 +242,54 @@ function _e(s) {
   return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
 
-// Allow safe inline HTML tags: strong, em, span (only style attr with color/font-size/font-family)
-// Also converts \n to <br> so users can add line breaks by pressing Enter in the textarea
+// Sanitize rich text coming from the contentEditable editor.
+// Allows: <br>, <strong>/<em>/<b>/<i>, and <span style="..."> with a property whitelist.
+// Everything else (scripts, event handlers, unknown tags) is escaped.
 function _safeHtml(str) {
   if (!str) return '';
-  // Convert \n to <br> first (must happen before any escaping)
+  str = String(str);
+  // Plain text (no tags) → escape and turn newlines into <br>
+  if (!/<[a-z]/i.test(str)) {
+    return _e(str).replace(/\n/g, '<br>');
+  }
+  // contentEditable uses <div> for new lines — normalize to <br>
+  str = str.replace(/<div[^>]*>/gi, '<br>').replace(/<\/div>/gi, '');
   str = str.replace(/\n/g, '<br>');
-  // If no HTML tags present, escape normally (but keep the <br> we just added)
-  if (!/<[a-z]/i.test(str)) return str.replace(/&/g,'&amp;').replace(/<br>/g,'\x00BR\x00').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\x00BR\x00/g,'<br>');
-  return str
+
+  const ALLOWED = ['color','background-color','font-size','font-family','font-weight','font-style','text-decoration','font-variant','letter-spacing'];
+
+  str = str
     .replace(/&/g, '&amp;')
-    .replace(/<br>/g, '\x00BR\x00')
-    .replace(/</g, '\x00LT\x00')
-    .replace(/>/g, '\x00GT\x00')
+    .replace(/<br\s*\/?>/gi, '\x00BR\x00')
+    // strong / em / b / i (open & close)
+    .replace(/<(\/?)(?:strong|em|b|i)\b[^>]*>/gi, function(m, slash){
+      const t = m.match(/<\/?\s*([a-z]+)/i)[1].toLowerCase();
+      return '\x00T:' + slash + t + '\x00';
+    })
+    // span with style — keep only whitelisted, harmless CSS properties
+    .replace(/<span\b[^>]*style\s*=\s*"([^"]*)"[^>]*>/gi, function(m, style){
+      const clean = style.split(';').map(function(decl){
+        const i = decl.indexOf(':'); if (i < 0) return '';
+        const prop = decl.slice(0, i).trim().toLowerCase();
+        const val = decl.slice(i + 1).trim();
+        if (ALLOWED.indexOf(prop) < 0) return '';
+        if (/[<>"]|url\(|expression|javascript:/i.test(val)) return '';
+        return prop + ':' + val;
+      }).filter(Boolean).join(';');
+      return clean ? '\x00SPAN:' + clean + '\x00' : '\x00SPANOPEN\x00';
+    })
+    .replace(/<span\b[^>]*>/gi, '\x00SPANOPEN\x00')
+    .replace(/<\/span>/gi, '\x00/SPAN\x00')
+    // Escape anything left (unknown/unsafe tags)
+    .replace(/</g, '&lt;').replace(/>/g, '&gt;');
+
+  // Restore the safe tokens
+  return str
     .replace(/\x00BR\x00/g, '<br>')
-    // Restore safe tags: strong, em (open/close)
-    .replace(/\x00LT\x00(\/?(strong|em|b|i))\x00GT\x00/g, '<$1>')
-    // Restore <span style="color:X / font-size:Xpx / font-family:X"> (and combinations)
-    .replace(/\x00LT\x00span style="((?:color:[#a-zA-Z0-9(),. %]+|font-size:\d+(?:\.\d+)?(?:px|em|rem)|font-family:[^"]+)(?:;(?:color:[#a-zA-Z0-9(),. %]+|font-size:\d+(?:\.\d+)?(?:px|em|rem)|font-family:[^"]+))*)"\x00GT\x00/g, '<span style="$1">')
-    .replace(/\x00LT\x00\/span\x00GT\x00/g, '</span>')
-    // Remaining unrecognized tags become escaped
-    .replace(/\x00LT\x00/g, '&lt;')
-    .replace(/\x00GT\x00/g, '&gt;');
+    .replace(/\x00T:(\/?)([a-z]+)\x00/g, function(m, slash, t){ return '<' + slash + t + '>'; })
+    .replace(/\x00SPAN:([^\x00]*)\x00/g, function(m, s){ return '<span style="' + s + '">'; })
+    .replace(/\x00SPANOPEN\x00/g, '<span>')
+    .replace(/\x00\/SPAN\x00/g, '</span>');
 }
 function _gradBg(pal) {
   return `background:linear-gradient(135deg,${pal.from} 0%,${pal.to} 100%)`;
@@ -615,12 +641,12 @@ function _renderNav(data, pal) {
       </div>
       <span class="ham-label" style="font-size:12px;font-weight:700;color:${hamLineColor}">Menú</span>
     </button>
-    <a id="ld-nav-cta" href="${_e(data.cta_href||'#ld-cta_final')}" class="ld-btn" style="padding:10px 20px;font-size:13px;border-radius:10px;flex-shrink:0;${_gradBg(pal)}">${_e(data.cta_text||'Comenzar')}</a>
+    <a id="ld-nav-cta" href="${_e(data.cta_href||'#ld-cta_final')}" class="ld-btn" style="padding:10px 20px;font-size:13px;border-radius:10px;flex-shrink:0;${_gradBg(pal)}">${_safeHtml(data.cta_text||'Comenzar')}</a>
   </div>
 </nav>
 <div id="ld-nav-mobile" style="display:none;flex-direction:column;gap:0;background:${mobBg};border-bottom:1px solid ${_borderCol(pal)};padding:8px 0;position:sticky;top:64px;z-index:99">
   ${_arr(data.links).map(l => `<a href="${_navAnchor(l)}" onclick="document.getElementById('ld-nav-mobile').style.display='none'" style="display:block;padding:14px 24px;font-size:15px;font-weight:600;color:${_fgMuted(pal)};border-bottom:1px solid ${_borderCol(pal)}">${_e(l)}</a>`).join('')}
-  <div style="padding:12px 16px"><a href="${_e(data.cta_href||'#ld-cta_final')}" class="ld-btn" style="width:100%;justify-content:center;${_gradBg(pal)}">${_e(data.cta_text||'Comenzar')}</a></div>
+  <div style="padding:12px 16px"><a href="${_e(data.cta_href||'#ld-cta_final')}" class="ld-btn" style="width:100%;justify-content:center;${_gradBg(pal)}">${_safeHtml(data.cta_text||'Comenzar')}</a></div>
 </div>`;
 }
 
@@ -649,7 +675,7 @@ function _renderHero(data, pal) {
         <div style="display:flex">
           ${[0,1,2,3].map(i=>`<div style="width:32px;height:32px;border-radius:50%;${_gradBg(pal)};border:2px solid #09090b;margin-left:${i?-8:0}px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700">${String.fromCharCode(65+i)}</div>`).join('')}
         </div>
-        <span style="font-size:13px;color:${_fgMuted(pal)}"><strong style="color:#fff">${_e(data.social_proof_count)}</strong> ${_e(data.social_proof_label)}</span>
+        <span style="font-size:13px;color:${_fgMuted(pal)}"><strong style="color:#fff">${_safeHtml(data.social_proof_count)}</strong> ${_safeHtml(data.social_proof_label)}</span>
        </div>`
     : '';
   // mesh grid overlay for premium look
@@ -661,16 +687,16 @@ function _renderHero(data, pal) {
 <section id="ld-hero" style="padding:90px 0 72px;overflow:hidden;position:relative;${data.video_url ? '' : 'background-image:' + meshSvg + ';background-size:60px 60px;'}${_blockStyle(data)}">
   ${videoBg}
   <div class="ld-inner" style="position:relative;z-index:2">
-    ${data.badge ? `<div style="display:inline-flex;align-items:center;gap:8px;padding:7px 18px;border-radius:999px;${_gradBg(pal)};font-size:12px;font-weight:700;letter-spacing:0.06em;margin-bottom:32px;box-shadow:0 4px 20px rgba(${_hexToRgb(pal.from)},0.4)">${_e(data.badge)}</div>` : ''}
+    ${data.badge ? `<div style="display:inline-flex;align-items:center;gap:8px;padding:7px 18px;border-radius:999px;${_gradBg(pal)};font-size:12px;font-weight:700;letter-spacing:0.06em;margin-bottom:32px;box-shadow:0 4px 20px rgba(${_hexToRgb(pal.from)},0.4)">${_safeHtml(data.badge)}</div>` : ''}
     ${heroCols}
       <div style="${sz==='centrado'?'max-width:720px':'flex:1;min-width:0'}">
         <h1 class="ld-h1" style="margin-bottom:22px;${_titleStyle(data)}">${headline}</h1>
         <p class="ld-body" style="font-size:19px;margin-bottom:40px;max-width:580px">${_safeHtml(data.subheadline)}</p>
         <div style="display:flex;flex-wrap:wrap;gap:14px;align-items:center${sz==='centrado'?';justify-content:center':''}">
-          <a href="${_e(data.cta_href||'#ld-cta_final')}" class="ld-btn ld-btn-lg">${_icon('bolt',22,'#fff')} ${_e(data.cta_text||'Comenzar ahora')}</a>
+          <a href="${_e(data.cta_href||'#ld-cta_final')}" class="ld-btn ld-btn-lg">${_icon('bolt',22,'#fff')} ${_safeHtml(data.cta_text||'Comenzar ahora')}</a>
         </div>
         ${socialProof}
-        ${data.microcopy ? `<p class="ld-small" style="margin-top:16px">${_e(data.microcopy)}</p>` : ''}
+        ${data.microcopy ? `<p class="ld-small" style="margin-top:16px">${_safeHtml(data.microcopy)}</p>` : ''}
       </div>
       ${imgCol ? imgCol.replace('border-radius:24px', `border-radius:24px;box-shadow:0 32px 80px rgba(${_hexToRgb(pal.from)},0.25),0 8px 32px rgba(0,0,0,0.5)`) : ''}
     </div>
@@ -692,11 +718,11 @@ function _renderParaQuien(data, pal) {
   <div class="ld-inner">
     <div class="ld-g2">
       <div class="ld-card">
-        <h3 class="ld-h3" style="margin-bottom:20px">${_e(data.for_headline||'Esta formación ES para vos si…')}</h3>
+        <h3 class="ld-h3" style="margin-bottom:20px">${_safeHtml(data.for_headline||'Esta formación ES para vos si…')}</h3>
         <ul style="list-style:none">${forItems}</ul>
       </div>
       <div class="ld-card" style="background:rgba(239,68,68,0.04);border-color:rgba(239,68,68,0.15)">
-        <h3 class="ld-h3" style="margin-bottom:20px;color:${_fgMuted(pal)}">${_e(data.not_for_headline||'NO es para vos si…')}</h3>
+        <h3 class="ld-h3" style="margin-bottom:20px;color:${_fgMuted(pal)}">${_safeHtml(data.not_for_headline||'NO es para vos si…')}</h3>
         <ul style="list-style:none">${notForItems}</ul>
       </div>
     </div>
@@ -920,8 +946,8 @@ function _renderCtaFinal(data, pal) {
       ${data.original_price ? `<p style="font-size:15px;text-decoration:line-through;color:${_fgDim(pal)}">Antes: ${_e(data.original_price)}</p>` : ''}
       ${data.price ? `<div class="ld-h2" style="${_gradText(pal)}">${_e(data.price)}</div>` : ''}
     </div>
-    <a href="${_e(data.cta_href||'#')}" class="ld-btn ld-btn-lg" style="width:auto;font-size:20px;padding:22px 52px">${_icon('bolt',24,'#fff')} ${_e(data.cta_text||'Comenzar ahora')}</a>
-    ${data.microcopy ? `<p class="ld-small" style="margin-top:16px">${_e(data.microcopy)}</p>` : ''}
+    <a href="${_e(data.cta_href||'#')}" class="ld-btn ld-btn-lg" style="width:auto;font-size:20px;padding:22px 52px">${_icon('bolt',24,'#fff')} ${_safeHtml(data.cta_text||'Comenzar ahora')}</a>
+    ${data.microcopy ? `<p class="ld-small" style="margin-top:16px">${_safeHtml(data.microcopy)}</p>` : ''}
   </div>
 </section>`;
 }
@@ -962,8 +988,8 @@ function _renderImagen(data, pal) {
     return `
 <section id="ld-imagen-${Math.random().toString(36).slice(2,5)}" class="ld-section-sm" style="${_blockStyle(data)}">
   <div class="ld-inner" style="display:flex;flex-direction:column;align-items:center">
-    ${data.title ? `<h2 class="ld-h2" style="text-align:center;margin-bottom:16px">${_e(data.title)}</h2>` : ''}
-    ${data.subtitle ? `<p class="ld-body" style="text-align:center;margin-bottom:32px;max-width:700px">${_e(data.subtitle)}</p>` : ''}
+    ${data.title ? `<h2 class="ld-h2" style="text-align:center;margin-bottom:16px">${_safeHtml(data.title)}</h2>` : ''}
+    ${data.subtitle ? `<p class="ld-body" style="text-align:center;margin-bottom:32px;max-width:700px">${_safeHtml(data.subtitle)}</p>` : ''}
     ${data.image_url ? `<img src="${_e(data.image_url)}" alt="${_e(data.caption||'')}" style="max-width:100%;height:auto;border-radius:16px;box-shadow:0 16px 48px rgba(0,0,0,0.45);display:block" onerror="this.style.display='none'"/>` : `<div style="width:300px;height:200px;background:rgba(255,255,255,0.05);border-radius:16px;display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,0.3);font-size:14px">Sin imagen</div>`}
     ${data.caption ? `<p style="text-align:center;margin-top:12px;font-size:13px;color:${_fgDim(pal)}">${_e(data.caption)}</p>` : ''}
   </div>
@@ -976,8 +1002,8 @@ function _renderImagen(data, pal) {
   return `
 <section id="ld-imagen-${Math.random().toString(36).slice(2,5)}" class="ld-section-sm" style="${_blockStyle(data)}">
   <div class="ld-inner">
-    ${data.title ? `<h2 class="ld-h2" style="text-align:center;margin-bottom:16px">${_e(data.title)}</h2>` : ''}
-    ${data.subtitle ? `<p class="ld-body" style="text-align:center;margin-bottom:32px;max-width:700px;margin-left:auto;margin-right:auto">${_e(data.subtitle)}</p>` : ''}
+    ${data.title ? `<h2 class="ld-h2" style="text-align:center;margin-bottom:16px">${_safeHtml(data.title)}</h2>` : ''}
+    ${data.subtitle ? `<p class="ld-body" style="text-align:center;margin-bottom:32px;max-width:700px;margin-left:auto;margin-right:auto">${_safeHtml(data.subtitle)}</p>` : ''}
     <div style="margin:0 auto;width:${w};border-radius:20px;overflow:hidden;box-shadow:0 24px 64px rgba(0,0,0,0.5)">
       ${data.image_url ? `<img src="${_e(data.image_url)}" alt="${_e(data.caption||'')}" style="width:100%;aspect-ratio:${ar};object-fit:cover;display:block" onerror="this.style.display='none'"/>` : `<div style="width:100%;aspect-ratio:${ar};background:rgba(255,255,255,0.05);display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,0.3);font-size:14px">Sin imagen</div>`}
     </div>
@@ -1009,8 +1035,8 @@ function _renderGaleria(data, pal) {
   return `
 <section id="ld-galeria-${Math.random().toString(36).slice(2,5)}" class="ld-section-sm" style="${_blockStyle(data)}">
   <div class="ld-inner">
-    ${data.title ? `<h2 class="ld-h2" style="text-align:center;margin-bottom:12px">${_e(data.title)}</h2>` : ''}
-    ${data.subtitle ? `<p class="ld-body" style="text-align:center;margin-bottom:40px;max-width:640px;margin-left:auto;margin-right:auto">${_e(data.subtitle)}</p>` : ''}
+    ${data.title ? `<h2 class="ld-h2" style="text-align:center;margin-bottom:12px">${_safeHtml(data.title)}</h2>` : ''}
+    ${data.subtitle ? `<p class="ld-body" style="text-align:center;margin-bottom:40px;max-width:640px;margin-left:auto;margin-right:auto">${_safeHtml(data.subtitle)}</p>` : ''}
     <div style="margin:0 auto;width:${gw}">
       <div style="display:grid;grid-template-columns:repeat(${cols},1fr);gap:16px;align-items:start">${imgHtml}</div>
     </div>
