@@ -242,54 +242,91 @@ function _e(s) {
   return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
 
-// Sanitize rich text coming from the contentEditable editor.
-// Allows: <br>, <strong>/<em>/<b>/<i>, and <span style="..."> with a property whitelist.
-// Everything else (scripts, event handlers, unknown tags) is escaped.
+// Sanitize rich text from the contentEditable editor (execCommand output).
+// Allows: <br>, <b>/<i>/<strong>/<em>, <span style="safe-props">, <font color/face>.
+// Normalizes <font> → <span style> for consistent rendering.
+// Escapes everything else (scripts, event handlers, unknown tags).
 function _safeHtml(str) {
   if (!str) return '';
   str = String(str);
-  // Plain text (no tags) → escape and turn newlines into <br>
-  if (!/<[a-z]/i.test(str)) {
-    return _e(str).replace(/\n/g, '<br>');
+
+  // Plain text (no HTML) → escape and convert newlines to <br>
+  if (!/<[a-zA-Z]/i.test(str)) {
+    return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/\n/g, '<br>');
   }
-  // contentEditable uses <div> for new lines — normalize to <br>
-  str = str.replace(/<div[^>]*>/gi, '<br>').replace(/<\/div>/gi, '');
+
+  // contentEditable wraps new lines in <div> — normalize to <br>
+  str = str.replace(/<div><br\s*\/?><\/div>/gi, '<br>');
+  str = str.replace(/<div[^>]*>([\s\S]*?)<\/div>/gi, function(m, inner) { return inner + '<br>'; });
   str = str.replace(/\n/g, '<br>');
 
-  const ALLOWED = ['color','background-color','font-size','font-family','font-weight','font-style','text-decoration','font-variant','letter-spacing'];
+  // CSS properties we allow in span style
+  const SAFE_PROPS = /^(color|background-color|font-size|font-family|font-weight|font-style|text-decoration|letter-spacing|line-height)$/;
+  function cleanStyle(style) {
+    return style.split(';').map(function(decl) {
+      const ci = decl.indexOf(':'); if (ci < 0) return '';
+      const prop = decl.slice(0, ci).trim().toLowerCase();
+      const val  = decl.slice(ci + 1).trim();
+      if (!SAFE_PROPS.test(prop)) return '';
+      if (/expression|javascript:|url\(|<|>/i.test(val)) return '';
+      return prop + ':' + val;
+    }).filter(Boolean).join(';');
+  }
 
+  // Tokenize: replace safe tags with placeholders, escape the rest
+  const tokens = [];
   str = str
-    .replace(/&/g, '&amp;')
+    .replace(/&amp;/g, '\x00AMP\x00').replace(/&lt;/g, '\x00LT\x00').replace(/&gt;/g, '\x00GT\x00')
+    .replace(/&/g, '\x00AMP\x00')
     .replace(/<br\s*\/?>/gi, '\x00BR\x00')
-    // strong / em / b / i (open & close)
-    .replace(/<(\/?)(?:strong|em|b|i)\b[^>]*>/gi, function(m, slash){
-      const t = m.match(/<\/?\s*([a-z]+)/i)[1].toLowerCase();
-      return '\x00T:' + slash + t + '\x00';
+    // b / i / strong / em (open & close, any attrs ignored)
+    .replace(/<\/?(b|i|strong|em)\b[^>]*>/gi, function(m) {
+      const cl = m.match(/<\/?\s*([a-zA-Z]+)/)[1].toLowerCase();
+      const closing = m.startsWith('</');
+      const tok = '\x00TAG' + tokens.length + '\x00';
+      tokens.push('<' + (closing ? '/' : '') + cl + '>');
+      return tok;
     })
-    // span with style — keep only whitelisted, harmless CSS properties
-    .replace(/<span\b[^>]*style\s*=\s*"([^"]*)"[^>]*>/gi, function(m, style){
-      const clean = style.split(';').map(function(decl){
-        const i = decl.indexOf(':'); if (i < 0) return '';
-        const prop = decl.slice(0, i).trim().toLowerCase();
-        const val = decl.slice(i + 1).trim();
-        if (ALLOWED.indexOf(prop) < 0) return '';
-        if (/[<>"]|url\(|expression|javascript:/i.test(val)) return '';
-        return prop + ':' + val;
-      }).filter(Boolean).join(';');
-      return clean ? '\x00SPAN:' + clean + '\x00' : '\x00SPANOPEN\x00';
+    // span with style
+    .replace(/<span\b[^>]*>/gi, function(m) {
+      const sm = m.match(/style\s*=\s*"([^"]*)"/i);
+      const cs = sm ? cleanStyle(sm[1]) : '';
+      const tok = '\x00TAG' + tokens.length + '\x00';
+      tokens.push(cs ? '<span style="' + cs + '">' : '<span>');
+      return tok;
     })
-    .replace(/<span\b[^>]*>/gi, '\x00SPANOPEN\x00')
-    .replace(/<\/span>/gi, '\x00/SPAN\x00')
-    // Escape anything left (unknown/unsafe tags)
-    .replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    .replace(/<\/span>/gi, function() {
+      const tok = '\x00TAG' + tokens.length + '\x00';
+      tokens.push('</span>');
+      return tok;
+    })
+    // <font color="X" face="Y"> → convert to <span style>
+    .replace(/<font\b[^>]*>/gi, function(m) {
+      const cm = m.match(/color\s*=\s*"([^"]*)"/i);
+      const fm = m.match(/face\s*=\s*"([^"]*)"/i);
+      const sm = m.match(/style\s*=\s*"([^"]*)"/i);
+      const parts = [];
+      if (cm) parts.push('color:' + cm[1]);
+      if (fm) parts.push('font-family:' + fm[1]);
+      if (sm) { const cs = cleanStyle(sm[1]); if (cs) parts.push(cs); }
+      const tok = '\x00TAG' + tokens.length + '\x00';
+      tokens.push(parts.length ? '<span style="' + parts.join(';') + '">' : '<span>');
+      return tok;
+    })
+    .replace(/<\/font>/gi, function() {
+      const tok = '\x00TAG' + tokens.length + '\x00';
+      tokens.push('</span>');
+      return tok;
+    });
 
-  // Restore the safe tokens
-  return str
+  // Escape any remaining unrecognized tags
+  str = str.replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  // Restore placeholders
+  str = str
+    .replace(/\x00AMP\x00/g, '&amp;').replace(/\x00LT\x00/g, '&lt;').replace(/\x00GT\x00/g, '&gt;')
     .replace(/\x00BR\x00/g, '<br>')
-    .replace(/\x00T:(\/?)([a-z]+)\x00/g, function(m, slash, t){ return '<' + slash + t + '>'; })
-    .replace(/\x00SPAN:([^\x00]*)\x00/g, function(m, s){ return '<span style="' + s + '">'; })
-    .replace(/\x00SPANOPEN\x00/g, '<span>')
-    .replace(/\x00\/SPAN\x00/g, '</span>');
+    .replace(/\x00TAG(\d+)\x00/g, function(m, i) { return tokens[+i]; });
+  return str;
 }
 function _gradBg(pal) {
   return `background:linear-gradient(135deg,${pal.from} 0%,${pal.to} 100%)`;

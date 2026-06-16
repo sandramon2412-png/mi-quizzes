@@ -9,9 +9,9 @@
 <script src="https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.min.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
 <link href="https://fonts.googleapis.com/icon?family=Material+Symbols+Outlined" rel="stylesheet"/>
-<script src="./supabase-config.js?v=20260616a"></script>
-<script src="./app.js?v=20260616a"></script>
-<script src="./landing-blocks.js?v=20260616a"></script>
+<script src="./supabase-config.js?v=20260616b"></script>
+<script src="./app.js?v=20260616b"></script>
+<script src="./landing-blocks.js?v=20260616b"></script>
 <script>
   tailwind.config = {
     theme: {
@@ -650,88 +650,85 @@ function setBlockStyleBg(idx, val) {
   autosave();
 }
 
-// Remembers the last contentEditable that had focus + its selection range,
-// so toolbar clicks (which steal focus) still know what text to format.
-let _lastRtEl = null;
-let _lastRtRange = null;
-function _trackRtSelection(el) {
+// Saved range for color picker (which opens a native dialog and clears selection)
+let _savedRtRange = null;
+let _savedRtEl = null;
+function _saveRtSel(colorInput) {
   const sel = window.getSelection();
-  if (sel && sel.rangeCount && el.contains(sel.anchorNode)) {
-    _lastRtEl = el;
-    _lastRtRange = sel.getRangeAt(0).cloneRange();
+  if (sel && sel.rangeCount) {
+    _savedRtRange = sel.getRangeAt(0).cloneRange();
+    // Find the rt-edit ancestor
+    let p = colorInput.parentElement;
+    while (p) { if (p.classList && p.classList.contains('rt-edit')) { _savedRtEl = p; break; } p = p.parentElement; }
   }
 }
 
-// Wrap the current selection inside the editor with a styled <span> (or strong/em).
-// Works on partial selections, repeatedly, and shows the result visually — no raw code.
-function _wrapRtSelection(el, tag, styleProp, styleVal) {
-  el.focus();
-  const sel = window.getSelection();
-  // Restore the saved range if the click moved focus off the editor
-  if ((!sel.rangeCount || !el.contains(sel.anchorNode)) && _lastRtRange && _lastRtEl === el) {
-    sel.removeAllRanges();
-    sel.addRange(_lastRtRange);
-  }
-  if (!sel.rangeCount) return false;
-  const range = sel.getRangeAt(0);
-  if (range.collapsed) return false; // nothing selected
-
-  const node = tag === 'span' ? document.createElement('span') : document.createElement(tag);
-  if (styleProp) node.style[styleProp] = styleVal;
-  try {
-    range.surroundContents(node);
-  } catch (e) {
-    // Selection crosses element boundaries — extract + re-insert
-    const frag = range.extractContents();
-    node.appendChild(frag);
-    range.insertNode(node);
-  }
-  // Reselect the formatted content so the user can keep applying formats
-  const newRange = document.createRange();
-  newRange.selectNodeContents(node);
-  sel.removeAllRanges();
-  sel.addRange(newRange);
-  _lastRtEl = el;
-  _lastRtRange = newRange.cloneRange();
-  return true;
-}
-
-function fmtField(btn, action) {
-  // Find the contentEditable rich-text field this toolbar belongs to
-  let el = null;
+function _getRtEl(btn) {
   let p = btn.parentElement;
-  while (p && !el) {
-    const found = p.querySelector('.rt-edit[data-key]');
-    if (found) { el = found; break; }
+  while (p) {
+    const f = p.querySelector('.rt-edit[data-key]');
+    if (f) return f;
     p = p.parentElement;
   }
+  return null;
+}
+
+// Wrap selected text via execCommand — reliable, handles partial selections
+// and cross-node ranges natively. onmousedown="return false" on toolbar keeps focus.
+function fmtField(btn, action) {
+  const el = _getRtEl(btn);
   if (!el) return;
 
-  if (action === 'clear') {
-    // Strip formatting from the selection (or whole field if nothing selected)
+  // For color picker: restore the saved range (picker opens dialog → clears selection)
+  if (action === 'color' && _savedRtRange) {
+    el.focus();
     const sel = window.getSelection();
-    if (sel.rangeCount && el.contains(sel.anchorNode) && !sel.getRangeAt(0).collapsed) {
-      const range = sel.getRangeAt(0);
-      const text = range.toString();
-      range.deleteContents();
-      range.insertNode(document.createTextNode(text));
-    } else {
-      el.textContent = el.textContent; // flatten everything
-    }
-  } else if (action === 'b') {
-    _wrapRtSelection(el, 'span', 'fontWeight', '700');
+    sel.removeAllRanges();
+    sel.addRange(_savedRtRange);
+    _savedRtRange = null;
+  }
+
+  if (!el.contains(document.activeElement) && action !== 'clear') el.focus();
+
+  if (action === 'b') {
+    document.execCommand('bold', false, null);
   } else if (action === 'i') {
-    _wrapRtSelection(el, 'span', 'fontStyle', 'italic');
+    document.execCommand('italic', false, null);
   } else if (action === 'color') {
-    _wrapRtSelection(el, 'span', 'color', btn.value);
+    document.execCommand('styleWithCSS', false, true);
+    document.execCommand('foreColor', false, btn.value);
   } else if (action === 'font') {
     if (!btn.value) return;
-    _wrapRtSelection(el, 'span', 'fontFamily', btn.value);
+    document.execCommand('styleWithCSS', false, true);
+    document.execCommand('fontName', false, btn.value);
     btn.value = '';
   } else if (action === 'size') {
     if (!btn.value) return;
-    _wrapRtSelection(el, 'span', 'fontSize', btn.value);
+    // execCommand fontSize only supports 1-7; insert a span for pixel sizes
+    const sel = window.getSelection();
+    if (sel && sel.rangeCount && !sel.getRangeAt(0).collapsed) {
+      const range = sel.getRangeAt(0);
+      const text = range.toString();
+      range.deleteContents();
+      const span = document.createElement('span');
+      span.style.fontSize = btn.value;
+      span.textContent = text;
+      range.insertNode(span);
+      // Reselect so user can see what was formatted
+      const nr = document.createRange();
+      nr.selectNodeContents(span);
+      sel.removeAllRanges();
+      sel.addRange(nr);
+    }
     btn.value = '';
+  } else if (action === 'clear') {
+    document.execCommand('removeFormat', false, null);
+    // Also flatten any remaining spans with style attributes
+    el.querySelectorAll('span[style],font').forEach(function(node){
+      const parent = node.parentNode;
+      while (node.firstChild) parent.insertBefore(node.firstChild, node);
+      parent.removeChild(node);
+    });
   } else {
     return;
   }
@@ -1070,25 +1067,25 @@ function buildFieldEditor(block, idx) {
 
     if (field.type === 'text' || field.type === 'textarea') {
       wrap.innerHTML = `<label class="field-label">${field.label}</label>`;
-      // Format toolbar
+      // Format toolbar — onmousedown="return false" prevents buttons from stealing focus
+      const btnS = 'width:24px;height:24px;border-radius:4px;border:1px solid #3f3f46;background:transparent;color:#e0e0e0;font-size:12px;cursor:pointer';
       const toolbar = document.createElement('div');
       toolbar.style.cssText = 'display:flex;gap:3px;margin-bottom:4px;flex-wrap:wrap;align-items:center';
-      const btnS = 'width:24px;height:24px;border-radius:4px;border:1px solid #3f3f46;background:transparent;color:#e0e0e0;font-size:12px;cursor:pointer';
       toolbar.innerHTML =
-        '<button type="button" title="Negrita" onclick="fmtField(this,\'b\')" style="' + btnS + ';font-weight:700">B</button>'
-        + '<button type="button" title="Cursiva" onclick="fmtField(this,\'i\')" style="' + btnS + ';font-style:italic">I</button>'
-        + '<select onchange="fmtField(this,\'size\')" title="Tamaño" style="height:24px;border-radius:4px;border:1px solid #3f3f46;background:#1c1c1e;color:#e0e0e0;font-size:10px;cursor:pointer;padding:0 4px">'
+        '<button type="button" title="Negrita" onmousedown="return false" onclick="fmtField(this,\'b\')" style="' + btnS + ';font-weight:700">B</button>'
+        + '<button type="button" title="Cursiva" onmousedown="return false" onclick="fmtField(this,\'i\')" style="' + btnS + ';font-style:italic">I</button>'
+        + '<select onmousedown="return false" onchange="fmtField(this,\'size\')" title="Tamaño" style="height:24px;border-radius:4px;border:1px solid #3f3f46;background:#1c1c1e;color:#e0e0e0;font-size:10px;cursor:pointer;padding:0 4px">'
         + '<option value="" style="background:#1c1c1e;color:#e0e0e0">Tamaño</option>'
         + ['12px','14px','16px','18px','20px','24px','28px','32px','40px','48px'].map(function(s){return '<option value="'+s+'" style="background:#1c1c1e;color:#e0e0e0">'+s.replace('px','')+'</option>';}).join('')
         + '</select>'
-        + '<select onchange="fmtField(this,\'font\')" title="Fuente" style="height:24px;border-radius:4px;border:1px solid #3f3f46;background:#1c1c1e;color:#e0e0e0;font-size:10px;cursor:pointer;padding:0 4px">'
+        + '<select onmousedown="return false" onchange="fmtField(this,\'font\')" title="Fuente" style="height:24px;border-radius:4px;border:1px solid #3f3f46;background:#1c1c1e;color:#e0e0e0;font-size:10px;cursor:pointer;padding:0 4px">'
         + '<option value="" style="background:#1c1c1e;color:#e0e0e0">Fuente</option>'
         + [['Plus Jakarta Sans','Jakarta'],['Inter','Inter'],['Playfair Display','Playfair'],['Lato','Lato'],['Dancing Script','Dancing'],['Great Vibes','Great Vibes']].map(function(p){return '<option value="'+p[0]+'" style="background:#1c1c1e;color:#e0e0e0">'+p[1]+'</option>';}).join('')
         + '</select>'
-        + '<input type="color" value="#ffffff" title="Color del texto" onchange="fmtField(this,\'color\')" style="width:24px;height:24px;border:1px solid #3f3f46;border-radius:4px;background:none;cursor:pointer;padding:1px">'
-        + '<button type="button" title="Quitar formato" onclick="fmtField(this,\'clear\')" style="height:24px;padding:0 6px;border-radius:4px;border:1px solid #3f3f46;background:transparent;color:#a1a1aa;font-size:10px;cursor:pointer">Sin formato</button>';
+        + '<input type="color" value="#ffffff" title="Color del texto" onmousedown="_saveRtSel(this)" onchange="fmtField(this,\'color\')" style="width:24px;height:24px;border:1px solid #3f3f46;border-radius:4px;background:none;cursor:pointer;padding:1px">'
+        + '<button type="button" title="Quitar formato" onmousedown="return false" onclick="fmtField(this,\'clear\')" style="height:24px;padding:0 6px;border-radius:4px;border:1px solid #3f3f46;background:transparent;color:#a1a1aa;font-size:10px;cursor:pointer">Sin formato</button>';
       wrap.appendChild(toolbar);
-      // Rich-text editor: contentEditable div shows formatted text directly (never raw HTML code)
+      // Rich-text editor: contentEditable div — user sees formatted text, never raw HTML
       const ce = document.createElement('div');
       ce.className = 'field-input rt-edit';
       ce.dataset.key = field.key;
@@ -1443,7 +1440,7 @@ function buildFieldEditor(block, idx) {
           el._rt = setTimeout(function(){ renderPreview(); autosave(); }, 400);
         });
       } else if (el.classList.contains('rt-edit')) {
-        // Rich-text contentEditable: sync innerHTML + remember selection for the toolbar
+        // Rich-text contentEditable: sync innerHTML on any change
         el.addEventListener('input', function() {
           if (activeBlockIdx < 0 || !landing) return;
           const b = landing.blocks[activeBlockIdx];
@@ -1452,9 +1449,6 @@ function buildFieldEditor(block, idx) {
           clearTimeout(el._rt);
           el._rt = setTimeout(function(){ renderPreview(); autosave(); }, 400);
         });
-        el.addEventListener('keyup', function(){ _trackRtSelection(el); });
-        el.addEventListener('mouseup', function(){ _trackRtSelection(el); });
-        el.addEventListener('blur', function(){ _trackRtSelection(el); });
       }
     });
   }, 0);
