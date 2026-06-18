@@ -1123,6 +1123,9 @@ function renderLandingFromBlocks(blocks, paletteId, customFrom, customTo, font, 
     .map(b => b.data && b.data._style && b.data._style.font)
     .filter(f => f && f !== font && FONT_DEFS[f])
   )].map(f => `<link href="https://fonts.googleapis.com/css2?family=${FONT_DEFS[f].url}&display=swap" rel="stylesheet">`).join('\n');
+  // Always load every font offered by the inline text toolbar, so font-family
+  // chosen on individual words renders correctly (not just the fallback).
+  const toolbarFonts = '<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:wght@400;700;800&family=Lato:wght@300;400;700;900&family=Dancing+Script:wght@400;600;700&family=Great+Vibes&family=Montserrat:wght@300;400;600;700;800&family=Merriweather:wght@400;700;900&family=Oswald:wght@300;400;600;700&family=Pacifico&display=swap" rel="stylesheet">';
   return `<!DOCTYPE html>
 <html lang="es">
 <head>
@@ -1130,6 +1133,7 @@ function renderLandingFromBlocks(blocks, paletteId, customFrom, customTo, font, 
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Landing</title>
 <link href="https://fonts.googleapis.com/css2?family=${(FONT_DEFS[font]||FONT_DEFS['jakarta']).url}&display=swap" rel="stylesheet">
+${toolbarFonts}
 ${blockFonts}
 <link href="https://fonts.googleapis.com/icon?family=Material+Symbols+Outlined" rel="stylesheet">
 <style>${_baseCss(pal, font, settings)}</style>
