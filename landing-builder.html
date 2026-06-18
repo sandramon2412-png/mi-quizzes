@@ -9,9 +9,9 @@
 <script src="https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.min.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
 <link href="https://fonts.googleapis.com/icon?family=Material+Symbols+Outlined" rel="stylesheet"/>
-<script src="./supabase-config.js?v=20260616b"></script>
-<script src="./app.js?v=20260616b"></script>
-<script src="./landing-blocks.js?v=20260616b"></script>
+<script src="./supabase-config.js?v=20260616c"></script>
+<script src="./app.js?v=20260616c"></script>
+<script src="./landing-blocks.js?v=20260616c"></script>
 <script>
   tailwind.config = {
     theme: {
@@ -650,18 +650,28 @@ function setBlockStyleBg(idx, val) {
   autosave();
 }
 
-// Saved range for color picker (which opens a native dialog and clears selection)
+// Global selection tracker: always remembers the last text range selected
+// inside ANY rich-text editor. This survives clicks on toolbar selects/color
+// pickers that move focus away from the contentEditable.
 let _savedRtRange = null;
 let _savedRtEl = null;
-function _saveRtSel(colorInput) {
+document.addEventListener('selectionchange', function() {
   const sel = window.getSelection();
-  if (sel && sel.rangeCount) {
-    _savedRtRange = sel.getRangeAt(0).cloneRange();
-    // Find the rt-edit ancestor
-    let p = colorInput.parentElement;
-    while (p) { if (p.classList && p.classList.contains('rt-edit')) { _savedRtEl = p; break; } p = p.parentElement; }
+  if (!sel || !sel.rangeCount) return;
+  const anchor = sel.anchorNode;
+  if (!anchor) return;
+  let node = anchor.nodeType === 1 ? anchor : anchor.parentElement;
+  while (node) {
+    if (node.classList && node.classList.contains('rt-edit')) {
+      if (!sel.getRangeAt(0).collapsed) {
+        _savedRtRange = sel.getRangeAt(0).cloneRange();
+        _savedRtEl = node;
+      }
+      return;
+    }
+    node = node.parentElement;
   }
-}
+});
 
 function _getRtEl(btn) {
   let p = btn.parentElement;
@@ -670,25 +680,23 @@ function _getRtEl(btn) {
     if (f) return f;
     p = p.parentElement;
   }
-  return null;
+  return _savedRtEl;
 }
 
-// Wrap selected text via execCommand — reliable, handles partial selections
-// and cross-node ranges natively. onmousedown="return false" on toolbar keeps focus.
+// Apply formatting via execCommand. The toolbar control may have moved focus
+// off the editor, so we always restore the last saved selection first.
 function fmtField(btn, action) {
   const el = _getRtEl(btn);
   if (!el) return;
 
-  // For color picker: restore the saved range (picker opens dialog → clears selection)
-  if (action === 'color' && _savedRtRange) {
-    el.focus();
-    const sel = window.getSelection();
+  // Restore the last selection that was inside this editor
+  el.focus();
+  const sel = window.getSelection();
+  const needRestore = !sel.rangeCount || sel.getRangeAt(0).collapsed || !el.contains(sel.anchorNode);
+  if (needRestore && _savedRtRange && _savedRtEl === el) {
     sel.removeAllRanges();
     sel.addRange(_savedRtRange);
-    _savedRtRange = null;
   }
-
-  if (!el.contains(document.activeElement) && action !== 'clear') el.focus();
 
   if (action === 'b') {
     document.execCommand('bold', false, null);
@@ -927,7 +935,7 @@ function buildBrief() {
 function renderPreview() {
   if (!landing || !landing.blocks) return;
   const frame = document.getElementById('preview-frame');
-  // Preserve scroll position so the user stays on the section they're editing
+  // Remember where the user was: pixel scroll AND the section being edited
   const savedScroll = (() => { try { return frame.contentWindow?.scrollY || 0; } catch(e) { return 0; } })();
   const _palRaw = window._palById ? window._palById(landing.palette || 'blue-purple') : null;
   const _palAdj = _palRaw ? applyIntensity(_palRaw) : null;
@@ -937,10 +945,11 @@ function renderPreview() {
     : renderLandingFromBlocks(landing.blocks, landing.palette || 'blue-purple', null, null, _font, landing.settings);
   // Inject a script that intercepts anchor clicks so preview links don't navigate
   const navGuard = '<scr' + 'ipt>document.addEventListener("click",function(e){var a=e.target.closest("a");if(!a)return;var h=a.getAttribute("href")||"";if(h.startsWith("#")){e.preventDefault();var t=document.querySelector(h);if(t)t.scrollIntoView({behavior:"smooth"});}else if(h&&!h.startsWith("javascript")){e.preventDefault();}},true);</scr' + 'ipt>';
-  // Restore scroll after load
-  const scrollScript = savedScroll > 20
-    ? `<scr` + `ipt>window.addEventListener('load',function(){window.scrollTo(0,${savedScroll});});</scr` + `ipt>`
-    : '';
+  // Restore view: prefer scrolling to the section currently being edited;
+  // fall back to the previous pixel position. Runs both inline and on load.
+  const bi = activeBlockIdx;
+  const restoreFn = `(function(){try{var t=document.querySelector('[data-bi=\\'' + ${bi} + '\\']');if(${bi} >= 0 && t){t.scrollIntoView({block:'start'});}else if(${savedScroll} > 20){window.scrollTo(0,${savedScroll});}}catch(e){}})`;
+  const scrollScript = `<scr` + `ipt>var _r=${restoreFn};document.addEventListener('DOMContentLoaded',_r);window.addEventListener('load',_r);setTimeout(_r,60);</scr` + `ipt>`;
   html = html.replace('</body>', navGuard + scrollScript + '</body>');
   frame.srcdoc = html;
   frame.classList.remove('hidden');
@@ -1074,15 +1083,15 @@ function buildFieldEditor(block, idx) {
       toolbar.innerHTML =
         '<button type="button" title="Negrita" onmousedown="return false" onclick="fmtField(this,\'b\')" style="' + btnS + ';font-weight:700">B</button>'
         + '<button type="button" title="Cursiva" onmousedown="return false" onclick="fmtField(this,\'i\')" style="' + btnS + ';font-style:italic">I</button>'
-        + '<select onmousedown="return false" onchange="fmtField(this,\'size\')" title="Tamaño" style="height:24px;border-radius:4px;border:1px solid #3f3f46;background:#1c1c1e;color:#e0e0e0;font-size:10px;cursor:pointer;padding:0 4px">'
+        + '<select onchange="fmtField(this,\'size\')" title="Tamaño" style="height:24px;border-radius:4px;border:1px solid #3f3f46;background:#1c1c1e;color:#e0e0e0;font-size:10px;cursor:pointer;padding:0 4px">'
         + '<option value="" style="background:#1c1c1e;color:#e0e0e0">Tamaño</option>'
         + ['12px','14px','16px','18px','20px','24px','28px','32px','40px','48px'].map(function(s){return '<option value="'+s+'" style="background:#1c1c1e;color:#e0e0e0">'+s.replace('px','')+'</option>';}).join('')
         + '</select>'
-        + '<select onmousedown="return false" onchange="fmtField(this,\'font\')" title="Fuente" style="height:24px;border-radius:4px;border:1px solid #3f3f46;background:#1c1c1e;color:#e0e0e0;font-size:10px;cursor:pointer;padding:0 4px">'
+        + '<select onchange="fmtField(this,\'font\')" title="Fuente" style="height:24px;border-radius:4px;border:1px solid #3f3f46;background:#1c1c1e;color:#e0e0e0;font-size:10px;cursor:pointer;padding:0 4px">'
         + '<option value="" style="background:#1c1c1e;color:#e0e0e0">Fuente</option>'
-        + [['Plus Jakarta Sans','Jakarta'],['Inter','Inter'],['Playfair Display','Playfair'],['Lato','Lato'],['Dancing Script','Dancing'],['Great Vibes','Great Vibes']].map(function(p){return '<option value="'+p[0]+'" style="background:#1c1c1e;color:#e0e0e0">'+p[1]+'</option>';}).join('')
+        + [['Plus Jakarta Sans','Jakarta'],['Inter','Inter'],['Playfair Display','Playfair'],['Lato','Lato'],['Dancing Script','Dancing'],['Great Vibes','Great Vibes'],['Montserrat','Montserrat'],['Merriweather','Merriweather'],['Oswald','Oswald'],['Pacifico','Pacifico']].map(function(p){return '<option value="'+p[0]+'" style="background:#1c1c1e;color:#e0e0e0">'+p[1]+'</option>';}).join('')
         + '</select>'
-        + '<input type="color" value="#ffffff" title="Color del texto" onmousedown="_saveRtSel(this)" onchange="fmtField(this,\'color\')" style="width:24px;height:24px;border:1px solid #3f3f46;border-radius:4px;background:none;cursor:pointer;padding:1px">'
+        + '<input type="color" value="#ffffff" title="Color del texto" onchange="fmtField(this,\'color\')" style="width:24px;height:24px;border:1px solid #3f3f46;border-radius:4px;background:none;cursor:pointer;padding:1px">'
         + '<button type="button" title="Quitar formato" onmousedown="return false" onclick="fmtField(this,\'clear\')" style="height:24px;padding:0 6px;border-radius:4px;border:1px solid #3f3f46;background:transparent;color:#a1a1aa;font-size:10px;cursor:pointer">Sin formato</button>';
       wrap.appendChild(toolbar);
       // Rich-text editor: contentEditable div — user sees formatted text, never raw HTML
