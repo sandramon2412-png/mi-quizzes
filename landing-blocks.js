@@ -641,7 +641,7 @@ function _titleStyle(data) {
   if (!data || !data._style) return '';
   const s = data._style;
   const parts = [];
-  const sizes = { xs:'0.65em', sm:'0.8em', md:'1em', lg:'1.25em', xl:'1.6em' };
+  const sizes = { xs:'22px', sm:'32px', lg:'64px', xl:'88px' };
   if (s.title_size && sizes[s.title_size]) parts.push(`font-size:${sizes[s.title_size]}!important`);
   if (s.font && FONT_DEFS[s.font]) parts.push(`font-family:${FONT_DEFS[s.font].family}`);
   // Cursive fonts should render at weight 400
@@ -828,6 +828,7 @@ function _renderBeneficios(data, pal) {
       ${data.subheadline ? `<p class="ld-body" style="margin-top:16px;max-width:640px">${_safeHtml(data.subheadline)}</p>` : ''}
     </div>
     <div class="ld-g3">${items}</div>
+    ${data.image_url ? `<div style="margin-top:48px;border-radius:20px;overflow:hidden;box-shadow:0 16px 48px rgba(0,0,0,0.4)"><img src="${_e(data.image_url)}" style="width:100%;height:auto;display:block" onerror="this.closest('div').style.display='none'"/></div>` : ''}
   </div>
 </section>`;
 }
@@ -850,6 +851,7 @@ function _renderModulos(data, pal) {
       ${data.subheadline ? `<p class="ld-body" style="margin-top:16px;max-width:640px">${_safeHtml(data.subheadline)}</p>` : ''}
     </div>
     <div class="ld-g2">${items}</div>
+    ${data.image_url ? `<div style="margin-top:48px;border-radius:20px;overflow:hidden;box-shadow:0 16px 48px rgba(0,0,0,0.4)"><img src="${_e(data.image_url)}" style="width:100%;height:auto;display:block" onerror="this.closest('div').style.display='none'"/></div>` : ''}
   </div>
 </section>`;
 }
@@ -1309,11 +1311,13 @@ const BLOCK_FIELDS = {
     { key: 'headline', label: 'Titular', type: 'text' },
     { key: 'subheadline', label: 'Subtítulo', type: 'textarea' },
     { key: 'items', label: 'Beneficios (ícono + texto)', type: 'list-icon-text', iconDefault: 'check_circle' },
+    { key: 'image_url', label: 'Imagen de la sección (opcional)', type: 'image' },
   ],
   modulos: [
     { key: 'headline', label: 'Titular', type: 'text' },
     { key: 'subheadline', label: 'Subtítulo', type: 'textarea' },
     { key: 'items', label: 'Módulos', type: 'list-module' },
+    { key: 'image_url', label: 'Imagen de la sección (opcional)', type: 'image' },
   ],
   testimonios: [
     { key: 'headline', label: 'Titular', type: 'text' },
