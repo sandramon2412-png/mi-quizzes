@@ -1194,8 +1194,12 @@ function buildFieldEditor(block, idx) {
               <button class="btn-del-sub" onclick="delSubItem(this)">
                 <span class="material-symbols-outlined" style="font-size:14px;">close</span>
               </button>
-              <input type="text" value="${escAttr(v.icon || 'check_circle')}" placeholder="icon (ej: check_circle)"/>
-              <input type="text" value="${escAttr(v.text || '')}" placeholder="Texto del ítem" style="margin-top:4px;"/>
+              <div style="display:flex;align-items:center;gap:6px;margin-bottom:3px">
+                <span class="material-symbols-outlined icon-gradient" style="font-size:20px;flex-shrink:0" data-icon-preview>${escAttr(v.icon || 'check_circle')}</span>
+                <input type="text" value="${escAttr(v.icon || 'check_circle')}" placeholder="Nombre del ícono" oninput="var p=this.closest('.sublist-item').querySelector('[data-icon-preview]');if(p)p.textContent=this.value||'check_circle'" style="flex:1"/>
+              </div>
+              <small style="color:#666;font-size:10px;display:block;margin-bottom:4px">íconos: check_circle, bolt, star, favorite, shield, thumb_up...</small>
+              <input type="text" value="${escAttr(v.text || '')}" placeholder="Texto del ítem"/>
             </div>
           `).join('')}
           <button class="btn-add-sub" onclick="addSubItem(this,'list-icon-text')">
@@ -1379,7 +1383,7 @@ function buildFieldEditor(block, idx) {
   const fontOpts = [['','Global (hereda)'],['jakarta','Plus Jakarta Sans'],['inter','Inter'],['playfair','Playfair Display'],['lato','Lato'],['dancing','Dancing Script'],['greatvibes','Great Vibes']];
   fontDiv.innerHTML = '<span class="field-label">Tipografía de esta sección</span>'
     + '<select onchange="setBlockStyleFont(' + idx + ',this.value)" style="width:100%;margin-top:4px;background:#0e0e0e;border:1px solid rgba(255,255,255,.1);border-radius:6px;padding:5px 8px;font-size:12px;color:#e0e0e0;outline:none">'
-    + fontOpts.map(function(pair){ return '<option value="' + pair[0] + '"' + ((curStyle.font||'')===pair[0]?' selected':'') + '>' + pair[1] + '</option>'; }).join('')
+    + fontOpts.map(function(pair){ return '<option value="' + pair[0] + '"' + ((curStyle.font||'')===pair[0]?' selected':'') + ' style="background:#0e0e0e;color:#e0e0e0">' + pair[1] + '</option>'; }).join('')
     + '</select>';
   styleCard.appendChild(fontDiv);
 
@@ -1391,7 +1395,7 @@ function buildFieldEditor(block, idx) {
     + ['left','center','right'].map(function(a) {
         const label = a === 'left' ? 'Izquierda' : a === 'center' ? 'Centro' : 'Derecha';
         const sel = (curStyle.text_align || 'left') === a;
-        return '<button data-align="' + a + '" onclick="setBlockStyle(' + idx + ',\'text_align\',\'' + a + '\',this)" style="' + (sel ? btnSel : btnOff) + ';font-size:11px">' + label + '</button>';
+        return '<button type="button" data-align="' + a + '" onclick="setBlockStyle(' + idx + ',\'text_align\',\'' + a + '\',this)" style="' + (sel ? btnSel : btnOff) + ';font-size:11px">' + label + '</button>';
       }).join('')
     + '</div>';
   styleCard.appendChild(alignDiv);
@@ -1404,7 +1408,7 @@ function buildFieldEditor(block, idx) {
     + [['xs','XS'],['sm','S'],['md','M'],['lg','L'],['xl','XL']].map(function(pair) {
         const v = pair[0], l = pair[1];
         const sel = (curStyle.title_size || 'md') === v;
-        return '<button data-tsize="' + v + '" onclick="setBlockStyle(' + idx + ',\'title_size\',\'' + v + '\',this)" style="' + (sel ? btnSel : btnOff) + ';font-size:11px">' + l + '</button>';
+        return '<button type="button" data-tsize="' + v + '" onclick="setBlockStyle(' + idx + ',\'title_size\',\'' + v + '\',this)" style="' + (sel ? btnSel : btnOff) + ';font-size:11px">' + l + '</button>';
       }).join('')
     + '</div>';
   styleCard.appendChild(sizeDiv);
@@ -1416,7 +1420,7 @@ function buildFieldEditor(block, idx) {
     + [['compact','Compacto'],['normal','Normal'],['spacious','Espacioso']].map(function(pair) {
         const v = pair[0], l = pair[1];
         const sel = (curStyle.padding || 'normal') === v;
-        return '<button data-pad="' + v + '" onclick="setBlockStyle(' + idx + ',\'padding\',\'' + v + '\',this)" style="' + (sel ? btnSel : btnOff) + ';font-size:10px">' + l + '</button>';
+        return '<button type="button" data-pad="' + v + '" onclick="setBlockStyle(' + idx + ',\'padding\',\'' + v + '\',this)" style="' + (sel ? btnSel : btnOff) + ';font-size:10px">' + l + '</button>';
       }).join('')
     + '</div>';
   styleCard.appendChild(padDiv);
@@ -1473,7 +1477,7 @@ function addSubItem(btn, type) {
   } else if (type === 'list-qa') {
     div.innerHTML = closeBtn + `<input type="text" placeholder="Pregunta"/><textarea rows="2" style="margin-top:4px;"></textarea>`;
   } else if (type === 'list-icon-text') {
-    div.innerHTML = closeBtn + `<input type="text" value="check_circle" placeholder="icon"/><input type="text" placeholder="Texto" style="margin-top:4px;"/>`;
+    div.innerHTML = closeBtn + `<div style="display:flex;align-items:center;gap:6px;margin-bottom:3px"><span class="material-symbols-outlined icon-gradient" style="font-size:20px;flex-shrink:0" data-icon-preview>check_circle</span><input type="text" value="check_circle" placeholder="Nombre del ícono" oninput="var p=this.closest('.sublist-item').querySelector('[data-icon-preview]');if(p)p.textContent=this.value||'check_circle'" style="flex:1"/></div><small style="color:#666;font-size:10px;display:block;margin-bottom:4px">íconos: check_circle, bolt, star, favorite, shield...</small><input type="text" placeholder="Texto del ítem"/>`;
   } else if (type === 'list-value-label') {
     div.innerHTML = closeBtn + `<input type="text" placeholder="Valor (ej: +2,400)"/><input type="text" placeholder="Etiqueta" style="margin-top:4px;"/>`;
   } else if (type === 'list-bono') {
