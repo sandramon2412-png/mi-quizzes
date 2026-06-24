@@ -9,9 +9,9 @@
 <script src="https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.min.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
 <link href="https://fonts.googleapis.com/icon?family=Material+Symbols+Outlined" rel="stylesheet"/>
-<script src="./supabase-config.js?v=20260616c"></script>
-<script src="./app.js?v=20260616c"></script>
-<script src="./landing-blocks.js?v=20260616c"></script>
+<script src="./supabase-config.js?v=20260624a"></script>
+<script src="./app.js?v=20260624a"></script>
+<script src="./landing-blocks.js?v=20260624a"></script>
 <script>
   tailwind.config = {
     theme: {
@@ -1088,7 +1088,7 @@ function _iconPickerHtml(currentIcon) {
   return '<div class="icon-picker" style="display:flex;flex-wrap:wrap;gap:3px;background:#0a0a0a;border:1px solid rgba(255,255,255,.08);border-radius:8px;padding:6px;margin-bottom:4px">'
     + icons.map(ic => {
       const sel = ic === (currentIcon || 'check_circle');
-      return '<button type="button" onclick="_pickIcon(this,'' + ic + '')" title="' + ic + '" style="width:28px;height:28px;border-radius:5px;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;background:' + (sel?'rgba(46,91,255,0.25)':'transparent') + ';outline:' + (sel?'1px solid #2E5BFF':'none') + '" data-ic="' + ic + '">'
+      return '<button type="button" onclick="_pickIcon(this,\'' + ic + '\')" title="' + ic + '" style="width:28px;height:28px;border-radius:5px;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;background:' + (sel?'rgba(46,91,255,0.25)':'transparent') + ';outline:' + (sel?'1px solid #2E5BFF':'none') + '" data-ic="' + ic + '">'
         + '<span class="material-symbols-outlined" style="font-size:16px;' + (sel?'background:linear-gradient(135deg,#4d7cff,#a78bfa);-webkit-background-clip:text;-webkit-text-fill-color:transparent':'color:#9a9a9a') + '">' + ic + '</span>'
         + '</button>';
     }).join('')
