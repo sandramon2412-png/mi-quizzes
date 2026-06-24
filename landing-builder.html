@@ -1070,6 +1070,86 @@ function _scrollPreviewToBlock(idx) {
   } catch(e) {}
 }
 
+// ─────────────────────────────────────────────────────────────
+// ICON PICKER helpers
+// ─────────────────────────────────────────────────────────────
+const _ICON_LIST = [
+  'check_circle','bolt','star','favorite','shield','thumb_up','rocket_launch','verified',
+  'diamond','emoji_events','workspace_premium','psychology','trending_up','school','lightbulb',
+  'auto_awesome','celebration','military_tech','local_fire_department','speed',
+  'fitness_center','self_improvement','monetization_on','savings','account_balance',
+  'health_and_safety','spa','directions_run','laptop','cloud','security','support_agent',
+  'groups','handshake','timer','calendar_today','edit','brush','camera_alt','music_note',
+  'restaurant','home','shopping_cart','send','notifications','lock','public','explore'
+];
+
+function _iconPickerHtml(currentIcon) {
+  const icons = _ICON_LIST;
+  return '<div class="icon-picker" style="display:flex;flex-wrap:wrap;gap:3px;background:#0a0a0a;border:1px solid rgba(255,255,255,.08);border-radius:8px;padding:6px;margin-bottom:4px">'
+    + icons.map(ic => {
+      const sel = ic === (currentIcon || 'check_circle');
+      return '<button type="button" onclick="_pickIcon(this,'' + ic + '')" title="' + ic + '" style="width:28px;height:28px;border-radius:5px;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;background:' + (sel?'rgba(46,91,255,0.25)':'transparent') + ';outline:' + (sel?'1px solid #2E5BFF':'none') + '" data-ic="' + ic + '">'
+        + '<span class="material-symbols-outlined" style="font-size:16px;' + (sel?'background:linear-gradient(135deg,#4d7cff,#a78bfa);-webkit-background-clip:text;-webkit-text-fill-color:transparent':'color:#9a9a9a') + '">' + ic + '</span>'
+        + '</button>';
+    }).join('')
+    + '</div>';
+}
+
+function _pickIcon(btn, iconName) {
+  const item = btn.closest('.sublist-item');
+  if (!item) return;
+  // Update preview span
+  const preview = item.querySelector('[data-icon-preview]');
+  if (preview) preview.textContent = iconName;
+  // Update hidden input
+  const input = item.querySelector('input[data-icon-val]');
+  if (input) input.value = iconName;
+  // Update picker button states
+  btn.closest('.icon-picker').querySelectorAll('[data-ic]').forEach(function(b) {
+    const isNow = b.dataset.ic === iconName;
+    b.style.background = isNow ? 'rgba(46,91,255,0.25)' : 'transparent';
+    b.style.outline = isNow ? '1px solid #2E5BFF' : 'none';
+    const sp = b.querySelector('.material-symbols-outlined');
+    if (sp) {
+      if (isNow) {
+        sp.style.background = 'linear-gradient(135deg,#4d7cff,#a78bfa)';
+        sp.style.webkitBackgroundClip = 'text';
+        sp.style.webkitTextFillColor = 'transparent';
+      } else {
+        sp.style.background = '';
+        sp.style.webkitBackgroundClip = '';
+        sp.style.webkitTextFillColor = '';
+        sp.style.color = '#9a9a9a';
+      }
+    }
+  });
+  // Trigger sublist auto-save
+  item.dispatchEvent(new Event('icon-changed', {bubbles:true}));
+  if (activeBlockIdx >= 0 && landing) {
+    var block = landing.blocks[activeBlockIdx];
+    if (block) {
+      block.data = collectBlockData(block);
+      renderPreview();
+      autosave();
+    }
+  }
+}
+
+function _iconItemHtml(v) {
+  const ic = v.icon || 'check_circle';
+  return '<div class="sublist-item">'
+    + '<button class="btn-del-sub" onclick="delSubItem(this)"><span class="material-symbols-outlined" style="font-size:14px;">close</span></button>'
+    + '<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">'
+    + '<span class="material-symbols-outlined icon-gradient" style="font-size:24px;flex-shrink:0" data-icon-preview>' + ic + '</span>'
+    + '<span style="font-size:11px;color:#9a9a9a">Ícono actual — elegí uno abajo:</span>'
+    + '</div>'
+    + _iconPickerHtml(ic)
+    + '<input type="hidden" data-icon-val value="' + ic + '"/>'
+    + '<input type="text" value="' + (v.text || v.title || '') + '" placeholder="Título del ítem" style="margin-bottom:3px"/>'
+    + '<textarea placeholder="Descripción (opcional)" rows="2" style="resize:none">' + (v.description || '') + '</textarea>'
+    + '</div>';
+}
+
 function buildFieldEditor(block, idx) {
   const container = document.getElementById('rp-fields');
   container.innerHTML = '';
@@ -1211,22 +1291,9 @@ function buildFieldEditor(block, idx) {
       wrap.innerHTML = `
         <label class="field-label">${field.label}</label>
         <div class="sublist" data-key="${field.key}" data-type="list-icon-text">
-          ${items.map(v => `
-            <div class="sublist-item">
-              <button class="btn-del-sub" onclick="delSubItem(this)">
-                <span class="material-symbols-outlined" style="font-size:14px;">close</span>
-              </button>
-              <div style="display:flex;align-items:center;gap:6px;margin-bottom:3px">
-                <span class="material-symbols-outlined icon-gradient" style="font-size:20px;flex-shrink:0" data-icon-preview>${escAttr(v.icon || 'check_circle')}</span>
-                <input type="text" value="${escAttr(v.icon || 'check_circle')}" placeholder="Nombre del ícono" oninput="var p=this.closest('.sublist-item').querySelector('[data-icon-preview]');if(p)p.textContent=this.value||'check_circle'" style="flex:1"/>
-              </div>
-              <small style="color:#666;font-size:10px;display:block;margin-bottom:4px">Íconos: check_circle, bolt, star, favorite, shield, thumb_up, rocket_launch, verified...</small>
-              <input type="text" value="${escAttr(v.text || v.title || '')}" placeholder="Título del ítem" style="margin-bottom:3px"/>
-              <textarea placeholder="Descripción (opcional)" rows="2" style="resize:none">${escAttr(v.description || '')}</textarea>
-            </div>
-          `).join('')}
+          ${items.map(v => _iconItemHtml(v)).join('')}
           <button class="btn-add-sub" onclick="addSubItem(this,'list-icon-text')">
-            <span class="material-symbols-outlined align-middle" style="font-size:12px">add</span> Agregar beneficio
+            <span class="material-symbols-outlined align-middle" style="font-size:12px">add</span> Agregar ítem
           </button>
         </div>
       `;
@@ -1516,7 +1583,7 @@ function addSubItem(btn, type) {
   } else if (type === 'list-qa') {
     div.innerHTML = closeBtn + `<input type="text" placeholder="Pregunta"/><textarea rows="2" style="margin-top:4px;"></textarea>`;
   } else if (type === 'list-icon-text') {
-    div.innerHTML = closeBtn + `<div style="display:flex;align-items:center;gap:6px;margin-bottom:3px"><span class="material-symbols-outlined icon-gradient" style="font-size:20px;flex-shrink:0" data-icon-preview>check_circle</span><input type="text" value="check_circle" placeholder="Nombre del ícono" oninput="var p=this.closest('.sublist-item').querySelector('[data-icon-preview]');if(p)p.textContent=this.value||'check_circle'" style="flex:1"/></div><small style="color:#666;font-size:10px;display:block;margin-bottom:4px">Íconos: check_circle, bolt, star, favorite, shield, thumb_up, rocket_launch...</small><input type="text" placeholder="Título del ítem" style="margin-bottom:3px"/><textarea placeholder="Descripción (opcional)" rows="2" style="resize:none"></textarea>`;
+    div.innerHTML = _iconItemHtml({});
   } else if (type === 'list-value-label') {
     div.innerHTML = closeBtn + `<input type="text" placeholder="Valor (ej: +2,400)"/><input type="text" placeholder="Etiqueta" style="margin-top:4px;"/>`;
   } else if (type === 'list-bono') {
