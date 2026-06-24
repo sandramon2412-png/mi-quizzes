@@ -908,6 +908,7 @@ function _renderBonos(data, pal) {
       ${data.subheadline ? `<p class="ld-body" style="margin-top:16px;max-width:640px">${_safeHtml(data.subheadline)}</p>` : ''}
     </div>
     <div class="ld-flex-col">${items}</div>
+    ${data.image_url ? `<div style="margin-top:48px;border-radius:20px;overflow:hidden;box-shadow:0 16px 48px rgba(0,0,0,0.4)"><img src="${_e(data.image_url)}" style="width:100%;height:auto;display:block" onerror="this.closest('div').style.display='none'"/></div>` : ''}
   </div>
 </section>`;
 }
@@ -1327,6 +1328,7 @@ const BLOCK_FIELDS = {
     { key: 'headline', label: 'Titular', type: 'text' },
     { key: 'subheadline', label: 'Subtítulo (opcional)', type: 'text' },
     { key: 'items', label: 'Bonos', type: 'list-bono' },
+    { key: 'image_url', label: 'Imagen de la sección (opcional)', type: 'image' },
   ],
   stack: [
     { key: 'headline', label: 'Titular', type: 'text' },
