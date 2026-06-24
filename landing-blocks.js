@@ -828,7 +828,7 @@ function _renderBeneficios(data, pal) {
       ${data.subheadline ? `<p class="ld-body" style="margin-top:16px;max-width:640px">${_safeHtml(data.subheadline)}</p>` : ''}
     </div>
     <div class="ld-g3">${items}</div>
-    ${data.image_url ? `<div style="margin-top:48px;border-radius:20px;overflow:hidden;box-shadow:0 16px 48px rgba(0,0,0,0.4)"><img src="${_e(data.image_url)}" style="width:100%;height:auto;display:block" onerror="this.closest('div').style.display='none'"/></div>` : ''}
+    ${data.image_url ? (()=>{const wMap={small:'40%',medium:'65%',full:'100%'};const w=wMap[data.image_url_size||'full']||'100%';return `<div style="margin:40px auto 0;width:${w};border-radius:20px;overflow:hidden;box-shadow:0 16px 48px rgba(0,0,0,0.4)"><img src="${_e(data.image_url)}" style="width:100%;height:auto;display:block" onerror="this.closest('div').style.display='none'"/></div>`;})() : ''}
   </div>
 </section>`;
 }
@@ -851,7 +851,7 @@ function _renderModulos(data, pal) {
       ${data.subheadline ? `<p class="ld-body" style="margin-top:16px;max-width:640px">${_safeHtml(data.subheadline)}</p>` : ''}
     </div>
     <div class="ld-g2">${items}</div>
-    ${data.image_url ? `<div style="margin-top:48px;border-radius:20px;overflow:hidden;box-shadow:0 16px 48px rgba(0,0,0,0.4)"><img src="${_e(data.image_url)}" style="width:100%;height:auto;display:block" onerror="this.closest('div').style.display='none'"/></div>` : ''}
+    ${data.image_url ? (()=>{const wMap={small:'40%',medium:'65%',full:'100%'};const w=wMap[data.image_url_size||'full']||'100%';return `<div style="margin:40px auto 0;width:${w};border-radius:20px;overflow:hidden;box-shadow:0 16px 48px rgba(0,0,0,0.4)"><img src="${_e(data.image_url)}" style="width:100%;height:auto;display:block" onerror="this.closest('div').style.display='none'"/></div>`;})() : ''}
   </div>
 </section>`;
 }
@@ -908,7 +908,7 @@ function _renderBonos(data, pal) {
       ${data.subheadline ? `<p class="ld-body" style="margin-top:16px;max-width:640px">${_safeHtml(data.subheadline)}</p>` : ''}
     </div>
     <div class="ld-flex-col">${items}</div>
-    ${data.image_url ? `<div style="margin-top:48px;border-radius:20px;overflow:hidden;box-shadow:0 16px 48px rgba(0,0,0,0.4)"><img src="${_e(data.image_url)}" style="width:100%;height:auto;display:block" onerror="this.closest('div').style.display='none'"/></div>` : ''}
+    ${data.image_url ? (()=>{const wMap={small:'40%',medium:'65%',full:'100%'};const w=wMap[data.image_url_size||'full']||'100%';return `<div style="margin:40px auto 0;width:${w};border-radius:20px;overflow:hidden;box-shadow:0 16px 48px rgba(0,0,0,0.4)"><img src="${_e(data.image_url)}" style="width:100%;height:auto;display:block" onerror="this.closest('div').style.display='none'"/></div>`;})() : ''}
   </div>
 </section>`;
 }

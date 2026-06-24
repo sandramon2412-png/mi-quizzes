@@ -636,6 +636,17 @@ function setBlockStyleFont(idx, val) {
   autosave();
 }
 
+function clearImgField(key, btn) {
+  if (activeBlockIdx < 0 || !landing) return;
+  const block = landing.blocks[activeBlockIdx];
+  if (!block) return;
+  block.data[key] = '';
+  block.data[key + '_size'] = '';
+  buildFieldEditor(block, activeBlockIdx);
+  renderPreview();
+  autosave();
+}
+
 function setBlockStyleBg(idx, val) {
   if (!landing || !landing.blocks[idx]) return;
   if (!landing.blocks[idx].data._style) landing.blocks[idx].data._style = {};
@@ -1105,6 +1116,8 @@ function buildFieldEditor(block, idx) {
       wrap.appendChild(ce);
     } else if (field.type === 'image') {
       const currentUrl = data[field.key] || '';
+      const sizeKey = field.key + '_size';
+      const currentSize = data[sizeKey] || 'full';
       wrap.innerHTML = `
         <label class="field-label">${field.label}</label>
         <div class="flex gap-2">
@@ -1118,7 +1131,16 @@ function buildFieldEditor(block, idx) {
             <input type="file" accept="image/*" class="hidden" onchange="uploadImgField(this, '${field.key}')"/>
           </label>
         </div>
-        ${currentUrl ? `<img src="${escAttr(currentUrl)}" class="w-full rounded-lg mt-2" style="max-height:100px;object-fit:cover;" onerror="this.style.display='none'"/>` : ''}
+        ${currentUrl ? `
+        <div style="display:flex;gap:6px;align-items:center;margin-top:6px;flex-wrap:wrap">
+          <select data-key="${sizeKey}" style="background:#0e0e0e;border:1px solid rgba(255,255,255,.1);border-radius:6px;padding:3px 6px;font-size:11px;color:#e0e0e0;flex:1">
+            <option value="small" style="background:#0e0e0e;color:#e0e0e0"${currentSize==='small'?' selected':''}>Pequeña (40%)</option>
+            <option value="medium" style="background:#0e0e0e;color:#e0e0e0"${currentSize==='medium'?' selected':''}>Mediana (65%)</option>
+            <option value="full" style="background:#0e0e0e;color:#e0e0e0"${currentSize==='full'?' selected':''}>Completa (100%)</option>
+          </select>
+          <button onclick="clearImgField('${field.key}',this)" style="font-size:10px;padding:3px 8px;border-radius:6px;border:1px solid #3f3f46;background:transparent;color:#ef4444;cursor:pointer">Quitar imagen</button>
+        </div>
+        <img src="${escAttr(currentUrl)}" class="w-full rounded-lg mt-2" style="max-height:100px;object-fit:cover;" onerror="this.style.display='none'"/>` : ''}
       `;
     } else if (field.type === 'layout-preset') {
       // Collage layout presets for galeria block
@@ -1444,8 +1466,9 @@ function buildFieldEditor(block, idx) {
   // Wire real-time sync for all text/select inputs and rich-text editors
   setTimeout(function() {
     document.querySelectorAll('#rp-fields [data-key]').forEach(function(el) {
-      if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') {
-        el.addEventListener('input', function() {
+      if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA' || el.tagName === 'SELECT') {
+        const evName = el.tagName === 'SELECT' ? 'change' : 'input';
+        el.addEventListener(evName, function() {
           if (activeBlockIdx < 0 || !landing) return;
           const b = landing.blocks[activeBlockIdx];
           if (!b) return;
@@ -1464,6 +1487,21 @@ function buildFieldEditor(block, idx) {
           el._rt = setTimeout(function(){ renderPreview(); autosave(); }, 400);
         });
       }
+    });
+    // Auto-sync sublist item inputs (icons, text, description) — debounced
+    var _sublistTimer = null;
+    document.querySelectorAll('#rp-fields .sublist-item input, #rp-fields .sublist-item textarea').forEach(function(el) {
+      el.addEventListener('input', function() {
+        clearTimeout(_sublistTimer);
+        _sublistTimer = setTimeout(function() {
+          if (activeBlockIdx < 0 || !landing) return;
+          var block = landing.blocks[activeBlockIdx];
+          if (!block) return;
+          block.data = collectBlockData(block);
+          renderPreview();
+          autosave();
+        }, 500);
+      });
     });
   }, 0);
 }
@@ -2149,12 +2187,16 @@ function _videoUrl(v) {
   return `https://videos.pexels.com/video-files/${v.id}/${v.id}-hd_1280_720_30fps.mp4`;
 }
 function _categoryThumb(v) {
-  // For Pexels videos (numeric id, no explicit url or cloudfront url):
-  // Use Pexels images CDN which is publicly accessible
-  if (!isNaN(parseInt(v.id))) {
-    return `https://images.pexels.com/videos/${v.id}/pictures/preview-0.jpg`;
-  }
-  return '';
+  return ''; // placeholders handled inline via CSS gradient
+}
+// Generate SVG data-uri placeholder for Pexels videos (no external CDN needed)
+const _CAT_COLORS = {
+  nature:'#1a4731,#2d6a4f', city:'#1a2a4a,#2e4482', abstract:'#2d1b4a,#5b2d8e',
+  tech:'#0d2137,#0e4e82', people:'#3a1a2a,#7a2d5e', mine:'#1a2440,#2E5BFF'
+};
+function _vtgPlaceholder(v) {
+  const [c1,c2] = (_CAT_COLORS[v.category]||'#1a1a2e,#2E5BFF').split(',');
+  return `data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='320' height='180'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='${encodeURIComponent(c1)}'/%3E%3Cstop offset='1' stop-color='${encodeURIComponent(c2)}'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='320' height='180' fill='url(%23g)'/%3E%3Ctext x='160' y='95' text-anchor='middle' dominant-baseline='middle' font-size='48' fill='rgba(255,255,255,0.25)' font-family='sans-serif'%3E%E2%96%B6%3C/text%3E%3C/svg%3E`;
 }
 function _videoThumb(v) {
   // Mux videos → reliable thumbnail via image.mux.com API
@@ -2190,13 +2232,10 @@ function renderVideoGallery() {
     : VIDEO_TEMPLATES.filter(v => v.category === _vtgActiveCat);
   grid.innerHTML = filtered.map(v => {
     const isSel = _vtgSelectedId === v.id;
-    const staticThumb = _videoThumb(v);   // Mux → image.mux.com; Pexels → pexels images CDN
-    const catPoster = _categoryThumb(v);
     const isMux = v.url && v.url.includes('stream.mux.com');
-    // Use <img> for all thumbnail previews (fast, reliable, no video load needed)
-    // Hover → swap to <video> for preview
-    const thumb = staticThumb || catPoster || '';
-    const thumbHtml = `<img src="${thumb}" alt="${v.label}" style="width:100%;height:100%;object-fit:cover;border-radius:6px;display:block" loading="lazy" onerror="this.style.display='none'">`;
+    // Mux: real thumbnail image. All others: SVG gradient placeholder (no external CDN)
+    const thumb = isMux ? _videoThumb(v) : _vtgPlaceholder(v);
+    const thumbHtml = `<img src="${thumb}" alt="${v.label}" style="width:100%;height:100%;object-fit:cover;border-radius:6px;display:block">`;
     return `<div class="vtg-item" data-id="${v.id}" onclick="selectVideo('${v.id}')"
       onmouseenter="hoverVideo(this,true)"
       onmouseleave="hoverVideo(this,false)"
