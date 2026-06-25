@@ -9,9 +9,9 @@
 <script src="https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.min.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
 <link href="https://fonts.googleapis.com/icon?family=Material+Symbols+Outlined" rel="stylesheet"/>
-<script src="./supabase-config.js?v=20260625a"></script>
-<script src="./app.js?v=20260625a"></script>
-<script src="./landing-blocks.js?v=20260625a"></script>
+<script src="./supabase-config.js?v=20260625b"></script>
+<script src="./app.js?v=20260625b"></script>
+<script src="./landing-blocks.js?v=20260625b"></script>
 <script>
   tailwind.config = {
     theme: {
@@ -1166,40 +1166,16 @@ function buildFieldEditor(block, idx) {
     }
 
     if (field.type === 'text' || field.type === 'textarea') {
-      wrap.innerHTML = `<label class="field-label">${field.label}</label>`;
-      // Format toolbar — onmousedown="return false" prevents buttons from stealing focus
-      const btnS = 'width:24px;height:24px;border-radius:4px;border:1px solid #3f3f46;background:transparent;color:#e0e0e0;font-size:12px;cursor:pointer';
-      const toolbar = document.createElement('div');
-      toolbar.style.cssText = 'display:flex;gap:3px;margin-bottom:4px;flex-wrap:wrap;align-items:center';
-      toolbar.innerHTML =
-        '<button type="button" title="Negrita" onmousedown="return false" onclick="fmtField(this,\'b\')" style="' + btnS + ';font-weight:700">B</button>'
-        + '<button type="button" title="Cursiva" onmousedown="return false" onclick="fmtField(this,\'i\')" style="' + btnS + ';font-style:italic">I</button>'
-        + '<select onchange="fmtField(this,\'size\')" title="Tamaño" style="height:24px;border-radius:4px;border:1px solid #3f3f46;background:#1c1c1e;color:#e0e0e0;font-size:10px;cursor:pointer;padding:0 4px">'
-        + '<option value="" style="background:#1c1c1e;color:#e0e0e0">Tamaño</option>'
-        + ['12px','14px','16px','18px','20px','24px','28px','32px','40px','48px'].map(function(s){return '<option value="'+s+'" style="background:#1c1c1e;color:#e0e0e0">'+s.replace('px','')+'</option>';}).join('')
-        + '</select>'
-        + '<select onchange="fmtField(this,\'font\')" title="Fuente" style="height:24px;border-radius:4px;border:1px solid #3f3f46;background:#1c1c1e;color:#e0e0e0;font-size:10px;cursor:pointer;padding:0 4px">'
-        + '<option value="" style="background:#1c1c1e;color:#e0e0e0">Fuente</option>'
-        + [['Plus Jakarta Sans','Jakarta'],['Inter','Inter'],['Playfair Display','Playfair'],['Lato','Lato'],['Dancing Script','Dancing'],['Great Vibes','Great Vibes'],['Montserrat','Montserrat'],['Merriweather','Merriweather'],['Oswald','Oswald'],['Pacifico','Pacifico']].map(function(p){return '<option value="'+p[0]+'" style="background:#1c1c1e;color:#e0e0e0">'+p[1]+'</option>';}).join('')
-        + '</select>'
-        + '<input type="color" value="#ffffff" title="Color del texto" onchange="fmtField(this,\'color\')" style="width:24px;height:24px;border:1px solid #3f3f46;border-radius:4px;background:none;cursor:pointer;padding:1px">'
-        + '<button type="button" title="Quitar formato" onmousedown="return false" onclick="fmtField(this,\'clear\')" style="height:24px;padding:0 6px;border-radius:4px;border:1px solid #3f3f46;background:transparent;color:#a1a1aa;font-size:10px;cursor:pointer">Sin formato</button>';
-      wrap.appendChild(toolbar);
-      // Rich-text editor: contentEditable div — user sees formatted text, never raw HTML
-      const ce = document.createElement('div');
-      ce.className = 'field-input rt-edit';
-      ce.dataset.key = field.key;
-      ce.contentEditable = 'true';
-      ce.setAttribute('data-placeholder', field.placeholder || '');
-      if (field.type === 'textarea') ce.style.minHeight = '64px';
-      // If value is double-escaped HTML (e.g. &lt;span&gt;), unescape it so the editor
-      // shows formatted text instead of literal HTML tags
-      var _raw = data[field.key] || '';
-      if (/&lt;[a-zA-Z]/.test(_raw) && !/<[a-zA-Z]/.test(_raw)) {
-        _raw = _raw.replace(/&lt;/g,'<').replace(/&gt;/g,'>').replace(/&amp;/g,'&').replace(/&quot;/g,'"');
+      // Simple, reliable plain-text input — no contentEditable bugs
+      // Block-level styling (font, size, alignment) is handled by the Estilo panel
+      const isMulti = field.type === 'textarea';
+      // Strip HTML tags from existing values (legacy rich-text data)
+      const rawVal = (data[field.key] || '').replace(/<[^>]+>/g, '').replace(/&lt;/g,'<').replace(/&gt;/g,'>').replace(/&amp;/g,'&').replace(/&quot;/g,'"').replace(/&#39;/g,"'");
+      if (isMulti) {
+        wrap.innerHTML = `<label class="field-label">${field.label}</label><textarea class="field-input" data-key="${field.key}" rows="3" placeholder="${field.placeholder||''}" style="resize:vertical">${rawVal}</textarea>`;
+      } else {
+        wrap.innerHTML = `<label class="field-label">${field.label}</label><input type="text" class="field-input" data-key="${field.key}" value="${escAttr(rawVal)}" placeholder="${field.placeholder||''}"/>`;
       }
-      ce.innerHTML = _raw;
-      wrap.appendChild(ce);
     } else if (field.type === 'image') {
       const currentUrl = data[field.key] || '';
       const sizeKey = field.key + '_size';
