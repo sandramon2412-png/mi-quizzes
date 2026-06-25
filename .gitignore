@@ -40,3 +40,4 @@ out/
 *.pem
 *.key
 credentials.json
+.claude/
