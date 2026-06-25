@@ -250,6 +250,12 @@ function _safeHtml(str) {
   if (!str) return '';
   str = String(str);
 
+  // If the string looks like double-escaped HTML (e.g. &lt;span...) unescape it first
+  // so the tokenizer can process the actual tags
+  if (/&lt;[a-zA-Z]/.test(str) && !/<[a-zA-Z]/.test(str)) {
+    str = str.replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&amp;/g, '&').replace(/&quot;/g, '"');
+  }
+
   // Plain text (no HTML) → escape and convert newlines to <br>
   if (!/<[a-zA-Z]/i.test(str)) {
     return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/\n/g, '<br>');
@@ -289,7 +295,7 @@ function _safeHtml(str) {
     })
     // span with style
     .replace(/<span\b[^>]*>/gi, function(m) {
-      const sm = m.match(/style\s*=\s*"([^"]*)"/i);
+      const sm = m.match(/style\s*=\s*["']([^"']*)["']/i);
       const cs = sm ? cleanStyle(sm[1]) : '';
       const tok = '\x00TAG' + tokens.length + '\x00';
       tokens.push(cs ? '<span style="' + cs + '">' : '<span>');
@@ -302,9 +308,9 @@ function _safeHtml(str) {
     })
     // <font color="X" face="Y"> → convert to <span style>
     .replace(/<font\b[^>]*>/gi, function(m) {
-      const cm = m.match(/color\s*=\s*"([^"]*)"/i);
-      const fm = m.match(/face\s*=\s*"([^"]*)"/i);
-      const sm = m.match(/style\s*=\s*"([^"]*)"/i);
+      const cm = m.match(/color\s*=\s*["']?([^"'\s>]+)["']?/i);
+      const fm = m.match(/face\s*=\s*["']([^"']*)["']/i);
+      const sm = m.match(/style\s*=\s*["']([^"']*)["']/i);
       const parts = [];
       if (cm) parts.push('color:' + cm[1]);
       if (fm) parts.push('font-family:' + fm[1]);
