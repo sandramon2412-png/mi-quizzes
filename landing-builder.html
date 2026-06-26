@@ -2001,33 +2001,46 @@ async function publishLanding() {
 // ═══════════════════════════════════════════════════════════
 async function generateFromChat(msg) {
   const thinkingId = addChatMsg('<span class="dot"></span><span class="dot"></span><span class="dot"></span>', 'assistant', true);
-  // Animate progress bar
   const bar = document.getElementById('gen-progress');
   const barInner = document.getElementById('gen-progress-bar');
   if (bar) bar.classList.remove('hidden');
-  if (barInner) { barInner.style.width = '0%'; setTimeout(() => { barInner.style.width = '60%'; }, 100); }
+  if (barInner) { barInner.style.width = '0%'; setTimeout(() => { barInner.style.width = '55%'; }, 200); }
   try {
     const palId = getCurrentPalette() || 'blue-purple';
-    const blocks = await Claude.generateLandingBlocks(msg, [], palId);
+    // Build schema template first — same as old generateLanding()
+    const defaultBlocks = buildDefaultBlocks(msg);
+    const filledBlocks = await AI.generateLandingBlocks(msg, defaultBlocks);
     if (barInner) barInner.style.width = '100%';
     setTimeout(() => { if (bar) bar.classList.add('hidden'); if (barInner) barInner.style.width = '0%'; }, 600);
     removeMsg(thinkingId);
+    // Merge AI content over defaults (same pattern as old generateLanding)
+    const mergedBlocks = Array.isArray(filledBlocks) && filledBlocks.length > 0
+      ? defaultBlocks.map(def => {
+          const aiBlock = filledBlocks.find(b => b && b.type === def.type);
+          return {
+            ...def,
+            data: (aiBlock && aiBlock.data && Object.keys(aiBlock.data).length > 0)
+              ? { ...def.data, ...aiBlock.data }
+              : def.data,
+          };
+        })
+      : defaultBlocks;
     if (!landing) {
-      landing = { id: 'ld_' + Date.now(), title: 'Mi Landing', blocks, palette: palId, published: false, created_at: new Date().toISOString() };
+      landing = { id: 'ld_' + Date.now(), title: 'Mi Landing', blocks: mergedBlocks, palette: palId, published: false, created_at: new Date().toISOString() };
     } else {
-      landing.blocks = blocks;
+      landing.blocks = mergedBlocks;
       landing.palette = palId;
     }
     renderPreview();
     switchToBuilderMode();
     autosave();
-    const reply = '¡Lista! Tu landing está creada. Decime qué querés cambiar: el texto, los colores, agregar secciones, o lo que necesites.';
+    const reply = '¡Lista! Tu landing está creada. Decime qué querés cambiar: el texto, los colores, agregar secciones, o cualquier cosa.';
     addChatMsg(reply, 'assistant');
     chatHistory.push({ role: 'assistant', content: reply });
   } catch(e) {
     if (bar) bar.classList.add('hidden');
     removeMsg(thinkingId);
-    const errMsg = 'Error al generar la landing: ' + e.message + '. ¿Podés intentar de nuevo?';
+    const errMsg = 'Hubo un error generando la landing: ' + e.message + '. ¿Podés intentar de nuevo con más detalle sobre tu producto?';
     addChatMsg(errMsg, 'assistant');
     chatHistory.push({ role: 'assistant', content: errMsg });
   }
