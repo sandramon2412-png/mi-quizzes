@@ -161,11 +161,104 @@
 <!-- ═══════════════════════════ MAIN AREA ═══════════════════════════ -->
 <main class="flex h-[calc(100vh-56px)]">
 
-<!-- ═══ LEFT PANEL ═══ -->
-<aside id="left-panel" class="shrink-0 border-r border-outline-variant/20 flex flex-col bg-surface-container-low overflow-hidden" style="width:320px;min-width:300px;">
+<!-- ═══ LEFT PANEL — CHAT ONLY ═══ -->
+<aside id="left-panel" class="shrink-0 border-r border-outline-variant/20 flex flex-col bg-surface-container-low overflow-hidden" style="width:340px;min-width:300px;">
 
-  <!-- ── STARTER FORM (initial state) ── -->
-  <div id="starter" class="flex-1 overflow-y-auto p-4 space-y-3">
+  <!-- ── CHAT HEADER ── -->
+  <div class="px-4 py-3 border-b border-outline-variant/15 shrink-0 flex items-center gap-2">
+    <div class="w-8 h-8 rounded-lg primary-gradient flex items-center justify-center shrink-0">
+      <span class="material-symbols-outlined text-white" style="font-size:16px">auto_awesome</span>
+    </div>
+    <div class="flex-1 min-w-0">
+      <p class="text-sm font-bold">Asistente IA</p>
+      <p class="text-[10px] text-on-surface-variant/60">Describí lo que querés, la IA lo hace</p>
+    </div>
+    <button id="btn-palette-toggle" onclick="document.getElementById('palette-panel').classList.toggle('hidden')" class="h-7 px-2 rounded-lg bg-surface-container-high hover:bg-surface-container-highest text-xs font-semibold text-on-surface-variant flex items-center gap-1 transition">
+      <span class="material-symbols-outlined" style="font-size:14px">palette</span>
+      <span class="hidden sm:inline">Paleta</span>
+    </button>
+  </div>
+
+  <!-- Palette quick panel (collapsed by default) -->
+  <div id="palette-panel" class="hidden border-b border-outline-variant/10 px-3 py-2 shrink-0">
+    <div class="flex flex-wrap gap-1.5 mb-1.5" id="palette-swatches"></div>
+    <p class="text-[10px] text-on-surface-variant/60 mb-1.5" id="palette-name-lbl"></p>
+    <select id="fld-font" class="field-input" style="font-size:11px;padding:5px 8px" onchange="onFontChange()">
+      <option value="jakarta">Plus Jakarta Sans</option>
+      <option value="inter">Inter</option>
+      <option value="playfair">Playfair Display</option>
+      <option value="lato">Lato</option>
+      <option value="dancing">Dancing Script</option>
+      <option value="greatvibes">Great Vibes</option>
+    </select>
+  </div>
+
+  <!-- ── CHAT LOG ── -->
+  <div id="chat-log" class="flex-1 overflow-y-auto p-3 space-y-3 min-h-0"></div>
+
+  <!-- ── CHAT INPUT ── -->
+  <div class="p-3 border-t border-outline-variant/15 shrink-0">
+    <div id="gen-progress" class="hidden mb-2 rounded-lg overflow-hidden" style="height:3px;background:rgba(255,255,255,0.08)">
+      <div id="gen-progress-bar" style="height:100%;background:linear-gradient(90deg,#2E5BFF,#7c3aed);width:0%;transition:width 1s ease;border-radius:2px"></div>
+    </div>
+    <div class="flex gap-2">
+      <textarea id="chat-input" rows="2"
+        placeholder="Describí tu landing o pedí un cambio…"
+        class="field-input text-sm resize-none flex-1" style="border-radius:10px;padding:8px 10px;min-height:52px"></textarea>
+      <button id="chat-send" class="w-10 shrink-0 primary-gradient rounded-xl flex items-center justify-center self-end hover:opacity-90 transition" style="height:52px">
+        <span class="material-symbols-outlined text-white" style="font-size:18px">send</span>
+      </button>
+    </div>
+    <p class="text-[10px] text-on-surface-variant/40 mt-1.5 text-center">Enter para enviar · Shift+Enter para nueva línea</p>
+    <button id="chat-undo-btn" class="hidden w-full mt-1.5 h-7 rounded-lg text-[11px] font-semibold text-on-surface-variant hover:text-on-surface border border-outline-variant/20 hover:bg-surface-container transition items-center justify-center gap-1">
+      <span class="material-symbols-outlined" style="font-size:13px">undo</span>
+      Deshacer último cambio
+    </button>
+  </div>
+
+  <!-- Hidden inputs kept for buildBrief() compatibility -->
+  <div class="hidden">
+    <input id="fld-product" type="text"/>
+    <input id="fld-audience" type="text"/>
+    <input id="fld-price" type="text"/>
+    <textarea id="fld-bonuses"></textarea>
+    <input id="fld-stats" type="text"/>
+    <textarea id="fld-extras"></textarea>
+    <textarea id="fld-prompt"></textarea>
+    <input id="fld-ref-url" type="text"/>
+    <textarea id="fld-paste-content"></textarea>
+    <select id="fld-hero-bg-type"><option value=""></option></select>
+    <input id="fld-hero-bg-value" type="text"/>
+    <input id="fld-hero-video-url" type="text"/>
+    <button id="toggle-interactive" data-active="false"></button>
+    <input id="fld-paste-file" type="file"/>
+    <div id="bld-swatches"></div>
+    <div id="blocks-list"></div>
+    <button id="btn-add-block"></button>
+    <button id="btn-generate"></button>
+    <div id="vtg-grid"></div>
+    <div id="vtg-cat-bar"></div>
+    <div id="gen-progress-bar-old"></div>
+    <div id="builder-mode"></div>
+    <div id="starter" style="display:none"></div>
+  </div>
+  <!-- END HIDDEN -->
+
+  <!-- DUMMY so old code doesn't crash -->
+  <div style="display:none">
+    <div id="chat-active-indicator"></div>
+    <span id="chat-active-label"></span>
+    <button id="chat-toggle"></button>
+    <div id="chat-area"></div>
+    <div id="rp-fields"></div>
+    <span id="rp-title"></span>
+    <button id="rp-save"></button>
+    <div id="rp-empty"></div>
+    <div id="rp-body"></div>
+  </div>
+
+  <!-- DUMMY for old starter form that references this -->
+  <div id="_starter_compat" style="display:none">
     <div class="flex items-center gap-2 mb-1">
       <div class="w-9 h-9 rounded-xl primary-gradient flex items-center justify-center">
         <span class="material-symbols-outlined text-white" style="font-size:19px">auto_awesome</span>
@@ -413,11 +506,11 @@
             </button>
           </div>
         </div>
-        <div id="chat-log" class="overflow-y-auto p-2 space-y-2" style="max-height:220px;min-height:80px;"></div>
+        <div id="_legacy-chat-log" class="overflow-y-auto p-2 space-y-2" style="max-height:220px;min-height:80px;"></div>
         <div class="flex gap-2 p-2 border-t border-outline-variant/15">
-          <textarea id="chat-input" rows="2" placeholder="Cambia el título del hero, agrega un testimonio de Ana…"
+          <textarea id="_legacy-chat-input" rows="2" placeholder="Cambia el título del hero, agrega un testimonio de Ana…"
                     class="field-input text-xs resize-none flex-1" style="border-radius:8px;padding:6px 8px;"></textarea>
-          <button id="chat-send" class="w-8 h-8 shrink-0 primary-gradient rounded-lg flex items-center justify-center self-end hover:opacity-90 transition">
+          <button id="_legacy-chat-send" class="w-8 h-8 shrink-0 primary-gradient rounded-lg flex items-center justify-center self-end hover:opacity-90 transition">
             <span class="material-symbols-outlined text-white" style="font-size:15px">send</span>
           </button>
         </div>
@@ -453,7 +546,7 @@
     <!-- Starter placeholder -->
     <div id="preview-placeholder" class="flex flex-col items-center justify-center h-full gap-4 text-on-surface-variant/40">
       <span class="material-symbols-outlined" style="font-size:48px">web</span>
-      <p class="text-sm">Completá el formulario y hacé click en "Generar landing"</p>
+      <p class="text-sm">Describí tu landing en el chat y la IA la crea en segundos</p>
     </div>
     <iframe id="preview-frame" class="hidden" style="width:100%;height:100%;border:none;background:#fff;"></iframe>
   </div>
@@ -1847,24 +1940,11 @@ async function generateLanding() {
 // BUILDER MODE SWITCH
 // ═══════════════════════════════════════════════════════════
 function switchToBuilderMode() {
-  document.getElementById('starter').classList.add('hidden');
-  const bm = document.getElementById('builder-mode');
-  bm.classList.remove('hidden');
-  bm.classList.add('flex');
-  document.getElementById('right-panel').classList.remove('hidden');
+  // Chat-first UI: no builder-mode or right-panel to show
   document.getElementById('preview-toolbar').classList.remove('hidden');
   document.getElementById('preview-toolbar').classList.add('flex');
   document.getElementById('btn-open-tab').classList.remove('hidden');
   document.getElementById('btn-open-tab').classList.add('flex');
-
-  // Builder palette
-  buildSwatches('bld-swatches', (id) => {
-    if (landing) {
-      landing.palette = id;
-      renderPreview();
-      autosave();
-    }
-  }, getCurrentPalette());
 }
 
 // ═══════════════════════════════════════════════════════════
@@ -1919,14 +1999,52 @@ async function publishLanding() {
 // ═══════════════════════════════════════════════════════════
 // CHAT (block-aware)
 // ═══════════════════════════════════════════════════════════
+async function generateFromChat(msg) {
+  const thinkingId = addChatMsg('<span class="dot"></span><span class="dot"></span><span class="dot"></span>', 'assistant', true);
+  // Animate progress bar
+  const bar = document.getElementById('gen-progress');
+  const barInner = document.getElementById('gen-progress-bar');
+  if (bar) bar.classList.remove('hidden');
+  if (barInner) { barInner.style.width = '0%'; setTimeout(() => { barInner.style.width = '60%'; }, 100); }
+  try {
+    const palId = getCurrentPalette() || 'blue-purple';
+    const blocks = await Claude.generateLandingBlocks(msg, [], palId);
+    if (barInner) barInner.style.width = '100%';
+    setTimeout(() => { if (bar) bar.classList.add('hidden'); if (barInner) barInner.style.width = '0%'; }, 600);
+    removeMsg(thinkingId);
+    if (!landing) {
+      landing = { id: 'ld_' + Date.now(), title: 'Mi Landing', blocks, palette: palId, published: false, created_at: new Date().toISOString() };
+    } else {
+      landing.blocks = blocks;
+      landing.palette = palId;
+    }
+    renderPreview();
+    switchToBuilderMode();
+    autosave();
+    const reply = '¡Lista! Tu landing está creada. Decime qué querés cambiar: el texto, los colores, agregar secciones, o lo que necesites.';
+    addChatMsg(reply, 'assistant');
+    chatHistory.push({ role: 'assistant', content: reply });
+  } catch(e) {
+    if (bar) bar.classList.add('hidden');
+    removeMsg(thinkingId);
+    const errMsg = 'Error al generar la landing: ' + e.message + '. ¿Podés intentar de nuevo?';
+    addChatMsg(errMsg, 'assistant');
+    chatHistory.push({ role: 'assistant', content: errMsg });
+  }
+}
+
 async function sendChat() {
   const input = document.getElementById('chat-input');
   const msg = input.value.trim();
-  if (!msg || !landing) return;
-
+  if (!msg) return;
   addChatMsg(msg, 'user');
   chatHistory.push({ role: 'user', content: msg });
   input.value = '';
+
+  if (!landing || !landing.blocks || !landing.blocks.length) {
+    await generateFromChat(msg);
+    return;
+  }
 
   const thinkingId = addChatMsg('<span class="dot"></span><span class="dot"></span><span class="dot"></span>', 'assistant', true);
 
@@ -2444,14 +2562,13 @@ function initUI() {
     if (e.target === document.getElementById('add-block-modal'))
       document.getElementById('add-block-modal').classList.add('hidden');
   });
-  document.getElementById('chat-toggle').addEventListener('click', () => {
-    toggleChat();
-    // Show welcome message on first open
+  // Welcome message on load
+  setTimeout(() => {
     const log = document.getElementById('chat-log');
-    if (log && log.children.length === 0 && landing) {
-      addChatMsg('Hola! Decime qué querés cambiar en la landing. Por ejemplo: "cambiá el título del hero", "agregá un testimonio de María", "actualizá los beneficios para ser más directos"…', 'assistant');
+    if (log && log.children.length === 0) {
+      addChatMsg('¡Hola! Describime la landing que querés crear. Por ejemplo: <em>"Quiero una landing para mi curso de biodecodificación, precio $197, para mujeres de 30-50 años que quieren entender sus síntomas"</em>', 'assistant');
     }
-  });
+  }, 400);
   document.getElementById('chat-send').addEventListener('click', sendChat);
   document.getElementById('chat-undo-btn').addEventListener('click', () => {
     if (!lastBlockSnapshot || !landing) return;
