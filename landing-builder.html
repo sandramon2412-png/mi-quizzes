@@ -202,6 +202,9 @@
       <div id="gen-progress-bar" style="height:100%;background:linear-gradient(90deg,#2E5BFF,#7c3aed);width:0%;transition:width 1s ease;border-radius:2px"></div>
     </div>
     <div class="flex gap-2">
+      <button id="chat-attach" title="Subir tu propia imagen" class="w-10 shrink-0 rounded-xl bg-surface-container-high hover:bg-surface-container-highest flex items-center justify-center self-end transition" style="height:52px">
+        <span class="material-symbols-outlined text-on-surface-variant" style="font-size:18px">add_photo_alternate</span>
+      </button>
       <textarea id="chat-input" rows="2"
         placeholder="Describí tu landing o pedí un cambio…"
         class="field-input text-sm resize-none flex-1" style="border-radius:10px;padding:8px 10px;min-height:52px"></textarea>
@@ -236,8 +239,6 @@
     <div id="blocks-list"></div>
     <button id="btn-add-block"></button>
     <button id="btn-generate"></button>
-    <div id="vtg-grid"></div>
-    <div id="vtg-cat-bar"></div>
     <div id="gen-progress-bar-old"></div>
     <div id="builder-mode"></div>
     <div id="starter" style="display:none"></div>
@@ -409,17 +410,8 @@
         <input id="fld-hero-video-url" type="text" class="field-input mb-2" placeholder="URL de video .mp4 de fondo" oninput="_vtgSelectedId=null;renderVideoGallery()"/>
         <p class="text-[10px] text-on-surface-variant/60 mb-2">Galería — hover para preview, clic para usar:</p>
         <!-- Category filter -->
-        <div style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:8px" id="vtg-cat-bar">
-          <button class="vtg-cat-btn" onclick="filterVideoCategory('all',this)" style="font-size:9px;font-weight:700;padding:3px 8px;border-radius:4px;border:none;cursor:pointer;letter-spacing:.04em;background:rgba(255,255,255,0.07);color:#9a9a9a">TODOS</button>
-          <button class="vtg-cat-btn" onclick="filterVideoCategory('mine',this)" style="font-size:9px;font-weight:700;padding:3px 8px;border-radius:4px;border:none;cursor:pointer;letter-spacing:.04em;background:linear-gradient(135deg,#2E5BFF,#7c3aed);color:#fff">MIS VIDEOS</button>
-          <button class="vtg-cat-btn" onclick="filterVideoCategory('people',this)" style="font-size:9px;font-weight:700;padding:3px 8px;border-radius:4px;border:none;cursor:pointer;letter-spacing:.04em;background:rgba(255,255,255,0.07);color:#9a9a9a">PERSONAS</button>
-          <button class="vtg-cat-btn" onclick="filterVideoCategory('tech',this)" style="font-size:9px;font-weight:700;padding:3px 8px;border-radius:4px;border:none;cursor:pointer;letter-spacing:.04em;background:rgba(255,255,255,0.07);color:#9a9a9a">TECH</button>
-          <button class="vtg-cat-btn" onclick="filterVideoCategory('abstract',this)" style="font-size:9px;font-weight:700;padding:3px 8px;border-radius:4px;border:none;cursor:pointer;letter-spacing:.04em;background:rgba(255,255,255,0.07);color:#9a9a9a">ABSTRACT</button>
-          <button class="vtg-cat-btn" onclick="filterVideoCategory('city',this)" style="font-size:9px;font-weight:700;padding:3px 8px;border-radius:4px;border:none;cursor:pointer;letter-spacing:.04em;background:rgba(255,255,255,0.07);color:#9a9a9a">CIUDAD</button>
-          <button class="vtg-cat-btn" onclick="filterVideoCategory('nature',this)" style="font-size:9px;font-weight:700;padding:3px 8px;border-radius:4px;border:none;cursor:pointer;letter-spacing:.04em;background:rgba(255,255,255,0.07);color:#9a9a9a">NATURALEZA</button>
-        </div>
-        <div id="vtg-grid" style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;max-height:320px;overflow-y:auto"></div>
-        <p class="text-[10px] text-on-surface-variant/50 mt-1">O pegá tu URL arriba. Videos de Pexels (gratis, sin atribución).</p>
+        <div id="vtg-cat-bar-legacy"></div>
+        <div id="vtg-grid-legacy"></div>
       </div>
 
       <!-- Prompt exacto -->
@@ -536,6 +528,10 @@
       </button>
     </div>
     <div class="flex-1"></div>
+    <button id="btn-media" class="h-7 px-3 rounded-lg bg-surface-container-high hover:bg-surface-container-highest text-[11px] font-semibold flex items-center gap-1 transition-colors text-on-surface-variant hover:text-on-surface" title="Video de fondo del hero">
+      <span class="material-symbols-outlined" style="font-size:13px">movie</span>
+      Video de fondo
+    </button>
     <button id="btn-regen" class="h-7 px-3 rounded-lg bg-surface-container-high hover:bg-surface-container-highest text-[11px] font-semibold flex items-center gap-1 transition-colors text-on-surface-variant hover:text-on-surface" title="Regenerar toda la landing">
       <span class="material-symbols-outlined" style="font-size:13px">refresh</span>
       Regenerar todo
@@ -585,6 +581,38 @@
     <div id="add-block-grid" class="grid grid-cols-2 gap-2"></div>
   </div>
 </div>
+
+<!-- ── MEDIA (VIDEO BG) MODAL ── -->
+<div id="media-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center" style="background:rgba(0,0,0,.7)">
+  <div class="bg-surface-container-high rounded-2xl p-5 w-[460px] max-w-[92vw] max-h-[85vh] overflow-y-auto shadow-2xl border border-outline-variant/20">
+    <div class="flex items-center gap-2 mb-3">
+      <span class="material-symbols-outlined icon-gradient" style="font-size:18px">movie</span>
+      <h3 class="font-bold text-sm">Video de fondo del hero</h3>
+      <button id="media-close" class="ml-auto text-on-surface-variant hover:text-on-surface">
+        <span class="material-symbols-outlined" style="font-size:18px">close</span>
+      </button>
+    </div>
+    <p class="text-[11px] text-on-surface-variant/70 mb-2">Elegí un video — hover para preview, clic para aplicarlo al hero.</p>
+    <input id="media-video-url" type="text" class="field-input mb-2" placeholder="O pegá la URL de un video .mp4" oninput="_vtgSelectedId=null;renderVideoGallery();applyHeroVideo(this.value.trim())"/>
+    <div style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:8px" id="vtg-cat-bar">
+      <button class="vtg-cat-btn" onclick="filterVideoCategory('all',this)" style="font-size:9px;font-weight:700;padding:3px 8px;border-radius:4px;border:none;cursor:pointer;letter-spacing:.04em;background:rgba(255,255,255,0.07);color:#9a9a9a">TODOS</button>
+      <button class="vtg-cat-btn" onclick="filterVideoCategory('mine',this)" style="font-size:9px;font-weight:700;padding:3px 8px;border-radius:4px;border:none;cursor:pointer;letter-spacing:.04em;background:linear-gradient(135deg,#2E5BFF,#7c3aed);color:#fff">MIS VIDEOS</button>
+      <button class="vtg-cat-btn" onclick="filterVideoCategory('people',this)" style="font-size:9px;font-weight:700;padding:3px 8px;border-radius:4px;border:none;cursor:pointer;letter-spacing:.04em;background:rgba(255,255,255,0.07);color:#9a9a9a">PERSONAS</button>
+      <button class="vtg-cat-btn" onclick="filterVideoCategory('tech',this)" style="font-size:9px;font-weight:700;padding:3px 8px;border-radius:4px;border:none;cursor:pointer;letter-spacing:.04em;background:rgba(255,255,255,0.07);color:#9a9a9a">TECH</button>
+      <button class="vtg-cat-btn" onclick="filterVideoCategory('abstract',this)" style="font-size:9px;font-weight:700;padding:3px 8px;border-radius:4px;border:none;cursor:pointer;letter-spacing:.04em;background:rgba(255,255,255,0.07);color:#9a9a9a">ABSTRACT</button>
+      <button class="vtg-cat-btn" onclick="filterVideoCategory('city',this)" style="font-size:9px;font-weight:700;padding:3px 8px;border-radius:4px;border:none;cursor:pointer;letter-spacing:.04em;background:rgba(255,255,255,0.07);color:#9a9a9a">CIUDAD</button>
+      <button class="vtg-cat-btn" onclick="filterVideoCategory('nature',this)" style="font-size:9px;font-weight:700;padding:3px 8px;border-radius:4px;border:none;cursor:pointer;letter-spacing:.04em;background:rgba(255,255,255,0.07);color:#9a9a9a">NATURALEZA</button>
+    </div>
+    <div id="vtg-grid" style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px"></div>
+    <button id="media-remove-video" class="w-full mt-3 h-8 rounded-lg text-[11px] font-semibold text-on-surface-variant hover:text-on-surface border border-outline-variant/20 hover:bg-surface-container transition flex items-center justify-center gap-1">
+      <span class="material-symbols-outlined" style="font-size:13px">block</span>
+      Quitar video de fondo
+    </button>
+  </div>
+</div>
+
+<!-- Hidden file input for chat image upload -->
+<input id="chat-img-input" type="file" accept="image/*" class="hidden"/>
 
 <!-- ── TOAST ── -->
 <div id="toast" class="hidden fixed top-4 left-1/2 -translate-x-1/2 z-50 px-4 py-2 rounded-xl text-sm font-semibold shadow-xl toast" style="background:#1e2a45;border:1px solid #2E5BFF44;"></div>
@@ -2467,22 +2495,64 @@ function selectVideo(id) {
   _vtgSelectedId = _vtgSelectedId === id ? null : id;
   const v = VIDEO_TEMPLATES.find(x => x.id === id);
   const url = (v && _vtgSelectedId) ? _videoUrl(v) : '';
-  // Update the generation-form input
-  const urlInput = document.getElementById('fld-hero-video-url');
-  if (urlInput) urlInput.value = url;
-  // If a hero block is currently active in the editor, update it directly
-  if (activeBlockIdx >= 0 && landing && landing.blocks[activeBlockIdx]) {
-    const b = landing.blocks[activeBlockIdx];
-    if (b.type === 'hero') {
-      b.data.video_url = url;
-      // Also update the right-panel text input if it exists
-      const rpInput = document.querySelector('#rp-fields [data-key="video_url"]');
-      if (rpInput) rpInput.value = url;
-      renderPreview();
-      autosave();
-    }
-  }
+  applyHeroVideo(url);
   renderVideoGallery();
+}
+
+// Apply a video-bg URL to the first hero block (chat-first: no active block needed)
+function applyHeroVideo(url) {
+  if (!landing || !landing.blocks) return;
+  const heroIdx = landing.blocks.findIndex(b => b.type === 'hero');
+  if (heroIdx < 0) { showToast('Esta landing no tiene sección hero', true); return; }
+  landing.blocks[heroIdx].data.video_url = url || '';
+  renderPreview();
+  autosave();
+  if (url) showToast('Video de fondo aplicado al hero');
+}
+
+// ── Chat image upload: apply user's own photo to a section ──
+let _pendingChatImage = null;
+function _imageTargets() {
+  // Blocks that have an image field (type:'image' with a single key)
+  const out = [];
+  (landing.blocks || []).forEach((b, i) => {
+    const fields = (window.BLOCK_FIELDS && window.BLOCK_FIELDS[b.type]) || [];
+    const imgField = fields.find(f => f.type === 'image' && f.key);
+    if (imgField) {
+      const label = (window.BLOCK_LABELS && window.BLOCK_LABELS[b.type]) || b.type;
+      out.push({ idx: i, key: imgField.key, label });
+    }
+  });
+  return out;
+}
+function handleChatImage(dataUrl) {
+  if (!landing) return;
+  _pendingChatImage = dataUrl;
+  const targets = _imageTargets();
+  // Show the uploaded thumbnail in the chat
+  addChatMsg(`<div class="flex flex-col gap-1.5"><img src="${dataUrl}" style="max-width:140px;border-radius:8px;border:1px solid rgba(255,255,255,.15)"/><span>Imagen subida</span></div>`, 'user');
+  if (targets.length === 0) {
+    addChatMsg('Esta landing no tiene ninguna sección con imagen. Agregá un hero o una sección de imagen primero.', 'assistant');
+    return;
+  }
+  if (targets.length === 1) {
+    applyChatImageTo(targets[0].idx, targets[0].key);
+    return;
+  }
+  // Multiple targets → ask where to put it via chips
+  const chips = targets.map(t =>
+    `<button onclick="applyChatImageTo(${t.idx},'${t.key}')" class="px-2.5 py-1 rounded-lg text-[11px] font-semibold bg-surface-container-high hover:bg-surface-container-highest border border-outline-variant/20 transition">${t.label}</button>`
+  ).join('');
+  addChatMsg(`<div class="flex flex-col gap-2"><span>¿En qué sección la pongo?</span><div class="flex flex-wrap gap-1.5">${chips}</div></div>`, 'assistant');
+}
+function applyChatImageTo(idx, key) {
+  if (!_pendingChatImage || !landing || !landing.blocks[idx]) return;
+  landing.blocks[idx].data[key] = _pendingChatImage;
+  renderPreview();
+  autosave();
+  const label = (window.BLOCK_LABELS && window.BLOCK_LABELS[landing.blocks[idx].type]) || landing.blocks[idx].type;
+  addChatMsg(`Imagen aplicada en la sección <strong>${label}</strong>. Si querés ponerla en otra, subí la imagen de nuevo.`, 'assistant');
+  _pendingChatImage = null;
 }
 
 function filterVideoCategory(key, btn) {
@@ -2583,6 +2653,46 @@ function initUI() {
     }
   }, 400);
   document.getElementById('chat-send').addEventListener('click', sendChat);
+
+  // ── MEDIA (video bg) modal ──
+  const mediaModal = document.getElementById('media-modal');
+  document.getElementById('btn-media').addEventListener('click', () => {
+    if (!landing || !landing.blocks || !landing.blocks.length) { showToast('Primero creá una landing desde el chat', true); return; }
+    if (!landing.blocks.some(b => b.type === 'hero')) { showToast('Esta landing no tiene sección hero', true); return; }
+    // Reflect current hero video in the gallery selection
+    const hero = landing.blocks.find(b => b.type === 'hero');
+    const cur = hero && hero.data ? (hero.data.video_url || '') : '';
+    const match = VIDEO_TEMPLATES.find(v => _videoUrl(v) === cur);
+    _vtgSelectedId = match ? match.id : null;
+    const urlIn = document.getElementById('media-video-url');
+    if (urlIn) urlIn.value = (cur && !match) ? cur : '';
+    renderVideoGallery();
+    mediaModal.classList.remove('hidden');
+  });
+  document.getElementById('media-close').addEventListener('click', () => mediaModal.classList.add('hidden'));
+  mediaModal.addEventListener('click', e => { if (e.target === mediaModal) mediaModal.classList.add('hidden'); });
+  document.getElementById('media-remove-video').addEventListener('click', () => {
+    _vtgSelectedId = null;
+    const urlIn = document.getElementById('media-video-url');
+    if (urlIn) urlIn.value = '';
+    applyHeroVideo('');
+    renderVideoGallery();
+    showToast('Video de fondo quitado');
+  });
+
+  // ── CHAT image upload ──
+  const imgInput = document.getElementById('chat-img-input');
+  document.getElementById('chat-attach').addEventListener('click', () => {
+    if (!landing || !landing.blocks || !landing.blocks.length) { showToast('Primero creá una landing desde el chat', true); return; }
+    imgInput.click();
+  });
+  imgInput.addEventListener('change', () => {
+    const file = imgInput.files && imgInput.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = e => { handleChatImage(e.target.result); imgInput.value = ''; };
+    reader.readAsDataURL(file);
+  });
   document.getElementById('chat-undo-btn').addEventListener('click', () => {
     if (!lastBlockSnapshot || !landing) return;
     for (const snap of lastBlockSnapshot) {
