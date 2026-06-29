@@ -9,9 +9,9 @@
 <script src="https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.min.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
 <link href="https://fonts.googleapis.com/icon?family=Material+Symbols+Outlined" rel="stylesheet"/>
-<script src="./supabase-config.js?v=20260628a"></script>
-<script src="./app.js?v=20260628a"></script>
-<script src="./landing-blocks.js?v=20260628a"></script>
+<script src="./supabase-config.js?v=20260628b"></script>
+<script src="./app.js?v=20260628b"></script>
+<script src="./landing-blocks.js?v=20260628b"></script>
 <script>
   tailwind.config = {
     theme: {
@@ -2513,26 +2513,36 @@ function applyHeroVideo(url) {
 // ── Chat image upload: apply user's own photo to a section ──
 let _pendingChatImage = null;
 function _imageTargets() {
-  // Blocks that have an image field (type:'image' with a single key)
+  // Blocks that can hold an image. Robust: by BLOCK_FIELDS, by hero type, or by existing image key.
   const out = [];
+  const IMG_KEYS = ['image_url', 'logo_img', 'image', 'img', 'photo'];
   (landing.blocks || []).forEach((b, i) => {
     const fields = (window.BLOCK_FIELDS && window.BLOCK_FIELDS[b.type]) || [];
     const imgField = fields.find(f => f.type === 'image' && f.key);
-    if (imgField) {
+    let key = imgField ? imgField.key : null;
+    // Fallback 1: hero always accepts image_url
+    if (!key && b.type === 'hero') key = 'image_url';
+    // Fallback 2: data already has a known image key
+    if (!key && b.data) key = IMG_KEYS.find(k => k in b.data) || null;
+    if (key) {
       const label = (window.BLOCK_LABELS && window.BLOCK_LABELS[b.type]) || b.type;
-      out.push({ idx: i, key: imgField.key, label });
+      out.push({ idx: i, key, label });
     }
   });
   return out;
 }
 function handleChatImage(dataUrl) {
-  if (!landing) return;
+  if (!landing || !landing.blocks || !landing.blocks.length) {
+    addChatMsg('Primero creá una landing describiéndola en el chat. Después subí tu imagen y la pongo en la sección que quieras.', 'assistant');
+    return;
+  }
   _pendingChatImage = dataUrl;
   const targets = _imageTargets();
   // Show the uploaded thumbnail in the chat
   addChatMsg(`<div class="flex flex-col gap-1.5"><img src="${dataUrl}" style="max-width:140px;border-radius:8px;border:1px solid rgba(255,255,255,.15)"/><span>Imagen subida</span></div>`, 'user');
   if (targets.length === 0) {
-    addChatMsg('Esta landing no tiene ninguna sección con imagen. Agregá un hero o una sección de imagen primero.', 'assistant');
+    // Last-resort fallback: apply to the first block as image_url
+    applyChatImageTo(0, 'image_url');
     return;
   }
   if (targets.length === 1) {
