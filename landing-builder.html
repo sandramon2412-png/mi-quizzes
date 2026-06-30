@@ -9,9 +9,9 @@
 <script src="https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.min.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
 <link href="https://fonts.googleapis.com/icon?family=Material+Symbols+Outlined" rel="stylesheet"/>
-<script src="./supabase-config.js?v=20260628b"></script>
-<script src="./app.js?v=20260628b"></script>
-<script src="./landing-blocks.js?v=20260628b"></script>
+<script src="./supabase-config.js?v=20260628c"></script>
+<script src="./app.js?v=20260628c"></script>
+<script src="./landing-blocks.js?v=20260628c"></script>
 <script>
   tailwind.config = {
     theme: {
@@ -2099,6 +2099,21 @@ async function sendChat() {
 
     removeMsg(thinkingId);
 
+    if (result.action === 'palette' && result.palette) {
+      const valid = (window.LANDING_PALETTES_DEF || []).some(p => p.id === result.palette);
+      if (valid) {
+        landing.palette = result.palette;
+        renderPreview();
+        autosave();
+        const r = result.reply || 'Listo, cambié los colores.';
+        addChatMsg(r, 'assistant');
+        chatHistory.push({ role: 'assistant', content: r });
+      } else {
+        addChatMsg('No reconocí esa paleta. Probá: azul, púrpura, tonos cálidos, verde…', 'assistant');
+      }
+      return;
+    }
+
     if (result.action === 'edit' && Array.isArray(result.changes) && result.changes.length > 0) {
       // Save snapshot of ALL changed blocks for undo
       lastBlockSnapshot = result.changes.map(c => ({
@@ -2627,6 +2642,12 @@ function initUI() {
   buildSwatches('palette-swatches', (id) => {
     const p = (window.LANDING_PALETTES_DEF || []).find(x => x.id === id);
     document.getElementById('palette-name-lbl').textContent = p ? p.name : '';
+    // Apply to the live landing
+    if (landing) {
+      landing.palette = id;
+      renderPreview();
+      autosave();
+    }
   }, 'blue-purple');
   const defPal = (window.LANDING_PALETTES_DEF || []).find(p => p.id === 'blue-purple');
   document.getElementById('palette-name-lbl').textContent = defPal ? defPal.name : 'Azul → Púrpura';

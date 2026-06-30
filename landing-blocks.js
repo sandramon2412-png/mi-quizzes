@@ -145,6 +145,7 @@ const BLOCK_DEFAULTS = {
   },
   testimonios: {
     headline: 'Lo que dicen quienes ya lo vivieron',
+    columns: '3',
     items: [
       { name: '', role: '', text: '', initials: '', result: '' },
       { name: '', role: '', text: '', initials: '', result: '' },
@@ -587,6 +588,7 @@ body>*:not(.ld-orb){position:relative;z-index:1}
   .ld-hero-cols{flex-direction:column!important;gap:28px!important}
   .ld-hero-cols > *{width:100%!important;max-width:100%!important;flex:none!important}
   .ld-g3{grid-template-columns:repeat(2,1fr)!important}
+  .ld-tgrid{grid-template-columns:repeat(2,1fr)!important}
   .ld-nav-links{display:none!important}
   #ld-nav-ham{display:flex!important}
   .ld-btn-lg{font-size:17px!important;padding:18px 32px!important}
@@ -601,7 +603,7 @@ body>*:not(.ld-orb){position:relative;z-index:1}
   .ld-body{font-size:16px}
   .ld-section{padding:52px 0}
   .ld-section-sm{padding:36px 0}
-  .ld-g2,.ld-g3,.ld-g4{grid-template-columns:1fr!important}
+  .ld-g2,.ld-g3,.ld-g4,.ld-tgrid{grid-template-columns:1fr!important}
   .ld-hero-cols{flex-direction:column!important;gap:28px!important}
   .ld-hero-cols > *{order:unset!important;width:100%!important;max-width:100%!important;flex:none!important}
   .ld-nav-links{display:none!important}
@@ -878,13 +880,14 @@ function _renderTestimonios(data, pal) {
       </div>
      </div>`;
   }).join('');
+  const tcols = Math.min(Math.max(parseInt(data.columns) || 3, 1), 4);
   return `
 <section id="ld-testimonios" class="ld-section" style="background:linear-gradient(135deg,rgba(${_hexToRgb(pal.from)},0.06) 0%,transparent 50%,rgba(${_hexToRgb(pal.to)},0.06) 100%);${_blockStyle(data)}">
   <div class="ld-inner">
     <div class="ld-center" style="margin-bottom:56px">
       <h2 class="ld-h2" style="${_titleStyle(data)}">${_safeHtml(data.headline||'Lo que dicen nuestros alumnos')}</h2>
     </div>
-    <div class="ld-g3">${items}</div>
+    <div class="ld-tgrid" style="display:grid;grid-template-columns:repeat(${tcols},1fr);gap:20px;align-items:stretch">${items}</div>
   </div>
 </section>`;
 }
@@ -1328,6 +1331,7 @@ const BLOCK_FIELDS = {
   ],
   testimonios: [
     { key: 'headline', label: 'Titular', type: 'text' },
+    { key: 'columns', label: 'Columnas del grid', type: 'select', options: ['2','3','4'] },
     { key: 'items', label: 'Testimonios', type: 'list-testimonio' },
   ],
   bonos: [
