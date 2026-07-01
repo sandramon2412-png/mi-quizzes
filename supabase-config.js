@@ -428,6 +428,7 @@ const DB = {
         ...r,
         blocks:  r.blocks  ?? s.blocks  ?? null,
         palette: r.palette ?? s.palette ?? null,
+        mode:    r.mode    ?? s.mode    ?? '',
       };
     },
 
@@ -487,6 +488,7 @@ const DB = {
           ...(landing.settings || {}),
           ...(landing.blocks  ? { blocks:  landing.blocks  } : {}),
           ...(landing.palette ? { palette: landing.palette } : {}),
+          ...(landing.mode    ? { mode:    landing.mode    } : {}),
         },
         updated_at: new Date().toISOString(),
       };

@@ -1190,6 +1190,71 @@ REGLAS INAMOVIBLES:
     return this._parseJSONLoose(text);
   },
 
+  // ── LOVABLE-STYLE: generate/edit a full unique HTML landing page ──
+  _landingPageSystem() {
+    return `Sos un diseñador y desarrollador front-end de élite. Creás landing pages de altísima conversión, con diseño ÚNICO y visualmente impresionante para cada producto. NO usás plantillas repetidas: cada landing tiene su propia personalidad visual.
+
+FORMATO DE SALIDA — OBLIGATORIO:
+- Devolvé UNA sola página HTML completa y autónoma: desde <!DOCTYPE html> hasta </html>.
+- SIN markdown, SIN \`\`\`, SIN texto antes o después. SOLO el HTML.
+
+STACK TÉCNICO (usalo siempre):
+- <script src="https://cdn.tailwindcss.com"></script> para estilos.
+- Fuente: Plus Jakarta Sans desde Google Fonts (o la que pida el usuario).
+- Íconos: Material Symbols Outlined de Google. NUNCA emojis.
+- Todo el CSS extra en un <style> en el <head>. Todo inline-friendly (la página se muestra en un iframe).
+
+DISEÑO — REGLAS DE ORO:
+1. DISEÑO ÚNICO: variá el layout del hero (centrado, dividido texto+imagen, con video de fondo, asimétrico). Variá el orden y estilo de las secciones. Que dos landings distintas NUNCA se vean iguales.
+2. Mobile-first y 100% responsive (usá clases Tailwind md: lg: y media queries).
+3. Estética premium: buen espaciado, jerarquía tipográfica fuerte, gradientes sutiles, sombras suaves, bordes redondeados, micro-animaciones CSS (fade-in on scroll, hover states).
+4. COLORES: usá exactamente los que pida el usuario. Si no especifica, usá un gradiente elegante azul→púrpura (#2E5BFF→#7c3aed). Aplicá el color en botones, acentos, íconos y detalles — no solo texto.
+5. IMÁGENES: usá https://image.pollinations.ai/prompt/[descripción-en-inglés]?width=1200&height=800&nologo=true con prompts descriptivos y relevantes al producto. Para avatares de testimonios usá iniciales en círculos con gradiente, no fotos falsas.
+6. Íconos Material Symbols para features/beneficios, no imágenes genéricas.
+
+CONTENIDO — COPYWRITING (español latinoamericano):
+- Headline con fórmula PAS-T: dolor → agitación → solución → transformación con tiempo concreto.
+- Secciones típicas (elegí y ordená según el producto): hero, prueba social breve, problema/dolor, beneficios (con íconos), qué incluye/módulos, testimonios reales-verosímiles, bonos, oferta/precio, garantía, FAQ (objeciones reales), CTA final potente.
+- CTAs verbo+resultado ("Quiero X en Y días"), nunca "Registrarse".
+- Microcopy bajo el CTA: "Sin tarjeta · Acceso inmediato · Garantía 30 días".
+- Datos honestos y verosímiles, sin porcentajes inventados absurdos.
+
+INTERACTIVIDAD:
+- FAQ con acordeón (details/summary o JS simple).
+- Scroll suave, botones con hover.
+- Si el usuario pide video de fondo, usá <video autoplay muted loop playsinline> en el hero.
+
+Generá una landing COMPLETA, larga y persuasiva. No dejes secciones vacías ni placeholders tipo "Lorem ipsum".`;
+  },
+
+  async generateLandingPage(instruction, currentHtml, history) {
+    const editing = !!(currentHtml && currentHtml.length > 200);
+    const userMsg = editing
+      ? `Esta es la landing HTML actual:\n\n${currentHtml}\n\n─────────\nINSTRUCCIÓN DEL USUARIO: ${instruction}\n\nAplicá ese cambio y devolvé la PÁGINA HTML COMPLETA actualizada (desde <!DOCTYPE html> hasta </html>). Mantené todo lo demás igual salvo lo que pide el usuario.`
+      : `Creá una landing page completa, única y de alta conversión para lo siguiente:\n\n${instruction}`;
+    const msgs = editing
+      ? [{ role: 'user', content: userMsg }]
+      : [...(history || []).filter(m => m.content && m.content.trim()).slice(-6), { role: 'user', content: userMsg }];
+    const text = await this._call(msgs, 8192, {
+      model: 'claude-sonnet-4-6',
+      system: this._landingPageSystem(),
+    });
+    return this._extractHtmlPage(text);
+  },
+
+  _extractHtmlPage(text) {
+    let t = (text || '').trim();
+    // Strip markdown fences if present
+    t = t.replace(/^```(?:html)?\s*/i, '').replace(/```\s*$/i, '').trim();
+    // If wrapped in prose, extract from <!DOCTYPE or <html
+    const dt = t.search(/<!DOCTYPE html|<html/i);
+    if (dt > 0) t = t.slice(dt);
+    const endIdx = t.toLowerCase().lastIndexOf('</html>');
+    if (endIdx !== -1) t = t.slice(0, endIdx + 7);
+    if (!/<html/i.test(t)) throw new Error('La IA no devolvió una página HTML válida. Probá de nuevo.');
+    return t;
+  },
+
   async editBlockData(blockType, currentData, instruction, contextBrief = '') {
     const system = `Eres experto en copywriting de landing pages. Tu tarea: modificar el objeto "data" de una sección específica.
 
@@ -1890,6 +1955,9 @@ const AI = {
   },
   async chatEditLanding(userMsg, history, landingBlocks, brief) {
     return Claude.chatEditLanding(userMsg, history, landingBlocks, brief);
+  },
+  async generateLandingPage(instruction, currentHtml, history) {
+    return Claude.generateLandingPage(instruction, currentHtml, history);
   },
   // Complejo: ebook estructurado — intenta Claude, cae a Groq si no hay créditos
   async generateEbook(brief, history = [], onProgress, docType = 'ebook') {
