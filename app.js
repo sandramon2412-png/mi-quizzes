@@ -1197,12 +1197,16 @@ REGLAS INAMOVIBLES:
 FORMATO DE SALIDA — OBLIGATORIO:
 - Devolvé UNA sola página HTML completa y autónoma: desde <!DOCTYPE html> hasta </html>.
 - SIN markdown, SIN \`\`\`, SIN texto antes o después. SOLO el HTML.
+- CÓDIGO COMPACTO: usá clases Tailwind directamente en cada elemento. Minimizá el CSS custom al mínimo indispensable — no agregues CSS que Tailwind ya cubre.
 
 STACK TÉCNICO (usalo siempre):
 - <script src="https://cdn.tailwindcss.com"></script> para estilos.
 - Fuente: Plus Jakarta Sans desde Google Fonts (o la que pida el usuario).
 - Íconos: Material Symbols Outlined de Google. NUNCA emojis.
 - Todo el CSS extra en un <style> en el <head>. Todo inline-friendly (la página se muestra en un iframe).
+
+ESTRUCTURA DE SECCIONES — OBLIGATORIO:
+Cada sección principal DEBE tener un id único en lowercase: id="hero", id="prueba-social", id="problema", id="beneficios", id="modulos", id="testimonios", id="bonos", id="precio", id="garantia", id="faq", id="footer". Esto permite edición quirúrgica posterior.
 
 DISEÑO — REGLAS DE ORO:
 1. DISEÑO ÚNICO: variá el layout del hero (centrado, dividido texto+imagen, con video de fondo, asimétrico). Variá el orden y estilo de las secciones. Que dos landings distintas NUNCA se vean iguales.
@@ -1224,22 +1228,93 @@ INTERACTIVIDAD:
 - Scroll suave, botones con hover.
 - Si el usuario pide video de fondo, usá <video autoplay muted loop playsinline> en el hero.
 
-Generá una landing COMPLETA, larga y persuasiva. No dejes secciones vacías ni placeholders tipo "Lorem ipsum".`;
+Generá una landing COMPLETA con TODAS las secciones. Priorizá completar TODAS las secciones sobre agregar adornos — es mejor tener todas las secciones con contenido que tener pocas secciones con efectos extras.`;
   },
 
   async generateLandingPage(instruction, currentHtml, history) {
     const editing = !!(currentHtml && currentHtml.length > 200);
-    const userMsg = editing
-      ? `Esta es la landing HTML actual:\n\n${currentHtml}\n\n─────────\nINSTRUCCIÓN DEL USUARIO: ${instruction}\n\nAplicá ese cambio y devolvé la PÁGINA HTML COMPLETA actualizada (desde <!DOCTYPE html> hasta </html>). Mantené todo lo demás igual salvo lo que pide el usuario.`
-      : `Creá una landing page completa, única y de alta conversión para lo siguiente:\n\n${instruction}`;
-    const msgs = editing
-      ? [{ role: 'user', content: userMsg }]
-      : [...(history || []).filter(m => m.content && m.content.trim()).slice(-6), { role: 'user', content: userMsg }];
-    const text = await this._call(msgs, 8192, {
+
+    if (editing) {
+      // Surgical edit: only change what the user asked, preserve everything else
+      return this._surgicalHtmlEdit(instruction, currentHtml);
+    }
+
+    // New landing: generate fresh
+    const userMsg = `Creá una landing page completa, única y de alta conversión para lo siguiente:\n\n${instruction}`;
+    const msgs = [...(history || []).filter(m => m.content && m.content.trim()).slice(-4), { role: 'user', content: userMsg }];
+    let text = await this._call(msgs, 8192, {
       model: 'claude-sonnet-4-6',
       system: this._landingPageSystem(),
     });
+
+    // If the page got cut off (no closing tags), do a continuation pass
+    const trimmed = text.trim();
+    if (!trimmed.includes('</html>') && !trimmed.includes('</body>')) {
+      const contText = await this._call([
+        { role: 'user', content: userMsg },
+        { role: 'assistant', content: text },
+        { role: 'user', content: 'Continuá desde donde lo dejaste. Completá las secciones que faltan (testimonios, precio, FAQ, footer, etc.) y cerrá con </body></html>. NO repitas lo que ya generaste — solo continuá.' },
+      ], 8192, {
+        model: 'claude-sonnet-4-6',
+        system: this._landingPageSystem(),
+      });
+      text = text + '\n' + contText;
+    }
+
     return this._extractHtmlPage(text);
+  },
+
+  async _surgicalHtmlEdit(instruction, currentHtml) {
+    // Step 1: classify the edit and identify the target section
+    const classifyMsg = `Tenés este HTML de una landing page y el usuario quiere hacer un cambio.
+
+INSTRUCCIÓN: "${instruction}"
+
+Respondé SOLO con este JSON (sin markdown, sin texto extra):
+{
+  "editType": "surgical" | "full",
+  "sectionId": "id del section HTML a modificar (ej: hero, beneficios, testimonios, faq, precio, footer) o null si afecta todo",
+  "reason": "por qué elegiste ese tipo en 1 línea"
+}
+
+Usá "surgical" cuando el cambio es local: editar texto, cambiar imagen, ajustar copy de UNA sección, agregar un item a una lista, cambiar el color de un botón puntual.
+Usá "full" cuando el cambio requiere restructurar el layout, agregar/quitar secciones completas, cambiar la paleta de colores de toda la página, o aplicar un rediseño.`;
+
+    const classifyText = await this._call([{ role: 'user', content: classifyMsg }], 300, {
+      model: 'claude-haiku-4-5-20251001',
+    });
+    const plan = this._parseJSONLoose(classifyText) || {};
+
+    if (plan.editType === 'surgical' && plan.sectionId) {
+      // Extract the target section from HTML using its id
+      const secRe = new RegExp(`(<(?:section|div|header|footer|nav)[^>]*\\bid=["']${plan.sectionId}["'][^>]*>[\\s\\S]*?<\\/(?:section|div|header|footer|nav)>)`, 'i');
+      const secMatch = currentHtml.match(secRe);
+      if (secMatch) {
+        const oldSection = secMatch[1];
+        const editMsg = `Modificá SOLO esta sección HTML aplicando la instrucción del usuario. Devolvé ÚNICAMENTE el HTML de la sección modificada (el mismo elemento con su id), sin texto adicional, sin markdown.
+
+SECCIÓN ACTUAL (id="${plan.sectionId}"):
+${oldSection}
+
+INSTRUCCIÓN: ${instruction}`;
+        const newSection = await this._call([{ role: 'user', content: editMsg }], 4096, {
+          model: 'claude-sonnet-4-6',
+          system: 'Sos un editor quirúrgico de HTML. Devolvés SOLO el HTML de la sección modificada, nada más.',
+        });
+        const cleanSection = newSection.trim().replace(/^```(?:html)?\s*/i, '').replace(/```\s*$/i, '').trim();
+        if (cleanSection && cleanSection.includes('<')) {
+          return currentHtml.replace(oldSection, cleanSection);
+        }
+      }
+    }
+
+    // Full regeneration fallback
+    const fullMsg = `Esta es la landing HTML actual:\n\n${currentHtml}\n\n─────────\nINSTRUCCIÓN DEL USUARIO: ${instruction}\n\nAplicá ese cambio y devolvé la PÁGINA HTML COMPLETA actualizada (desde <!DOCTYPE html> hasta </html>). Mantené todo lo demás igual.`;
+    const fullText = await this._call([{ role: 'user', content: fullMsg }], 8192, {
+      model: 'claude-sonnet-4-6',
+      system: this._landingPageSystem(),
+    });
+    return this._extractHtmlPage(fullText);
   },
 
   _extractHtmlPage(text) {
