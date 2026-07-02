@@ -1434,16 +1434,18 @@ COLORES — usá SIEMPRE estas variables CSS (ya definidas en la página):
 - Fondo de página: var(--bg). Texto principal: var(--ink). Texto atenuado: var(--muted).
 - Marca principal: var(--brand). Secundario/gradiente: var(--brand-2).
 - Tarjetas: var(--surface). Bordes: var(--border).
-Usalas con Tailwind arbitrario o inline: text-[color:var(--ink)], text-[color:var(--muted)], bg-[var(--surface)], border-[color:var(--border)], o style="color:var(--brand)". Gradientes: style="background:linear-gradient(135deg,var(--brand),var(--brand-2))". Botones: fondo con gradiente de marca y texto blanco.
-El tema de la página es ${pal.mode === 'dark' ? 'OSCURO (fondo oscuro, texto claro)' : 'CLARO (fondo claro, texto oscuro)'} — diseñá los contrastes acorde.
+Usalas con style inline o Tailwind arbitrario: style="color:var(--ink)", style="background:var(--surface)", style="border-color:var(--border)". Gradientes: style="background:linear-gradient(135deg,var(--brand),var(--brand-2))". Botones: style="background:linear-gradient(135deg,var(--brand),var(--brand-2));color:#fff".
+El tema es ${pal.mode === 'dark' ? 'OSCURO (fondo oscuro, texto claro)' : 'CLARO (fondo claro, texto oscuro)'} — asegurate de que TODO el texto tenga contraste visible.
 
-DISEÑO:
+DISEÑO — REGLAS CRÍTICAS:
 - Padding vertical generoso (py-16 md:py-24), contenedor centrado (max-w-6xl mx-auto px-6).
 - Mobile-first y responsive (md: lg:).
-- Estética premium: jerarquía tipográfica fuerte, espaciado amplio, rounded-2xl, sombras suaves, hover states, transiciones.
-- IMÁGENES: https://image.pollinations.ai/prompt/[descripcion-en-ingles]?width=1200&height=800&nologo=true con prompts relevantes al producto. Avatares de testimonios = iniciales en círculo con gradiente de marca (NO fotos falsas).
+- NUNCA generes columnas de grid o divs VACÍOS. Cada celda de grid DEBE tener contenido visible (texto, imagen o ícono). Si no tenés contenido para 3 columnas, usá 2 o 1.
+- Para grids de tarjetas: usá flex flex-wrap gap-6 o grid con número de columnas que coincida EXACTAMENTE con los ítems disponibles.
+- Estética premium: jerarquía tipográfica fuerte, espaciado amplio, rounded-2xl, sombras suaves, hover states.
+- IMÁGENES: https://image.pollinations.ai/prompt/[descripcion-en-ingles]?width=1200&height=800&nologo=true. Avatares de testimonios = iniciales en círculo con gradiente de marca (NO fotos falsas).
 
-COPY — español latinoamericano, persuasivo, concreto, cálido. Sin clichés, sin datos inventados absurdos. CTAs verbo+resultado. Contenido real y completo, nunca "Lorem ipsum" ni placeholders.`;
+COPY — español latinoamericano, persuasivo, concreto. CTAs verbo+resultado. Contenido real, nunca "Lorem ipsum" ni placeholders.`;
   },
 
   _cleanSectionHtml(text, id, isFooter) {
@@ -1526,22 +1528,38 @@ Generá SOLO el <${tag} id="${spec.id}"> ... </${tag}> completo, premium y con c
   async editLandingSectioned(instruction, sections, palId, brief) {
     const pal = this._landingPalette(palId);
     const ids = (sections || []).map(s => s.id);
-    const classify = await this._call([{ role: 'user', content: `Landing con estas secciones (en orden): ${ids.join(', ')}.
-INSTRUCCIÓN DEL USUARIO: "${instruction}"
 
-Respondé SOLO JSON (sin markdown):
-{"action":"edit"|"add"|"remove","sectionId":"id","brief":"detalle si aplica","reply":"respuesta breve y amable al usuario"}
+    // Detect error-fix intent: user reporting broken/empty/wrong sections
+    const isErrorFix = /error|mal\b|roto|vac[íi]o|blanco|equivoc|no sal[ió]|no se ve|columna/i.test(instruction);
 
-- "edit": modificar UNA sección existente. sectionId DEBE ser uno de: ${ids.join(', ')}.
-- "add": agregar una sección nueva. sectionId = un id descriptivo nuevo. brief = qué debe tener.
-- "remove": quitar una sección. sectionId DEBE ser uno existente.` }], 500, { model: 'claude-haiku-4-5-20251001' });
-    const plan = this._parseJSONLoose(classify) || {};
+    const classifyMsg = `Esta landing es sobre: "${(brief || '').slice(0, 200)}"
+Secciones actuales: ${ids.join(', ')}.
+MENSAJE DEL USUARIO: "${instruction}"
+
+Respondé SOLO JSON (sin markdown, sin texto extra):
+{"action":"edit"|"add"|"remove"|"fix","sectionId":"id o null","brief":"detalle si aplica","reply":"respuesta breve y amable"}
+
+- "edit": cambiar contenido/texto de UNA sección. sectionId DEBE ser uno de: ${ids.join(', ')}.
+- "add": agregar una sección nueva que NO existe aún.
+- "remove": quitar una sección existente.
+- "fix": el usuario reporta error visual o de layout. sectionId = la sección mencionada o null.
+Si el mensaje menciona errores/bugs/vacío, usá "fix". Si pide cambio de contenido, usá "edit". Si no queda claro, preguntá con "reply" y dejá sectionId en null.`;
+
+    const classifyText = await this._call([{ role: 'user', content: classifyMsg }], 400, { model: 'claude-haiku-4-5-20251001' });
+    const plan = this._parseJSONLoose(classifyText) || {};
     const reply = plan.reply || 'Listo, apliqué el cambio.';
 
+    // No target identified → ask user
+    if (!plan.action || (!plan.sectionId && plan.action === 'edit')) {
+      return { sections, reply: reply || '¿Qué sección querés cambiar? (hero, beneficios, testimonios, precio, faq, etc.)' };
+    }
+
+    // Remove
     if (plan.action === 'remove' && ids.includes(plan.sectionId)) {
       return { sections: sections.filter(s => s.id !== plan.sectionId), reply: plan.reply || 'Quité esa sección.' };
     }
 
+    // Add
     if (plan.action === 'add') {
       const newId = (plan.sectionId && !ids.includes(plan.sectionId)) ? plan.sectionId : ('extra-' + ids.length);
       const spec = { id: newId, brief: plan.brief || instruction };
@@ -1549,22 +1567,48 @@ Respondé SOLO JSON (sin markdown):
       const newSec = { id: newId, brief: spec.brief, html };
       const fi = sections.findIndex(s => s.id === 'footer');
       const out = fi === -1 ? [...sections, newSec] : [...sections.slice(0, fi), newSec, ...sections.slice(fi)];
-      return { sections: out, reply: plan.reply || 'Agregué la sección nueva.' };
+      return { sections: out, reply: plan.reply || 'Agregué la sección.' };
     }
 
-    // Default: edit one section
-    const targetId = (plan.sectionId && ids.includes(plan.sectionId)) ? plan.sectionId : ids[0];
+    // Fix (error/visual bug) → regenerate from original brief, NOT from error message
+    if (plan.action === 'fix' || isErrorFix) {
+      const targetId = (plan.sectionId && ids.includes(plan.sectionId)) ? plan.sectionId : null;
+      // If no specific section mentioned, regenerate ALL sections that look broken (empty html)
+      const toFix = targetId
+        ? sections.filter(s => s.id === targetId)
+        : sections.filter(s => !s.html || s.html.length < 100);
+      if (!toFix.length) {
+        // Nothing looks broken, ask user
+        return { sections, reply: '¿Podés decirme qué sección tiene el error? (ej: "el hero", "los beneficios")' };
+      }
+      const fixed = sections.slice();
+      await Promise.all(toFix.map(async (sec) => {
+        const spec = { id: sec.id, brief: this._sectionDefaultBrief(sec.id) };
+        try {
+          const newHtml = await this.generateOneSection(spec, brief || '', pal);
+          const idx = fixed.findIndex(s => s.id === sec.id);
+          if (idx !== -1) fixed[idx] = { ...sec, html: newHtml };
+        } catch (e) { /* leave as-is */ }
+      }));
+      return { sections: fixed, reply: plan.reply || `Regeneré ${toFix.map(s => s.id).join(', ')} desde cero con el contenido correcto.` };
+    }
+
+    // Edit: modify content of specific section
+    const targetId = (plan.sectionId && ids.includes(plan.sectionId)) ? plan.sectionId : null;
+    if (!targetId) return { sections, reply: '¿Qué sección querés cambiar? Decime el nombre (hero, beneficios, testimonios, precio, faq…)' };
     const idx = sections.findIndex(s => s.id === targetId);
-    if (idx === -1) return { sections, reply: 'No encontré qué sección cambiar. ¿Podés ser más específica?' };
+    if (idx === -1) return { sections, reply: `No encontré la sección "${targetId}".` };
     const cur = sections[idx];
     const isFooter = targetId === 'footer';
     const tag = isFooter ? 'footer' : 'section';
-    const user = `Esta es la sección actual (id="${targetId}"):
+    const user = `PRODUCTO: ${(brief || '').slice(0, 300)}
+
+Sección actual (id="${targetId}"):
 ${cur.html}
 
-INSTRUCCIÓN DEL USUARIO: ${instruction}
+CAMBIO SOLICITADO: ${instruction}
 
-Devolvé SOLO el <${tag} id="${targetId}"> ... </${tag}> modificado, aplicando el cambio y manteniendo el resto igual. Mismo formato premium con las variables CSS de color.`;
+Devolvé SOLO el <${tag} id="${targetId}"> ... </${tag}> modificado. Aplicá el cambio al contenido/texto, manteniendo el diseño y estructura. Usá las variables CSS de color (var(--brand), var(--ink), etc.).`;
     const text = await this._call([{ role: 'user', content: user }], 4000, {
       model: 'claude-sonnet-4-6',
       system: this._sectionGenSystem(pal),
