@@ -1247,18 +1247,24 @@ Generá una landing COMPLETA con TODAS las secciones. Priorizá completar TODAS 
       system: this._landingPageSystem(),
     });
 
-    // If the page got cut off (no closing tags), do a continuation pass
+    // If page is cut off OR too short (missing key sections), do a continuation pass
     const trimmed = text.trim();
-    if (!trimmed.includes('</html>') && !trimmed.includes('</body>')) {
+    const missingEnd = !trimmed.includes('</html>') && !trimmed.includes('</body>');
+    // Count how many of the key sections the AI included
+    const keySections = ['id="testimonios"', 'id="precio"', 'id="faq"', 'id="footer"', 'id="garantia"', 'id="bonos"'];
+    const sectionsFound = keySections.filter(s => text.includes(s)).length;
+    const tooShort = sectionsFound < 2; // Less than 2 of the bottom sections = incomplete
+
+    if (missingEnd || tooShort) {
       const contText = await this._call([
         { role: 'user', content: userMsg },
         { role: 'assistant', content: text },
-        { role: 'user', content: 'Continuá desde donde lo dejaste. Completá las secciones que faltan (testimonios, precio, FAQ, footer, etc.) y cerrá con </body></html>. NO repitas lo que ya generaste — solo continuá.' },
+        { role: 'user', content: 'La landing está incompleta — faltan secciones importantes (testimonios, precio, garantía, FAQ, footer). Continuá desde donde lo dejaste y agregá TODAS las secciones que faltan con contenido completo. Cerrá con </body></html>. NO repitas lo que ya generaste.' },
       ], 8192, {
         model: 'claude-sonnet-4-6',
         system: this._landingPageSystem(),
       });
-      text = text + '\n' + contText;
+      text = missingEnd ? (text + '\n' + contText) : (text.replace(/<\/body>\s*<\/html>\s*$/i, '') + '\n' + contText);
     }
 
     return this._extractHtmlPage(text);
