@@ -1379,6 +1379,9 @@ INSTRUCCIÓN: ${instruction}`;
     const vars = this._landingCssVars(pal);
     const body = (sections || []).map(s => (s && s.html) ? s.html : '').filter(Boolean).join('\n');
     const safeTitle = String(title || 'Landing').replace(/[<>]/g, '');
+    const imgFallbackBg = pal.mode === 'dark'
+      ? `linear-gradient(135deg,${pal.primary}55,${pal.accent}55)`
+      : `linear-gradient(135deg,${pal.primary}22,${pal.accent}22)`;
     return `<!DOCTYPE html>
 <html lang="es">
 <head>
@@ -1396,27 +1399,39 @@ INSTRUCCIÓN: ${instruction}`;
   .js-reveal{opacity:0;transform:translateY(24px);transition:opacity .6s ease,transform .6s ease}
   .js-reveal.in{opacity:1;transform:none}
   section,footer{scroll-margin-top:80px}
+  /* Image fallback: si Pollinations no carga, muestra gradiente de marca */
+  img.ld-img{background:${imgFallbackBg};min-height:160px;display:block}
 </style>
 </head>
 <body>
 ${body}
 <script>
   try {
-    var els = [].slice.call(document.querySelectorAll('body > section, body > footer, body > header'));
-    els.forEach(function(el){ el.classList.add('js-reveal'); });
-    var io = new IntersectionObserver(function(entries){
-      entries.forEach(function(e){ if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); } });
-    }, { threshold: 0.1 });
-    els.forEach(function(el){ io.observe(el); });
-    // Failsafe: never leave content invisible
-    setTimeout(function(){ els.forEach(function(el){ el.classList.add('in'); }); }, 2200);
-    // FAQ: allow only one open at a time within same container (optional nicety)
-    document.querySelectorAll('details').forEach(function(d){
-      d.addEventListener('toggle', function(){
-        if(d.open){ var p=d.parentElement; if(p) p.querySelectorAll('details').forEach(function(o){ if(o!==d) o.open=false; }); }
+    // Image fallback: si una imagen no carga, mostrar gradiente
+    document.querySelectorAll('img').forEach(function(img){
+      img.classList.add('ld-img');
+      img.addEventListener('error', function(){
+        this.style.visibility='hidden';
+        this.parentElement.style.background='${imgFallbackBg}';
+        this.parentElement.style.minHeight='200px';
+        this.parentElement.style.borderRadius='12px';
       });
     });
-  } catch(e) {}
+    // Scroll reveal
+    var els=[].slice.call(document.querySelectorAll('body > section,body > footer,body > header'));
+    els.forEach(function(el){el.classList.add('js-reveal');});
+    var io=new IntersectionObserver(function(entries){
+      entries.forEach(function(e){if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}});
+    },{threshold:0.08});
+    els.forEach(function(el){io.observe(el);});
+    setTimeout(function(){els.forEach(function(el){el.classList.add('in');});},2500);
+    // FAQ accordion
+    document.querySelectorAll('details').forEach(function(d){
+      d.addEventListener('toggle',function(){
+        if(d.open){var p=d.parentElement;if(p)p.querySelectorAll('details').forEach(function(o){if(o!==d)o.open=false;});}
+      });
+    });
+  } catch(e){}
 <\/script>
 </body>
 </html>`;
@@ -1439,13 +1454,14 @@ El tema es ${pal.mode === 'dark' ? 'OSCURO (fondo oscuro, texto claro)' : 'CLARO
 
 DISEÑO — REGLAS CRÍTICAS:
 - Padding vertical generoso (py-16 md:py-24), contenedor centrado (max-w-6xl mx-auto px-6).
-- Mobile-first y responsive (md: lg:).
-- NUNCA generes columnas de grid o divs VACÍOS. Cada celda de grid DEBE tener contenido visible (texto, imagen o ícono). Si no tenés contenido para 3 columnas, usá 2 o 1.
-- Para grids de tarjetas: usá flex flex-wrap gap-6 o grid con número de columnas que coincida EXACTAMENTE con los ítems disponibles.
-- Estética premium: jerarquía tipográfica fuerte, espaciado amplio, rounded-2xl, sombras suaves, hover states.
-- IMÁGENES: https://image.pollinations.ai/prompt/[descripcion-en-ingles]?width=1200&height=800&nologo=true. Avatares de testimonios = iniciales en círculo con gradiente de marca (NO fotos falsas).
+- Mobile-first: en mobile todo en 1 columna, en md: máximo 2-3 columnas.
+- GRIDS: NUNCA uses grid-cols-N donde N sea mayor al número de ítems reales que tenés. Si tenés 3 tarjetas, usá grid-cols-1 md:grid-cols-3. Si tenés 4 tarjetas, usá grid-cols-1 md:grid-cols-2 lg:grid-cols-4. Mejor flex flex-wrap que un grid con celdas vacías.
+- NUNCA dejes divs vacíos o celdas de grid sin contenido.
+- IMÁGENES: usa https://image.pollinations.ai/prompt/DESCRIPCION?width=1200&height=800&nologo=true donde DESCRIPCION son palabras en inglés separadas por +, sin espacios ni caracteres especiales. Ejemplo: "pregnant+woman+meditation+peaceful+nature". SIEMPRE agregá loading="lazy" a las imágenes.
+- Avatares de testimonios: círculo con gradiente (style="background:linear-gradient(135deg,var(--brand),var(--brand-2))") con iniciales en texto blanco. Nunca fotos de personas.
+- Estética premium: jerarquía tipográfica fuerte, espaciado amplio, rounded-2xl, sombras suaves.
 
-COPY — español latinoamericano, persuasivo, concreto. CTAs verbo+resultado. Contenido real, nunca "Lorem ipsum" ni placeholders.`;
+COPY — español latinoamericano, persuasivo, concreto. CTAs verbo+resultado. Contenido real, nunca "Lorem ipsum".`;
   },
 
   _cleanSectionHtml(text, id, isFooter) {

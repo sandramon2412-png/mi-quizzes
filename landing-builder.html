@@ -9,9 +9,9 @@
 <script src="https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.min.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
 <link href="https://fonts.googleapis.com/icon?family=Material+Symbols+Outlined" rel="stylesheet"/>
-<script src="./supabase-config.js?v=20260702a"></script>
-<script src="./app.js?v=20260702a"></script>
-<script src="./landing-blocks.js?v=20260702a"></script>
+<script src="./supabase-config.js?v=20260702b"></script>
+<script src="./app.js?v=20260702b"></script>
+<script src="./landing-blocks.js?v=20260702b"></script>
 <script>
   tailwind.config = {
     theme: {
@@ -2106,32 +2106,76 @@ async function sendChat() {
 
   const thinkingId = addChatMsg('<span class="dot"></span><span class="dot"></span><span class="dot"></span>', 'assistant', true);
 
-  // ── Section-based HTML mode: edit only the relevant section ──
+  // ── Section-based HTML mode ──
   if (landing.mode === 'html' && landing.html) {
     try {
       const palId = landing.palette || getCurrentPalette() || 'blue-purple';
-      const _prev = { html: landing.html, sections: landing.sections ? landing.sections.slice() : null };
-      let reply = 'Listo, apliqué el cambio.';
-      // If we have sections, edit surgically. Otherwise fall back to full-page regen.
-      if (landing.sections && landing.sections.length) {
-        const res = await AI.editLandingSectioned(msg, landing.sections, palId, landing.brief || landing.title || '');
+      const sections = landing.sections || [];
+      const sectionIds = sections.map(s => s.id).join(', ') || 'ninguna cargada aún';
+
+      // First: get a conversational response from the AI that ALSO decides what to do
+      const convoSystem = `Sos el asistente de landing pages de Luminous Studio. Tenés acceso a la landing que el usuario está editando.
+
+LANDING ACTUAL:
+- Producto: ${landing.brief || landing.title || 'no especificado'}
+- Secciones: ${sectionIds}
+
+CÓMO RESPONDER:
+1. Respondé de forma CONVERSACIONAL y CÁLIDA, como un diseñador web que está ayudando.
+2. Si el usuario reporta un error o algo que no quedó bien → preguntá qué sección tiene el problema o explicá qué vas a hacer para arreglarlo.
+3. Si el usuario pide un cambio claro → confirmá brevemente qué vas a cambiar y en qué sección.
+4. Si el usuario hace una pregunta sin pedir cambio → respondé solo la pregunta, no hagas nada.
+5. Al final de tu respuesta, en una línea nueva, escribí exactamente: ACTION: edit|fix|add|remove|none seguido de | y el id de la sección si aplica.
+   Ejemplo: ACTION: fix|beneficios  o  ACTION: edit|testimonios  o  ACTION: none
+
+Solo escribí ACTION: none si el usuario está haciendo una pregunta sin pedir cambio.`;
+
+      const convoText = await Claude._call([
+        ...chatHistory.slice(-6).filter(m => m.content && m.content.trim()),
+        { role: 'user', content: msg }
+      ], 600, { model: 'claude-haiku-4-5-20251001', system: convoSystem });
+
+      // Parse action from the last line
+      const actionMatch = convoText.match(/ACTION:\s*(\w+)\|?(\S*)?/i);
+      const actionType = actionMatch ? actionMatch[1].toLowerCase() : 'edit';
+      const actionSection = actionMatch ? (actionMatch[2] || '').replace(/[^a-z0-9-]/g, '') : '';
+      // Clean reply: remove the ACTION line
+      const cleanReply = convoText.replace(/\n?ACTION:\s*.*/i, '').trim();
+
+      removeMsg(thinkingId);
+      addChatMsg(cleanReply, 'assistant');
+      chatHistory.push({ role: 'assistant', content: cleanReply });
+
+      // If no action needed, stop here
+      if (actionType === 'none') return;
+
+      // Apply the change
+      const _prev = { html: landing.html, sections: sections.length ? sections.slice() : null };
+      let changed = false;
+
+      if (sections.length) {
+        const instruction = actionSection
+          ? `${actionType === 'fix' ? 'Corregí errores de layout/visual en' : 'Aplicá este cambio en'} la sección "${actionSection}": ${msg}`
+          : msg;
+        const res = await AI.editLandingSectioned(instruction, sections, palId, landing.brief || landing.title || '');
         landing.sections = res.sections;
         landing.html = AI.assembleLanding(res.sections, palId, landing.title);
-        reply = res.reply || reply;
+        changed = true;
       } else {
         landing.html = await AI.generateLandingPage(msg, landing.html, null);
+        changed = true;
       }
-      removeMsg(thinkingId);
-      _lastHtmlSnapshot = _prev;
-      renderPreview();
-      autosave();
-      const undoBtn = document.getElementById('chat-undo-btn');
-      if (undoBtn) { undoBtn.classList.remove('hidden'); undoBtn.style.display = 'inline-flex'; }
-      addChatMsg(reply, 'assistant');
-      chatHistory.push({ role: 'assistant', content: reply });
+
+      if (changed) {
+        _lastHtmlSnapshot = _prev;
+        renderPreview();
+        autosave();
+        const undoBtn = document.getElementById('chat-undo-btn');
+        if (undoBtn) { undoBtn.classList.remove('hidden'); undoBtn.style.display = 'inline-flex'; }
+      }
     } catch(e) {
       removeMsg(thinkingId);
-      const em = 'No pude aplicar ese cambio: ' + e.message + '. Probá de nuevo.';
+      const em = `Hubo un error: ${e.message}. ¿Querés que lo intente de nuevo?`;
       addChatMsg(em, 'assistant');
       chatHistory.push({ role: 'assistant', content: em });
     }
