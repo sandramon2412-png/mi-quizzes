@@ -1438,6 +1438,7 @@ ${body}
   },
 
   _sectionGenSystem(pal) {
+    const dark = pal.mode === 'dark';
     return `Sos un desarrollador front-end de élite. Generás UNA sección de landing page en HTML premium (nivel Stripe, Linear, Vercel).
 
 FORMATO — OBLIGATORIO:
@@ -1449,19 +1450,145 @@ COLORES — usá SIEMPRE estas variables CSS (ya definidas en la página):
 - Fondo de página: var(--bg). Texto principal: var(--ink). Texto atenuado: var(--muted).
 - Marca principal: var(--brand). Secundario/gradiente: var(--brand-2).
 - Tarjetas: var(--surface). Bordes: var(--border).
-Usalas con style inline o Tailwind arbitrario: style="color:var(--ink)", style="background:var(--surface)", style="border-color:var(--border)". Gradientes: style="background:linear-gradient(135deg,var(--brand),var(--brand-2))". Botones: style="background:linear-gradient(135deg,var(--brand),var(--brand-2));color:#fff".
-El tema es ${pal.mode === 'dark' ? 'OSCURO (fondo oscuro, texto claro)' : 'CLARO (fondo claro, texto oscuro)'} — asegurate de que TODO el texto tenga contraste visible.
+Usalas con style inline: style="color:var(--ink)", style="background:var(--surface)", style="border-color:var(--border)". Gradientes: style="background:linear-gradient(135deg,var(--brand),var(--brand-2))". Botones CTA: style="background:linear-gradient(135deg,var(--brand),var(--brand-2));color:#fff;padding:14px 32px;border-radius:12px;font-weight:700;font-size:18px;display:inline-block;text-decoration:none".
+El tema es ${dark ? 'OSCURO (fondo oscuro, texto claro)' : 'CLARO (fondo claro, texto oscuro)'} — TODO el texto debe tener contraste visible sobre el fondo.
 
-DISEÑO — REGLAS CRÍTICAS:
-- Padding vertical generoso (py-16 md:py-24), contenedor centrado (max-w-6xl mx-auto px-6).
-- Mobile-first: en mobile todo en 1 columna, en md: máximo 2-3 columnas.
-- GRIDS: NUNCA uses grid-cols-N donde N sea mayor al número de ítems reales que tenés. Si tenés 3 tarjetas, usá grid-cols-1 md:grid-cols-3. Si tenés 4 tarjetas, usá grid-cols-1 md:grid-cols-2 lg:grid-cols-4. Mejor flex flex-wrap que un grid con celdas vacías.
-- NUNCA dejes divs vacíos o celdas de grid sin contenido.
-- IMÁGENES: usa https://image.pollinations.ai/prompt/DESCRIPCION?width=1200&height=800&nologo=true donde DESCRIPCION son palabras en inglés separadas por +, sin espacios ni caracteres especiales. Ejemplo: "pregnant+woman+meditation+peaceful+nature". SIEMPRE agregá loading="lazy" a las imágenes.
-- Avatares de testimonios: círculo con gradiente (style="background:linear-gradient(135deg,var(--brand),var(--brand-2))") con iniciales en texto blanco. Nunca fotos de personas.
-- Estética premium: jerarquía tipográfica fuerte, espaciado amplio, rounded-2xl, sombras suaves.
+IMÁGENES: usa https://image.pollinations.ai/prompt/DESCRIPCION?width=1200&height=800&nologo=true
+DESCRIPCION = palabras en inglés separadas únicamente con + sin espacios (ej: "happy+woman+meditating+nature+sunlight"). SIEMPRE agregá loading="lazy" alt="descripción" class="w-full h-full object-cover rounded-2xl".
 
-COPY — español latinoamericano, persuasivo, concreto. CTAs verbo+resultado. Contenido real, nunca "Lorem ipsum".`;
+AVATARES DE PERSONAS: NUNCA uses fotos reales. Siempre un círculo con iniciales:
+<div style="width:48px;height:48px;border-radius:50%;background:linear-gradient(135deg,var(--brand),var(--brand-2));display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:16px;flex-shrink:0">AB</div>
+
+═══════════════════════════════════════════
+LAYOUTS EXACTOS POR TIPO DE SECCIÓN — SEGUÍ ESTE PATRÓN OBLIGATORIAMENTE:
+═══════════════════════════════════════════
+
+HERO (id="hero"):
+<section id="hero" style="background:var(--bg);padding:80px 0">
+  <div style="max-width:1152px;margin:0 auto;padding:0 24px;display:flex;flex-wrap:wrap;align-items:center;gap:48px">
+    <div style="flex:1;min-width:280px">
+      <p style="color:var(--brand);font-weight:700;font-size:14px;text-transform:uppercase;letter-spacing:2px;margin:0 0 16px">subtítulo de credibilidad</p>
+      <h1 style="color:var(--ink);font-size:clamp(2rem,5vw,3.5rem);font-weight:800;line-height:1.1;margin:0 0 20px">Título principal impactante</h1>
+      <p style="color:var(--muted);font-size:18px;line-height:1.6;margin:0 0 32px">Descripción clara del beneficio principal</p>
+      <a href="#precio" style="background:linear-gradient(135deg,var(--brand),var(--brand-2));color:#fff;padding:16px 36px;border-radius:12px;font-weight:700;font-size:18px;display:inline-block;text-decoration:none">CTA verbo + resultado</a>
+      <p style="color:var(--muted);font-size:13px;margin:12px 0 0">Sin tarjeta · Acceso inmediato · Garantía 30 días</p>
+    </div>
+    <div style="flex:1;min-width:280px;max-width:520px">
+      <img src="https://image.pollinations.ai/prompt/DESCRIPCION?width=1200&height=800&nologo=true" loading="lazy" alt="..." style="width:100%;height:380px;object-fit:cover;border-radius:20px;box-shadow:0 20px 60px rgba(0,0,0,.3)"/>
+    </div>
+  </div>
+</section>
+
+BENEFICIOS (id="beneficios") — SIEMPRE 3 columnas en desktop, 1 en mobile:
+<section id="beneficios" style="background:var(--surface);padding:80px 0">
+  <div style="max-width:1152px;margin:0 auto;padding:0 24px">
+    <h2 style="color:var(--ink);font-size:clamp(1.6rem,3vw,2.5rem);font-weight:800;text-align:center;margin:0 0 12px">Título sección</h2>
+    <p style="color:var(--muted);text-align:center;font-size:18px;margin:0 0 48px">Subtítulo</p>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:24px">
+      <!-- REPITE ESTE BLOQUE POR CADA BENEFICIO (mínimo 3, máximo 6): -->
+      <div style="background:var(--bg);border:1px solid var(--border);border-radius:16px;padding:28px">
+        <span class="material-symbols-outlined" style="font-size:32px;background:linear-gradient(135deg,var(--brand),var(--brand-2));-webkit-background-clip:text;-webkit-text-fill-color:transparent">icono</span>
+        <h3 style="color:var(--ink);font-size:18px;font-weight:700;margin:12px 0 8px">Beneficio X</h3>
+        <p style="color:var(--muted);font-size:15px;line-height:1.6;margin:0">Descripción concreta del beneficio</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+TESTIMONIOS (id="testimonios") — SIEMPRE 3 testimonios en fila en desktop:
+<section id="testimonios" style="background:var(--bg);padding:80px 0">
+  <div style="max-width:1152px;margin:0 auto;padding:0 24px">
+    <h2 style="color:var(--ink);font-size:clamp(1.6rem,3vw,2.5rem);font-weight:800;text-align:center;margin:0 0 48px">Lo que dicen</h2>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:24px">
+      <!-- REPITE EXACTAMENTE 3 VECES: -->
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:28px;display:flex;flex-direction:column;gap:16px">
+        <p style="color:var(--ink);font-size:15px;line-height:1.7;margin:0">"Testimonio real y específico con resultado concreto"</p>
+        <div style="display:flex;align-items:center;gap:12px;margin-top:auto">
+          <div style="width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,var(--brand),var(--brand-2));display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:15px;flex-shrink:0">AB</div>
+          <div><p style="color:var(--ink);font-weight:700;font-size:14px;margin:0">Nombre Apellido</p><p style="color:var(--muted);font-size:13px;margin:0">Profesión / Ciudad</p></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+FAQ (id="faq") — SIEMPRE en columna única, NUNCA en grid:
+<section id="faq" style="background:var(--surface);padding:80px 0">
+  <div style="max-width:720px;margin:0 auto;padding:0 24px">
+    <h2 style="color:var(--ink);font-size:clamp(1.6rem,3vw,2.5rem);font-weight:800;text-align:center;margin:0 0 48px">Preguntas frecuentes</h2>
+    <div style="display:flex;flex-direction:column;gap:12px">
+      <!-- REPITE POR CADA PREGUNTA: -->
+      <details style="background:var(--bg);border:1px solid var(--border);border-radius:12px;overflow:hidden">
+        <summary style="color:var(--ink);font-weight:600;font-size:16px;padding:20px 24px;cursor:pointer;list-style:none">¿Pregunta real de objeción?</summary>
+        <p style="color:var(--muted);font-size:15px;line-height:1.6;padding:0 24px 20px;margin:0">Respuesta clara que elimina la objeción.</p>
+      </details>
+    </div>
+  </div>
+</section>
+
+PRECIO (id="precio"):
+<section id="precio" style="background:var(--bg);padding:80px 0">
+  <div style="max-width:480px;margin:0 auto;padding:0 24px;text-align:center">
+    <h2 style="color:var(--ink);font-size:clamp(1.6rem,3vw,2.5rem);font-weight:800;margin:0 0 12px">Invertí en tu transformación</h2>
+    <div style="background:var(--surface);border:2px solid var(--brand);border-radius:20px;padding:40px;margin-top:32px">
+      <p style="color:var(--muted);font-size:14px;text-transform:uppercase;letter-spacing:1px;margin:0 0 8px">Precio único</p>
+      <p style="color:var(--ink);font-size:56px;font-weight:800;margin:0 0 8px">$97</p>
+      <p style="color:var(--muted);font-size:14px;margin:0 0 28px">Acceso de por vida</p>
+      <ul style="list-style:none;margin:0 0 32px;padding:0;text-align:left;display:flex;flex-direction:column;gap:12px">
+        <li style="color:var(--ink);font-size:15px;display:flex;align-items:center;gap:8px"><span class="material-symbols-outlined" style="color:var(--brand);font-size:20px">check_circle</span> Beneficio incluido 1</li>
+      </ul>
+      <a href="#" style="background:linear-gradient(135deg,var(--brand),var(--brand-2));color:#fff;padding:16px 36px;border-radius:12px;font-weight:700;font-size:18px;display:block;text-decoration:none;text-align:center">Quiero acceso ahora</a>
+      <p style="color:var(--muted);font-size:13px;margin:12px 0 0">Pago seguro · Garantía 30 días</p>
+    </div>
+  </div>
+</section>
+
+MÓDULOS / CONTENIDO (id="modulos"):
+<section id="modulos" style="background:var(--surface);padding:80px 0">
+  <div style="max-width:1152px;margin:0 auto;padding:0 24px">
+    <h2 style="color:var(--ink);font-size:clamp(1.6rem,3vw,2.5rem);font-weight:800;text-align:center;margin:0 0 48px">Qué vas a aprender</h2>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:24px">
+      <!-- REPITE POR MÓDULO: -->
+      <div style="background:var(--bg);border:1px solid var(--border);border-radius:16px;padding:28px;display:flex;gap:16px;align-items:flex-start">
+        <div style="background:linear-gradient(135deg,var(--brand),var(--brand-2));border-radius:10px;width:40px;height:40px;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+          <span class="material-symbols-outlined" style="color:#fff;font-size:20px">school</span>
+        </div>
+        <div><h3 style="color:var(--ink);font-weight:700;font-size:17px;margin:0 0 6px">Módulo 1: Título</h3><p style="color:var(--muted);font-size:14px;line-height:1.5;margin:0">Descripción de lo que van a aprender y el resultado.</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+GARANTÍA (id="garantia"):
+<section id="garantia" style="background:var(--surface);padding:64px 0">
+  <div style="max-width:640px;margin:0 auto;padding:0 24px;text-align:center">
+    <span class="material-symbols-outlined" style="font-size:56px;background:linear-gradient(135deg,var(--brand),var(--brand-2));-webkit-background-clip:text;-webkit-text-fill-color:transparent">verified_user</span>
+    <h2 style="color:var(--ink);font-size:2rem;font-weight:800;margin:16px 0 12px">Garantía de 30 días</h2>
+    <p style="color:var(--muted);font-size:17px;line-height:1.7;margin:0">Si en 30 días no ves resultados, te devolvemos el 100% de tu inversión. Sin preguntas, sin demoras.</p>
+  </div>
+</section>
+
+CTA FINAL (id="cta-final"):
+<section id="cta-final" style="background:linear-gradient(135deg,var(--brand),var(--brand-2));padding:96px 0">
+  <div style="max-width:640px;margin:0 auto;padding:0 24px;text-align:center">
+    <h2 style="color:#fff;font-size:clamp(1.8rem,4vw,2.8rem);font-weight:800;margin:0 0 16px">¿Estás lista para transformar tu vida?</h2>
+    <p style="color:rgba(255,255,255,.85);font-size:18px;margin:0 0 36px">Unite a las personas que ya cambiaron su realidad</p>
+    <a href="#precio" style="background:#fff;color:var(--brand);padding:16px 40px;border-radius:12px;font-weight:800;font-size:18px;display:inline-block;text-decoration:none">Quiero empezar hoy</a>
+    <p style="color:rgba(255,255,255,.7);font-size:13px;margin:14px 0 0">Sin tarjeta · Acceso inmediato · Garantía 30 días</p>
+  </div>
+</section>
+
+FOOTER (id="footer"):
+<footer id="footer" style="background:var(--bg);border-top:1px solid var(--border);padding:40px 0">
+  <div style="max-width:1152px;margin:0 auto;padding:0 24px;display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:16px">
+    <p style="color:var(--ink);font-weight:700;font-size:16px;margin:0">Nombre del Producto</p>
+    <p style="color:var(--muted);font-size:13px;margin:0">© 2024 · Todos los derechos reservados</p>
+  </div>
+</footer>
+
+═══════════════════════════════════════════
+COPY — español latinoamericano, persuasivo, concreto. CTAs verbo+resultado. Contenido real, nunca "Lorem ipsum".
+REGLA ABSOLUTA: NUNCA copies el layout de ejemplo literalmente — adaptá el contenido al producto específico. Los layouts de arriba son la ESTRUCTURA, vos ponés el contenido real.`;
   },
 
   _cleanSectionHtml(text, id, isFooter) {
@@ -1552,14 +1679,19 @@ Generá SOLO el <${tag} id="${spec.id}"> ... </${tag}> completo, premium y con c
 Secciones actuales: ${ids.join(', ')}.
 MENSAJE DEL USUARIO: "${instruction}"
 
-Respondé SOLO JSON (sin markdown, sin texto extra):
-{"action":"edit"|"add"|"remove"|"fix","sectionId":"id o null","brief":"detalle si aplica","reply":"respuesta breve y amable"}
+Respondé SOLO JSON válido (sin markdown, sin texto extra):
+{"action":"edit"|"add"|"remove"|"fix","sectionId":"id exacto o null","reply":"respuesta amable en español"}
 
-- "edit": cambiar contenido/texto de UNA sección. sectionId DEBE ser uno de: ${ids.join(', ')}.
-- "add": agregar una sección nueva que NO existe aún.
-- "remove": quitar una sección existente.
-- "fix": el usuario reporta error visual o de layout. sectionId = la sección mencionada o null.
-Si el mensaje menciona errores/bugs/vacío, usá "fix". Si pide cambio de contenido, usá "edit". Si no queda claro, preguntá con "reply" y dejá sectionId en null.`;
+REGLAS DE CLASIFICACIÓN:
+- "fix" con sectionId=null: el usuario dice que algo quedó mal en GENERAL o menciona múltiples secciones o dice "sigue mal/igual", "corregí todo", "está todo roto". Se regenerarán TODAS las secciones.
+- "fix" con sectionId=NOMBRE: el usuario menciona UNA sección específica que tiene error (ej: "el hero quedó mal", "los beneficios están rotos"). sectionId debe ser uno de: ${ids.join(', ')}.
+- "edit" con sectionId=NOMBRE: el usuario pide cambiar texto/contenido de una sección específica. sectionId debe ser uno de: ${ids.join(', ')}.
+- "add": el usuario pide agregar una sección nueva que no existe. sectionId = id nuevo sugerido.
+- "remove": el usuario pide quitar una sección. sectionId = el id a quitar.
+
+reply debe ser una frase corta y amable explicando qué vas a hacer. Si es fix con null: "Voy a regenerar todas las secciones desde cero con layouts corregidos, un momento..."
+Si es fix con sección: "Voy a regenerar la sección [X] desde cero, un momento..."
+Si es edit: "Voy a aplicar ese cambio en [X]."`;
 
     const classifyText = await this._call([{ role: 'user', content: classifyMsg }], 400, { model: 'claude-haiku-4-5-20251001' });
     const plan = this._parseJSONLoose(classifyText) || {};
@@ -1589,24 +1721,28 @@ Si el mensaje menciona errores/bugs/vacío, usá "fix". Si pide cambio de conten
     // Fix (error/visual bug) → regenerate from original brief, NOT from error message
     if (plan.action === 'fix' || isErrorFix) {
       const targetId = (plan.sectionId && ids.includes(plan.sectionId)) ? plan.sectionId : null;
-      // If no specific section mentioned, regenerate ALL sections that look broken (empty html)
-      const toFix = targetId
-        ? sections.filter(s => s.id === targetId)
-        : sections.filter(s => !s.html || s.html.length < 100);
-      if (!toFix.length) {
-        // Nothing looks broken, ask user
-        return { sections, reply: '¿Podés decirme qué sección tiene el error? (ej: "el hero", "los beneficios")' };
-      }
       const fixed = sections.slice();
-      await Promise.all(toFix.map(async (sec) => {
-        const spec = { id: sec.id, brief: this._sectionDefaultBrief(sec.id) };
+
+      if (targetId) {
+        // Fix specific section only
+        const spec = { id: targetId, brief: sections.find(s => s.id === targetId)?.brief || this._sectionDefaultBrief(targetId) };
         try {
           const newHtml = await this.generateOneSection(spec, brief || '', pal);
-          const idx = fixed.findIndex(s => s.id === sec.id);
-          if (idx !== -1) fixed[idx] = { ...sec, html: newHtml };
-        } catch (e) { /* leave as-is */ }
-      }));
-      return { sections: fixed, reply: plan.reply || `Regeneré ${toFix.map(s => s.id).join(', ')} desde cero con el contenido correcto.` };
+          const i = fixed.findIndex(s => s.id === targetId);
+          if (i !== -1 && newHtml) fixed[i] = { ...fixed[i], html: newHtml };
+        } catch (e) {}
+        return { sections: fixed, reply: `Regeneré la sección "${targetId}" desde cero. Fijate cómo quedó.` };
+      } else {
+        // No specific section → regenerate ALL sections from original brief
+        await Promise.all(fixed.map(async (sec, i) => {
+          const spec = { id: sec.id, brief: sec.brief || this._sectionDefaultBrief(sec.id) };
+          try {
+            const newHtml = await this.generateOneSection(spec, brief || '', pal);
+            if (newHtml) fixed[i] = { ...sec, html: newHtml };
+          } catch (e) {}
+        }));
+        return { sections: fixed, reply: 'Regeneré todas las secciones desde cero con layouts corregidos. Fijate cómo quedó ahora.' };
+      }
     }
 
     // Edit: modify content of specific section
