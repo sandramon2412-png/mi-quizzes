@@ -426,9 +426,10 @@ const DB = {
       const s = r.settings || {};
       return {
         ...r,
-        blocks:  r.blocks  ?? s.blocks  ?? null,
-        palette: r.palette ?? s.palette ?? null,
-        mode:    r.mode    ?? s.mode    ?? '',
+        blocks:   r.blocks   ?? s.blocks   ?? null,
+        palette:  r.palette  ?? s.palette  ?? null,
+        mode:     r.mode     ?? s.mode     ?? '',
+        sections: r.sections ?? s.sections ?? null,
       };
     },
 
@@ -486,9 +487,10 @@ const DB = {
         published:  !!landing.published,
         settings:   {
           ...(landing.settings || {}),
-          ...(landing.blocks  ? { blocks:  landing.blocks  } : {}),
-          ...(landing.palette ? { palette: landing.palette } : {}),
-          ...(landing.mode    ? { mode:    landing.mode    } : {}),
+          ...(landing.blocks   ? { blocks:   landing.blocks   } : {}),
+          ...(landing.palette  ? { palette:  landing.palette  } : {}),
+          ...(landing.mode     ? { mode:     landing.mode     } : {}),
+          ...(landing.sections ? { sections: landing.sections } : {}),
         },
         updated_at: new Date().toISOString(),
       };
