@@ -9,9 +9,9 @@
 <script src="https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.min.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
 <link href="https://fonts.googleapis.com/icon?family=Material+Symbols+Outlined" rel="stylesheet"/>
-<script src="./supabase-config.js?v=20260701a"></script>
-<script src="./app.js?v=20260701a"></script>
-<script src="./landing-blocks.js?v=20260701a"></script>
+<script src="./supabase-config.js?v=20260702a"></script>
+<script src="./app.js?v=20260702a"></script>
+<script src="./landing-blocks.js?v=20260702a"></script>
 <script>
   tailwind.config = {
     theme: {
@@ -2057,18 +2057,24 @@ async function generateFromChat(msg) {
   const creepTimer = setInterval(() => { creep = Math.min(creep + 4, 92); if (barInner) barInner.style.width = creep + '%'; }, 1500);
   try {
     const palId = getCurrentPalette() || 'blue-purple';
-    // ── Lovable mode: AI generates a full, unique HTML page ──
-    const html = await AI.generateLandingPage(msg, null, chatHistory.slice(-6));
+    // ── Section-based mode: plan → generate each section in parallel → assemble ──
+    const result = await AI.generateLandingSectioned(msg, palId, (phase) => {
+      if (phase === 'plan' && barInner) barInner.style.width = '20%';
+    });
     clearInterval(creepTimer);
     if (barInner) barInner.style.width = '100%';
     setTimeout(() => { if (bar) bar.classList.add('hidden'); if (barInner) barInner.style.width = '0%'; }, 600);
     removeMsg(thinkingId);
     if (!landing) {
-      landing = { id: 'ld_' + Date.now(), title: 'Mi Landing', mode: 'html', html, blocks: [], palette: palId, published: false, created_at: new Date().toISOString() };
+      landing = { id: 'ld_' + Date.now(), title: result.title || 'Mi Landing', mode: 'html', html: result.html, sections: result.sections, blocks: [], palette: palId, published: false, created_at: new Date().toISOString() };
     } else {
       landing.mode = 'html';
-      landing.html = html;
+      landing.html = result.html;
+      landing.sections = result.sections;
+      landing.title = result.title || landing.title;
+      landing.brief = landing.brief || msg;
     }
+    if (!landing.brief) landing.brief = msg;
     renderPreview();
     switchToBuilderMode();
     autosave();
@@ -2100,21 +2106,29 @@ async function sendChat() {
 
   const thinkingId = addChatMsg('<span class="dot"></span><span class="dot"></span><span class="dot"></span>', 'assistant', true);
 
-  // ── Lovable HTML mode: regenerate the page with the requested change ──
+  // ── Section-based HTML mode: edit only the relevant section ──
   if (landing.mode === 'html' && landing.html) {
     try {
-      const _prev = landing.html;
-      const newHtml = await AI.generateLandingPage(msg, landing.html, null);
+      const palId = landing.palette || getCurrentPalette() || 'blue-purple';
+      const _prev = { html: landing.html, sections: landing.sections ? landing.sections.slice() : null };
+      let reply = 'Listo, apliqué el cambio.';
+      // If we have sections, edit surgically. Otherwise fall back to full-page regen.
+      if (landing.sections && landing.sections.length) {
+        const res = await AI.editLandingSectioned(msg, landing.sections, palId, landing.brief || landing.title || '');
+        landing.sections = res.sections;
+        landing.html = AI.assembleLanding(res.sections, palId, landing.title);
+        reply = res.reply || reply;
+      } else {
+        landing.html = await AI.generateLandingPage(msg, landing.html, null);
+      }
       removeMsg(thinkingId);
       _lastHtmlSnapshot = _prev;
-      landing.html = newHtml;
       renderPreview();
       autosave();
       const undoBtn = document.getElementById('chat-undo-btn');
       if (undoBtn) { undoBtn.classList.remove('hidden'); undoBtn.style.display = 'inline-flex'; }
-      const r = 'Listo, apliqué el cambio.';
-      addChatMsg(r, 'assistant');
-      chatHistory.push({ role: 'assistant', content: r });
+      addChatMsg(reply, 'assistant');
+      chatHistory.push({ role: 'assistant', content: reply });
     } catch(e) {
       removeMsg(thinkingId);
       const em = 'No pude aplicar ese cambio: ' + e.message + '. Probá de nuevo.';
@@ -2326,6 +2340,7 @@ async function loadLanding(id) {
       settings: row.settings || {},
       html: row.html || '',
       mode: row.mode || '',
+      sections: row.sections || null,
     };
     // Detect Lovable HTML landings: has html but no editable blocks
     if (!landing.mode && landing.html && (!landing.blocks || !landing.blocks.length)) {
@@ -2405,13 +2420,30 @@ function toggleChat() {
 // ═══════════════════════════════════════════════════════════
 async function regenAll() {
   if (!landing) return;
-  // Lovable HTML mode: regenerate a fresh, different design from the original description
+  // Section-based mode: regenerate ALL sections fresh from the original brief
   if (landing.mode === 'html') {
-    const firstUser = chatHistory.find(m => m.role === 'user');
-    if (!firstUser) { showToast('Escribí en el chat qué landing querés y la genero', true); return; }
+    const brief = landing.brief || (chatHistory.find(m => m.role === 'user') || {}).content;
+    if (!brief) { showToast('Escribí en el chat qué landing querés y la genero', true); return; }
     if (!confirm('¿Generar un diseño nuevo desde cero? El diseño actual se reemplaza.')) return;
-    _lastHtmlSnapshot = landing.html;
-    await runHtmlEdit('Rediseñá esta landing COMPLETAMENTE con un enfoque visual totalmente distinto y fresco (otro layout, otra estructura), manteniendo el mismo producto y mensaje. Devolvé la página HTML completa.', 'Generá un diseño nuevo');
+    _lastHtmlSnapshot = { html: landing.html, sections: landing.sections ? landing.sections.slice() : null };
+    addChatMsg('Generá un diseño nuevo', 'user');
+    const thinkingId = addChatMsg('<span class="dot"></span><span class="dot"></span><span class="dot"></span>', 'assistant', true);
+    try {
+      const palId = landing.palette || getCurrentPalette() || 'blue-purple';
+      const result = await AI.generateLandingSectioned(brief, palId);
+      landing.sections = result.sections;
+      landing.html = result.html;
+      landing.title = result.title || landing.title;
+      removeMsg(thinkingId);
+      renderPreview();
+      autosave();
+      const undoBtn = document.getElementById('chat-undo-btn');
+      if (undoBtn) { undoBtn.classList.remove('hidden'); undoBtn.style.display = 'inline-flex'; }
+      addChatMsg('Listo, generé un diseño completamente nuevo.', 'assistant');
+    } catch(e) {
+      removeMsg(thinkingId);
+      addChatMsg('No pude regenerar: ' + e.message, 'assistant');
+    }
     return;
   }
   if (!landing.brief) return;
@@ -2588,11 +2620,17 @@ async function runHtmlEdit(instruction, userEcho) {
   if (userEcho) addChatMsg(userEcho, 'user');
   const thinkingId = addChatMsg('<span class="dot"></span><span class="dot"></span><span class="dot"></span>', 'assistant', true);
   try {
-    const _prev = landing.html;
-    const newHtml = await AI.generateLandingPage(instruction, landing.html, null);
+    const palId = landing.palette || getCurrentPalette() || 'blue-purple';
+    const _prev = { html: landing.html, sections: landing.sections ? landing.sections.slice() : null };
+    if (landing.sections && landing.sections.length) {
+      const res = await AI.editLandingSectioned(instruction, landing.sections, palId, landing.brief || landing.title || '');
+      landing.sections = res.sections;
+      landing.html = AI.assembleLanding(res.sections, palId, landing.title);
+    } else {
+      landing.html = await AI.generateLandingPage(instruction, landing.html, null);
+    }
     removeMsg(thinkingId);
     _lastHtmlSnapshot = _prev;
-    landing.html = newHtml;
     renderPreview();
     autosave();
     const undoBtn = document.getElementById('chat-undo-btn');
@@ -2630,18 +2668,37 @@ function handleChatImage(dataUrl) {
     addChatMsg('Primero creá una landing describiéndola en el chat. Después subí tu imagen y la pongo en la sección que quieras.', 'assistant');
     return;
   }
-  // Lovable HTML mode: replace the first <img> in the page with the uploaded photo
+  // Section-based HTML mode: replace the first <img> (in the hero section if possible)
   if (landing.mode === 'html') {
     addChatMsg(`<div class="flex flex-col gap-1.5"><img src="${dataUrl}" style="max-width:140px;border-radius:8px;border:1px solid rgba(255,255,255,.15)"/><span>Imagen subida</span></div>`, 'user');
+    const safeUrl = dataUrl.replace(/\$/g, '$$$$');
+    const imgRe = /(<img\b[^>]*\bsrc\s*=\s*")[^"]*(")/i;
+    const palId = landing.palette || getCurrentPalette() || 'blue-purple';
+    // Prefer editing the section that holds the first image, so sections stay in sync
+    if (landing.sections && landing.sections.length) {
+      const target = landing.sections.find(s => imgRe.test(s.html || '')) || landing.sections[0];
+      if (target && imgRe.test(target.html || '')) {
+        _lastHtmlSnapshot = { html: landing.html, sections: landing.sections.slice() };
+        target.html = target.html.replace(imgRe, '$1' + safeUrl + '$2');
+        landing.html = AI.assembleLanding(landing.sections, palId, landing.title);
+        renderPreview();
+        autosave();
+        const undoBtn = document.getElementById('chat-undo-btn');
+        if (undoBtn) { undoBtn.classList.remove('hidden'); undoBtn.style.display = 'inline-flex'; }
+        addChatMsg('Puse tu imagen en la landing. Si querés ponerla en otra sección, decime dónde por el chat.', 'assistant');
+        return;
+      }
+    }
+    // Fallback: raw HTML replace
     const html = landing.html || '';
-    if (/<img\b[^>]*\bsrc\s*=/i.test(html)) {
-      _lastHtmlSnapshot = html;
-      landing.html = html.replace(/(<img\b[^>]*\bsrc\s*=\s*")[^"]*(")/i, '$1' + dataUrl.replace(/\$/g, '$$$$') + '$2');
+    if (imgRe.test(html)) {
+      _lastHtmlSnapshot = { html, sections: landing.sections ? landing.sections.slice() : null };
+      landing.html = html.replace(imgRe, '$1' + safeUrl + '$2');
       renderPreview();
       autosave();
       const undoBtn = document.getElementById('chat-undo-btn');
       if (undoBtn) { undoBtn.classList.remove('hidden'); undoBtn.style.display = 'inline-flex'; }
-      addChatMsg('Puse tu imagen en la landing (reemplacé la imagen principal). Si querés ponerla en otro lugar, decime dónde por el chat.', 'assistant');
+      addChatMsg('Puse tu imagen en la landing (reemplacé la imagen principal).', 'assistant');
     } else {
       addChatMsg('Esta landing no tiene una imagen para reemplazar. Pedime por el chat dónde querés que agregue tu imagen.', 'assistant');
     }
@@ -2740,11 +2797,18 @@ function initUI() {
     document.getElementById('palette-name-lbl').textContent = p ? p.name : '';
     if (!landing) return;
     landing.palette = id;
-    // Lovable HTML mode: ask the AI to recolor the page
+    // Section-based HTML mode: recolor INSTANTLY by reassembling with new CSS vars (no AI, free)
     if (landing.mode === 'html') {
       document.getElementById('palette-panel').classList.add('hidden');
-      const desc = p ? `${p.name} (de ${p.from} a ${p.to})` : id;
-      runHtmlEdit(`Cambiá TODA la paleta de colores de la landing a estos colores: ${desc}. Aplicá el nuevo color en botones, acentos, íconos, gradientes y detalles.`, `Cambiá los colores a ${p ? p.name : id}`);
+      if (landing.sections && landing.sections.length) {
+        landing.html = AI.assembleLanding(landing.sections, id, landing.title);
+        renderPreview();
+        autosave();
+      } else {
+        // Legacy landing without sections: fall back to AI recolor
+        const desc = p ? `${p.name} (de ${p.primary} a ${p.accent})` : id;
+        runHtmlEdit(`Cambiá TODA la paleta de colores de la landing a estos colores: ${desc}. Aplicá el nuevo color en botones, acentos, íconos, gradientes y detalles.`, `Cambiá los colores a ${p ? p.name : id}`);
+      }
       return;
     }
     renderPreview();
@@ -2838,7 +2902,13 @@ function initUI() {
     // Lovable HTML mode undo
     if (landing.mode === 'html') {
       if (!_lastHtmlSnapshot) return;
-      landing.html = _lastHtmlSnapshot;
+      // Snapshot can be a string (legacy) or {html, sections}
+      if (typeof _lastHtmlSnapshot === 'string') {
+        landing.html = _lastHtmlSnapshot;
+      } else {
+        landing.html = _lastHtmlSnapshot.html;
+        if (_lastHtmlSnapshot.sections) landing.sections = _lastHtmlSnapshot.sections;
+      }
       _lastHtmlSnapshot = null;
       renderPreview();
       autosave();

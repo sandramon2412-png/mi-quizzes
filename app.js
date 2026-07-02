@@ -1336,6 +1336,245 @@ INSTRUCCIÓN: ${instruction}`;
     return t;
   },
 
+  // ════════════════════════════════════════════════════════════
+  // SECTION-BASED LANDING — arquitectura definitiva
+  // Cada sección se genera por separado (nunca se corta). El armazón
+  // HTML lo arma el código, no el AI → la página SIEMPRE sale completa.
+  // ════════════════════════════════════════════════════════════
+  _landingPalette(palId) {
+    const pals = (typeof window !== 'undefined' && window.LANDING_PALETTES_DEF) || [];
+    return pals.find(p => p.id === palId) || pals[0] ||
+      { id: 'blue-purple', primary: '#2E5BFF', accent: '#7c3aed', bg: '#09090b', surface: 'rgba(255,255,255,0.04)', fg: '#ffffff', mode: 'dark' };
+  },
+
+  _landingCssVars(pal) {
+    const isDark = pal.mode === 'dark';
+    const muted = isDark ? 'rgba(255,255,255,0.64)' : 'rgba(0,0,0,0.6)';
+    const border = isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)';
+    const cardBg = isDark ? 'rgba(255,255,255,0.045)' : '#ffffff';
+    return `--brand:${pal.primary};--brand-2:${pal.accent};--bg:${pal.bg};--ink:${pal.fg};--muted:${muted};--surface:${cardBg};--border:${border}`;
+  },
+
+  _sectionDefaultBrief(id) {
+    const b = {
+      hero: 'Titular potente (fórmula dolor→solución→transformación), subtítulo con el mecanismo, CTA verbo+resultado, microcopy debajo (Sin tarjeta · Acceso inmediato), imagen o mockup relevante.',
+      'prueba-social': 'Franja de confianza: logos o métricas verosímiles, "+N personas ya confían".',
+      problema: 'El dolor real del cliente, agitado con empatía. 3-4 puntos de frustración concretos.',
+      beneficios: 'Grid de 3-6 beneficios con íconos Material Symbols. Cada uno: resultado concreto → cómo → tiempo.',
+      modulos: 'Qué incluye el producto: módulos/lecciones/entregables en tarjetas.',
+      'como-funciona': 'Pasos numerados (3-4) de cómo funciona el producto.',
+      testimonios: '3-4 testimonios verosímiles con avatar de iniciales, nombre y resultado concreto.',
+      bonos: 'Bonos extra incluidos, con valor percibido de cada uno.',
+      precio: 'Oferta clara: precio, qué incluye, CTA fuerte, ancla de valor, urgencia honesta.',
+      garantia: 'Garantía que elimina el riesgo (ej: 30 días o devolución).',
+      faq: 'Acordeón con 5-7 objeciones reales del cliente y sus respuestas.',
+      'cta-final': 'Cierre potente: recap de la transformación + CTA final grande.',
+      footer: 'Footer con nombre de marca, links básicos y aviso legal breve.',
+    };
+    return b[id] || 'Sección relevante y persuasiva para el producto.';
+  },
+
+  assembleLanding(sections, palId, title) {
+    const pal = this._landingPalette(palId);
+    const vars = this._landingCssVars(pal);
+    const body = (sections || []).map(s => (s && s.html) ? s.html : '').filter(Boolean).join('\n');
+    const safeTitle = String(title || 'Landing').replace(/[<>]/g, '');
+    return `<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>${safeTitle}</title>
+<script src="https://cdn.tailwindcss.com"><\/script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/icon?family=Material+Symbols+Outlined" rel="stylesheet"/>
+<style>
+  :root{${vars}}
+  html{scroll-behavior:smooth}
+  body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(--ink);margin:0}
+  .material-symbols-outlined{font-variation-settings:'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 24}
+  .js-reveal{opacity:0;transform:translateY(24px);transition:opacity .6s ease,transform .6s ease}
+  .js-reveal.in{opacity:1;transform:none}
+  section,footer{scroll-margin-top:80px}
+</style>
+</head>
+<body>
+${body}
+<script>
+  try {
+    var els = [].slice.call(document.querySelectorAll('body > section, body > footer, body > header'));
+    els.forEach(function(el){ el.classList.add('js-reveal'); });
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(e){ if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); } });
+    }, { threshold: 0.1 });
+    els.forEach(function(el){ io.observe(el); });
+    // Failsafe: never leave content invisible
+    setTimeout(function(){ els.forEach(function(el){ el.classList.add('in'); }); }, 2200);
+    // FAQ: allow only one open at a time within same container (optional nicety)
+    document.querySelectorAll('details').forEach(function(d){
+      d.addEventListener('toggle', function(){
+        if(d.open){ var p=d.parentElement; if(p) p.querySelectorAll('details').forEach(function(o){ if(o!==d) o.open=false; }); }
+      });
+    });
+  } catch(e) {}
+<\/script>
+</body>
+</html>`;
+  },
+
+  _sectionGenSystem(pal) {
+    return `Sos un desarrollador front-end de élite. Generás UNA sección de landing page en HTML premium (nivel Stripe, Linear, Vercel).
+
+FORMATO — OBLIGATORIO:
+- Devolvé SOLO el HTML de la sección: un único elemento <section id="..."> ... </section> (o <footer id="footer"> para el footer). SIN <html>, <head>, <body>. SIN markdown, SIN \`\`\`, SIN texto antes o después.
+- Usá clases Tailwind (el CDN ya está cargado en la página).
+- Íconos: <span class="material-symbols-outlined">nombre_icono</span>. NUNCA emojis.
+
+COLORES — usá SIEMPRE estas variables CSS (ya definidas en la página):
+- Fondo de página: var(--bg). Texto principal: var(--ink). Texto atenuado: var(--muted).
+- Marca principal: var(--brand). Secundario/gradiente: var(--brand-2).
+- Tarjetas: var(--surface). Bordes: var(--border).
+Usalas con Tailwind arbitrario o inline: text-[color:var(--ink)], text-[color:var(--muted)], bg-[var(--surface)], border-[color:var(--border)], o style="color:var(--brand)". Gradientes: style="background:linear-gradient(135deg,var(--brand),var(--brand-2))". Botones: fondo con gradiente de marca y texto blanco.
+El tema de la página es ${pal.mode === 'dark' ? 'OSCURO (fondo oscuro, texto claro)' : 'CLARO (fondo claro, texto oscuro)'} — diseñá los contrastes acorde.
+
+DISEÑO:
+- Padding vertical generoso (py-16 md:py-24), contenedor centrado (max-w-6xl mx-auto px-6).
+- Mobile-first y responsive (md: lg:).
+- Estética premium: jerarquía tipográfica fuerte, espaciado amplio, rounded-2xl, sombras suaves, hover states, transiciones.
+- IMÁGENES: https://image.pollinations.ai/prompt/[descripcion-en-ingles]?width=1200&height=800&nologo=true con prompts relevantes al producto. Avatares de testimonios = iniciales en círculo con gradiente de marca (NO fotos falsas).
+
+COPY — español latinoamericano, persuasivo, concreto, cálido. Sin clichés, sin datos inventados absurdos. CTAs verbo+resultado. Contenido real y completo, nunca "Lorem ipsum" ni placeholders.`;
+  },
+
+  _cleanSectionHtml(text, id, isFooter) {
+    let t = (text || '').trim().replace(/^```(?:html)?\s*/i, '').replace(/```\s*$/i, '').trim();
+    const tag = isFooter ? 'footer' : 'section';
+    const si = t.search(new RegExp('<' + tag + '[\\s>]', 'i'));
+    if (si > 0) t = t.slice(si);
+    const ci = t.toLowerCase().lastIndexOf('</' + tag + '>');
+    if (ci !== -1) t = t.slice(0, ci + tag.length + 3);
+    // Ensure the section carries its id (for later surgical edits)
+    if (t && !new RegExp('id=["\']' + id + '["\']').test(t)) {
+      t = t.replace(new RegExp('<' + tag, 'i'), '<' + tag + ' id="' + id + '"');
+    }
+    return t;
+  },
+
+  async planLandingSections(instruction) {
+    const system = 'Sos un estratega de landing pages de alta conversión (CRO). Dado un producto, decidís qué secciones necesita la landing y en qué orden para maximizar conversión.';
+    const user = `PRODUCTO / PEDIDO DEL USUARIO:
+${instruction}
+
+Elegí las secciones ideales para ESTA landing (entre 6 y 9). La primera SIEMPRE es "hero" y la última "footer".
+Secciones posibles (ids): hero, prueba-social, problema, beneficios, modulos, como-funciona, testimonios, bonos, precio, garantia, faq, cta-final, footer.
+
+Respondé SOLO con este JSON (sin markdown, sin texto extra):
+{"title":"Nombre corto del producto","sections":[{"id":"hero","brief":"qué debe comunicar específicamente para ESTE producto en 1-2 frases"},{"id":"beneficios","brief":"..."}]}`;
+    const text = await this._call([{ role: 'user', content: user }], 1500, { model: 'claude-sonnet-4-6', system });
+    const plan = this._parseJSONLoose(text) || {};
+    if (!plan.sections || !plan.sections.length) {
+      plan.sections = ['hero', 'problema', 'beneficios', 'testimonios', 'precio', 'garantia', 'faq', 'footer']
+        .map(id => ({ id, brief: '' }));
+    }
+    // Guarantee hero first, footer last
+    plan.sections = plan.sections.filter(s => s && s.id);
+    if (!plan.sections.some(s => s.id === 'hero')) plan.sections.unshift({ id: 'hero', brief: '' });
+    if (!plan.sections.some(s => s.id === 'footer')) plan.sections.push({ id: 'footer', brief: '' });
+    if (!plan.title) plan.title = 'Mi Landing';
+    return plan;
+  },
+
+  async generateOneSection(spec, sharedBrief, pal) {
+    const isFooter = spec.id === 'footer';
+    const isFaq = spec.id === 'faq';
+    const tag = isFooter ? 'footer' : 'section';
+    const extra = isFaq ? '\nUsá <details><summary>...</summary>...</details> nativo para el acordeón de cada pregunta.' : '';
+    const user = `PRODUCTO GENERAL:
+${sharedBrief}
+
+SECCIÓN A GENERAR: id="${spec.id}"
+OBJETIVO DE ESTA SECCIÓN: ${spec.brief || this._sectionDefaultBrief(spec.id)}
+
+Generá SOLO el <${tag} id="${spec.id}"> ... </${tag}> completo, premium y con contenido real.${extra}`;
+    const text = await this._call([{ role: 'user', content: user }], 4000, {
+      model: 'claude-sonnet-4-6',
+      system: this._sectionGenSystem(pal),
+    });
+    return this._cleanSectionHtml(text, spec.id, isFooter);
+  },
+
+  async generateLandingSectioned(instruction, palId, onProgress) {
+    const pal = this._landingPalette(palId);
+    if (onProgress) try { onProgress('plan'); } catch (e) {}
+    const plan = await this.planLandingSections(instruction);
+    const brief = `${plan.title || ''}\n\n${instruction}`;
+    const specs = plan.sections;
+    let done = 0;
+    const results = await Promise.all(specs.map(async (spec) => {
+      let html = '';
+      try { html = await this.generateOneSection(spec, brief, pal); } catch (e) { html = ''; }
+      done++;
+      if (onProgress) try { onProgress('section', Math.round((done / specs.length) * 100)); } catch (e) {}
+      return { id: spec.id, brief: spec.brief || '', html };
+    }));
+    const sections = results.filter(s => s.html);
+    if (!sections.length) throw new Error('No se pudo generar ninguna sección. Probá de nuevo con más detalle.');
+    const html = this.assembleLanding(sections, palId, plan.title);
+    return { title: plan.title || 'Mi Landing', sections, html, palette: palId };
+  },
+
+  async editLandingSectioned(instruction, sections, palId, brief) {
+    const pal = this._landingPalette(palId);
+    const ids = (sections || []).map(s => s.id);
+    const classify = await this._call([{ role: 'user', content: `Landing con estas secciones (en orden): ${ids.join(', ')}.
+INSTRUCCIÓN DEL USUARIO: "${instruction}"
+
+Respondé SOLO JSON (sin markdown):
+{"action":"edit"|"add"|"remove","sectionId":"id","brief":"detalle si aplica","reply":"respuesta breve y amable al usuario"}
+
+- "edit": modificar UNA sección existente. sectionId DEBE ser uno de: ${ids.join(', ')}.
+- "add": agregar una sección nueva. sectionId = un id descriptivo nuevo. brief = qué debe tener.
+- "remove": quitar una sección. sectionId DEBE ser uno existente.` }], 500, { model: 'claude-haiku-4-5-20251001' });
+    const plan = this._parseJSONLoose(classify) || {};
+    const reply = plan.reply || 'Listo, apliqué el cambio.';
+
+    if (plan.action === 'remove' && ids.includes(plan.sectionId)) {
+      return { sections: sections.filter(s => s.id !== plan.sectionId), reply: plan.reply || 'Quité esa sección.' };
+    }
+
+    if (plan.action === 'add') {
+      const newId = (plan.sectionId && !ids.includes(plan.sectionId)) ? plan.sectionId : ('extra-' + ids.length);
+      const spec = { id: newId, brief: plan.brief || instruction };
+      const html = await this.generateOneSection(spec, brief || '', pal);
+      const newSec = { id: newId, brief: spec.brief, html };
+      const fi = sections.findIndex(s => s.id === 'footer');
+      const out = fi === -1 ? [...sections, newSec] : [...sections.slice(0, fi), newSec, ...sections.slice(fi)];
+      return { sections: out, reply: plan.reply || 'Agregué la sección nueva.' };
+    }
+
+    // Default: edit one section
+    const targetId = (plan.sectionId && ids.includes(plan.sectionId)) ? plan.sectionId : ids[0];
+    const idx = sections.findIndex(s => s.id === targetId);
+    if (idx === -1) return { sections, reply: 'No encontré qué sección cambiar. ¿Podés ser más específica?' };
+    const cur = sections[idx];
+    const isFooter = targetId === 'footer';
+    const tag = isFooter ? 'footer' : 'section';
+    const user = `Esta es la sección actual (id="${targetId}"):
+${cur.html}
+
+INSTRUCCIÓN DEL USUARIO: ${instruction}
+
+Devolvé SOLO el <${tag} id="${targetId}"> ... </${tag}> modificado, aplicando el cambio y manteniendo el resto igual. Mismo formato premium con las variables CSS de color.`;
+    const text = await this._call([{ role: 'user', content: user }], 4000, {
+      model: 'claude-sonnet-4-6',
+      system: this._sectionGenSystem(pal),
+    });
+    const newHtml = this._cleanSectionHtml(text, targetId, isFooter);
+    const copy = sections.slice();
+    copy[idx] = { ...cur, html: newHtml || cur.html };
+    return { sections: copy, reply };
+  },
+
   async editBlockData(blockType, currentData, instruction, contextBrief = '') {
     const system = `Eres experto en copywriting de landing pages. Tu tarea: modificar el objeto "data" de una sección específica.
 
@@ -2039,6 +2278,16 @@ const AI = {
   },
   async generateLandingPage(instruction, currentHtml, history) {
     return Claude.generateLandingPage(instruction, currentHtml, history);
+  },
+  // ── Section-based landing (arquitectura definitiva) ──
+  async generateLandingSectioned(instruction, palId, onProgress) {
+    return Claude.generateLandingSectioned(instruction, palId, onProgress);
+  },
+  async editLandingSectioned(instruction, sections, palId, brief) {
+    return Claude.editLandingSectioned(instruction, sections, palId, brief);
+  },
+  assembleLanding(sections, palId, title) {
+    return Claude.assembleLanding(sections, palId, title);
   },
   // Complejo: ebook estructurado — intenta Claude, cae a Groq si no hay créditos
   async generateEbook(brief, history = [], onProgress, docType = 'ebook') {
