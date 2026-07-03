@@ -1437,6 +1437,151 @@ ${body}
 </html>`;
   },
 
+  // ── Template-based section builder ─────────────────────────────────────
+  // AI fills JSON content, CODE generates HTML — layouts always correct.
+
+  _esc(s) {
+    return String(s == null ? '' : s)
+      .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  },
+
+  _imgUrl(prompt) {
+    const safe = (prompt||'abstract+background').replace(/\s+/g,'+').replace(/[^a-zA-Z0-9+\-]/g,'').replace(/\++/g,'+');
+    return `https://image.pollinations.ai/prompt/${safe||'abstract+colorful+background'}?width=1200&height=800&nologo=true`;
+  },
+
+  _sectionContentSchema(id) {
+    const icons = 'star|check_circle|favorite|school|trending_up|bolt|shield|people|rocket_launch|thumb_up|verified|psychology|emoji_events|lightbulb|timer|local_fire_department|health_and_safety|fitness_center|attach_money|savings|work|campaign|diversity_3|card_giftcard|sentiment_satisfied|self_improvement';
+    const S = {
+      hero: {badge:'frase corta de credibilidad (ej: +2.000 personas ya lo lograron)',title:'título H1 impactante y específico para este producto (6-12 palabras)',subtitle:'descripción del beneficio principal en 2-3 líneas que engancha al lector',cta:'texto del botón (verbo+resultado, ej: Quiero empezar hoy)',microcopy:'texto pequeño bajo el botón (ej: Sin tarjeta · Acceso inmediato · Garantía 30 días)',image_prompt:'relevant+english+keywords+describing+a+real+image+for+this+product+separated+by+plus'},
+      problema: {title:'El problema real que tiene tu cliente ideal',items:[{icon:'sentiment_dissatisfied',title:'Dolor específico 1',desc:'descripción del dolor en 1-2 frases'},{icon:'sentiment_dissatisfied',title:'Dolor específico 2',desc:'descripción'},{icon:'sentiment_dissatisfied',title:'Dolor específico 3',desc:'descripción'}]},
+      beneficios: {title:'título de la sección de beneficios',subtitle:'subtítulo opcional',items:[{icon:'star',title:'Beneficio 1',desc:'descripción concreta con resultado'},{icon:'check_circle',title:'Beneficio 2',desc:'descripción'},{icon:'trending_up',title:'Beneficio 3',desc:'descripción'}]},
+      modulos: {title:'Qué vas a aprender',items:[{icon:'school',title:'Módulo 1: nombre del módulo',desc:'qué aprenden y qué resultado logran'},{icon:'rocket_launch',title:'Módulo 2: nombre',desc:'descripción'},{icon:'lightbulb',title:'Módulo 3: nombre',desc:'descripción'},{icon:'verified',title:'Módulo 4: nombre',desc:'descripción'}]},
+      'como-funciona': {title:'Cómo funciona',items:[{step:'1',title:'Primer paso',desc:'descripción de qué hace el usuario'},{step:'2',title:'Segundo paso',desc:'descripción'},{step:'3',title:'Tercer paso',desc:'resultado que obtiene'}]},
+      'prueba-social': {title:'texto de credibilidad (ej: Más de 2.000 personas ya transformaron sus finanzas)',stats:[{value:'2.000+',label:'estudiantes activos'},{value:'98%',label:'lo recomiendan'},{value:'30 días',label:'para ver resultados'}]},
+      testimonios: {title:'Lo que dicen ellas',items:[{initials:'ML',name:'María López',role:'Profesión · Ciudad',quote:'testimonio específico con resultado concreto medible que inspira a otros a comprar'},{initials:'AC',name:'Ana Cruz',role:'Profesión · Ciudad',quote:'testimonio diferente con otro ángulo del resultado'},{initials:'PG',name:'Paula Gómez',role:'Profesión · Ciudad',quote:'tercer testimonio con resultado específico y creíble'}]},
+      bonos: {title:'Bonos exclusivos incluidos',items:[{icon:'card_giftcard',title:'Nombre del bono 1',desc:'qué incluye y para qué sirve',value:'Valor: $97'},{icon:'campaign',title:'Nombre del bono 2',desc:'descripción del bono',value:'Valor: $47'}]},
+      precio: {title:'Tu inversión',price:'$97',period:'pago único / acceso de por vida',features:['Todo el contenido del programa','Comunidad privada de apoyo','Acceso de por vida','Actualizaciones incluidas','Soporte personalizado'],cta:'Quiero acceso ahora',microcopy:'Pago seguro · Garantía 30 días · Acceso inmediato'},
+      garantia: {title:'Garantía de 30 días sin preguntas',desc:'Si en 30 días no ves resultados concretos, te devolvemos el 100% de tu inversión. Sin preguntas, sin demoras, sin complicaciones. Probalo sin riesgo.',days:'30'},
+      faq: {title:'Preguntas frecuentes',items:[{q:'¿Para quién es este programa?',a:'respuesta específica'},{q:'¿Cuánto tiempo necesito por día?',a:'respuesta'},{q:'¿Qué pasa si no veo resultados?',a:'respuesta sobre la garantía'},{q:'¿Tengo acceso de por vida?',a:'respuesta'},{q:'¿Cómo accedo después de comprar?',a:'respuesta'}]},
+      'cta-final': {title:'¿Estás lista para cambiar tu vida?',subtitle:'Unite a las personas que ya dieron el primer paso y están transformando su realidad',cta:'Quiero empezar hoy',microcopy:'Sin tarjeta · Acceso inmediato · Garantía 30 días'},
+      footer: {brand_name:'Nombre del Producto',tagline:'frase de 5-8 palabras que resume el valor',copyright:'© 2024 · Todos los derechos reservados'}
+    };
+    return JSON.parse(JSON.stringify(S[id] || S.beneficios));
+  },
+
+  _buildSection(id, content, pal) {
+    const c = content || {};
+    const e = (s) => this._esc(s);
+    const arr = (v) => Array.isArray(v) ? v : [];
+    const GRAD = 'linear-gradient(135deg,var(--brand),var(--brand-2))';
+    const CARD = 'background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:28px';
+    const GRID = (min) => `display:grid;grid-template-columns:repeat(auto-fit,minmax(${min}px,1fr));gap:24px`;
+    const ICON = (name,sz=28) => `<span class="material-symbols-outlined" style="font-size:${sz}px;background:${GRAD};-webkit-background-clip:text;-webkit-text-fill-color:transparent">${e(name||'star')}</span>`;
+    const ICON_W = (name,sz=20) => `<span class="material-symbols-outlined" style="font-size:${sz}px;color:#fff">${e(name||'star')}</span>`;
+    const AVATAR = (init) => `<div style="width:44px;height:44px;border-radius:50%;background:${GRAD};display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:14px;flex-shrink:0">${e((init||'?').slice(0,2))}</div>`;
+    const BTN = (text,href='#precio') => `<a href="${e(href)}" style="background:${GRAD};color:#fff;padding:16px 36px;border-radius:12px;font-weight:700;font-size:18px;display:inline-block;text-decoration:none;cursor:pointer">${e(text||'Empezar')}</a>`;
+    const H2 = (text,align='center') => `<h2 style="color:var(--ink);font-size:clamp(1.6rem,3vw,2.4rem);font-weight:800;text-align:${align};margin:0 0 12px">${e(text)}</h2>`;
+    const SUB = (text,align='center') => text ? `<p style="color:var(--muted);text-align:${align};font-size:17px;line-height:1.6;margin:0 0 48px">${e(text)}</p>` : '<div style="margin-bottom:48px"></div>';
+    const SEC = (inner,bg='var(--bg)',py=80) => `<section id="${e(id)}" style="background:${bg};padding:${py}px 0"><div style="max-width:1152px;margin:0 auto;padding:0 24px">${inner}</div></section>`;
+
+    switch(id) {
+      case 'hero': {
+        const img = this._imgUrl(c.image_prompt);
+        return `<section id="hero" style="background:var(--bg);padding:80px 0">
+<div style="max-width:1152px;margin:0 auto;padding:0 24px;display:flex;flex-wrap:wrap;align-items:center;gap:48px">
+<div style="flex:1;min-width:280px">
+${c.badge?`<p style="color:var(--brand);font-weight:700;font-size:13px;text-transform:uppercase;letter-spacing:2px;margin:0 0 16px">${e(c.badge)}</p>`:''}
+<h1 style="color:var(--ink);font-size:clamp(2rem,5vw,3.5rem);font-weight:800;line-height:1.1;margin:0 0 20px">${e(c.title||'Título')}</h1>
+<p style="color:var(--muted);font-size:18px;line-height:1.6;margin:0 0 32px">${e(c.subtitle||'')}</p>
+${BTN(c.cta||'Empezar ahora')}
+${c.microcopy?`<p style="color:var(--muted);font-size:13px;margin:12px 0 0">${e(c.microcopy)}</p>`:''}
+</div>
+<div style="flex:1;min-width:280px;max-width:520px">
+<img src="${img}" loading="lazy" alt="${e(c.title||'')}" style="width:100%;height:380px;object-fit:cover;border-radius:20px;box-shadow:0 20px 60px rgba(0,0,0,.3)"/>
+</div>
+</div>
+</section>`;
+      }
+      case 'problema': {
+        const items = arr(c.items);
+        return SEC(`${H2(c.title||'El problema')}${SUB('')}<div style="${GRID(240)}">${items.map(it=>`<div style="${CARD}">${ICON(it.icon||'sentiment_dissatisfied')}<h3 style="color:var(--ink);font-size:17px;font-weight:700;margin:12px 0 8px">${e(it.title||'')}</h3><p style="color:var(--muted);font-size:15px;line-height:1.6;margin:0">${e(it.desc||'')}</p></div>`).join('')}</div>`,'var(--surface)');
+      }
+      case 'beneficios': {
+        const items = arr(c.items);
+        return SEC(`${H2(c.title||'Beneficios')}${SUB(c.subtitle||'')}<div style="${GRID(240)}">${items.map(it=>`<div style="${CARD}">${ICON(it.icon||'check_circle')}<h3 style="color:var(--ink);font-size:17px;font-weight:700;margin:12px 0 8px">${e(it.title||'')}</h3><p style="color:var(--muted);font-size:15px;line-height:1.6;margin:0">${e(it.desc||'')}</p></div>`).join('')}</div>`);
+      }
+      case 'modulos': {
+        const items = arr(c.items);
+        return SEC(`${H2(c.title||'Contenido')}${SUB('')}<div style="${GRID(290)}">${items.map(it=>`<div style="${CARD};display:flex;gap:16px;align-items:flex-start"><div style="background:${GRAD};border-radius:10px;width:40px;height:40px;display:flex;align-items:center;justify-content:center;flex-shrink:0">${ICON_W(it.icon||'school')}</div><div><h3 style="color:var(--ink);font-weight:700;font-size:16px;margin:0 0 6px">${e(it.title||'')}</h3><p style="color:var(--muted);font-size:14px;line-height:1.5;margin:0">${e(it.desc||'')}</p></div></div>`).join('')}</div>`,'var(--surface)');
+      }
+      case 'como-funciona': {
+        const items = arr(c.items);
+        return SEC(`${H2(c.title||'Cómo funciona')}${SUB('')}<div style="${GRID(240)}">${items.map((it,i)=>`<div style="text-align:center"><div style="width:56px;height:56px;border-radius:50%;background:${GRAD};display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:22px;margin:0 auto 16px">${e(it.step||String(i+1))}</div><h3 style="color:var(--ink);font-weight:700;font-size:17px;margin:0 0 8px">${e(it.title||'')}</h3><p style="color:var(--muted);font-size:15px;line-height:1.6;margin:0">${e(it.desc||'')}</p></div>`).join('')}</div>`);
+      }
+      case 'prueba-social': {
+        const stats = arr(c.stats);
+        return `<section id="prueba-social" style="background:${GRAD};padding:56px 0"><div style="max-width:1152px;margin:0 auto;padding:0 24px">${c.title?`<p style="color:rgba(255,255,255,.9);text-align:center;font-size:16px;font-weight:500;margin:0 0 32px">${e(c.title)}</p>`:''}<div style="display:flex;flex-wrap:wrap;justify-content:center;gap:56px">${stats.map(s=>`<div style="text-align:center"><p style="color:#fff;font-size:2.5rem;font-weight:800;margin:0 0 4px">${e(s.value||'')}</p><p style="color:rgba(255,255,255,.8);font-size:14px;margin:0">${e(s.label||'')}</p></div>`).join('')}</div></div></section>`;
+      }
+      case 'testimonios': {
+        const items = arr(c.items).slice(0,3);
+        return SEC(`${H2(c.title||'Lo que dicen')}${SUB('')}<div style="${GRID(270)}">${items.map(it=>`<div style="${CARD};display:flex;flex-direction:column;gap:16px"><p style="color:var(--ink);font-size:15px;line-height:1.7;margin:0;font-style:italic">"${e(it.quote||'')}"</p><div style="display:flex;align-items:center;gap:12px;margin-top:auto">${AVATAR(it.initials||'?')}<div><p style="color:var(--ink);font-weight:700;font-size:14px;margin:0">${e(it.name||'')}</p><p style="color:var(--muted);font-size:13px;margin:0">${e(it.role||'')}</p></div></div></div>`).join('')}</div>`,'var(--surface)');
+      }
+      case 'bonos': {
+        const items = arr(c.items);
+        return SEC(`${H2(c.title||'Bonos')}${SUB('')}<div style="${GRID(290)}">${items.map(it=>`<div style="${CARD};display:flex;gap:16px;align-items:flex-start"><div style="background:${GRAD};border-radius:10px;width:44px;height:44px;display:flex;align-items:center;justify-content:center;flex-shrink:0">${ICON_W(it.icon||'card_giftcard',22)}</div><div style="flex:1"><h3 style="color:var(--ink);font-weight:700;font-size:16px;margin:0 0 6px">${e(it.title||'')}</h3><p style="color:var(--muted);font-size:14px;line-height:1.5;margin:0 0 8px">${e(it.desc||'')}</p>${it.value?`<p style="color:var(--brand);font-weight:700;font-size:14px;margin:0">${e(it.value)}</p>`:''}</div></div>`).join('')}</div>`);
+      }
+      case 'precio': {
+        const features = arr(c.features);
+        return `<section id="precio" style="background:var(--surface);padding:80px 0"><div style="max-width:480px;margin:0 auto;padding:0 24px;text-align:center">${H2(c.title||'Tu inversión','center')}<div style="background:var(--bg);border:2px solid var(--brand);border-radius:20px;padding:40px;margin-top:32px"><p style="color:var(--muted);font-size:13px;text-transform:uppercase;letter-spacing:1px;margin:0 0 8px">${e(c.period||'pago único')}</p><p style="color:var(--ink);font-size:56px;font-weight:800;margin:0 0 8px;line-height:1">${e(c.price||'$97')}</p><ul style="list-style:none;margin:24px 0 32px;padding:0;text-align:left;display:flex;flex-direction:column;gap:10px">${features.map(f=>`<li style="color:var(--ink);font-size:15px;display:flex;align-items:flex-start;gap:8px"><span class="material-symbols-outlined" style="font-size:18px;color:var(--brand);flex-shrink:0;margin-top:1px">check_circle</span><span>${e(f)}</span></li>`).join('')}</ul>${BTN(c.cta||'Quiero acceso ahora')}${c.microcopy?`<p style="color:var(--muted);font-size:13px;margin:12px 0 0">${e(c.microcopy)}</p>`:''}</div></div></section>`;
+      }
+      case 'garantia': {
+        return `<section id="garantia" style="background:var(--bg);padding:64px 0"><div style="max-width:600px;margin:0 auto;padding:0 24px;text-align:center">${ICON('verified_user',56)}<h2 style="color:var(--ink);font-size:2rem;font-weight:800;margin:16px 0 12px">${e(c.title||'Garantía')}</h2><p style="color:var(--muted);font-size:17px;line-height:1.7;margin:0">${e(c.desc||'')}</p></div></section>`;
+      }
+      case 'faq': {
+        const items = arr(c.items);
+        return `<section id="faq" style="background:var(--surface);padding:80px 0"><div style="max-width:720px;margin:0 auto;padding:0 24px">${H2(c.title||'Preguntas frecuentes')}<div style="display:flex;flex-direction:column;gap:12px;margin-top:48px">${items.map(it=>`<details style="background:var(--bg);border:1px solid var(--border);border-radius:12px;overflow:hidden"><summary style="color:var(--ink);font-weight:600;font-size:16px;padding:20px 24px;cursor:pointer;list-style:none;display:block">${e(it.q||'')}</summary><p style="color:var(--muted);font-size:15px;line-height:1.6;padding:0 24px 20px;margin:0">${e(it.a||'')}</p></details>`).join('')}</div></div></section>`;
+      }
+      case 'cta-final': {
+        return `<section id="cta-final" style="background:${GRAD};padding:96px 0"><div style="max-width:640px;margin:0 auto;padding:0 24px;text-align:center"><h2 style="color:#fff;font-size:clamp(1.8rem,4vw,2.8rem);font-weight:800;margin:0 0 16px">${e(c.title||'¿Estás lista?')}</h2>${c.subtitle?`<p style="color:rgba(255,255,255,.85);font-size:18px;margin:0 0 36px">${e(c.subtitle)}</p>`:''}<a href="#precio" style="background:#fff;color:var(--brand);padding:16px 40px;border-radius:12px;font-weight:800;font-size:18px;display:inline-block;text-decoration:none">${e(c.cta||'Quiero empezar hoy')}</a>${c.microcopy?`<p style="color:rgba(255,255,255,.7);font-size:13px;margin:14px 0 0">${e(c.microcopy)}</p>`:''}</div></section>`;
+      }
+      case 'footer': {
+        return `<footer id="footer" style="background:var(--bg);border-top:1px solid var(--border);padding:40px 0"><div style="max-width:1152px;margin:0 auto;padding:0 24px;display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:16px"><div><p style="color:var(--ink);font-weight:700;font-size:16px;margin:0 0 4px">${e(c.brand_name||'Producto')}</p>${c.tagline?`<p style="color:var(--muted);font-size:13px;margin:0">${e(c.tagline)}</p>`:''}</div><p style="color:var(--muted);font-size:13px;margin:0">${e(c.copyright||'© 2024 · Todos los derechos reservados')}</p></div></footer>`;
+      }
+      default: {
+        const items = arr(c.items);
+        return SEC(`${H2(c.title||id)}${c.subtitle?SUB(c.subtitle):''}${items.length?`<div style="${GRID(240)}">${items.map(it=>`<div style="${CARD}">${it.icon?ICON(it.icon):''}<h3 style="color:var(--ink);font-size:17px;font-weight:700;margin:12px 0 8px">${e(it.title||'')}</h3><p style="color:var(--muted);font-size:15px;line-height:1.6;margin:0">${e(it.desc||it.text||'')}</p></div>`).join('')}</div>`:`<p style="color:var(--muted);text-align:center">${e(c.desc||c.text||'')}</p>`}`);
+      }
+    }
+  },
+
+  async _getSectionContent(spec, sharedBrief, pal) {
+    const schema = this._sectionContentSchema(spec.id);
+    const hints = {
+      testimonios: 'Los 3 testimonios deben ser de personas distintas, con nombres reales, resultados concretos y creíbles. No exageres.',
+      beneficios: 'Incluí 3 a 6 items. Los iconos deben ser nombres válidos de Material Symbols (star, check_circle, favorite, school, trending_up, bolt, shield, people, rocket_launch, thumb_up, verified, psychology, emoji_events, lightbulb, timer, health_and_safety, fitness_center, attach_money, savings, work, campaign, diversity_3, card_giftcard, sentiment_dissatisfied).',
+      hero: 'La image_prompt debe describir una imagen REAL y relevante para el producto, en inglés, con palabras separadas por + (nunca espacios). Ejemplo para maternidad: happy+pregnant+woman+meditating+nature+sunlight',
+      faq: 'Las preguntas deben ser objeciones reales: precio, tiempo, resultados, garantía, si sirve para mí. Nada genérico.',
+      precio: 'Los features deben ser beneficios reales y específicos del producto, no genéricos.',
+    };
+    const user = `Sos experto en copywriting persuasivo en español latinoamericano.
+
+PRODUCTO / SERVICIO:
+${sharedBrief}
+
+SECCIÓN: "${spec.id}"
+OBJETIVO: ${spec.brief || this._sectionDefaultBrief(spec.id)}
+${hints[spec.id] ? '\nNOTA IMPORTANTE: ' + hints[spec.id] : ''}
+
+Completá este JSON con contenido REAL y ESPECÍFICO para ESTE producto (no genérico).
+Respondé SOLO el JSON válido, sin markdown, sin texto extra, sin comentarios.
+
+${JSON.stringify(schema, null, 2)}`;
+    const text = await this._call([{role:'user',content:user}], 2000, {model:'claude-haiku-4-5-20251001'});
+    try { return this._parseJSONLoose(text) || schema; } catch(e) { return schema; }
+  },
+
+  // ── Legacy system prompt (kept for compatibility) ───────────────────────
   _sectionGenSystem(pal) {
     const dark = pal.mode === 'dark';
     return `Sos un desarrollador front-end de élite. Generás UNA sección de landing page en HTML premium (nivel Stripe, Linear, Vercel).
@@ -1630,22 +1775,10 @@ Respondé SOLO con este JSON (sin markdown, sin texto extra):
   },
 
   async generateOneSection(spec, sharedBrief, pal) {
-    const isFooter = spec.id === 'footer';
-    const isFaq = spec.id === 'faq';
-    const tag = isFooter ? 'footer' : 'section';
-    const extra = isFaq ? '\nUsá <details><summary>...</summary>...</details> nativo para el acordeón de cada pregunta.' : '';
-    const user = `PRODUCTO GENERAL:
-${sharedBrief}
-
-SECCIÓN A GENERAR: id="${spec.id}"
-OBJETIVO DE ESTA SECCIÓN: ${spec.brief || this._sectionDefaultBrief(spec.id)}
-
-Generá SOLO el <${tag} id="${spec.id}"> ... </${tag}> completo, premium y con contenido real.${extra}`;
-    const text = await this._call([{ role: 'user', content: user }], 4000, {
-      model: 'claude-sonnet-4-6',
-      system: this._sectionGenSystem(pal),
-    });
-    return this._cleanSectionHtml(text, spec.id, isFooter);
+    // Step 1: AI fills content JSON (small, fast, reliable)
+    const content = await this._getSectionContent(spec, sharedBrief, pal);
+    // Step 2: Code builds HTML from hardcoded template (always correct layout)
+    return this._buildSection(spec.id, content, pal);
   },
 
   async generateLandingSectioned(instruction, palId, onProgress) {
@@ -1751,23 +1884,15 @@ Si es edit: "Voy a aplicar ese cambio en [X]."`;
     const idx = sections.findIndex(s => s.id === targetId);
     if (idx === -1) return { sections, reply: `No encontré la sección "${targetId}".` };
     const cur = sections[idx];
-    const isFooter = targetId === 'footer';
-    const tag = isFooter ? 'footer' : 'section';
-    const user = `PRODUCTO: ${(brief || '').slice(0, 300)}
-
-Sección actual (id="${targetId}"):
-${cur.html}
-
-CAMBIO SOLICITADO: ${instruction}
-
-Devolvé SOLO el <${tag} id="${targetId}"> ... </${tag}> modificado. Aplicá el cambio al contenido/texto, manteniendo el diseño y estructura. Usá las variables CSS de color (var(--brand), var(--ink), etc.).`;
-    const text = await this._call([{ role: 'user', content: user }], 4000, {
-      model: 'claude-sonnet-4-6',
-      system: this._sectionGenSystem(pal),
-    });
-    const newHtml = this._cleanSectionHtml(text, targetId, isFooter);
+    // Use template approach: regenerate content JSON with instruction incorporated
+    const spec = {
+      id: targetId,
+      brief: (cur.brief || this._sectionDefaultBrief(targetId)) + ' — CAMBIO REQUERIDO: ' + instruction
+    };
+    const content = await this._getSectionContent(spec, brief || '', pal);
+    const newHtml = this._buildSection(targetId, content, pal);
     const copy = sections.slice();
-    copy[idx] = { ...cur, html: newHtml || cur.html };
+    copy[idx] = { ...cur, html: newHtml, content };
     return { sections: copy, reply };
   },
 
