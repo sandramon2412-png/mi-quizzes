@@ -1481,3 +1481,113 @@ En `landing-view.html`: si el usuario es el owner de la landing, mostrarla aunqu
 - `landing-blocks.js`: `BLOCK_FIELDS.imagen` (agregar type:'image')
 - `landing-builder.html`: `saveActiveBlock()` (orden de calls), `sendChat()` (UX activo/inactivo, merge parcial)
 - `landing-view.html`: bypass `published` check para owner (agregar `?preview=true` mode)
+
+---
+
+## SESIÓN 18 JUL 2026 — branch `claude/clever-rubin-5AIL5`
+
+### Contexto
+Sesión dedicada 100% a intentar arreglar el landing-builder. **Resultado: no se logró que funcione correctamente.** El builder de landings sigue roto después de múltiples intentos.
+
+### Estado del landing-builder — ROTO ❌
+
+El landing-builder tiene los siguientes problemas sin resolver:
+
+1. **Layout roto** — después de las primeras secciones, todo sale en una sola columna, apilado, sin estructura.
+2. **Chat incoherente** — cuando el usuario reporta un error o pide un cambio, el chat cambia de tema, regenera con un producto completamente diferente, o responde cosas sin sentido.
+3. **Videos de fondo no funcionan** — al colocar un video de fondo en el hero, se pierde el contenido de la sección o cambia el tema.
+4. **Paleta de colores no se aplica** — los cambios de paleta no se reflejan correctamente en la landing generada.
+5. **Generación incompleta** — solo genera 2-3 secciones bien, el resto con errores.
+
+### Lo que se intentó en esta sesión (sin éxito)
+
+**Intento 1** — Reescribir `_sectionGenSystem` con layouts explícitos por tipo de sección (plantillas HTML en el system prompt). La IA seguía ignorando los layouts.
+
+**Intento 2** — Eliminar doble clasificación en `sendChat()`: se quitó el wrapper conversacional de Haiku y se llama `editLandingSectioned` directamente. Mejoró la coherencia del chat parcialmente.
+
+**Intento 3 (último commit `b67ec27`)** — Arquitectura template-based: **la IA ya NO genera HTML**. Solo genera JSON con el contenido (título, bullets, etc.), y el código JS tiene funciones hardcodeadas que construyen el HTML de cada sección. Commit pusheado pero **Sandra no llegó a probar si funcionó** antes de terminar el chat.
+
+### Arquitectura actual del landing-builder (post commit `b67ec27`)
+
+**Flujo de generación:**
+1. `generateLandingSectioned(instruction, palId)` en `app.js`
+   - Llama `planLandingSections()` → Sonnet decide qué secciones incluir → `{title, sections:[{id, brief}]}`
+   - Para cada sección en paralelo: `generateOneSection(spec, brief, pal)`
+     - `_getSectionContent(spec, brief, pal)` → Haiku llena JSON de contenido
+     - `_buildSection(id, content, pal)` → JS genera HTML desde template hardcodeado
+   - `assembleLanding(sections, palId, title)` → ensambla HTML final con CSS vars
+
+**Métodos nuevos en `app.js` (objeto `Claude`):**
+- `_esc(s)` — escapa HTML
+- `_imgUrl(prompt)` — genera URL de Pollinations con + en lugar de espacios
+- `_sectionContentSchema(id)` — schema JSON que la IA debe llenar por tipo de sección
+- `_buildSection(id, content, pal)` — construye HTML desde template hardcodeado. Secciones implementadas: `hero`, `problema`, `beneficios`, `modulos`, `como-funciona`, `prueba-social`, `testimonios`, `bonos`, `precio`, `garantia`, `faq`, `cta-final`, `footer`
+- `_getSectionContent(spec, brief, pal)` — llama Haiku con el schema → retorna JSON de contenido
+- `generateOneSection` — reescrito para usar `_getSectionContent` + `_buildSection`
+- `_sectionGenSystem(pal)` — mantenida como legacy (ya no se usa en generación normal)
+
+**Flujo de edición:**
+- `editLandingSectioned(instruction, sections, palId, brief)` en `app.js`
+- Clasifica la instrucción con Haiku → `{action: edit|fix|add|remove, sectionId, reply}`
+- `fix` sin sectionId → regenera TODAS las secciones (para "sigue mal" sin especificar)
+- `fix` con sectionId → regenera solo esa sección
+- `edit` → llama `_getSectionContent` con el cambio incorporado en el brief → reconstruye desde template
+- Respuestas de `editLandingSectioned` se muestran directamente en el chat (sin wrapper Haiku)
+
+**Persistencia:**
+- `landing.sections` = `[{id, brief, html, content?}]`
+- `landing.brief` = prompt original del usuario (siempre pasado a `editLandingSectioned`)
+- `landing.mode = 'html'` para landings generadas con este sistema
+- En Supabase: `landings.sections` (JSONB), `landings.settings.sections` como fallback
+
+**Paleta de colores:**
+- CSS vars: `--brand`, `--brand-2`, `--bg`, `--ink`, `--muted`, `--surface`, `--border`
+- Definidas en `assembleLanding()` en el `<style>` del HTML ensamblado
+- Cambio de paleta DEBERÍA ser instantáneo: `landing.html = AI.assembleLanding(sections, newPalId, title)` sin llamada a IA
+- Paletas definidas en `window.LANDING_PALETTES_DEF` (en `landing-builder.html`)
+
+**Swatch de paleta en `landing-builder.html`:**
+```js
+// Al hacer click en un swatch:
+if (landing.sections && landing.sections.length) {
+  landing.html = AI.assembleLanding(landing.sections, id, landing.title);
+  renderPreview(); autosave();
+}
+```
+
+### Lo que TODAVÍA FALTA arreglar en el próximo chat
+
+**PRIORIDAD 1 — Verificar si el commit `b67ec27` realmente funciona:**
+El próximo chat debe probar con un prompt completo si los layouts ahora son correctos. Si no funcionan, el problema puede estar en:
+- `_parseJSONLoose` no parsea bien el JSON que devuelve Haiku
+- Haiku devuelve JSON malformado o con campos faltantes
+- `_buildSection` tiene un bug (falta un cierre de template literal, etc.)
+- Agregar console.log en `generateOneSection` para ver qué llega en `content`
+
+**PRIORIDAD 2 — Videos de fondo en hero:**
+La funcionalidad de video de fondo está en `landing-builder.html` en `runHtmlEdit()` con instrucción hardcodeada. El problema es que `editLandingSectioned` no sabe cómo editar HTML existente con un video — el template de hero en `_buildSection` no tiene opción de video.
+- **Fix**: agregar campo `video_url` al schema del hero. Si `content.video_url` existe, `_buildSection('hero')` genera el hero con `<video autoplay muted loop playsinline>` de fondo en lugar de imagen.
+
+**PRIORIDAD 3 — Chat cambio de tema:**
+Asegurarse que `landing.brief` siempre se pase a `editLandingSectioned`. Verificar en `sendChat()` que `landing.brief || landing.title || ''` no esté vacío. Si `landing.brief` es vacío después de generar, el chat no tiene contexto del producto.
+- En `generateFromChat()`, verificar que se guarda: `landing.brief = landing.brief || msg;`
+
+**PRIORIDAD 4 — `_parseJSONLoose` y robustez:**
+Si Haiku devuelve JSON parcial o con comentarios, `_parseJSONLoose` puede fallar y retornar el schema vacío. En ese caso la sección se genera con placeholder text ("Título", "Empezar"). Agregar fallback que usa el schema con valores genéricos en lugar de nada.
+
+### Archivos clave del landing-builder
+
+| Archivo | Función |
+|---------|---------|
+| `app.js` líneas ~1440-1910 | Toda la lógica de generación y edición de landings (`_sectionContentSchema`, `_buildSection`, `_getSectionContent`, `generateOneSection`, `generateLandingSectioned`, `editLandingSectioned`, `assembleLanding`) |
+| `landing-builder.html` | UI del builder, `sendChat()`, `generateFromChat()`, `renderPreview()`, swatch de paleta |
+| `landing-blocks.js` | Sistema VIEJO de bloques (aún existe pero el modo `html` lo bypasea completamente) |
+| `landing-view.html` | Vista pública de landing publicada |
+
+### Commits de esta sesión
+- `b10bb4a` — Landing builder: fix layout + chat coherence (rewrite _sectionGenSystem, fix editLandingSectioned, remove double-classification)
+- `b67ec27` — Landing builder: template-based architecture — AI fills JSON, code builds HTML ← **ÚLTIMO, A VERIFICAR**
+
+### Lección de esta sesión
+La raíz del problema del landing-builder siempre fue pedir a la IA que genere HTML directamente. La IA no puede hacerlo confiablemente para layouts complejos. La solución correcta (commit `b67ec27`) separa contenido (IA) de layout (código). **El próximo chat debe verificar si este commit finalmente resuelve el problema antes de hacer más cambios.**
+
