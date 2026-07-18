@@ -1360,6 +1360,8 @@ INSTRUCCIÓN: ${instruction}`;
       hero: 'Titular potente (fórmula dolor→solución→transformación), subtítulo con el mecanismo, CTA verbo+resultado, microcopy debajo (Sin tarjeta · Acceso inmediato), imagen o mockup relevante.',
       'prueba-social': 'Franja de confianza: logos o métricas verosímiles, "+N personas ya confían".',
       problema: 'El dolor real del cliente, agitado con empatía. 3-4 puntos de frustración concretos.',
+      'para-quien': 'Dos columnas: para quién ES el producto (cliente ideal) y para quién NO es. Filtra y genera identificación.',
+      'antes-despues': 'Contraste del estado actual (dolores) vs el estado después del producto (resultados concretos).',
       beneficios: 'Grid de 3-6 beneficios con íconos Material Symbols. Cada uno: resultado concreto → cómo → tiempo.',
       modulos: 'Qué incluye el producto: módulos/lecciones/entregables en tarjetas.',
       'como-funciona': 'Pasos numerados (3-4) de cómo funciona el producto.',
@@ -1401,6 +1403,38 @@ INSTRUCCIÓN: ${instruction}`;
   section,footer{scroll-margin-top:80px}
   /* Image fallback: si Pollinations no carga, muestra gradiente de marca */
   img.ld-img{background:${imgFallbackBg};min-height:160px;display:block}
+  /* ── Premium: glass cards con hover lift y glow de marca ── */
+  .ld-card{position:relative;backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.08),0 8px 24px -14px rgba(0,0,0,.4);
+    transition:transform .35s cubic-bezier(.2,.8,.2,1),box-shadow .35s ease,border-color .35s ease}
+  .ld-card:hover{transform:translateY(-6px);
+    border-color:color-mix(in srgb,var(--brand) 45%,transparent);
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.14),0 24px 48px -16px color-mix(in srgb,var(--brand) 35%,rgba(0,0,0,.45))}
+  /* Botones CTA con glow de marca */
+  .ld-btn{transition:transform .25s ease,box-shadow .25s ease;
+    box-shadow:0 10px 32px -10px color-mix(in srgb,var(--brand) 65%,transparent)}
+  .ld-btn:hover{transform:translateY(-2px) scale(1.02);
+    box-shadow:0 18px 44px -12px color-mix(in srgb,var(--brand) 85%,transparent)}
+  /* Glow ambiental en el hero (detrás del contenido) */
+  #hero{position:relative;overflow:hidden}
+  #hero::before{content:'';position:absolute;inset:0;pointer-events:none;
+    background:radial-gradient(circle at 12% 18%,color-mix(in srgb,var(--brand) 20%,transparent) 0%,transparent 46%),
+               radial-gradient(circle at 88% 82%,color-mix(in srgb,var(--brand-2) 16%,transparent) 0%,transparent 42%)}
+  #hero > div{position:relative;z-index:2}
+  #hero img{transition:transform .5s ease}
+  #hero img:hover{transform:scale(1.02)}
+  /* Aurora animada en franjas con gradiente de marca */
+  #prueba-social,#cta-final{background-size:220% 220% !important;animation:ldAurora 14s ease-in-out infinite alternate}
+  @keyframes ldAurora{0%{background-position:0% 40%}100%{background-position:100% 60%}}
+  /* FAQ: hover sutil */
+  #faq details{transition:border-color .25s ease,background .25s ease}
+  #faq details:hover{border-color:color-mix(in srgb,var(--brand) 40%,transparent)}
+  #faq summary::-webkit-details-marker{display:none}
+  /* Precio: card destacada con glow permanente */
+  #precio .ld-price-card{box-shadow:0 24px 64px -24px color-mix(in srgb,var(--brand) 45%,transparent);
+    transition:transform .35s ease,box-shadow .35s ease}
+  #precio .ld-price-card:hover{transform:translateY(-4px);
+    box-shadow:0 32px 80px -24px color-mix(in srgb,var(--brand) 60%,transparent)}
 </style>
 </head>
 <body>
@@ -1453,7 +1487,9 @@ ${body}
   _sectionContentSchema(id) {
     const icons = 'star|check_circle|favorite|school|trending_up|bolt|shield|people|rocket_launch|thumb_up|verified|psychology|emoji_events|lightbulb|timer|local_fire_department|health_and_safety|fitness_center|attach_money|savings|work|campaign|diversity_3|card_giftcard|sentiment_satisfied|self_improvement';
     const S = {
-      hero: {badge:'frase corta de credibilidad (ej: +2.000 personas ya lo lograron)',title:'título H1 impactante y específico para este producto (6-12 palabras)',subtitle:'descripción del beneficio principal en 2-3 líneas que engancha al lector',cta:'texto del botón (verbo+resultado, ej: Quiero empezar hoy)',microcopy:'texto pequeño bajo el botón (ej: Sin tarjeta · Acceso inmediato · Garantía 30 días)',image_prompt:'relevant+english+keywords+describing+a+real+image+for+this+product+separated+by+plus'},
+      hero: {badge:'frase corta de credibilidad (ej: +2.000 personas ya lo lograron)',title:'título H1 impactante y específico para este producto (6-12 palabras)',subtitle:'descripción del beneficio principal en 2-3 líneas que engancha al lector',cta:'texto del botón (verbo+resultado, ej: Quiero empezar hoy)',microcopy:'texto pequeño bajo el botón (ej: Sin tarjeta · Acceso inmediato · Garantía 30 días)',image_prompt:'relevant+english+keywords+describing+a+real+image+for+this+product+separated+by+plus',layout:'split o center — split: texto a la izquierda + imagen a la derecha (cursos, servicios con rostro humano). center: todo centrado con imagen ancha abajo (apps, productos digitales, comunidades)'},
+      'para-quien': {title:'¿Este programa es para vos?',yes_title:'Es para vos si…',no_title:'No es para vos si…',yes:['frase específica sobre el cliente ideal 1','frase 2','frase 3'],no:['frase sobre quién NO debería comprarlo 1','frase 2','frase 3']},
+      'antes-despues': {title:'Tu transformación',before_title:'Hoy',after_title:'Después del programa',before:['punto de dolor actual 1','punto 2','punto 3'],after:['resultado concreto 1','resultado 2','resultado 3']},
       problema: {title:'El problema real que tiene tu cliente ideal',items:[{icon:'sentiment_dissatisfied',title:'Dolor específico 1',desc:'descripción del dolor en 1-2 frases'},{icon:'sentiment_dissatisfied',title:'Dolor específico 2',desc:'descripción'},{icon:'sentiment_dissatisfied',title:'Dolor específico 3',desc:'descripción'}]},
       beneficios: {title:'título de la sección de beneficios',subtitle:'subtítulo opcional',items:[{icon:'star',title:'Beneficio 1',desc:'descripción concreta con resultado'},{icon:'check_circle',title:'Beneficio 2',desc:'descripción'},{icon:'trending_up',title:'Beneficio 3',desc:'descripción'}]},
       modulos: {title:'Qué vas a aprender',items:[{icon:'school',title:'Módulo 1: nombre del módulo',desc:'qué aprenden y qué resultado logran'},{icon:'rocket_launch',title:'Módulo 2: nombre',desc:'descripción'},{icon:'lightbulb',title:'Módulo 3: nombre',desc:'descripción'},{icon:'verified',title:'Módulo 4: nombre',desc:'descripción'}]},
@@ -1480,7 +1516,7 @@ ${body}
     const ICON = (name,sz=28) => `<span class="material-symbols-outlined" style="font-size:${sz}px;background:${GRAD};-webkit-background-clip:text;-webkit-text-fill-color:transparent">${e(name||'star')}</span>`;
     const ICON_W = (name,sz=20) => `<span class="material-symbols-outlined" style="font-size:${sz}px;color:#fff">${e(name||'star')}</span>`;
     const AVATAR = (init) => `<div style="width:44px;height:44px;border-radius:50%;background:${GRAD};display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:14px;flex-shrink:0">${e((init||'?').slice(0,2))}</div>`;
-    const BTN = (text,href='#precio') => `<a href="${e(href)}" style="background:${GRAD};color:#fff;padding:16px 36px;border-radius:12px;font-weight:700;font-size:18px;display:inline-block;text-decoration:none;cursor:pointer">${e(text||'Empezar')}</a>`;
+    const BTN = (text,href='#precio') => `<a href="${e(href)}" class="ld-btn" style="background:${GRAD};color:#fff;padding:16px 36px;border-radius:12px;font-weight:700;font-size:18px;display:inline-block;text-decoration:none;cursor:pointer">${e(text||'Empezar')}</a>`;
     const H2 = (text,align='center') => `<h2 style="color:var(--ink);font-size:clamp(1.6rem,3vw,2.4rem);font-weight:800;text-align:${align};margin:0 0 12px">${e(text)}</h2>`;
     const SUB = (text,align='center') => text ? `<p style="color:var(--muted);text-align:${align};font-size:17px;line-height:1.6;margin:0 0 48px">${e(text)}</p>` : '<div style="margin-bottom:48px"></div>';
     const SEC = (inner,bg='var(--bg)',py=80) => `<section id="${e(id)}" style="background:${bg};padding:${py}px 0"><div style="max-width:1152px;margin:0 auto;padding:0 24px">${inner}</div></section>`;
@@ -1501,7 +1537,23 @@ ${c.microcopy?`<p style="color:rgba(255,255,255,.7);font-size:13px;margin:12px 0
 </div>
 </section>`;
         }
-        const img = this._imgUrl(c.image_prompt);
+        // image_url (subida por el usuario) tiene prioridad sobre la imagen generada
+        const img = c.image_url || this._imgUrl(c.image_prompt);
+        if (c.layout === 'center') {
+          // Variante centrada: texto arriba, imagen ancha abajo
+          return `<section id="hero" style="background:var(--bg);padding:80px 0">
+<div style="max-width:860px;margin:0 auto;padding:0 24px;text-align:center">
+${c.badge?`<p style="color:var(--brand);font-weight:700;font-size:13px;text-transform:uppercase;letter-spacing:2px;margin:0 0 16px">${e(c.badge)}</p>`:''}
+<h1 style="color:var(--ink);font-size:clamp(2rem,5vw,3.6rem);font-weight:800;line-height:1.1;margin:0 0 20px">${e(c.title||'Título')}</h1>
+<p style="color:var(--muted);font-size:18px;line-height:1.6;margin:0 auto 32px;max-width:620px">${e(c.subtitle||'')}</p>
+${BTN(c.cta||'Empezar ahora')}
+${c.microcopy?`<p style="color:var(--muted);font-size:13px;margin:12px 0 0">${e(c.microcopy)}</p>`:''}
+</div>
+<div style="max-width:900px;margin:56px auto 0;padding:0 24px">
+<img src="${img}" loading="lazy" alt="${e(c.title||'')}" style="width:100%;height:400px;object-fit:cover;border-radius:20px;box-shadow:0 24px 64px rgba(0,0,0,.35)"/>
+</div>
+</section>`;
+        }
         return `<section id="hero" style="background:var(--bg);padding:80px 0">
 <div style="max-width:1152px;margin:0 auto;padding:0 24px;display:flex;flex-wrap:wrap;align-items:center;gap:48px">
 <div style="flex:1;min-width:280px">
@@ -1519,15 +1571,15 @@ ${c.microcopy?`<p style="color:var(--muted);font-size:13px;margin:12px 0 0">${e(
       }
       case 'problema': {
         const items = arr(c.items);
-        return SEC(`${H2(c.title||'El problema')}${SUB('')}<div style="${GRID(240)}">${items.map(it=>`<div style="${CARD}">${ICON(it.icon||'sentiment_dissatisfied')}<h3 style="color:var(--ink);font-size:17px;font-weight:700;margin:12px 0 8px">${e(it.title||'')}</h3><p style="color:var(--muted);font-size:15px;line-height:1.6;margin:0">${e(it.desc||'')}</p></div>`).join('')}</div>`,'var(--surface)');
+        return SEC(`${H2(c.title||'El problema')}${SUB('')}<div style="${GRID(240)}">${items.map(it=>`<div class="ld-card" style="${CARD}">${ICON(it.icon||'sentiment_dissatisfied')}<h3 style="color:var(--ink);font-size:17px;font-weight:700;margin:12px 0 8px">${e(it.title||'')}</h3><p style="color:var(--muted);font-size:15px;line-height:1.6;margin:0">${e(it.desc||'')}</p></div>`).join('')}</div>`,'var(--surface)');
       }
       case 'beneficios': {
         const items = arr(c.items);
-        return SEC(`${H2(c.title||'Beneficios')}${SUB(c.subtitle||'')}<div style="${GRID(240)}">${items.map(it=>`<div style="${CARD}">${ICON(it.icon||'check_circle')}<h3 style="color:var(--ink);font-size:17px;font-weight:700;margin:12px 0 8px">${e(it.title||'')}</h3><p style="color:var(--muted);font-size:15px;line-height:1.6;margin:0">${e(it.desc||'')}</p></div>`).join('')}</div>`);
+        return SEC(`${H2(c.title||'Beneficios')}${SUB(c.subtitle||'')}<div style="${GRID(240)}">${items.map(it=>`<div class="ld-card" style="${CARD}">${ICON(it.icon||'check_circle')}<h3 style="color:var(--ink);font-size:17px;font-weight:700;margin:12px 0 8px">${e(it.title||'')}</h3><p style="color:var(--muted);font-size:15px;line-height:1.6;margin:0">${e(it.desc||'')}</p></div>`).join('')}</div>`);
       }
       case 'modulos': {
         const items = arr(c.items);
-        return SEC(`${H2(c.title||'Contenido')}${SUB('')}<div style="${GRID(290)}">${items.map(it=>`<div style="${CARD};display:flex;gap:16px;align-items:flex-start"><div style="background:${GRAD};border-radius:10px;width:40px;height:40px;display:flex;align-items:center;justify-content:center;flex-shrink:0">${ICON_W(it.icon||'school')}</div><div><h3 style="color:var(--ink);font-weight:700;font-size:16px;margin:0 0 6px">${e(it.title||'')}</h3><p style="color:var(--muted);font-size:14px;line-height:1.5;margin:0">${e(it.desc||'')}</p></div></div>`).join('')}</div>`,'var(--surface)');
+        return SEC(`${H2(c.title||'Contenido')}${SUB('')}<div style="${GRID(290)}">${items.map(it=>`<div class="ld-card" style="${CARD};display:flex;gap:16px;align-items:flex-start"><div style="background:${GRAD};border-radius:10px;width:40px;height:40px;display:flex;align-items:center;justify-content:center;flex-shrink:0">${ICON_W(it.icon||'school')}</div><div><h3 style="color:var(--ink);font-weight:700;font-size:16px;margin:0 0 6px">${e(it.title||'')}</h3><p style="color:var(--muted);font-size:14px;line-height:1.5;margin:0">${e(it.desc||'')}</p></div></div>`).join('')}</div>`,'var(--surface)');
       }
       case 'como-funciona': {
         const items = arr(c.items);
@@ -1539,15 +1591,31 @@ ${c.microcopy?`<p style="color:var(--muted);font-size:13px;margin:12px 0 0">${e(
       }
       case 'testimonios': {
         const items = arr(c.items).slice(0,3);
-        return SEC(`${H2(c.title||'Lo que dicen')}${SUB('')}<div style="${GRID(270)}">${items.map(it=>`<div style="${CARD};display:flex;flex-direction:column;gap:16px"><p style="color:var(--ink);font-size:15px;line-height:1.7;margin:0;font-style:italic">"${e(it.quote||'')}"</p><div style="display:flex;align-items:center;gap:12px;margin-top:auto">${AVATAR(it.initials||'?')}<div><p style="color:var(--ink);font-weight:700;font-size:14px;margin:0">${e(it.name||'')}</p><p style="color:var(--muted);font-size:13px;margin:0">${e(it.role||'')}</p></div></div></div>`).join('')}</div>`,'var(--surface)');
+        return SEC(`${H2(c.title||'Lo que dicen')}${SUB('')}<div style="${GRID(270)}">${items.map(it=>`<div class="ld-card" style="${CARD};display:flex;flex-direction:column;gap:16px"><p style="color:var(--ink);font-size:15px;line-height:1.7;margin:0;font-style:italic">"${e(it.quote||'')}"</p><div style="display:flex;align-items:center;gap:12px;margin-top:auto">${AVATAR(it.initials||'?')}<div><p style="color:var(--ink);font-weight:700;font-size:14px;margin:0">${e(it.name||'')}</p><p style="color:var(--muted);font-size:13px;margin:0">${e(it.role||'')}</p></div></div></div>`).join('')}</div>`,'var(--surface)');
       }
       case 'bonos': {
         const items = arr(c.items);
-        return SEC(`${H2(c.title||'Bonos')}${SUB('')}<div style="${GRID(290)}">${items.map(it=>`<div style="${CARD};display:flex;gap:16px;align-items:flex-start"><div style="background:${GRAD};border-radius:10px;width:44px;height:44px;display:flex;align-items:center;justify-content:center;flex-shrink:0">${ICON_W(it.icon||'card_giftcard',22)}</div><div style="flex:1"><h3 style="color:var(--ink);font-weight:700;font-size:16px;margin:0 0 6px">${e(it.title||'')}</h3><p style="color:var(--muted);font-size:14px;line-height:1.5;margin:0 0 8px">${e(it.desc||'')}</p>${it.value?`<p style="color:var(--brand);font-weight:700;font-size:14px;margin:0">${e(it.value)}</p>`:''}</div></div>`).join('')}</div>`);
+        return SEC(`${H2(c.title||'Bonos')}${SUB('')}<div style="${GRID(290)}">${items.map(it=>`<div class="ld-card" style="${CARD};display:flex;gap:16px;align-items:flex-start"><div style="background:${GRAD};border-radius:10px;width:44px;height:44px;display:flex;align-items:center;justify-content:center;flex-shrink:0">${ICON_W(it.icon||'card_giftcard',22)}</div><div style="flex:1"><h3 style="color:var(--ink);font-weight:700;font-size:16px;margin:0 0 6px">${e(it.title||'')}</h3><p style="color:var(--muted);font-size:14px;line-height:1.5;margin:0 0 8px">${e(it.desc||'')}</p>${it.value?`<p style="color:var(--brand);font-weight:700;font-size:14px;margin:0">${e(it.value)}</p>`:''}</div></div>`).join('')}</div>`);
       }
       case 'precio': {
         const features = arr(c.features);
-        return `<section id="precio" style="background:var(--surface);padding:80px 0"><div style="max-width:480px;margin:0 auto;padding:0 24px;text-align:center">${H2(c.title||'Tu inversión','center')}<div style="background:var(--bg);border:2px solid var(--brand);border-radius:20px;padding:40px;margin-top:32px"><p style="color:var(--muted);font-size:13px;text-transform:uppercase;letter-spacing:1px;margin:0 0 8px">${e(c.period||'pago único')}</p><p style="color:var(--ink);font-size:56px;font-weight:800;margin:0 0 8px;line-height:1">${e(c.price||'$97')}</p><ul style="list-style:none;margin:24px 0 32px;padding:0;text-align:left;display:flex;flex-direction:column;gap:10px">${features.map(f=>`<li style="color:var(--ink);font-size:15px;display:flex;align-items:flex-start;gap:8px"><span class="material-symbols-outlined" style="font-size:18px;color:var(--brand);flex-shrink:0;margin-top:1px">check_circle</span><span>${e(f)}</span></li>`).join('')}</ul>${BTN(c.cta||'Quiero acceso ahora')}${c.microcopy?`<p style="color:var(--muted);font-size:13px;margin:12px 0 0">${e(c.microcopy)}</p>`:''}</div></div></section>`;
+        return `<section id="precio" style="background:var(--surface);padding:80px 0"><div style="max-width:480px;margin:0 auto;padding:0 24px;text-align:center">${H2(c.title||'Tu inversión','center')}<div class="ld-price-card" style="background:var(--bg);border:2px solid var(--brand);border-radius:20px;padding:40px;margin-top:32px"><p style="color:var(--muted);font-size:13px;text-transform:uppercase;letter-spacing:1px;margin:0 0 8px">${e(c.period||'pago único')}</p><p style="color:var(--ink);font-size:56px;font-weight:800;margin:0 0 8px;line-height:1">${e(c.price||'$97')}</p><ul style="list-style:none;margin:24px 0 32px;padding:0;text-align:left;display:flex;flex-direction:column;gap:10px">${features.map(f=>`<li style="color:var(--ink);font-size:15px;display:flex;align-items:flex-start;gap:8px"><span class="material-symbols-outlined" style="font-size:18px;color:var(--brand);flex-shrink:0;margin-top:1px">check_circle</span><span>${e(f)}</span></li>`).join('')}</ul>${BTN(c.cta||'Quiero acceso ahora')}${c.microcopy?`<p style="color:var(--muted);font-size:13px;margin:12px 0 0">${e(c.microcopy)}</p>`:''}</div></div></section>`;
+      }
+      case 'para-quien': {
+        const yes = arr(c.yes), no = arr(c.no);
+        const ITEM = (txt, icon, col) => `<li style="color:var(--ink);font-size:15px;line-height:1.6;display:flex;align-items:flex-start;gap:10px;margin:0 0 12px"><span class="material-symbols-outlined" style="font-size:20px;color:${col};flex-shrink:0;margin-top:1px">${icon}</span><span>${e(txt)}</span></li>`;
+        return SEC(`${H2(c.title||'¿Es para vos?')}${SUB('')}<div style="${GRID(280)}">
+<div class="ld-card" style="${CARD};border-color:color-mix(in srgb,var(--brand) 35%,transparent)"><h3 style="color:var(--ink);font-size:18px;font-weight:800;margin:0 0 16px">${e(c.yes_title||'Es para vos si…')}</h3><ul style="list-style:none;margin:0;padding:0">${yes.map(t=>ITEM(t,'check_circle','var(--brand)')).join('')}</ul></div>
+<div class="ld-card" style="${CARD};opacity:.85"><h3 style="color:var(--muted);font-size:18px;font-weight:800;margin:0 0 16px">${e(c.no_title||'No es para vos si…')}</h3><ul style="list-style:none;margin:0;padding:0">${no.map(t=>ITEM(t,'close','var(--muted)')).join('')}</ul></div>
+</div>`,'var(--surface)');
+      }
+      case 'antes-despues': {
+        const before = arr(c.before), after = arr(c.after);
+        const ROW = (txt, icon, col) => `<li style="color:var(--ink);font-size:15px;line-height:1.6;display:flex;align-items:flex-start;gap:10px;margin:0 0 12px"><span class="material-symbols-outlined" style="font-size:20px;color:${col};flex-shrink:0;margin-top:1px">${icon}</span><span>${e(txt)}</span></li>`;
+        return SEC(`${H2(c.title||'Tu transformación')}${SUB('')}<div style="${GRID(280)}">
+<div class="ld-card" style="${CARD};opacity:.85"><p style="color:var(--muted);font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;margin:0 0 14px">${e(c.before_title||'Hoy')}</p><ul style="list-style:none;margin:0;padding:0">${before.map(t=>ROW(t,'remove_circle_outline','var(--muted)')).join('')}</ul></div>
+<div class="ld-card" style="${CARD};border:2px solid var(--brand)"><p style="color:var(--brand);font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;margin:0 0 14px">${e(c.after_title||'Después')}</p><ul style="list-style:none;margin:0;padding:0">${after.map(t=>ROW(t,'check_circle','var(--brand)')).join('')}</ul></div>
+</div>`);
       }
       case 'garantia': {
         return `<section id="garantia" style="background:var(--bg);padding:64px 0"><div style="max-width:600px;margin:0 auto;padding:0 24px;text-align:center">${ICON('verified_user',56)}<h2 style="color:var(--ink);font-size:2rem;font-weight:800;margin:16px 0 12px">${e(c.title||'Garantía')}</h2><p style="color:var(--muted);font-size:17px;line-height:1.7;margin:0">${e(c.desc||'')}</p></div></section>`;
@@ -1557,14 +1625,14 @@ ${c.microcopy?`<p style="color:var(--muted);font-size:13px;margin:12px 0 0">${e(
         return `<section id="faq" style="background:var(--surface);padding:80px 0"><div style="max-width:720px;margin:0 auto;padding:0 24px">${H2(c.title||'Preguntas frecuentes')}<div style="display:flex;flex-direction:column;gap:12px;margin-top:48px">${items.map(it=>`<details style="background:var(--bg);border:1px solid var(--border);border-radius:12px;overflow:hidden"><summary style="color:var(--ink);font-weight:600;font-size:16px;padding:20px 24px;cursor:pointer;list-style:none;display:block">${e(it.q||'')}</summary><p style="color:var(--muted);font-size:15px;line-height:1.6;padding:0 24px 20px;margin:0">${e(it.a||'')}</p></details>`).join('')}</div></div></section>`;
       }
       case 'cta-final': {
-        return `<section id="cta-final" style="background:${GRAD};padding:96px 0"><div style="max-width:640px;margin:0 auto;padding:0 24px;text-align:center"><h2 style="color:#fff;font-size:clamp(1.8rem,4vw,2.8rem);font-weight:800;margin:0 0 16px">${e(c.title||'¿Estás lista?')}</h2>${c.subtitle?`<p style="color:rgba(255,255,255,.85);font-size:18px;margin:0 0 36px">${e(c.subtitle)}</p>`:''}<a href="#precio" style="background:#fff;color:var(--brand);padding:16px 40px;border-radius:12px;font-weight:800;font-size:18px;display:inline-block;text-decoration:none">${e(c.cta||'Quiero empezar hoy')}</a>${c.microcopy?`<p style="color:rgba(255,255,255,.7);font-size:13px;margin:14px 0 0">${e(c.microcopy)}</p>`:''}</div></section>`;
+        return `<section id="cta-final" style="background:${GRAD};padding:96px 0"><div style="max-width:640px;margin:0 auto;padding:0 24px;text-align:center"><h2 style="color:#fff;font-size:clamp(1.8rem,4vw,2.8rem);font-weight:800;margin:0 0 16px">${e(c.title||'¿Estás lista?')}</h2>${c.subtitle?`<p style="color:rgba(255,255,255,.85);font-size:18px;margin:0 0 36px">${e(c.subtitle)}</p>`:''}<a href="#precio" class="ld-btn" style="background:#fff;color:var(--brand);padding:16px 40px;border-radius:12px;font-weight:800;font-size:18px;display:inline-block;text-decoration:none">${e(c.cta||'Quiero empezar hoy')}</a>${c.microcopy?`<p style="color:rgba(255,255,255,.7);font-size:13px;margin:14px 0 0">${e(c.microcopy)}</p>`:''}</div></section>`;
       }
       case 'footer': {
         return `<footer id="footer" style="background:var(--bg);border-top:1px solid var(--border);padding:40px 0"><div style="max-width:1152px;margin:0 auto;padding:0 24px;display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:16px"><div><p style="color:var(--ink);font-weight:700;font-size:16px;margin:0 0 4px">${e(c.brand_name||'Producto')}</p>${c.tagline?`<p style="color:var(--muted);font-size:13px;margin:0">${e(c.tagline)}</p>`:''}</div><p style="color:var(--muted);font-size:13px;margin:0">${e(c.copyright||'© 2024 · Todos los derechos reservados')}</p></div></footer>`;
       }
       default: {
         const items = arr(c.items);
-        return SEC(`${H2(c.title||id)}${c.subtitle?SUB(c.subtitle):''}${items.length?`<div style="${GRID(240)}">${items.map(it=>`<div style="${CARD}">${it.icon?ICON(it.icon):''}<h3 style="color:var(--ink);font-size:17px;font-weight:700;margin:12px 0 8px">${e(it.title||'')}</h3><p style="color:var(--muted);font-size:15px;line-height:1.6;margin:0">${e(it.desc||it.text||'')}</p></div>`).join('')}</div>`:`<p style="color:var(--muted);text-align:center">${e(c.desc||c.text||'')}</p>`}`);
+        return SEC(`${H2(c.title||id)}${c.subtitle?SUB(c.subtitle):''}${items.length?`<div style="${GRID(240)}">${items.map(it=>`<div class="ld-card" style="${CARD}">${it.icon?ICON(it.icon):''}<h3 style="color:var(--ink);font-size:17px;font-weight:700;margin:12px 0 8px">${e(it.title||'')}</h3><p style="color:var(--muted);font-size:15px;line-height:1.6;margin:0">${e(it.desc||it.text||'')}</p></div>`).join('')}</div>`:`<p style="color:var(--muted);text-align:center">${e(c.desc||c.text||'')}</p>`}`);
       }
     }
   },
@@ -1769,8 +1837,16 @@ REGLA ABSOLUTA: NUNCA copies el layout de ejemplo literalmente — adaptá el co
     const user = `PRODUCTO / PEDIDO DEL USUARIO:
 ${instruction}
 
-Elegí las secciones ideales para ESTA landing (entre 6 y 9). La primera SIEMPRE es "hero" y la última "footer".
-Secciones posibles (ids): hero, prueba-social, problema, beneficios, modulos, como-funciona, testimonios, bonos, precio, garantia, faq, cta-final, footer.
+Elegí las secciones ideales para ESTA landing (entre 7 y 11). La primera SIEMPRE es "hero" y la última "footer".
+Secciones posibles (ids): hero, prueba-social, problema, para-quien, antes-despues, beneficios, modulos, como-funciona, testimonios, bonos, precio, garantia, faq, cta-final, footer.
+
+IMPORTANTE — VARIÁ LA ESTRUCTURA SEGÚN EL NICHO, no uses siempre las mismas secciones en el mismo orden:
+- Curso/programa educativo: modulos + antes-despues son clave.
+- Servicio/consultoría/mentoría: para-quien + como-funciona + testimonios.
+- Producto físico o app: beneficios + prueba-social + faq, sin modulos.
+- Nicho emocional (bienestar, espiritualidad, relaciones): problema + antes-despues con lenguaje empático.
+- Ticket alto: garantia + bonos + testimonios con resultados medibles.
+No incluyas bonos si el producto no menciona bonos. No incluyas precio si no hay precio definido (usá cta-final para "agendar llamada" en su lugar).
 
 Respondé SOLO con este JSON (sin markdown, sin texto extra):
 {"title":"Nombre corto del producto","sections":[{"id":"hero","brief":"qué debe comunicar específicamente para ESTE producto en 1-2 frases"},{"id":"beneficios","brief":"..."}]}`;
@@ -1858,9 +1934,10 @@ Secciones actuales: ${ids.join(', ')}.
 MENSAJE DEL USUARIO: "${instruction}"
 
 Respondé SOLO JSON válido (sin markdown, sin texto extra):
-{"action":"edit"|"add"|"remove"|"fix","sectionId":"id exacto o null","reply":"respuesta amable en español"}
+{"action":"edit"|"add"|"remove"|"fix"|"new","sectionId":"id exacto o null","reply":"respuesta amable en español"}
 
 REGLAS DE CLASIFICACIÓN:
+- "new": SOLO si el usuario pide EXPLÍCITAMENTE una landing nueva/desde cero para OTRO producto ("hacé una landing nueva de yoga", "empezá de cero con otro producto"). Un pedido de cambio, por grande que sea, NUNCA es "new".
 - "fix" con sectionId=null: el usuario dice que algo quedó mal en GENERAL o menciona múltiples secciones o dice "sigue mal/igual", "corregí todo", "está todo roto". Se regenerarán TODAS las secciones.
 - "fix" con sectionId=NOMBRE: el usuario menciona UNA sección específica que tiene error (ej: "el hero quedó mal", "los beneficios están rotos"). sectionId debe ser uno de: ${ids.join(', ')}.
 - "edit" con sectionId=NOMBRE: el usuario pide cambiar texto/contenido de una sección específica. sectionId debe ser uno de: ${ids.join(', ')}.
@@ -1874,6 +1951,11 @@ Si es edit: "Voy a aplicar ese cambio en [X]."`;
     const classifyText = await this._call([{ role: 'user', content: classifyMsg }], 400, { model: 'claude-haiku-4-5-20251001' });
     const plan = this._parseJSONSafe(classifyText) || {};
     const reply = plan.reply || 'Listo, apliqué el cambio.';
+
+    // Usuario pide una landing nueva desde cero → el caller la genera
+    if (plan.action === 'new') {
+      return { sections, newLanding: true, reply: plan.reply || 'Dale, armo una landing nueva desde cero.' };
+    }
 
     // No target identified → ask user
     if (!plan.action || (!plan.sectionId && plan.action === 'edit')) {
@@ -1902,7 +1984,14 @@ Si es edit: "Voy a aplicar ese cambio en [X]."`;
       const fixed = sections.slice();
 
       // Campos controlados por código que la regeneración no debe perder
-      const keepOf = (sec) => (sec && sec.content && sec.content.video_url) ? { video_url: sec.content.video_url } : null;
+      const keepOf = (sec) => {
+        const c = sec && sec.content;
+        if (!c) return null;
+        const keep = {};
+        if (c.video_url) keep.video_url = c.video_url;
+        if (c.image_url) keep.image_url = c.image_url;
+        return Object.keys(keep).length ? keep : null;
+      };
 
       if (targetId) {
         // Fix specific section only
@@ -1939,8 +2028,9 @@ Si es edit: "Voy a aplicar ese cambio en [X]."`;
       brief: (cur.brief || this._sectionDefaultBrief(targetId)) + ' — CAMBIO REQUERIDO: ' + instruction
     };
     const content = await this._getSectionContent(spec, brief || '', pal);
-    // Preservar el video de fondo si la sección lo tenía y la IA no lo devolvió
+    // Preservar video/imagen del usuario si la sección los tenía y la IA no los devolvió
     if (cur.content && cur.content.video_url && !content.video_url) content.video_url = cur.content.video_url;
+    if (cur.content && cur.content.image_url && !content.image_url) content.image_url = cur.content.image_url;
     const newHtml = this._buildSection(targetId, content, pal);
     const copy = sections.slice();
     copy[idx] = { ...cur, html: newHtml, content };
