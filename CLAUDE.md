@@ -1651,3 +1651,57 @@ Ya no se le pide a la IA que "embeba el video en el HTML". Ahora:
 3. Botón "Video de fondo" → elegir un video de la galería → se aplica al hero AL INSTANTE (sin esperar IA)
 4. Pedir un cambio por chat ("cambiá el título del hero") → solo cambia esa sección y el video queda
 5. Cambiar paleta con los swatches → instantáneo
+
+---
+
+## SESIÓN 18 JUL 2026 (parte 3) — Los 7 problemas reportados por Sandra, resueltos
+
+### PROBLEMA 1 (EL MÁS GRAVE) — El chat regeneraba en vez de editar — RESUELTO ✅
+
+**Causa raíz encontrada**: `sendChat()` en `landing-builder.html` decidía "¿generar o editar?" con `if (!landing || !landing.blocks || !landing.blocks.length)`. Las landings del sistema de secciones guardan todo en `landing.sections` y dejan `blocks: []` VACÍO → **cada mensaje del chat caía en `generateFromChat` y creaba una landing nueva desde cero usando solo ese mensaje como brief**. El path de edición (`editLandingSectioned`) era código muerto en producción — nunca se ejecutaba. Esto explica: "no tiene contexto", "vuelve a hacer otra landing diferente", "la imagen no se coloca" (el mensaje posterior a la subida regeneraba todo).
+
+**Fix**: el check ahora es `landing && ((landing.mode === 'html' && landing.html) || (landing.blocks && landing.blocks.length))`. Además el clasificador tiene acción `new` (solo si el usuario pide EXPLÍCITAMENTE una landing nueva para otro producto) que devuelve `{newLanding:true}` y el caller genera de cero.
+
+### PROBLEMA 7 — Publicar no daba link — RESUELTO ✅ (había 2 bugs ocultos)
+
+1. `generateFromChat` creaba la landing con `id: 'ld_' + Date.now()` — NO es UUID válido de Postgres → el update fallaba, el insert con ese id también → **las landings de chat NUNCA se guardaban en Supabase** (error silencioso en console).
+2. Tampoco se generaba `slug` → aunque guardara, el link sería `?slug=undefined`.
+
+**Fix**: `id: null` (Supabase genera el UUID) + `_slugify(title)` compartido. Nuevo **modal de publicación** (`publish-modal`): nombre editable, slug editable, botón "Publicar ahora", y al confirmar muestra el link final con "Copiar link" y "Abrir". `confirmPublish()` respeta el slug ajustado por el server si estaba tomado.
+
+### PROBLEMA 3 — Imágenes — RESUELTO ✅
+- `_buildSection('hero')`: `content.image_url` (subida del usuario) tiene prioridad sobre Pollinations.
+- `handleChatImage` ahora también persiste `target.content.image_url` → la imagen sobrevive a regeneraciones.
+- `keepOf()` en `editLandingSectioned` preserva `image_url` y `video_url` en TODOS los paths (fix puntual, fix total, edit).
+- El botón de adjuntar acepta imagen o PDF (`attach_file`).
+
+### PROBLEMA 4 — Referencia por link y PDF — IMPLEMENTADO ✅
+- **Link**: si el mensaje de generación contiene una URL, `_fetchUrlContent()` la lee via `https://r.jina.ai/<url>` (CORS abierto, verificado con curl) y agrega hasta 6000 chars del contenido real al brief. Si falla, avisa y sigue.
+- **PDF**: `handleChatPdf()` — pdf.js 3.11.174 desde cdnjs (lazy load), extrae texto de hasta 15 páginas / 7000 chars. Sin landing → genera con ese contenido. Con landing → lo suma a `landing.brief` como contexto.
+
+### PROBLEMA 5 — Diseño básico → premium — RESUELTO ✅
+CSS agregado en `assembleLanding` + clases en templates:
+- `.ld-card`: glass (backdrop-filter blur 14px), inner highlight, hover lift -6px con glow del color de marca (`color-mix`)
+- `.ld-btn`: glow permanente de marca + hover scale
+- `#hero::before`: glow ambiental radial con --brand/--brand-2
+- `#prueba-social`/`#cta-final`: aurora animada (`background-size:220% !important` + keyframes `ldAurora` — el `!important` gana al inline shorthand)
+- `#precio .ld-price-card`: glow permanente + hover
+- FAQ details con hover de borde
+
+### PROBLEMA 2 — Siempre la misma estructura — RESUELTO ✅
+- 2 secciones nuevas: `para-quien` (dos columnas es/no-es para vos) y `antes-despues` (contraste con card "después" destacada)
+- Hero con `layout: 'split' | 'center'` — la IA elige según el tipo de producto
+- Planner: 7-11 secciones con guía explícita por nicho (curso→modulos+antes-despues; servicio→para-quien+como-funciona; app→sin modulos; ticket alto→garantia+bonos). No incluye bonos/precio si el producto no los menciona.
+
+### PROBLEMA 6 — Videos de galería muertos — RESUELTO ✅
+Las categorías Personas/Tech/Abstract/Ciudad/Naturaleza usaban IDs viejos de Pexels sin URL — `_videoUrl()` fabricaba `videos.pexels.com/video-files/{id}/{id}-hd_1280_720_30fps.mp4` → **403 en todos**. Reemplazadas por 29 entradas con URL completa **verificada con curl (HTTP 200)** en esta sesión. "Mis videos" quedó intacto.
+
+### Verificación
+- Harness offline: 12 tests, todos pasan (generación, paleta, edit quirúrgico, robustez, video x4, secciones nuevas, hero center, clases premium, image_url priority + supervivencia, acción new)
+- Syntax check de app.js y de TODOS los <script> inline de landing-builder.html
+- Screenshot Chromium del diseño premium (hero center + para-quien + antes-despues + precio + cta) — correcto en dark
+- Cache-busters: `?v=20260718b`
+
+### Pendientes
+- 🟡 Límites ebook: Pro=999, Growth=999 → REVERTIR a Pro→5, Growth→20
+- 🟡 Prueba con API viva (calidad de contenido real de Sonnet/Haiku)

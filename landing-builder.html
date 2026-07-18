@@ -9,9 +9,9 @@
 <script src="https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.min.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
 <link href="https://fonts.googleapis.com/icon?family=Material+Symbols+Outlined" rel="stylesheet"/>
-<script src="./supabase-config.js?v=20260718a"></script>
-<script src="./app.js?v=20260718a"></script>
-<script src="./landing-blocks.js?v=20260718a"></script>
+<script src="./supabase-config.js?v=20260718b"></script>
+<script src="./app.js?v=20260718b"></script>
+<script src="./landing-blocks.js?v=20260718b"></script>
 <script>
   tailwind.config = {
     theme: {
@@ -202,11 +202,11 @@
       <div id="gen-progress-bar" style="height:100%;background:linear-gradient(90deg,#2E5BFF,#7c3aed);width:0%;transition:width 1s ease;border-radius:2px"></div>
     </div>
     <div class="flex gap-2">
-      <button id="chat-attach" title="Subir tu propia imagen" class="w-10 shrink-0 rounded-xl bg-surface-container-high hover:bg-surface-container-highest flex items-center justify-center self-end transition" style="height:52px">
-        <span class="material-symbols-outlined text-on-surface-variant" style="font-size:18px">add_photo_alternate</span>
+      <button id="chat-attach" title="Subir imagen o PDF de referencia" class="w-10 shrink-0 rounded-xl bg-surface-container-high hover:bg-surface-container-highest flex items-center justify-center self-end transition" style="height:52px">
+        <span class="material-symbols-outlined text-on-surface-variant" style="font-size:18px">attach_file</span>
       </button>
       <textarea id="chat-input" rows="2"
-        placeholder="Describí tu landing o pedí un cambio…"
+        placeholder="Describí tu landing, pegá un link de referencia, o pedí un cambio…"
         class="field-input text-sm resize-none flex-1" style="border-radius:10px;padding:8px 10px;min-height:52px"></textarea>
       <button id="chat-send" class="w-10 shrink-0 primary-gradient rounded-xl flex items-center justify-center self-end hover:opacity-90 transition" style="height:52px">
         <span class="material-symbols-outlined text-white" style="font-size:18px">send</span>
@@ -611,8 +611,46 @@
   </div>
 </div>
 
+<!-- ── PUBLISH MODAL ── -->
+<div id="publish-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center" style="background:rgba(0,0,0,.7)">
+  <div class="bg-surface-container-high rounded-2xl p-5 w-[460px] max-w-[92vw] shadow-2xl border border-outline-variant/20">
+    <div class="flex items-center gap-2 mb-3">
+      <span class="material-symbols-outlined icon-gradient" style="font-size:18px">rocket_launch</span>
+      <h3 class="font-bold text-sm">Publicar landing</h3>
+      <button id="publish-close" class="ml-auto text-on-surface-variant hover:text-on-surface">
+        <span class="material-symbols-outlined" style="font-size:18px">close</span>
+      </button>
+    </div>
+    <label class="text-[11px] text-on-surface-variant/70 block mb-1">Nombre de la landing</label>
+    <input id="publish-title" type="text" class="field-input mb-3" placeholder="Mi landing"/>
+    <label class="text-[11px] text-on-surface-variant/70 block mb-1">Dirección del link (podés editarla)</label>
+    <div class="flex items-center gap-1 mb-3">
+      <span class="text-[11px] text-on-surface-variant/60 whitespace-nowrap" id="publish-url-prefix"></span>
+      <input id="publish-slug" type="text" class="field-input" style="flex:1" placeholder="mi-landing"/>
+    </div>
+    <button id="publish-confirm" class="w-full h-10 rounded-xl primary-gradient text-white text-sm font-bold flex items-center justify-center gap-2 hover:opacity-90 transition mb-2">
+      <span class="material-symbols-outlined" style="font-size:16px">public</span>
+      Publicar ahora
+    </button>
+    <div id="publish-result" class="hidden mt-2 p-3 rounded-xl border border-outline-variant/20" style="background:rgba(46,91,255,.08)">
+      <p class="text-[11px] text-on-surface-variant/70 mb-1">Tu landing está publicada en:</p>
+      <div class="flex items-center gap-2">
+        <a id="publish-link" href="#" target="_blank" class="text-[12px] font-semibold break-all" style="color:#4d7cff"></a>
+      </div>
+      <div class="flex gap-2 mt-2">
+        <button id="publish-copy" class="flex-1 h-8 rounded-lg text-[11px] font-semibold border border-outline-variant/20 hover:bg-surface-container transition flex items-center justify-center gap-1">
+          <span class="material-symbols-outlined" style="font-size:13px">content_copy</span> Copiar link
+        </button>
+        <button id="publish-open" class="flex-1 h-8 rounded-lg text-[11px] font-semibold primary-gradient text-white hover:opacity-90 transition flex items-center justify-center gap-1">
+          <span class="material-symbols-outlined" style="font-size:13px">open_in_new</span> Abrir
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <!-- Hidden file input for chat image upload -->
-<input id="chat-img-input" type="file" accept="image/*" class="hidden"/>
+<input id="chat-img-input" type="file" accept="image/*,application/pdf" class="hidden"/>
 
 <!-- ── TOAST ── -->
 <div id="toast" class="hidden fixed top-4 left-1/2 -translate-x-1/2 z-50 px-4 py-2 rounded-xl text-sm font-semibold shadow-xl toast" style="background:#1e2a45;border:1px solid #2E5BFF44;"></div>
@@ -656,66 +694,36 @@ const VIDEO_TEMPLATES = [
   { id: 'mine-23', category: 'mine', label: 'Mi video 23', url: 'https://stream.mux.com/T6oQJQ02cQ6N01TR6iHwZkKFkbepS34dkkIc9iukgy400g/high.mp4' },
   { id: 'mine-24', category: 'mine', label: 'Mi video 24', url: 'https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260329_050842_be71947f-f16e-4a14-810c-06e83d23ddb5.mp4' },
   { id: 'mine-25', category: 'mine', label: 'Mi video 25', url: 'https://res.cloudinary.com/dqd6gdwda/video/upload/v1777261664/Dise%C3%B1o_sin_t%C3%ADtulo_27_usnghs.mp4' },
-  { id: '4871',  category: 'people', label: 'Negocios' },
-  { id: '5285',  category: 'people', label: 'Equipo trabajando' },
-  { id: '4608',  category: 'people', label: 'Profesional oficina' },
-  { id: '49583', category: 'people', label: 'Lifestyle moderno' },
-  { id: '4503',  category: 'people', label: 'Trabajo creativo' },
-  { id: '4957',  category: 'people', label: 'Estudio profesional' },
-  { id: '308',   category: 'people', label: 'Hombre laptop ciudad' },
-  { id: '4809',  category: 'people', label: 'Reunión coworkers' },
-  { id: '42648', category: 'people', label: 'Presentación gráficos' },
-  { id: '914',   category: 'people', label: 'Oficina abierta' },
-  { id: '4907',  category: 'people', label: 'Manos teclado' },
-  { id: '42664', category: 'people', label: 'Mujer profesional' },
-  { id: '30012', category: 'people', label: 'Apretón de manos' },
-  { id: '4547',  category: 'people', label: 'Reunión exitosa' },
-  { id: '918',   category: 'people', label: 'Startup activa' },
-  { id: '4948',  category: 'people', label: 'Lectura tranquila' },
-  { id: '4800',  category: 'people', label: 'Mujer meditando' },
-  { id: '4074',  category: 'tech', label: 'Tecnología digital' },
-  { id: '6168',  category: 'tech', label: 'Pantalla código' },
-  { id: '50264', category: 'tech', label: 'Interfaz futurista' },
-  { id: '4068',  category: 'tech', label: 'Red conectada' },
-  { id: '46635', category: 'tech', label: 'Programación' },
-  { id: '99786', category: 'tech', label: 'Dispositivos futuros' },
-  { id: '9757',  category: 'tech', label: 'Código en pantalla' },
-  { id: '47051', category: 'tech', label: 'Placa circuito' },
-  { id: '12748', category: 'tech', label: 'Mapa digital mundial' },
-  { id: '51214', category: 'tech', label: 'Gafas VR' },
-  { id: '50748', category: 'tech', label: 'Pantallas matrix' },
-  { id: '23282', category: 'tech', label: 'Centro de datos' },
-  { id: '31771', category: 'tech', label: 'Red de puntos' },
-  { id: '47323', category: 'tech', label: 'Huella digital' },
-  { id: '45378', category: 'tech', label: 'Código HTML' },
-  { id: '31562', category: 'abstract', label: 'Túnel fractal' },
-  { id: '47282', category: 'abstract', label: 'Fuga de luz' },
-  { id: '44818', category: 'abstract', label: 'Tinta fluida' },
-  { id: '3524',  category: 'abstract', label: 'Glitch digital' },
-  { id: '4974',  category: 'abstract', label: 'Formas mono' },
-  { id: '45298', category: 'abstract', label: 'Humo abstracto' },
-  { id: '31497', category: 'abstract', label: 'Túnel cubos 3D' },
-  { id: '49845', category: 'city', label: 'Edificios nocturnos' },
-  { id: '4231',  category: 'city', label: 'Tokio luces neón' },
-  { id: '49878', category: 'city', label: 'Rascacielos aérea' },
-  { id: '4332',  category: 'city', label: 'Times Square lluvia' },
-  { id: '4067',  category: 'city', label: 'Túnel tráfico' },
-  { id: '34562', category: 'city', label: 'Avenidas nocturnas' },
-  { id: '41161', category: 'city', label: 'Avenida principal' },
-  { id: '4308',  category: 'city', label: 'Tokio atardecer' },
-  { id: '42343', category: 'city', label: 'Tráfico aéreo noche' },
-  { id: '4451',  category: 'city', label: 'Calle Tokio' },
-  { id: '41576', category: 'nature', label: 'Carretera montaña' },
-  { id: '4075',  category: 'nature', label: 'Pradera flores' },
-  { id: '2213',  category: 'nature', label: 'Cascada bosque' },
-  { id: '51502', category: 'nature', label: 'Costa rocosa' },
-  { id: '51445', category: 'nature', label: 'Atardecer playa' },
-  { id: '4881',  category: 'nature', label: 'Campo girasoles' },
-  { id: '5016',  category: 'nature', label: 'Olas espuma' },
-  { id: '1610',  category: 'nature', label: 'Estrellas espacio' },
-  { id: '26108', category: 'nature', label: 'Cielo y nubes' },
-  { id: '4645',  category: 'nature', label: 'Palmera soleada' },
-  { id: '4633',  category: 'nature', label: 'Carretera 1ra persona' },
+  // ── Videos stock verificados (Pexels, URLs completas testeadas) ──
+  { id: 'p-1', category: 'people', label: 'Reunión de equipo',    url: 'https://videos.pexels.com/video-files/3195394/3195394-hd_1920_1080_25fps.mp4' },
+  { id: 'p-2', category: 'people', label: 'Trabajando en laptop', url: 'https://videos.pexels.com/video-files/5473806/5473806-hd_1366_720_25fps.mp4' },
+  { id: 'p-3', category: 'people', label: 'Profesional oficina',  url: 'https://videos.pexels.com/video-files/4990233/4990233-hd_1920_1080_30fps.mp4' },
+  { id: 'p-4', category: 'people', label: 'Colaboración',         url: 'https://videos.pexels.com/video-files/5091624/5091624-hd_1920_1080_24fps.mp4' },
+  { id: 'p-5', category: 'people', label: 'Freelancer laptop',    url: 'https://videos.pexels.com/video-files/3209828/3209828-hd_1920_1080_25fps.mp4' },
+  { id: 'p-6', category: 'people', label: 'Gente caminando',      url: 'https://videos.pexels.com/video-files/1526909/1526909-hd_1920_1080_24fps.mp4' },
+  { id: 'p-7', category: 'people', label: 'Bienestar',            url: 'https://videos.pexels.com/video-files/7578552/7578552-hd_1920_1080_30fps.mp4' },
+  { id: 't-1', category: 'tech', label: 'Pantalla de código',   url: 'https://videos.pexels.com/video-files/857195/857195-hd_1280_720_25fps.mp4' },
+  { id: 't-2', category: 'tech', label: 'Tipeando en laptop',   url: 'https://videos.pexels.com/video-files/852421/852421-hd_1920_1080_30fps.mp4' },
+  { id: 't-3', category: 'tech', label: 'Teclado de cerca',     url: 'https://videos.pexels.com/video-files/2611250/2611250-hd_1920_1080_30fps.mp4' },
+  { id: 't-4', category: 'tech', label: 'Escritorio de trabajo', url: 'https://videos.pexels.com/video-files/4761426/4761426-hd_1366_720_25fps.mp4' },
+  { id: 'a-1', category: 'abstract', label: 'Partículas',        url: 'https://videos.pexels.com/video-files/2278095/2278095-hd_1920_1080_30fps.mp4' },
+  { id: 'a-2', category: 'abstract', label: 'Fluido abstracto',  url: 'https://videos.pexels.com/video-files/3141210/3141210-hd_1920_1080_25fps.mp4' },
+  { id: 'a-3', category: 'abstract', label: 'Luces bokeh',       url: 'https://videos.pexels.com/video-files/2098989/2098989-hd_1920_1080_30fps.mp4' },
+  { id: 'c-1', category: 'city', label: 'Ciudad aérea',       url: 'https://videos.pexels.com/video-files/3129671/3129671-hd_1920_1080_30fps.mp4' },
+  { id: 'c-2', category: 'city', label: 'Tráfico nocturno',   url: 'https://videos.pexels.com/video-files/3129957/3129957-hd_1920_1080_25fps.mp4' },
+  { id: 'c-3', category: 'city', label: 'Avenida aérea',      url: 'https://videos.pexels.com/video-files/3130284/3130284-hd_1920_1080_30fps.mp4' },
+  { id: 'c-4', category: 'city', label: 'Timelapse urbano',   url: 'https://videos.pexels.com/video-files/855564/855564-hd_1920_1080_24fps.mp4' },
+  { id: 'c-5', category: 'city', label: 'Calle de noche',     url: 'https://videos.pexels.com/video-files/856973/856973-hd_1920_1080_25fps.mp4' },
+  { id: 'c-6', category: 'city', label: 'Luces de ciudad',    url: 'https://videos.pexels.com/video-files/2792370/2792370-hd_1920_1080_30fps.mp4' },
+  { id: 'n-1', category: 'nature', label: 'Olas del mar',      url: 'https://videos.pexels.com/video-files/1093662/1093662-hd_1920_1080_30fps.mp4' },
+  { id: 'n-2', category: 'nature', label: 'Bosque',            url: 'https://videos.pexels.com/video-files/1409899/1409899-hd_1920_1080_25fps.mp4' },
+  { id: 'n-3', category: 'nature', label: 'Nubes timelapse',   url: 'https://videos.pexels.com/video-files/2035509/2035509-hd_1920_1080_24fps.mp4' },
+  { id: 'n-4', category: 'nature', label: 'Montañas',          url: 'https://videos.pexels.com/video-files/1721294/1721294-hd_1920_1080_25fps.mp4' },
+  { id: 'n-5', category: 'nature', label: 'Playa',             url: 'https://videos.pexels.com/video-files/1739010/1739010-hd_1920_1080_30fps.mp4' },
+  { id: 'n-6', category: 'nature', label: 'Costa aérea',       url: 'https://videos.pexels.com/video-files/3571264/3571264-hd_1920_1080_30fps.mp4' },
+  { id: 'n-7', category: 'nature', label: 'Cielo estrellado',  url: 'https://videos.pexels.com/video-files/946146/946146-hd_1920_1080_30fps.mp4' },
+  { id: 'n-8', category: 'nature', label: 'Mar aéreo',         url: 'https://videos.pexels.com/video-files/1580455/1580455-hd_1920_1080_30fps.mp4' },
+  { id: 'n-9', category: 'nature', label: 'Costa rocosa',      url: 'https://videos.pexels.com/video-files/2169880/2169880-hd_1920_1080_30fps.mp4' },
 ];
 let _vtgActiveCat = 'mine';
 let _vtgSelectedId = null;
@@ -1013,6 +1021,14 @@ function getCurrentPalette() {
 function getImgStrategy() {
   const sel = document.querySelector('input[name="img-strategy"]:checked');
   return sel ? sel.value : 'ai';
+}
+
+function _slugify(title) {
+  return String(title || 'landing').toLowerCase()
+    .replace(/[áàä]/g,'a').replace(/[éèë]/g,'e').replace(/[íìï]/g,'i')
+    .replace(/[óòö]/g,'o').replace(/[úùü]/g,'u').replace(/ñ/g,'n')
+    .replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'').slice(0,60)
+    + '-' + Math.random().toString(36).slice(2,5);
 }
 
 function buildBrief() {
@@ -1928,11 +1944,7 @@ async function generateLanding() {
     });
 
     const title = document.getElementById('fld-product').value.trim() || 'Mi Landing';
-    const slug  = title.toLowerCase()
-      .replace(/[áàä]/g,'a').replace(/[éèë]/g,'e').replace(/[íìï]/g,'i')
-      .replace(/[óòö]/g,'o').replace(/[úùü]/g,'u').replace(/ñ/g,'n')
-      .replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'').slice(0,60)
-      + '-' + Math.random().toString(36).slice(2,5);
+    const slug  = _slugify(title);
 
     const _genFont = document.getElementById('fld-font')?.value || 'jakarta';
     const _genScale = document.querySelector('[data-scale].sel')?.dataset.scale || 'md';
@@ -2019,20 +2031,47 @@ async function saveLanding() {
 // ═══════════════════════════════════════════════════════════
 // PUBLISH
 // ═══════════════════════════════════════════════════════════
-async function publishLanding() {
+function publishLanding() {
+  if (!landing) { showToast('Primero creá una landing', true); return; }
+  // Abrir modal: nombre + slug editables, luego confirmar
+  if (!landing.slug) landing.slug = _slugify(landing.title || 'landing');
+  document.getElementById('publish-title').value = document.getElementById('ld-title').value.trim() || landing.title || '';
+  document.getElementById('publish-slug').value = landing.slug;
+  document.getElementById('publish-url-prefix').textContent = location.origin + '/landing-view.html?slug=';
+  document.getElementById('publish-result').classList.add('hidden');
+  document.getElementById('publish-modal').classList.remove('hidden');
+}
+
+async function confirmPublish() {
   if (!landing) return;
-  const btn = document.getElementById('btn-publish');
+  const btn = document.getElementById('publish-confirm');
   btn.disabled = true;
+  btn.textContent = 'Publicando…';
   setStatus('Publicando…');
   try {
+    const title = document.getElementById('publish-title').value.trim();
+    let slug = document.getElementById('publish-slug').value.trim()
+      .toLowerCase().replace(/[^a-z0-9-]+/g, '-').replace(/^-+|-+$/g, '');
+    if (title) { landing.title = title; document.getElementById('ld-title').value = title; }
+    if (slug) landing.slug = slug;
     landing.published = true;
     if (!(landing.mode === 'html' && landing.html)) {
       landing.html = renderLandingFromBlocks(landing.blocks, landing.palette || 'blue-purple');
     }
     await saveLanding();
-    const url = `${location.origin}/landing-view.html?slug=${landing.slug}`;
-    showToast('Landing publicada');
+    if (!landing.id) throw new Error('No se pudo guardar la landing (¿estás logueada?)');
+    // saveLanding puede haber ajustado el slug si estaba tomado
+    const url = `${location.origin}/landing-view.html?slug=${encodeURIComponent(landing.slug)}`;
+    const slugInput = document.getElementById('publish-slug');
+    if (slugInput) slugInput.value = landing.slug;
+    const link = document.getElementById('publish-link');
+    link.textContent = url;
+    link.href = url;
+    document.getElementById('publish-result').classList.remove('hidden');
+    document.getElementById('publish-copy').onclick = () => { copyToClipboard(url); showToast('Link copiado'); };
+    document.getElementById('publish-open').onclick = () => window.open(url, '_blank');
     document.getElementById('btn-open-tab').onclick = () => window.open(url, '_blank');
+    showToast('Landing publicada');
     setStatus('Publicada');
   } catch(e) {
     showToast('Error al publicar: ' + e.message, true);
@@ -2040,13 +2079,44 @@ async function publishLanding() {
     landing.published = false;
   } finally {
     btn.disabled = false;
+    btn.innerHTML = '<span class="material-symbols-outlined" style="font-size:16px">public</span> Publicar ahora';
   }
 }
 
 // ═══════════════════════════════════════════════════════════
 // CHAT (block-aware)
 // ═══════════════════════════════════════════════════════════
+// ── Referencia por URL: lee el contenido de una página via r.jina.ai (CORS abierto) ──
+async function _fetchUrlContent(url) {
+  const ctrl = new AbortController();
+  const t = setTimeout(() => ctrl.abort(), 25000);
+  try {
+    const res = await fetch('https://r.jina.ai/' + url, { signal: ctrl.signal, headers: { 'Accept': 'text/plain' } });
+    if (!res.ok) return null;
+    const text = await res.text();
+    return text.slice(0, 6000);
+  } catch (e) { return null; }
+  finally { clearTimeout(t); }
+}
+
+function _extractUrl(text) {
+  const m = String(text || '').match(/https?:\/\/[^\s"'<>)]+/);
+  return m ? m[0] : null;
+}
+
 async function generateFromChat(msg) {
+  // Si el mensaje trae una URL de referencia, leemos su contenido y lo sumamos al brief
+  const refUrl = _extractUrl(msg);
+  if (refUrl && !/pollinations|pexels|mux\.com|cloudfront|cloudinary/.test(refUrl)) {
+    const readingId = addChatMsg('Leyendo la página de referencia…', 'assistant', true);
+    const content = await _fetchUrlContent(refUrl);
+    removeMsg(readingId);
+    if (content) {
+      msg += `\n\nCONTENIDO REAL DE LA PÁGINA DE REFERENCIA (${refUrl}) — usalo como base del producto, oferta y tono:\n${content}`;
+    } else {
+      addChatMsg('No pude leer esa página (puede estar protegida). Sigo con lo que me contaste en el mensaje.', 'assistant');
+    }
+  }
   const thinkingId = addChatMsg('<span class="dot"></span><span class="dot"></span><span class="dot"></span>', 'assistant', true);
   const bar = document.getElementById('gen-progress');
   const barInner = document.getElementById('gen-progress-bar');
@@ -2066,7 +2136,9 @@ async function generateFromChat(msg) {
     setTimeout(() => { if (bar) bar.classList.add('hidden'); if (barInner) barInner.style.width = '0%'; }, 600);
     removeMsg(thinkingId);
     if (!landing) {
-      landing = { id: 'ld_' + Date.now(), title: result.title || 'Mi Landing', mode: 'html', html: result.html, sections: result.sections, blocks: [], palette: palId, published: false, created_at: new Date().toISOString() };
+      // id null → Supabase genera el UUID en el insert. slug desde el título → link publicable.
+      const t = result.title || 'Mi Landing';
+      landing = { id: null, title: t, slug: _slugify(t), mode: 'html', html: result.html, sections: result.sections, blocks: [], palette: palId, published: false, created_at: new Date().toISOString() };
     } else {
       landing.mode = 'html';
       landing.html = result.html;
@@ -2099,7 +2171,11 @@ async function sendChat() {
   chatHistory.push({ role: 'user', content: msg });
   input.value = '';
 
-  if (!landing || !landing.blocks || !landing.blocks.length) {
+  // Solo generar de cero si NO existe una landing (ni en modo secciones/html ni en bloques).
+  // BUG histórico: se chequeaba solo landing.blocks, que en modo secciones está vacío →
+  // cada mensaje del chat regeneraba una landing nueva en vez de editar la existente.
+  const hasLanding = landing && ((landing.mode === 'html' && landing.html) || (landing.blocks && landing.blocks.length));
+  if (!hasLanding) {
     await generateFromChat(msg);
     return;
   }
@@ -2114,6 +2190,14 @@ async function sendChat() {
       const _prev = { html: landing.html, sections: sections.length ? sections.slice() : null };
 
       const res = await AI.editLandingSectioned(msg, sections, palId, landing.brief || landing.title || '');
+
+      // El usuario pidió explícitamente una landing nueva desde cero
+      if (res.newLanding) {
+        removeMsg(thinkingId);
+        landing.brief = '';
+        await generateFromChat(msg);
+        return;
+      }
 
       removeMsg(thinkingId);
       addChatMsg(res.reply || 'Listo, apliqué el cambio.', 'assistant');
@@ -2682,6 +2766,58 @@ function _imageTargets() {
   });
   return out;
 }
+// ── PDF de referencia: extrae el texto con pdf.js y genera/enriquece la landing ──
+let _pdfjsReady = null;
+function _loadPdfJs() {
+  if (_pdfjsReady) return _pdfjsReady;
+  _pdfjsReady = new Promise((resolve, reject) => {
+    const s = document.createElement('script');
+    s.src = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js';
+    s.onload = () => {
+      window.pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+      resolve(window.pdfjsLib);
+    };
+    s.onerror = () => reject(new Error('No se pudo cargar el lector de PDF'));
+    document.head.appendChild(s);
+  });
+  return _pdfjsReady;
+}
+
+async function handleChatPdf(file) {
+  addChatMsg(`<div class="flex items-center gap-2"><span class="material-symbols-outlined" style="font-size:16px">picture_as_pdf</span><span>${file.name}</span></div>`, 'user');
+  const thinkingId = addChatMsg('Leyendo tu PDF…', 'assistant', true);
+  try {
+    const pdfjs = await _loadPdfJs();
+    const buf = await file.arrayBuffer();
+    const doc = await pdfjs.getDocument({ data: buf }).promise;
+    const maxPages = Math.min(doc.numPages, 15);
+    let text = '';
+    for (let i = 1; i <= maxPages && text.length < 8000; i++) {
+      const page = await doc.getPage(i);
+      const tc = await page.getTextContent();
+      text += tc.items.map(it => it.str).join(' ') + '\n';
+    }
+    text = text.replace(/\s{3,}/g, ' ').trim().slice(0, 7000);
+    removeMsg(thinkingId);
+    if (!text || text.length < 80) {
+      addChatMsg('El PDF no tiene texto extraíble (¿es un escaneo/imagen?). Pegame el contenido en el chat y lo uso como base.', 'assistant');
+      return;
+    }
+    const hasLanding = landing && (landing.mode === 'html' ? !!landing.html : (landing.blocks && landing.blocks.length));
+    if (!hasLanding) {
+      addChatMsg('Leí tu PDF. Genero la landing con ese contenido…', 'assistant');
+      await generateFromChat(`Creá una landing de ventas basada en este contenido real del producto (respetá la oferta, precios y tono):\n\n${text}`);
+    } else {
+      landing.brief = ((landing.brief || '') + '\n\nCONTENIDO DEL PDF DE REFERENCIA:\n' + text).slice(0, 12000);
+      autosave();
+      addChatMsg('Listo, sumé el contenido del PDF como contexto del producto. Ahora pedime los cambios que quieras (ej: "reescribí los beneficios usando el PDF").', 'assistant');
+    }
+  } catch (e) {
+    removeMsg(thinkingId);
+    addChatMsg('No pude leer el PDF: ' + (e.message || 'error') + '. Pegame el contenido en el chat y lo uso igual.', 'assistant');
+  }
+}
+
 function handleChatImage(dataUrl) {
   if (!landing || (landing.mode !== 'html' && (!landing.blocks || !landing.blocks.length))) {
     addChatMsg('Primero creá una landing describiéndola en el chat. Después subí tu imagen y la pongo en la sección que quieras.', 'assistant');
@@ -2699,6 +2835,8 @@ function handleChatImage(dataUrl) {
       if (target && imgRe.test(target.html || '')) {
         _lastHtmlSnapshot = { html: landing.html, sections: landing.sections.slice() };
         target.html = target.html.replace(imgRe, '$1' + safeUrl + '$2');
+        // Persistir en content: así la imagen sobrevive a regeneraciones/ediciones futuras
+        if (target.content) target.content.image_url = dataUrl;
         landing.html = AI.assembleLanding(landing.sections, palId, landing.title);
         renderPreview();
         autosave();
@@ -2852,6 +2990,9 @@ function initUI() {
   // Wire all buttons
   document.getElementById('btn-generate').addEventListener('click', generateLanding);
   document.getElementById('btn-publish').addEventListener('click', publishLanding);
+  document.getElementById('publish-confirm').addEventListener('click', confirmPublish);
+  document.getElementById('publish-close').addEventListener('click', () => document.getElementById('publish-modal').classList.add('hidden'));
+  document.getElementById('publish-modal').addEventListener('click', (e) => { if (e.target.id === 'publish-modal') e.target.classList.add('hidden'); });
   document.getElementById('btn-regen').addEventListener('click', regenAll);
   document.getElementById('btn-add-block').addEventListener('click', openAddBlockModal);
   document.getElementById('modal-close').addEventListener('click', () =>
@@ -2905,13 +3046,19 @@ function initUI() {
   // ── CHAT image upload ──
   const imgInput = document.getElementById('chat-img-input');
   document.getElementById('chat-attach').addEventListener('click', () => {
-    const hasLanding = landing && (landing.mode === 'html' ? !!landing.html : (landing.blocks && landing.blocks.length));
-    if (!hasLanding) { showToast('Primero creá una landing desde el chat', true); return; }
+    // Sin landing igual se permite: un PDF sirve como base para generar una nueva
     imgInput.click();
   });
   imgInput.addEventListener('change', () => {
     const file = imgInput.files && imgInput.files[0];
     if (!file) return;
+    if (file.type === 'application/pdf' || /\.pdf$/i.test(file.name)) {
+      handleChatPdf(file);
+      imgInput.value = '';
+      return;
+    }
+    const hasLanding = landing && (landing.mode === 'html' ? !!landing.html : (landing.blocks && landing.blocks.length));
+    if (!hasLanding) { showToast('Primero creá una landing, después subí tu imagen', true); imgInput.value = ''; return; }
     const reader = new FileReader();
     reader.onload = e => { handleChatImage(e.target.result); imgInput.value = ''; };
     reader.readAsDataURL(file);
