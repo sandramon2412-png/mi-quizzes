@@ -1591,3 +1591,63 @@ Si Haiku devuelve JSON parcial o con comentarios, `_parseJSONLoose` puede fallar
 ### Lección de esta sesión
 La raíz del problema del landing-builder siempre fue pedir a la IA que genere HTML directamente. La IA no puede hacerlo confiablemente para layouts complejos. La solución correcta (commit `b67ec27`) separa contenido (IA) de layout (código). **El próximo chat debe verificar si este commit finalmente resuelve el problema antes de hacer más cambios.**
 
+
+---
+
+## SESIÓN 18 JUL 2026 (parte 2) — branch `claude/landing-builder-json-arch-sp9tb6`
+
+### VERIFICACIÓN DEL COMMIT `b67ec27` — LA ARQUITECTURA FUNCIONA ✅
+
+Se verificó la arquitectura template-based con un harness offline en Node (carga `app.js` con stubs de browser, mockea `Claude._call` con JSON realista, corre el pipeline completo) + screenshots con Chromium. Resultados:
+
+- ✅ `generateLandingSectioned`: 11 secciones, layouts correctos en desktop (grids 3-4 col, hero 2 col, FAQ acordeón, precio card) y móvil (todo apila a 1 columna sin romperse)
+- ✅ Paleta clara (nude-rose) y oscura (blue-purple) se aplican bien con contraste correcto
+- ✅ `assembleLanding` con paleta nueva = instantáneo, 0 llamadas IA
+- ✅ `editLandingSectioned` (edit de una sección): solo esa sección cambia, las demás intactas
+- ✅ Sin template literals JS, sin markdown fences, sin layouts rotos — el código genera el HTML, no la IA
+
+### BUG REAL ENCONTRADO Y CORREGIDO: `_parseJSONLoose` lanza, los clasificadores asumían null
+
+`_parseJSONLoose` **lanza excepción** cuando falla todo el recovery (línea ~2226), pero `planLandingSections`, el clasificador de `editLandingSectioned` y el clasificador legacy de HTML edit usaban `this._parseJSONLoose(text) || {}` asumiendo contrato de null. Consecuencia: si Sonnet/Haiku devolvía texto no-JSON, **toda la generación crasheaba** en lugar de usar el fallback de 8 secciones que ya existía. Este era probablemente uno de los modos de fallo "la generación falla sin razón".
+
+**Fix**: nuevo `_parseJSONSafe(text)` (try/catch → null) usado en los 3 clasificadores. `_getSectionContent` ya tenía try/catch propio.
+
+### VIDEO DE FONDO EN HERO — IMPLEMENTADO DETERMINÍSTICAMENTE ✅
+
+Ya no se le pide a la IA que "embeba el video en el HTML". Ahora:
+
+**`app.js`**:
+- `_buildSection('hero')`: si `content.video_url` existe → hero centrado con `<video autoplay muted loop playsinline>` absoluto + overlay `rgba(0,0,0,.55)` + texto blanco. Sin video → hero 2 columnas con imagen (como antes).
+- `generateOneSection(spec, brief, pal, keep)` ahora devuelve `{html, content}` y acepta `keep` (campos controlados por código que la IA no pisa). **Las secciones ahora guardan su `content` JSON** → cualquier rebuild futuro es sin IA.
+- `generateLandingSectioned`: extrae `Hero background video: URL` del brief del form (regex) y lo aplica via `keep` — la IA nunca ve ni pierde el video.
+- `setHeroVideo(sections, palId, videoUrl, productBrief)` (+ facade AI): pone/quita el video reconstruyendo solo el hero. Instantáneo si hay `content` guardado; landings viejas sin content → 1 llamada IA para regenerar el contenido del hero (y de ahí en más queda guardado.)
+- `editLandingSectioned`: los paths de fix (puntual y total) y edit **preservan `video_url`** del content anterior via `keepOf(sec)`.
+
+**`landing-builder.html`**:
+- `applyHeroVideo(url)`: en modo secciones usa `AI.setHeroVideo` + `assembleLanding` (nada de `runHtmlEdit`), guarda `landing.settings.hero_video_url`, snapshot para undo, toast. El path `runHtmlEdit` queda solo para landings HTML legacy sin secciones.
+- Cache-busters bumpeados a `?v=20260718a`.
+
+### Cobertura de tests del harness (8 tests, todos pasan)
+1. Generación completa: 13 checks estructurales
+2. Cambio de paleta instantáneo (0 llamadas IA)
+3. Edit quirúrgico de hero (demás secciones intactas)
+4. Robustez: plan malformado → fallback 8 secciones; `items` como string → no crashea
+5. `setHeroVideo` instantáneo con content guardado + quitar video restaura imagen
+6. Video sobrevive a un "fix" total (regeneración de todas las secciones)
+7. Landing vieja sin content → video aplicado con exactamente 1 llamada IA
+8. Video del form inicial aplicado en generación + todas las secciones guardan `content`
+
+### Pendientes que quedaron VERIFICADOS como ya resueltos (no tocar)
+- `landing.brief` siempre se guarda: `generateFromChat` líneas ~2075-2077 (`landing.brief = landing.brief || msg` + fallback)
+- Paleta instantánea al click del swatch: líneas ~2802-2803 (`assembleLanding` sin IA)
+
+### Pendiente restante
+- 🟡 Límites ebook: Pro=999, Growth=999 en `app.js → PlanLimits` — REVERTIR a Pro→5, Growth→20 cuando Sandra confirme el PDF
+- 🟡 Probar con generación real (API viva): el harness prueba la lógica, no la calidad del contenido que devuelven Sonnet/Haiku en producción
+
+### Cómo Sandra puede validar
+1. Hard-refresh en el landing-builder (Ctrl+Shift+R)
+2. Escribir en el chat un pedido de landing completo → debe generar ~8-11 secciones con layouts correctos en ~15-30s
+3. Botón "Video de fondo" → elegir un video de la galería → se aplica al hero AL INSTANTE (sin esperar IA)
+4. Pedir un cambio por chat ("cambiá el título del hero") → solo cambia esa sección y el video queda
+5. Cambiar paleta con los swatches → instantáneo

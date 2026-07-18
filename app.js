@@ -1289,7 +1289,7 @@ Usá "full" cuando el cambio requiere restructurar el layout, agregar/quitar sec
     const classifyText = await this._call([{ role: 'user', content: classifyMsg }], 300, {
       model: 'claude-haiku-4-5-20251001',
     });
-    const plan = this._parseJSONLoose(classifyText) || {};
+    const plan = this._parseJSONSafe(classifyText) || {};
 
     if (plan.editType === 'surgical' && plan.sectionId) {
       // Extract the target section from HTML using its id
@@ -1487,6 +1487,20 @@ ${body}
 
     switch(id) {
       case 'hero': {
+        if (c.video_url) {
+          // Video de fondo: hero centrado con overlay oscuro para legibilidad
+          return `<section id="hero" style="position:relative;overflow:hidden;background:#0a0a0f;padding:120px 0">
+<video autoplay muted loop playsinline preload="metadata" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:0"><source src="${e(c.video_url)}" type="video/mp4"/></video>
+<div style="position:absolute;inset:0;background:rgba(0,0,0,.55);z-index:1"></div>
+<div style="position:relative;z-index:2;max-width:860px;margin:0 auto;padding:0 24px;text-align:center">
+${c.badge?`<p style="color:rgba(255,255,255,.85);font-weight:700;font-size:13px;text-transform:uppercase;letter-spacing:2px;margin:0 0 16px">${e(c.badge)}</p>`:''}
+<h1 style="color:#fff;font-size:clamp(2rem,5vw,3.6rem);font-weight:800;line-height:1.1;margin:0 0 20px;text-shadow:0 2px 20px rgba(0,0,0,.4)">${e(c.title||'Título')}</h1>
+<p style="color:rgba(255,255,255,.88);font-size:18px;line-height:1.6;margin:0 auto 32px;max-width:620px">${e(c.subtitle||'')}</p>
+${BTN(c.cta||'Empezar ahora')}
+${c.microcopy?`<p style="color:rgba(255,255,255,.7);font-size:13px;margin:12px 0 0">${e(c.microcopy)}</p>`:''}
+</div>
+</section>`;
+        }
         const img = this._imgUrl(c.image_prompt);
         return `<section id="hero" style="background:var(--bg);padding:80px 0">
 <div style="max-width:1152px;margin:0 auto;padding:0 24px;display:flex;flex-wrap:wrap;align-items:center;gap:48px">
@@ -1761,7 +1775,7 @@ Secciones posibles (ids): hero, prueba-social, problema, beneficios, modulos, co
 Respondé SOLO con este JSON (sin markdown, sin texto extra):
 {"title":"Nombre corto del producto","sections":[{"id":"hero","brief":"qué debe comunicar específicamente para ESTE producto en 1-2 frases"},{"id":"beneficios","brief":"..."}]}`;
     const text = await this._call([{ role: 'user', content: user }], 1500, { model: 'claude-sonnet-4-6', system });
-    const plan = this._parseJSONLoose(text) || {};
+    const plan = this._parseJSONSafe(text) || {};
     if (!plan.sections || !plan.sections.length) {
       plan.sections = ['hero', 'problema', 'beneficios', 'testimonios', 'precio', 'garantia', 'faq', 'footer']
         .map(id => ({ id, brief: '' }));
@@ -1774,11 +1788,13 @@ Respondé SOLO con este JSON (sin markdown, sin texto extra):
     return plan;
   },
 
-  async generateOneSection(spec, sharedBrief, pal) {
+  async generateOneSection(spec, sharedBrief, pal, keep) {
     // Step 1: AI fills content JSON (small, fast, reliable)
-    const content = await this._getSectionContent(spec, sharedBrief, pal);
+    let content = await this._getSectionContent(spec, sharedBrief, pal);
+    // `keep` = campos que el código controla y la IA no debe pisar (ej: video_url)
+    if (keep) content = { ...content, ...keep };
     // Step 2: Code builds HTML from hardcoded template (always correct layout)
-    return this._buildSection(spec.id, content, pal);
+    return { html: this._buildSection(spec.id, content, pal), content };
   },
 
   async generateLandingSectioned(instruction, palId, onProgress) {
@@ -1787,18 +1803,47 @@ Respondé SOLO con este JSON (sin markdown, sin texto extra):
     const plan = await this.planLandingSections(instruction);
     const brief = `${plan.title || ''}\n\n${instruction}`;
     const specs = plan.sections;
+    // El form puede pedir video de fondo del hero — el código lo aplica, no la IA
+    const vm = instruction.match(/Hero background video:\s*(\S+)/i);
+    const heroVideo = vm ? vm[1] : null;
     let done = 0;
     const results = await Promise.all(specs.map(async (spec) => {
-      let html = '';
-      try { html = await this.generateOneSection(spec, brief, pal); } catch (e) { html = ''; }
+      let html = '', content = null;
+      const keep = (spec.id === 'hero' && heroVideo) ? { video_url: heroVideo } : null;
+      try {
+        const r = await this.generateOneSection(spec, brief, pal, keep);
+        html = r.html; content = r.content;
+      } catch (e) { html = ''; }
       done++;
       if (onProgress) try { onProgress('section', Math.round((done / specs.length) * 100)); } catch (e) {}
-      return { id: spec.id, brief: spec.brief || '', html };
+      return { id: spec.id, brief: spec.brief || '', html, content };
     }));
     const sections = results.filter(s => s.html);
     if (!sections.length) throw new Error('No se pudo generar ninguna sección. Probá de nuevo con más detalle.');
     const html = this.assembleLanding(sections, palId, plan.title);
     return { title: plan.title || 'Mi Landing', sections, html, palette: palId };
+  },
+
+  // Pone o quita el video de fondo del hero SIN pedirle a la IA que edite HTML.
+  // Si el hero tiene su content JSON guardado es instantáneo; si es una landing
+  // vieja sin content, pide el contenido a la IA una sola vez y lo guarda.
+  async setHeroVideo(sections, palId, videoUrl, productBrief) {
+    const pal = this._landingPalette(palId);
+    const out = (sections || []).slice();
+    const i = out.findIndex(s => s.id === 'hero');
+    if (i === -1) throw new Error('Esta landing no tiene sección hero.');
+    let content = out[i].content;
+    if (!content || !content.title) {
+      content = await this._getSectionContent(
+        { id: 'hero', brief: out[i].brief || this._sectionDefaultBrief('hero') },
+        productBrief || '', pal
+      );
+    }
+    content = { ...content };
+    if (videoUrl) content.video_url = videoUrl;
+    else delete content.video_url;
+    out[i] = { ...out[i], content, html: this._buildSection('hero', content, pal) };
+    return out;
   },
 
   async editLandingSectioned(instruction, sections, palId, brief) {
@@ -1827,7 +1872,7 @@ Si es fix con sección: "Voy a regenerar la sección [X] desde cero, un momento.
 Si es edit: "Voy a aplicar ese cambio en [X]."`;
 
     const classifyText = await this._call([{ role: 'user', content: classifyMsg }], 400, { model: 'claude-haiku-4-5-20251001' });
-    const plan = this._parseJSONLoose(classifyText) || {};
+    const plan = this._parseJSONSafe(classifyText) || {};
     const reply = plan.reply || 'Listo, apliqué el cambio.';
 
     // No target identified → ask user
@@ -1844,8 +1889,8 @@ Si es edit: "Voy a aplicar ese cambio en [X]."`;
     if (plan.action === 'add') {
       const newId = (plan.sectionId && !ids.includes(plan.sectionId)) ? plan.sectionId : ('extra-' + ids.length);
       const spec = { id: newId, brief: plan.brief || instruction };
-      const html = await this.generateOneSection(spec, brief || '', pal);
-      const newSec = { id: newId, brief: spec.brief, html };
+      const r = await this.generateOneSection(spec, brief || '', pal);
+      const newSec = { id: newId, brief: spec.brief, html: r.html, content: r.content };
       const fi = sections.findIndex(s => s.id === 'footer');
       const out = fi === -1 ? [...sections, newSec] : [...sections.slice(0, fi), newSec, ...sections.slice(fi)];
       return { sections: out, reply: plan.reply || 'Agregué la sección.' };
@@ -1856,13 +1901,17 @@ Si es edit: "Voy a aplicar ese cambio en [X]."`;
       const targetId = (plan.sectionId && ids.includes(plan.sectionId)) ? plan.sectionId : null;
       const fixed = sections.slice();
 
+      // Campos controlados por código que la regeneración no debe perder
+      const keepOf = (sec) => (sec && sec.content && sec.content.video_url) ? { video_url: sec.content.video_url } : null;
+
       if (targetId) {
         // Fix specific section only
-        const spec = { id: targetId, brief: sections.find(s => s.id === targetId)?.brief || this._sectionDefaultBrief(targetId) };
+        const cur = sections.find(s => s.id === targetId);
+        const spec = { id: targetId, brief: cur?.brief || this._sectionDefaultBrief(targetId) };
         try {
-          const newHtml = await this.generateOneSection(spec, brief || '', pal);
+          const r = await this.generateOneSection(spec, brief || '', pal, keepOf(cur));
           const i = fixed.findIndex(s => s.id === targetId);
-          if (i !== -1 && newHtml) fixed[i] = { ...fixed[i], html: newHtml };
+          if (i !== -1 && r.html) fixed[i] = { ...fixed[i], html: r.html, content: r.content };
         } catch (e) {}
         return { sections: fixed, reply: `Regeneré la sección "${targetId}" desde cero. Fijate cómo quedó.` };
       } else {
@@ -1870,8 +1919,8 @@ Si es edit: "Voy a aplicar ese cambio en [X]."`;
         await Promise.all(fixed.map(async (sec, i) => {
           const spec = { id: sec.id, brief: sec.brief || this._sectionDefaultBrief(sec.id) };
           try {
-            const newHtml = await this.generateOneSection(spec, brief || '', pal);
-            if (newHtml) fixed[i] = { ...sec, html: newHtml };
+            const r = await this.generateOneSection(spec, brief || '', pal, keepOf(sec));
+            if (r.html) fixed[i] = { ...sec, html: r.html, content: r.content };
           } catch (e) {}
         }));
         return { sections: fixed, reply: 'Regeneré todas las secciones desde cero con layouts corregidos. Fijate cómo quedó ahora.' };
@@ -1890,6 +1939,8 @@ Si es edit: "Voy a aplicar ese cambio en [X]."`;
       brief: (cur.brief || this._sectionDefaultBrief(targetId)) + ' — CAMBIO REQUERIDO: ' + instruction
     };
     const content = await this._getSectionContent(spec, brief || '', pal);
+    // Preservar el video de fondo si la sección lo tenía y la IA no lo devolvió
+    if (cur.content && cur.content.video_url && !content.video_url) content.video_url = cur.content.video_url;
     const newHtml = this._buildSection(targetId, content, pal);
     const copy = sections.slice();
     copy[idx] = { ...cur, html: newHtml, content };
@@ -2146,6 +2197,12 @@ REGLAS CRÍTICAS:
 - JSON VÁLIDO OBLIGATORIO: dentro de los strings, los saltos de línea van como \\n, las comillas como \\", las tabulaciones como \\t. Nunca pongas saltos de línea crudos dentro de un string.
 - Si el pedido no entra en este schema (ej: "mejorá el texto", "hacelo más corto", "agregá una tabla" sin índice claro), respondé con "conversation" pidiendo la aclaración mínima necesaria.
 - Sé breve. JSON chico = menos truncación.`;
+  },
+
+  // Variante segura: devuelve null en lugar de lanzar, para los call sites
+  // que tienen fallback propio (plan de secciones, clasificadores de chat).
+  _parseJSONSafe(text) {
+    try { return this._parseJSONLoose(text); } catch { return null; }
   },
 
   _parseJSONLoose(text) {
@@ -2606,6 +2663,9 @@ const AI = {
   },
   async editLandingSectioned(instruction, sections, palId, brief) {
     return Claude.editLandingSectioned(instruction, sections, palId, brief);
+  },
+  async setHeroVideo(sections, palId, videoUrl, productBrief) {
+    return Claude.setHeroVideo(sections, palId, videoUrl, productBrief);
   },
   assembleLanding(sections, palId, title) {
     return Claude.assembleLanding(sections, palId, title);

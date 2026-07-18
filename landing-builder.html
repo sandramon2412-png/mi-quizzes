@@ -9,9 +9,9 @@
 <script src="https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.min.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
 <link href="https://fonts.googleapis.com/icon?family=Material+Symbols+Outlined" rel="stylesheet"/>
-<script src="./supabase-config.js?v=20260703a"></script>
-<script src="./app.js?v=20260703a"></script>
-<script src="./landing-blocks.js?v=20260703a"></script>
+<script src="./supabase-config.js?v=20260718a"></script>
+<script src="./app.js?v=20260718a"></script>
+<script src="./landing-blocks.js?v=20260718a"></script>
 <script>
   tailwind.config = {
     theme: {
@@ -2597,9 +2597,29 @@ function selectVideo(id) {
 // Apply a video-bg URL to the first hero block (chat-first: no active block needed)
 function applyHeroVideo(url) {
   if (!landing) return;
-  // Lovable HTML mode: ask the AI to embed the video in the hero
   if (landing.mode === 'html') {
     document.getElementById('media-modal').classList.add('hidden');
+    // Modo secciones (template-based): el código reconstruye el hero — sin IA editando HTML
+    if (landing.sections && landing.sections.length) {
+      (async () => {
+        try {
+          const palId = landing.palette || getCurrentPalette() || 'blue-purple';
+          const _prev = { html: landing.html, sections: landing.sections.slice() };
+          landing.sections = await AI.setHeroVideo(landing.sections, palId, url || '', landing.brief || landing.title || '');
+          landing.html = AI.assembleLanding(landing.sections, palId, landing.title);
+          landing.settings = landing.settings || {};
+          landing.settings.hero_video_url = url || '';
+          _lastHtmlSnapshot = _prev;
+          renderPreview();
+          autosave();
+          showToast(url ? 'Video de fondo aplicado al hero' : 'Video de fondo quitado');
+        } catch (e) {
+          showToast('No pude aplicar el video: ' + (e.message || 'error'), true);
+        }
+      })();
+      return;
+    }
+    // Legacy HTML mode sin secciones: pedir a la IA que lo embeba
     if (url) runHtmlEdit(`Poné este video como fondo del hero (autoplay, muted, loop, playsinline, cubriendo toda la sección con un overlay oscuro semitransparente para que el texto se lea): ${url}`, 'Poné un video de fondo en el hero');
     else runHtmlEdit('Quitá el video de fondo del hero y volvé a un fondo con gradiente.', 'Quitá el video de fondo');
     return;
