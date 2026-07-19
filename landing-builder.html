@@ -9,9 +9,9 @@
 <script src="https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.min.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
 <link href="https://fonts.googleapis.com/icon?family=Material+Symbols+Outlined" rel="stylesheet"/>
-<script src="./supabase-config.js?v=20260718b"></script>
-<script src="./app.js?v=20260718b"></script>
-<script src="./landing-blocks.js?v=20260718b"></script>
+<script src="./supabase-config.js?v=20260718c"></script>
+<script src="./app.js?v=20260718c"></script>
+<script src="./landing-blocks.js?v=20260718c"></script>
 <script>
   tailwind.config = {
     theme: {
@@ -628,6 +628,12 @@
       <span class="text-[11px] text-on-surface-variant/60 whitespace-nowrap" id="publish-url-prefix"></span>
       <input id="publish-slug" type="text" class="field-input" style="flex:1" placeholder="mi-landing"/>
     </div>
+    <label class="text-[11px] text-on-surface-variant/70 block mb-1">Link de pago — Hotmart u otro (opcional)</label>
+    <input id="publish-cta-url" type="text" class="field-input mb-1" placeholder="https://pay.hotmart.com/..."/>
+    <p class="text-[10px] text-on-surface-variant/50 mb-3">Todos los botones de la landing van a llevar a este link.</p>
+    <label class="text-[11px] text-on-surface-variant/70 block mb-1">Facebook Pixel ID (opcional)</label>
+    <input id="publish-fb-pixel" type="text" class="field-input mb-1" placeholder="123456789012345"/>
+    <p class="text-[10px] text-on-surface-variant/50 mb-3">Registra PageView y clics en los botones (InitiateCheckout).</p>
     <button id="publish-confirm" class="w-full h-10 rounded-xl primary-gradient text-white text-sm font-bold flex items-center justify-center gap-2 hover:opacity-90 transition mb-2">
       <span class="material-symbols-outlined" style="font-size:16px">public</span>
       Publicar ahora
@@ -739,6 +745,7 @@ let paletteIntensity = 'normal'; // 'suave' | 'normal' | 'fuerte'
 let lastBlockSnapshot = null;   // { idx, data } — para undo del chat
 let _lastHtmlSnapshot = null;   // HTML previo — para undo en modo Lovable
 let chatHistory = [];           // { role:'user'|'assistant', content:string }
+let _pendingHtmlImage = null;   // última imagen subida — para "ponela en X" por chat
 
 function setTypoScale(val, btn) {
   document.querySelectorAll('[data-scale]').forEach(b => {
@@ -1021,6 +1028,41 @@ function getCurrentPalette() {
 function getImgStrategy() {
   const sel = document.querySelector('input[name="img-strategy"]:checked');
   return sel ? sel.value : 'ai';
+}
+
+// Encuentra a qué sección se refiere el usuario en un mensaje ("ponela en beneficios")
+function _matchSectionInMsg(msg, sections) {
+  const t = (msg || '').toLowerCase();
+  const aliases = {
+    hero: ['hero', 'portada', 'principal', 'cabecera', 'arriba de todo'],
+    problema: ['problema', 'dolor'],
+    'para-quien': ['para quien', 'para quién', 'para vos'],
+    'antes-despues': ['antes y despu', 'antes/despu', 'transformaci'],
+    beneficios: ['beneficio'],
+    modulos: ['modulo', 'módulo', 'aprender'],
+    'como-funciona': ['como funciona', 'cómo funciona', 'pasos'],
+    'prueba-social': ['prueba social', 'metricas', 'métricas', 'numeros', 'números'],
+    testimonios: ['testimonio'],
+    bonos: ['bono'],
+    precio: ['precio', 'inversion', 'inversión', 'oferta'],
+    garantia: ['garantia', 'garantía'],
+    faq: ['faq', 'pregunta'],
+    'cta-final': ['cta final', 'cierre', 'final'],
+  };
+  const ids = (sections || []).map(s => s.id);
+  for (const id of ids) {
+    const keys = aliases[id] || [id];
+    if (keys.some(k => t.includes(k))) return id;
+  }
+  return null;
+}
+
+// Opciones de ensamblado: link de pago en CTAs + Facebook Pixel (si están configurados)
+function _landingOpts() {
+  return {
+    ctaUrl: (landing && landing.settings && landing.settings.cta_url) || '',
+    fbPixel: (landing && landing.settings && landing.settings.fb_pixel_id) || '',
+  };
 }
 
 function _slugify(title) {
@@ -2038,6 +2080,8 @@ function publishLanding() {
   document.getElementById('publish-title').value = document.getElementById('ld-title').value.trim() || landing.title || '';
   document.getElementById('publish-slug').value = landing.slug;
   document.getElementById('publish-url-prefix').textContent = location.origin + '/landing-view.html?slug=';
+  document.getElementById('publish-cta-url').value = (landing.settings && landing.settings.cta_url) || '';
+  document.getElementById('publish-fb-pixel').value = (landing.settings && landing.settings.fb_pixel_id) || '';
   document.getElementById('publish-result').classList.add('hidden');
   document.getElementById('publish-modal').classList.remove('hidden');
 }
@@ -2054,8 +2098,14 @@ async function confirmPublish() {
       .toLowerCase().replace(/[^a-z0-9-]+/g, '-').replace(/^-+|-+$/g, '');
     if (title) { landing.title = title; document.getElementById('ld-title').value = title; }
     if (slug) landing.slug = slug;
+    // Guardar link de pago + pixel y reensamblar para que queden en el HTML publicado
+    landing.settings = landing.settings || {};
+    landing.settings.cta_url = document.getElementById('publish-cta-url').value.trim();
+    landing.settings.fb_pixel_id = document.getElementById('publish-fb-pixel').value.trim().replace(/[^0-9]/g, '');
     landing.published = true;
-    if (!(landing.mode === 'html' && landing.html)) {
+    if (landing.mode === 'html' && landing.sections && landing.sections.length) {
+      landing.html = AI.assembleLanding(landing.sections, landing.palette || getCurrentPalette() || 'blue-purple', landing.title, _landingOpts());
+    } else if (!(landing.mode === 'html' && landing.html)) {
       landing.html = renderLandingFromBlocks(landing.blocks, landing.palette || 'blue-purple');
     }
     await saveLanding();
@@ -2180,6 +2230,32 @@ async function sendChat() {
     return;
   }
 
+  // ── Imagen pendiente + "ponela en X" → colocación determinística, sin IA ──
+  if (_pendingHtmlImage && landing.mode === 'html' && landing.sections && landing.sections.length
+      && /imagen|foto|ponela|ponla|colocala|col[oó]cala|agregala|agr[eé]gala|usala|[úu]sala/i.test(msg)) {
+    const target = _matchSectionInMsg(msg, landing.sections);
+    if (target) {
+      const _thinking = addChatMsg('<span class="dot"></span><span class="dot"></span><span class="dot"></span>', 'assistant', true);
+      try {
+        const palId = landing.palette || getCurrentPalette() || 'blue-purple';
+        const _prev = { html: landing.html, sections: landing.sections.slice() };
+        landing.sections = await AI.setSectionImage(landing.sections, palId, target, _pendingHtmlImage, landing.brief || '');
+        landing.html = AI.assembleLanding(landing.sections, palId, landing.title, _landingOpts());
+        _lastHtmlSnapshot = _prev;
+        _pendingHtmlImage = null;
+        removeMsg(_thinking);
+        renderPreview(); autosave();
+        const r = `Listo, puse tu imagen en la sección "${target}".`;
+        addChatMsg(r, 'assistant');
+        chatHistory.push({ role: 'assistant', content: r });
+      } catch (e) {
+        removeMsg(_thinking);
+        addChatMsg('No pude colocar la imagen ahí: ' + (e.message || 'error'), 'assistant');
+      }
+      return;
+    }
+  }
+
   const thinkingId = addChatMsg('<span class="dot"></span><span class="dot"></span><span class="dot"></span>', 'assistant', true);
 
   // ── Section-based HTML mode ──
@@ -2189,7 +2265,7 @@ async function sendChat() {
       const sections = landing.sections || [];
       const _prev = { html: landing.html, sections: sections.length ? sections.slice() : null };
 
-      const res = await AI.editLandingSectioned(msg, sections, palId, landing.brief || landing.title || '');
+      const res = await AI.editLandingSectioned(msg, sections, palId, landing.brief || landing.title || '', chatHistory.slice(-8));
 
       // El usuario pidió explícitamente una landing nueva desde cero
       if (res.newLanding) {
@@ -2206,7 +2282,7 @@ async function sendChat() {
       if (res.sections) {
         _lastHtmlSnapshot = _prev;
         landing.sections = res.sections;
-        landing.html = AI.assembleLanding(res.sections, palId, landing.title);
+        landing.html = AI.assembleLanding(res.sections, palId, landing.title, _landingOpts());
         renderPreview();
         autosave();
         const undoBtn = document.getElementById('chat-undo-btn');
@@ -2690,7 +2766,7 @@ function applyHeroVideo(url) {
           const palId = landing.palette || getCurrentPalette() || 'blue-purple';
           const _prev = { html: landing.html, sections: landing.sections.slice() };
           landing.sections = await AI.setHeroVideo(landing.sections, palId, url || '', landing.brief || landing.title || '');
-          landing.html = AI.assembleLanding(landing.sections, palId, landing.title);
+          landing.html = AI.assembleLanding(landing.sections, palId, landing.title, _landingOpts());
           landing.settings = landing.settings || {};
           landing.settings.hero_video_url = url || '';
           _lastHtmlSnapshot = _prev;
@@ -2726,9 +2802,9 @@ async function runHtmlEdit(instruction, userEcho) {
     const palId = landing.palette || getCurrentPalette() || 'blue-purple';
     const _prev = { html: landing.html, sections: landing.sections ? landing.sections.slice() : null };
     if (landing.sections && landing.sections.length) {
-      const res = await AI.editLandingSectioned(instruction, landing.sections, palId, landing.brief || landing.title || '');
+      const res = await AI.editLandingSectioned(instruction, landing.sections, palId, landing.brief || landing.title || '', chatHistory.slice(-8));
       landing.sections = res.sections;
-      landing.html = AI.assembleLanding(res.sections, palId, landing.title);
+      landing.html = AI.assembleLanding(res.sections, palId, landing.title, _landingOpts());
     } else {
       landing.html = await AI.generateLandingPage(instruction, landing.html, null);
     }
@@ -2826,6 +2902,7 @@ function handleChatImage(dataUrl) {
   // Section-based HTML mode: replace the first <img> (in the hero section if possible)
   if (landing.mode === 'html') {
     addChatMsg(`<div class="flex flex-col gap-1.5"><img src="${dataUrl}" style="max-width:140px;border-radius:8px;border:1px solid rgba(255,255,255,.15)"/><span>Imagen subida</span></div>`, 'user');
+    _pendingHtmlImage = dataUrl; // queda disponible para "ponela en X" por chat
     const safeUrl = dataUrl.replace(/\$/g, '$$$$');
     const imgRe = /(<img\b[^>]*\bsrc\s*=\s*")[^"]*(")/i;
     const palId = landing.palette || getCurrentPalette() || 'blue-purple';
@@ -2837,12 +2914,12 @@ function handleChatImage(dataUrl) {
         target.html = target.html.replace(imgRe, '$1' + safeUrl + '$2');
         // Persistir en content: así la imagen sobrevive a regeneraciones/ediciones futuras
         if (target.content) target.content.image_url = dataUrl;
-        landing.html = AI.assembleLanding(landing.sections, palId, landing.title);
+        landing.html = AI.assembleLanding(landing.sections, palId, landing.title, _landingOpts());
         renderPreview();
         autosave();
         const undoBtn = document.getElementById('chat-undo-btn');
         if (undoBtn) { undoBtn.classList.remove('hidden'); undoBtn.style.display = 'inline-flex'; }
-        addChatMsg('Puse tu imagen en la landing. Si querés ponerla en otra sección, decime dónde por el chat.', 'assistant');
+        addChatMsg('Puse tu imagen en la landing. Si la querés en otra sección, decime cuál — ej: "ponela en beneficios" o "ponela en el precio".', 'assistant');
         return;
       }
     }
@@ -2857,7 +2934,7 @@ function handleChatImage(dataUrl) {
       if (undoBtn) { undoBtn.classList.remove('hidden'); undoBtn.style.display = 'inline-flex'; }
       addChatMsg('Puse tu imagen en la landing (reemplacé la imagen principal).', 'assistant');
     } else {
-      addChatMsg('Esta landing no tiene una imagen para reemplazar. Pedime por el chat dónde querés que agregue tu imagen.', 'assistant');
+      addChatMsg('Guardé tu imagen. Decime en qué sección la pongo — ej: "ponela en el hero", "ponela en beneficios", "ponela en el precio".', 'assistant');
     }
     return;
   }
@@ -2958,7 +3035,7 @@ function initUI() {
     if (landing.mode === 'html') {
       document.getElementById('palette-panel').classList.add('hidden');
       if (landing.sections && landing.sections.length) {
-        landing.html = AI.assembleLanding(landing.sections, id, landing.title);
+        landing.html = AI.assembleLanding(landing.sections, id, landing.title, _landingOpts());
         renderPreview();
         autosave();
       } else {

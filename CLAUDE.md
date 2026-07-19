@@ -1705,3 +1705,51 @@ Las categorías Personas/Tech/Abstract/Ciudad/Naturaleza usaban IDs viejos de Pe
 ### Pendientes
 - 🟡 Límites ebook: Pro=999, Growth=999 → REVERTIR a Pro→5, Growth→20
 - 🟡 Prueba con API viva (calidad de contenido real de Sonnet/Haiku)
+
+---
+
+## SESIÓN 19 JUL 2026 — Ronda 2 de fixes del landing-builder (feedback de Sandra)
+
+### Reporte de Sandra tras probar la ronda 1
+1. El chat ya no regenera TODA la landing, pero al pedir un cambio regenera la sección completa (pierde el contenido bueno)
+2. Cards desbalanceadas: 4 módulos = 3 arriba + 1 abajo (feo), y pedirle "organizalas" solo regeneraba contenido
+3. El chat sigue sin contexto de la conversación
+4. Imágenes: solo se colocan si hay espacio de imagen; "ponela en X sección" no funcionaba
+5. Iconos "básicos de WhatsApp" (emojis) en vez de Material Symbols
+6. Móvil roto
+7. Siempre inventa un precio genérico ($97) aunque el producto no tenga precio
+8. Video de fondo borra la foto del hero
+9. Necesita: pixel de Facebook, links de pago Hotmart, páginas de agradecimiento/funnels
+
+### Fixes aplicados (todos determinísticos donde fue posible)
+
+**Grids balanceados por código (`_buildSection`)**: `COLS(n)` — 4 items → 2×2, 3/5/6 → 3 col, 1-2 → esa cantidad. Clases `.ld-grid .ld-g1/.ld-g2/.ld-g3` con media queries en `assembleLanding`: ≤960px g3→2col, ≤640px todo→1col. Ya no puede quedar 1 card huérfana. **El layout nunca más depende de la IA.**
+
+**Responsive móvil real**: bloque `@media(max-width:640px)` en assembled CSS: secciones 56px padding, hero img height auto (max 300px), h1 2rem, `.ld-btn` display block centrado.
+
+**Edición quirúrgica (`_editSectionContent`)**: el path "edit" ahora manda el JSON ACTUAL de la sección + el pedido + los últimos 6 mensajes del chat → la IA devuelve el mismo JSON con SOLO lo pedido cambiado (verificado en test: items intactos palabra por palabra). Fallback al método anterior si la sección no tiene content guardado.
+
+**Contexto de conversación**: `editLandingSectioned(instruction, sections, palId, brief, history)` — el clasificador recibe los últimos 8 mensajes. El clasificador ahora PREFIERE "edit" sobre "fix" (fix=destructivo solo si está roto de verdad) y trata quejas de layout como edit.
+
+**Iconos sanitizados**: `okIcon()` — si la IA devuelve emoji o texto raro (no `/^[a-z0-9_]+$/`), se usa el fallback del template. Los emojis ya no pueden aparecer.
+
+**Precio/bonos determinístico**: `generateLandingSectioned` filtra las secciones `precio` y `bonos` del plan si el brief no menciona precio/bonos (regex). Hint de precio: "usá EXACTAMENTE el precio del brief". `assembleLanding` redirige `href="#precio"` a `#cta-final` si no hay sección precio.
+
+**Imagen en cualquier sección**: post-proceso en `_buildSection` — si `content.image_url` y la sección no es hero, inserta la imagen al final de la sección. Nuevo `setSectionImage(sections, palId, sectionId, imageUrl, brief)` (+ facade). En el builder: `_pendingHtmlImage` guarda la última imagen subida; si el usuario dice "ponela en beneficios" (matching por alias en `_matchSectionInMsg`), se coloca SIN IA. El mensaje del chat tras subir explica cómo moverla.
+
+**Video + foto conviven**: el hero con `video_url` ahora también muestra `image_url` (card con borde bajo el CTA).
+
+**Pixel de Facebook + link de pago (Hotmart)**: `assembleLanding(sections, palId, title, opts)` acepta `{ctaUrl, fbPixel}`:
+- `ctaUrl` → todos los `<a class="ld-btn">` apuntan al checkout con `target="_blank"`
+- `fbPixel` → snippet fbq init+PageView en <head> + listener `InitiateCheckout` en clicks de `.ld-btn`
+- Campos en el modal de publicar (`publish-cta-url`, `publish-fb-pixel`) → `landing.settings.cta_url` / `fb_pixel_id`
+- `_landingOpts()` en el builder pasa los settings a TODOS los call sites de assembleLanding
+
+### Verificación
+- `test-round2.js`: 21 checks nuevos, todos pasan
+- `test-landing.js` (suite 1): actualizada a los nuevos grids/filtros, 12 tests pasan
+- Screenshots Chromium: 4 módulos → 2×2 perfecto en desktop, 1 col en móvil 390px
+- Cache-busters: `?v=20260718c`
+
+### Sobre funnels/páginas de agradecimiento (pendiente mayor)
+No implementado aún. Workaround actual: crear otra landing como página de gracias y poner su URL publicada en la config de Hotmart. Feature futura: multi-página por landing (`landing.pages[]`).
