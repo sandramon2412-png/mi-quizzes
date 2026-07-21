@@ -97,8 +97,9 @@
     background:
       linear-gradient(145deg, color-mix(in srgb, var(--brand) 46%, transparent), color-mix(in srgb, var(--brand-light) 30%, transparent)),
       var(--quiz-hero-image, linear-gradient(135deg, var(--brand), var(--brand-light))) !important;
-    background-size: cover !important;
-    background-position: center !important;
+    background-size: cover, contain !important;
+    background-position: center, center !important;
+    background-repeat: no-repeat !important;
     color: #fff;
   }
   .report-card > .relative:first-child::before {
