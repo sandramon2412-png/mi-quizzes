@@ -201,7 +201,12 @@
     color: rgba(255,255,255,0.48) !important;
   }
   #q-counter {
-    color: rgba(38,33,43,0.72) !important;
+    color: rgba(24,20,31,0.88) !important;
+    background: rgba(255,255,255,0.48);
+    border: 1px solid rgba(255,255,255,0.32);
+    border-radius: 999px;
+    padding: 0.2rem 0.55rem;
+    font-weight: 800;
     text-shadow: none !important;
   }
   footer {
@@ -511,14 +516,14 @@
     <div id="screen-question" class="hidden space-y-6">
       <!-- Question counter -->
       <div class="flex items-center justify-between">
-        <span id="q-counter" class="text-xs font-semibold text-gray-400 tracking-wide">Pregunta 1 de 5</span>
+        <span id="q-counter" class="text-xs tracking-wide">Pregunta 1 de 5</span>
         <span id="q-category" class="text-xs font-semibold text-brand tracking-wide px-3 py-1 rounded-full bg-brand-bg"></span>
       </div>
 
       <!-- Question text -->
       <div class="space-y-3">
         <p class="text-[10px] font-black tracking-[0.24em] uppercase text-brand/60">Elige lo que más se parece a ti</p>
-        <h2 id="q-text" class="font-serif text-3xl md:text-4xl font-semibold leading-tight text-gray-900 slide-in"></h2>
+        <h2 id="q-text" class="font-serif text-2xl md:text-3xl font-semibold leading-[1.16] text-gray-900 slide-in"></h2>
       </div>
 
       <!-- Options -->
