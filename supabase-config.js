@@ -12,16 +12,54 @@ const SUPABASE_URL      = 'https://euauqqamrkqwoytveljp.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV1YXVxcWFtcmtxd295dHZlbGpwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQxMjc5ODcsImV4cCI6MjA4OTcwMzk4N30.-047G98I5ecegiWBmkItSgYkhv37AAgTOOZoeB-iAIo';
 
 const AUTH_POLL_INTERVAL_MS = 180;
+const AUTH_STORAGE_RECOVERY_KEYS = [
+  'ls_miniapp_template_pending',
+  'ls_miniapp_template_pending_id',
+  'ls_mini_apps',
+  'ls_ebooks',
+  'ls_quizzes',
+];
+
+function clearStoragePressure() {
+  AUTH_STORAGE_RECOVERY_KEYS.forEach((key) => {
+    try {
+      window.localStorage.removeItem(key);
+    } catch {}
+  });
+}
 
 function getSafeAuthStorage() {
+  const storage = window.localStorage;
+  const key = '__luminous_auth_storage_test__';
   try {
-    const key = '__luminous_auth_storage_test__';
-    window.localStorage.setItem(key, '1');
-    window.localStorage.removeItem(key);
-    return window.localStorage;
+    storage.setItem(key, '1');
+    storage.removeItem(key);
   } catch {
-    return undefined;
+    clearStoragePressure();
+    try {
+      storage.setItem(key, '1');
+      storage.removeItem(key);
+    } catch {
+      return undefined;
+    }
   }
+
+  return {
+    getItem(authKey) {
+      try { return storage.getItem(authKey); } catch { return null; }
+    },
+    setItem(authKey, value) {
+      try {
+        storage.setItem(authKey, value);
+      } catch {
+        clearStoragePressure();
+        storage.setItem(authKey, value);
+      }
+    },
+    removeItem(authKey) {
+      try { storage.removeItem(authKey); } catch {}
+    },
+  };
 }
 
 const safeAuthStorage = getSafeAuthStorage();

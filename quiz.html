@@ -213,6 +213,15 @@
   #intro-icon .material-symbols-outlined {
     color: #fff !important;
   }
+  #intro-icon .material-symbols-outlined,
+  #profile-emoji-wrap .material-symbols-outlined {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1em;
+    height: 1em;
+    line-height: 1;
+  }
   #quiz-wrapper {
     max-width: 980px;
     transition: max-width 0.35s ease, padding 0.35s ease;
@@ -782,12 +791,8 @@
 
   function continueAfterQuiz() {
     Session.setAnswers(answers);
-    const action = QUIZ.postQuizAction || 'result_page';
-    const destination = buildPostQuizDestination(_calculatedProfile);
-    if (action !== 'result_page' && destination) {
-      window.location.href = destination;
-      return;
-    }
+    // Always show the calculated result first. Payment, landing and WhatsApp
+    // destinations are presented as the CTA on resultado-quiz.html.
     _goToResultPage();
   }
 
@@ -988,8 +993,9 @@
 
     // Send result email if enabled
     if (QUIZ.emailResultEnabled && email && _calculatedProfile) {
-      fetch('/api/send-email', {
+      await fetch('/api/send-email', {
         method: 'POST',
+        keepalive: true,
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           toEmail: email, toName: name,
@@ -1001,7 +1007,7 @@
           matchScore: _calculatedProfile.matchScore,
           fromName: QUIZ.brandName || '',
         }),
-      }).catch(() => {}); // fire and forget
+      }).catch((err) => console.warn('Result email error:', err));
     }
 
     fbTrack('Lead', { content_name: QUIZ.title || 'Quiz' });
