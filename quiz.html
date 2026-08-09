@@ -568,14 +568,21 @@
             <span class="material-symbols-outlined" style="font-size:34px;font-variation-settings:'FILL' 1">workspace_premium</span>
           </div>
         </div>
-        <h2 class="font-serif text-2xl md:text-3xl font-semibold text-gray-800">¡Tu perfil está listo!</h2>
-        <p class="text-gray-500 max-w-sm mx-auto leading-relaxed text-sm">
-          Deja tu correo para ver tu resultado personalizado y la recomendación exacta para ti.
+        <h2 id="lead-title" class="font-serif text-2xl md:text-3xl font-semibold text-gray-800">Tu perfil esta listo!</h2>
+        <p id="lead-subtitle" class="text-gray-500 max-w-sm mx-auto leading-relaxed text-sm">
+          Deja tu correo para ver tu resultado personalizado y la recomendacion exacta para ti.
         </p>
-      </div>
+        <div id="lead-preview" class="hidden max-w-sm mx-auto text-left rounded-2xl border border-white/20 bg-white/10 p-4 space-y-3">
+          <p id="lead-preview-text" class="text-sm font-semibold leading-relaxed text-gray-800"></p>
+          <p id="lead-blur-text" class="rounded-xl bg-white/30 px-4 py-3 text-xs font-black uppercase tracking-[0.18em] text-gray-500 blur-[2px] select-none"></p>
+        </div>
+        <div id="lead-unlock-copy" class="hidden max-w-sm mx-auto space-y-1">
+          <h3 id="lead-unlock-title" class="text-base font-extrabold text-gray-800"></h3>
+          <p id="lead-unlock-subtitle" class="text-sm leading-relaxed text-gray-500"></p>
+        </div>`r`n      </div>
 
       <form id="lead-form" onsubmit="submitLead(event)" class="space-y-3 max-w-sm mx-auto">
-        <div>
+        <div id="lead-name-wrap">
           <input id="lead-name" type="text" required placeholder="Tu nombre"
             class="w-full bg-white border border-brand-light/40 rounded-xl px-5 py-3.5 text-sm text-gray-700 placeholder:text-gray-400 focus:outline-none focus:border-brand focus:ring-2 focus:ring-brand/20 transition-all"/>
         </div>
@@ -590,7 +597,7 @@
         </button>
         <p class="text-xs text-gray-400 text-center flex items-center justify-center gap-1.5">
           <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd"/></svg>
-          Tu información está segura. Sin spam.
+          <span id="lead-footer-text">Tu información está segura. Sin spam.</span>
         </p>
       </form>
 
@@ -720,6 +727,7 @@
 
     Session.setCurrentQuiz(QUIZ.id || 'demo');
     Session.setAnswers([]);
+    if (typeof Session.setLead === 'function') Session.setLead({});
 
     // ── Populate intro ────────────────────────────────────
     const introIcon = document.getElementById('intro-icon');
@@ -937,6 +945,59 @@
     if (currentQ > 0) { currentQ--; selectedOption = null; renderQuestion(); }
   }
 
+  function getSelectedSymptomInfo() {
+    const firstAnswer = Array.isArray(answers) ? answers[0] : null;
+    const question = firstAnswer ? (QUIZ.questions || []).find(q => q.id === firstAnswer.questionId) : null;
+    const option = question && Array.isArray(question.options) ? question.options[firstAnswer.optionIndex] : null;
+    const value = option?.valor || option?.value || option?.sintoma || option?.profiles?.[0] || '';
+    return { value, label: option?.text || value || 'tu sintoma' };
+  }
+
+  function renderTemplateText(text, data = {}) {
+    return String(text || '').replace(/\[VARIABLE SINTOMA\]/g, data.symptomLabel || data.symptom || 'tu sintoma');
+  }
+
+  function applyLeadGateCopy() {
+    const gate = QUIZ.leadGate || null;
+    const symptom = getSelectedSymptomInfo();
+    const profile = _calculatedProfile || calculateProfile(QUIZ, answers);
+    const preview = gate?.previewByProfile?.[profile?.id] || gate?.previewText || '';
+
+    const titleEl = document.getElementById('lead-title');
+    const subtitleEl = document.getElementById('lead-subtitle');
+    const previewWrap = document.getElementById('lead-preview');
+    const previewEl = document.getElementById('lead-preview-text');
+    const blurEl = document.getElementById('lead-blur-text');
+    const unlockWrap = document.getElementById('lead-unlock-copy');
+    const unlockTitleEl = document.getElementById('lead-unlock-title');
+    const unlockSubtitleEl = document.getElementById('lead-unlock-subtitle');
+    const footerEl = document.getElementById('lead-footer-text');
+    const nameWrap = document.getElementById('lead-name-wrap');
+    const nameInput = document.getElementById('lead-name');
+    const emailInput = document.getElementById('lead-email');
+    const btnText = document.getElementById('lead-btn-text');
+
+    if (titleEl && gate?.title) titleEl.textContent = renderTemplateText(gate.title, { symptomLabel: symptom.label, symptom: symptom.value });
+    if (subtitleEl && gate?.subtitle) subtitleEl.textContent = renderTemplateText(gate.subtitle, { symptomLabel: symptom.label, symptom: symptom.value });
+    if (previewWrap && previewEl && preview) {
+      previewEl.textContent = renderTemplateText(preview, { symptomLabel: symptom.label, symptom: symptom.value });
+      previewWrap.classList.remove('hidden');
+    }
+    if (blurEl && gate?.blurText) blurEl.textContent = gate.blurText;
+    if (unlockWrap && (gate?.unlockTitle || gate?.unlockSubtitle)) {
+      if (unlockTitleEl) unlockTitleEl.textContent = gate.unlockTitle || '';
+      if (unlockSubtitleEl) unlockSubtitleEl.textContent = gate.unlockSubtitle || '';
+      unlockWrap.classList.remove('hidden');
+    }
+    if (footerEl && QUIZ.privacyFooter) footerEl.textContent = QUIZ.privacyFooter;
+    if (emailInput && gate?.emailPlaceholder) emailInput.placeholder = gate.emailPlaceholder;
+    if (btnText && gate?.buttonText) btnText.textContent = gate.buttonText;
+    if (nameWrap && nameInput && QUIZ.leadNameRequired === false) {
+      nameInput.required = false;
+      nameInput.value = nameInput.value || 'Lectora Codigo Cuerpo';
+      nameWrap.classList.add('hidden');
+    }
+  }
   function showLoading() {
     document.getElementById('screen-question').classList.add('hidden');
     document.getElementById('q-side-panel').classList.add('hidden');
@@ -944,11 +1005,14 @@
     document.getElementById('screen-loading').classList.remove('hidden');
     document.getElementById('progress-bar').style.width = '100%';
 
-    const steps = [
-      'Analizando tus respuestas...',
-      'Identificando tu perfil...',
-      'Preparando tu recomendación personalizada...',
-    ];
+    const symptom = getSelectedSymptomInfo();
+    const steps = Array.isArray(QUIZ.loadingSteps) && QUIZ.loadingSteps.length
+      ? QUIZ.loadingSteps.map(step => renderTemplateText(step, { symptomLabel: symptom.label, symptom: symptom.value }))
+      : [
+        'Analizando tus respuestas...',
+        'Identificando tu perfil...',
+        'Preparando tu recomendacion personalizada...',
+      ];
     let i = 0;
     const bar    = document.getElementById('loading-bar');
     const status = document.getElementById('loading-status');
@@ -973,7 +1037,9 @@
 
     document.getElementById('screen-loading').classList.add('hidden');
     document.getElementById('screen-lead').classList.remove('hidden');
-    document.getElementById('lead-name').focus();
+    applyLeadGateCopy();
+    const focusEl = QUIZ.leadNameRequired === false ? document.getElementById('lead-email') : document.getElementById('lead-name');
+    focusEl?.focus();
 
     if (typeof confetti === 'function') {
       confetti({ particleCount: 60, spread: 70, origin: { y: 0.6 }, colors: ['#8B6AA0','#C4A7D7','#ffa3e9','#69f6b8'] });
@@ -984,6 +1050,7 @@
     e.preventDefault();
     const name  = document.getElementById('lead-name').value.trim();
     const email = document.getElementById('lead-email').value.trim();
+    if (typeof Session.setLead === 'function') Session.setLead({ name, email });
     setLeadLoading(true);
 
     try {

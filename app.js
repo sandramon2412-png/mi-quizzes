@@ -13,6 +13,7 @@ const KEYS = {
   PROJECTS: 'ls_projects',
   CURRENT_QUIZ_ID: 'ls_current_quiz_id',
   CURRENT_ANSWERS: 'ls_current_answers',
+  CURRENT_LEAD: 'ls_current_lead',
   ANALYTICS: 'ls_analytics',
 };
 
@@ -328,9 +329,12 @@ const Session = {
   getCurrentQuizId() { return Store.get(KEYS.CURRENT_QUIZ_ID); },
   setAnswers(answers) { Store.set(KEYS.CURRENT_ANSWERS, answers); },
   getAnswers() { return Store.get(KEYS.CURRENT_ANSWERS) || []; },
+  setLead(lead) { Store.set(KEYS.CURRENT_LEAD, lead || {}); },
+  getLead() { return Store.get(KEYS.CURRENT_LEAD) || {}; },
   clear() {
     localStorage.removeItem(KEYS.CURRENT_QUIZ_ID);
     localStorage.removeItem(KEYS.CURRENT_ANSWERS);
+    localStorage.removeItem(KEYS.CURRENT_LEAD);
   },
 };
 
@@ -3975,6 +3979,104 @@ function getBuiltinTemplates() {
       ],
     },
     {
+      id: 'tmpl-codigo-cuerpo-sintomas',
+      title: 'Que te quiere decir tu sintoma? Test de 30 segundos',
+      subtitle: 'Solo 5 preguntas - Menos de 2 min - Reporte personalizado segun tu sintoma',
+      category: 'Bienestar',
+      icon: 'psychology',
+      product: 'Codigo Cuerpo',
+      niche: 'biodescodificacion femenina, sintomas emocionales, cuerpo femenino',
+      estimatedMinutes: 2,
+      postQuizAction: 'landing',
+      landingUrl: 'https://tubiodescodificacion.vercel.app/',
+      leadCapture: true,
+      leadNameRequired: false,
+      emailResultEnabled: true,
+      privacyFooter: 'Tu info esta segura. Sin spam. Solo personalizamos tu mapa.',
+      loadingSteps: [
+        'Analizando tu sintoma: [VARIABLE SINTOMA]...',
+        'Cruzando con diccionario emocional de 147 sintomas...',
+        'Creando tu mapa corporal personalizado...',
+      ],
+      leadGate: {
+        title: 'Tu mapa esta listo!',
+        subtitle: 'Detectamos un patron muy claro en tu caso.',
+        blurText: 'XXXXX recomendacion exacta bloqueada XXXXX',
+        unlockTitle: 'Desbloquea tu resultado completo + recomendacion exacta',
+        unlockSubtitle: 'Deja tu correo para ver tu reporte y como liberar esta emocion en 5 min al dia con Codigo Cuerpo',
+        emailPlaceholder: 'Tu mejor correo',
+        buttonText: 'Ver mi resultado personalizado ->',
+        previewByProfile: {
+          vientre: 'Tu perfil apunta a creatividad bloqueada. Tu cuerpo aprendio a retener y callar para protegerte cuando sentiste que expresarte no era seguro.',
+          lumbar: 'Tu perfil apunta a miedo a avanzar y falta de apoyo. Tu cuerpo aprendio a tensarse cuando siente que todo depende de ti.',
+          cabeza: 'Tu perfil apunta a sobreexigencia y control. Tu cuerpo aprendio a mantenerse alerta cuando siente que no puede soltar.',
+          tiroides: 'Tu perfil apunta a tiempo y voz retenida. Tu cuerpo aprendio a callar palabras, limites o verdades para evitar conflicto.',
+          ansiedad: 'Tu perfil apunta a culpa por ponerte al ultimo. Tu cuerpo aprendio a apretar el pecho cuando cargas con todos menos contigo.',
+        },
+      },
+      questions: [
+        { id: 'q1', text: 'Que sintoma se repite mas en ti ultimamente?', options: [
+          { text: 'Vientre inflamado / hinchazon constante', valor: 'vientre', value: 'vientre', profiles: ['vientre'] },
+          { text: 'Dolor lumbar / espalda baja que no se va', valor: 'lumbar', value: 'lumbar', profiles: ['lumbar'] },
+          { text: 'Dolor de cabeza / migrana tensional', valor: 'cabeza', value: 'cabeza', profiles: ['cabeza'] },
+          { text: 'Garganta cerrada / nudo que no te deja hablar', valor: 'tiroides', value: 'tiroides', profiles: ['tiroides'] },
+          { text: 'Ansiedad / pecho apretado sin causa clara', valor: 'ansiedad', value: 'ansiedad', profiles: ['ansiedad'] },
+        ]},
+        { id: 'q2', text: 'Desde cuando lo sientes?', options: [
+          { text: 'Desde hace unos meses', profiles: ['vientre', 'ansiedad'] },
+          { text: 'Desde hace anos', profiles: ['lumbar', 'cabeza'] },
+          { text: 'Desde que soy nina / adolescente', profiles: ['tiroides', 'ansiedad'] },
+        ]},
+        { id: 'q3', text: 'Que emocion domina tu dia a dia ahora?', options: [
+          { text: 'Miedo a avanzar o a quedarme sin apoyo', profiles: ['lumbar'] },
+          { text: 'Culpa por ponerme siempre al ultimo', profiles: ['ansiedad'] },
+          { text: 'Rabia contenida por no decir lo que siento', profiles: ['tiroides'] },
+          { text: 'Tristeza / sensacion de vacio', profiles: ['vientre', 'cabeza'] },
+        ]},
+        { id: 'q4', text: 'Que has intentado para aliviarlo?', options: [
+          { text: 'Medicos, estudios salen bien', profiles: ['cabeza', 'lumbar'] },
+          { text: 'Terapia / cursos de desarrollo personal', profiles: ['tiroides', 'vientre'] },
+          { text: 'Nada me ha funcionado del todo', profiles: ['ansiedad', 'lumbar'] },
+        ]},
+        { id: 'q5', text: 'Que necesitas desbloquear primero?', options: [
+          { text: 'Entender el mensaje emocional de mi sintoma', profiles: ['vientre', 'cabeza'] },
+          { text: 'Saber que practica hacer para liberar la emocion', profiles: ['ansiedad', 'lumbar'] },
+          { text: 'Ver mi mapa corporal completo paso a paso', profiles: ['tiroides', 'vientre'] },
+        ]},
+      ],
+      profiles: [
+        {
+          id: 'vientre', sintoma: 'vientre', name: 'Tu mapa: Creatividad Bloqueada', emoji: '',
+          description: 'Tu vientre es tu centro creativo y de poder femenino. Cuando vive inflamado, en biodescodificacion femenina suele guardar una creatividad, un proyecto o una parte de ti que no te permitiste expresar por miedo a ser juzgada. No es que tu cuerpo falle. Es que aprendio a retener y a protegerte cuando sentiste que mostrarte no era seguro. Por eso se hincha, aunque comas sano.',
+          recommendation: 'En Codigo Cuerpo vas a encontrar: Diccionario -> "Vientre inflamado", Mapa Corporal -> Utero / Centro, y la meditacion de 5 min "Libero mi voz creativa". Tu cuerpo no quiere castigarte. Quiere que lo escuches. Este contenido es educativo y de autoconocimiento emocional. No reemplaza consejo medico.',
+          cta: 'Ver mi mapa completo de vientre',
+        },
+        {
+          id: 'tiroides', sintoma: 'tiroides', name: 'Tu mapa: Tiempo y Voz Retenida', emoji: '',
+          description: 'Tu tiroides guarda dos historias muy femeninas: tu relacion con el tiempo y tu voz. Suele aparecer esa sensacion de "tengo que apurarme, no me alcanza el tiempo, tengo que hacerlo todo yo" y al mismo tiempo, palabras, limites o verdades que te guardaste por miedo al conflicto o a no ser entendida. Aprendiste a acelerar y a callar al mismo tiempo. Tu garganta se cierra porque hay mucho por decir.',
+          recommendation: 'En Codigo Cuerpo: Diccionario -> "Tiroides / Nudo en garganta", Mapa -> Cuello / Garganta, Meditacion "Me doy mi tiempo y me doy mi voz". Este contenido es educativo y de autoconocimiento emocional. No reemplaza consejo medico.',
+          cta: 'Ver mi mapa completo de tiroides',
+        },
+        {
+          id: 'lumbar', sintoma: 'lumbar', name: 'Tu mapa: Miedo a Avanzar y Falta de Apoyo', emoji: '',
+          description: 'Tu zona lumbar es tu sosten. Es la que te sostiene para avanzar en la vida. Cuando duele sin una causa fisica clara, suele expresar miedo a avanzar, a no tener apoyo, o la sensacion de tener que sostenerlo todo sola: casa, hijos, trabajo, emociones de otros. Tu cuerpo se tensa porque siente que si tu no sostienes, todo se cae.',
+          recommendation: 'En Codigo Cuerpo: Diccionario -> "Lumbar", Mapa -> Espalda baja, Meditacion "Me permito ser sostenida". Este contenido es educativo y de autoconocimiento emocional. No reemplaza consejo medico.',
+          cta: 'Ver mi mapa completo lumbar',
+        },
+        {
+          id: 'cabeza', sintoma: 'cabeza', name: 'Tu mapa: Sobreexigencia y Control', emoji: '',
+          description: 'Tu cabeza guarda pensamientos que no paran. Sobreexigencia, autoexigencia, querer tener todo bajo control. En biodescodificacion femenina, el dolor de cabeza tensional suele aparecer cuando sientes que si no controlas todo, algo malo va a pasar. Tu mente no descansa porque aprendio a estar alerta.',
+          recommendation: 'Tu cuerpo te esta pidiendo una pausa, no mas exigencia. En Codigo Cuerpo: Diccionario -> "Dolor de cabeza", Mapa -> Cabeza, Meditacion "Suelto el control y descanso mi mente". Este contenido es educativo y de autoconocimiento emocional. No reemplaza consejo medico.',
+          cta: 'Ver mi mapa completo',
+        },
+        {
+          id: 'ansiedad', sintoma: 'ansiedad', name: 'Tu mapa: Culpa por Ponerte al Ultimo', emoji: '',
+          description: 'Ese pecho apretado, esa ansiedad que aparece sin razon, suele guardar culpa por ponerte siempre al ultimo y una tristeza contenida por no ser vista. Aprendiste a ser fuerte para todos, a resolver, a estar disponible. Pero te olvidaste de ti.',
+          recommendation: 'Tu cuerpo te aprieta el pecho para que vuelvas a ti. En Codigo Cuerpo: Diccionario -> "Ansiedad / Pecho apretado", Mapa -> Pecho / Corazon, Meditacion "Vuelvo a mi y me elijo". Este contenido es educativo y de autoconocimiento emocional. No reemplaza consejo medico.',
+          cta: 'Ver mi mapa completo',
+        },
+      ],
+    },    {
       id: 'tmpl-habitos-emprendedor',
       title: '¿Qué hábito de emprendedor está saboteando tu éxito?',
       subtitle: 'Identifica el patrón que te frena y la solución exacta para superarlo',

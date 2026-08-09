@@ -860,6 +860,7 @@
     }
 
     ctaText = ctaText || 'Ver la solución';
+    ctaDest = buildPersonalizedActionHref(ctaDest, quiz, profile, answers);
 
     const btnCta = document.getElementById('btn-cta');
     btnCta.textContent = ctaIcon + ctaText + ' →';
@@ -964,6 +965,41 @@
     return href;
   }
 
+  function appendQueryParams(href, params) {
+    const cleanHref = String(href || '').trim();
+    if (!cleanHref) return '';
+    const entries = Object.entries(params || {}).filter(([, value]) => value !== undefined && value !== null && String(value).trim() !== '');
+    if (!entries.length) return cleanHref;
+    const hashIndex = cleanHref.indexOf('#');
+    const base = hashIndex >= 0 ? cleanHref.slice(0, hashIndex) : cleanHref;
+    const hash = hashIndex >= 0 ? cleanHref.slice(hashIndex) : '';
+    const joiner = base.includes('?') ? '&' : '?';
+    const query = entries.map(([key, value]) => `${encodeURIComponent(key)}=${encodeURIComponent(String(value).trim())}`).join('&');
+    return `${base}${joiner}${query}${hash}`;
+  }
+
+  function canPassLeadEmailToHref(href) {
+    try {
+      const url = new URL(String(href || ''), window.location.href);
+      return url.hostname === 'tubiodescodificacion.vercel.app';
+    } catch {
+      return false;
+    }
+  }
+
+  function getSelectedSymptom(quiz, answers, profile) {
+    const firstAnswer = Array.isArray(answers) ? answers[0] : null;
+    const question = firstAnswer ? (quiz.questions || []).find(q => q.id === firstAnswer.questionId) : null;
+    const option = question && Array.isArray(question.options) ? question.options[firstAnswer.optionIndex] : null;
+    return getFirstValue(option?.sintoma, option?.valor, option?.value, option?.profiles?.[0], profile?.sintoma, profile?.id);
+  }
+
+  function buildPersonalizedActionHref(href, quiz, profile, answers) {
+    const lead = typeof Session !== 'undefined' && typeof Session.getLead === 'function' ? Session.getLead() : {};
+    const params = { sintoma: getSelectedSymptom(quiz, answers, profile) };
+    if (canPassLeadEmailToHref(href)) params.email = lead.email;
+    return appendQueryParams(href, params);
+  }
   function buildLandingHref(quiz) {
     const slug = getFirstValue(quiz.landingSlug, quiz.settings?.landingSlug);
     if (slug) return `./landing-view.html?slug=${encodeURIComponent(slug)}`;
