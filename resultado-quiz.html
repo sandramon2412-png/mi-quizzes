@@ -785,7 +785,8 @@
     }
 
     const hasRealAnswers = Array.isArray(answers) && answers.length > 0;
-    const profile = hasRealAnswers ? calculateProfile(quiz, answers) : quiz.profiles[0];
+    let profile = hasRealAnswers ? calculateProfile(quiz, answers) : quiz.profiles[0];
+    profile = resolveProfileForSymptom(quiz, answers, profile) || profile;
 
     // Header brand
     document.getElementById('header-brand').textContent = quiz.brandName || quiz.product || quiz.niche || '';
@@ -846,15 +847,15 @@
         ctaIcon = '';
       }
     } else if (action === 'payment') {
-      ctaDest = quiz.paymentUrl || quiz.productUrl;
+      ctaDest = getProfileActionUrl(profile, 'payment') || quiz.paymentUrl || quiz.productUrl;
       ctaText = profile.cta || (quiz.product ? `Quiero acceder a ${quiz.product}` : 'Comprar ahora');
       ctaIcon = '';
     } else if (action === 'landing') {
-      ctaDest = quiz.landingUrl || quiz.productUrl;
+      ctaDest = getProfileActionUrl(profile, 'landing') || quiz.landingUrl || quiz.productUrl;
       ctaText = profile.cta || (quiz.product ? `Ver ${quiz.product}` : 'Ver la solución');
       ctaIcon = '';
     } else {
-      ctaDest = profile.ctaUrl || quiz.productUrl || quiz.landingUrl || quiz.paymentUrl;
+      ctaDest = getProfileActionUrl(profile, action) || profile.ctaUrl || quiz.productUrl || quiz.landingUrl || quiz.paymentUrl;
       ctaText = profile.cta || (quiz.product ? `Quiero acceder a ${quiz.product}` : 'Ver la solución');
       ctaIcon = '';
     }
@@ -918,13 +919,14 @@
     }
 
     const linkedEbook = await resolveEbookResource(quiz, profile);
-    const landingHref = buildLandingHref(quiz);
+    const landingHref = buildPersonalizedActionHref(buildLandingHref(quiz), quiz, profile, answers);
+    const paymentHref = buildPersonalizedActionHref(getProfileActionUrl(profile, 'payment') || quiz.paymentUrl, quiz, profile, answers);
     if (isSkinGlowResult) {
       document.getElementById('result-action-cards')?.classList.add('hidden');
       document.getElementById('result-ecosystem')?.classList.add('hidden');
     } else {
-      renderResultActionCards({ quiz, profile, ctaDest, ctaText, calendlyUrl, miniApp: linkedMiniApp, ebook: linkedEbook, landingHref });
-      renderResultEcosystem({ quiz, profile, ctaDest, ctaText, calendlyUrl, miniApp: linkedMiniApp, ebook: linkedEbook, landingHref });
+      renderResultActionCards({ quiz, profile, ctaDest, ctaText, calendlyUrl, miniApp: linkedMiniApp, ebook: linkedEbook, landingHref, paymentHref });
+      renderResultEcosystem({ quiz, profile, ctaDest, ctaText, calendlyUrl, miniApp: linkedMiniApp, ebook: linkedEbook, landingHref, paymentHref });
     }
 
     // All profiles
@@ -988,6 +990,8 @@
   }
 
   function getSelectedSymptom(quiz, answers, profile) {
+    const fromUrl = getParam('sintoma');
+    if (fromUrl) return fromUrl;
     const firstAnswer = Array.isArray(answers) ? answers[0] : null;
     const question = firstAnswer ? (quiz.questions || []).find(q => q.id === firstAnswer.questionId) : null;
     const option = question && Array.isArray(question.options) ? question.options[firstAnswer.optionIndex] : null;
@@ -999,6 +1003,20 @@
     const params = { sintoma: getSelectedSymptom(quiz, answers, profile) };
     if (canPassLeadEmailToHref(href)) params.email = lead.email;
     return appendQueryParams(href, params);
+  }
+
+  function resolveProfileForSymptom(quiz, answers, fallbackProfile) {
+    const symptom = getSelectedSymptom(quiz, answers, fallbackProfile);
+    if (!symptom || !Array.isArray(quiz?.profiles)) return fallbackProfile;
+    return quiz.profiles.find(p => String(getFirstValue(p.sintoma, p.valor, p.value, p.id)).trim() === String(symptom).trim()) || fallbackProfile;
+  }
+
+  function getProfileActionUrl(profile, action) {
+    if (!profile) return '';
+    if (action === 'landing') return getFirstValue(profile.landingUrl, profile.urls?.landing, profile.ctaUrl);
+    if (action === 'payment') return getFirstValue(profile.paymentUrl, profile.urls?.payment, profile.checkoutUrl, profile.ctaUrl);
+    if (action === 'whatsapp') return getFirstValue(profile.whatsappUrl, profile.urls?.whatsapp);
+    return getFirstValue(profile.ctaUrl, profile.landingUrl, profile.paymentUrl);
   }
   function buildLandingHref(quiz) {
     const slug = getFirstValue(quiz.landingSlug, quiz.settings?.landingSlug);
@@ -1047,7 +1065,7 @@
     return null;
   }
 
-  function renderResultActionCards({ quiz, profile, ctaDest, ctaText, calendlyUrl, miniApp, ebook, landingHref }) {
+  function renderResultActionCards({ quiz, profile, ctaDest, ctaText, calendlyUrl, miniApp, ebook, landingHref, paymentHref }) {
     const grid = document.getElementById('result-action-cards');
     if (!grid) return;
     const cards = [];
@@ -1086,7 +1104,7 @@
     addActionCard(cards, {
       title: 'Ir al checkout',
       description: 'Entra directo a la página de pago configurada.',
-      href: quiz.paymentUrl,
+      href: paymentHref || quiz.paymentUrl,
       icon: 'local_fire_department',
       label: 'Acceso'
     });
@@ -1121,7 +1139,7 @@
     grid.classList.toggle('hidden', cards.length === 0);
   }
 
-  function renderResultEcosystem({ quiz, profile, ctaDest, ctaText, calendlyUrl, miniApp, ebook, landingHref }) {
+  function renderResultEcosystem({ quiz, profile, ctaDest, ctaText, calendlyUrl, miniApp, ebook, landingHref, paymentHref }) {
     const panel = document.getElementById('result-ecosystem');
     const grid = document.getElementById('ecosystem-cards');
     const countEl = document.getElementById('ecosystem-count');

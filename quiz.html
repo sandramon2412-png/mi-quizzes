@@ -1117,9 +1117,12 @@
   }
 
   function _goToResultPage() {
-    window.location.href = QUIZ.id
-      ? `./resultado-quiz.html?quiz=${QUIZ.id}`
-      : `./resultado-quiz.html`;
+    const symptom = getSelectedSymptomInfo().value;
+    const params = new URLSearchParams();
+    if (QUIZ.id) params.set('quiz', QUIZ.id);
+    if (symptom) params.set('sintoma', symptom);
+    const query = params.toString();
+    window.location.href = `./resultado-quiz.html${query ? '?' + query : ''}`;
   }
 
   function setLeadLoading(on) {
