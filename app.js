@@ -4034,7 +4034,7 @@ function getBuiltinTemplates() {
         { id: 'q2', text: 'Desde cuando sientes ese sintoma?', options: [
           { text: 'Desde hace dias o pocas semanas', profiles: ['ansiedad', 'cabeza'] },
           { text: 'Desde hace varios meses', profiles: ['vientre', 'tiroides'] },
-          { text: 'Desde hace anos o vuelve por temporadas', profiles: ['lumbar', 'ovarios'] },
+          { text: 'Desde nina o adolescente', profiles: ['lumbar', 'ovarios', 'tiroides'] },
           { text: 'Desde una etapa emocional dificil que recuerdo', profiles: ['tiroides', 'otro'] },
         ]},
         { id: 'q3', text: 'Con que frecuencia aparece?', options: [

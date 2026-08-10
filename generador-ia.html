@@ -975,7 +975,7 @@ function loadQuizIntoEditor(quiz) {
   const optCount = Array.isArray(quiz.questions?.[0]?.options) && quiz.questions[0].options.length ? quiz.questions[0].options.length : _numOptions;
   setNumQ(qCount);
   setNumOpts(optCount);
-  ensureQuizShape(currentQuiz, qCount, optCount);
+  ensureQuizShape(currentQuiz, qCount, null);
   showLoading(false);
   document.getElementById('empty-state').classList.add('hidden');
   document.getElementById('quiz-content').classList.remove('hidden');
@@ -1627,10 +1627,55 @@ function buildOfflineQuizDraft(product, desc, niche, theme = null) {
   };
 }
 
+function isCodigoCuerpoQuiz(quiz = {}) {
+  const haystack = [quiz.id, quiz._templateId, quiz.title, quiz.product, quiz.niche]
+    .filter(Boolean)
+    .join(' ')
+    .toLowerCase();
+  return haystack.includes('codigo cuerpo') || haystack.includes('biodescodificacion') || haystack.includes('tmpl-codigo-cuerpo-sintomas');
+}
+
+function removeGenericCodigoCuerpoOptions(quiz) {
+  if (!isCodigoCuerpoQuiz(quiz) || !Array.isArray(quiz.questions)) return;
+  const fillerLabels = new Set([
+    'Estoy empezando y necesito claridad',
+    'Tengo informacion pero me falta orden',
+    'Ya avance, pero quiero mejores resultados',
+    'Necesito una solucion mas profesional',
+    'Quiero algo simple y accionable',
+    'Busco acompanamiento paso a paso',
+    'Nueva opcion',
+    'Nueva opci?n',
+  ]);
+  quiz.questions.forEach((question, qi) => {
+    if (qi === 0 || !Array.isArray(question.options)) return;
+    question.options = question.options.filter(option => {
+      const label = String(option?.text || '').trim();
+      return label && !fillerLabels.has(label) && !/^Opcion \d+$/i.test(label) && !/^Opci?n \d+$/i.test(label);
+    });
+  });
+
+  const timeQuestion = quiz.questions[1];
+  if (timeQuestion && /Desde cuando/i.test(timeQuestion.text || '')) {
+    const hasChildhood = timeQuestion.options.some(option => /nina|ni?a|adolescente/i.test(option.text || ''));
+    if (!hasChildhood) {
+      const longTerm = timeQuestion.options.find(option => /anos|a?os|temporadas/i.test(option.text || ''));
+      if (longTerm) {
+        longTerm.text = 'Desde nina o adolescente';
+      } else {
+        timeQuestion.options.push({ text: 'Desde nina o adolescente', profiles: ['lumbar', 'ovarios', 'tiroides'] });
+      }
+    }
+  }
+}
+
 function ensureQuizShape(quiz, questionCount, optionCount) {
   const wantedQuestions = Math.max(1, parseInt(questionCount, 10) || 6);
-  const wantedOptions = Math.max(2, parseInt(optionCount, 10) || 4);
+  const preserveExistingOptionCounts = optionCount === null || optionCount === undefined;
+  const wantedOptions = preserveExistingOptionCounts ? null : Math.max(2, parseInt(optionCount, 10) || 4);
   const product = quiz?.product || document.getElementById('input-product')?.value?.trim() || 'tu producto';
+
+  removeGenericCodigoCuerpoOptions(quiz);
 
   if (!Array.isArray(quiz.profiles) || quiz.profiles.length < 1) {
     quiz.profiles = [
@@ -1668,14 +1713,17 @@ function ensureQuizShape(quiz, questionCount, optionCount) {
     question.id = `q${qi + 1}`;
     question.text = (question.text || '').trim() || `Pregunta ${qi + 1}: que describe mejor tu situacion actual?`;
     if (!Array.isArray(question.options)) question.options = [];
-    while (question.options.length < wantedOptions) {
+    const targetOptions = preserveExistingOptionCounts
+      ? Math.max(2, question.options.length || 4)
+      : wantedOptions;
+    while (question.options.length < targetOptions) {
       const oi = question.options.length;
       question.options.push({
         text: optionLabels[oi] || `Opcion ${oi + 1}`,
         profiles: [profileIds[oi % profileIds.length]],
       });
     }
-    question.options = question.options.slice(0, wantedOptions);
+    if (!preserveExistingOptionCounts) question.options = question.options.slice(0, targetOptions);
     question.options.forEach((option, oi) => {
       option.text = (option.text || '').trim() || (optionLabels[oi] || `Opcion ${oi + 1}`);
       const validProfiles = Array.isArray(option.profiles)
@@ -1689,7 +1737,7 @@ function ensureQuizShape(quiz, questionCount, optionCount) {
   return quiz;
 }
 
-// ── Num questions / options state ─────────────────────────
+// ?? Num questions / options state ?????????????????????????
 let _numQuestions = 6;
 let _numOptions   = 4;
 
