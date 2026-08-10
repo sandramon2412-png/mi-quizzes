@@ -825,6 +825,13 @@
     _goToResultPage();
   }
 
+  function getOptionDisplayText(opt = {}) {
+    const value = opt.valor || opt.value || opt.sintoma || opt.profiles?.[0] || '';
+    if (value === 'tiroides') return 'Tiroides / garganta cerrada / nudo al hablar';
+    if (value === 'ovarios' && opt.text === 'Ovarios / ciclo irregular') return 'Ovarios / colicos / ciclo irregular';
+    return opt.text || '';
+  }
+
   function renderQuestion() {
     const q     = QUIZ.questions[currentQ];
     const total = QUIZ.questions.length;
@@ -873,14 +880,14 @@
         div.className = 'option-card-img' + (isSelected ? ' selected' : '');
         div.innerHTML = `
           <div class="relative">
-            <img src="${opt.imageUrl}" alt="${opt.text}" class="w-full h-36 object-cover" loading="lazy"/>
+            <img src="${opt.imageUrl}" alt="${displayText}" class="w-full h-36 object-cover" loading="lazy"/>
             <div class="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent"></div>
             <svg class="opt-check absolute top-2 right-2 w-6 h-6 text-white drop-shadow-md" fill="currentColor" viewBox="0 0 20 20">
               <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
             </svg>
           </div>
           <div class="px-3 py-2.5 text-center">
-            <span class="font-semibold text-gray-700 text-sm">${opt.text}</span>
+            <span class="font-semibold text-gray-700 text-sm">${displayText}</span>
           </div>`;
       } else {
         const badge = `<div class="w-10 h-10 rounded-xl bg-brand-bg border border-brand-light/25 flex items-center justify-center shrink-0 text-brand">
@@ -895,7 +902,7 @@
         div.innerHTML = `
           ${badge}
           <div class="flex-1 min-w-0">
-            <span class="font-medium text-gray-700 text-sm leading-snug block">${opt.text}</span>
+            <span class="font-medium text-gray-700 text-sm leading-snug block">${displayText}</span>
             ${customInput}
           </div>
           <svg class="opt-check w-5 h-5 text-brand shrink-0" style="opacity:${isSelected?1:0}" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>`;
@@ -978,7 +985,7 @@
     const question = firstAnswer ? (QUIZ.questions || []).find(q => q.id === firstAnswer.questionId) : null;
     const option = question && Array.isArray(question.options) ? question.options[firstAnswer.optionIndex] : null;
     const value = option?.valor || option?.value || option?.sintoma || option?.profiles?.[0] || '';
-    return { value, label: firstAnswer?.text || option?.text || value || 'tu sintoma' };
+    return { value, label: firstAnswer?.text || getOptionDisplayText(option) || value || 'tu sintoma' };
   }
 
   function renderTemplateText(text, data = {}) {
