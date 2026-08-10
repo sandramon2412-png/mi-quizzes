@@ -888,10 +888,25 @@
         </div>`;
         div.className = 'option-card flex items-center gap-4 p-4 rounded-2xl';
         if (isSelected) div.classList.add('selected');
+        const answerText = isSelected ? (prevAnswer?.text || '') : '';
+        const customInput = opt.requiresText ? `
+          <input type="text" class="custom-answer-input mt-3 w-full rounded-xl border border-brand-light/30 bg-white/80 px-3 py-2 text-sm text-gray-700 outline-none focus:border-brand" placeholder="${opt.textPlaceholder || 'Escribe tu respuesta...'}" value="${String(answerText).replace(/"/g, '&quot;')}" />
+        ` : '';
         div.innerHTML = `
           ${badge}
-          <span class="font-medium text-gray-700 flex-1 text-sm leading-snug">${opt.text}</span>
+          <div class="flex-1 min-w-0">
+            <span class="font-medium text-gray-700 text-sm leading-snug block">${opt.text}</span>
+            ${customInput}
+          </div>
           <svg class="opt-check w-5 h-5 text-brand shrink-0" style="opacity:${isSelected?1:0}" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>`;
+        div.querySelector('.custom-answer-input')?.addEventListener('focus', () => { if (selectedOption !== i) selectOption(i); });
+        div.querySelector('.custom-answer-input')?.addEventListener('click', e => { e.stopPropagation(); if (selectedOption !== i) selectOption(i); });
+        div.querySelector('.custom-answer-input')?.addEventListener('input', e => {
+          if (selectedOption !== i) selectOption(i);
+          const existing = answers.find(a => a.questionId === q.id);
+          if (existing) existing.text = e.target.value.trim();
+          document.getElementById('btn-next').disabled = !e.target.value.trim();
+        });
       }
 
       div.addEventListener('click', () => selectOption(i));
@@ -899,7 +914,9 @@
     });
 
     selectedOption = prevIdx;
-    document.getElementById('btn-next').disabled = selectedOption === null;
+    const selectedOpt = selectedOption !== null ? q.options[selectedOption] : null;
+    const selectedAnswer = answers.find(a => a.questionId === q.id);
+    document.getElementById('btn-next').disabled = selectedOption === null || (selectedOpt?.requiresText && !String(selectedAnswer?.text || '').trim());
     document.getElementById('btn-back').style.visibility = currentQ === 0 ? 'hidden' : 'visible';
     const nextBtn = document.getElementById('btn-next');
     nextBtn.innerHTML = currentQ === total - 1
@@ -916,22 +933,33 @@
       if (i === index) { card.classList.add('selected'); if (check) { check.style.opacity='1'; check.style.transform='scale(1)'; } }
       else { card.classList.remove('selected'); if (check) { check.style.opacity='0'; check.style.transform='scale(0.5)'; } }
     });
-    document.getElementById('btn-next').disabled = false;
+    const q = QUIZ.questions[currentQ];
+    const opt = q.options[index];
+    document.getElementById('btn-next').disabled = !!opt.requiresText;
 
     clearTimeout(_autoAdvanceTimer);
     _autoAdvanceTimer = setTimeout(() => {
       document.querySelectorAll('.option-card, .option-card-img').forEach(c => c.classList.add('auto-advancing'));
-      setTimeout(goNext, 120);
+      if (!opt.requiresText) setTimeout(goNext, 120);
     }, 550);
   }
 
   function goNext() {
     if (selectedOption === null) return;
     clearTimeout(_autoAdvanceTimer);
-    const qId = QUIZ.questions[currentQ].id;
+    const q = QUIZ.questions[currentQ];
+    const qId = q.id;
+    const opt = q.options[selectedOption];
+    const customText = document.querySelector('.custom-answer-input')?.value.trim() || '';
+    if (opt?.requiresText && !customText) {
+      document.querySelector('.custom-answer-input')?.focus();
+      return;
+    }
     const idx = answers.findIndex(a => a.questionId === qId);
-    if (idx >= 0) answers[idx].optionIndex = selectedOption;
-    else answers.push({ questionId: qId, optionIndex: selectedOption });
+    const nextAnswer = { questionId: qId, optionIndex: selectedOption };
+    if (customText) nextAnswer.text = customText;
+    if (idx >= 0) answers[idx] = nextAnswer;
+    else answers.push(nextAnswer);
     Session.setAnswers(answers);
 
     if (currentQ < QUIZ.questions.length - 1) {
@@ -950,7 +978,7 @@
     const question = firstAnswer ? (QUIZ.questions || []).find(q => q.id === firstAnswer.questionId) : null;
     const option = question && Array.isArray(question.options) ? question.options[firstAnswer.optionIndex] : null;
     const value = option?.valor || option?.value || option?.sintoma || option?.profiles?.[0] || '';
-    return { value, label: option?.text || value || 'tu sintoma' };
+    return { value, label: firstAnswer?.text || option?.text || value || 'tu sintoma' };
   }
 
   function renderTemplateText(text, data = {}) {
