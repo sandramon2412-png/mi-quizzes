@@ -122,8 +122,8 @@
               class="w-full bg-surface-container-lowest border border-outline-variant/20 rounded-lg px-4 py-3 text-on-surface text-sm focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all"/>
           </div>
           <div>
-            <label class="block text-xs font-bold text-on-surface-variant uppercase tracking-widest mb-1.5">¿Qué transformación promete?</label>
-            <textarea id="input-desc" rows="2" placeholder="Ej: Ordenar su dinero, ahorrar con método y empezar a invertir"
+            <label class="block text-xs font-bold text-on-surface-variant uppercase tracking-widest mb-1.5">Que transformacion promete?</label>
+            <textarea id="input-desc" rows="2" placeholder="Ej: Ordenar su dinero, ahorrar con metodo y empezar a invertir"
               class="w-full bg-surface-container-lowest border border-outline-variant/20 rounded-lg px-4 py-3 text-on-surface text-sm focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all resize-none"></textarea>
           </div>
           <div>
@@ -244,13 +244,13 @@
 
           <!-- Title -->
           <div class="bg-surface-container rounded-xl p-4 border border-outline-variant/10">
-            <label class="text-xs font-bold text-on-surface-variant uppercase tracking-widest block mb-2">Título</label>
-            <input id="quiz-title" type="text" placeholder="Título del quiz..."
+            <label class="text-xs font-bold text-on-surface-variant uppercase tracking-widest block mb-2">Titulo</label>
+            <input id="quiz-title" type="text" placeholder="Titulo del quiz..."
               class="w-full bg-transparent text-on-surface font-bold text-base outline-none border-b border-outline-variant/20 focus:border-primary pb-1 transition-colors"/>
-            <input id="quiz-subtitle" type="text" placeholder="Subtítulo..."
+            <input id="quiz-subtitle" type="text" placeholder="Subtitulo..."
               class="w-full bg-transparent text-on-surface-variant text-sm outline-none mt-2"/>
-            <label class="text-[10px] font-bold text-on-surface-variant uppercase tracking-widest block mt-4 mb-1.5">�Qu� transformaci�n promete?</label>
-            <textarea id="quiz-description" rows="2" placeholder="Ej: liberar la emoci�n detr�s del s�ntoma y entender su mapa corporal"
+            <label class="text-[10px] font-bold text-on-surface-variant uppercase tracking-widest block mt-4 mb-1.5">Que transformacion promete?</label>
+            <textarea id="quiz-description" rows="2" placeholder="Ej: liberar la emocion detras del sintoma y entender su mapa corporal"
               class="w-full bg-surface-container-high border border-outline-variant/10 rounded-lg px-3 py-2 text-xs text-on-surface outline-none focus:border-primary transition-colors resize-none"></textarea>
           </div>
 
@@ -789,7 +789,7 @@ async function generateWithAI() {
     currentQuiz.brandColor = document.getElementById('quiz-brand-color')?.value || currentQuiz.brandColor || '#8B6AA0';
     ensureQuizShape(currentQuiz, _numQuestions, _numOptions);
     loadQuizIntoEditor(currentQuiz);
-    showToast('La IA no respondiÃ³ a tiempo. Te dejÃ© un borrador premium editable para que puedas avanzar.', 'info');
+    showToast('La IA no respondio a tiempo. Te deje un borrador premium editable para que puedas avanzar.', 'info');
   } finally {
     btn.disabled = false;
   }
@@ -867,7 +867,7 @@ function createManual() {
     ],
     profiles: [
       { id: 'p1', name: 'El Explorador', emoji: '', description: 'Está buscando claridad antes de avanzar. Necesita una explicación simple, una ruta corta y una primera victoria que le dé confianza.', recommendation: `Presenta ${product} como el primer paso claro para pasar de la confusión a la acción.`, cta: 'Quiero empezar con claridad' },
-      { id: 'p2', name: 'El Estratega en Proceso', emoji: '', description: 'Ya entiende el problema, pero necesita estructura. Valora los métodos, los pasos y las herramientas que reducen la improvisación.', recommendation: `Muestra ${product} como un sistema práctico para avanzar con orden y constancia.`, cta: 'Quiero mi sistema' },
+      { id: 'p2', name: 'El Estratega en Proceso', emoji: '', description: 'Ya entiende el problema, pero necesita estructura. Valora los metodos, los pasos y las herramientas que reducen la improvisación.', recommendation: `Muestra ${product} como un sistema práctico para avanzar con orden y constancia.`, cta: 'Quiero mi sistema' },
       { id: 'p3', name: 'El Optimizador', emoji: '', description: 'Ya está en movimiento y quiere mejorar resultados. Busca una solución más profesional, accionable y orientada a conversión.', recommendation: `Posiciona ${product} como la forma de acelerar resultados sin rehacer todo desde cero.`, cta: 'Quiero optimizar mis resultados' },
     ],
   };
@@ -968,7 +968,8 @@ function applySuggestedTheme() {
 // ── Load quiz into UI ─────────────────────────────────────
 function loadQuizIntoEditor(quiz) {
   if (!quiz) return;
-  currentQuiz = quiz;
+  currentQuiz = normalizeQuizText(quiz);
+  quiz = currentQuiz;
   if (quiz.id && !String(quiz.id).startsWith('tmpl-')) editingQuizId = quiz.id;
   const qCount = Array.isArray(quiz.questions) && quiz.questions.length ? quiz.questions.length : _numQuestions;
   const optCount = Array.isArray(quiz.questions?.[0]?.options) && quiz.questions[0].options.length ? quiz.questions[0].options.length : _numOptions;
@@ -1280,9 +1281,10 @@ async function saveQuiz() {
   currentQuiz.metaCapiToken = pixelEnabled ? (document.getElementById('quiz-capi-token').value.trim() || '') : '';
 
   if (editingQuizId) currentQuiz.id = editingQuizId;
+  currentQuiz = normalizeQuizText(currentQuiz);
 
   // Allow saving drafts, but warn when placeholder text remains
-  const defaultTexts = ['Nueva pregunta', 'Opción A', 'Opción B', 'Opción C', 'Opción D', 'Nueva opción'];
+  const defaultTexts = ['Nueva pregunta', 'Opci\u00f3n A', 'Opci\u00f3n B', 'Opci\u00f3n C', 'Opci\u00f3n D', 'Nueva opci\u00f3n'];
   const incomplete = currentQuiz.questions.filter(q =>
     defaultTexts.includes(q.text) || q.options.some(o => defaultTexts.includes(o.text))
   );
@@ -1487,6 +1489,41 @@ function esc(s) {
   return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
 
+function fixBrokenEncodingText(value) {
+  if (typeof value !== 'string' || value.startsWith('data:image/')) return value;
+  const fixes = [
+    ['\u00c3\u201a\u00c2\u00bf', '\u00bf'], ['\u00c2\u00bf', '\u00bf'],
+    ['\u00c3\u201a\u00c2\u00a1', '\u00a1'],
+    ['\u00c3\u0192\u00c2\u00a1', '\u00e1'], ['\u00c3\u00a1', '\u00e1'],
+    ['\u00c3\u0192\u00c2\u00a9', '\u00e9'], ['\u00c3\u00a9', '\u00e9'],
+    ['\u00c3\u0192\u00c2\u00ad', '\u00ed'], ['\u00c3\u00ad', '\u00ed'],
+    ['\u00c3\u0192\u00c2\u00b3', '\u00f3'], ['\u00c3\u00b3', '\u00f3'],
+    ['\u00c3\u0192\u00c2\u00ba', '\u00fa'], ['\u00c3\u00ba', '\u00fa'],
+    ['\u00c3\u0192\u00c2\u00b1', '\u00f1'], ['\u00c3\u00b1', '\u00f1'],
+    ['\u00c3\u0192\u00c2\u00bc', '\u00fc'], ['\u00c3\u00bc', '\u00fc'],
+    ['\u00c2\u00a1', '\u00a1'],
+    ['\u00c3\u0192\u00c2\u0081', '\u00c1'], ['\u00c3\u0081', '\u00c1'],
+    ['\u00c3\u0192\u00c2\u0089', '\u00c9'], ['\u00c3\u0089', '\u00c9'],
+    ['\u00c3\u0192\u00c2\u008d', '\u00cd'], ['\u00c3\u008d', '\u00cd'],
+    ['\u00c3\u0192\u00c2\u0093', '\u00d3'], ['\u00c3\u0093', '\u00d3'],
+    ['\u00c3\u0192\u00c2\u009a', '\u00da'], ['\u00c3\u009a', '\u00da'],
+    ['\u00c3\u0192\u00c2\u0091', '\u00d1'], ['\u00c3\u0091', '\u00d1'],
+  ];
+  let text = value;
+  fixes.forEach(([bad, good]) => { text = text.split(bad).join(good); });
+  return text;
+}
+
+function normalizeQuizText(value) {
+  if (typeof value === 'string') return fixBrokenEncodingText(value);
+  if (Array.isArray(value)) return value.map(normalizeQuizText);
+  if (value && typeof value === 'object') {
+    Object.keys(value).forEach(key => {
+      value[key] = normalizeQuizText(value[key]);
+    });
+  }
+  return value;
+}
 function buildOfflineQuizDraft(product, desc, niche, theme = null) {
   const cleanProduct = product || 'Tu producto';
   const cleanNiche = niche || 'tu nicho';
@@ -1727,7 +1764,7 @@ const TEMPLATE_QUESTIONS = [
       { text: 'Falta de tiempo y mil ocupaciones', imageUrl: 'https://images.unsplash.com/photo-1483389127117-b6a2102724ae?w=400&h=280&fit=crop&auto=format&q=80' },
       { text: 'No sé por dónde empezar', imageUrl: 'https://images.unsplash.com/photo-1494178270175-e96de2971df9?w=400&h=280&fit=crop&auto=format&q=80' },
       { text: 'Lo he intentado pero no mantengo la constancia', imageUrl: 'https://images.unsplash.com/photo-1541534741688-6078c6bfb5c5?w=400&h=280&fit=crop&auto=format&q=80' },
-      { text: 'No he encontrado el método correcto para mí', imageUrl: 'https://images.unsplash.com/photo-1434030216411-0b793f4b4173?w=400&h=280&fit=crop&auto=format&q=80' },
+      { text: 'No he encontrado el metodo correcto para mí', imageUrl: 'https://images.unsplash.com/photo-1434030216411-0b793f4b4173?w=400&h=280&fit=crop&auto=format&q=80' },
     ]
   },
   {
