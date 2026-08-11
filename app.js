@@ -4067,14 +4067,13 @@ function getBuiltinTemplates() {
           { text: 'Cuidar mi ciclo, hormonas o energia femenina', profiles: ['ovarios'] },
           { text: 'Casi nada; apenas estoy empezando a observarlo', profiles: ['otro'] },
         ]},
-        { id: 'q7', text: 'Que te gustaria entender de tu sintoma?', options: [
-          { text: 'Por que mi vientre se inflama o retiene', profiles: ['vientre'] },
-          { text: 'Por que mi garganta o tiroides se siente bloqueada', profiles: ['tiroides'] },
-          { text: 'Por que mi espalda baja carga tanto peso', profiles: ['lumbar'] },
-          { text: 'Por que mi cabeza no descansa', profiles: ['cabeza'] },
-          { text: 'Por que mi pecho se aprieta o aparece ansiedad', profiles: ['ansiedad'] },
-          { text: 'Por que mi ciclo, ovarios o vientre bajo se alteran', profiles: ['ovarios'] },
-          { text: 'Que mensaje emocional puede tener mi sintoma exacto', profiles: ['otro'] },
+        { id: 'q7', text: 'Que te gustaria entender de lo que te pasa?', options: [
+          { text: 'Que emocion podria estar guardando mi cuerpo', profiles: ['vientre', 'otro'] },
+          { text: 'Que necesito decir o expresar con mas libertad', profiles: ['tiroides'] },
+          { text: 'Que carga estoy sosteniendo sola desde hace tiempo', profiles: ['lumbar'] },
+          { text: 'Que pensamiento o exigencia no me deja descansar', profiles: ['cabeza'] },
+          { text: 'Que culpa o miedo me hace ponerme al ultimo lugar', profiles: ['ansiedad'] },
+          { text: 'Que parte de mi feminidad o creatividad necesita atencion', profiles: ['ovarios'] },
         ]},
         { id: 'q8', text: 'Que practica te ayudaria mas hoy?', options: [
           { text: 'Una practica para liberar voz y limites', profiles: ['tiroides'] },
