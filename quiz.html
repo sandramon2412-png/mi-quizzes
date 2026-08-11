@@ -251,7 +251,7 @@
     max-width: 620px;
   }
   #quiz-wrapper.quiz-with-side-image {
-    max-width: 560px;
+    max-width: 620px;
   }
   #screen-question {
     min-height: 0;
@@ -617,7 +617,7 @@
   </div><!-- end quiz-wrapper -->
 
   <!-- Side image panel — shown on desktop when question has an image -->
-  <div id="q-side-panel" class="hidden shrink-0 ml-8 self-start w-[42vw] max-w-[520px] min-h-[360px] relative overflow-hidden rounded-2xl bg-black/18 border border-white/10">
+  <div id="q-side-panel" class="hidden shrink-0 ml-6 self-start w-[32vw] max-w-[420px] min-h-[320px] relative overflow-hidden rounded-2xl bg-black/18 border border-white/10">
     <img id="q-side-img" src="" alt="" loading="lazy"
       class="w-full h-full object-contain object-center absolute inset-0 transition-opacity duration-700"/>
   </div>
@@ -799,6 +799,15 @@
     ];
   }
 
+  function ensureVisibleOptionsForCurrentQuestion(question) {
+    if (!question || currentQ !== 0) return;
+    if (!isSymptomQuestionText(question.text)) return;
+    const usableOptions = Array.isArray(question.options)
+      ? question.options.filter(opt => String(opt?.text || '').trim())
+      : [];
+    if (usableOptions.length < 7) question.options = getCodigoCuerpoSymptomOptions();
+  }
+
   function normalizeQuizRuntime(quiz) {
     if (!quiz || !Array.isArray(quiz.questions)) return quiz;
     quiz.questions.forEach(question => {
@@ -919,10 +928,12 @@
     const prevAnswer = answers.find(a => a.questionId === q.id);
     const prevIdx    = prevAnswer ? prevAnswer.optionIndex : null;
 
+    if (!Array.isArray(q.options) && Array.isArray(q.opts)) q.options = q.opts;
+    if (!Array.isArray(q.options) && Array.isArray(q.opciones)) q.options = q.opciones;
+    if (!Array.isArray(q.options) && Array.isArray(q.answers)) q.options = q.answers;
+    if (!Array.isArray(q.options) && Array.isArray(q.choices)) q.options = q.choices;
     if (!Array.isArray(q.options)) q.options = [];
-    if (currentQ === 0 && isSymptomQuestionText(q.text) && q.options.length < 7) {
-      q.options = getCodigoCuerpoSymptomOptions();
-    }
+    ensureVisibleOptionsForCurrentQuestion(q);
     const hasImages = q.options.some(o => o.imageUrl);
     container.className = hasImages
       ? 'grid grid-cols-2 gap-3 stagger-in'
