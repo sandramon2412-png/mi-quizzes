@@ -250,12 +250,6 @@
   #quiz-wrapper.quiz-compact {
     max-width: 620px;
   }
-  #quiz-wrapper.quiz-with-side-image {
-    max-width: 560px;
-  }
-  #screen-question {
-    min-height: 0;
-  }
   #screen-intro {
     position: relative;
     min-height: 560px;
@@ -617,9 +611,10 @@
   </div><!-- end quiz-wrapper -->
 
   <!-- Side image panel — shown on desktop when question has an image -->
-  <div id="q-side-panel" class="hidden shrink-0 ml-8 self-start w-[42vw] max-w-[520px] min-h-[360px] relative overflow-hidden rounded-2xl bg-black/18 border border-white/10">
+  <div id="q-side-panel" class="hidden shrink-0 ml-8 self-stretch w-[42vw] max-w-[520px] relative overflow-hidden rounded-2xl">
     <img id="q-side-img" src="" alt="" loading="lazy"
-      class="w-full h-full object-contain object-center absolute inset-0 transition-opacity duration-700"/>
+      class="w-full h-full object-cover object-top absolute inset-0 transition-opacity duration-700"/>
+    <div class="absolute inset-0 bg-gradient-to-r from-white/50 to-transparent pointer-events-none"></div>
   </div>
 
 </main>
@@ -686,7 +681,6 @@
       if (!QUIZ && typeof getSkinGlowQuiz === 'function') QUIZ = getSkinGlowQuiz(quizId);
     }
     if (!QUIZ) QUIZ = DEMO_QUIZ;
-    QUIZ = normalizeQuizRuntime(QUIZ);
 
     // Apply branding
     applyQuizTheme(QUIZ);
@@ -767,41 +761,6 @@
       wrap.classList.remove('hidden');
     }
   });
-
-  function isCodigoCuerpoQuiz(quiz = {}) {
-    const haystack = [quiz.id, quiz._templateId, quiz.title, quiz.product, quiz.niche]
-      .filter(Boolean)
-      .join(' ')
-      .toLowerCase();
-    return haystack.includes('codigo cuerpo') || haystack.includes('biodescodificacion') || haystack.includes('tmpl-codigo-cuerpo-sintomas');
-  }
-
-  function getCodigoCuerpoSymptomOptions() {
-    return [
-      { text: 'Vientre inflamado / hinchazon constante', valor: 'vientre', value: 'vientre', profiles: ['vientre'] },
-      { text: 'Tiroides / garganta cerrada / nudo al hablar', valor: 'tiroides', value: 'tiroides', profiles: ['tiroides'] },
-      { text: 'Dolor lumbar / espalda baja que no se va', valor: 'lumbar', value: 'lumbar', profiles: ['lumbar'] },
-      { text: 'Dolor de cabeza / migrana tensional', valor: 'cabeza', value: 'cabeza', profiles: ['cabeza'] },
-      { text: 'Ansiedad / pecho apretado sin causa clara', valor: 'ansiedad', value: 'ansiedad', profiles: ['ansiedad'] },
-      { text: 'Ovarios / colicos / ciclo irregular', valor: 'ovarios', value: 'ovarios', profiles: ['ovarios'] },
-      { text: 'Otro sintoma', valor: 'otro', value: 'otro', profiles: ['otro'], requiresText: true, textPlaceholder: 'Escribe aqui tu sintoma...' },
-    ];
-  }
-
-  function normalizeQuizRuntime(quiz) {
-    if (!quiz || !Array.isArray(quiz.questions)) return quiz;
-    quiz.questions.forEach(question => {
-      if (!Array.isArray(question.options) && Array.isArray(question.opts)) question.options = question.opts;
-      if (!Array.isArray(question.options)) question.options = [];
-    });
-    if (isCodigoCuerpoQuiz(quiz)) {
-      const first = quiz.questions[0];
-      if (first && /sintoma/i.test(first.text || '') && first.options.length < 2) {
-        first.options = getCodigoCuerpoSymptomOptions();
-      }
-    }
-    return quiz;
-  }
 
   function applyQuizTheme(quizOrColor) {
     const quiz = typeof quizOrColor === 'object' && quizOrColor ? quizOrColor : null;
@@ -895,11 +854,9 @@
       sideImg.src = imgSrc;
       sideImg.onerror = () => sidePanel.classList.add('hidden');
       sidePanel.classList.remove('hidden');
-      wrapper.classList.add('quiz-with-side-image');
-      wrapper.style.maxWidth = '';
+      wrapper.style.maxWidth = '480px';
     } else {
       sidePanel.classList.add('hidden');
-      wrapper.classList.remove('quiz-with-side-image');
       wrapper.style.maxWidth = '';
     }
 
@@ -910,10 +867,6 @@
     const prevAnswer = answers.find(a => a.questionId === q.id);
     const prevIdx    = prevAnswer ? prevAnswer.optionIndex : null;
 
-    if (!Array.isArray(q.options)) q.options = [];
-    if (!q.options.length && isCodigoCuerpoQuiz(QUIZ) && currentQ === 0 && /sintoma/i.test(q.text || '')) {
-      q.options = getCodigoCuerpoSymptomOptions();
-    }
     const hasImages = q.options.some(o => o.imageUrl);
     container.className = hasImages
       ? 'grid grid-cols-2 gap-3 stagger-in'
