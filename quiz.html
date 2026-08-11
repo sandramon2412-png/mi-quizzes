@@ -990,12 +990,49 @@
     return { value, label: firstAnswer?.text || getOptionDisplayText(option) || value || 'tu sintoma' };
   }
 
+  function normalizeGateText(value = '') {
+    return String(value).normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+  }
+
+  function isCodigoCuerpoLeadQuiz(quiz = {}) {
+    const firstQuestion = Array.isArray(quiz.questions) ? quiz.questions[0]?.text || '' : '';
+    const haystack = [quiz.id, quiz._templateId, quiz.title, quiz.product, quiz.niche, firstQuestion]
+      .filter(Boolean)
+      .join(' ');
+    const text = normalizeGateText(haystack);
+    return text.includes('codigo cuerpo') || text.includes('biodescodificacion') || text.includes('sintoma');
+  }
+
+  function getDefaultCodigoCuerpoLeadGate() {
+    return {
+      title: 'Tu mapa esta listo!',
+      subtitle: 'Detectamos un patron muy claro en tu caso.',
+      previewText: 'Tu perfil apunta a una emocion retenida. Tu cuerpo aprendio a guardar una senal para protegerte, pero ahora puedes empezar a escucharla con mas claridad.',
+      previewByProfile: {
+        vientre: 'Tu perfil apunta a creatividad bloqueada. Tu cuerpo aprendio a retener y callar para protegerte cuando sentiste que expresarte no era seguro.',
+        tiroides: 'Tu perfil apunta a tiempo y voz retenida. Tu cuerpo aprendio a callar palabras, limites o verdades para evitar conflicto.',
+        lumbar: 'Tu perfil apunta a miedo a avanzar y falta de apoyo. Tu cuerpo aprendio a tensarse cuando siente que todo depende de ti.',
+        cabeza: 'Tu perfil apunta a sobreexigencia y control. Tu mente no descansa porque aprendio a mantenerse alerta.',
+        ansiedad: 'Tu perfil apunta a culpa por ponerte al ultimo. Tu cuerpo aprendio a apretar el pecho cuando cargas con todos menos contigo.',
+        ovarios: 'Tu perfil apunta a feminidad y creacion retenida. Tu cuerpo guarda deseos, creatividad o historias del linaje femenino que necesitan atencion.',
+        otro: 'Tu cuerpo tiene un mensaje para ti. Aunque tu sintoma no este en la lista principal, hay una emocion que necesita ser escuchada con amor.',
+      },
+      blurText: 'XXXXX recomendacion exacta bloqueada XXXXX',
+      unlockTitle: 'Desbloquea tu resultado completo + recomendacion exacta',
+      unlockSubtitle: 'Deja tu correo para ver tu reporte y como liberar esta emocion en 5 min al dia con Codigo Cuerpo',
+      emailPlaceholder: 'Tu mejor correo',
+      buttonText: 'Ver mi resultado personalizado ->',
+      privacyFooter: 'Tu info esta segura. Sin spam. Solo personalizamos tu mapa.',
+      leadNameRequired: false,
+    };
+  }
+
   function renderTemplateText(text, data = {}) {
     return String(text || '').replace(/\[VARIABLE SINTOMA\]/g, data.symptomLabel || data.symptom || 'tu sintoma');
   }
 
   function applyLeadGateCopy() {
-    const gate = QUIZ.leadGate || null;
+    const gate = QUIZ.leadGate || (isCodigoCuerpoLeadQuiz(QUIZ) ? getDefaultCodigoCuerpoLeadGate() : null);
     const symptom = getSelectedSymptomInfo();
     const profile = _calculatedProfile || calculateProfile(QUIZ, answers);
     const preview = gate?.previewByProfile?.[profile?.id] || gate?.previewText || '';
@@ -1026,10 +1063,10 @@
       if (unlockSubtitleEl) unlockSubtitleEl.textContent = gate.unlockSubtitle || '';
       unlockWrap.classList.remove('hidden');
     }
-    if (footerEl && QUIZ.privacyFooter) footerEl.textContent = QUIZ.privacyFooter;
+    if (footerEl && (QUIZ.privacyFooter || gate?.privacyFooter)) footerEl.textContent = QUIZ.privacyFooter || gate.privacyFooter;
     if (emailInput && gate?.emailPlaceholder) emailInput.placeholder = gate.emailPlaceholder;
     if (btnText && gate?.buttonText) btnText.textContent = gate.buttonText;
-    if (nameWrap && nameInput && QUIZ.leadNameRequired === false) {
+    if (nameWrap && nameInput && (QUIZ.leadNameRequired === false || gate?.leadNameRequired === false)) {
       nameInput.required = false;
       nameInput.value = nameInput.value || 'Lectora Codigo Cuerpo';
       nameWrap.classList.add('hidden');
