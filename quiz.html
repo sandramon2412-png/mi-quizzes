@@ -579,7 +579,8 @@
         <div id="lead-unlock-copy" class="hidden max-w-sm mx-auto space-y-1">
           <h3 id="lead-unlock-title" class="text-base font-extrabold text-gray-800"></h3>
           <p id="lead-unlock-subtitle" class="text-sm leading-relaxed text-gray-500"></p>
-        </div>`r`n      </div>
+        </div>
+      </div>
 
       <form id="lead-form" onsubmit="submitLead(event)" class="space-y-3 max-w-sm mx-auto">
         <div id="lead-name-wrap">
@@ -826,7 +827,7 @@
   }
 
   function getOptionDisplayText(opt = {}) {
-    const value = opt.valor || opt.value || opt.sintoma || opt.profiles?.[0] || '';
+    const value = opt.valor || opt.value || opt.sintoma || '';
     if (value === 'tiroides') return 'Tiroides / garganta cerrada / nudo al hablar';
     if (value === 'ovarios' && opt.text === 'Ovarios / ciclo irregular') return 'Ovarios / colicos / ciclo irregular';
     return opt.text || '';
