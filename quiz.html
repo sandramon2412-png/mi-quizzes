@@ -776,6 +776,17 @@
     return haystack.includes('codigo cuerpo') || haystack.includes('biodescodificacion') || haystack.includes('tmpl-codigo-cuerpo-sintomas');
   }
 
+  function normalizeTextForMatch(value = '') {
+    return String(value)
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .toLowerCase();
+  }
+
+  function isSymptomQuestionText(value = '') {
+    return normalizeTextForMatch(value).includes('sintoma');
+  }
+
   function getCodigoCuerpoSymptomOptions() {
     return [
       { text: 'Vientre inflamado / hinchazon constante', valor: 'vientre', value: 'vientre', profiles: ['vientre'] },
@@ -795,7 +806,7 @@
       if (!Array.isArray(question.options)) question.options = [];
     });
     const first = quiz.questions[0];
-    if (first && /sintoma/i.test(first.text || '') && first.options.length < 7) {
+    if (first && isSymptomQuestionText(first.text) && first.options.length < 7) {
       first.options = getCodigoCuerpoSymptomOptions();
     }
     return quiz;
@@ -909,7 +920,7 @@
     const prevIdx    = prevAnswer ? prevAnswer.optionIndex : null;
 
     if (!Array.isArray(q.options)) q.options = [];
-    if (currentQ === 0 && /sintoma/i.test(q.text || '') && q.options.length < 7) {
+    if (currentQ === 0 && isSymptomQuestionText(q.text) && q.options.length < 7) {
       q.options = getCodigoCuerpoSymptomOptions();
     }
     const hasImages = q.options.some(o => o.imageUrl);
