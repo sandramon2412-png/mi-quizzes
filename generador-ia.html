@@ -1655,6 +1655,22 @@ function removeGenericCodigoCuerpoOptions(quiz) {
     });
   });
 
+  const repeatedSymptomQuestion = quiz.questions.find(question =>
+    /Que te gustaria entender de tu sintoma/i.test(question.text || '') ||
+    (Array.isArray(question.options) && question.options.some(option => /Por que mi vientre|Por que mi garganta|Por que mi espalda/i.test(option.text || '')))
+  );
+  if (repeatedSymptomQuestion) {
+    repeatedSymptomQuestion.text = 'Que te gustaria entender de lo que te pasa?';
+    repeatedSymptomQuestion.options = [
+      { text: 'Que emocion podria estar guardando mi cuerpo', profiles: ['vientre', 'otro'] },
+      { text: 'Que necesito decir o expresar con mas libertad', profiles: ['tiroides'] },
+      { text: 'Que carga estoy sosteniendo sola desde hace tiempo', profiles: ['lumbar'] },
+      { text: 'Que pensamiento o exigencia no me deja descansar', profiles: ['cabeza'] },
+      { text: 'Que culpa o miedo me hace ponerme al ultimo lugar', profiles: ['ansiedad'] },
+      { text: 'Que parte de mi feminidad o creatividad necesita atencion', profiles: ['ovarios'] },
+    ];
+  }
+
   const timeQuestion = quiz.questions[1];
   if (timeQuestion && /Desde cuando/i.test(timeQuestion.text || '')) {
     const hasChildhood = timeQuestion.options.some(option => /nina|ni?a|adolescente/i.test(option.text || ''));
