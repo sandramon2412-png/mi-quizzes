@@ -9,10 +9,13 @@
 <script src="https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.min.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
 <link href="https://fonts.googleapis.com/icon?family=Material+Symbols+Outlined" rel="stylesheet"/>
-<script src="./supabase-config.js?v=20260718c"></script>
-<script src="./app.js?v=20260718c"></script>
-<script src="./landing-blocks.js?v=20260718c"></script>
+<script src="./supabase-config.js?v=20260719a"></script>
+<script src="./app.js?v=20260719a"></script>
+<script src="./landing-blocks.js?v=20260719a"></script>
 <script>
+  // Si el CDN de Tailwind no cargó, esta asignación tiraba y mataba todo el script
+  // que sigue (incluida la UI del builder). Blindado para que la página funcione igual.
+  window.tailwind = window.tailwind || {};
   tailwind.config = {
     theme: {
       extend: {
@@ -43,6 +46,19 @@
   .block-item:hover{background:#1e1e1e;}
   .block-item.active{background:#1e2a45;border-left:2px solid #2E5BFF;}
   .block-item.hidden-block{opacity:.45;}
+
+  /* Lloyd (asistente flotante) tapaba el editor de secciones: lo achicamos y corremos */
+  #lsa-float-btn{width:52px !important;height:52px !important;font-size:20px !important;
+    left:auto !important;right:356px !important;opacity:.8}
+  #lsa-float-btn:hover{opacity:1}
+
+  /* Editor visual de secciones */
+  .sec-mini{background:none;border:none;cursor:pointer;color:#7a7a82;padding:2px;border-radius:4px;display:flex;align-items:center;transition:color .15s,background .15s}
+  .sec-mini:hover:not(:disabled){color:#e8e8ee;background:rgba(255,255,255,.08)}
+  .sec-mini:disabled{opacity:.25;cursor:default}
+  .sec-mini.sec-del:hover{color:#f87171;background:rgba(248,113,113,.12)}
+  .sec-row:hover{background:rgba(255,255,255,.06) !important}
+  #sec-editor input:focus,#sec-editor textarea:focus,#sec-editor select:focus{outline:none;border-color:rgba(77,124,255,.6) !important}
 
   /* Field editor */
   .field-label{display:block;font-size:11px;font-weight:600;color:#9a9a9a;margin-bottom:5px;letter-spacing:.01em;}
@@ -548,25 +564,50 @@
   </div>
 </div>
 
-<!-- ═══ RIGHT PANEL (block editor) ═══ -->
-<aside id="right-panel" class="w-80 shrink-0 border-l border-outline-variant/20 flex flex-col bg-surface-container-low overflow-hidden hidden">
+<!-- ═══ RIGHT PANEL — EDITOR VISUAL DE SECCIONES (sin IA) ═══ -->
+<aside id="right-panel" class="shrink-0 border-l border-outline-variant/20 flex flex-col bg-surface-container-low overflow-hidden hidden" style="width:340px">
   <div class="px-4 py-3 border-b border-outline-variant/15 flex items-center gap-2 shrink-0">
-    <span class="material-symbols-outlined icon-gradient" style="font-size:16px">edit_note</span>
-    <span id="rp-title" class="text-sm font-bold flex-1 truncate">Editor de bloque</span>
-    <button id="rp-save" class="h-7 px-3 rounded-lg primary-gradient text-white text-xs font-bold hover:opacity-90 transition">
-      Guardar
-    </button>
+    <span class="material-symbols-outlined icon-gradient" style="font-size:16px">tune</span>
+    <span class="text-sm font-bold flex-1">Editar a mano</span>
+    <span class="text-[9px] font-bold px-1.5 py-0.5 rounded" style="background:rgba(46,91,255,.15);color:#4d7cff">SIN IA</span>
   </div>
-  <div id="rp-body" class="flex-1 overflow-y-auto p-3">
-    <div id="rp-empty">
-      <span class="material-symbols-outlined" style="font-size:32px">touch_app</span>
-      <span>Seleccioná un bloque para editar</span>
+
+  <!-- Lista de secciones -->
+  <div class="shrink-0 border-b border-outline-variant/15">
+    <div class="flex items-center justify-between px-3 py-2">
+      <span class="text-[10px] font-bold text-on-surface-variant/60 uppercase tracking-wider">Secciones</span>
+      <button id="sec-add-btn" class="text-[10px] font-semibold flex items-center gap-0.5 hover:opacity-80" style="color:#4d7cff;background:none;border:none;cursor:pointer">
+        <span class="material-symbols-outlined" style="font-size:13px">add</span>Agregar
+      </button>
     </div>
-    <div id="rp-fields" class="hidden space-y-3"></div>
+    <div id="sec-list" class="overflow-y-auto px-2 pb-2" style="max-height:230px"></div>
+  </div>
+
+  <!-- Editor de campos de la sección activa -->
+  <div id="sec-editor" class="flex-1 overflow-y-auto p-3 min-h-0">
+    <div class="flex flex-col items-center justify-center h-full gap-2 text-on-surface-variant/40 text-center px-4">
+      <span class="material-symbols-outlined" style="font-size:30px">touch_app</span>
+      <span class="text-xs">Tocá una sección de la lista para editar sus textos.<br>Los cambios se ven al instante.</span>
+    </div>
   </div>
 </aside>
 
 </main>
+
+<!-- ── MODAL: AGREGAR SECCIÓN ── -->
+<div id="sec-add-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center" style="background:rgba(0,0,0,.7)">
+  <div class="bg-surface-container-high rounded-2xl p-5 w-[420px] max-w-[92vw] max-h-[80vh] overflow-y-auto shadow-2xl border border-outline-variant/20">
+    <div class="flex items-center gap-2 mb-3">
+      <span class="material-symbols-outlined icon-gradient" style="font-size:18px">add_circle</span>
+      <h3 class="font-bold text-sm">Agregar sección</h3>
+      <button id="sec-add-close" class="ml-auto text-on-surface-variant hover:text-on-surface">
+        <span class="material-symbols-outlined" style="font-size:18px">close</span>
+      </button>
+    </div>
+    <p class="text-[11px] text-on-surface-variant/60 mb-3">Se agrega con textos de ejemplo que después editás a mano.</p>
+    <div id="sec-add-grid" class="grid grid-cols-2 gap-2"></div>
+  </div>
+</div>
 
 <!-- ── ADD BLOCK MODAL ── -->
 <div id="add-block-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center" style="background:rgba(0,0,0,.7)">
@@ -1028,6 +1069,362 @@ function getCurrentPalette() {
 function getImgStrategy() {
   const sel = document.querySelector('input[name="img-strategy"]:checked');
   return sel ? sel.value : 'ai';
+}
+
+// ═══════════════════════════════════════════════════════════
+// EDITOR VISUAL DE SECCIONES — edición directa, sin IA
+// Cada campo que escribís reconstruye la sección al instante.
+// ═══════════════════════════════════════════════════════════
+const SEC_ICONS = ['star','check_circle','favorite','school','trending_up','bolt','shield','people','rocket_launch','thumb_up','verified','psychology','emoji_events','lightbulb','timer','local_fire_department','health_and_safety','fitness_center','attach_money','savings','work','campaign','diversity_3','card_giftcard','sentiment_satisfied','sentiment_dissatisfied','self_improvement','menu_book','schedule','support_agent'];
+
+const F = {
+  text:  (key, label, ph) => ({ key, label, type: 'text', ph }),
+  area:  (key, label, ph) => ({ key, label, type: 'area', ph }),
+  list:  (key, label)     => ({ key, label, type: 'list' }),
+  icon:  ()               => ({ key: 'icon', label: 'Icono', type: 'icon' }),
+  image: (key, label)     => ({ key: key || 'image_url', label: label || 'Imagen', type: 'image' }),
+};
+
+const SEC_SCHEMA = {
+  hero: { label: 'Portada (hero)', icon: 'flag', fields: [
+    F.text('badge', 'Frase de credibilidad', 'Ej: +2.000 personas ya lo lograron'),
+    F.area('title', 'Título principal'),
+    F.area('subtitle', 'Subtítulo'),
+    F.text('cta', 'Texto del botón'),
+    F.text('microcopy', 'Texto chico bajo el botón'),
+    F.image('image_url', 'Imagen de la portada'),
+    { key: 'layout', label: 'Diseño', type: 'select', options: [['split', 'Texto + imagen al lado'], ['center', 'Todo centrado']] },
+  ]},
+  problema: { label: 'El problema', icon: 'report', fields: [
+    F.text('title', 'Título de la sección'),
+    { key: 'items', label: 'Puntos de dolor', type: 'items', addLabel: 'Agregar punto',
+      item: [F.icon(), F.text('title', 'Título'), F.area('desc', 'Descripción')] },
+  ]},
+  'para-quien': { label: '¿Es para vos?', icon: 'group', fields: [
+    F.text('title', 'Título de la sección'),
+    F.text('yes_title', 'Título columna SÍ'),
+    F.list('yes', 'Es para vos si…'),
+    F.text('no_title', 'Título columna NO'),
+    F.list('no', 'No es para vos si…'),
+  ]},
+  'antes-despues': { label: 'Antes y después', icon: 'compare_arrows', fields: [
+    F.text('title', 'Título de la sección'),
+    F.text('before_title', 'Título del "antes"'),
+    F.list('before', 'Situación actual'),
+    F.text('after_title', 'Título del "después"'),
+    F.list('after', 'Resultados'),
+  ]},
+  beneficios: { label: 'Beneficios', icon: 'star', fields: [
+    F.text('title', 'Título de la sección'),
+    F.text('subtitle', 'Subtítulo'),
+    { key: 'items', label: 'Beneficios', type: 'items', addLabel: 'Agregar beneficio',
+      item: [F.icon(), F.text('title', 'Título'), F.area('desc', 'Descripción')] },
+  ]},
+  modulos: { label: 'Módulos / contenido', icon: 'menu_book', fields: [
+    F.text('title', 'Título de la sección'),
+    { key: 'items', label: 'Módulos', type: 'items', addLabel: 'Agregar módulo',
+      item: [F.icon(), F.text('title', 'Título'), F.area('desc', 'Descripción')] },
+  ]},
+  'como-funciona': { label: 'Cómo funciona', icon: 'linear_scale', fields: [
+    F.text('title', 'Título de la sección'),
+    { key: 'items', label: 'Pasos', type: 'items', addLabel: 'Agregar paso',
+      item: [F.text('step', 'Número'), F.text('title', 'Título'), F.area('desc', 'Descripción')] },
+  ]},
+  'prueba-social': { label: 'Métricas / confianza', icon: 'insights', fields: [
+    F.text('title', 'Frase de credibilidad'),
+    { key: 'stats', label: 'Números', type: 'items', addLabel: 'Agregar número',
+      item: [F.text('value', 'Número'), F.text('label', 'Etiqueta')] },
+  ]},
+  testimonios: { label: 'Testimonios', icon: 'format_quote', fields: [
+    F.text('title', 'Título de la sección'),
+    { key: 'items', label: 'Testimonios', type: 'items', addLabel: 'Agregar testimonio',
+      item: [F.text('name', 'Nombre'), F.text('initials', 'Iniciales'), F.text('role', 'Profesión · Ciudad'), F.area('quote', 'Testimonio')] },
+  ]},
+  bonos: { label: 'Bonos', icon: 'card_giftcard', fields: [
+    F.text('title', 'Título de la sección'),
+    { key: 'items', label: 'Bonos', type: 'items', addLabel: 'Agregar bono',
+      item: [F.icon(), F.text('title', 'Nombre'), F.area('desc', 'Descripción'), F.text('value', 'Valor')] },
+  ]},
+  precio: { label: 'Precio', icon: 'sell', fields: [
+    F.text('title', 'Título de la sección'),
+    F.text('price', 'Precio', 'Ej: $97'),
+    F.text('period', 'Detalle', 'Ej: pago único · acceso de por vida'),
+    F.list('features', 'Qué incluye'),
+    F.text('cta', 'Texto del botón'),
+    F.text('microcopy', 'Texto chico bajo el botón'),
+  ]},
+  garantia: { label: 'Garantía', icon: 'verified_user', fields: [
+    F.text('title', 'Título'), F.area('desc', 'Texto de la garantía'),
+  ]},
+  faq: { label: 'Preguntas frecuentes', icon: 'help', fields: [
+    F.text('title', 'Título de la sección'),
+    { key: 'items', label: 'Preguntas', type: 'items', addLabel: 'Agregar pregunta',
+      item: [F.text('q', 'Pregunta'), F.area('a', 'Respuesta')] },
+  ]},
+  'cta-final': { label: 'Cierre / CTA final', icon: 'campaign', fields: [
+    F.area('title', 'Título'), F.area('subtitle', 'Subtítulo'),
+    F.text('cta', 'Texto del botón'), F.text('microcopy', 'Texto chico bajo el botón'),
+  ]},
+  footer: { label: 'Pie de página', icon: 'horizontal_rule', fields: [
+    F.text('brand_name', 'Nombre de la marca'), F.text('tagline', 'Frase corta'), F.text('copyright', 'Derechos'),
+  ]},
+};
+
+function secMeta(id) {
+  return SEC_SCHEMA[id] || { label: id, icon: 'widgets', fields: [F.text('title', 'Título'), F.area('desc', 'Texto')] };
+}
+
+let activeSecIdx = -1;
+
+function hasSections() { return !!(landing && landing.sections && landing.sections.length); }
+
+// ── Lista de secciones con reordenar / borrar ──
+function renderSectionsList() {
+  const wrap = document.getElementById('sec-list');
+  const panel = document.getElementById('right-panel');
+  if (!wrap || !panel) return;
+  if (!hasSections()) { panel.classList.add('hidden'); return; }
+  panel.classList.remove('hidden');
+  const secs = landing.sections;
+  wrap.innerHTML = secs.map((s, i) => {
+    const m = secMeta(s.id);
+    const sel = i === activeSecIdx;
+    return `<div class="sec-row flex items-center gap-1.5 px-2 py-1.5 rounded-lg mb-1 cursor-pointer transition"
+      style="background:${sel ? 'rgba(46,91,255,.16)' : 'rgba(255,255,255,.03)'};border:1px solid ${sel ? 'rgba(77,124,255,.45)' : 'transparent'}"
+      onclick="openSectionEditor(${i})">
+      <span class="material-symbols-outlined shrink-0" style="font-size:14px;color:${sel ? '#4d7cff' : '#8a8a92'}">${m.icon}</span>
+      <span class="text-[11px] font-semibold flex-1 truncate" style="color:${sel ? '#e8e8ee' : '#b4b4bc'}">${m.label}</span>
+      <button title="Subir" onclick="event.stopPropagation();moveSection(${i},-1)" class="sec-mini" ${i === 0 ? 'disabled' : ''}>
+        <span class="material-symbols-outlined" style="font-size:13px">keyboard_arrow_up</span></button>
+      <button title="Bajar" onclick="event.stopPropagation();moveSection(${i},1)" class="sec-mini" ${i === secs.length - 1 ? 'disabled' : ''}>
+        <span class="material-symbols-outlined" style="font-size:13px">keyboard_arrow_down</span></button>
+      <button title="Eliminar" onclick="event.stopPropagation();deleteSection(${i})" class="sec-mini sec-del">
+        <span class="material-symbols-outlined" style="font-size:13px">delete</span></button>
+    </div>`;
+  }).join('');
+}
+
+// ── Formulario de campos de la sección activa ──
+function openSectionEditor(idx) {
+  if (!hasSections() || !landing.sections[idx]) return;
+  activeSecIdx = idx;
+  const sec = landing.sections[idx];
+  const meta = secMeta(sec.id);
+  if (!sec.content || !Object.keys(sec.content).length) {
+    // Landing vieja sin content: partimos del schema por defecto para poder editar igual
+    try { sec.content = AI.sectionSchema(sec.id); } catch (e) { sec.content = {}; }
+  }
+  const c = sec.content;
+  const box = document.getElementById('sec-editor');
+  const parts = [`<div class="flex items-center gap-2 mb-3 pb-2 border-b border-outline-variant/15">
+    <span class="material-symbols-outlined icon-gradient" style="font-size:16px">${meta.icon}</span>
+    <span class="text-xs font-bold flex-1">${meta.label}</span>
+    <button onclick="scrollPreviewTo('${sec.id}')" class="text-[10px] font-semibold hover:opacity-80" style="color:#4d7cff;background:none;border:none;cursor:pointer">Ver ↓</button>
+  </div>`];
+
+  meta.fields.forEach(f => { parts.push(renderSecField(f, c[f.key], f.key)); });
+  box.innerHTML = parts.join('');
+  renderSectionsList();
+}
+
+function _fLabel(txt) { return `<label class="block text-[10px] font-semibold text-on-surface-variant/70 mb-1">${txt}</label>`; }
+const _INP = 'width:100%;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:7px 9px;font-size:12px;color:#e8e8ee;font-family:inherit';
+
+function renderSecField(f, val, path) {
+  const v = val == null ? '' : val;
+  if (f.type === 'text')
+    return `<div class="mb-3">${_fLabel(f.label)}<input type="text" style="${_INP}" value="${escHtml(v)}" placeholder="${escHtml(f.ph || '')}" oninput="setSecField('${path}',this.value)"/></div>`;
+  if (f.type === 'area')
+    return `<div class="mb-3">${_fLabel(f.label)}<textarea rows="3" style="${_INP};resize:vertical" placeholder="${escHtml(f.ph || '')}" oninput="setSecField('${path}',this.value)">${escHtml(v)}</textarea></div>`;
+  if (f.type === 'select')
+    return `<div class="mb-3">${_fLabel(f.label)}<select style="${_INP}" onchange="setSecField('${path}',this.value)">${f.options.map(([ov, ol]) => `<option value="${ov}" ${v === ov ? 'selected' : ''}>${ol}</option>`).join('')}</select></div>`;
+  if (f.type === 'icon')
+    return `<div class="mb-2">${_fLabel(f.label)}<select style="${_INP}" onchange="setSecField('${path}',this.value)">${SEC_ICONS.map(ic => `<option value="${ic}" ${v === ic ? 'selected' : ''}>${ic}</option>`).join('')}</select></div>`;
+  if (f.type === 'image')
+    return `<div class="mb-3">${_fLabel(f.label)}
+      <input type="text" style="${_INP}" value="${escHtml(v)}" placeholder="Pegá una URL o subí una imagen" oninput="setSecField('${path}',this.value)"/>
+      <label style="display:inline-flex;align-items:center;gap:5px;margin-top:5px;cursor:pointer;font-size:10px;color:#4d7cff;font-weight:600">
+        <span class="material-symbols-outlined" style="font-size:13px">upload</span>Subir imagen
+        <input type="file" accept="image/*" class="hidden" onchange="uploadSecImage(this,'${path}')"/>
+      </label>
+      ${v ? `<img src="${escHtml(v)}" style="width:100%;max-height:90px;object-fit:cover;border-radius:6px;margin-top:6px"/>` : ''}
+    </div>`;
+  if (f.type === 'list') {
+    const arr = Array.isArray(v) ? v : [];
+    return `<div class="mb-3">${_fLabel(f.label)}
+      ${arr.map((it, i) => `<div class="flex gap-1 mb-1">
+        <input type="text" style="${_INP}" value="${escHtml(it)}" oninput="setSecField('${path}.${i}',this.value)"/>
+        <button onclick="removeSecItem('${path}',${i})" class="sec-mini sec-del shrink-0"><span class="material-symbols-outlined" style="font-size:13px">close</span></button>
+      </div>`).join('')}
+      <button onclick="addSecItem('${path}')" class="text-[10px] font-semibold mt-1 hover:opacity-80" style="color:#4d7cff;background:none;border:none;cursor:pointer">+ Agregar</button>
+    </div>`;
+  }
+  if (f.type === 'items') {
+    const arr = Array.isArray(v) ? v : [];
+    return `<div class="mb-3">${_fLabel(f.label + ` (${arr.length})`)}
+      ${arr.map((it, i) => `<div style="background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:10px;padding:8px;margin-bottom:8px">
+        <div class="flex items-center gap-1 mb-1.5">
+          <span class="text-[10px] font-bold text-on-surface-variant/50 flex-1">#${i + 1}</span>
+          <button title="Subir" onclick="moveSecItem('${path}',${i},-1)" class="sec-mini"><span class="material-symbols-outlined" style="font-size:12px">keyboard_arrow_up</span></button>
+          <button title="Bajar" onclick="moveSecItem('${path}',${i},1)" class="sec-mini"><span class="material-symbols-outlined" style="font-size:12px">keyboard_arrow_down</span></button>
+          <button title="Eliminar" onclick="removeSecItem('${path}',${i})" class="sec-mini sec-del"><span class="material-symbols-outlined" style="font-size:12px">delete</span></button>
+        </div>
+        ${f.item.map(sf => renderSecField(sf, it[sf.key], `${path}.${i}.${sf.key}`)).join('')}
+      </div>`).join('')}
+      <button onclick="addSecItem('${path}')" class="w-full text-[10px] font-semibold py-1.5 rounded-lg hover:opacity-80" style="color:#4d7cff;background:rgba(46,91,255,.1);border:none;cursor:pointer">+ ${f.addLabel || 'Agregar'}</button>
+    </div>`;
+  }
+  return '';
+}
+
+// ── Escritura en el content por path ("items.2.title") ──
+function _setByPath(obj, path, value) {
+  const keys = path.split('.');
+  let cur = obj;
+  for (let i = 0; i < keys.length - 1; i++) {
+    const k = keys[i];
+    if (cur[k] == null) cur[k] = /^\d+$/.test(keys[i + 1]) ? [] : {};
+    cur = cur[k];
+  }
+  cur[keys[keys.length - 1]] = value;
+}
+function _getByPath(obj, path) {
+  return path.split('.').reduce((o, k) => (o == null ? undefined : o[k]), obj);
+}
+
+let _secRebuildTimer = null;
+function setSecField(path, value) {
+  if (activeSecIdx < 0) return;
+  _setByPath(landing.sections[activeSecIdx].content, path, value);
+  clearTimeout(_secRebuildTimer);
+  _secRebuildTimer = setTimeout(() => rebuildActiveSection(true), 350);
+}
+
+// Reconstruye la sección activa desde su content — SIN IA, instantáneo
+function rebuildActiveSection(keepFocus) {
+  if (activeSecIdx < 0 || !hasSections()) return;
+  const sec = landing.sections[activeSecIdx];
+  const palId = landing.palette || getCurrentPalette() || 'blue-purple';
+  try {
+    sec.html = AI.buildSection(sec.id, sec.content, palId);
+    landing.html = AI.assembleLanding(landing.sections, palId, landing.title, _landingOpts());
+    renderPreview();
+    autosave();
+    setStatus('Guardado');
+  } catch (e) {
+    console.error('[sec] rebuild', e);
+    showToast('Error al aplicar el cambio', true);
+  }
+  if (!keepFocus) openSectionEditor(activeSecIdx);
+}
+
+function addSecItem(path) {
+  const c = landing.sections[activeSecIdx].content;
+  let arr = _getByPath(c, path);
+  if (!Array.isArray(arr)) { _setByPath(c, path, []); arr = _getByPath(c, path); }
+  // Copiar la forma del primer item (o string vacío para listas simples)
+  const first = arr[0];
+  if (first && typeof first === 'object') {
+    const blank = {}; Object.keys(first).forEach(k => { blank[k] = k === 'icon' ? 'check_circle' : ''; });
+    arr.push(blank);
+  } else {
+    // Si la lista está vacía, deducir del schema de la sección
+    const meta = secMeta(landing.sections[activeSecIdx].id);
+    const fdef = meta.fields.find(f => f.key === path);
+    if (fdef && fdef.type === 'items') {
+      const blank = {}; fdef.item.forEach(sf => { blank[sf.key] = sf.type === 'icon' ? 'check_circle' : ''; });
+      arr.push(blank);
+    } else arr.push('');
+  }
+  rebuildActiveSection(false);
+}
+function removeSecItem(path, i) {
+  const arr = _getByPath(landing.sections[activeSecIdx].content, path);
+  if (Array.isArray(arr)) { arr.splice(i, 1); rebuildActiveSection(false); }
+}
+function moveSecItem(path, i, dir) {
+  const arr = _getByPath(landing.sections[activeSecIdx].content, path);
+  const j = i + dir;
+  if (!Array.isArray(arr) || j < 0 || j >= arr.length) return;
+  [arr[i], arr[j]] = [arr[j], arr[i]];
+  rebuildActiveSection(false);
+}
+function uploadSecImage(input, path) {
+  const file = input.files && input.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => { setSecField(path, e.target.result); rebuildActiveSection(false); };
+  reader.readAsDataURL(file);
+  input.value = '';
+}
+
+// ── Reordenar / borrar / agregar secciones ──
+function _rebuildAll() {
+  const palId = landing.palette || getCurrentPalette() || 'blue-purple';
+  landing.html = AI.assembleLanding(landing.sections, palId, landing.title, _landingOpts());
+  renderPreview(); autosave(); renderSectionsList();
+}
+function moveSection(i, dir) {
+  const j = i + dir;
+  if (!hasSections() || j < 0 || j >= landing.sections.length) return;
+  const s = landing.sections;
+  [s[i], s[j]] = [s[j], s[i]];
+  if (activeSecIdx === i) activeSecIdx = j; else if (activeSecIdx === j) activeSecIdx = i;
+  _rebuildAll();
+}
+function deleteSection(i) {
+  if (!hasSections()) return;
+  const meta = secMeta(landing.sections[i].id);
+  if (!confirm(`¿Eliminar la sección "${meta.label}"?`)) return;
+  landing.sections.splice(i, 1);
+  if (activeSecIdx === i) { activeSecIdx = -1; document.getElementById('sec-editor').innerHTML = '<div class="text-xs text-on-surface-variant/40 text-center p-6">Sección eliminada. Elegí otra de la lista.</div>'; }
+  else if (activeSecIdx > i) activeSecIdx--;
+  _rebuildAll();
+}
+function openAddSectionModal() {
+  const grid = document.getElementById('sec-add-grid');
+  const existing = (landing.sections || []).map(s => s.id);
+  grid.innerHTML = Object.keys(SEC_SCHEMA).map(id => {
+    const m = SEC_SCHEMA[id];
+    const dup = existing.includes(id);
+    return `<button onclick="addSection('${id}')" class="flex flex-col items-center gap-1 p-3 rounded-xl transition hover:opacity-80" style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);cursor:pointer">
+      <span class="material-symbols-outlined icon-gradient" style="font-size:18px">${m.icon}</span>
+      <span class="text-[10px] font-semibold text-center" style="color:#d4d4dc">${m.label}</span>
+      ${dup ? '<span class="text-[8px] text-on-surface-variant/40">ya está</span>' : ''}
+    </button>`;
+  }).join('');
+  document.getElementById('sec-add-modal').classList.remove('hidden');
+}
+function addSection(id) {
+  if (!hasSections()) return;
+  let content = {};
+  try { content = AI.sectionSchema(id); } catch (e) {}
+  // El schema trae textos-guía: los limpiamos para que se editen desde cero
+  content = _blankifySchema(content);
+  const palId = landing.palette || getCurrentPalette() || 'blue-purple';
+  const sec = { id, brief: '', content, html: AI.buildSection(id, content, palId) };
+  const fi = landing.sections.findIndex(s => s.id === 'footer');
+  const at = fi === -1 ? landing.sections.length : fi;
+  landing.sections.splice(at, 0, sec);
+  activeSecIdx = at;
+  document.getElementById('sec-add-modal').classList.add('hidden');
+  _rebuildAll();
+  openSectionEditor(at);
+  showToast('Sección agregada — editá sus textos a la derecha');
+}
+function _blankifySchema(o) {
+  if (Array.isArray(o)) return o.map(_blankifySchema);
+  if (o && typeof o === 'object') {
+    const out = {};
+    Object.keys(o).forEach(k => { out[k] = (k === 'icon' && typeof o[k] === 'string' && /^[a-z_]+$/.test(o[k])) ? o[k] : _blankifySchema(o[k]); });
+    return out;
+  }
+  if (typeof o === 'string') return /^[a-z_]+$/.test(o) ? o : '';
+  return o;
+}
+function scrollPreviewTo(secId) {
+  const fr = document.getElementById('preview-frame');
+  try { fr.contentWindow.document.getElementById(secId)?.scrollIntoView({ behavior: 'smooth' }); } catch (e) {}
 }
 
 // Encuentra a qué sección se refiere el usuario en un mensaje ("ponela en beneficios")
@@ -2199,8 +2596,10 @@ async function generateFromChat(msg) {
     if (!landing.brief) landing.brief = msg;
     renderPreview();
     switchToBuilderMode();
+    activeSecIdx = -1;
+    renderSectionsList();
     autosave();
-    const reply = '¡Lista! Diseñé tu landing. Pedime lo que quieras cambiar: colores, textos, agregar o quitar secciones, poner un video de fondo, lo que sea.';
+    const reply = '¡Lista! Ya podés editar cada texto a mano en el panel de la derecha (se ve al instante, sin esperar). O pedime cambios por acá si preferís.';
     addChatMsg(reply, 'assistant');
     chatHistory.push({ role: 'assistant', content: reply });
   } catch(e) {
@@ -2284,6 +2683,8 @@ async function sendChat() {
         landing.sections = res.sections;
         landing.html = AI.assembleLanding(res.sections, palId, landing.title, _landingOpts());
         renderPreview();
+        renderSectionsList();
+        if (activeSecIdx >= 0) openSectionEditor(activeSecIdx);
         autosave();
         const undoBtn = document.getElementById('chat-undo-btn');
         if (undoBtn) { undoBtn.classList.remove('hidden'); undoBtn.style.display = 'inline-flex'; }
@@ -2539,7 +2940,9 @@ async function loadLanding(id) {
       // Lovable HTML landing
       switchToBuilderMode();
       renderPreview();
-      addChatMsg('Cargué tu landing. Pedime cualquier cambio: colores, textos, secciones, video de fondo, lo que quieras.', 'assistant');
+      activeSecIdx = -1;
+      renderSectionsList();
+      addChatMsg('Cargué tu landing. Podés editar cada texto a mano en el panel de la derecha, o pedirme cambios por acá.', 'assistant');
     } else if (landing.blocks && landing.blocks.length > 0) {
       // Block-based landing
       switchToBuilderMode();
@@ -3067,6 +3470,10 @@ function initUI() {
   // Wire all buttons
   document.getElementById('btn-generate').addEventListener('click', generateLanding);
   document.getElementById('btn-publish').addEventListener('click', publishLanding);
+  // Editor visual de secciones
+  document.getElementById('sec-add-btn').addEventListener('click', openAddSectionModal);
+  document.getElementById('sec-add-close').addEventListener('click', () => document.getElementById('sec-add-modal').classList.add('hidden'));
+  document.getElementById('sec-add-modal').addEventListener('click', (e) => { if (e.target.id === 'sec-add-modal') e.target.classList.add('hidden'); });
   document.getElementById('publish-confirm').addEventListener('click', confirmPublish);
   document.getElementById('publish-close').addEventListener('click', () => document.getElementById('publish-modal').classList.add('hidden'));
   document.getElementById('publish-modal').addEventListener('click', (e) => { if (e.target.id === 'publish-modal') e.target.classList.add('hidden'); });
