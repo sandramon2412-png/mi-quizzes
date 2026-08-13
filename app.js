@@ -2885,6 +2885,14 @@ const AI = {
   async setSectionImage(sections, palId, sectionId, imageUrl, productBrief) {
     return Claude.setSectionImage(sections, palId, sectionId, imageUrl, productBrief);
   },
+  // Construye el HTML de una sección desde su content JSON — 100% código, sin IA.
+  // Lo usa el editor visual: cada tecla que escribís reconstruye la sección al instante.
+  buildSection(id, content, palId) {
+    return Claude._buildSection(id, content, Claude._landingPalette(palId));
+  },
+  sectionSchema(id) {
+    return Claude._sectionContentSchema(id);
+  },
   assembleLanding(sections, palId, title, opts) {
     return Claude.assembleLanding(sections, palId, title, opts);
   },

@@ -1753,3 +1753,73 @@ Las categorías Personas/Tech/Abstract/Ciudad/Naturaleza usaban IDs viejos de Pe
 
 ### Sobre funnels/páginas de agradecimiento (pendiente mayor)
 No implementado aún. Workaround actual: crear otra landing como página de gracias y poner su URL publicada en la config de Hotmart. Feature futura: multi-página por landing (`landing.pages[]`).
+
+---
+
+## SESIÓN 19 JUL 2026 (parte 2) — LA SOLUCIÓN DE FONDO: editor visual sin IA
+
+### El diagnóstico que faltaba hacer
+
+Sandra: "ese building de la landing definitivamente no funciona y ese chat peor, llevo meses".
+
+Antes de tocar código se hicieron dos verificaciones que NUNCA se habían hecho:
+
+1. **¿El código llegó a producción?** Sí — `origin/main` contiene los fixes (`_editSectionContent`,
+   `_parseJSONSafe`, `setSectionImage`, cache-busters `?v=20260718c`). No era un problema de deploy.
+
+2. **¿Funciona la página real, no la lógica aislada?** Se construyó un **test E2E real**
+   (`tests/e2e-landing-builder.js`): levanta el repo en un server HTTP, abre `landing-builder.html`
+   en Chromium, mockea el CDN de supabase-js y el endpoint `claude-proxy`, y opera la UI como la
+   usuaria. **Pasó todo**: generar, editar sin regenerar, guardar, recargar, editar de nuevo.
+
+**Conclusión**: la mecánica ya estaba bien. El problema de fondo es **arquitectónico**: editar SOLO
+por chat significa que cada cambio depende de que un modelo clasifique bien la intención. Aunque
+acierte el 85% de las veces, el 15% restante destruye trabajo — y eso destruye la confianza.
+Ninguna cantidad de prompt-tuning arregla eso.
+
+### LA SOLUCIÓN: editor visual directo (panel derecho)
+
+El modo secciones ya guardaba `content` JSON estructurado por sección. Faltaba exponerlo en una UI.
+
+**`app.js`** — dos métodos nuevos en el facade `AI` (puro código, sin IA):
+- `AI.buildSection(id, content, palId)` → HTML de una sección desde su content
+- `AI.sectionSchema(id)` → schema por defecto (para secciones nuevas o landings viejas sin content)
+
+**`landing-builder.html`** — el `#right-panel` (que era del sistema viejo de bloques y estaba
+oculto) ahora es el **Editor visual**:
+- `SEC_SCHEMA`: define los campos editables de cada tipo de sección (texto, área, lista, items
+  con subcampos, icono con dropdown de Material Symbols, imagen con upload, select de layout).
+- `renderSectionsList()`: lista de secciones con ↑ ↓ 🗑 y selección.
+- `openSectionEditor(idx)` + `renderSecField()`: formulario generado desde el schema.
+- `setSecField(path, value)` → `_setByPath` sobre `section.content` → debounce 350ms →
+  `rebuildActiveSection()` → `AI.buildSection` + `AI.assembleLanding` → preview + autosave.
+- `addSecItem` / `removeSecItem` / `moveSecItem`: manipular listas (agregar un beneficio, borrar
+  un testimonio, reordenar módulos).
+- `moveSection` / `deleteSection` / `addSection(id)`: estructura de la landing.
+- **CERO llamadas a la IA en todo este flujo** (verificado en el E2E).
+
+El chat sigue existiendo para lo que es bueno (generar de cero, reescribir textos con IA), pero
+**ya no es el único camino**. Si el chat falla, la usuaria edita a mano y listo.
+
+### Bug adicional encontrado y corregido
+`tailwind.config = {...}` en un `<script>` inline: si el CDN de Tailwind no cargaba (red lenta,
+bloqueo, adblock), `tailwind` era undefined → **ReferenceError que mataba TODO el script siguiente**,
+incluida la UI del builder. Blindado con `window.tailwind = window.tailwind || {}`.
+Esto puede explicar reportes de "no funciona nada" que no se reproducían.
+
+También: Lloyd (`#lsa-float-btn`) tapaba el editor → se achica y se corre a la izquierda del panel.
+
+### Tests permanentes en el repo (`tests/`)
+- `tests/e2e-landing-builder.js` — 40+ checks sobre la página real en Chromium
+- `tests/unit-landing.js` — generación, paleta, edición, video, robustez
+- `tests/unit-landing-round2.js` — grids balanceados, iconos, edición quirúrgica, pixel/CTA
+- `tests/README.md` — cómo correrlos
+
+**Regla para futuras sesiones**: antes de decir "está arreglado", correr
+`node tests/e2e-landing-builder.js`. Si no pasa, no está arreglado.
+
+### Versión: `?v=20260719a`
+
+### Pendientes
+- 🟡 Límites ebook: Pro=999, Growth=999 → REVERTIR a Pro→5, Growth→20
+- 🟡 Funnels / páginas de agradecimiento (multi-página por landing)
