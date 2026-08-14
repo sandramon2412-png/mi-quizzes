@@ -303,6 +303,75 @@ function aiResponder(bodyStr) {
   chk('panel de edición visible tras reload', st10.panelVisible);
   chk('lista de secciones poblada (' + st10.rows + ')', st10.rows >= 8);
 
+  console.log('E2E 11 — nav, secciones nuevas y panel de ventas');
+  const aiB2 = aiCalls.length;
+  const st11 = await page.evaluate(() => ({
+    hasNav: landing.sections.some(s => s.id === 'nav'),
+    navFirst: landing.sections[0]?.id === 'nav',
+    navInHtml: landing.html.includes('<header id="nav"'),
+    navLinksReal: (landing.sections.find(s => s.id === 'nav')?.content?.links || [])
+      .every(l => landing.sections.some(x => '#' + x.id === l.href)),
+  }));
+  chk('la landing tiene barra de navegación', st11.hasNav);
+  chk('el nav va primero', st11.navFirst);
+  chk('nav presente en el HTML', st11.navInHtml);
+  chk('links del nav apuntan a secciones reales', st11.navLinksReal);
+
+  // Agregar una sección de video desde el modal
+  await page.evaluate(() => addSection('video'));
+  await page.waitForTimeout(600);
+  await page.evaluate(() => {
+    const i = landing.sections.findIndex(s => s.id === 'video');
+    openSectionEditor(i);
+    setSecField('video_url', 'https://www.youtube.com/watch?v=abc12345');
+  });
+  await page.waitForTimeout(900);
+  chk('sección de video agregada y embebida', await page.evaluate(() => landing.html.includes('youtube.com/embed/abc12345')));
+
+  // Imagen en una sección que no es el hero
+  await page.evaluate(() => {
+    const i = landing.sections.findIndex(s => s.id === 'beneficios');
+    openSectionEditor(i);
+    setSecField('image_url', 'data:image/png;base64,SECIMG');
+  });
+  await page.waitForTimeout(900);
+  chk('imagen colocada en una sección que no es el hero', await page.evaluate(() => landing.html.includes('SECIMG')));
+  chk('nada de esto usó IA', aiCalls.length === aiB2);
+
+  // Panel de ventas: link de pago + pixel
+  await page.evaluate(() => {
+    document.getElementById('sales-cta-url').value = 'https://pay.hotmart.com/ABC';
+    document.getElementById('sales-fb-pixel').value = '999888777666555';
+    saveSalesSettings();
+  });
+  await page.waitForTimeout(900);
+  const st12 = await page.evaluate(() => ({
+    cta: landing.html.includes('href="https://pay.hotmart.com/ABC"'),
+    pixel: landing.html.includes("fbq('init','999888777666555')"),
+  }));
+  chk('botones apuntan a la pasarela de pago', st12.cta);
+  chk('píxel de Facebook inyectado', st12.pixel);
+
+  console.log('E2E 12 — página de gracias del funnel');
+  await page.evaluate(() => createThanksPage());
+  await page.waitForFunction(() => landing.settings && landing.settings.thanks_slug, null, { timeout: 15000 }).catch(() => {});
+  const st13 = await page.evaluate(() => {
+    const rows = JSON.parse(localStorage.getItem('mockdb_landings') || '[]');
+    const thanks = rows.find(r => r.settings && r.settings.is_thanks_page);
+    return {
+      slug: landing.settings?.thanks_slug || '',
+      saved: !!thanks,
+      published: !!(thanks && thanks.published),
+      hasGracias: !!(thanks && thanks.html && thanks.html.includes('Gracias por tu compra')),
+      urlShown: (document.getElementById('thanks-url') || {}).value || '',
+      panelReady: !document.getElementById('thanks-ready').classList.contains('hidden'),
+    };
+  });
+  chk('página de gracias guardada en la DB', st13.saved);
+  chk('queda publicada automáticamente', st13.published);
+  chk('con el contenido de agradecimiento', st13.hasGracias);
+  chk('el link se muestra para pegar en la pasarela', st13.urlShown.includes(st13.slug) && st13.panelReady);
+
   console.log('\nLlamadas IA por tipo:', JSON.stringify(aiCalls.reduce((a, c) => { a[c.kind] = (a[c.kind] || 0) + 1; return a; }, {})));
   console.log(fails.length === 0 ? '\n🎉 E2E COMPLETO: TODO PASA' : '\n⚠️ FALLARON: ' + fails.join(' | '));
   await browser.close();

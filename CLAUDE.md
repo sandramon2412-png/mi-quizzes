@@ -1823,3 +1823,72 @@ También: Lloyd (`#lsa-float-btn`) tapaba el editor → se achica y se corre a l
 ### Pendientes
 - 🟡 Límites ebook: Pro=999, Growth=999 → REVERTIR a Pro→5, Growth→20
 - 🟡 Funnels / páginas de agradecimiento (multi-página por landing)
+
+---
+
+## SESIÓN 19 JUL 2026 (parte 3) — Nav, media por sección, funnel y fix de desplegables
+
+### Reporte de Sandra sobre el editor visual (que sí le gustó: "mucho mejor")
+1. Desplegables con texto blanco sobre blanco → ilegibles
+2. Hero "texto + imagen al lado" no funcionaba, solo centrado
+3. "No hay opción de agregar más secciones"
+4. No se podían poner imágenes/videos en secciones que no fueran el hero
+5. La landing no tiene barra de navegación
+6. Falta el funnel: página de gracias, píxel y botón de pago a la pasarela
+
+### 1. Desplegables ilegibles — RESUELTO ✅
+El popup de un `<select>` lo pinta el sistema operativo con fondo blanco, pero heredaba
+`color:#e8e8ee` → texto blanco sobre blanco. Fix en el CSS de la página:
+```css
+select{color-scheme:dark}
+select option{background:#1c1c20 !important;color:#e8e8ee !important}
+```
+Aplica a TODOS los selects del builder, no solo al editor.
+
+### 2. Hero "imagen al lado" — CAUSA RAÍZ ENCONTRADA ✅
+El motor de `layout: split|center` estaba bien (verificado en `tests/unit-landing-sections.js`).
+El problema real: **`_buildSection('hero')` chequeaba `if (c.video_url)` ANTES que el layout**, así
+que cualquier hero con video de fondo se forzaba a centrado, ignorando la elección.
+Fix: ahora hay dos variantes con video — split (texto + imagen al lado, video detrás) y centrada.
+Además el campo `video_url` del hero es visible/editable/borrable en el editor.
+
+### 3-4. Media en cualquier sección — RESUELTO ✅
+- `MEDIA_FIELDS` (imagen + video de fondo) se agrega automáticamente al editor de toda sección
+  que no maneje media en su propio template (las que sí: hero, nav, imagen, video, galeria → `noMedia:true`).
+- Post-proceso en `_buildSection`: `image_url` se inserta al final de la sección; `video_url` envuelve
+  la sección con `<video>` absoluto + overlay `rgba(0,0,0,.62)` + wrapper `.ld-onvideo` que fuerza
+  texto blanco y cards translúcidas para que todo se lea.
+
+### 5. Barra de navegación — NUEVA ✅
+- Template `nav` en `_buildSection`: header sticky con blur, marca, links, botón CTA y menú
+  hamburguesa en ≤860px (el toggle es JS inline, sin dependencias).
+- `navLinksFor(sections)` construye los links **desde las secciones que existen de verdad** — nunca
+  puede apuntar a una sección inexistente.
+- `generateLandingSectioned` lo agrega automáticamente al principio, sin llamada extra a la IA.
+
+### Secciones libres nuevas ✅
+`texto` (bloque libre con alineación), `imagen` (destacada con pie y 3 tamaños),
+`video` (YouTube/Vimeo → iframe embed; .mp4 → tag video), `galeria` (grid balanceado).
+Todas disponibles en el modal "+ Agregar" del editor visual.
+
+### 6. Panel "Ventas y funnel" — NUEVO ✅
+Sección plegable arriba del editor visual (antes esto vivía escondido en el modal de publicar):
+- **Link de pago**: todos los `.ld-btn` de la landing apuntan al checkout (`target="_blank"`)
+- **Píxel de Facebook**: fbq init + PageView en `<head>` + `InitiateCheckout` en clics de CTA
+- **Página de gracias**: `createThanksPage()` arma una landing secundaria por código (hero de
+  agradecimiento + 3 pasos siguientes + soporte + footer), la guarda **publicada** como fila propia
+  en `landings` con `settings.is_thanks_page` y `parent_landing`, y muestra el link listo para pegar
+  en la pasarela. Botón "Editar página de gracias" la abre en otro tab del mismo builder.
+  Los datos quedan en `landing.settings.thanks_slug` / `thanks_id`.
+
+### Tests
+- `tests/unit-landing-sections.js` (NUEVO): 22 checks — hero split/center/video, nav, secciones
+  libres, media por sección, overlay de legibilidad.
+- `tests/e2e-landing-builder.js`: ampliado a **50+ checks**, ahora cubre nav automático con links
+  reales, agregar sección de video con embed, imagen en sección no-hero, link de pago + píxel
+  aplicados al HTML, y creación/publicación de la página de gracias.
+
+### Versión: `?v=20260719b`
+
+### Pendientes
+- 🟡 Límites ebook: Pro=999, Growth=999 → REVERTIR a Pro→5, Growth→20

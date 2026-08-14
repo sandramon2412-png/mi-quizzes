@@ -9,9 +9,9 @@
 <script src="https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.min.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
 <link href="https://fonts.googleapis.com/icon?family=Material+Symbols+Outlined" rel="stylesheet"/>
-<script src="./supabase-config.js?v=20260719a"></script>
-<script src="./app.js?v=20260719a"></script>
-<script src="./landing-blocks.js?v=20260719a"></script>
+<script src="./supabase-config.js?v=20260719b"></script>
+<script src="./app.js?v=20260719b"></script>
+<script src="./landing-blocks.js?v=20260719b"></script>
 <script>
   // Si el CDN de Tailwind no cargó, esta asignación tiraba y mataba todo el script
   // que sigue (incluida la UI del builder). Blindado para que la página funcione igual.
@@ -51,6 +51,12 @@
   #lsa-float-btn{width:52px !important;height:52px !important;font-size:20px !important;
     left:auto !important;right:356px !important;opacity:.8}
   #lsa-float-btn:hover{opacity:1}
+
+  /* Desplegables: el popup nativo lo pinta el SO en blanco y heredaba texto blanco
+     → quedaba invisible. color-scheme:dark + option explícito lo arregla. */
+  select,select.field-input,#sec-editor select{color-scheme:dark}
+  select option,select.field-input option,#sec-editor select option{
+    background:#1c1c20 !important;color:#e8e8ee !important}
 
   /* Editor visual de secciones */
   .sec-mini{background:none;border:none;cursor:pointer;color:#7a7a82;padding:2px;border-radius:4px;display:flex;align-items:center;transition:color .15s,background .15s}
@@ -572,6 +578,46 @@
     <span class="text-[9px] font-bold px-1.5 py-0.5 rounded" style="background:rgba(46,91,255,.15);color:#4d7cff">SIN IA</span>
   </div>
 
+  <!-- Ventas y funnel -->
+  <div class="shrink-0 border-b border-outline-variant/15">
+    <button id="sales-toggle" class="w-full px-3 py-2 flex items-center gap-2 text-[10px] font-bold text-on-surface-variant/70 hover:text-on-surface transition" style="background:none;border:none;cursor:pointer">
+      <span class="material-symbols-outlined" style="font-size:13px">payments</span>
+      <span class="uppercase tracking-wider">Ventas y funnel</span>
+      <span class="material-symbols-outlined ml-auto" style="font-size:14px" id="sales-toggle-icon">expand_more</span>
+    </button>
+    <div id="sales-panel" class="hidden px-3 pb-3">
+      <label class="block text-[10px] font-semibold text-on-surface-variant/70 mb-1">Link de pago (Hotmart, MercadoPago…)</label>
+      <input id="sales-cta-url" type="text" class="field-input" style="font-size:11px;padding:6px 9px" placeholder="https://pay.hotmart.com/..." oninput="saveSalesSettings()"/>
+      <p class="text-[9px] text-on-surface-variant/50 mt-1 mb-2">Todos los botones de la landing llevan acá.</p>
+
+      <label class="block text-[10px] font-semibold text-on-surface-variant/70 mb-1">Píxel de Facebook</label>
+      <input id="sales-fb-pixel" type="text" class="field-input" style="font-size:11px;padding:6px 9px" placeholder="123456789012345" oninput="saveSalesSettings()"/>
+      <p class="text-[9px] text-on-surface-variant/50 mt-1 mb-3">Mide visitas y clics en los botones.</p>
+
+      <div class="pt-2 border-t border-outline-variant/15">
+        <label class="block text-[10px] font-semibold text-on-surface-variant/70 mb-1">Página de gracias</label>
+        <div id="thanks-none">
+          <p class="text-[9px] text-on-surface-variant/50 mb-2">La página donde cae tu cliente después de pagar. Se crea lista y editable.</p>
+          <button id="btn-create-thanks" class="w-full h-8 rounded-lg text-[11px] font-bold primary-gradient text-white flex items-center justify-center gap-1 hover:opacity-90 transition">
+            <span class="material-symbols-outlined" style="font-size:13px">celebration</span>
+            Crear página de gracias
+          </button>
+        </div>
+        <div id="thanks-ready" class="hidden">
+          <p class="text-[9px] text-on-surface-variant/50 mb-1">Pegá este link en tu pasarela de pago:</p>
+          <div class="flex gap-1 mb-1.5">
+            <input id="thanks-url" type="text" readonly class="field-input" style="font-size:10px;padding:5px 8px"/>
+            <button onclick="copyToClipboard(document.getElementById('thanks-url').value);showToast('Link copiado')" class="sec-mini shrink-0" title="Copiar">
+              <span class="material-symbols-outlined" style="font-size:14px">content_copy</span></button>
+          </div>
+          <button id="btn-edit-thanks" class="w-full h-7 rounded-lg text-[10px] font-semibold border border-outline-variant/25 hover:bg-surface-container transition flex items-center justify-center gap-1">
+            <span class="material-symbols-outlined" style="font-size:12px">edit</span>Editar página de gracias
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- Lista de secciones -->
   <div class="shrink-0 border-b border-outline-variant/15">
     <div class="flex items-center justify-between px-3 py-2">
@@ -1086,13 +1132,42 @@ const F = {
 };
 
 const SEC_SCHEMA = {
-  hero: { label: 'Portada (hero)', icon: 'flag', fields: [
+  nav: { label: 'Barra de navegación', icon: 'menu', noMedia: true, fields: [
+    F.text('brand', 'Nombre de la marca'),
+    F.text('cta', 'Texto del botón (vacío = sin botón)'),
+    { key: 'links', label: 'Links del menú', type: 'items', addLabel: 'Agregar link',
+      item: [F.text('label', 'Texto'), F.text('href', 'Destino', '#beneficios')] },
+  ]},
+  texto: { label: 'Texto libre', icon: 'notes', fields: [
+    F.text('title', 'Título (opcional)'),
+    F.area('body', 'Texto'),
+    { key: 'align', label: 'Alineación', type: 'select', options: [['left', 'Izquierda'], ['center', 'Centrado']] },
+  ]},
+  imagen: { label: 'Imagen destacada', icon: 'image', noMedia: true, fields: [
+    F.text('title', 'Título (opcional)'),
+    F.image('image_url', 'Imagen'),
+    F.text('caption', 'Pie de foto'),
+    { key: 'size', label: 'Tamaño', type: 'select', options: [['full', 'Ancho completo'], ['medium', 'Mediana'], ['small', 'Chica']] },
+  ]},
+  video: { label: 'Video', icon: 'play_circle', noMedia: true, fields: [
+    F.text('title', 'Título (opcional)'),
+    F.text('subtitle', 'Subtítulo'),
+    F.text('video_url', 'Link del video', 'YouTube, Vimeo o .mp4'),
+  ]},
+  galeria: { label: 'Galería de imágenes', icon: 'collections', noMedia: true, fields: [
+    F.text('title', 'Título'),
+    F.text('subtitle', 'Subtítulo'),
+    { key: 'images', label: 'Imágenes', type: 'items', addLabel: 'Agregar imagen',
+      item: [F.image('url', 'Imagen'), F.text('caption', 'Pie de foto')] },
+  ]},
+  hero: { label: 'Portada (hero)', icon: 'flag', noMedia: true, fields: [
     F.text('badge', 'Frase de credibilidad', 'Ej: +2.000 personas ya lo lograron'),
     F.area('title', 'Título principal'),
     F.area('subtitle', 'Subtítulo'),
     F.text('cta', 'Texto del botón'),
     F.text('microcopy', 'Texto chico bajo el botón'),
     F.image('image_url', 'Imagen de la portada'),
+    F.text('video_url', 'Video de fondo (opcional)', 'Link .mp4 — o usá el botón Video de fondo'),
     { key: 'layout', label: 'Diseño', type: 'select', options: [['split', 'Texto + imagen al lado'], ['center', 'Todo centrado']] },
   ]},
   problema: { label: 'El problema', icon: 'report', fields: [
@@ -1170,8 +1245,16 @@ const SEC_SCHEMA = {
   ]},
 };
 
+// Campos de media que se agregan a toda sección que no los maneje ya en su template
+const MEDIA_FIELDS = [
+  F.image('image_url', 'Imagen de la sección'),
+  F.text('video_url', 'Video de fondo (link .mp4)', 'Dejalo vacío si no querés video'),
+];
+
 function secMeta(id) {
-  return SEC_SCHEMA[id] || { label: id, icon: 'widgets', fields: [F.text('title', 'Título'), F.area('desc', 'Texto')] };
+  const base = SEC_SCHEMA[id] || { label: id, icon: 'widgets', fields: [F.text('title', 'Título'), F.area('desc', 'Texto')] };
+  if (base.noMedia) return base;
+  return { ...base, fields: [...base.fields, ...MEDIA_FIELDS] };
 }
 
 let activeSecIdx = -1;
@@ -1425,6 +1508,119 @@ function _blankifySchema(o) {
 function scrollPreviewTo(secId) {
   const fr = document.getElementById('preview-frame');
   try { fr.contentWindow.document.getElementById(secId)?.scrollIntoView({ behavior: 'smooth' }); } catch (e) {}
+}
+
+// ═══════════════════════════════════════════════════════════
+// VENTAS Y FUNNEL — pasarela de pago, píxel y página de gracias
+// ═══════════════════════════════════════════════════════════
+function hydrateSalesPanel() {
+  if (!landing) return;
+  const st = landing.settings || {};
+  const u = document.getElementById('sales-cta-url');
+  const p = document.getElementById('sales-fb-pixel');
+  if (u) u.value = st.cta_url || '';
+  if (p) p.value = st.fb_pixel_id || '';
+  const ready = !!st.thanks_slug;
+  document.getElementById('thanks-none')?.classList.toggle('hidden', ready);
+  document.getElementById('thanks-ready')?.classList.toggle('hidden', !ready);
+  if (ready) {
+    const t = document.getElementById('thanks-url');
+    if (t) t.value = `${location.origin}/landing-view.html?slug=${encodeURIComponent(st.thanks_slug)}`;
+  }
+}
+
+let _salesTimer = null;
+function saveSalesSettings() {
+  if (!landing) return;
+  landing.settings = landing.settings || {};
+  landing.settings.cta_url = document.getElementById('sales-cta-url').value.trim();
+  landing.settings.fb_pixel_id = document.getElementById('sales-fb-pixel').value.trim().replace(/[^0-9]/g, '');
+  clearTimeout(_salesTimer);
+  _salesTimer = setTimeout(() => {
+    if (hasSections()) {
+      const palId = landing.palette || getCurrentPalette() || 'blue-purple';
+      landing.html = AI.assembleLanding(landing.sections, palId, landing.title, _landingOpts());
+      renderPreview();
+    }
+    autosave();
+    setStatus('Guardado');
+  }, 500);
+}
+
+// Secciones de la página de gracias — armadas por código, editables después
+function _thanksSections(palId, productName) {
+  const mk = (id, content) => ({ id, brief: '', content, html: AI.buildSection(id, content, palId) });
+  return [
+    mk('hero', {
+      layout: 'center',
+      badge: 'Pago confirmado',
+      title: '¡Gracias por tu compra!',
+      subtitle: `Ya tenés acceso a ${productName || 'tu programa'}. Te mandamos un correo con todos los detalles — revisá tu bandeja de entrada (y la carpeta de spam, por las dudas).`,
+      cta: 'Revisar mi correo',
+      microcopy: 'Si en 10 minutos no te llega, escribinos.',
+      image_prompt: 'happy+woman+celebrating+laptop+success+bright',
+    }),
+    mk('como-funciona', {
+      title: 'Tus próximos pasos',
+      items: [
+        { step: '1', title: 'Revisá tu correo', desc: 'Te enviamos los datos de acceso a la dirección con la que compraste.' },
+        { step: '2', title: 'Entrá a la plataforma', desc: 'Usá el link del correo para entrar y crear tu contraseña.' },
+        { step: '3', title: 'Empezá hoy mismo', desc: 'Arrancá por el primer módulo — no necesitás nada más para empezar.' },
+      ],
+    }),
+    mk('cta-final', {
+      title: '¿Necesitás ayuda?',
+      subtitle: 'Escribinos y te respondemos a la brevedad.',
+      cta: 'Contactar soporte',
+      microcopy: 'Respondemos de lunes a viernes.',
+    }),
+    mk('footer', {
+      brand_name: productName || 'Mi Marca',
+      tagline: 'Gracias por confiar en nosotros',
+      copyright: `© ${new Date().getFullYear()} · Todos los derechos reservados`,
+    }),
+  ];
+}
+
+async function createThanksPage() {
+  if (!landing) { showToast('Primero creá tu landing', true); return; }
+  if (!currentUser) { showToast('Iniciá sesión para crear la página', true); return; }
+  const btn = document.getElementById('btn-create-thanks');
+  btn.disabled = true;
+  btn.innerHTML = 'Creando…';
+  try {
+    const palId = landing.palette || getCurrentPalette() || 'blue-purple';
+    const name = (landing.title || 'Mi producto').trim();
+    const sections = _thanksSections(palId, name);
+    const title = `${name} — Gracias`;
+    const page = {
+      id: null,
+      title,
+      slug: _slugify(name + '-gracias'),
+      brief: `Página de agradecimiento post-compra de: ${name}`,
+      palette: palId,
+      blocks: [],
+      mode: 'html',
+      sections,
+      published: true,
+      settings: { mode: 'html', palette: palId, sections, is_thanks_page: true, parent_landing: landing.id || null },
+    };
+    page.html = AI.assembleLanding(sections, palId, title, { fbPixel: (landing.settings || {}).fb_pixel_id || '' });
+    const row = await DB.landings.save(page, currentUser.id);
+    if (!row || !row.id) throw new Error('No se pudo guardar');
+    landing.settings = landing.settings || {};
+    landing.settings.thanks_slug = row.slug || page.slug;
+    landing.settings.thanks_id = row.id;
+    await saveLanding();
+    hydrateSalesPanel();
+    showToast('Página de gracias creada y publicada');
+    addChatMsg(`Creé tu página de gracias y ya está publicada. Copiá el link del panel "Ventas y funnel" y pegalo en tu pasarela de pago como página de retorno tras la compra. Podés editarla con el botón "Editar página de gracias".`, 'assistant');
+  } catch (e) {
+    showToast('No pude crear la página: ' + (e.message || 'error'), true);
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = '<span class="material-symbols-outlined" style="font-size:13px">celebration</span> Crear página de gracias';
+  }
 }
 
 // Encuentra a qué sección se refiere el usuario en un mensaje ("ponela en beneficios")
@@ -2598,6 +2794,7 @@ async function generateFromChat(msg) {
     switchToBuilderMode();
     activeSecIdx = -1;
     renderSectionsList();
+    hydrateSalesPanel();
     autosave();
     const reply = '¡Lista! Ya podés editar cada texto a mano en el panel de la derecha (se ve al instante, sin esperar). O pedime cambios por acá si preferís.';
     addChatMsg(reply, 'assistant');
@@ -2942,6 +3139,7 @@ async function loadLanding(id) {
       renderPreview();
       activeSecIdx = -1;
       renderSectionsList();
+      hydrateSalesPanel();
       addChatMsg('Cargué tu landing. Podés editar cada texto a mano en el panel de la derecha, o pedirme cambios por acá.', 'assistant');
     } else if (landing.blocks && landing.blocks.length > 0) {
       // Block-based landing
@@ -3470,6 +3668,18 @@ function initUI() {
   // Wire all buttons
   document.getElementById('btn-generate').addEventListener('click', generateLanding);
   document.getElementById('btn-publish').addEventListener('click', publishLanding);
+  // Panel de ventas y funnel
+  document.getElementById('sales-toggle').addEventListener('click', () => {
+    const p = document.getElementById('sales-panel');
+    const open = p.classList.toggle('hidden');
+    document.getElementById('sales-toggle-icon').textContent = open ? 'expand_more' : 'expand_less';
+  });
+  document.getElementById('btn-create-thanks').addEventListener('click', createThanksPage);
+  document.getElementById('btn-edit-thanks').addEventListener('click', () => {
+    const id = (landing && landing.settings && landing.settings.thanks_id);
+    if (id) window.open('landing-builder.html?id=' + id, '_blank');
+  });
+
   // Editor visual de secciones
   document.getElementById('sec-add-btn').addEventListener('click', openAddSectionModal);
   document.getElementById('sec-add-close').addEventListener('click', () => document.getElementById('sec-add-modal').classList.add('hidden'));
