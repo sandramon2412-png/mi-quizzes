@@ -1367,6 +1367,7 @@ INSTRUCCIÓN: ${instruction}`;
   _sectionDefaultBrief(id) {
     const b = {
       nav: 'Barra de navegación: nombre de marca, 3-5 links a secciones de esta misma landing (href con #id) y botón CTA.',
+      oferta: 'Oferta de upsell/downsell con botón de aceptar y link para declinar.',
       texto: 'Bloque de texto libre.',
       imagen: 'Imagen destacada con pie de foto.',
       video: 'Video de presentación o demo del producto.',
@@ -1404,6 +1405,8 @@ INSTRUCCIÓN: ${instruction}`;
     if (o.ctaUrl) {
       const safeCta = String(o.ctaUrl).replace(/"/g, '&quot;');
       body = body.replace(/href="#(?:precio|cta-final|hero)"( class="ld-btn")/g, `href="${safeCta}" target="_blank" rel="noopener"$1`);
+      // El botón de una sección "oferta" sin link propio también apunta al checkout
+      body = body.replace(/href="#"( class="ld-btn")/g, `href="${safeCta}" target="_blank" rel="noopener"$1`);
     }
     // Facebook Pixel (se inyecta solo si hay ID configurado)
     const fbPixel = o.fbPixel ? `
@@ -1474,6 +1477,9 @@ INSTRUCCIÓN: ${instruction}`;
   /* Sección con video de fondo: el texto siempre legible sobre el video */
   .ld-onvideo h2,.ld-onvideo h3,.ld-onvideo p,.ld-onvideo li,.ld-onvideo summary,.ld-onvideo figcaption{color:#fff !important}
   .ld-onvideo .ld-card,.ld-onvideo details{background:rgba(255,255,255,.09) !important;border-color:rgba(255,255,255,.2) !important}
+
+  .ld-decline{transition:color .2s}
+  .ld-decline:hover{color:var(--ink) !important}
 
   /* Barra de navegación */
   #nav a{transition:color .2s}
@@ -1554,6 +1560,7 @@ ${body}
       imagen: {title:'',image_prompt:'english+keywords+for+the+image+separated+by+plus',caption:'pie de foto opcional',size:'full'},
       video: {title:'Mirá cómo funciona',subtitle:'subtítulo opcional',video_url:''},
       galeria: {title:'Galería',subtitle:'',images:[{url:'',caption:''},{url:'',caption:''},{url:'',caption:''}]},
+      oferta: {badge:'Espera — oferta única',title:'Sumá esto y potenciá tus resultados',subtitle:'Solo disponible en esta pantalla, no se repite después.',features:['qué incluye 1','qué incluye 2','qué incluye 3'],price_before:'$97',price:'$47',cta:'SÍ, LO QUIERO',cta_url:'',decline:'No gracias, continuar sin esto',decline_url:'',microcopy:'Pago seguro · Se suma a tu compra anterior'},
       'para-quien': {title:'¿Este programa es para vos?',yes_title:'Es para vos si…',no_title:'No es para vos si…',yes:['frase específica sobre el cliente ideal 1','frase 2','frase 3'],no:['frase sobre quién NO debería comprarlo 1','frase 2','frase 3']},
       'antes-despues': {title:'Tu transformación',before_title:'Hoy',after_title:'Después del programa',before:['punto de dolor actual 1','punto 2','punto 3'],after:['resultado concreto 1','resultado 2','resultado 3']},
       problema: {title:'El problema real que tiene tu cliente ideal',items:[{icon:'sentiment_dissatisfied',title:'Dolor específico 1',desc:'descripción del dolor en 1-2 frases'},{icon:'sentiment_dissatisfied',title:'Dolor específico 2',desc:'descripción'},{icon:'sentiment_dissatisfied',title:'Dolor específico 3',desc:'descripción'}]},
@@ -1752,6 +1759,29 @@ ${c.microcopy?`<p style="color:var(--muted);font-size:13px;margin:12px 0 0">${e(
 <div class="ld-card" style="${CARD};opacity:.85"><p style="color:var(--muted);font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;margin:0 0 14px">${e(c.before_title||'Hoy')}</p><ul style="list-style:none;margin:0;padding:0">${before.map(t=>ROW(t,'remove_circle_outline','var(--muted)')).join('')}</ul></div>
 <div class="ld-card" style="${CARD};border:2px solid var(--brand)"><p style="color:var(--brand);font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;margin:0 0 14px">${e(c.after_title||'Después')}</p><ul style="list-style:none;margin:0;padding:0">${after.map(t=>ROW(t,'check_circle','var(--brand)')).join('')}</ul></div>
 </div>`);
+      }
+      case 'oferta': {
+        // Sección de upsell/downsell: SÍ destacado + "no gracias" discreto
+        const feats = arr(c.features);
+        const yesHref = c.cta_url || '#';
+        const noHref = c.decline_url || '#';
+        return `<section id="oferta" style="background:var(--bg);padding:72px 0">
+<div style="max-width:620px;margin:0 auto;padding:0 24px;text-align:center">
+${c.badge?`<p style="display:inline-block;background:${GRAD};color:#fff;font-weight:800;font-size:12px;text-transform:uppercase;letter-spacing:1.5px;padding:7px 16px;border-radius:99px;margin:0 0 20px">${e(c.badge)}</p>`:''}
+<h2 style="color:var(--ink);font-size:clamp(1.7rem,4vw,2.6rem);font-weight:800;line-height:1.15;margin:0 0 16px">${e(c.title||'Una última oferta')}</h2>
+<p style="color:var(--muted);font-size:17px;line-height:1.6;margin:0 0 28px">${e(c.subtitle||'')}</p>
+<div class="ld-price-card" style="background:var(--surface);border:2px solid var(--brand);border-radius:20px;padding:32px">
+${feats.length?`<ul style="list-style:none;margin:0 0 24px;padding:0;text-align:left;display:flex;flex-direction:column;gap:11px">${feats.map(f=>`<li style="color:var(--ink);font-size:15px;display:flex;align-items:flex-start;gap:9px"><span class="material-symbols-outlined" style="font-size:19px;color:var(--brand);flex-shrink:0;margin-top:1px">check_circle</span><span>${e(f)}</span></li>`).join('')}</ul>`:''}
+<div style="display:flex;align-items:baseline;justify-content:center;gap:12px;margin:0 0 22px">
+${c.price_before?`<span style="color:var(--muted);font-size:22px;text-decoration:line-through">${e(c.price_before)}</span>`:''}
+<span style="color:var(--ink);font-size:46px;font-weight:800;line-height:1">${e(c.price||'')}</span>
+</div>
+<a href="${e(yesHref)}" class="ld-btn" style="background:${GRAD};color:#fff;padding:17px 30px;border-radius:12px;font-weight:800;font-size:18px;display:block;text-decoration:none;text-align:center">${e(c.cta||'SÍ, LO QUIERO')}</a>
+${c.microcopy?`<p style="color:var(--muted);font-size:13px;margin:12px 0 0">${e(c.microcopy)}</p>`:''}
+</div>
+<a href="${e(noHref)}" class="ld-decline" style="display:inline-block;color:var(--muted);font-size:14px;text-decoration:underline;margin-top:22px">${e(c.decline||'No gracias, continuar')}</a>
+</div>
+</section>`;
       }
       case 'garantia': {
         return `<section id="garantia" style="background:var(--bg);padding:64px 0"><div style="max-width:600px;margin:0 auto;padding:0 24px;text-align:center">${ICON('verified_user',56)}<h2 style="color:var(--ink);font-size:2rem;font-weight:800;margin:16px 0 12px">${e(c.title||'Garantía')}</h2><p style="color:var(--muted);font-size:17px;line-height:1.7;margin:0">${e(c.desc||'')}</p></div></section>`;

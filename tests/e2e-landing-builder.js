@@ -142,6 +142,14 @@ function aiResponder(bodyStr) {
   });
   await page.route(/image\.pollinations\.ai|fonts\.googleapis|fonts\.gstatic|cdn\.tailwindcss|pdfjs-dist|r\.jina\.ai|cloudfront|mux\.com|cloudinary|pexels/, r => r.abort());
 
+  // Espera a que el contador de llamadas a la IA se estabilice, para que medir
+  // "cero llamadas" no cuente pedidos del paso anterior que siguen en vuelo.
+  const settleAI = async (quietMs = 900) => {
+    let last = -1;
+    while (last !== aiCalls.length) { last = aiCalls.length; await new Promise(r => setTimeout(r, quietMs)); }
+    return aiCalls.length;
+  };
+
   const fails = [];
   const chk = (name, ok) => { console.log('  ' + (ok ? '✅' : '❌'), name); if (!ok) fails.push(name); };
 
@@ -224,7 +232,7 @@ function aiResponder(bodyStr) {
   }
 
   console.log('E2E 6 — EDITOR VISUAL: editar a mano, sin IA');
-  const aiBefore = aiCalls.length;
+  const aiBefore = await settleAI();
   // El panel debe estar visible con la lista de secciones
   chk('panel de edición visible', await page.locator('#right-panel:not(.hidden)').count() === 1);
   const rows = await page.locator('#sec-list .sec-row').count();
@@ -304,7 +312,7 @@ function aiResponder(bodyStr) {
   chk('lista de secciones poblada (' + st10.rows + ')', st10.rows >= 8);
 
   console.log('E2E 11 — nav, secciones nuevas y panel de ventas');
-  const aiB2 = aiCalls.length;
+  const aiB2 = await settleAI();
   const st11 = await page.evaluate(() => ({
     hasNav: landing.sections.some(s => s.id === 'nav'),
     navFirst: landing.sections[0]?.id === 'nav',
@@ -352,25 +360,56 @@ function aiResponder(bodyStr) {
   chk('botones apuntan a la pasarela de pago', st12.cta);
   chk('píxel de Facebook inyectado', st12.pixel);
 
-  console.log('E2E 12 — página de gracias del funnel');
-  await page.evaluate(() => createThanksPage());
-  await page.waitForFunction(() => landing.settings && landing.settings.thanks_slug, null, { timeout: 15000 }).catch(() => {});
-  const st13 = await page.evaluate(() => {
+  console.log('E2E 12 — embudo completo: upsell → downsell → gracias');
+  const aiB3 = await settleAI();
+  await page.evaluate(() => createFunnelPage('upsell'));
+  await page.waitForFunction(() => landing.settings?.funnel?.upsell?.slug, null, { timeout: 15000 }).catch(() => {});
+  await page.evaluate(() => createFunnelPage('downsell'));
+  await page.waitForFunction(() => landing.settings?.funnel?.downsell?.slug, null, { timeout: 15000 }).catch(() => {});
+  await page.evaluate(() => createFunnelPage('thanks'));
+  await page.waitForFunction(() => landing.settings?.funnel?.thanks?.slug, null, { timeout: 15000 }).catch(() => {});
+  await page.waitForTimeout(800);
+
+  const fn = await page.evaluate(() => {
     const rows = JSON.parse(localStorage.getItem('mockdb_landings') || '[]');
-    const thanks = rows.find(r => r.settings && r.settings.is_thanks_page);
+    const byRole = r => rows.find(x => x.settings && x.settings.funnel_role === r);
+    const up = byRole('upsell'), down = byRole('downsell'), th = rows.find(x => x.settings && x.settings.funnel_role === 'thanks');
+    const declineOf = row => {
+      const secs = (row && (row.sections || (row.settings || {}).sections)) || [];
+      return (secs.find(s => s.id === 'oferta') || {}).content?.decline_url || '';
+    };
     return {
-      slug: landing.settings?.thanks_slug || '',
-      saved: !!thanks,
-      published: !!(thanks && thanks.published),
-      hasGracias: !!(thanks && thanks.html && thanks.html.includes('Gracias por tu compra')),
-      urlShown: (document.getElementById('thanks-url') || {}).value || '',
-      panelReady: !document.getElementById('thanks-ready').classList.contains('hidden'),
+      f: landing.settings.funnel,
+      upSaved: !!up, downSaved: !!down, thSaved: !!th,
+      allPublished: [up, down, th].every(r => r && r.published),
+      upHasOffer: !!(up && up.html && up.html.includes('SÍ, LO QUIERO SUMAR')),
+      downCheaper: !!(down && down.html && down.html.includes('$27')),
+      upDecline: declineOf(up),
+      downDecline: declineOf(down),
+      downSlug: down && down.slug, thSlug: th && th.slug,
+      stepsUi: document.querySelectorAll('#funnel-steps input[readonly]').length,
     };
   });
-  chk('página de gracias guardada en la DB', st13.saved);
-  chk('queda publicada automáticamente', st13.published);
-  chk('con el contenido de agradecimiento', st13.hasGracias);
-  chk('el link se muestra para pegar en la pasarela', st13.urlShown.includes(st13.slug) && st13.panelReady);
+  chk('página de upsell creada', fn.upSaved);
+  chk('página de downsell creada', fn.downSaved);
+  chk('página de gracias creada', fn.thSaved);
+  chk('las tres quedan publicadas', fn.allPublished);
+  chk('el upsell tiene su oferta con botón SÍ', fn.upHasOffer);
+  chk('el downsell ofrece un precio menor', fn.downCheaper);
+  chk('"no gracias" del upsell → downsell', fn.upDecline.includes(fn.downSlug));
+  chk('"no gracias" del downsell → gracias', fn.downDecline.includes(fn.thSlug));
+  chk('el panel muestra los 3 links listos para copiar', fn.stepsUi === 3);
+  chk('crear todo el embudo no usó IA', aiCalls.length === aiB3);
+
+  // El link de pago propio de la oferta manda: no lo pisa el de la landing madre
+  const offerHtml = await page.evaluate(() => {
+    const palId = landing.palette || 'blue-purple';
+    const c = { title: 'X', price: '$47', cta: 'SI', cta_url: 'https://pay.hotmart.com/UPSELL9', decline: 'no', decline_url: 'https://x.com/next' };
+    const sec = { id: 'oferta', content: c, html: AI.buildSection('oferta', c, palId) };
+    return AI.assembleLanding([sec], palId, 't', { ctaUrl: 'https://pay.hotmart.com/PRINCIPAL' });
+  });
+  chk('el botón usa el link de pago de su propia oferta', offerHtml.includes('href="https://pay.hotmart.com/UPSELL9"'));
+  chk('el "no gracias" no se reescribe al checkout', offerHtml.includes('href="https://x.com/next"'));
 
   console.log('\nLlamadas IA por tipo:', JSON.stringify(aiCalls.reduce((a, c) => { a[c.kind] = (a[c.kind] || 0) + 1; return a; }, {})));
   console.log(fails.length === 0 ? '\n🎉 E2E COMPLETO: TODO PASA' : '\n⚠️ FALLARON: ' + fails.join(' | '));

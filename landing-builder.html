@@ -9,9 +9,9 @@
 <script src="https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.min.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
 <link href="https://fonts.googleapis.com/icon?family=Material+Symbols+Outlined" rel="stylesheet"/>
-<script src="./supabase-config.js?v=20260719b"></script>
-<script src="./app.js?v=20260719b"></script>
-<script src="./landing-blocks.js?v=20260719b"></script>
+<script src="./supabase-config.js?v=20260719c"></script>
+<script src="./app.js?v=20260719c"></script>
+<script src="./landing-blocks.js?v=20260719c"></script>
 <script>
   // Si el CDN de Tailwind no cargó, esta asignación tiraba y mataba todo el script
   // que sigue (incluida la UI del builder). Blindado para que la página funcione igual.
@@ -595,25 +595,19 @@
       <p class="text-[9px] text-on-surface-variant/50 mt-1 mb-3">Mide visitas y clics en los botones.</p>
 
       <div class="pt-2 border-t border-outline-variant/15">
-        <label class="block text-[10px] font-semibold text-on-surface-variant/70 mb-1">Página de gracias</label>
-        <div id="thanks-none">
-          <p class="text-[9px] text-on-surface-variant/50 mb-2">La página donde cae tu cliente después de pagar. Se crea lista y editable.</p>
-          <button id="btn-create-thanks" class="w-full h-8 rounded-lg text-[11px] font-bold primary-gradient text-white flex items-center justify-center gap-1 hover:opacity-90 transition">
-            <span class="material-symbols-outlined" style="font-size:13px">celebration</span>
-            Crear página de gracias
-          </button>
+        <div class="flex items-center gap-1 mb-1">
+          <span class="text-[10px] font-semibold text-on-surface-variant/70">Tu embudo de ventas</span>
+          <button onclick="document.getElementById('funnel-help').classList.toggle('hidden')" class="sec-mini ml-auto" title="Cómo funciona">
+            <span class="material-symbols-outlined" style="font-size:13px">help</span></button>
         </div>
-        <div id="thanks-ready" class="hidden">
-          <p class="text-[9px] text-on-surface-variant/50 mb-1">Pegá este link en tu pasarela de pago:</p>
-          <div class="flex gap-1 mb-1.5">
-            <input id="thanks-url" type="text" readonly class="field-input" style="font-size:10px;padding:5px 8px"/>
-            <button onclick="copyToClipboard(document.getElementById('thanks-url').value);showToast('Link copiado')" class="sec-mini shrink-0" title="Copiar">
-              <span class="material-symbols-outlined" style="font-size:14px">content_copy</span></button>
-          </div>
-          <button id="btn-edit-thanks" class="w-full h-7 rounded-lg text-[10px] font-semibold border border-outline-variant/25 hover:bg-surface-container transition flex items-center justify-center gap-1">
-            <span class="material-symbols-outlined" style="font-size:12px">edit</span>Editar página de gracias
-          </button>
+        <div id="funnel-help" class="hidden text-[9px] text-on-surface-variant/60 leading-relaxed mb-2 p-2 rounded-lg" style="background:rgba(255,255,255,.04)">
+          Después de pagar, tu cliente pasa por estas páginas en orden.<br>
+          <b>Upsell</b>: una oferta extra más grande.<br>
+          <b>Downsell</b>: si dice que no, una versión más accesible.<br>
+          <b>Gracias</b>: el cierre con los pasos para empezar.<br>
+          El link de cada página va en tu pasarela de pago; el "no gracias" se conecta solo al paso siguiente.
         </div>
+        <div id="funnel-steps"></div>
       </div>
     </div>
   </div>
@@ -1138,6 +1132,19 @@ const SEC_SCHEMA = {
     { key: 'links', label: 'Links del menú', type: 'items', addLabel: 'Agregar link',
       item: [F.text('label', 'Texto'), F.text('href', 'Destino', '#beneficios')] },
   ]},
+  oferta: { label: 'Oferta (upsell/downsell)', icon: 'local_offer', fields: [
+    F.text('badge', 'Etiqueta de urgencia'),
+    F.area('title', 'Título de la oferta'),
+    F.area('subtitle', 'Subtítulo'),
+    F.list('features', 'Qué incluye'),
+    F.text('price_before', 'Precio tachado'),
+    F.text('price', 'Precio de esta oferta'),
+    F.text('cta', 'Texto del botón SÍ'),
+    F.text('cta_url', 'Link de pago de ESTA oferta', 'https://pay.hotmart.com/...'),
+    F.text('microcopy', 'Texto chico bajo el botón'),
+    F.text('decline', 'Texto del "no gracias"'),
+    F.text('decline_url', 'A dónde va si dice que no', 'Se conecta solo al paso siguiente'),
+  ]},
   texto: { label: 'Texto libre', icon: 'notes', fields: [
     F.text('title', 'Título (opcional)'),
     F.area('body', 'Texto'),
@@ -1513,6 +1520,62 @@ function scrollPreviewTo(secId) {
 // ═══════════════════════════════════════════════════════════
 // VENTAS Y FUNNEL — pasarela de pago, píxel y página de gracias
 // ═══════════════════════════════════════════════════════════
+// ── Configuración del embudo (compat con el formato viejo de thanks) ──
+function _funnelCfg() {
+  if (!landing) return {};
+  landing.settings = landing.settings || {};
+  const st = landing.settings;
+  if (!st.funnel) st.funnel = {};
+  // Migrar el formato anterior (thanks_slug/thanks_id sueltos)
+  if (st.thanks_slug && !st.funnel.thanks) st.funnel.thanks = { id: st.thanks_id || null, slug: st.thanks_slug };
+  return st.funnel;
+}
+
+const FUNNEL_STEPS = [
+  { key: 'upsell',   label: 'Upsell',   icon: 'trending_up',  hint: 'Oferta extra después de pagar' },
+  { key: 'downsell', label: 'Downsell', icon: 'trending_down', hint: 'Alternativa si rechaza el upsell' },
+  { key: 'thanks',   label: 'Gracias',  icon: 'celebration',  hint: 'Cierre con los pasos para empezar' },
+];
+
+function _pageUrl(slug) {
+  return `${location.origin}/landing-view.html?slug=${encodeURIComponent(slug)}`;
+}
+
+function renderFunnelSteps() {
+  const box = document.getElementById('funnel-steps');
+  if (!box || !landing) return;
+  const f = _funnelCfg();
+  box.innerHTML = FUNNEL_STEPS.map(st => {
+    const page = f[st.key];
+    if (page && page.slug) {
+      return `<div class="mb-2 p-2 rounded-lg" style="background:rgba(46,91,255,.08);border:1px solid rgba(77,124,255,.25)">
+        <div class="flex items-center gap-1.5 mb-1">
+          <span class="material-symbols-outlined" style="font-size:13px;color:#4d7cff">${st.icon}</span>
+          <span class="text-[10px] font-bold" style="color:#e8e8ee">${st.label}</span>
+          <span class="material-symbols-outlined ml-auto" style="font-size:12px;color:#4ade80" title="Publicada">check_circle</span>
+        </div>
+        <div class="flex gap-1 mb-1">
+          <input type="text" readonly class="field-input" style="font-size:9px;padding:4px 7px" value="${escHtml(_pageUrl(page.slug))}"/>
+          <button onclick="copyToClipboard('${escAttr(_pageUrl(page.slug))}');showToast('Link copiado')" class="sec-mini shrink-0" title="Copiar link">
+            <span class="material-symbols-outlined" style="font-size:13px">content_copy</span></button>
+        </div>
+        <div class="flex gap-1">
+          <button onclick="window.open('landing-builder.html?id=${escAttr(page.id || '')}','_blank')" class="flex-1 h-6 rounded text-[9px] font-semibold border border-outline-variant/25 hover:bg-surface-container transition">Editar</button>
+          <button onclick="window.open('${escAttr(_pageUrl(page.slug))}','_blank')" class="flex-1 h-6 rounded text-[9px] font-semibold border border-outline-variant/25 hover:bg-surface-container transition">Ver</button>
+        </div>
+      </div>`;
+    }
+    return `<div class="mb-2 p-2 rounded-lg" style="background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07)">
+      <div class="flex items-center gap-1.5 mb-1">
+        <span class="material-symbols-outlined" style="font-size:13px;color:#7a7a82">${st.icon}</span>
+        <span class="text-[10px] font-bold text-on-surface-variant/70">${st.label}</span>
+      </div>
+      <p class="text-[9px] text-on-surface-variant/50 mb-1.5">${st.hint}</p>
+      <button onclick="createFunnelPage('${st.key}')" class="w-full h-7 rounded-lg text-[10px] font-bold primary-gradient text-white hover:opacity-90 transition">Crear página</button>
+    </div>`;
+  }).join('');
+}
+
 function hydrateSalesPanel() {
   if (!landing) return;
   const st = landing.settings || {};
@@ -1520,13 +1583,7 @@ function hydrateSalesPanel() {
   const p = document.getElementById('sales-fb-pixel');
   if (u) u.value = st.cta_url || '';
   if (p) p.value = st.fb_pixel_id || '';
-  const ready = !!st.thanks_slug;
-  document.getElementById('thanks-none')?.classList.toggle('hidden', ready);
-  document.getElementById('thanks-ready')?.classList.toggle('hidden', !ready);
-  if (ready) {
-    const t = document.getElementById('thanks-url');
-    if (t) t.value = `${location.origin}/landing-view.html?slug=${encodeURIComponent(st.thanks_slug)}`;
-  }
+  renderFunnelSteps();
 }
 
 let _salesTimer = null;
@@ -1547,81 +1604,140 @@ function saveSalesSettings() {
   }, 500);
 }
 
-// Secciones de la página de gracias — armadas por código, editables después
-function _thanksSections(palId, productName) {
-  const mk = (id, content) => ({ id, brief: '', content, html: AI.buildSection(id, content, palId) });
-  return [
-    mk('hero', {
-      layout: 'center',
-      badge: 'Pago confirmado',
-      title: '¡Gracias por tu compra!',
-      subtitle: `Ya tenés acceso a ${productName || 'tu programa'}. Te mandamos un correo con todos los detalles — revisá tu bandeja de entrada (y la carpeta de spam, por las dudas).`,
-      cta: 'Revisar mi correo',
-      microcopy: 'Si en 10 minutos no te llega, escribinos.',
-      image_prompt: 'happy+woman+celebrating+laptop+success+bright',
-    }),
-    mk('como-funciona', {
-      title: 'Tus próximos pasos',
-      items: [
+// ── Secciones de cada página del embudo, armadas por código ──
+function _mkSec(id, content, palId) {
+  return { id, brief: '', content, html: AI.buildSection(id, content, palId) };
+}
+
+function _funnelPageSections(type, palId, productName) {
+  const name = productName || 'tu programa';
+  if (type === 'thanks') {
+    return [
+      _mkSec('hero', {
+        layout: 'center', badge: 'Pago confirmado', title: '¡Gracias por tu compra!',
+        subtitle: `Ya tenés acceso a ${name}. Te mandamos un correo con todos los detalles — revisá tu bandeja de entrada (y la carpeta de spam, por las dudas).`,
+        cta: 'Revisar mi correo', microcopy: 'Si en 10 minutos no te llega, escribinos.',
+        image_prompt: 'happy+woman+celebrating+laptop+success+bright',
+      }, palId),
+      _mkSec('como-funciona', { title: 'Tus próximos pasos', items: [
         { step: '1', title: 'Revisá tu correo', desc: 'Te enviamos los datos de acceso a la dirección con la que compraste.' },
         { step: '2', title: 'Entrá a la plataforma', desc: 'Usá el link del correo para entrar y crear tu contraseña.' },
         { step: '3', title: 'Empezá hoy mismo', desc: 'Arrancá por el primer módulo — no necesitás nada más para empezar.' },
-      ],
-    }),
-    mk('cta-final', {
-      title: '¿Necesitás ayuda?',
-      subtitle: 'Escribinos y te respondemos a la brevedad.',
-      cta: 'Contactar soporte',
-      microcopy: 'Respondemos de lunes a viernes.',
-    }),
-    mk('footer', {
-      brand_name: productName || 'Mi Marca',
-      tagline: 'Gracias por confiar en nosotros',
-      copyright: `© ${new Date().getFullYear()} · Todos los derechos reservados`,
-    }),
+      ]}, palId),
+      _mkSec('cta-final', { title: '¿Necesitás ayuda?', subtitle: 'Escribinos y te respondemos a la brevedad.', cta: 'Contactar soporte', microcopy: 'Respondemos de lunes a viernes.' }, palId),
+      _mkSec('footer', { brand_name: name, tagline: 'Gracias por confiar en nosotros', copyright: `© ${new Date().getFullYear()} · Todos los derechos reservados` }, palId),
+    ];
+  }
+  const isUp = type === 'upsell';
+  return [
+    _mkSec('oferta', {
+      badge: isUp ? 'Espera — oferta única' : 'Última oportunidad',
+      title: isUp ? 'Sumá esto y acelerá tus resultados' : 'Probá con una versión más accesible',
+      subtitle: isUp
+        ? 'Solo aparece en esta pantalla y no se repite. Se agrega a la compra que acabás de hacer.'
+        : 'Entendemos que no sea el momento. Te dejamos una opción más simple al alcance de todos.',
+      features: isUp
+        ? ['Acceso al programa avanzado completo', 'Sesiones en vivo de acompañamiento', 'Plantillas y recursos listos para usar']
+        : ['Lo esencial del programa', 'Acceso por tiempo limitado', 'Podés mejorar al plan completo cuando quieras'],
+      price_before: isUp ? '$197' : '$97',
+      price: isUp ? '$97' : '$27',
+      cta: isUp ? 'SÍ, LO QUIERO SUMAR' : 'SÍ, QUIERO ESTA OPCIÓN',
+      cta_url: '',
+      decline: isUp ? 'No gracias, continuar sin esto' : 'No gracias, ir a mi compra',
+      decline_url: '',
+      microcopy: 'Pago seguro · Se suma a tu compra anterior',
+    }, palId),
+    _mkSec('footer', { brand_name: name, tagline: 'Gracias por tu compra', copyright: `© ${new Date().getFullYear()} · Todos los derechos reservados` }, palId),
   ];
 }
 
-async function createThanksPage() {
+// El "no gracias" de cada oferta apunta al siguiente paso que exista
+function _declineTargetFor(type, f) {
+  if (type === 'upsell') return (f.downsell && f.downsell.slug) || (f.thanks && f.thanks.slug) || '';
+  if (type === 'downsell') return (f.thanks && f.thanks.slug) || '';
+  return '';
+}
+
+// Reconecta los "no gracias" de upsell/downsell cuando se agregan páginas nuevas
+async function _relinkFunnel() {
+  const f = _funnelCfg();
+  for (const type of ['upsell', 'downsell']) {
+    const page = f[type];
+    if (!page || !page.id) continue;
+    const slug = _declineTargetFor(type, f);
+    if (!slug) continue;
+    try {
+      const row = await DB.landings.get(page.id);
+      if (!row) continue;
+      const secs = row.sections || (row.settings && row.settings.sections);
+      if (!Array.isArray(secs)) continue;
+      const palId = row.palette || (row.settings && row.settings.palette) || 'blue-purple';
+      const i = secs.findIndex(s => s.id === 'oferta');
+      if (i === -1) continue;
+      const url = _pageUrl(slug);
+      if (secs[i].content && secs[i].content.decline_url === url) continue;
+      secs[i].content = { ...(secs[i].content || {}), decline_url: url };
+      secs[i].html = AI.buildSection('oferta', secs[i].content, palId);
+      const opts = { ctaUrl: (row.settings || {}).cta_url || '', fbPixel: (row.settings || {}).fb_pixel_id || '' };
+      await DB.landings.save({
+        ...row, sections: secs, mode: 'html',
+        html: AI.assembleLanding(secs, palId, row.title, opts),
+        settings: { ...(row.settings || {}), sections: secs, mode: 'html', palette: palId },
+      }, currentUser.id);
+    } catch (e) { console.warn('[funnel] relink', type, e); }
+  }
+}
+
+async function createFunnelPage(type) {
   if (!landing) { showToast('Primero creá tu landing', true); return; }
   if (!currentUser) { showToast('Iniciá sesión para crear la página', true); return; }
-  const btn = document.getElementById('btn-create-thanks');
-  btn.disabled = true;
-  btn.innerHTML = 'Creando…';
+  const meta = FUNNEL_STEPS.find(s => s.key === type) || { label: type };
+  setStatus('Creando…');
   try {
     const palId = landing.palette || getCurrentPalette() || 'blue-purple';
     const name = (landing.title || 'Mi producto').trim();
-    const sections = _thanksSections(palId, name);
-    const title = `${name} — Gracias`;
+    const f = _funnelCfg();
+    const sections = _funnelPageSections(type, palId, name);
+    // Conectar el "no gracias" con el paso siguiente que ya exista
+    const declineSlug = _declineTargetFor(type, f);
+    if (declineSlug) {
+      const oi = sections.findIndex(s => s.id === 'oferta');
+      if (oi !== -1) {
+        sections[oi].content.decline_url = _pageUrl(declineSlug);
+        sections[oi].html = AI.buildSection('oferta', sections[oi].content, palId);
+      }
+    }
+    const title = `${name} — ${meta.label}`;
     const page = {
-      id: null,
-      title,
-      slug: _slugify(name + '-gracias'),
-      brief: `Página de agradecimiento post-compra de: ${name}`,
-      palette: palId,
-      blocks: [],
-      mode: 'html',
-      sections,
-      published: true,
-      settings: { mode: 'html', palette: palId, sections, is_thanks_page: true, parent_landing: landing.id || null },
+      id: null, title, slug: _slugify(`${name}-${type}`),
+      brief: `Página de ${meta.label} del embudo de: ${name}`,
+      palette: palId, blocks: [], mode: 'html', sections, published: true,
+      settings: {
+        mode: 'html', palette: palId, sections,
+        funnel_role: type, parent_landing: landing.id || null,
+        fb_pixel_id: (landing.settings || {}).fb_pixel_id || '',
+      },
     };
-    page.html = AI.assembleLanding(sections, palId, title, { fbPixel: (landing.settings || {}).fb_pixel_id || '' });
+    page.html = AI.assembleLanding(sections, palId, title, { fbPixel: page.settings.fb_pixel_id });
     const row = await DB.landings.save(page, currentUser.id);
     if (!row || !row.id) throw new Error('No se pudo guardar');
-    landing.settings = landing.settings || {};
-    landing.settings.thanks_slug = row.slug || page.slug;
-    landing.settings.thanks_id = row.id;
+    f[type] = { id: row.id, slug: row.slug || page.slug };
+    if (type === 'thanks') { landing.settings.thanks_slug = f.thanks.slug; landing.settings.thanks_id = f.thanks.id; }
     await saveLanding();
-    hydrateSalesPanel();
-    showToast('Página de gracias creada y publicada');
-    addChatMsg(`Creé tu página de gracias y ya está publicada. Copiá el link del panel "Ventas y funnel" y pegalo en tu pasarela de pago como página de retorno tras la compra. Podés editarla con el botón "Editar página de gracias".`, 'assistant');
+    await _relinkFunnel();
+    renderFunnelSteps();
+    setStatus('Guardado');
+    showToast(`Página de ${meta.label} creada y publicada`);
+    const extra = type === 'thanks'
+      ? 'Pegá su link en tu pasarela como página de retorno tras la compra.'
+      : `Pegá su link en tu pasarela como página posterior al pago, y cargá el link de pago de esa oferta dentro de la página (campo "Link de pago" al editarla).`;
+    addChatMsg(`Creé tu página de ${meta.label} y ya está publicada. ${extra}`, 'assistant');
   } catch (e) {
+    setStatus('');
     showToast('No pude crear la página: ' + (e.message || 'error'), true);
-  } finally {
-    btn.disabled = false;
-    btn.innerHTML = '<span class="material-symbols-outlined" style="font-size:13px">celebration</span> Crear página de gracias';
   }
 }
+
 
 // Encuentra a qué sección se refiere el usuario en un mensaje ("ponela en beneficios")
 function _matchSectionInMsg(msg, sections) {
@@ -3673,11 +3789,6 @@ function initUI() {
     const p = document.getElementById('sales-panel');
     const open = p.classList.toggle('hidden');
     document.getElementById('sales-toggle-icon').textContent = open ? 'expand_more' : 'expand_less';
-  });
-  document.getElementById('btn-create-thanks').addEventListener('click', createThanksPage);
-  document.getElementById('btn-edit-thanks').addEventListener('click', () => {
-    const id = (landing && landing.settings && landing.settings.thanks_id);
-    if (id) window.open('landing-builder.html?id=' + id, '_blank');
   });
 
   // Editor visual de secciones

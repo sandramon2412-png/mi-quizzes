@@ -1892,3 +1892,55 @@ Sección plegable arriba del editor visual (antes esto vivía escondido en el mo
 
 ### Pendientes
 - 🟡 Límites ebook: Pro=999, Growth=999 → REVERTIR a Pro→5, Growth→20
+
+---
+
+## SESIÓN 19 JUL 2026 (parte 4) — Embudo completo: upsell y downsell
+
+### Pedido de Sandra
+"¿Y para el funnel de los upsell y downsell?"
+
+### Sección `oferta` (nueva) — `_buildSection` en app.js
+Sección diseñada para páginas de upsell/downsell:
+- Badge de urgencia con gradiente de marca
+- Lista de qué incluye con checks
+- **Precio tachado + precio de oferta**
+- Botón grande "SÍ, LO QUIERO" que usa `content.cta_url` (link de pago de ESA oferta)
+- Link discreto "No gracias, continuar" (`content.decline_url`) que lleva al paso siguiente
+
+**Regla clave en `assembleLanding`**: el `ctaUrl` global reescribe `href="#precio|#cta-final|#hero"`
+con clase `.ld-btn`, y también `href="#"` (oferta sin link propio). **Nunca toca el `.ld-decline`**
+(no tiene clase `ld-btn`), así que el "no gracias" jamás se convierte en un botón de compra.
+
+### Embudo de 3 páginas — `landing-builder.html`
+`landing.settings.funnel = { upsell:{id,slug}, downsell:{id,slug}, thanks:{id,slug} }`
+(migra automáticamente el formato viejo `thanks_slug`/`thanks_id`).
+
+- `FUNNEL_STEPS` + `renderFunnelSteps()`: mapa visual de los 3 pasos en el panel "Ventas y funnel".
+  Cada paso creado muestra su link copiable + botones Editar / Ver. Los no creados muestran "Crear página".
+- `_funnelPageSections(type, palId, name)`: arma las secciones por código.
+  - `upsell` → oferta ($197 tachado → $97) + footer
+  - `downsell` → oferta más accesible ($97 tachado → $27) + footer
+  - `thanks` → hero de agradecimiento + 3 pasos + soporte + footer
+- `createFunnelPage(type)`: crea la página como fila propia en `landings`, publicada,
+  con `settings.funnel_role` y `parent_landing`. Hereda el píxel de la landing madre.
+- `_declineTargetFor(type, f)`: upsell → downsell (o gracias); downsell → gracias.
+- `_relinkFunnel()`: al crear una página nueva, recarga las páginas de oferta ya existentes desde
+  la DB, actualiza su `decline_url`, reconstruye su HTML y las vuelve a guardar. **Así el embudo se
+  encadena solo sin importar en qué orden se crean las páginas.**
+
+**Cero llamadas a la IA** en todo el flujo del embudo (verificado en el E2E).
+
+### Tests
+- `tests/unit-landing-sections.js`: +7 checks de la sección oferta (precio tachado, link propio vs
+  global, protección del "no gracias").
+- `tests/e2e-landing-builder.js`: E2E 12 reescrito — crea las 3 páginas, verifica que quedan
+  publicadas, que el "no gracias" del upsell apunta al downsell y el del downsell a gracias, que el
+  panel muestra los 3 links, y que nada de esto usa IA.
+- Se agregó `settleAI()` al E2E: espera a que el contador de llamadas se estabilice antes de medir
+  "cero llamadas", eliminando un falso negativo intermitente por pedidos del paso anterior en vuelo.
+
+### Versión: `?v=20260719c`
+
+### Pendientes
+- 🟡 Límites ebook: Pro=999, Growth=999 → REVERTIR a Pro→5, Growth→20
