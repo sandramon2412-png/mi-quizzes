@@ -57,5 +57,18 @@ chk('video + split → dos columnas con imagen', hvSplit.includes('display:flex;
 chk('video + center → centrado', hvCenter.includes('text-align:center') && hvCenter.includes('<video autoplay'));
 chk('ambos con overlay', hvSplit.includes('rgba(0,0,0,.58)') && hvCenter.includes('rgba(0,0,0,.55)'));
 
+console.log('Oferta (upsell/downsell)');
+const of1=C._buildSection('oferta',{badge:'Espera',title:'Sumá esto',features:['a','b'],price_before:'$197',price:'$97',cta:'SI',cta_url:'https://pay/UP',decline:'No gracias',decline_url:'https://next'},pal);
+chk('precio tachado + precio oferta', of1.includes('line-through') && of1.includes('$197') && of1.includes('$97'));
+chk('botón con su propio link de pago', of1.includes('href="https://pay/UP"'));
+chk('link de declinar', of1.includes('href="https://next"') && of1.includes('ld-decline'));
+chk('features con check', of1.includes('check_circle'));
+const asm=C.assembleLanding([{id:'oferta',html:of1}],'blue-purple','t',{ctaUrl:'https://pay/PRINCIPAL'});
+chk('el checkout global NO pisa el link propio de la oferta', asm.includes('href="https://pay/UP"') && !asm.includes('href="https://pay/PRINCIPAL"'));
+chk('el checkout global NO pisa el "no gracias"', asm.includes('href="https://next"'));
+const of2=C._buildSection('oferta',{title:'X',price:'$47',cta:'SI'},pal);
+const asm2=C.assembleLanding([{id:'oferta',html:of2}],'blue-purple','t',{ctaUrl:'https://pay/PRINCIPAL'});
+chk('oferta sin link propio → usa el checkout global', asm2.includes('href="https://pay/PRINCIPAL"'));
+
 console.log('\n'+(f===0?'🎉 TODOS PASAN':'⚠️ '+f+' FALLAN'));
 process.exit(f?1:0);
