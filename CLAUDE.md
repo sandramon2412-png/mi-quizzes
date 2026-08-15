@@ -1753,3 +1753,194 @@ Las categorías Personas/Tech/Abstract/Ciudad/Naturaleza usaban IDs viejos de Pe
 
 ### Sobre funnels/páginas de agradecimiento (pendiente mayor)
 No implementado aún. Workaround actual: crear otra landing como página de gracias y poner su URL publicada en la config de Hotmart. Feature futura: multi-página por landing (`landing.pages[]`).
+
+---
+
+## SESIÓN 19 JUL 2026 (parte 2) — LA SOLUCIÓN DE FONDO: editor visual sin IA
+
+### El diagnóstico que faltaba hacer
+
+Sandra: "ese building de la landing definitivamente no funciona y ese chat peor, llevo meses".
+
+Antes de tocar código se hicieron dos verificaciones que NUNCA se habían hecho:
+
+1. **¿El código llegó a producción?** Sí — `origin/main` contiene los fixes (`_editSectionContent`,
+   `_parseJSONSafe`, `setSectionImage`, cache-busters `?v=20260718c`). No era un problema de deploy.
+
+2. **¿Funciona la página real, no la lógica aislada?** Se construyó un **test E2E real**
+   (`tests/e2e-landing-builder.js`): levanta el repo en un server HTTP, abre `landing-builder.html`
+   en Chromium, mockea el CDN de supabase-js y el endpoint `claude-proxy`, y opera la UI como la
+   usuaria. **Pasó todo**: generar, editar sin regenerar, guardar, recargar, editar de nuevo.
+
+**Conclusión**: la mecánica ya estaba bien. El problema de fondo es **arquitectónico**: editar SOLO
+por chat significa que cada cambio depende de que un modelo clasifique bien la intención. Aunque
+acierte el 85% de las veces, el 15% restante destruye trabajo — y eso destruye la confianza.
+Ninguna cantidad de prompt-tuning arregla eso.
+
+### LA SOLUCIÓN: editor visual directo (panel derecho)
+
+El modo secciones ya guardaba `content` JSON estructurado por sección. Faltaba exponerlo en una UI.
+
+**`app.js`** — dos métodos nuevos en el facade `AI` (puro código, sin IA):
+- `AI.buildSection(id, content, palId)` → HTML de una sección desde su content
+- `AI.sectionSchema(id)` → schema por defecto (para secciones nuevas o landings viejas sin content)
+
+**`landing-builder.html`** — el `#right-panel` (que era del sistema viejo de bloques y estaba
+oculto) ahora es el **Editor visual**:
+- `SEC_SCHEMA`: define los campos editables de cada tipo de sección (texto, área, lista, items
+  con subcampos, icono con dropdown de Material Symbols, imagen con upload, select de layout).
+- `renderSectionsList()`: lista de secciones con ↑ ↓ 🗑 y selección.
+- `openSectionEditor(idx)` + `renderSecField()`: formulario generado desde el schema.
+- `setSecField(path, value)` → `_setByPath` sobre `section.content` → debounce 350ms →
+  `rebuildActiveSection()` → `AI.buildSection` + `AI.assembleLanding` → preview + autosave.
+- `addSecItem` / `removeSecItem` / `moveSecItem`: manipular listas (agregar un beneficio, borrar
+  un testimonio, reordenar módulos).
+- `moveSection` / `deleteSection` / `addSection(id)`: estructura de la landing.
+- **CERO llamadas a la IA en todo este flujo** (verificado en el E2E).
+
+El chat sigue existiendo para lo que es bueno (generar de cero, reescribir textos con IA), pero
+**ya no es el único camino**. Si el chat falla, la usuaria edita a mano y listo.
+
+### Bug adicional encontrado y corregido
+`tailwind.config = {...}` en un `<script>` inline: si el CDN de Tailwind no cargaba (red lenta,
+bloqueo, adblock), `tailwind` era undefined → **ReferenceError que mataba TODO el script siguiente**,
+incluida la UI del builder. Blindado con `window.tailwind = window.tailwind || {}`.
+Esto puede explicar reportes de "no funciona nada" que no se reproducían.
+
+También: Lloyd (`#lsa-float-btn`) tapaba el editor → se achica y se corre a la izquierda del panel.
+
+### Tests permanentes en el repo (`tests/`)
+- `tests/e2e-landing-builder.js` — 40+ checks sobre la página real en Chromium
+- `tests/unit-landing.js` — generación, paleta, edición, video, robustez
+- `tests/unit-landing-round2.js` — grids balanceados, iconos, edición quirúrgica, pixel/CTA
+- `tests/README.md` — cómo correrlos
+
+**Regla para futuras sesiones**: antes de decir "está arreglado", correr
+`node tests/e2e-landing-builder.js`. Si no pasa, no está arreglado.
+
+### Versión: `?v=20260719a`
+
+### Pendientes
+- 🟡 Límites ebook: Pro=999, Growth=999 → REVERTIR a Pro→5, Growth→20
+- 🟡 Funnels / páginas de agradecimiento (multi-página por landing)
+
+---
+
+## SESIÓN 19 JUL 2026 (parte 3) — Nav, media por sección, funnel y fix de desplegables
+
+### Reporte de Sandra sobre el editor visual (que sí le gustó: "mucho mejor")
+1. Desplegables con texto blanco sobre blanco → ilegibles
+2. Hero "texto + imagen al lado" no funcionaba, solo centrado
+3. "No hay opción de agregar más secciones"
+4. No se podían poner imágenes/videos en secciones que no fueran el hero
+5. La landing no tiene barra de navegación
+6. Falta el funnel: página de gracias, píxel y botón de pago a la pasarela
+
+### 1. Desplegables ilegibles — RESUELTO ✅
+El popup de un `<select>` lo pinta el sistema operativo con fondo blanco, pero heredaba
+`color:#e8e8ee` → texto blanco sobre blanco. Fix en el CSS de la página:
+```css
+select{color-scheme:dark}
+select option{background:#1c1c20 !important;color:#e8e8ee !important}
+```
+Aplica a TODOS los selects del builder, no solo al editor.
+
+### 2. Hero "imagen al lado" — CAUSA RAÍZ ENCONTRADA ✅
+El motor de `layout: split|center` estaba bien (verificado en `tests/unit-landing-sections.js`).
+El problema real: **`_buildSection('hero')` chequeaba `if (c.video_url)` ANTES que el layout**, así
+que cualquier hero con video de fondo se forzaba a centrado, ignorando la elección.
+Fix: ahora hay dos variantes con video — split (texto + imagen al lado, video detrás) y centrada.
+Además el campo `video_url` del hero es visible/editable/borrable en el editor.
+
+### 3-4. Media en cualquier sección — RESUELTO ✅
+- `MEDIA_FIELDS` (imagen + video de fondo) se agrega automáticamente al editor de toda sección
+  que no maneje media en su propio template (las que sí: hero, nav, imagen, video, galeria → `noMedia:true`).
+- Post-proceso en `_buildSection`: `image_url` se inserta al final de la sección; `video_url` envuelve
+  la sección con `<video>` absoluto + overlay `rgba(0,0,0,.62)` + wrapper `.ld-onvideo` que fuerza
+  texto blanco y cards translúcidas para que todo se lea.
+
+### 5. Barra de navegación — NUEVA ✅
+- Template `nav` en `_buildSection`: header sticky con blur, marca, links, botón CTA y menú
+  hamburguesa en ≤860px (el toggle es JS inline, sin dependencias).
+- `navLinksFor(sections)` construye los links **desde las secciones que existen de verdad** — nunca
+  puede apuntar a una sección inexistente.
+- `generateLandingSectioned` lo agrega automáticamente al principio, sin llamada extra a la IA.
+
+### Secciones libres nuevas ✅
+`texto` (bloque libre con alineación), `imagen` (destacada con pie y 3 tamaños),
+`video` (YouTube/Vimeo → iframe embed; .mp4 → tag video), `galeria` (grid balanceado).
+Todas disponibles en el modal "+ Agregar" del editor visual.
+
+### 6. Panel "Ventas y funnel" — NUEVO ✅
+Sección plegable arriba del editor visual (antes esto vivía escondido en el modal de publicar):
+- **Link de pago**: todos los `.ld-btn` de la landing apuntan al checkout (`target="_blank"`)
+- **Píxel de Facebook**: fbq init + PageView en `<head>` + `InitiateCheckout` en clics de CTA
+- **Página de gracias**: `createThanksPage()` arma una landing secundaria por código (hero de
+  agradecimiento + 3 pasos siguientes + soporte + footer), la guarda **publicada** como fila propia
+  en `landings` con `settings.is_thanks_page` y `parent_landing`, y muestra el link listo para pegar
+  en la pasarela. Botón "Editar página de gracias" la abre en otro tab del mismo builder.
+  Los datos quedan en `landing.settings.thanks_slug` / `thanks_id`.
+
+### Tests
+- `tests/unit-landing-sections.js` (NUEVO): 22 checks — hero split/center/video, nav, secciones
+  libres, media por sección, overlay de legibilidad.
+- `tests/e2e-landing-builder.js`: ampliado a **50+ checks**, ahora cubre nav automático con links
+  reales, agregar sección de video con embed, imagen en sección no-hero, link de pago + píxel
+  aplicados al HTML, y creación/publicación de la página de gracias.
+
+### Versión: `?v=20260719b`
+
+### Pendientes
+- 🟡 Límites ebook: Pro=999, Growth=999 → REVERTIR a Pro→5, Growth→20
+
+---
+
+## SESIÓN 19 JUL 2026 (parte 4) — Embudo completo: upsell y downsell
+
+### Pedido de Sandra
+"¿Y para el funnel de los upsell y downsell?"
+
+### Sección `oferta` (nueva) — `_buildSection` en app.js
+Sección diseñada para páginas de upsell/downsell:
+- Badge de urgencia con gradiente de marca
+- Lista de qué incluye con checks
+- **Precio tachado + precio de oferta**
+- Botón grande "SÍ, LO QUIERO" que usa `content.cta_url` (link de pago de ESA oferta)
+- Link discreto "No gracias, continuar" (`content.decline_url`) que lleva al paso siguiente
+
+**Regla clave en `assembleLanding`**: el `ctaUrl` global reescribe `href="#precio|#cta-final|#hero"`
+con clase `.ld-btn`, y también `href="#"` (oferta sin link propio). **Nunca toca el `.ld-decline`**
+(no tiene clase `ld-btn`), así que el "no gracias" jamás se convierte en un botón de compra.
+
+### Embudo de 3 páginas — `landing-builder.html`
+`landing.settings.funnel = { upsell:{id,slug}, downsell:{id,slug}, thanks:{id,slug} }`
+(migra automáticamente el formato viejo `thanks_slug`/`thanks_id`).
+
+- `FUNNEL_STEPS` + `renderFunnelSteps()`: mapa visual de los 3 pasos en el panel "Ventas y funnel".
+  Cada paso creado muestra su link copiable + botones Editar / Ver. Los no creados muestran "Crear página".
+- `_funnelPageSections(type, palId, name)`: arma las secciones por código.
+  - `upsell` → oferta ($197 tachado → $97) + footer
+  - `downsell` → oferta más accesible ($97 tachado → $27) + footer
+  - `thanks` → hero de agradecimiento + 3 pasos + soporte + footer
+- `createFunnelPage(type)`: crea la página como fila propia en `landings`, publicada,
+  con `settings.funnel_role` y `parent_landing`. Hereda el píxel de la landing madre.
+- `_declineTargetFor(type, f)`: upsell → downsell (o gracias); downsell → gracias.
+- `_relinkFunnel()`: al crear una página nueva, recarga las páginas de oferta ya existentes desde
+  la DB, actualiza su `decline_url`, reconstruye su HTML y las vuelve a guardar. **Así el embudo se
+  encadena solo sin importar en qué orden se crean las páginas.**
+
+**Cero llamadas a la IA** en todo el flujo del embudo (verificado en el E2E).
+
+### Tests
+- `tests/unit-landing-sections.js`: +7 checks de la sección oferta (precio tachado, link propio vs
+  global, protección del "no gracias").
+- `tests/e2e-landing-builder.js`: E2E 12 reescrito — crea las 3 páginas, verifica que quedan
+  publicadas, que el "no gracias" del upsell apunta al downsell y el del downsell a gracias, que el
+  panel muestra los 3 links, y que nada de esto usa IA.
+- Se agregó `settleAI()` al E2E: espera a que el contador de llamadas se estabilice antes de medir
+  "cero llamadas", eliminando un falso negativo intermitente por pedidos del paso anterior en vuelo.
+
+### Versión: `?v=20260719c`
+
+### Pendientes
+- 🟡 Límites ebook: Pro=999, Growth=999 → REVERTIR a Pro→5, Growth→20

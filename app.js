@@ -1366,6 +1366,12 @@ INSTRUCCIÓN: ${instruction}`;
 
   _sectionDefaultBrief(id) {
     const b = {
+      nav: 'Barra de navegación: nombre de marca, 3-5 links a secciones de esta misma landing (href con #id) y botón CTA.',
+      oferta: 'Oferta de upsell/downsell con botón de aceptar y link para declinar.',
+      texto: 'Bloque de texto libre.',
+      imagen: 'Imagen destacada con pie de foto.',
+      video: 'Video de presentación o demo del producto.',
+      galeria: 'Galería de imágenes del producto o resultados.',
       hero: 'Titular potente (fórmula dolor→solución→transformación), subtítulo con el mecanismo, CTA verbo+resultado, microcopy debajo (Sin tarjeta · Acceso inmediato), imagen o mockup relevante.',
       'prueba-social': 'Franja de confianza: logos o métricas verosímiles, "+N personas ya confían".',
       problema: 'El dolor real del cliente, agitado con empatía. 3-4 puntos de frustración concretos.',
@@ -1399,6 +1405,8 @@ INSTRUCCIÓN: ${instruction}`;
     if (o.ctaUrl) {
       const safeCta = String(o.ctaUrl).replace(/"/g, '&quot;');
       body = body.replace(/href="#(?:precio|cta-final|hero)"( class="ld-btn")/g, `href="${safeCta}" target="_blank" rel="noopener"$1`);
+      // El botón de una sección "oferta" sin link propio también apunta al checkout
+      body = body.replace(/href="#"( class="ld-btn")/g, `href="${safeCta}" target="_blank" rel="noopener"$1`);
     }
     // Facebook Pixel (se inyecta solo si hay ID configurado)
     const fbPixel = o.fbPixel ? `
@@ -1466,6 +1474,21 @@ INSTRUCCIÓN: ${instruction}`;
   @media(max-width:960px){
     .ld-g3{grid-template-columns:repeat(2,1fr)}
   }
+  /* Sección con video de fondo: el texto siempre legible sobre el video */
+  .ld-onvideo h2,.ld-onvideo h3,.ld-onvideo p,.ld-onvideo li,.ld-onvideo summary,.ld-onvideo figcaption{color:#fff !important}
+  .ld-onvideo .ld-card,.ld-onvideo details{background:rgba(255,255,255,.09) !important;border-color:rgba(255,255,255,.2) !important}
+
+  .ld-decline{transition:color .2s}
+  .ld-decline:hover{color:var(--ink) !important}
+
+  /* Barra de navegación */
+  #nav a{transition:color .2s}
+  #nav .ld-nav-links a:hover{color:var(--ink)}
+  @media(max-width:860px){
+    #nav .ld-nav-links{display:none !important}
+    #nav .ld-nav-cta{display:none !important}
+    #nav .ld-burger{display:block !important}
+  }
   @media(max-width:640px){
     .ld-grid{grid-template-columns:1fr !important}
     section{padding:56px 0 !important}
@@ -1532,6 +1555,12 @@ ${body}
     const icons = 'star|check_circle|favorite|school|trending_up|bolt|shield|people|rocket_launch|thumb_up|verified|psychology|emoji_events|lightbulb|timer|local_fire_department|health_and_safety|fitness_center|attach_money|savings|work|campaign|diversity_3|card_giftcard|sentiment_satisfied|self_improvement';
     const S = {
       hero: {badge:'frase corta de credibilidad (ej: +2.000 personas ya lo lograron)',title:'título H1 impactante y específico para este producto (6-12 palabras)',subtitle:'descripción del beneficio principal en 2-3 líneas que engancha al lector',cta:'texto del botón (verbo+resultado, ej: Quiero empezar hoy)',microcopy:'texto pequeño bajo el botón (ej: Sin tarjeta · Acceso inmediato · Garantía 30 días)',image_prompt:'relevant+english+keywords+describing+a+real+image+for+this+product+separated+by+plus',layout:'split o center — split: texto a la izquierda + imagen a la derecha (cursos, servicios con rostro humano). center: todo centrado con imagen ancha abajo (apps, productos digitales, comunidades)'},
+      nav: {brand:'Nombre de la marca o producto',cta:'texto corto del botón (ej: Empezar)',links:[{label:'Beneficios',href:'#beneficios'},{label:'Contenido',href:'#modulos'},{label:'Precio',href:'#precio'},{label:'Preguntas',href:'#faq'}]},
+      texto: {title:'Título de la sección (opcional)',body:'Párrafos de texto libre. Podés usar varias líneas.',align:'left'},
+      imagen: {title:'',image_prompt:'english+keywords+for+the+image+separated+by+plus',caption:'pie de foto opcional',size:'full'},
+      video: {title:'Mirá cómo funciona',subtitle:'subtítulo opcional',video_url:''},
+      galeria: {title:'Galería',subtitle:'',images:[{url:'',caption:''},{url:'',caption:''},{url:'',caption:''}]},
+      oferta: {badge:'Espera — oferta única',title:'Sumá esto y potenciá tus resultados',subtitle:'Solo disponible en esta pantalla, no se repite después.',features:['qué incluye 1','qué incluye 2','qué incluye 3'],price_before:'$97',price:'$47',cta:'SÍ, LO QUIERO',cta_url:'',decline:'No gracias, continuar sin esto',decline_url:'',microcopy:'Pago seguro · Se suma a tu compra anterior'},
       'para-quien': {title:'¿Este programa es para vos?',yes_title:'Es para vos si…',no_title:'No es para vos si…',yes:['frase específica sobre el cliente ideal 1','frase 2','frase 3'],no:['frase sobre quién NO debería comprarlo 1','frase 2','frase 3']},
       'antes-despues': {title:'Tu transformación',before_title:'Hoy',after_title:'Después del programa',before:['punto de dolor actual 1','punto 2','punto 3'],after:['resultado concreto 1','resultado 2','resultado 3']},
       problema: {title:'El problema real que tiene tu cliente ideal',items:[{icon:'sentiment_dissatisfied',title:'Dolor específico 1',desc:'descripción del dolor en 1-2 frases'},{icon:'sentiment_dissatisfied',title:'Dolor específico 2',desc:'descripción'},{icon:'sentiment_dissatisfied',title:'Dolor específico 3',desc:'descripción'}]},
@@ -1571,9 +1600,73 @@ ${body}
 
     const __built = (() => {
     switch(id) {
+      case 'nav': {
+        const links = arr(c.links);
+        const navId = 'ldnav' + Math.random().toString(36).slice(2, 7);
+        return `<header id="nav" style="position:sticky;top:0;z-index:50;background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom:1px solid var(--border)">
+<div style="max-width:1152px;margin:0 auto;padding:0 24px;height:66px;display:flex;align-items:center;gap:20px">
+<a href="#hero" style="font-weight:800;font-size:18px;color:var(--ink);text-decoration:none;flex-shrink:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${e(c.brand || 'Mi Marca')}</a>
+<nav class="ld-nav-links" style="margin-left:auto;display:flex;align-items:center;gap:26px">
+${links.map(l => `<a href="${e(l.href || '#')}" style="color:var(--muted);font-size:15px;font-weight:500;text-decoration:none">${e(l.label || '')}</a>`).join('')}
+</nav>
+${c.cta ? `<a href="#precio" class="ld-btn ld-nav-cta" style="background:${GRAD};color:#fff;padding:10px 20px;border-radius:10px;font-weight:700;font-size:14px;text-decoration:none;white-space:nowrap">${e(c.cta)}</a>` : ''}
+<button class="ld-burger" aria-label="Menú" onclick="var m=document.getElementById('${navId}');m.style.display=m.style.display==='block'?'none':'block'" style="display:none;background:none;border:1px solid var(--border);border-radius:8px;color:var(--ink);padding:7px 10px;font-size:13px;font-weight:700;cursor:pointer;margin-left:auto;flex-shrink:0">☰</button>
+</div>
+<div id="${navId}" style="display:none;border-top:1px solid var(--border);padding:12px 24px 18px">
+${links.map(l => `<a href="${e(l.href || '#')}" style="display:block;color:var(--ink);font-size:16px;font-weight:600;text-decoration:none;padding:11px 0">${e(l.label || '')}</a>`).join('')}
+${c.cta ? `<a href="#precio" class="ld-btn" style="display:block;text-align:center;background:${GRAD};color:#fff;padding:13px;border-radius:10px;font-weight:700;text-decoration:none;margin-top:10px">${e(c.cta)}</a>` : ''}
+</div>
+</header>`;
+      }
+      case 'texto': {
+        return SEC(`${c.title ? H2(c.title) : ''}<div style="max-width:760px;margin:0 auto;color:var(--muted);font-size:17px;line-height:1.75;white-space:pre-line;text-align:${e(c.align || 'left')}">${e(c.body || '')}</div>`);
+      }
+      case 'imagen': {
+        const src = c.image_url || this._imgUrl(c.image_prompt);
+        const w = { small: '48%', medium: '72%', full: '100%' }[c.size] || '100%';
+        return SEC(`${c.title ? H2(c.title) : ''}<figure style="margin:0 auto;max-width:${w}">
+<img src="${src}" loading="lazy" alt="${e(c.caption || '')}" style="width:100%;border-radius:20px;box-shadow:0 20px 60px rgba(0,0,0,.3)"/>
+${c.caption ? `<figcaption style="color:var(--muted);font-size:14px;text-align:center;margin-top:12px">${e(c.caption)}</figcaption>` : ''}
+</figure>`);
+      }
+      case 'video': {
+        const vurl = c.video_url || '';
+        const yt = vurl.match(/(?:youtube\.com\/(?:watch\?v=|embed\/)|youtu\.be\/)([\w-]{6,})/);
+        const vimeo = vurl.match(/vimeo\.com\/(?:video\/)?(\d+)/);
+        let player;
+        if (yt) player = `<iframe src="https://www.youtube.com/embed/${e(yt[1])}" style="width:100%;aspect-ratio:16/9;border:0;border-radius:18px" allow="accelerometer;autoplay;clipboard-write;encrypted-media;picture-in-picture" allowfullscreen></iframe>`;
+        else if (vimeo) player = `<iframe src="https://player.vimeo.com/video/${e(vimeo[1])}" style="width:100%;aspect-ratio:16/9;border:0;border-radius:18px" allow="autoplay;fullscreen;picture-in-picture" allowfullscreen></iframe>`;
+        else if (vurl) player = `<video src="${e(vurl)}" controls playsinline style="width:100%;aspect-ratio:16/9;border-radius:18px;background:#000"></video>`;
+        else player = `<div style="width:100%;aspect-ratio:16/9;border-radius:18px;background:${GRAD};opacity:.25"></div>`;
+        return SEC(`${c.title ? H2(c.title) : ''}${c.subtitle ? SUB(c.subtitle) : '<div style="margin-bottom:32px"></div>'}<div style="max-width:900px;margin:0 auto;box-shadow:0 24px 64px rgba(0,0,0,.35);border-radius:18px;overflow:hidden">${player}</div>`);
+      }
+      case 'galeria': {
+        const imgs = arr(c.images);
+        return SEC(`${c.title ? H2(c.title) : ''}${c.subtitle ? SUB(c.subtitle) : '<div style="margin-bottom:32px"></div>'}<div ${GRIDC(imgs.length)}>${imgs.map(im => `<figure style="margin:0"><img src="${e(im.url || '')}" loading="lazy" alt="${e(im.caption || '')}" style="width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:16px"/>${im.caption ? `<figcaption style="color:var(--muted);font-size:13px;text-align:center;margin-top:8px">${e(im.caption)}</figcaption>` : ''}</figure>`).join('')}</div>`, 'var(--surface)');
+      }
       case 'hero': {
+        // Video de fondo + layout "split": texto a la izquierda, imagen al lado, video detrás
+        if (c.video_url && c.layout !== 'center') {
+          const vimg = c.image_url || this._imgUrl(c.image_prompt);
+          return `<section id="hero" style="position:relative;overflow:hidden;background:#0a0a0f;padding:96px 0">
+<video autoplay muted loop playsinline preload="metadata" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:0"><source src="${e(c.video_url)}" type="video/mp4"/></video>
+<div style="position:absolute;inset:0;background:rgba(0,0,0,.58);z-index:1"></div>
+<div style="position:relative;z-index:2;max-width:1152px;margin:0 auto;padding:0 24px;display:flex;flex-wrap:wrap;align-items:center;gap:48px">
+<div style="flex:1;min-width:280px">
+${c.badge?`<p style="color:rgba(255,255,255,.85);font-weight:700;font-size:13px;text-transform:uppercase;letter-spacing:2px;margin:0 0 16px">${e(c.badge)}</p>`:''}
+<h1 style="color:#fff;font-size:clamp(2rem,5vw,3.5rem);font-weight:800;line-height:1.1;margin:0 0 20px;text-shadow:0 2px 20px rgba(0,0,0,.4)">${e(c.title||'Título')}</h1>
+<p style="color:rgba(255,255,255,.88);font-size:18px;line-height:1.6;margin:0 0 32px">${e(c.subtitle||'')}</p>
+${BTN(c.cta||'Empezar ahora')}
+${c.microcopy?`<p style="color:rgba(255,255,255,.7);font-size:13px;margin:12px 0 0">${e(c.microcopy)}</p>`:''}
+</div>
+<div style="flex:1;min-width:280px;max-width:520px">
+<img src="${vimg}" loading="lazy" alt="${e(c.title||'')}" style="width:100%;height:380px;object-fit:cover;border-radius:20px;box-shadow:0 20px 60px rgba(0,0,0,.5);border:1px solid rgba(255,255,255,.15)"/>
+</div>
+</div>
+</section>`;
+        }
         if (c.video_url) {
-          // Video de fondo: hero centrado con overlay oscuro para legibilidad
+          // Video de fondo con layout centrado
           return `<section id="hero" style="position:relative;overflow:hidden;background:#0a0a0f;padding:120px 0">
 <video autoplay muted loop playsinline preload="metadata" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:0"><source src="${e(c.video_url)}" type="video/mp4"/></video>
 <div style="position:absolute;inset:0;background:rgba(0,0,0,.55);z-index:1"></div>
@@ -1667,6 +1760,29 @@ ${c.microcopy?`<p style="color:var(--muted);font-size:13px;margin:12px 0 0">${e(
 <div class="ld-card" style="${CARD};border:2px solid var(--brand)"><p style="color:var(--brand);font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;margin:0 0 14px">${e(c.after_title||'Después')}</p><ul style="list-style:none;margin:0;padding:0">${after.map(t=>ROW(t,'check_circle','var(--brand)')).join('')}</ul></div>
 </div>`);
       }
+      case 'oferta': {
+        // Sección de upsell/downsell: SÍ destacado + "no gracias" discreto
+        const feats = arr(c.features);
+        const yesHref = c.cta_url || '#';
+        const noHref = c.decline_url || '#';
+        return `<section id="oferta" style="background:var(--bg);padding:72px 0">
+<div style="max-width:620px;margin:0 auto;padding:0 24px;text-align:center">
+${c.badge?`<p style="display:inline-block;background:${GRAD};color:#fff;font-weight:800;font-size:12px;text-transform:uppercase;letter-spacing:1.5px;padding:7px 16px;border-radius:99px;margin:0 0 20px">${e(c.badge)}</p>`:''}
+<h2 style="color:var(--ink);font-size:clamp(1.7rem,4vw,2.6rem);font-weight:800;line-height:1.15;margin:0 0 16px">${e(c.title||'Una última oferta')}</h2>
+<p style="color:var(--muted);font-size:17px;line-height:1.6;margin:0 0 28px">${e(c.subtitle||'')}</p>
+<div class="ld-price-card" style="background:var(--surface);border:2px solid var(--brand);border-radius:20px;padding:32px">
+${feats.length?`<ul style="list-style:none;margin:0 0 24px;padding:0;text-align:left;display:flex;flex-direction:column;gap:11px">${feats.map(f=>`<li style="color:var(--ink);font-size:15px;display:flex;align-items:flex-start;gap:9px"><span class="material-symbols-outlined" style="font-size:19px;color:var(--brand);flex-shrink:0;margin-top:1px">check_circle</span><span>${e(f)}</span></li>`).join('')}</ul>`:''}
+<div style="display:flex;align-items:baseline;justify-content:center;gap:12px;margin:0 0 22px">
+${c.price_before?`<span style="color:var(--muted);font-size:22px;text-decoration:line-through">${e(c.price_before)}</span>`:''}
+<span style="color:var(--ink);font-size:46px;font-weight:800;line-height:1">${e(c.price||'')}</span>
+</div>
+<a href="${e(yesHref)}" class="ld-btn" style="background:${GRAD};color:#fff;padding:17px 30px;border-radius:12px;font-weight:800;font-size:18px;display:block;text-decoration:none;text-align:center">${e(c.cta||'SÍ, LO QUIERO')}</a>
+${c.microcopy?`<p style="color:var(--muted);font-size:13px;margin:12px 0 0">${e(c.microcopy)}</p>`:''}
+</div>
+<a href="${e(noHref)}" class="ld-decline" style="display:inline-block;color:var(--muted);font-size:14px;text-decoration:underline;margin-top:22px">${e(c.decline||'No gracias, continuar')}</a>
+</div>
+</section>`;
+      }
       case 'garantia': {
         return `<section id="garantia" style="background:var(--bg);padding:64px 0"><div style="max-width:600px;margin:0 auto;padding:0 24px;text-align:center">${ICON('verified_user',56)}<h2 style="color:var(--ink);font-size:2rem;font-weight:800;margin:16px 0 12px">${e(c.title||'Garantía')}</h2><p style="color:var(--muted);font-size:17px;line-height:1.7;margin:0">${e(c.desc||'')}</p></div></section>`;
       }
@@ -1689,9 +1805,17 @@ ${c.microcopy?`<p style="color:var(--muted);font-size:13px;margin:12px 0 0">${e(
     // Imagen subida por el usuario en cualquier sección (el hero ya la maneja en su template)
     let __out = __built;
     const __endTag = '</div></section>';
-    if (c.image_url && id !== 'hero' && !__out.includes(c.image_url) && __out.endsWith(__endTag)) {
+    const __plain = ['hero', 'nav', 'imagen', 'video', 'galeria'].indexOf(id) === -1;
+    if (c.image_url && __plain && !__out.includes(c.image_url) && __out.endsWith(__endTag)) {
       __out = __out.slice(0, -__endTag.length) +
         `<div style="margin-top:44px"><img src="${e(c.image_url)}" loading="lazy" alt="" style="width:100%;max-height:420px;object-fit:cover;border-radius:20px;box-shadow:0 20px 60px rgba(0,0,0,.3)"/></div>` + __endTag;
+    }
+    // Video de fondo en cualquier sección: se envuelve con overlay para que el texto se lea
+    if (c.video_url && __plain) {
+      __out = __out.replace(/^<section([^>]*)style="([^"]*)"/, (m, attrs, css) =>
+        `<section${attrs}style="${css};position:relative;overflow:hidden;background:#0a0a0f !important"`)
+        .replace(/^(<section[^>]*>)/, `$1<video autoplay muted loop playsinline preload="metadata" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:0"><source src="${e(c.video_url)}" type="video/mp4"/></video><div style="position:absolute;inset:0;background:rgba(0,0,0,.62);z-index:1"></div><div class="ld-onvideo" style="position:relative;z-index:2">`)
+        .replace(/<\/section>$/, '</div></section>');
     }
     return __out;
   },
@@ -1962,8 +2086,32 @@ Respondé SOLO con este JSON (sin markdown, sin texto extra):
     }));
     const sections = results.filter(s => s.html);
     if (!sections.length) throw new Error('No se pudo generar ninguna sección. Probá de nuevo con más detalle.');
+    // Barra de navegación: construida por código, con links a las secciones que existen
+    if (!sections.some(s => s.id === 'nav')) {
+      const heroC = (sections.find(s => s.id === 'hero') || {}).content || {};
+      const navContent = {
+        brand: plan.title || 'Mi Marca',
+        cta: heroC.cta || 'Empezar',
+        links: this.navLinksFor(sections),
+      };
+      sections.unshift({ id: 'nav', brief: 'barra de navegación', content: navContent, html: this._buildSection('nav', navContent, pal) });
+    }
     const html = this.assembleLanding(sections, palId, plan.title);
     return { title: plan.title || 'Mi Landing', sections, html, palette: palId };
+  },
+
+  // Links del nav derivados de las secciones reales (nunca apuntan a algo inexistente)
+  navLinksFor(sections) {
+    const NAMES = {
+      beneficios: 'Beneficios', modulos: 'Contenido', 'como-funciona': 'Cómo funciona',
+      testimonios: 'Testimonios', precio: 'Precio', faq: 'Preguntas', bonos: 'Bonos',
+      'para-quien': '¿Es para vos?', 'antes-despues': 'Resultados', garantia: 'Garantía',
+      problema: 'El problema', galeria: 'Galería', video: 'Video',
+    };
+    return (sections || [])
+      .filter(s => NAMES[s.id])
+      .slice(0, 5)
+      .map(s => ({ label: NAMES[s.id], href: '#' + s.id }));
   },
 
   // Coloca una imagen del usuario en una sección específica, sin IA si hay content guardado.
@@ -2884,6 +3032,17 @@ const AI = {
   },
   async setSectionImage(sections, palId, sectionId, imageUrl, productBrief) {
     return Claude.setSectionImage(sections, palId, sectionId, imageUrl, productBrief);
+  },
+  // Construye el HTML de una sección desde su content JSON — 100% código, sin IA.
+  // Lo usa el editor visual: cada tecla que escribís reconstruye la sección al instante.
+  buildSection(id, content, palId) {
+    return Claude._buildSection(id, content, Claude._landingPalette(palId));
+  },
+  sectionSchema(id) {
+    return Claude._sectionContentSchema(id);
+  },
+  navLinksFor(sections) {
+    return Claude.navLinksFor(sections);
   },
   assembleLanding(sections, palId, title, opts) {
     return Claude.assembleLanding(sections, palId, title, opts);
