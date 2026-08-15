@@ -401,6 +401,19 @@
       display: none !important;
     }
   }
+
+  @media (max-width: 767px) {
+    #screen-intro .intro-copy { align-items: center; }
+    #intro-icon-wrap { width: 100%; justify-content: center; }
+    #intro-icon .material-symbols-outlined { transform: translate(0, -2px); }
+    #intro-brand-card {
+      width: min(100%, 340px);
+      margin-left: auto !important;
+      margin-right: auto !important;
+      justify-content: center !important;
+    }
+    #intro-brand-card > div { text-align: left; }
+  }
 </style>
 </head>
 <body class="min-h-screen">
