@@ -1465,6 +1465,13 @@ INSTRUCCIÓN: ${instruction}`;
   @media(max-width:960px){
     .ld-g3{grid-template-columns:repeat(2,1fr)}
   }
+  /* Video de fondo: en celular algunos navegadores no lo pintan si no se fuerza el tamaño */
+  section > video{width:100% !important;height:100% !important;object-fit:cover;pointer-events:none}
+  @media(max-width:640px){
+    section > video{position:absolute !important;inset:0 !important;min-width:100%;min-height:100%}
+    #hero video{display:block !important}
+    iframe{max-width:100%}
+  }
   /* Sección con video de fondo: el texto siempre legible sobre el video */
   .ld-onvideo h2,.ld-onvideo h3,.ld-onvideo p,.ld-onvideo li,.ld-onvideo summary,.ld-onvideo figcaption{color:#fff !important}
   .ld-onvideo .ld-card,.ld-onvideo details{background:rgba(255,255,255,.09) !important;border-color:rgba(255,255,255,.2) !important}
@@ -1546,11 +1553,11 @@ ${body}
     const icons = 'star|check_circle|favorite|school|trending_up|bolt|shield|people|rocket_launch|thumb_up|verified|psychology|emoji_events|lightbulb|timer|local_fire_department|health_and_safety|fitness_center|attach_money|savings|work|campaign|diversity_3|card_giftcard|sentiment_satisfied|self_improvement';
     const S = {
       hero: {badge:'frase corta de credibilidad (ej: +2.000 personas ya lo lograron)',title:'título H1 impactante y específico para este producto (6-12 palabras)',subtitle:'descripción del beneficio principal en 2-3 líneas que engancha al lector',cta:'texto del botón (verbo+resultado, ej: Quiero empezar hoy)',microcopy:'texto pequeño bajo el botón (ej: Sin tarjeta · Acceso inmediato · Garantía 30 días)',image_prompt:'relevant+english+keywords+describing+a+real+image+for+this+product+separated+by+plus',layout:'split o center — split: texto a la izquierda + imagen a la derecha (cursos, servicios con rostro humano). center: todo centrado con imagen ancha abajo (apps, productos digitales, comunidades)'},
-      nav: {brand:'Nombre de la marca o producto',cta:'texto corto del botón (ej: Empezar)',links:[{label:'Beneficios',href:'#beneficios'},{label:'Contenido',href:'#modulos'},{label:'Precio',href:'#precio'},{label:'Preguntas',href:'#faq'}]},
+      nav: {brand:'Nombre de la marca o producto',logo_url:'',brand_href:'#hero',cta:'texto corto del botón (ej: Empezar)',links:[{label:'Beneficios',href:'#beneficios'},{label:'Contenido',href:'#modulos'},{label:'Precio',href:'#precio'},{label:'Preguntas',href:'#faq'}]},
       texto: {title:'Título de la sección (opcional)',body:'Párrafos de texto libre. Podés usar varias líneas.',align:'left'},
-      imagen: {title:'',image_prompt:'english+keywords+for+the+image+separated+by+plus',caption:'pie de foto opcional',size:'full'},
+      imagen: {title:'',image_prompt:'english+keywords+for+the+image+separated+by+plus',caption:'pie de foto opcional',size:'full',ratio:'16/9',align:'center'},
       video: {title:'Mirá cómo funciona',subtitle:'subtítulo opcional',video_url:''},
-      galeria: {title:'Galería',subtitle:'',images:[{url:'',caption:''},{url:'',caption:''},{url:'',caption:''}]},
+      galeria: {title:'Galería',subtitle:'',ratio:'4/3',images:[{url:'',caption:''},{url:'',caption:''},{url:'',caption:''}]},
       oferta: {badge:'Espera — oferta única',title:'Sumá esto y potenciá tus resultados',subtitle:'Solo disponible en esta pantalla, no se repite después.',features:['qué incluye 1','qué incluye 2','qué incluye 3'],price_before:'$97',price:'$47',cta:'SÍ, LO QUIERO',cta_url:'',decline:'No gracias, continuar sin esto',decline_url:'',microcopy:'Pago seguro · Se suma a tu compra anterior'},
       'para-quien': {title:'¿Este programa es para vos?',yes_title:'Es para vos si…',no_title:'No es para vos si…',yes:['frase específica sobre el cliente ideal 1','frase 2','frase 3'],no:['frase sobre quién NO debería comprarlo 1','frase 2','frase 3']},
       'antes-despues': {title:'Tu transformación',before_title:'Hoy',after_title:'Después del programa',before:['punto de dolor actual 1','punto 2','punto 3'],after:['resultado concreto 1','resultado 2','resultado 3']},
@@ -1588,6 +1595,11 @@ ${body}
     const H2 = (text,align='center') => `<h2 style="color:var(--ink);font-size:clamp(1.6rem,3vw,2.4rem);font-weight:800;text-align:${align};margin:0 0 12px">${e(text)}</h2>`;
     const SUB = (text,align='center') => text ? `<p style="color:var(--muted);text-align:${align};font-size:17px;line-height:1.6;margin:0 0 48px">${e(text)}</p>` : '<div style="margin-bottom:48px"></div>';
     const SEC = (inner,bg='var(--bg)',py=80) => `<section id="${e(id)}" style="background:${bg};padding:${py}px 0"><div style="max-width:1152px;margin:0 auto;padding:0 24px">${inner}</div></section>`;
+    // Botón CTA opcional al pie de cualquier sección
+    const SEC_CTA = () => c.cta ? `<div style="text-align:center;margin-top:44px">${BTN(c.cta, c.cta_url || '#precio')}${c.cta_note?`<p style="color:var(--muted);font-size:13px;margin:12px 0 0">${e(c.cta_note)}</p>`:''}</div>` : '';
+    // Proporción de imagen elegible
+    const RATIO = (r) => ({'16/9':'aspect-ratio:16/9;object-fit:cover','4/3':'aspect-ratio:4/3;object-fit:cover','1/1':'aspect-ratio:1/1;object-fit:cover','3/4':'aspect-ratio:3/4;object-fit:cover','original':'height:auto'}[r] || 'aspect-ratio:16/9;object-fit:cover');
+    const ALIGN = (a) => a === 'left' ? 'margin-right:auto' : a === 'right' ? 'margin-left:auto' : 'margin-left:auto;margin-right:auto';
 
     const __built = (() => {
     switch(id) {
@@ -1596,7 +1608,7 @@ ${body}
         const navId = 'ldnav' + Math.random().toString(36).slice(2, 7);
         return `<header id="nav" style="position:sticky;top:0;z-index:50;background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom:1px solid var(--border)">
 <div style="max-width:1152px;margin:0 auto;padding:0 24px;height:66px;display:flex;align-items:center;gap:20px">
-<a href="#hero" style="font-weight:800;font-size:18px;color:var(--ink);text-decoration:none;flex-shrink:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${e(c.brand || 'Mi Marca')}</a>
+<a href="${e(c.brand_href || '#hero')}" style="display:flex;align-items:center;gap:9px;font-weight:800;font-size:18px;color:var(--ink);text-decoration:none;flex-shrink:1;min-width:0;overflow:hidden;white-space:nowrap">${c.logo_url?`<img src="${e(c.logo_url)}" alt="${e(c.brand||'')}" style="height:34px;width:auto;max-width:150px;object-fit:contain;display:block"/>`:''}${c.brand?`<span style="overflow:hidden;text-overflow:ellipsis">${e(c.brand)}</span>`:''}</a>
 <nav class="ld-nav-links" style="margin-left:auto;display:flex;align-items:center;gap:26px">
 ${links.map(l => `<a href="${e(l.href || '#')}" style="color:var(--muted);font-size:15px;font-weight:500;text-decoration:none">${e(l.label || '')}</a>`).join('')}
 </nav>
@@ -1610,15 +1622,15 @@ ${c.cta ? `<a href="#precio" class="ld-btn" style="display:block;text-align:cent
 </header>`;
       }
       case 'texto': {
-        return SEC(`${c.title ? H2(c.title) : ''}<div style="max-width:760px;margin:0 auto;color:var(--muted);font-size:17px;line-height:1.75;white-space:pre-line;text-align:${e(c.align || 'left')}">${e(c.body || '')}</div>`);
+        return SEC(`${c.title ? H2(c.title) : ''}<div style="max-width:760px;margin:0 auto;color:var(--muted);font-size:17px;line-height:1.75;white-space:pre-wrap;text-align:${e(c.align || 'left')}">${e(c.body || '')}</div>${SEC_CTA()}`);
       }
       case 'imagen': {
         const src = c.image_url || this._imgUrl(c.image_prompt);
-        const w = { small: '48%', medium: '72%', full: '100%' }[c.size] || '100%';
-        return SEC(`${c.title ? H2(c.title) : ''}<figure style="margin:0 auto;max-width:${w}">
-<img src="${src}" loading="lazy" alt="${e(c.caption || '')}" style="width:100%;border-radius:20px;box-shadow:0 20px 60px rgba(0,0,0,.3)"/>
+        const w = { small: '40%', medium: '65%', large: '85%', full: '100%' }[c.size] || '100%';
+        return SEC(`${c.title ? H2(c.title) : ''}<figure style="margin:0;max-width:${w};${ALIGN(c.align)}">
+<img src="${src}" loading="lazy" alt="${e(c.caption || '')}" style="width:100%;${RATIO(c.ratio)};border-radius:20px;box-shadow:0 20px 60px rgba(0,0,0,.3);display:block"/>
 ${c.caption ? `<figcaption style="color:var(--muted);font-size:14px;text-align:center;margin-top:12px">${e(c.caption)}</figcaption>` : ''}
-</figure>`);
+</figure>${SEC_CTA()}`);
       }
       case 'video': {
         const vurl = c.video_url || '';
@@ -1629,18 +1641,18 @@ ${c.caption ? `<figcaption style="color:var(--muted);font-size:14px;text-align:c
         else if (vimeo) player = `<iframe src="https://player.vimeo.com/video/${e(vimeo[1])}" style="width:100%;aspect-ratio:16/9;border:0;border-radius:18px" allow="autoplay;fullscreen;picture-in-picture" allowfullscreen></iframe>`;
         else if (vurl) player = `<video src="${e(vurl)}" controls playsinline style="width:100%;aspect-ratio:16/9;border-radius:18px;background:#000"></video>`;
         else player = `<div style="width:100%;aspect-ratio:16/9;border-radius:18px;background:${GRAD};opacity:.25"></div>`;
-        return SEC(`${c.title ? H2(c.title) : ''}${c.subtitle ? SUB(c.subtitle) : '<div style="margin-bottom:32px"></div>'}<div style="max-width:900px;margin:0 auto;box-shadow:0 24px 64px rgba(0,0,0,.35);border-radius:18px;overflow:hidden">${player}</div>`);
+        return SEC(`${c.title ? H2(c.title) : ''}${c.subtitle ? SUB(c.subtitle) : '<div style="margin-bottom:32px"></div>'}<div style="max-width:900px;margin:0 auto;box-shadow:0 24px 64px rgba(0,0,0,.35);border-radius:18px;overflow:hidden">${player}</div>${SEC_CTA()}`);
       }
       case 'galeria': {
         const imgs = arr(c.images);
-        return SEC(`${c.title ? H2(c.title) : ''}${c.subtitle ? SUB(c.subtitle) : '<div style="margin-bottom:32px"></div>'}<div ${GRIDC(imgs.length)}>${imgs.map(im => `<figure style="margin:0"><img src="${e(im.url || '')}" loading="lazy" alt="${e(im.caption || '')}" style="width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:16px"/>${im.caption ? `<figcaption style="color:var(--muted);font-size:13px;text-align:center;margin-top:8px">${e(im.caption)}</figcaption>` : ''}</figure>`).join('')}</div>`, 'var(--surface)');
+        return SEC(`${c.title ? H2(c.title) : ''}${c.subtitle ? SUB(c.subtitle) : '<div style="margin-bottom:32px"></div>'}<div ${GRIDC(imgs.length)}>${imgs.map(im => `<figure style="margin:0"><img src="${e(im.url || '')}" loading="lazy" alt="${e(im.caption || '')}" style="width:100%;${RATIO(c.ratio || '4/3')};border-radius:16px;display:block"/>${im.caption ? `<figcaption style="color:var(--muted);font-size:13px;text-align:center;margin-top:8px">${e(im.caption)}</figcaption>` : ''}</figure>`).join('')}</div>${SEC_CTA()}`, 'var(--surface)');
       }
       case 'hero': {
         // Video de fondo + layout "split": texto a la izquierda, imagen al lado, video detrás
         if (c.video_url && c.layout !== 'center') {
           const vimg = c.image_url || this._imgUrl(c.image_prompt);
           return `<section id="hero" style="position:relative;overflow:hidden;background:#0a0a0f;padding:96px 0">
-<video autoplay muted loop playsinline preload="metadata" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:0"><source src="${e(c.video_url)}" type="video/mp4"/></video>
+<video autoplay muted loop playsinline webkit-playsinline disablepictureinpicture preload="auto" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:0"><source src="${e(c.video_url)}" type="video/mp4"/></video>
 <div style="position:absolute;inset:0;background:rgba(0,0,0,.58);z-index:1"></div>
 <div style="position:relative;z-index:2;max-width:1152px;margin:0 auto;padding:0 24px;display:flex;flex-wrap:wrap;align-items:center;gap:48px">
 <div style="flex:1;min-width:280px">
@@ -1659,7 +1671,7 @@ ${c.microcopy?`<p style="color:rgba(255,255,255,.7);font-size:13px;margin:12px 0
         if (c.video_url) {
           // Video de fondo con layout centrado
           return `<section id="hero" style="position:relative;overflow:hidden;background:#0a0a0f;padding:120px 0">
-<video autoplay muted loop playsinline preload="metadata" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:0"><source src="${e(c.video_url)}" type="video/mp4"/></video>
+<video autoplay muted loop playsinline webkit-playsinline disablepictureinpicture preload="auto" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:0"><source src="${e(c.video_url)}" type="video/mp4"/></video>
 <div style="position:absolute;inset:0;background:rgba(0,0,0,.55);z-index:1"></div>
 <div style="position:relative;z-index:2;max-width:860px;margin:0 auto;padding:0 24px;text-align:center">
 ${c.badge?`<p style="color:rgba(255,255,255,.85);font-weight:700;font-size:13px;text-transform:uppercase;letter-spacing:2px;margin:0 0 16px">${e(c.badge)}</p>`:''}
@@ -1709,15 +1721,16 @@ ${c.microcopy?`<p style="color:var(--muted);font-size:13px;margin:12px 0 0">${e(
       }
       case 'beneficios': {
         const items = arr(c.items);
-        return SEC(`${H2(c.title||'Beneficios')}${SUB(c.subtitle||'')}<div ${GRIDC(items.length)}>${items.map(it=>`<div class="ld-card" style="${CARD}">${ICON(it.icon||'check_circle')}<h3 style="color:var(--ink);font-size:17px;font-weight:700;margin:12px 0 8px">${e(it.title||'')}</h3><p style="color:var(--muted);font-size:15px;line-height:1.6;margin:0">${e(it.desc||'')}</p></div>`).join('')}</div>`);
+        const IMG_IT = (it) => it.image_url ? `<img src="${e(it.image_url)}" loading="lazy" alt="" style="width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:12px;margin:0 0 14px"/>` : '';
+        return SEC(`${H2(c.title||'Beneficios')}${SUB(c.subtitle||'')}<div ${GRIDC(items.length)}>${items.map(it=>`<div class="ld-card" style="${CARD}">${IMG_IT(it)}${ICON(it.icon||'check_circle')}<h3 style="color:var(--ink);font-size:17px;font-weight:700;margin:12px 0 8px">${e(it.title||'')}</h3><p style="color:var(--muted);font-size:15px;line-height:1.6;margin:0">${e(it.desc||'')}</p></div>`).join('')}</div>${SEC_CTA()}`);
       }
       case 'modulos': {
         const items = arr(c.items);
-        return SEC(`${H2(c.title||'Contenido')}${SUB('')}<div ${GRIDC(items.length)}>${items.map(it=>`<div class="ld-card" style="${CARD};display:flex;gap:16px;align-items:flex-start"><div style="background:${GRAD};border-radius:10px;width:40px;height:40px;display:flex;align-items:center;justify-content:center;flex-shrink:0">${ICON_W(it.icon||'school')}</div><div><h3 style="color:var(--ink);font-weight:700;font-size:16px;margin:0 0 6px">${e(it.title||'')}</h3><p style="color:var(--muted);font-size:14px;line-height:1.5;margin:0">${e(it.desc||'')}</p></div></div>`).join('')}</div>`,'var(--surface)');
+        return SEC(`${H2(c.title||'Contenido')}${SUB(c.subtitle||'')}<div ${GRIDC(items.length)}>${items.map(it=>`<div class="ld-card" style="${CARD}">${it.image_url?`<img src="${e(it.image_url)}" loading="lazy" alt="" style="width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:12px;margin:0 0 14px"/>`:''}<div style="display:flex;gap:16px;align-items:flex-start"><div style="background:${GRAD};border-radius:10px;width:40px;height:40px;display:flex;align-items:center;justify-content:center;flex-shrink:0">${ICON_W(it.icon||'school')}</div><div><h3 style="color:var(--ink);font-weight:700;font-size:16px;margin:0 0 6px">${e(it.title||'')}</h3><p style="color:var(--muted);font-size:14px;line-height:1.5;margin:0">${e(it.desc||'')}</p></div></div></div>`).join('')}</div>${SEC_CTA()}`,'var(--surface)');
       }
       case 'como-funciona': {
         const items = arr(c.items);
-        return SEC(`${H2(c.title||'Cómo funciona')}${SUB('')}<div ${GRIDC(items.length)}>${items.map((it,i)=>`<div style="text-align:center"><div style="width:56px;height:56px;border-radius:50%;background:${GRAD};display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:22px;margin:0 auto 16px">${e(it.step||String(i+1))}</div><h3 style="color:var(--ink);font-weight:700;font-size:17px;margin:0 0 8px">${e(it.title||'')}</h3><p style="color:var(--muted);font-size:15px;line-height:1.6;margin:0">${e(it.desc||'')}</p></div>`).join('')}</div>`);
+        return SEC(`${H2(c.title||'Cómo funciona')}${SUB('')}<div ${GRIDC(items.length)}>${items.map((it,i)=>`<div style="text-align:center"><div style="width:56px;height:56px;border-radius:50%;background:${GRAD};display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:22px;margin:0 auto 16px">${e(it.step||String(i+1))}</div><h3 style="color:var(--ink);font-weight:700;font-size:17px;margin:0 0 8px">${e(it.title||'')}</h3><p style="color:var(--muted);font-size:15px;line-height:1.6;margin:0">${e(it.desc||'')}</p></div>`).join('')}</div>${SEC_CTA()}`);
       }
       case 'prueba-social': {
         const stats = arr(c.stats);
@@ -1725,11 +1738,11 @@ ${c.microcopy?`<p style="color:var(--muted);font-size:13px;margin:12px 0 0">${e(
       }
       case 'testimonios': {
         const items = arr(c.items).slice(0,3);
-        return SEC(`${H2(c.title||'Lo que dicen')}${SUB('')}<div ${GRIDC(items.length)}>${items.map(it=>`<div class="ld-card" style="${CARD};display:flex;flex-direction:column;gap:16px"><p style="color:var(--ink);font-size:15px;line-height:1.7;margin:0;font-style:italic">"${e(it.quote||'')}"</p><div style="display:flex;align-items:center;gap:12px;margin-top:auto">${AVATAR(it.initials||'?')}<div><p style="color:var(--ink);font-weight:700;font-size:14px;margin:0">${e(it.name||'')}</p><p style="color:var(--muted);font-size:13px;margin:0">${e(it.role||'')}</p></div></div></div>`).join('')}</div>`,'var(--surface)');
+        return SEC(`${H2(c.title||'Lo que dicen')}${SUB('')}<div ${GRIDC(items.length)}>${items.map(it=>`<div class="ld-card" style="${CARD};display:flex;flex-direction:column;gap:16px"><p style="color:var(--ink);font-size:15px;line-height:1.7;margin:0;font-style:italic">"${e(it.quote||'')}"</p><div style="display:flex;align-items:center;gap:12px;margin-top:auto">${AVATAR(it.initials||'?')}<div><p style="color:var(--ink);font-weight:700;font-size:14px;margin:0">${e(it.name||'')}</p><p style="color:var(--muted);font-size:13px;margin:0">${e(it.role||'')}</p></div></div></div>`).join('')}</div>${SEC_CTA()}`,'var(--surface)');
       }
       case 'bonos': {
         const items = arr(c.items);
-        return SEC(`${H2(c.title||'Bonos')}${SUB('')}<div ${GRIDC(items.length)}>${items.map(it=>`<div class="ld-card" style="${CARD};display:flex;gap:16px;align-items:flex-start"><div style="background:${GRAD};border-radius:10px;width:44px;height:44px;display:flex;align-items:center;justify-content:center;flex-shrink:0">${ICON_W(it.icon||'card_giftcard',22)}</div><div style="flex:1"><h3 style="color:var(--ink);font-weight:700;font-size:16px;margin:0 0 6px">${e(it.title||'')}</h3><p style="color:var(--muted);font-size:14px;line-height:1.5;margin:0 0 8px">${e(it.desc||'')}</p>${it.value?`<p style="color:var(--brand);font-weight:700;font-size:14px;margin:0">${e(it.value)}</p>`:''}</div></div>`).join('')}</div>`);
+        return SEC(`${H2(c.title||'Bonos')}${SUB('')}<div ${GRIDC(items.length)}>${items.map(it=>`<div class="ld-card" style="${CARD};display:flex;gap:16px;align-items:flex-start"><div style="background:${GRAD};border-radius:10px;width:44px;height:44px;display:flex;align-items:center;justify-content:center;flex-shrink:0">${ICON_W(it.icon||'card_giftcard',22)}</div><div style="flex:1"><h3 style="color:var(--ink);font-weight:700;font-size:16px;margin:0 0 6px">${e(it.title||'')}</h3><p style="color:var(--muted);font-size:14px;line-height:1.5;margin:0 0 8px">${e(it.desc||'')}</p>${it.value?`<p style="color:var(--brand);font-weight:700;font-size:14px;margin:0">${e(it.value)}</p>`:''}${it.image_url?`<img src="${e(it.image_url)}" loading="lazy" alt="" style="width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:10px;margin-top:10px"/>`:''}</div></div>`).join('')}</div>${SEC_CTA()}`);
       }
       case 'precio': {
         const features = arr(c.features);
@@ -1737,19 +1750,21 @@ ${c.microcopy?`<p style="color:var(--muted);font-size:13px;margin:12px 0 0">${e(
       }
       case 'para-quien': {
         const yes = arr(c.yes), no = arr(c.no);
+        const yesIcon = okIcon(c.yes_icon, 'check_circle'), noIcon = okIcon(c.no_icon, 'close');
         const ITEM = (txt, icon, col) => `<li style="color:var(--ink);font-size:15px;line-height:1.6;display:flex;align-items:flex-start;gap:10px;margin:0 0 12px"><span class="material-symbols-outlined" style="font-size:20px;color:${col};flex-shrink:0;margin-top:1px">${icon}</span><span>${e(txt)}</span></li>`;
         return SEC(`${H2(c.title||'¿Es para vos?')}${SUB('')}<div class="ld-grid ld-g2">
-<div class="ld-card" style="${CARD};border-color:color-mix(in srgb,var(--brand) 35%,transparent)"><h3 style="color:var(--ink);font-size:18px;font-weight:800;margin:0 0 16px">${e(c.yes_title||'Es para vos si…')}</h3><ul style="list-style:none;margin:0;padding:0">${yes.map(t=>ITEM(t,'check_circle','var(--brand)')).join('')}</ul></div>
-<div class="ld-card" style="${CARD};opacity:.85"><h3 style="color:var(--muted);font-size:18px;font-weight:800;margin:0 0 16px">${e(c.no_title||'No es para vos si…')}</h3><ul style="list-style:none;margin:0;padding:0">${no.map(t=>ITEM(t,'close','var(--muted)')).join('')}</ul></div>
-</div>`,'var(--surface)');
+<div class="ld-card" style="${CARD};border-color:color-mix(in srgb,var(--brand) 35%,transparent)"><h3 style="color:var(--ink);font-size:18px;font-weight:800;margin:0 0 16px">${e(c.yes_title||'Es para vos si…')}</h3><ul style="list-style:none;margin:0;padding:0">${yes.map(t=>ITEM(t,yesIcon,'var(--brand)')).join('')}</ul></div>
+<div class="ld-card" style="${CARD};opacity:.85"><h3 style="color:var(--muted);font-size:18px;font-weight:800;margin:0 0 16px">${e(c.no_title||'No es para vos si…')}</h3><ul style="list-style:none;margin:0;padding:0">${no.map(t=>ITEM(t,noIcon,'var(--muted)')).join('')}</ul></div>
+</div>${SEC_CTA()}`,'var(--surface)');
       }
       case 'antes-despues': {
         const before = arr(c.before), after = arr(c.after);
+        const bIcon = okIcon(c.before_icon, 'remove_circle_outline'), aIcon = okIcon(c.after_icon, 'check_circle');
         const ROW = (txt, icon, col) => `<li style="color:var(--ink);font-size:15px;line-height:1.6;display:flex;align-items:flex-start;gap:10px;margin:0 0 12px"><span class="material-symbols-outlined" style="font-size:20px;color:${col};flex-shrink:0;margin-top:1px">${icon}</span><span>${e(txt)}</span></li>`;
         return SEC(`${H2(c.title||'Tu transformación')}${SUB('')}<div class="ld-grid ld-g2">
-<div class="ld-card" style="${CARD};opacity:.85"><p style="color:var(--muted);font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;margin:0 0 14px">${e(c.before_title||'Hoy')}</p><ul style="list-style:none;margin:0;padding:0">${before.map(t=>ROW(t,'remove_circle_outline','var(--muted)')).join('')}</ul></div>
-<div class="ld-card" style="${CARD};border:2px solid var(--brand)"><p style="color:var(--brand);font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;margin:0 0 14px">${e(c.after_title||'Después')}</p><ul style="list-style:none;margin:0;padding:0">${after.map(t=>ROW(t,'check_circle','var(--brand)')).join('')}</ul></div>
-</div>`);
+<div class="ld-card" style="${CARD};opacity:.85"><p style="color:var(--muted);font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;margin:0 0 14px">${e(c.before_title||'Hoy')}</p><ul style="list-style:none;margin:0;padding:0">${before.map(t=>ROW(t,bIcon,'var(--muted)')).join('')}</ul></div>
+<div class="ld-card" style="${CARD};border:2px solid var(--brand)"><p style="color:var(--brand);font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;margin:0 0 14px">${e(c.after_title||'Después')}</p><ul style="list-style:none;margin:0;padding:0">${after.map(t=>ROW(t,aIcon,'var(--brand)')).join('')}</ul></div>
+</div>${SEC_CTA()}`);
       }
       case 'oferta': {
         // Sección de upsell/downsell: SÍ destacado + "no gracias" discreto
@@ -1775,7 +1790,7 @@ ${c.microcopy?`<p style="color:var(--muted);font-size:13px;margin:12px 0 0">${e(
 </section>`;
       }
       case 'garantia': {
-        return `<section id="garantia" style="background:var(--bg);padding:64px 0"><div style="max-width:600px;margin:0 auto;padding:0 24px;text-align:center">${ICON('verified_user',56)}<h2 style="color:var(--ink);font-size:2rem;font-weight:800;margin:16px 0 12px">${e(c.title||'Garantía')}</h2><p style="color:var(--muted);font-size:17px;line-height:1.7;margin:0">${e(c.desc||'')}</p></div></section>`;
+        return `<section id="garantia" style="background:var(--bg);padding:64px 0"><div style="max-width:600px;margin:0 auto;padding:0 24px;text-align:center">${ICON('verified_user',56)}<h2 style="color:var(--ink);font-size:2rem;font-weight:800;margin:16px 0 12px">${e(c.title||'Garantía')}</h2><p style="color:var(--muted);font-size:17px;line-height:1.7;margin:0">${e(c.desc||'')}</p>${SEC_CTA()}</div></section>`;
       }
       case 'faq': {
         const items = arr(c.items);
@@ -1805,7 +1820,7 @@ ${c.microcopy?`<p style="color:var(--muted);font-size:13px;margin:12px 0 0">${e(
     if (c.video_url && __plain) {
       __out = __out.replace(/^<section([^>]*)style="([^"]*)"/, (m, attrs, css) =>
         `<section${attrs}style="${css};position:relative;overflow:hidden;background:#0a0a0f !important"`)
-        .replace(/^(<section[^>]*>)/, `$1<video autoplay muted loop playsinline preload="metadata" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:0"><source src="${e(c.video_url)}" type="video/mp4"/></video><div style="position:absolute;inset:0;background:rgba(0,0,0,.62);z-index:1"></div><div class="ld-onvideo" style="position:relative;z-index:2">`)
+        .replace(/^(<section[^>]*>)/, `$1<video autoplay muted loop playsinline webkit-playsinline disablepictureinpicture preload="auto" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:0"><source src="${e(c.video_url)}" type="video/mp4"/></video><div style="position:absolute;inset:0;background:rgba(0,0,0,.62);z-index:1"></div><div class="ld-onvideo" style="position:relative;z-index:2">`)
         .replace(/<\/section>$/, '</div></section>');
     }
     return __out;
@@ -2152,6 +2167,44 @@ REGLAS ESTRICTAS:
     return (parsed && typeof parsed === 'object') ? parsed : null;
   },
 
+  // Genera el contenido de una oferta de upsell/downsell a partir del producto real
+  // de la landing madre. Si la IA falla, el caller usa su contenido por defecto.
+  async generateOfferContent(kind, productBrief, offerBrief, mainPrice) {
+    const isUp = kind === 'upsell';
+    const user = `Sos experto en embudos de venta en español latinoamericano.
+
+PRODUCTO PRINCIPAL QUE LA PERSONA ACABA DE COMPRAR:
+${String(productBrief || '').slice(0, 2000)}
+${mainPrice ? `\nPrecio del producto principal: ${mainPrice}` : ''}
+${offerBrief ? `\nLA OFERTA QUE QUIERO HACER AHORA:\n${offerBrief}` : ''}
+
+Escribí el contenido de una página de ${isUp ? 'UPSELL' : 'DOWNSELL'}.
+${isUp
+  ? 'El upsell es una oferta COMPLEMENTARIA que potencia el resultado del producto que ya compró (acompañamiento, plantillas, versión avanzada, comunidad). Debe tener sentido con ESE producto, no ser genérica.'
+  : 'El downsell aparece cuando rechazó el upsell: es una versión MÁS ACCESIBLE y acotada de esa misma oferta, a un precio bastante menor.'}
+
+Reglas:
+- Todo debe referirse al producto real descrito arriba, con su vocabulario y su nicho.
+- Precio coherente: el upsell vale menos que el producto principal; el downsell, bastante menos que el upsell.
+- Nada de promesas exageradas ni datos inventados con números falsos.
+
+Respondé SOLO este JSON, sin markdown ni texto extra:
+${JSON.stringify({
+  badge: 'etiqueta corta de urgencia honesta',
+  title: 'título de la oferta, específico para este producto',
+  subtitle: '1-2 frases explicando por qué le sirve justo ahora',
+  features: ['qué incluye 1', 'qué incluye 2', 'qué incluye 3'],
+  price_before: '$X',
+  price: '$Y',
+  cta: 'texto del botón de aceptar',
+  decline: 'texto del link para rechazar',
+  microcopy: 'texto chico de seguridad bajo el botón',
+}, null, 2)}`;
+    const text = await this._call([{ role: 'user', content: user }], 1200, { model: 'claude-haiku-4-5-20251001' });
+    const parsed = this._parseJSONSafe(text);
+    return (parsed && parsed.title) ? parsed : null;
+  },
+
   // Pone o quita el video de fondo del hero SIN pedirle a la IA que edite HTML.
   // Si el hero tiene su content JSON guardado es instantáneo; si es una landing
   // vieja sin content, pide el contenido a la IA una sola vez y lo guarda.
@@ -2174,12 +2227,69 @@ REGLAS ESTRICTAS:
     return out;
   },
 
+  // Detecta por palabras clave a qué sección se refiere el usuario, SIN llamar a la IA.
+  // Evita que un clasificador equivocado mande el cambio a la sección que no es.
+  _matchSectionId(instruction, ids) {
+    const t = (instruction || '').toLowerCase()
+      .normalize('NFD').replace(/[̀-ͯ]/g, '');
+    const ALIAS = {
+      nav: ['nav', 'navegacion', 'menu', 'barra superior', 'logo'],
+      hero: ['hero', 'portada', 'cabecera', 'encabezado', 'titulo principal', 'arriba de todo'],
+      problema: ['problema', 'dolor', 'te suena'],
+      'para-quien': ['para quien', 'para vos', 'es para mi', 'a quien'],
+      'antes-despues': ['antes y despues', 'antes despues', 'antes/despues', 'transformacion'],
+      beneficios: ['beneficio', 'ventajas', 'que vas a lograr'],
+      modulos: ['modulo', 'contenido del curso', 'que vas a aprender', 'temario', 'clases'],
+      'como-funciona': ['como funciona', 'pasos', 'paso a paso'],
+      'prueba-social': ['prueba social', 'metricas', 'numeros', 'estadisticas'],
+      testimonios: ['testimonio', 'opiniones', 'resenas', 'lo que dicen'],
+      bonos: ['bono', 'bonus', 'regalo'],
+      precio: ['precio', 'inversion', 'costo', 'cuanto cuesta', 'oferta principal'],
+      garantia: ['garantia', 'devolucion'],
+      faq: ['faq', 'pregunta', 'dudas', 'objecion'],
+      'cta-final': ['cta final', 'cierre', 'llamado final', 'ultima seccion'],
+      footer: ['footer', 'pie de pagina', 'pie'],
+      oferta: ['oferta', 'upsell', 'downsell'],
+      texto: ['texto libre', 'parrafo'],
+      imagen: ['imagen destacada', 'foto destacada'],
+      video: ['video'],
+      galeria: ['galeria', 'fotos'],
+    };
+    let best = null, bestLen = 0;
+    for (const id of (ids || [])) {
+      for (const kw of (ALIAS[id] || [id])) {
+        if (t.includes(kw) && kw.length > bestLen) { best = id; bestLen = kw.length; }
+      }
+    }
+    return best;
+  },
+
   async editLandingSectioned(instruction, sections, palId, brief, history) {
     const pal = this._landingPalette(palId);
     const ids = (sections || []).map(s => s.id);
 
     // Detect error-fix intent: user reporting broken/empty/wrong sections
     const isErrorFix = /error|mal\b|roto|vac[íi]o|blanco|equivoc|no sal[ió]|no se ve|columna/i.test(instruction);
+
+    // ── Atajo determinístico: si el usuario nombra la sección y pide un cambio de
+    // contenido, editamos esa sección directamente sin pasar por el clasificador.
+    const named = this._matchSectionId(instruction, ids);
+    const wantsNew = /(landing|pagina|p[áa]gina)\s+(nueva|desde cero)|empez[áa]\s+de\s+cero|otra\s+landing/i.test(instruction);
+    const wantsStructure = /agregar?\s+(una\s+)?secci[óo]n|quitar?\s+(la\s+)?secci[óo]n|eliminar?\s+(la\s+)?secci[óo]n|borrar?\s+(la\s+)?secci[óo]n/i.test(instruction);
+    if (named && !wantsNew && !wantsStructure) {
+      const idx = sections.findIndex(s => s.id === named);
+      const cur = sections[idx];
+      if (cur && cur.content && Object.keys(cur.content).length) {
+        const edited = await this._editSectionContent(named, cur.content, instruction, brief || '', history);
+        if (edited) {
+          if (cur.content.video_url && !edited.video_url) edited.video_url = cur.content.video_url;
+          if (cur.content.image_url && !edited.image_url) edited.image_url = cur.content.image_url;
+          const copy = sections.slice();
+          copy[idx] = { ...cur, content: edited, html: this._buildSection(named, edited, pal) };
+          return { sections: copy, reply: `Listo, apliqué ese cambio en "${named}".` };
+        }
+      }
+    }
 
     const convo = (history || []).slice(-8)
       .map(m => `${m.role === 'user' ? 'USUARIO' : 'ASISTENTE'}: ${String(m.content).slice(0, 250)}`)
@@ -3034,6 +3144,9 @@ const AI = {
   },
   navLinksFor(sections) {
     return Claude.navLinksFor(sections);
+  },
+  async generateOfferContent(kind, productBrief, offerBrief, mainPrice) {
+    return Claude.generateOfferContent(kind, productBrief, offerBrief, mainPrice);
   },
   assembleLanding(sections, palId, title, opts) {
     return Claude.assembleLanding(sections, palId, title, opts);

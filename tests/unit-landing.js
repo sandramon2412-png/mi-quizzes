@@ -98,7 +98,7 @@ Claude._call = async function (messages, maxTokens, opts) {
     ['sin template literals JS', !/\$\{/.test(html)],
     ['sin markdown fences', !html.includes('```')],
     ['imagen Pollinations en hero', html.includes('image.pollinations.ai/prompt/happy+latina')],
-    ['todas las 11 secciones', result.sections.length === 11],
+    ['nav + las 11 secciones planificadas', result.sections.length === 12 && result.sections[0].id === 'nav'],
   ];
   let fails = 0;
   checks.forEach(([name, ok]) => { console.log('  ' + (ok ? '✅' : '❌'), name); if (!ok) fails++; });
@@ -160,7 +160,7 @@ Claude._call = async function (messages, maxTokens, opts) {
   console.log('  ' + (callLog.length === 0 ? '✅' : '❌'), 'aplicación instantánea sin IA');
   console.log('  ' + (heroV.html.includes('<video autoplay muted loop playsinline') ? '✅' : '❌'), 'video element en hero');
   console.log('  ' + (heroV.html.includes(VURL) ? '✅' : '❌'), 'URL del video presente');
-  console.log('  ' + (heroV.html.includes('rgba(0,0,0,.55)') ? '✅' : '❌'), 'overlay oscuro para legibilidad');
+  console.log('  ' + (/rgba\(0,0,0,\.5[58]\)/.test(heroV.html) ? '✅' : '❌'), 'overlay oscuro para legibilidad');
   console.log('  ' + (heroV.html.includes('Ordená tus finanzas') ? '✅' : '❌'), 'copy original preservado (sin llamar IA)');
   console.log('  ' + (heroV.content.video_url === VURL ? '✅' : '❌'), 'video_url persistido en content');
 
