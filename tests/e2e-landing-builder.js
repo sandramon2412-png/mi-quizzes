@@ -123,11 +123,11 @@ function aiResponder(bodyStr) {
       microcopy: 'Pago seguro' });
   }
   else if (msg.includes('CONTENIDO ACTUAL')) {
-    // surgical edit: devuelve el content actual con el título cambiado
     const jm = msg.match(/CONTENIDO ACTUAL \(JSON\):\n([\s\S]*?)\n\nPEDIDO DEL USUARIO/);
     const cur = JSON.parse(jm[1]);
-    cur.title = 'TITULO EDITADO POR CHAT';
-    text = JSON.stringify(cur);
+    // Simula lo que hace el modelo real: devuelve SOLO lo que cambió y omite el resto.
+    // Antes esto borraba el logo, las imágenes y los links del usuario.
+    text = JSON.stringify({ title: 'TITULO EDITADO POR CHAT', logo_url: '' });
   } else {
     const sm = msg.match(/SECCIÓN: "([^"]+)"/);
     if (sm && CONTENT[sm[1]]) text = JSON.stringify(CONTENT[sm[1]]);
@@ -423,6 +423,25 @@ function aiResponder(bodyStr) {
   });
   chk('el botón usa el link de pago de su propia oferta', offerHtml.includes('href="https://pay.hotmart.com/UPSELL9"'));
   chk('el "no gracias" no se reescribe al checkout', offerHtml.includes('href="https://x.com/next"'));
+
+  console.log('E2E 10b — el chat no borra lo que subiste');
+  await page.evaluate(() => {
+    const i = landing.sections.findIndex(s2 => s2.id === 'hero');
+    landing.sections[i].content.image_url = 'data:image/png;base64,MIFOTO';
+    landing.sections[i].content.cta_url = 'https://pay.hotmart.com/MIPAGO';
+  });
+  await page.fill('#chat-input', 'cambiá el título del hero');
+  await page.click('#chat-send');
+  await page.waitForFunction(() => (landing.sections.find(s2 => s2.id === 'hero')?.content?.title || '').includes('TITULO EDITADO'), null, { timeout: 20000 }).catch(() => {});
+  await page.waitForTimeout(500);
+  const keep = await page.evaluate(() => {
+    const c = landing.sections.find(s2 => s2.id === 'hero').content;
+    return { title: c.title, img: c.image_url, cta: c.cta_url, sub: c.subtitle };
+  });
+  chk('aplicó el cambio pedido', (keep.title || '').includes('TITULO EDITADO'));
+  chk('NO borró la imagen que subiste', keep.img === 'data:image/png;base64,MIFOTO');
+  chk('NO borró el link de pago', keep.cta === 'https://pay.hotmart.com/MIPAGO');
+  chk('conservó el resto del contenido', !!keep.sub);
 
   console.log('E2E 11b — el copy sale en español neutro aunque la IA vosee');
   const vos = await page.evaluate(() => {
