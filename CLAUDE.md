@@ -2007,3 +2007,62 @@ anterior — nunca bloquea.
 
 ### Pendientes
 - 🟡 Límites ebook: Pro=999, Growth=999 → REVERTIR a Pro→5, Growth→20
+
+---
+
+## SESIÓN 19 JUL 2026 (parte 6) — El bug del "se queda publicando" + español neutro
+
+### EL BUG CRÍTICO: imágenes sin comprimir → guardado colgado — RESUELTO ✅
+
+Sandra: *"No crea las páginas del embudo. Se queda publicando y no publica."*
+
+**Causa raíz**: el landing-builder **no comprimía las imágenes subidas** (el ebook-builder sí lo hace
+desde hace meses con `optimizeImageSource`). Una foto de celular de 3-6 MB se guardaba entera como
+data URL base64 **dos veces**: dentro de `section.content.image_url` y otra vez dentro del `html`
+ensamblado. Con 2-3 fotos, la fila de Supabase superaba los 15-20 MB → el `save` colgaba o fallaba,
+y como `setStatus('Creando…')` solo se limpiaba en el `catch`, la UI quedaba en "publicando" para
+siempre.
+
+**Fix (landing-builder.html)**:
+- `compressImage(src, maxBytes=220000, maxW=1600)`: canvas → JPEG con calidad descendente
+  (0.82 → 0.4) hasta bajar del umbral. Verificado en E2E: **3963 KB → 177 KB** (22x).
+- `readImageFile(file)`: toda subida (editor visual y chat) pasa por la compresión.
+- `optimizeLandingImages()`: antes de cada `saveLanding()` recorre recursivamente el `content` de
+  todas las secciones y comprime cualquier data URL > 240 KB que haya quedado de antes.
+- `withTimeout(promise, ms, label)`: **la UI nunca queda colgada**. Aplicado a `saveLanding` (25s),
+  creación de página del funnel (30s), `generateOfferContent` (45s), `_relinkFunnel` (30s) y a la
+  edición por chat (60s). Cada timeout produce un mensaje claro en pantalla.
+- `autosave()` ahora captura el error y lo muestra en vez de fallar en silencio.
+
+### Español neutro (sin voseo) — RESUELTO ✅
+Sandra: *"Español normal, no que esté vos."*
+- Los 4 prompts de generación (`_getSectionContent`, `_editSectionContent`, `generateOfferContent`,
+  `planLandingSections`) ahora abren con "Eres…" y llevan una **regla explícita**: español neutro con
+  "tú" o impersonal y una lista negra de formas voseantes ("tenés", "podés", "querés", "hacé",
+  "sumá", "fijate", "vos").
+- Los textos por defecto de los schemas y de las páginas del funnel se reescribieron en neutro.
+- **Nota**: la interfaz del builder sigue en voseo, igual que el resto de la plataforma. Solo se
+  cambió el copy que termina en la landing publicada.
+
+### Resto de la lista
+| Reporte | Fix |
+|---|---|
+| Logo del nav muy grande | Campo "Alto del logo" (26/34/46/60 px) con tope de seguridad en 72 px |
+| Video en celular "sale solo una parte" | Campo "Encuadre del video": Cubrir (recorta) o **Mostrar completo** (`object-fit:contain`) + `object-position` |
+| Salto de línea en textos no funcionaba | `white-space:pre-wrap` en subtítulos, descripciones de ítems, respuestas del FAQ y garantía (antes solo lo tenía la sección `texto`) |
+| Imagen no cambia tamaño ni lugar | La imagen genérica de sección ahora tiene `image_size`, `image_ratio` y `image_align` en el editor |
+| En bonos la imagen no cuadra | La foto del bono pasó a estar arriba de la tarjeta, a lo ancho y en 16:9 |
+| Preguntas sin iconos | El FAQ acepta icono por pregunta + icono general de la sección |
+| Chat no funciona | Timeout de 60s + mensaje de error **con el detalle real** y recordatorio de que se puede editar a mano en el panel derecho |
+
+### Tests
+- `tests/unit-landing-sections.js`: +12 checks (logo, iconos FAQ, imagen de bono arriba, tamaño/
+  proporción/alineación de imagen de sección, encuadre de video, saltos de línea).
+- `tests/e2e-landing-builder.js`: **E2E 12b** (saltos de línea escritos en el editor sobreviven y se
+  respetan al renderizar) y **E2E 13/14** (imagen de ~4 MB: se comprime, guarda en 102 ms sin colgar,
+  y publicar termina mostrando el link con el botón habilitado de nuevo).
+
+### Versión: `?v=20260719e`
+
+### Pendientes
+- 🟡 Límites ebook: Pro=999, Growth=999 → REVERTIR a Pro→5, Growth→20

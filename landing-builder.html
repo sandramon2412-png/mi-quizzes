@@ -9,9 +9,9 @@
 <script src="https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.min.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
 <link href="https://fonts.googleapis.com/icon?family=Material+Symbols+Outlined" rel="stylesheet"/>
-<script src="./supabase-config.js?v=20260719d"></script>
-<script src="./app.js?v=20260719d"></script>
-<script src="./landing-blocks.js?v=20260719d"></script>
+<script src="./supabase-config.js?v=20260719e"></script>
+<script src="./app.js?v=20260719e"></script>
+<script src="./landing-blocks.js?v=20260719e"></script>
 <script>
   // Si el CDN de Tailwind no cargó, esta asignación tiraba y mataba todo el script
   // que sigue (incluida la UI del builder). Blindado para que la página funcione igual.
@@ -1138,6 +1138,7 @@ const SEC_SCHEMA = {
   nav: { label: 'Barra de navegación', icon: 'menu', noMedia: true, fields: [
     F.text('brand', 'Nombre de la marca'),
     F.image('logo_url', 'Logo (imagen)'),
+    { key: 'logo_size', label: 'Alto del logo', type: 'select', options: [['26', 'Chico'], ['34', 'Normal'], ['46', 'Grande'], ['60', 'Muy grande']] },
     F.text('brand_href', 'Link del logo', '#hero o https://...'),
     F.text('cta', 'Texto del botón (vacío = sin botón)'),
     { key: 'links', label: 'Links del menú', type: 'items', addLabel: 'Agregar link',
@@ -1188,7 +1189,8 @@ const SEC_SCHEMA = {
     F.text('cta', 'Texto del botón'),
     F.text('microcopy', 'Texto chico bajo el botón'),
     F.image('image_url', 'Imagen de la portada'),
-    F.text('video_url', 'Video de fondo (opcional)', 'Link .mp4 — o usá el botón Video de fondo'),
+    F.text('video_url', 'Video de fondo (opcional)', 'Link .mp4 — o usa el botón Video de fondo'),
+    { key: 'video_fit', label: 'Encuadre del video', type: 'select', options: [['cover', 'Cubrir (recorta los bordes)'], ['contain', 'Mostrar completo (sin recortar)']] },
     { key: 'layout', label: 'Diseño', type: 'select', options: [['split', 'Texto + imagen al lado'], ['center', 'Todo centrado']] },
   ]},
   problema: { label: 'El problema', icon: 'report', fields: [
@@ -1243,6 +1245,7 @@ const SEC_SCHEMA = {
   ]},
   bonos: { label: 'Bonos', icon: 'card_giftcard', fields: [
     F.text('title', 'Título de la sección'),
+    F.text('subtitle', 'Subtítulo'),
     { key: 'items', label: 'Bonos', type: 'items', addLabel: 'Agregar bono',
       item: [F.icon(), F.text('title', 'Nombre'), F.area('desc', 'Descripción'), F.text('value', 'Valor'), F.image('image_url', 'Foto (opcional)')] },
   ]},
@@ -1259,8 +1262,9 @@ const SEC_SCHEMA = {
   ]},
   faq: { label: 'Preguntas frecuentes', icon: 'help', fields: [
     F.text('title', 'Título de la sección'),
+    { key: 'icon', label: 'Icono de las preguntas', type: 'icon' },
     { key: 'items', label: 'Preguntas', type: 'items', addLabel: 'Agregar pregunta',
-      item: [F.text('q', 'Pregunta'), F.area('a', 'Respuesta')] },
+      item: [F.icon(), F.text('q', 'Pregunta'), F.area('a', 'Respuesta')] },
   ]},
   'cta-final': { label: 'Cierre / CTA final', icon: 'campaign', fields: [
     F.area('title', 'Título'), F.area('subtitle', 'Subtítulo'),
@@ -1281,7 +1285,11 @@ const CTA_FIELDS = [
 // Campos de media que se agregan a toda sección que no los maneje ya en su template
 const MEDIA_FIELDS = [
   F.image('image_url', 'Imagen de la sección'),
-  F.text('video_url', 'Video de fondo (link .mp4)', 'Dejalo vacío si no querés video'),
+  { key: 'image_size', label: 'Tamaño de la imagen', type: 'select', options: [['full', 'Ancho completo'], ['large', 'Grande (85%)'], ['medium', 'Mediana (65%)'], ['small', 'Chica (40%)']] },
+  { key: 'image_ratio', label: 'Proporción de la imagen', type: 'select', options: [['16/9', 'Panorámica 16:9'], ['4/3', 'Clásica 4:3'], ['1/1', 'Cuadrada 1:1'], ['3/4', 'Vertical 3:4'], ['original', 'Original (sin recortar)']] },
+  { key: 'image_align', label: 'Posición de la imagen', type: 'select', options: [['center', 'Centrada'], ['left', 'A la izquierda'], ['right', 'A la derecha']] },
+  F.text('video_url', 'Video de fondo (link .mp4)', 'Déjalo vacío si no quieres video'),
+  { key: 'video_fit', label: 'Encuadre del video', type: 'select', options: [['cover', 'Cubrir (recorta los bordes)'], ['contain', 'Mostrar completo (sin recortar)']] },
 ];
 
 // Secciones que aceptan un botón CTA al pie (el hero, precio, cta-final y oferta ya tienen el suyo)
@@ -1357,7 +1365,7 @@ function renderSecField(f, val, path) {
   if (f.type === 'text')
     return `<div class="mb-3">${_fLabel(f.label)}<input type="text" style="${_INP}" value="${escHtml(v)}" placeholder="${escHtml(f.ph || '')}" oninput="setSecField('${path}',this.value)"/></div>`;
   if (f.type === 'area')
-    return `<div class="mb-3">${_fLabel(f.label)}<textarea rows="3" style="${_INP};resize:vertical" placeholder="${escHtml(f.ph || '')}" oninput="setSecField('${path}',this.value)">${escHtml(v)}</textarea></div>`;
+    return `<div class="mb-3">${_fLabel(f.label)}<textarea rows="4" style="${_INP};resize:vertical;min-height:78px;line-height:1.5" placeholder="${escHtml(f.ph || '')}" oninput="setSecField('${path}',this.value)">${escHtml(v)}</textarea></div>`;
   if (f.type === 'select')
     return `<div class="mb-3">${_fLabel(f.label)}<select style="${_INP}" onchange="setSecField('${path}',this.value)">${f.options.map(([ov, ol]) => `<option value="${ov}" ${v === ov ? 'selected' : ''}>${ol}</option>`).join('')}</select></div>`;
   if (f.type === 'icon')
@@ -1471,13 +1479,82 @@ function moveSecItem(path, i, dir) {
   [arr[i], arr[j]] = [arr[j], arr[i]];
   rebuildActiveSection(false);
 }
-function uploadSecImage(input, path) {
+// Envuelve una promesa con límite de tiempo, para que la UI nunca quede colgada
+function withTimeout(promise, ms, label) {
+  return Promise.race([
+    promise,
+    new Promise((_, rej) => setTimeout(() => rej(new Error((label || 'La operación') + ' tardó demasiado. Probá de nuevo.')), ms)),
+  ]);
+}
+
+// ── Compresión de imágenes ──
+// Sin esto, una foto del celular (3-6 MB) se guardaba entera en base64 dentro del
+// HTML y del contenido: la landing pesaba decenas de MB y el guardado en Supabase
+// se colgaba (síntoma: "se queda publicando y no publica").
+function _dataUrlBytes(src) {
+  if (!src || !/^data:/i.test(src)) return 0;
+  const b64 = src.split(',')[1] || '';
+  return Math.round(b64.length * 0.75);
+}
+
+function _loadImg(src) {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.crossOrigin = 'anonymous';
+    img.onload = () => resolve(img);
+    img.onerror = () => reject(new Error('No se pudo leer la imagen'));
+    img.src = src;
+  });
+}
+
+async function compressImage(src, maxBytes = 220000, maxW = 1600) {
+  try {
+    if (!/^data:image\//i.test(src)) return src;
+    if (_dataUrlBytes(src) <= maxBytes) return src;
+    const img = await _loadImg(src);
+    const scale = Math.min(1, maxW / (img.naturalWidth || maxW));
+    const canvas = document.createElement('canvas');
+    canvas.width = Math.max(1, Math.round((img.naturalWidth || maxW) * scale));
+    canvas.height = Math.max(1, Math.round((img.naturalHeight || maxW) * scale));
+    const ctx = canvas.getContext('2d');
+    ctx.fillStyle = '#ffffff';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+    for (const q of [0.82, 0.72, 0.62, 0.5, 0.4]) {
+      const out = canvas.toDataURL('image/jpeg', q);
+      if (_dataUrlBytes(out) <= maxBytes || q === 0.4) return out;
+    }
+    return canvas.toDataURL('image/jpeg', 0.4);
+  } catch (e) {
+    console.warn('[img] no se pudo comprimir:', e.message);
+    return src;
+  }
+}
+
+// Lee un archivo y devuelve un data URL ya comprimido
+function readImageFile(file, maxBytes) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = async e => resolve(await compressImage(e.target.result, maxBytes));
+    reader.onerror = () => reject(new Error('No se pudo leer el archivo'));
+    reader.readAsDataURL(file);
+  });
+}
+
+async function uploadSecImage(input, path) {
   const file = input.files && input.files[0];
-  if (!file) return;
-  const reader = new FileReader();
-  reader.onload = e => { setSecField(path, e.target.result); rebuildActiveSection(false); };
-  reader.readAsDataURL(file);
   input.value = '';
+  if (!file) return;
+  setStatus('Procesando imagen…');
+  try {
+    const url = await readImageFile(file);
+    setSecField(path, url);
+    rebuildActiveSection(false);
+    setStatus('Guardado');
+  } catch (e) {
+    setStatus('');
+    showToast('No pude usar esa imagen: ' + (e.message || 'error'), true);
+  }
 }
 
 // ── Reordenar / borrar / agregar secciones ──
@@ -1647,16 +1724,16 @@ function _funnelPageSections(type, palId, productName) {
     return [
       _mkSec('hero', {
         layout: 'center', badge: 'Pago confirmado', title: '¡Gracias por tu compra!',
-        subtitle: `Ya tenés acceso a ${name}. Te mandamos un correo con todos los detalles — revisá tu bandeja de entrada (y la carpeta de spam, por las dudas).`,
-        cta: 'Revisar mi correo', microcopy: 'Si en 10 minutos no te llega, escribinos.',
+        subtitle: `Ya tienes acceso a ${name}. Te enviamos un correo con todos los detalles — revisa tu bandeja de entrada (y la carpeta de spam, por si acaso).`,
+        cta: 'Revisar mi correo', microcopy: 'Si en 10 minutos no te llega, escríbenos.',
         image_prompt: 'happy+woman+celebrating+laptop+success+bright',
       }, palId),
       _mkSec('como-funciona', { title: 'Tus próximos pasos', items: [
-        { step: '1', title: 'Revisá tu correo', desc: 'Te enviamos los datos de acceso a la dirección con la que compraste.' },
-        { step: '2', title: 'Entrá a la plataforma', desc: 'Usá el link del correo para entrar y crear tu contraseña.' },
-        { step: '3', title: 'Empezá hoy mismo', desc: 'Arrancá por el primer módulo — no necesitás nada más para empezar.' },
+        { step: '1', title: 'Revisa tu correo', desc: 'Te enviamos los datos de acceso a la dirección con la que compraste.' },
+        { step: '2', title: 'Entra a la plataforma', desc: 'Usa el enlace del correo para entrar y crear tu contraseña.' },
+        { step: '3', title: 'Empieza hoy mismo', desc: 'Comienza por el primer módulo — no necesitas nada más para empezar.' },
       ]}, palId),
-      _mkSec('cta-final', { title: '¿Necesitás ayuda?', subtitle: 'Escribinos y te respondemos a la brevedad.', cta: 'Contactar soporte', microcopy: 'Respondemos de lunes a viernes.' }, palId),
+      _mkSec('cta-final', { title: '¿Necesitas ayuda?', subtitle: 'Escríbenos y te respondemos a la brevedad.', cta: 'Contactar soporte', microcopy: 'Respondemos de lunes a viernes.' }, palId),
       _mkSec('footer', { brand_name: name, tagline: 'Gracias por confiar en nosotros', copyright: `© ${new Date().getFullYear()} · Todos los derechos reservados` }, palId),
     ];
   }
@@ -1664,13 +1741,13 @@ function _funnelPageSections(type, palId, productName) {
   return [
     _mkSec('oferta', {
       badge: isUp ? 'Espera — oferta única' : 'Última oportunidad',
-      title: isUp ? 'Sumá esto y acelerá tus resultados' : 'Probá con una versión más accesible',
+      title: isUp ? 'Suma esto y acelera tus resultados' : 'Prueba con una versión más accesible',
       subtitle: isUp
-        ? 'Solo aparece en esta pantalla y no se repite. Se agrega a la compra que acabás de hacer.'
+        ? 'Solo aparece en esta pantalla y no se repite. Se agrega a la compra que acabas de hacer.'
         : 'Entendemos que no sea el momento. Te dejamos una opción más simple al alcance de todos.',
       features: isUp
         ? ['Acceso al programa avanzado completo', 'Sesiones en vivo de acompañamiento', 'Plantillas y recursos listos para usar']
-        : ['Lo esencial del programa', 'Acceso por tiempo limitado', 'Podés mejorar al plan completo cuando quieras'],
+        : ['Lo esencial del programa', 'Acceso por tiempo limitado', 'Puedes mejorar al plan completo cuando quieras'],
       price_before: isUp ? '$197' : '$97',
       price: isUp ? '$97' : '$27',
       cta: isUp ? 'SÍ, LO QUIERO SUMAR' : 'SÍ, QUIERO ESTA OPCIÓN',
@@ -1755,7 +1832,7 @@ Si lo dejás vacío, uso un texto de ejemplo que después editás a mano.`, '');
       if (oi !== -1) {
         try {
           const mainPrice = (landing.sections || []).find(s => s.id === 'precio')?.content?.price || '';
-          const gen = await AI.generateOfferContent(type, landing.brief || landing.title || '', offerBrief, mainPrice);
+          const gen = await withTimeout(AI.generateOfferContent(type, landing.brief || landing.title || '', offerBrief, mainPrice), 45000, 'Escribir la oferta');
           if (gen) {
             sections[oi].content = { ...sections[oi].content, ...gen };
             sections[oi].html = AI.buildSection('oferta', sections[oi].content, palId);
@@ -1784,12 +1861,12 @@ Si lo dejás vacío, uso un texto de ejemplo que después editás a mano.`, '');
       },
     };
     page.html = AI.assembleLanding(sections, palId, title, { fbPixel: page.settings.fb_pixel_id });
-    const row = await DB.landings.save(page, currentUser.id);
-    if (!row || !row.id) throw new Error('No se pudo guardar');
+    const row = await withTimeout(DB.landings.save(page, currentUser.id), 30000, 'Crear la página');
+    if (!row || !row.id) throw new Error('No se pudo guardar la página');
     f[type] = { id: row.id, slug: row.slug || page.slug };
     if (type === 'thanks') { landing.settings.thanks_slug = f.thanks.slug; landing.settings.thanks_id = f.thanks.id; }
     await saveLanding();
-    await _relinkFunnel();
+    try { await withTimeout(_relinkFunnel(), 30000, 'Conectar el embudo'); } catch (e) { console.warn('[funnel] relink', e.message); }
     renderFunnelSteps();
     setStatus('Guardado');
     showToast(`Página de ${meta.label} creada y publicada`);
@@ -2823,24 +2900,54 @@ function switchToBuilderMode() {
 let _saveTimer = null;
 function autosave() {
   clearTimeout(_saveTimer);
-  _saveTimer = setTimeout(() => saveLanding(), 1500);
+  _saveTimer = setTimeout(() => { saveLanding().catch(e => { setStatus(''); showToast('No se pudo guardar: ' + (e.message || 'error'), true); }); }, 1500);
+}
+
+// Recorre el contenido de las secciones y comprime data URLs pesadas
+async function optimizeLandingImages() {
+  if (!landing || !landing.sections) return false;
+  let changed = false;
+  for (const sec of landing.sections) {
+    const c = sec.content;
+    if (!c) continue;
+    const walk = async (obj) => {
+      for (const k of Object.keys(obj || {})) {
+        const v = obj[k];
+        if (typeof v === 'string' && /^data:image\//i.test(v) && _dataUrlBytes(v) > 240000) {
+          const small = await compressImage(v);
+          if (small !== v) { obj[k] = small; changed = true; }
+        } else if (v && typeof v === 'object') {
+          await walk(v);
+        }
+      }
+    };
+    await walk(c);
+    if (changed) sec.html = AI.buildSection(sec.id, c, landing.palette || 'blue-purple');
+  }
+  if (changed) {
+    landing.html = AI.assembleLanding(landing.sections, landing.palette || 'blue-purple', landing.title, _landingOpts());
+  }
+  return changed;
 }
 
 async function saveLanding() {
   if (!currentUser || !landing) return;
   try {
+    await optimizeLandingImages();
     const html = (landing.mode === 'html' && landing.html)
       ? landing.html
       : renderLandingFromBlocks(landing.blocks, landing.palette || 'blue-purple');
-    const row = await DB.landings.save({
+    const row = await withTimeout(DB.landings.save({
       ...landing,
       title: document.getElementById('ld-title').value.trim() || landing.title,
       html,
-    }, currentUser.id);
+    }, currentUser.id), 25000, 'Guardar la landing');
     if (row && row.id) landing.id = row.id;
     if (row && row.slug) landing.slug = row.slug;
+    return row;
   } catch(e) {
     console.error('[save]', e);
+    throw e;
   }
 }
 
@@ -2883,7 +2990,7 @@ async function confirmPublish() {
       landing.html = renderLandingFromBlocks(landing.blocks, landing.palette || 'blue-purple');
     }
     await saveLanding();
-    if (!landing.id) throw new Error('No se pudo guardar la landing (¿estás logueada?)');
+    if (!landing.id) throw new Error('No se pudo guardar la landing. Revisá tu conexión e intentá de nuevo.');
     // saveLanding puede haber ajustado el slug si estaba tomado
     const url = `${location.origin}/landing-view.html?slug=${encodeURIComponent(landing.slug)}`;
     const slugInput = document.getElementById('publish-slug');
@@ -3042,7 +3149,7 @@ async function sendChat() {
       const sections = landing.sections || [];
       const _prev = { html: landing.html, sections: sections.length ? sections.slice() : null };
 
-      const res = await AI.editLandingSectioned(msg, sections, palId, landing.brief || landing.title || '', chatHistory.slice(-8));
+      const res = await withTimeout(AI.editLandingSectioned(msg, sections, palId, landing.brief || landing.title || '', chatHistory.slice(-8)), 60000, 'El cambio');
 
       // El usuario pidió explícitamente una landing nueva desde cero
       if (res.newLanding) {
@@ -3069,9 +3176,13 @@ async function sendChat() {
       }
     } catch(e) {
       removeMsg(thinkingId);
-      const em = `Hubo un error: ${e.message}. ¿Querés que lo intente de nuevo?`;
+      console.error('[chat]', e);
+      const detalle = (e && e.message) ? e.message : 'error desconocido';
+      const em = `No pude aplicar ese cambio (${detalle}).<br><br>` +
+        `Mientras tanto podés hacerlo a mano: en el panel de la derecha, tocá la sección y editá el campo. ` +
+        `Se aplica al instante y no depende de la IA.`;
       addChatMsg(em, 'assistant');
-      chatHistory.push({ role: 'assistant', content: em });
+      chatHistory.push({ role: 'assistant', content: 'No pude aplicar ese cambio: ' + detalle });
     }
     return;
   }
@@ -3919,7 +4030,7 @@ function initUI() {
     // Sin landing igual se permite: un PDF sirve como base para generar una nueva
     imgInput.click();
   });
-  imgInput.addEventListener('change', () => {
+  imgInput.addEventListener('change', async () => {
     const file = imgInput.files && imgInput.files[0];
     if (!file) return;
     if (file.type === 'application/pdf' || /\.pdf$/i.test(file.name)) {
@@ -3928,10 +4039,14 @@ function initUI() {
       return;
     }
     const hasLanding = landing && (landing.mode === 'html' ? !!landing.html : (landing.blocks && landing.blocks.length));
-    if (!hasLanding) { showToast('Primero creá una landing, después subí tu imagen', true); imgInput.value = ''; return; }
-    const reader = new FileReader();
-    reader.onload = e => { handleChatImage(e.target.result); imgInput.value = ''; };
-    reader.readAsDataURL(file);
+    if (!hasLanding) { showToast('Primero crea una landing, después sube tu imagen', true); imgInput.value = ''; return; }
+    try {
+      const url = await readImageFile(file);
+      handleChatImage(url);
+    } catch (e) {
+      showToast('No pude leer esa imagen', true);
+    }
+    imgInput.value = '';
   });
   document.getElementById('chat-undo-btn').addEventListener('click', () => {
     if (!landing) return;

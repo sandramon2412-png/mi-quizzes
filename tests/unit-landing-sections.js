@@ -111,5 +111,32 @@ chk('atributos para autoplay en celular', vidBg.includes('playsinline') && vidBg
 const asmVid=C.assembleLanding([{id:'x',html:vidBg}],'blue-purple','t');
 chk('CSS que fuerza el video visible en celular', asmVid.includes('section > video'));
 
+console.log('Ronda de pulido');
+const navBig=C._buildSection('nav',{brand:'M',logo_url:'l.png',logo_size:'60',links:[]},pal);
+chk('alto del logo configurable', navBig.includes('height:60px'));
+const navClamp=C._buildSection('nav',{brand:'M',logo_url:'l.png',logo_size:'999',links:[]},pal);
+chk('alto del logo con tope de seguridad', navClamp.includes('height:72px'));
+
+const faqIc=C._buildSection('faq',{title:'F',items:[{q:'P1',a:'R1',icon:'schedule'},{q:'P2',a:'R2'}]},pal);
+chk('icono propio en una pregunta', faqIc.includes('schedule'));
+chk('icono por defecto en las demás', faqIc.includes('>help<'));
+chk('respuesta respeta saltos de línea', faqIc.includes('white-space:pre-wrap'));
+
+const bonImg2=C._buildSection('bonos',{title:'B',items:[{title:'b1',image_url:'f1.jpg',desc:'d'}]},pal);
+chk('imagen del bono va arriba y a lo ancho', bonImg2.includes('aspect-ratio:16/9') && bonImg2.indexOf('f1.jpg') < bonImg2.indexOf('b1'));
+
+const secImg=C._buildSection('beneficios',{title:'B',items:[{title:'a'}],image_url:'x.jpg',image_size:'medium',image_ratio:'original',image_align:'left'},pal);
+chk('imagen de sección con tamaño', secImg.includes('max-width:65%'));
+chk('imagen de sección sin recorte', secImg.includes('height:auto'));
+chk('imagen de sección alineada', secImg.includes('margin-right:auto'));
+
+const vidFit=C._buildSection('hero',{title:'T',video_url:'v.mp4',video_fit:'contain'},pal);
+chk('video se puede mostrar completo', vidFit.includes('object-fit:contain'));
+const vidCover=C._buildSection('hero',{title:'T',video_url:'v.mp4'},pal);
+chk('video cubre por defecto', vidCover.includes('object-fit:cover'));
+
+const subNl=C._buildSection('beneficios',{title:'B',subtitle:'linea1\nlinea2',items:[{title:'a',desc:'d1\nd2'}]},pal);
+chk('subtítulo respeta saltos', subNl.includes('white-space:pre-wrap'));
+
 console.log('\n'+(f===0?'🎉 TODOS PASAN':'⚠️ '+f+' FALLAN'));
 process.exit(f?1:0);

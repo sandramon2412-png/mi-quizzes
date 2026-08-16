@@ -424,6 +424,77 @@ function aiResponder(bodyStr) {
   chk('el botón usa el link de pago de su propia oferta', offerHtml.includes('href="https://pay.hotmart.com/UPSELL9"'));
   chk('el "no gracias" no se reescribe al checkout', offerHtml.includes('href="https://x.com/next"'));
 
+  console.log('E2E 12b — saltos de línea y espacios en el editor');
+  await page.evaluate(() => {
+    const i = landing.sections.findIndex(s2 => s2.id === 'beneficios');
+    openSectionEditor(i);
+  });
+  await page.waitForTimeout(300);
+  const ta = page.locator('#sec-editor textarea').first();
+  await ta.fill('Primera línea\nSegunda línea\n\nCuarta con   espacios');
+  await page.waitForTimeout(900);
+  const nl = await page.evaluate(() => {
+    const b = landing.sections.find(s2 => s2.id === 'beneficios');
+    const val = JSON.stringify(b.content);
+    return { guardado: val.includes('\\n'), enHtml: /white-space:pre-wrap/.test(b.html) };
+  });
+  chk('los saltos de línea se guardan', nl.guardado);
+  chk('la landing los respeta al mostrarlos', nl.enHtml);
+
+  console.log('E2E 13 — imágenes pesadas no cuelgan el guardado ni la publicación');
+  // Simular una foto de celular grande (data URL de ~1.5 MB)
+  const bigPng = await page.evaluate(() => {
+    const cv = document.createElement('canvas');
+    cv.width = 2400; cv.height = 1600;
+    const ctx = cv.getContext('2d');
+    const g = ctx.createLinearGradient(0, 0, 2400, 1600);
+    g.addColorStop(0, '#ff0055'); g.addColorStop(1, '#0055ff');
+    ctx.fillStyle = g; ctx.fillRect(0, 0, 2400, 1600);
+    for (let i = 0; i < 4000; i++) { ctx.fillStyle = `rgb(${i%255},${(i*7)%255},${(i*13)%255})`; ctx.fillRect((i*37)%2400, (i*53)%1600, 9, 9); }
+    return cv.toDataURL('image/png');
+  });
+  const bigKb = Math.round(bigPng.length * 0.75 / 1024);
+  console.log('    [info] imagen de prueba:', bigKb, 'KB');
+  chk('la imagen de prueba es realmente pesada', bigKb > 400);
+
+  const small = await page.evaluate(async src => await compressImage(src), bigPng);
+  const smallKb = await page.evaluate(s2 => Math.round(s2.length * 0.75 / 1024), small);
+  console.log('    [info] tras comprimir:', smallKb, 'KB');
+  chk('se comprime a un tamaño razonable', smallKb < 260 && smallKb > 0);
+  chk('sigue siendo una imagen válida', /^data:image\//.test(small));
+
+  // Guardar una landing que tiene la imagen pesada adentro: debe optimizar y no colgarse
+  await page.evaluate(src => {
+    const i = landing.sections.findIndex(s2 => s2.id === 'beneficios');
+    landing.sections[i].content.image_url = src;
+  }, bigPng);
+  const t0 = Date.now();
+  const saveOk = await page.evaluate(async () => {
+    try { await saveLanding(); return true; } catch (e) { return 'ERR: ' + e.message; }
+  });
+  const ms = Date.now() - t0;
+  chk('guardar con imagen pesada no falla (' + ms + 'ms)', saveOk === true);
+  chk('guardar no se cuelga', ms < 25000);
+  const storedKb = await page.evaluate(() => {
+    const i = landing.sections.findIndex(s2 => s2.id === 'beneficios');
+    return Math.round((landing.sections[i].content.image_url || '').length * 0.75 / 1024);
+  });
+  chk('la imagen quedó optimizada en el contenido (' + storedKb + ' KB)', storedKb < 260);
+
+  console.log('E2E 14 — publicar responde siempre');
+  const pub = await page.evaluate(async () => {
+    publishLanding();
+    document.getElementById('publish-slug').value = 'prueba-publicar';
+    try { await confirmPublish(); } catch (e) { return 'ERR: ' + e.message; }
+    return {
+      linkVisible: !document.getElementById('publish-result').classList.contains('hidden'),
+      url: document.getElementById('publish-link').textContent,
+      btnEnabled: !document.getElementById('publish-confirm').disabled,
+    };
+  });
+  chk('publicar termina y muestra el link', pub && pub.linkVisible && /prueba-publicar/.test(pub.url || ''));
+  chk('el botón vuelve a quedar disponible', pub && pub.btnEnabled);
+
   console.log('\nLlamadas IA por tipo:', JSON.stringify(aiCalls.reduce((a, c) => { a[c.kind] = (a[c.kind] || 0) + 1; return a; }, {})));
   console.log(fails.length === 0 ? '\n🎉 E2E COMPLETO: TODO PASA' : '\n⚠️ FALLARON: ' + fails.join(' | '));
   await browser.close();
