@@ -9,9 +9,9 @@
 <script src="https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.min.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
 <link href="https://fonts.googleapis.com/icon?family=Material+Symbols+Outlined" rel="stylesheet"/>
-<script src="./supabase-config.js?v=20260719f"></script>
-<script src="./app.js?v=20260719f"></script>
-<script src="./landing-blocks.js?v=20260719f"></script>
+<script src="./supabase-config.js?v=20260719g"></script>
+<script src="./app.js?v=20260719g"></script>
+<script src="./landing-blocks.js?v=20260719g"></script>
 <script>
   // Si el CDN de Tailwind no cargó, esta asignación tiraba y mataba todo el script
   // que sigue (incluida la UI del builder). Blindado para que la página funcione igual.
@@ -836,6 +836,7 @@ let lastBlockSnapshot = null;   // { idx, data } — para undo del chat
 let _lastHtmlSnapshot = null;   // HTML previo — para undo en modo Lovable
 let chatHistory = [];           // { role:'user'|'assistant', content:string }
 let _pendingHtmlImage = null;   // última imagen subida — para "ponela en X" por chat
+let _funnelBusy = null;         // paso del embudo que se está creando ahora mismo
 
 function setTypoScale(val, btn) {
   document.querySelectorAll('[data-scale]').forEach(b => {
@@ -1191,6 +1192,7 @@ const SEC_SCHEMA = {
     F.image('image_url', 'Imagen de la portada'),
     F.text('video_url', 'Video de fondo (opcional)', 'Link .mp4 — o usa el botón Video de fondo'),
     { key: 'video_fit', label: 'Encuadre del video', type: 'select', options: [['cover', 'Cubrir (recorta los bordes)'], ['contain', 'Mostrar completo (sin recortar)']] },
+    { key: 'video_position', label: 'Qué parte del video se ve', type: 'select', options: [['center', 'El centro'], ['top', 'La parte de arriba'], ['bottom', 'La parte de abajo']] },
     { key: 'layout', label: 'Diseño', type: 'select', options: [['split', 'Texto + imagen al lado'], ['center', 'Todo centrado']] },
   ]},
   problema: { label: 'El problema', icon: 'report', fields: [
@@ -1220,13 +1222,13 @@ const SEC_SCHEMA = {
     F.text('title', 'Título de la sección'),
     F.text('subtitle', 'Subtítulo'),
     { key: 'items', label: 'Beneficios', type: 'items', addLabel: 'Agregar beneficio',
-      item: [F.icon(), F.text('title', 'Título'), F.area('desc', 'Descripción'), F.image('image_url', 'Foto (opcional)')] },
+      item: [F.icon(), F.text('title', 'Título'), F.area('desc', 'Descripción'), F.image('image_url', 'Foto (opcional)'), { key: 'image_ratio', label: 'Ajuste de la foto', type: 'select', options: [['4/3', 'Clásica 4:3'], ['16/9', 'Panorámica 16:9'], ['1/1', 'Cuadrada'], ['original', 'Completa (sin recortar)']] }] },
   ]},
   modulos: { label: 'Módulos / contenido', icon: 'menu_book', fields: [
     F.text('title', 'Título de la sección'),
     F.text('subtitle', 'Subtítulo'),
     { key: 'items', label: 'Módulos', type: 'items', addLabel: 'Agregar módulo',
-      item: [F.icon(), F.text('title', 'Título'), F.area('desc', 'Descripción'), F.image('image_url', 'Foto (opcional)')] },
+      item: [F.icon(), F.text('title', 'Título'), F.area('desc', 'Descripción'), F.image('image_url', 'Foto (opcional)'), { key: 'image_ratio', label: 'Ajuste de la foto', type: 'select', options: [['4/3', 'Clásica 4:3'], ['16/9', 'Panorámica 16:9'], ['1/1', 'Cuadrada'], ['original', 'Completa (sin recortar)']] }] },
   ]},
   'como-funciona': { label: 'Cómo funciona', icon: 'linear_scale', fields: [
     F.text('title', 'Título de la sección'),
@@ -1247,7 +1249,7 @@ const SEC_SCHEMA = {
     F.text('title', 'Título de la sección'),
     F.text('subtitle', 'Subtítulo'),
     { key: 'items', label: 'Bonos', type: 'items', addLabel: 'Agregar bono',
-      item: [F.icon(), F.text('title', 'Nombre'), F.area('desc', 'Descripción'), F.text('value', 'Valor'), F.image('image_url', 'Foto (opcional)')] },
+      item: [F.icon(), F.text('title', 'Nombre'), F.area('desc', 'Descripción'), F.text('value', 'Valor'), F.image('image_url', 'Foto (opcional)'), { key: 'image_ratio', label: 'Ajuste de la foto', type: 'select', options: [['4/3', 'Clásica 4:3'], ['16/9', 'Panorámica 16:9'], ['1/1', 'Cuadrada'], ['original', 'Completa (sin recortar)']] }] },
   ]},
   precio: { label: 'Precio', icon: 'sell', fields: [
     F.text('title', 'Título de la sección'),
@@ -1290,6 +1292,7 @@ const MEDIA_FIELDS = [
   { key: 'image_align', label: 'Posición de la imagen', type: 'select', options: [['center', 'Centrada'], ['left', 'A la izquierda'], ['right', 'A la derecha']] },
   F.text('video_url', 'Video de fondo (link .mp4)', 'Déjalo vacío si no quieres video'),
   { key: 'video_fit', label: 'Encuadre del video', type: 'select', options: [['cover', 'Cubrir (recorta los bordes)'], ['contain', 'Mostrar completo (sin recortar)']] },
+  { key: 'video_position', label: 'Qué parte del video se ve', type: 'select', options: [['center', 'El centro'], ['top', 'La parte de arriba'], ['bottom', 'La parte de abajo']] },
 ];
 
 // Secciones que aceptan un botón CTA al pie (el hero, precio, cta-final y oferta ya tienen el suyo)
@@ -1372,12 +1375,16 @@ function renderSecField(f, val, path) {
     return `<div class="mb-2">${_fLabel(f.label)}<select style="${_INP}" onchange="setSecField('${path}',this.value)">${SEC_ICONS.map(ic => `<option value="${ic}" ${v === ic ? 'selected' : ''}>${ic}</option>`).join('')}</select></div>`;
   if (f.type === 'image')
     return `<div class="mb-3">${_fLabel(f.label)}
-      <input type="text" style="${_INP}" value="${escHtml(v)}" placeholder="Pegá una URL o subí una imagen" oninput="setSecField('${path}',this.value)"/>
-      <label style="display:inline-flex;align-items:center;gap:5px;margin-top:5px;cursor:pointer;font-size:10px;color:#4d7cff;font-weight:600">
-        <span class="material-symbols-outlined" style="font-size:13px">upload</span>Subir imagen
-        <input type="file" accept="image/*" class="hidden" onchange="uploadSecImage(this,'${path}')"/>
-      </label>
-      ${v ? `<img src="${escHtml(v)}" style="width:100%;max-height:90px;object-fit:cover;border-radius:6px;margin-top:6px"/>` : ''}
+      <input type="text" style="${_INP}" value="${escHtml(v)}" placeholder="Pega una URL o sube una imagen" oninput="setSecField('${path}',this.value)"/>
+      <div style="display:flex;align-items:center;gap:10px;margin-top:5px">
+        <label style="display:inline-flex;align-items:center;gap:5px;cursor:pointer;font-size:10px;color:#4d7cff;font-weight:600">
+          <span class="material-symbols-outlined" style="font-size:13px">upload</span>Subir imagen
+          <input type="file" accept="image/*" class="hidden" onchange="uploadSecImage(this,'${path}')"/>
+        </label>
+        ${v ? `<button onclick="clearSecField('${path}')" style="display:inline-flex;align-items:center;gap:4px;background:none;border:none;cursor:pointer;font-size:10px;color:#f87171;font-weight:600;padding:0">
+          <span class="material-symbols-outlined" style="font-size:13px">delete</span>Quitar</button>` : ''}
+      </div>
+      ${v ? `<img src="${escHtml(v)}" style="width:100%;max-height:90px;object-fit:contain;background:rgba(255,255,255,.04);border-radius:6px;margin-top:6px"/>` : ''}
     </div>`;
   if (f.type === 'list') {
     const arr = Array.isArray(v) ? v : [];
@@ -1446,6 +1453,13 @@ function rebuildActiveSection(keepFocus) {
     showToast('Error al aplicar el cambio', true);
   }
   if (!keepFocus) openSectionEditor(activeSecIdx);
+}
+
+// Vacía un campo y refresca el formulario (para borrar una imagen o un video)
+function clearSecField(path) {
+  if (activeSecIdx < 0) return;
+  _setByPath(landing.sections[activeSecIdx].content, path, '');
+  rebuildActiveSection(false);
 }
 
 function addSecItem(path) {
@@ -1674,13 +1688,17 @@ function renderFunnelSteps() {
         </div>
       </div>`;
     }
+    const busy = _funnelBusy === st.key;
     return `<div class="mb-2 p-2 rounded-lg" style="background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07)">
       <div class="flex items-center gap-1.5 mb-1">
         <span class="material-symbols-outlined" style="font-size:13px;color:#7a7a82">${st.icon}</span>
         <span class="text-[10px] font-bold text-on-surface-variant/70">${st.label}</span>
       </div>
-      <p class="text-[9px] text-on-surface-variant/50 mb-1.5">${st.hint}</p>
-      <button onclick="createFunnelPage('${st.key}')" class="w-full h-7 rounded-lg text-[10px] font-bold primary-gradient text-white hover:opacity-90 transition">Crear página</button>
+      <p class="text-[9px] text-on-surface-variant/50 mb-1.5">${busy ? 'Creando la página y escribiendo la oferta… puede tardar hasta 1 minuto.' : st.hint}</p>
+      <button ${busy || _funnelBusy ? 'disabled' : ''} onclick="createFunnelPage('${st.key}')"
+        class="w-full h-7 rounded-lg text-[10px] font-bold primary-gradient text-white hover:opacity-90 transition ${busy || _funnelBusy ? 'opacity-50 cursor-default' : ''}">
+        ${busy ? '<span class="dot"></span><span class="dot"></span><span class="dot"></span> Creando…' : 'Crear página'}
+      </button>
     </div>`;
   }).join('');
 }
@@ -1820,6 +1838,8 @@ Si lo dejás vacío, uso un texto de ejemplo que después editás a mano.`, '');
   }
 
   setStatus('Creando…');
+  _funnelBusy = type;
+  renderFunnelSteps();
   try {
     const palId = landing.palette || getCurrentPalette() || 'blue-purple';
     const name = (landing.title || 'Mi producto').trim();
@@ -1877,6 +1897,9 @@ Si lo dejás vacío, uso un texto de ejemplo que después editás a mano.`, '');
   } catch (e) {
     setStatus('');
     showToast('No pude crear la página: ' + (e.message || 'error'), true);
+  } finally {
+    _funnelBusy = null;
+    renderFunnelSteps();
   }
 }
 
@@ -1980,7 +2003,7 @@ function renderPreview() {
   // ── Lovable HTML mode: show the AI-generated full page directly ──
   if (landing.mode === 'html' && landing.html) {
     const savedScroll = (() => { try { return frame.contentWindow?.scrollY || 0; } catch(e) { return 0; } })();
-    const navGuard = '<scr' + 'ipt>document.addEventListener("click",function(e){var a=e.target.closest("a");if(!a)return;var h=a.getAttribute("href")||"";if(h.startsWith("#")){e.preventDefault();var t=document.querySelector(h);if(t)t.scrollIntoView({behavior:"smooth"});}else if(h&&!h.startsWith("javascript")){e.preventDefault();}},true);</scr' + 'ipt>';
+    const navGuard = '<scr' + 'ipt>document.addEventListener("click",function(e){var a=e.target.closest("a");if(!a)return;var h=a.getAttribute("href")||"";if(h.startsWith("#")){e.preventDefault();var t=document.querySelector(h);if(t)t.scrollIntoView({behavior:"smooth"});}else if(h&&!h.startsWith("javascript")){e.preventDefault();window.open(h,"_blank","noopener");}},true);</scr' + 'ipt>';
     const scrollScript = `<scr`+`ipt>var _r=function(){try{if(${savedScroll}>20)window.scrollTo(0,${savedScroll});}catch(e){}};window.addEventListener('load',_r);setTimeout(_r,60);</scr`+`ipt>`;
     let h = landing.html;
     h = h.includes('</body>') ? h.replace('</body>', navGuard + scrollScript + '</body>') : h + navGuard + scrollScript;
@@ -1999,7 +2022,7 @@ function renderPreview() {
     ? renderLandingFromBlocks(landing.blocks, landing.palette || 'blue-purple', _palAdj.from, _palAdj.to, _font, landing.settings)
     : renderLandingFromBlocks(landing.blocks, landing.palette || 'blue-purple', null, null, _font, landing.settings);
   // Inject a script that intercepts anchor clicks so preview links don't navigate
-  const navGuard = '<scr' + 'ipt>document.addEventListener("click",function(e){var a=e.target.closest("a");if(!a)return;var h=a.getAttribute("href")||"";if(h.startsWith("#")){e.preventDefault();var t=document.querySelector(h);if(t)t.scrollIntoView({behavior:"smooth"});}else if(h&&!h.startsWith("javascript")){e.preventDefault();}},true);</scr' + 'ipt>';
+  const navGuard = '<scr' + 'ipt>document.addEventListener("click",function(e){var a=e.target.closest("a");if(!a)return;var h=a.getAttribute("href")||"";if(h.startsWith("#")){e.preventDefault();var t=document.querySelector(h);if(t)t.scrollIntoView({behavior:"smooth"});}else if(h&&!h.startsWith("javascript")){e.preventDefault();window.open(h,"_blank","noopener");}},true);</scr' + 'ipt>';
   // Restore view: prefer scrolling to the section currently being edited;
   // fall back to the previous pixel position. Runs both inline and on load.
   const bi = activeBlockIdx;

@@ -138,5 +138,32 @@ chk('video cubre por defecto', vidCover.includes('object-fit:cover'));
 const subNl=C._buildSection('beneficios',{title:'B',subtitle:'linea1\nlinea2',items:[{title:'a',desc:'d1\nd2'}]},pal);
 chk('subtítulo respeta saltos', subNl.includes('white-space:pre-wrap'));
 
+console.log('Ronda 8 — bugs reportados');
+// La oferta (upsell/downsell) NO aceptaba imagen: el cierre tenía saltos de línea
+const ofImg=C._buildSection('oferta',{title:'X',price:'$47',cta:'SI',image_url:'data:image/png;base64,OFERTAIMG'},pal);
+chk('la oferta ahora acepta imagen', ofImg.includes('OFERTAIMG'));
+chk('la imagen queda dentro de la sección', ofImg.lastIndexOf('OFERTAIMG') < ofImg.lastIndexOf('</section>'));
+// Otras secciones con formato multilínea
+const garImg=C._buildSection('garantia',{title:'G',desc:'d',image_url:'GARIMG'},pal);
+chk('garantía acepta imagen', garImg.includes('GARIMG'));
+const precioImg=C._buildSection('precio',{title:'P',price:'$1',features:['a'],image_url:'PRECIOIMG'},pal);
+chk('precio acepta imagen', precioImg.includes('PRECIOIMG'));
+
+// Saltos de línea en títulos
+const h2nl=C._buildSection('beneficios',{title:'Linea1\nLinea2',items:[{title:'a'}]},pal);
+chk('los títulos respetan los saltos de línea', /white-space:pre-wrap/.test(h2nl.split('</h2>')[0]));
+const h1nl=C._buildSection('hero',{title:'A\nB',subtitle:'s'},pal);
+chk('el título del hero respeta saltos', /<h1[^>]*white-space:pre-wrap/.test(h1nl));
+
+// Foto de ítem sin recorte
+const itFull=C._buildSection('bonos',{title:'B',items:[{title:'b',image_url:'f.jpg',image_ratio:'original'}]},pal);
+chk('foto del bono se puede ver completa', itFull.includes('height:auto'));
+const itSq=C._buildSection('beneficios',{title:'B',items:[{title:'b',image_url:'f.jpg',image_ratio:'1/1'}]},pal);
+chk('foto del beneficio con proporción elegida', itSq.includes('aspect-ratio:1/1'));
+
+// Posición del video
+const vPos=C._buildSection('hero',{title:'T',video_url:'v.mp4',video_position:'top'},pal);
+chk('se puede elegir qué parte del video se ve', vPos.includes('object-position:top'));
+
 console.log('\n'+(f===0?'🎉 TODOS PASAN':'⚠️ '+f+' FALLAN'));
 process.exit(f?1:0);

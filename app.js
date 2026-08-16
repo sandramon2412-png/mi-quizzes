@@ -1592,7 +1592,7 @@ ${body}
     const ICON_W = (name,sz=20) => `<span class="material-symbols-outlined" style="font-size:${sz}px;color:#fff">${e(okIcon(name,'star'))}</span>`;
     const AVATAR = (init) => `<div style="width:44px;height:44px;border-radius:50%;background:${GRAD};display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:14px;flex-shrink:0">${e((init||'?').slice(0,2))}</div>`;
     const BTN = (text,href='#precio') => `<a href="${e(href)}" class="ld-btn" style="background:${GRAD};color:#fff;padding:16px 36px;border-radius:12px;font-weight:700;font-size:18px;display:inline-block;text-decoration:none;cursor:pointer">${e(text||'Empezar')}</a>`;
-    const H2 = (text,align='center') => `<h2 style="color:var(--ink);font-size:clamp(1.6rem,3vw,2.4rem);font-weight:800;text-align:${align};margin:0 0 12px">${e(text)}</h2>`;
+    const H2 = (text,align='center') => `<h2 style="color:var(--ink);font-size:clamp(1.6rem,3vw,2.4rem);font-weight:800;text-align:${align};margin:0 0 12px;white-space:pre-wrap">${e(text)}</h2>`;
     const SUB = (text,align='center') => text ? `<p style="color:var(--muted);text-align:${align};font-size:17px;line-height:1.6;margin:0 0 48px;white-space:pre-wrap">${e(text)}</p>` : '<div style="margin-bottom:48px"></div>';
     const SEC = (inner,bg='var(--bg)',py=80) => `<section id="${e(id)}" style="background:${bg};padding:${py}px 0"><div style="max-width:1152px;margin:0 auto;padding:0 24px">${inner}</div></section>`;
     // Botón CTA opcional al pie de cualquier sección
@@ -1657,7 +1657,7 @@ ${c.caption ? `<figcaption style="color:var(--muted);font-size:14px;text-align:c
 <div style="position:relative;z-index:2;max-width:1152px;margin:0 auto;padding:0 24px;display:flex;flex-wrap:wrap;align-items:center;gap:48px">
 <div style="flex:1;min-width:280px">
 ${c.badge?`<p style="color:rgba(255,255,255,.85);font-weight:700;font-size:13px;text-transform:uppercase;letter-spacing:2px;margin:0 0 16px">${e(c.badge)}</p>`:''}
-<h1 style="color:#fff;font-size:clamp(2rem,5vw,3.5rem);font-weight:800;line-height:1.1;margin:0 0 20px;text-shadow:0 2px 20px rgba(0,0,0,.4)">${e(c.title||'Título')}</h1>
+<h1 style="color:#fff;font-size:clamp(2rem,5vw,3.5rem);font-weight:800;line-height:1.1;margin:0 0 20px;text-shadow:0 2px 20px rgba(0,0,0,.4);white-space:pre-wrap">${e(c.title||'Título')}</h1>
 <p style="color:rgba(255,255,255,.88);font-size:18px;line-height:1.6;margin:0 0 32px">${e(c.subtitle||'')}</p>
 ${BTN(c.cta||'Empezar ahora')}
 ${c.microcopy?`<p style="color:rgba(255,255,255,.7);font-size:13px;margin:12px 0 0">${e(c.microcopy)}</p>`:''}
@@ -1675,7 +1675,7 @@ ${c.microcopy?`<p style="color:rgba(255,255,255,.7);font-size:13px;margin:12px 0
 <div style="position:absolute;inset:0;background:rgba(0,0,0,.55);z-index:1"></div>
 <div style="position:relative;z-index:2;max-width:860px;margin:0 auto;padding:0 24px;text-align:center">
 ${c.badge?`<p style="color:rgba(255,255,255,.85);font-weight:700;font-size:13px;text-transform:uppercase;letter-spacing:2px;margin:0 0 16px">${e(c.badge)}</p>`:''}
-<h1 style="color:#fff;font-size:clamp(2rem,5vw,3.6rem);font-weight:800;line-height:1.1;margin:0 0 20px;text-shadow:0 2px 20px rgba(0,0,0,.4)">${e(c.title||'Título')}</h1>
+<h1 style="color:#fff;font-size:clamp(2rem,5vw,3.6rem);font-weight:800;line-height:1.1;margin:0 0 20px;text-shadow:0 2px 20px rgba(0,0,0,.4);white-space:pre-wrap">${e(c.title||'Título')}</h1>
 <p style="color:rgba(255,255,255,.88);font-size:18px;line-height:1.6;margin:0 auto 32px;max-width:620px">${e(c.subtitle||'')}</p>
 ${BTN(c.cta||'Empezar ahora')}
 ${c.microcopy?`<p style="color:rgba(255,255,255,.7);font-size:13px;margin:12px 0 0">${e(c.microcopy)}</p>`:''}
@@ -1690,7 +1690,7 @@ ${c.image_url?`<div style="max-width:640px;margin:48px auto 0"><img src="${e(c.i
           return `<section id="hero" style="background:var(--bg);padding:80px 0">
 <div style="max-width:860px;margin:0 auto;padding:0 24px;text-align:center">
 ${c.badge?`<p style="color:var(--brand);font-weight:700;font-size:13px;text-transform:uppercase;letter-spacing:2px;margin:0 0 16px">${e(c.badge)}</p>`:''}
-<h1 style="color:var(--ink);font-size:clamp(2rem,5vw,3.6rem);font-weight:800;line-height:1.1;margin:0 0 20px">${e(c.title||'Título')}</h1>
+<h1 style="color:var(--ink);font-size:clamp(2rem,5vw,3.6rem);font-weight:800;line-height:1.1;margin:0 0 20px;white-space:pre-wrap">${e(c.title||'Título')}</h1>
 <p style="color:var(--muted);font-size:18px;line-height:1.6;margin:0 auto 32px;max-width:620px">${e(c.subtitle||'')}</p>
 ${BTN(c.cta||'Empezar ahora')}
 ${c.microcopy?`<p style="color:var(--muted);font-size:13px;margin:12px 0 0">${e(c.microcopy)}</p>`:''}
@@ -1704,7 +1704,7 @@ ${c.microcopy?`<p style="color:var(--muted);font-size:13px;margin:12px 0 0">${e(
 <div style="max-width:1152px;margin:0 auto;padding:0 24px;display:flex;flex-wrap:wrap;align-items:center;gap:48px">
 <div style="flex:1;min-width:280px">
 ${c.badge?`<p style="color:var(--brand);font-weight:700;font-size:13px;text-transform:uppercase;letter-spacing:2px;margin:0 0 16px">${e(c.badge)}</p>`:''}
-<h1 style="color:var(--ink);font-size:clamp(2rem,5vw,3.5rem);font-weight:800;line-height:1.1;margin:0 0 20px">${e(c.title||'Título')}</h1>
+<h1 style="color:var(--ink);font-size:clamp(2rem,5vw,3.5rem);font-weight:800;line-height:1.1;margin:0 0 20px;white-space:pre-wrap">${e(c.title||'Título')}</h1>
 <p style="color:var(--muted);font-size:18px;line-height:1.6;margin:0 0 32px;white-space:pre-wrap">${e(c.subtitle||'')}</p>
 ${BTN(c.cta||'Empezar ahora')}
 ${c.microcopy?`<p style="color:var(--muted);font-size:13px;margin:12px 0 0">${e(c.microcopy)}</p>`:''}
@@ -1717,16 +1717,16 @@ ${c.microcopy?`<p style="color:var(--muted);font-size:13px;margin:12px 0 0">${e(
       }
       case 'problema': {
         const items = arr(c.items);
-        return SEC(`${H2(c.title||'El problema')}${SUB('')}<div ${GRIDC(items.length)}>${items.map(it=>`<div class="ld-card" style="${CARD}">${ICON(it.icon||'sentiment_dissatisfied')}<h3 style="color:var(--ink);font-size:17px;font-weight:700;margin:12px 0 8px">${e(it.title||'')}</h3><p style="color:var(--muted);font-size:15px;line-height:1.6;margin:0;white-space:pre-wrap">${e(it.desc||'')}</p></div>`).join('')}</div>`,'var(--surface)');
+        return SEC(`${H2(c.title||'El problema')}${SUB('')}<div ${GRIDC(items.length)}>${items.map(it=>`<div class="ld-card" style="${CARD}">${ICON(it.icon||'sentiment_dissatisfied')}<h3 style="color:var(--ink);font-size:17px;font-weight:700;margin:12px 0 8px;white-space:pre-wrap">${e(it.title||'')}</h3><p style="color:var(--muted);font-size:15px;line-height:1.6;margin:0;white-space:pre-wrap">${e(it.desc||'')}</p></div>`).join('')}</div>`,'var(--surface)');
       }
       case 'beneficios': {
         const items = arr(c.items);
-        const IMG_IT = (it) => it.image_url ? `<img src="${e(it.image_url)}" loading="lazy" alt="" style="width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:12px;margin:0 0 14px"/>` : '';
-        return SEC(`${H2(c.title||'Beneficios')}${SUB(c.subtitle||'')}<div ${GRIDC(items.length)}>${items.map(it=>`<div class="ld-card" style="${CARD}">${IMG_IT(it)}${ICON(it.icon||'check_circle')}<h3 style="color:var(--ink);font-size:17px;font-weight:700;margin:12px 0 8px">${e(it.title||'')}</h3><p style="color:var(--muted);font-size:15px;line-height:1.6;margin:0;white-space:pre-wrap">${e(it.desc||'')}</p></div>`).join('')}</div>${SEC_CTA()}`);
+        const IMG_IT = (it) => it.image_url ? `<img src="${e(it.image_url)}" loading="lazy" alt="" style="width:100%;${(it.image_fit||c.item_image_fit)==='contain'?'height:auto;object-fit:contain':(it.image_ratio||c.item_image_ratio)==='original'?'height:auto':`aspect-ratio:${it.image_ratio||c.item_image_ratio||'4/3'};object-fit:cover`};border-radius:12px;margin:0 0 14px;display:block"/>` : '';
+        return SEC(`${H2(c.title||'Beneficios')}${SUB(c.subtitle||'')}<div ${GRIDC(items.length)}>${items.map(it=>`<div class="ld-card" style="${CARD}">${IMG_IT(it)}${ICON(it.icon||'check_circle')}<h3 style="color:var(--ink);font-size:17px;font-weight:700;margin:12px 0 8px;white-space:pre-wrap">${e(it.title||'')}</h3><p style="color:var(--muted);font-size:15px;line-height:1.6;margin:0;white-space:pre-wrap">${e(it.desc||'')}</p></div>`).join('')}</div>${SEC_CTA()}`);
       }
       case 'modulos': {
         const items = arr(c.items);
-        return SEC(`${H2(c.title||'Contenido')}${SUB(c.subtitle||'')}<div ${GRIDC(items.length)}>${items.map(it=>`<div class="ld-card" style="${CARD}">${it.image_url?`<img src="${e(it.image_url)}" loading="lazy" alt="" style="width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:12px;margin:0 0 14px"/>`:''}<div style="display:flex;gap:16px;align-items:flex-start"><div style="background:${GRAD};border-radius:10px;width:40px;height:40px;display:flex;align-items:center;justify-content:center;flex-shrink:0">${ICON_W(it.icon||'school')}</div><div><h3 style="color:var(--ink);font-weight:700;font-size:16px;margin:0 0 6px">${e(it.title||'')}</h3><p style="color:var(--muted);font-size:14px;line-height:1.5;margin:0;white-space:pre-wrap">${e(it.desc||'')}</p></div></div></div>`).join('')}</div>${SEC_CTA()}`,'var(--surface)');
+        return SEC(`${H2(c.title||'Contenido')}${SUB(c.subtitle||'')}<div ${GRIDC(items.length)}>${items.map(it=>`<div class="ld-card" style="${CARD}">${it.image_url?`<img src="${e(it.image_url)}" loading="lazy" alt="" style="width:100%;${(it.image_ratio||c.item_image_ratio)==='original'?'height:auto':`aspect-ratio:${it.image_ratio||c.item_image_ratio||'4/3'};object-fit:cover`};border-radius:12px;margin:0 0 14px;display:block"/>`:''}<div style="display:flex;gap:16px;align-items:flex-start"><div style="background:${GRAD};border-radius:10px;width:40px;height:40px;display:flex;align-items:center;justify-content:center;flex-shrink:0">${ICON_W(it.icon||'school')}</div><div><h3 style="color:var(--ink);font-weight:700;font-size:16px;margin:0 0 6px;white-space:pre-wrap">${e(it.title||'')}</h3><p style="color:var(--muted);font-size:14px;line-height:1.5;margin:0;white-space:pre-wrap">${e(it.desc||'')}</p></div></div></div>`).join('')}</div>${SEC_CTA()}`,'var(--surface)');
       }
       case 'como-funciona': {
         const items = arr(c.items);
@@ -1742,7 +1742,7 @@ ${c.microcopy?`<p style="color:var(--muted);font-size:13px;margin:12px 0 0">${e(
       }
       case 'bonos': {
         const items = arr(c.items);
-        return SEC(`${H2(c.title||'Bonos')}${SUB(c.subtitle||'')}<div ${GRIDC(items.length)}>${items.map(it=>`<div class="ld-card" style="${CARD}">${it.image_url?`<img src="${e(it.image_url)}" loading="lazy" alt="" style="width:100%;aspect-ratio:16/9;object-fit:cover;border-radius:12px;margin:0 0 16px;display:block"/>`:''}<div style="display:flex;gap:16px;align-items:flex-start"><div style="background:${GRAD};border-radius:10px;width:44px;height:44px;display:flex;align-items:center;justify-content:center;flex-shrink:0">${ICON_W(it.icon||'card_giftcard',22)}</div><div style="flex:1"><h3 style="color:var(--ink);font-weight:700;font-size:16px;margin:0 0 6px">${e(it.title||'')}</h3><p style="color:var(--muted);font-size:14px;line-height:1.5;margin:0 0 8px;white-space:pre-wrap">${e(it.desc||'')}</p>${it.value?`<p style="color:var(--brand);font-weight:700;font-size:14px;margin:0">${e(it.value)}</p>`:''}</div></div></div>`).join('')}</div>${SEC_CTA()}`);
+        return SEC(`${H2(c.title||'Bonos')}${SUB(c.subtitle||'')}<div ${GRIDC(items.length)}>${items.map(it=>`<div class="ld-card" style="${CARD}">${it.image_url?`<img src="${e(it.image_url)}" loading="lazy" alt="" style="width:100%;${(it.image_ratio||c.item_image_ratio)==='original'?'height:auto':`aspect-ratio:${it.image_ratio||c.item_image_ratio||'16/9'};object-fit:cover`};border-radius:12px;margin:0 0 16px;display:block"/>`:''}<div style="display:flex;gap:16px;align-items:flex-start"><div style="background:${GRAD};border-radius:10px;width:44px;height:44px;display:flex;align-items:center;justify-content:center;flex-shrink:0">${ICON_W(it.icon||'card_giftcard',22)}</div><div style="flex:1"><h3 style="color:var(--ink);font-weight:700;font-size:16px;margin:0 0 6px;white-space:pre-wrap">${e(it.title||'')}</h3><p style="color:var(--muted);font-size:14px;line-height:1.5;margin:0 0 8px;white-space:pre-wrap">${e(it.desc||'')}</p>${it.value?`<p style="color:var(--brand);font-weight:700;font-size:14px;margin:0">${e(it.value)}</p>`:''}</div></div></div>`).join('')}</div>${SEC_CTA()}`);
       }
       case 'precio': {
         const features = arr(c.features);
@@ -1774,7 +1774,7 @@ ${c.microcopy?`<p style="color:var(--muted);font-size:13px;margin:12px 0 0">${e(
         return `<section id="oferta" style="background:var(--bg);padding:72px 0">
 <div style="max-width:620px;margin:0 auto;padding:0 24px;text-align:center">
 ${c.badge?`<p style="display:inline-block;background:${GRAD};color:#fff;font-weight:800;font-size:12px;text-transform:uppercase;letter-spacing:1.5px;padding:7px 16px;border-radius:99px;margin:0 0 20px">${e(c.badge)}</p>`:''}
-<h2 style="color:var(--ink);font-size:clamp(1.7rem,4vw,2.6rem);font-weight:800;line-height:1.15;margin:0 0 16px">${e(c.title||'Una última oferta')}</h2>
+<h2 style="color:var(--ink);font-size:clamp(1.7rem,4vw,2.6rem);font-weight:800;line-height:1.15;margin:0 0 16px;white-space:pre-wrap">${e(c.title||'Una última oferta')}</h2>
 <p style="color:var(--muted);font-size:17px;line-height:1.6;margin:0 0 28px">${e(c.subtitle||'')}</p>
 <div class="ld-price-card" style="background:var(--surface);border:2px solid var(--brand);border-radius:20px;padding:32px">
 ${feats.length?`<ul style="list-style:none;margin:0 0 24px;padding:0;text-align:left;display:flex;flex-direction:column;gap:11px">${feats.map(f=>`<li style="color:var(--ink);font-size:15px;display:flex;align-items:flex-start;gap:9px"><span class="material-symbols-outlined" style="font-size:19px;color:var(--brand);flex-shrink:0;margin-top:1px">check_circle</span><span>${e(f)}</span></li>`).join('')}</ul>`:''}
@@ -1797,29 +1797,37 @@ ${c.microcopy?`<p style="color:var(--muted);font-size:13px;margin:12px 0 0">${e(
         return `<section id="faq" style="background:var(--surface);padding:80px 0"><div style="max-width:720px;margin:0 auto;padding:0 24px">${H2(c.title||'Preguntas frecuentes')}<div style="display:flex;flex-direction:column;gap:12px;margin-top:48px">${items.map(it=>`<details style="background:var(--bg);border:1px solid var(--border);border-radius:12px;overflow:hidden"><summary style="color:var(--ink);font-weight:600;font-size:16px;padding:20px 24px;cursor:pointer;list-style:none;display:flex;align-items:flex-start;gap:11px"><span class="material-symbols-outlined" style="font-size:20px;color:var(--brand);flex-shrink:0">${e(okIcon(it.icon || c.icon, 'help'))}</span><span>${e(it.q||'')}</span></summary><p style="color:var(--muted);font-size:15px;line-height:1.6;padding:0 24px 20px 55px;margin:0;white-space:pre-wrap">${e(it.a||'')}</p></details>`).join('')}</div></div></section>`;
       }
       case 'cta-final': {
-        return `<section id="cta-final" style="background:${GRAD};padding:96px 0"><div style="max-width:640px;margin:0 auto;padding:0 24px;text-align:center"><h2 style="color:#fff;font-size:clamp(1.8rem,4vw,2.8rem);font-weight:800;margin:0 0 16px">${e(c.title||'¿Estás listo?')}</h2>${c.subtitle?`<p style="color:rgba(255,255,255,.85);font-size:18px;margin:0 0 36px">${e(c.subtitle)}</p>`:''}<a href="#precio" class="ld-btn" style="background:#fff;color:var(--brand);padding:16px 40px;border-radius:12px;font-weight:800;font-size:18px;display:inline-block;text-decoration:none">${e(c.cta||'Quiero empezar hoy')}</a>${c.microcopy?`<p style="color:rgba(255,255,255,.7);font-size:13px;margin:14px 0 0">${e(c.microcopy)}</p>`:''}</div></section>`;
+        return `<section id="cta-final" style="background:${GRAD};padding:96px 0"><div style="max-width:640px;margin:0 auto;padding:0 24px;text-align:center"><h2 style="color:#fff;font-size:clamp(1.8rem,4vw,2.8rem);font-weight:800;margin:0 0 16px;white-space:pre-wrap">${e(c.title||'¿Estás listo?')}</h2>${c.subtitle?`<p style="color:rgba(255,255,255,.85);font-size:18px;margin:0 0 36px">${e(c.subtitle)}</p>`:''}<a href="#precio" class="ld-btn" style="background:#fff;color:var(--brand);padding:16px 40px;border-radius:12px;font-weight:800;font-size:18px;display:inline-block;text-decoration:none">${e(c.cta||'Quiero empezar hoy')}</a>${c.microcopy?`<p style="color:rgba(255,255,255,.7);font-size:13px;margin:14px 0 0">${e(c.microcopy)}</p>`:''}</div></section>`;
       }
       case 'footer': {
         return `<footer id="footer" style="background:var(--bg);border-top:1px solid var(--border);padding:40px 0"><div style="max-width:1152px;margin:0 auto;padding:0 24px;display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:16px"><div><p style="color:var(--ink);font-weight:700;font-size:16px;margin:0 0 4px">${e(c.brand_name||'Producto')}</p>${c.tagline?`<p style="color:var(--muted);font-size:13px;margin:0">${e(c.tagline)}</p>`:''}</div><p style="color:var(--muted);font-size:13px;margin:0">${e(c.copyright||'© 2024 · Todos los derechos reservados')}</p></div></footer>`;
       }
       default: {
         const items = arr(c.items);
-        return SEC(`${H2(c.title||id)}${c.subtitle?SUB(c.subtitle):''}${items.length?`<div ${GRIDC(items.length)}>${items.map(it=>`<div class="ld-card" style="${CARD}">${it.icon?ICON(it.icon):''}<h3 style="color:var(--ink);font-size:17px;font-weight:700;margin:12px 0 8px">${e(it.title||'')}</h3><p style="color:var(--muted);font-size:15px;line-height:1.6;margin:0">${e(it.desc||it.text||'')}</p></div>`).join('')}</div>`:`<p style="color:var(--muted);text-align:center">${e(c.desc||c.text||'')}</p>`}`);
+        return SEC(`${H2(c.title||id)}${c.subtitle?SUB(c.subtitle):''}${items.length?`<div ${GRIDC(items.length)}>${items.map(it=>`<div class="ld-card" style="${CARD}">${it.icon?ICON(it.icon):''}<h3 style="color:var(--ink);font-size:17px;font-weight:700;margin:12px 0 8px;white-space:pre-wrap">${e(it.title||'')}</h3><p style="color:var(--muted);font-size:15px;line-height:1.6;margin:0">${e(it.desc||it.text||'')}</p></div>`).join('')}</div>`:`<p style="color:var(--muted);text-align:center">${e(c.desc||c.text||'')}</p>`}`);
       }
     }
     })();
     // Imagen subida por el usuario en cualquier sección (el hero ya la maneja en su template)
     let __out = __built;
-    const __endTag = '</div></section>';
     const __plain = ['hero', 'nav', 'imagen', 'video', 'galeria'].indexOf(id) === -1;
-    if (c.image_url && __plain && !__out.includes(c.image_url) && __out.endsWith(__endTag)) {
+    if (c.image_url && __plain && !__out.includes(c.image_url)) {
       const iw = { small: '40%', medium: '65%', large: '85%', full: '100%' }[c.image_size] || '100%';
       const ir = c.image_ratio === 'original' ? 'height:auto'
         : `aspect-ratio:${c.image_ratio || '16/9'};object-fit:cover`;
       const ia = c.image_align === 'left' ? 'margin-right:auto'
         : c.image_align === 'right' ? 'margin-left:auto' : 'margin-left:auto;margin-right:auto';
-      __out = __out.slice(0, -__endTag.length) +
-        `<figure style="margin:44px 0 0;max-width:${iw};${ia}"><img src="${e(c.image_url)}" loading="lazy" alt="" style="width:100%;${ir};border-radius:20px;box-shadow:0 20px 60px rgba(0,0,0,.3);display:block"/></figure>` + __endTag;
+      const fig = `<figure style="margin:44px auto 0;max-width:${iw};${ia}"><img src="${e(c.image_url)}" loading="lazy" alt="" style="width:100%;${ir};border-radius:20px;box-shadow:0 20px 60px rgba(0,0,0,.3);display:block"/></figure>`;
+      // Insertar justo antes de cerrar la sección. Tolerante a espacios/saltos de línea,
+      // que antes hacían fallar el match exacto (por eso la oferta no aceptaba imagen).
+      const ci = __out.lastIndexOf('</section>');
+      if (ci !== -1) {
+        const head = __out.slice(0, ci);
+        const di = head.lastIndexOf('</div>');
+        __out = di !== -1
+          ? head.slice(0, di) + fig + head.slice(di) + __out.slice(ci)
+          : head + fig + __out.slice(ci);
+      }
     }
     // Video de fondo en cualquier sección: se envuelve con overlay para que el texto se lea
     if (c.video_url && __plain) {
@@ -1996,7 +2004,7 @@ HERO (id="hero"):
   <div style="max-width:1152px;margin:0 auto;padding:0 24px;display:flex;flex-wrap:wrap;align-items:center;gap:48px">
     <div style="flex:1;min-width:280px">
       <p style="color:var(--brand);font-weight:700;font-size:14px;text-transform:uppercase;letter-spacing:2px;margin:0 0 16px">subtítulo de credibilidad</p>
-      <h1 style="color:var(--ink);font-size:clamp(2rem,5vw,3.5rem);font-weight:800;line-height:1.1;margin:0 0 20px">Título principal impactante</h1>
+      <h1 style="color:var(--ink);font-size:clamp(2rem,5vw,3.5rem);font-weight:800;line-height:1.1;margin:0 0 20px;white-space:pre-wrap">Título principal impactante</h1>
       <p style="color:var(--muted);font-size:18px;line-height:1.6;margin:0 0 32px">Descripción clara del beneficio principal</p>
       <a href="#precio" style="background:linear-gradient(135deg,var(--brand),var(--brand-2));color:#fff;padding:16px 36px;border-radius:12px;font-weight:700;font-size:18px;display:inline-block;text-decoration:none">CTA verbo + resultado</a>
       <p style="color:var(--muted);font-size:13px;margin:12px 0 0">Sin tarjeta · Acceso inmediato · Garantía 30 días</p>
@@ -2099,7 +2107,7 @@ GARANTÍA (id="garantia"):
 CTA FINAL (id="cta-final"):
 <section id="cta-final" style="background:linear-gradient(135deg,var(--brand),var(--brand-2));padding:96px 0">
   <div style="max-width:640px;margin:0 auto;padding:0 24px;text-align:center">
-    <h2 style="color:#fff;font-size:clamp(1.8rem,4vw,2.8rem);font-weight:800;margin:0 0 16px">¿Estás lista para transformar tu vida?</h2>
+    <h2 style="color:#fff;font-size:clamp(1.8rem,4vw,2.8rem);font-weight:800;margin:0 0 16px;white-space:pre-wrap">¿Estás lista para transformar tu vida?</h2>
     <p style="color:rgba(255,255,255,.85);font-size:18px;margin:0 0 36px">Unite a las personas que ya cambiaron su realidad</p>
     <a href="#precio" style="background:#fff;color:var(--brand);padding:16px 40px;border-radius:12px;font-weight:800;font-size:18px;display:inline-block;text-decoration:none">Quiero empezar hoy</a>
     <p style="color:rgba(255,255,255,.7);font-size:13px;margin:14px 0 0">Sin tarjeta · Acceso inmediato · Garantía 30 días</p>
@@ -2280,7 +2288,19 @@ REGLAS ESTRICTAS:
 6. Responde SOLO el JSON, sin markdown ni texto extra.`;
     const text = await this._call([{ role: 'user', content: user }], 2500, { model: 'claude-haiku-4-5-20251001' });
     const parsed = this._parseJSONSafe(text);
-    return (parsed && typeof parsed === 'object') ? this._neutralize(parsed) : null;
+    if (!parsed || typeof parsed !== 'object') return null;
+    // Fusionar sobre el contenido actual: las claves que el modelo no devolvió se
+    // conservan. Sin esto, pedir "bajá el tamaño del logo" podía borrar el logo.
+    const merged = { ...currentContent };
+    for (const k of Object.keys(parsed)) {
+      const v = parsed[k];
+      if (v === null || v === undefined) continue;
+      // No dejar que un vaciado accidental borre archivos que subió el usuario
+      if (/^(logo_url|image_url|video_url|cta_url|decline_url|brand_href)$/.test(k)
+          && typeof v === 'string' && !v.trim() && currentContent[k]) continue;
+      merged[k] = v;
+    }
+    return this._neutralize(merged);
   },
 
   // Genera el contenido de una oferta de upsell/downsell a partir del producto real

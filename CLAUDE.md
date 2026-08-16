@@ -2111,3 +2111,63 @@ Los 4 puntos donde el modelo devuelve texto: `_getSectionContent`, `_editSection
 
 ### Pendientes
 - 🟡 Límites ebook: Pro=999, Growth=999 → REVERTIR a Pro→5, Growth→20
+
+---
+
+## SESIÓN 19 JUL 2026 (parte 8) — Ronda de 8 bugs concretos
+
+### 1. Imagen en las páginas de upsell/downsell — CAUSA RAÍZ ENCONTRADA ✅
+El post-proceso que inserta `content.image_url` en una sección exigía
+`__out.endsWith('</div></section>')` **exacto**. La sección `oferta` (y `precio`, `garantia`)
+cierran con `</div>\n</section>` — con salto de línea — así que el match fallaba siempre y la
+imagen nunca se insertaba. Ahora se busca el último `</section>` y se inserta antes del `</div>`
+previo, tolerante a espacios y saltos.
+
+### 2. Links de pago "no funcionan" — ERA LA VISTA PREVIA ✅
+El `navGuard` que se inyecta en el iframe hacía `e.preventDefault()` en **todos** los links que no
+empiezan con `#`, para que la vista previa no se navegue sola. Efecto: al hacer clic en un botón de
+pago desde el builder no pasaba nada (en la landing publicada sí funcionaba). Ahora los links
+externos abren en pestaña nueva (`window.open(h,'_blank','noopener')`), así se pueden probar.
+
+### 3. El chat borró el logo — CAUSA RAÍZ ENCONTRADA ✅
+`_editSectionContent` **reemplazaba** el content por lo que devolvía el modelo. Cuando el modelo
+devuelve solo las claves que cambió (comportamiento normal), todo lo demás desaparecía: logo,
+imágenes subidas, links de pago. Ahora se **fusiona** sobre el contenido actual
+(`{...currentContent, ...parsed}`), y además se ignora un vaciado accidental de
+`logo_url|image_url|video_url|cta_url|decline_url|brand_href` cuando el usuario ya tenía un valor.
+
+### 4. Texto que no bajaba de renglón en la landing ✅
+`white-space:pre-wrap` faltaba en los **títulos** (`H2`, los 4 `h1` del hero, `h3` de las cards y el
+`h2` de oferta/cta-final). En el editor el salto se veía porque el textarea lo respeta; en la landing
+se perdía.
+
+### 5. Alto del logo + no se podía borrar ✅
+- El campo de imagen ahora tiene botón **"Quitar"** (`clearSecField`), antes no había forma de borrar
+  una imagen ya cargada.
+- La vista previa del campo pasó a `object-fit:contain` para ver la imagen completa.
+
+### 6. Foto de los bonos que se cortaba ✅
+Cada ítem (bonos, beneficios, módulos) acepta ahora **"Ajuste de la foto"**: 4:3, 16:9, cuadrada o
+**Completa (sin recortar)** — esta última usa `height:auto` y muestra la imagen entera.
+
+### 7. Video en celular: "sale solo el centro" ✅
+Nuevo campo **"Qué parte del video se ve"** (`video_position`: centro / arriba / abajo) que se suma
+al encuadre (`video_fit`). Con `cover` en una pantalla angosta el recorte es inevitable; ahora se
+elige qué parte se conserva, o se pasa a "Mostrar completo".
+
+### 8. El embudo tardaba sin avisar ✅
+Sandra confirmó que **sí creaba las páginas**, solo tardaba y no había señal. Ahora el paso del
+embudo muestra "Creando la página y escribiendo la oferta… puede tardar hasta 1 minuto" con puntos
+animados, y el resto de los botones se deshabilitan mientras tanto (`_funnelBusy`).
+
+### Tests
+- `tests/unit-landing-sections.js`: +9 checks (imagen en oferta/garantía/precio, saltos en títulos,
+  ajuste de foto por ítem, posición del video).
+- `tests/e2e-landing-builder.js`: **E2E 10b** — el mock ahora devuelve un JSON incompleto y con
+  `logo_url: ''` (como hace el modelo real) y se verifica que el chat aplica el cambio **sin borrar**
+  la imagen subida, el link de pago ni el resto del contenido.
+
+### Versión: `?v=20260719g`
+
+### Pendientes
+- 🟡 Límites ebook: Pro=999, Growth=999 → REVERTIR a Pro→5, Growth→20
