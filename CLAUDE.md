@@ -1944,3 +1944,66 @@ con clase `.ld-btn`, y también `href="#"` (oferta sin link propio). **Nunca toc
 
 ### Pendientes
 - 🟡 Límites ebook: Pro=999, Growth=999 → REVERTIR a Pro→5, Growth→20
+
+---
+
+## SESIÓN 19 JUL 2026 (parte 5) — Ronda de pulido: 11 puntos de Sandra
+
+### 1. Contraste: modal de publicar e input de título — RESUELTO ✅
+`#ld-title` era `bg-transparent border-none` **sin color explícito** → heredaba un tono ilegible.
+Los modales usaban `bg-surface-container-high` (clase custom que puede quedar casi negra si el
+config de Tailwind no aplica). Fix: input con fondo/borde/color propios; los 4 modales con
+`background:#1b1b20` inline + reglas `#publish-modal label/h3/p/input` con `!important`.
+
+### 2. Botones CTA en más secciones — RESUELTO ✅
+`SEC_CTA()` en `_buildSection`: si `content.cta` existe, agrega botón al pie (usa `cta_url` propio o
+cae al link de pago global) + `cta_note`. Activo en beneficios, módulos, cómo-funciona, testimonios,
+bonos, garantía, para-quien, antes-después, texto, imagen, video, galería, problema
+(`CTA_SECTIONS` en el editor).
+
+### 3. Imágenes: por ítem, proporción y alineación — RESUELTO ✅
+- **Foto por ítem** en beneficios, módulos y bonos (`item.image_url` → `F.image` en el editor).
+- **Sección imagen**: `ratio` (original / 16:9 / 4:3 / 1:1 / 3:4) + `align` (centro/izq/der) +
+  4 tamaños (100/85/65/40%). Helpers `RATIO()` y `ALIGN()`.
+- **Galería**: `ratio` configurable (antes 4:3 fijo).
+
+### 4. Espacios en el texto — RESUELTO ✅
+La sección `texto` usaba `white-space:pre-line`, que **colapsa espacios múltiples**. Ahora `pre-wrap`.
+
+### 5. Iconos de antes-después y para-quien — RESUELTO ✅
+Eran fijos (`check_circle`/`close`). Ahora `yes_icon`/`no_icon` y `before_icon`/`after_icon`,
+editables con el selector de iconos, con fallback vía `okIcon()`.
+
+### 6. Chat que no aplica el cambio — MEJORA DE FONDO ✅
+Nuevo `_matchSectionId(instruction, ids)`: **detecta la sección por palabras clave, sin IA**
+(normaliza acentos, tabla de alias por sección, gana la coincidencia más larga). Si el usuario
+nombra la sección y no pide landing nueva ni cambio estructural, `editLandingSectioned` va
+**directo a la edición quirúrgica**, salteando el clasificador. Esto elimina el modo de fallo
+principal: que el clasificador mande el cambio a otra sección o lo malinterprete.
+
+### 7. Video en celular — RESUELTO ✅
+Atributos completos (`playsinline webkit-playsinline disablepictureinpicture preload="auto"`) +
+CSS `section > video{width/height 100%;object-fit:cover}` y refuerzo en `@media(max-width:640px)`.
+
+### 8. Logo con link en el navegador — RESUELTO ✅
+`nav` acepta `logo_url` (imagen, alto 34px) y `brand_href` (destino propio, por defecto `#hero`).
+
+### 9. Funnel sin relación con el producto — RESUELTO ✅
+`generateOfferContent(kind, productBrief, offerBrief, mainPrice)` en app.js (+ facade): escribe la
+oferta de upsell/downsell **a partir del brief real de la landing madre**, con reglas de coherencia
+de precio (upsell < principal; downsell << upsell). Al crear la página, el builder **pregunta qué
+querés ofrecer** (con ejemplos) y pasa esa descripción. Si la IA falla, usa el contenido de ejemplo
+anterior — nunca bloquea.
+
+### Tests
+- `tests/unit-landing-sections.js`: +19 checks (CTA al pie, foto por ítem, proporciones, alineación,
+  iconos configurables, logo del nav, atributos de video móvil).
+- `tests/e2e-landing-builder.js`: el mock ahora responde el prompt de oferta; se verifica que el
+  contenido del upsell hable del producto real y que gracias siga sin usar IA.
+- Aserciones actualizadas por cambios de comportamiento esperados (nav automático → 12 secciones,
+  `pre-wrap`, ancho `medium` 65%).
+
+### Versión: `?v=20260719d`
+
+### Pendientes
+- 🟡 Límites ebook: Pro=999, Growth=999 → REVERTIR a Pro→5, Growth→20

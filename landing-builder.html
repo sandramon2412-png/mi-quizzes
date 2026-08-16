@@ -9,9 +9,9 @@
 <script src="https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.min.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
 <link href="https://fonts.googleapis.com/icon?family=Material+Symbols+Outlined" rel="stylesheet"/>
-<script src="./supabase-config.js?v=20260719c"></script>
-<script src="./app.js?v=20260719c"></script>
-<script src="./landing-blocks.js?v=20260719c"></script>
+<script src="./supabase-config.js?v=20260719d"></script>
+<script src="./app.js?v=20260719d"></script>
+<script src="./landing-blocks.js?v=20260719d"></script>
 <script>
   // Si el CDN de Tailwind no cargó, esta asignación tiraba y mataba todo el script
   // que sigue (incluida la UI del builder). Blindado para que la página funcione igual.
@@ -51,6 +51,14 @@
   #lsa-float-btn{width:52px !important;height:52px !important;font-size:20px !important;
     left:auto !important;right:356px !important;opacity:.8}
   #lsa-float-btn:hover{opacity:1}
+
+  /* Modales: contraste garantizado aunque falten las clases del CDN */
+  #publish-modal label,#sec-add-modal label,#media-modal label{color:#c9c9d2 !important}
+  #publish-modal h3,#sec-add-modal h3,#media-modal h3{color:#f4f4f6 !important}
+  #publish-modal p,#sec-add-modal p,#media-modal p{color:#a9a9b4 !important}
+  #publish-modal input,#media-modal input{background:#0f0f10 !important;border:1px solid rgba(255,255,255,.16) !important;color:#f4f4f6 !important}
+  #publish-modal input::placeholder,#media-modal input::placeholder{color:#6f6f7a !important}
+  #ld-title::placeholder{color:#8a8a94}
 
   /* Desplegables: el popup nativo lo pinta el SO en blanco y heredaba texto blanco
      → quedaba invisible. color-scheme:dark + option explícito lo arregla. */
@@ -167,7 +175,8 @@
       <span class="material-symbols-outlined text-white" style="font-size:16px">web</span>
     </div>
     <input id="ld-title" type="text" placeholder="Título de tu landing"
-           class="bg-transparent border-none outline-none text-sm font-bold tracking-tight flex-1 min-w-0 focus:ring-0"/>
+           class="text-sm font-bold tracking-tight flex-1 min-w-0"
+           style="background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:9px;padding:7px 11px;color:#f4f4f6;outline:none"/>
   </div>
   <span id="ld-status" class="text-[11px] text-on-surface-variant/70 hidden sm:block whitespace-nowrap"></span>
   <button id="btn-open-tab" class="hidden h-9 px-3 rounded-lg bg-surface-container-high hover:bg-surface-container-highest text-xs font-semibold items-center gap-1.5 transition-colors">
@@ -636,7 +645,7 @@
 
 <!-- ── MODAL: AGREGAR SECCIÓN ── -->
 <div id="sec-add-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center" style="background:rgba(0,0,0,.7)">
-  <div class="bg-surface-container-high rounded-2xl p-5 w-[420px] max-w-[92vw] max-h-[80vh] overflow-y-auto shadow-2xl border border-outline-variant/20">
+  <div class="rounded-2xl p-5 w-[420px] max-w-[92vw] max-h-[80vh] overflow-y-auto shadow-2xl" style="background:#1b1b20;border:1px solid rgba(255,255,255,.14);color:#e8e8ee">
     <div class="flex items-center gap-2 mb-3">
       <span class="material-symbols-outlined icon-gradient" style="font-size:18px">add_circle</span>
       <h3 class="font-bold text-sm">Agregar sección</h3>
@@ -651,7 +660,7 @@
 
 <!-- ── ADD BLOCK MODAL ── -->
 <div id="add-block-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center" style="background:rgba(0,0,0,.7)">
-  <div class="bg-surface-container-high rounded-2xl p-5 w-96 max-h-[80vh] overflow-y-auto shadow-2xl border border-outline-variant/20">
+  <div class="rounded-2xl p-5 w-96 max-h-[80vh] overflow-y-auto shadow-2xl" style="background:#1b1b20;border:1px solid rgba(255,255,255,.14);color:#e8e8ee">
     <div class="flex items-center gap-2 mb-4">
       <span class="material-symbols-outlined icon-gradient" style="font-size:18px">add_circle</span>
       <h3 class="font-bold text-sm">Agregar sección</h3>
@@ -665,7 +674,7 @@
 
 <!-- ── MEDIA (VIDEO BG) MODAL ── -->
 <div id="media-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center" style="background:rgba(0,0,0,.7)">
-  <div class="bg-surface-container-high rounded-2xl p-5 w-[460px] max-w-[92vw] max-h-[85vh] overflow-y-auto shadow-2xl border border-outline-variant/20">
+  <div class="rounded-2xl p-5 w-[460px] max-w-[92vw] max-h-[85vh] overflow-y-auto shadow-2xl" style="background:#1b1b20;border:1px solid rgba(255,255,255,.14);color:#e8e8ee">
     <div class="flex items-center gap-2 mb-3">
       <span class="material-symbols-outlined icon-gradient" style="font-size:18px">movie</span>
       <h3 class="font-bold text-sm">Video de fondo del hero</h3>
@@ -694,7 +703,7 @@
 
 <!-- ── PUBLISH MODAL ── -->
 <div id="publish-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center" style="background:rgba(0,0,0,.7)">
-  <div class="bg-surface-container-high rounded-2xl p-5 w-[460px] max-w-[92vw] shadow-2xl border border-outline-variant/20">
+  <div class="rounded-2xl p-5 w-[460px] max-w-[92vw] shadow-2xl" style="background:#1b1b20;border:1px solid rgba(255,255,255,.14);color:#e8e8ee">
     <div class="flex items-center gap-2 mb-3">
       <span class="material-symbols-outlined icon-gradient" style="font-size:18px">rocket_launch</span>
       <h3 class="font-bold text-sm">Publicar landing</h3>
@@ -1128,6 +1137,8 @@ const F = {
 const SEC_SCHEMA = {
   nav: { label: 'Barra de navegación', icon: 'menu', noMedia: true, fields: [
     F.text('brand', 'Nombre de la marca'),
+    F.image('logo_url', 'Logo (imagen)'),
+    F.text('brand_href', 'Link del logo', '#hero o https://...'),
     F.text('cta', 'Texto del botón (vacío = sin botón)'),
     { key: 'links', label: 'Links del menú', type: 'items', addLabel: 'Agregar link',
       item: [F.text('label', 'Texto'), F.text('href', 'Destino', '#beneficios')] },
@@ -1154,7 +1165,9 @@ const SEC_SCHEMA = {
     F.text('title', 'Título (opcional)'),
     F.image('image_url', 'Imagen'),
     F.text('caption', 'Pie de foto'),
-    { key: 'size', label: 'Tamaño', type: 'select', options: [['full', 'Ancho completo'], ['medium', 'Mediana'], ['small', 'Chica']] },
+    { key: 'size', label: 'Tamaño', type: 'select', options: [['full', 'Ancho completo'], ['large', 'Grande (85%)'], ['medium', 'Mediana (65%)'], ['small', 'Chica (40%)']] },
+    { key: 'ratio', label: 'Proporción', type: 'select', options: [['original', 'Original (sin recortar)'], ['16/9', 'Panorámica 16:9'], ['4/3', 'Clásica 4:3'], ['1/1', 'Cuadrada 1:1'], ['3/4', 'Vertical 3:4']] },
+    { key: 'align', label: 'Posición', type: 'select', options: [['center', 'Centrada'], ['left', 'A la izquierda'], ['right', 'A la derecha']] },
   ]},
   video: { label: 'Video', icon: 'play_circle', noMedia: true, fields: [
     F.text('title', 'Título (opcional)'),
@@ -1164,6 +1177,7 @@ const SEC_SCHEMA = {
   galeria: { label: 'Galería de imágenes', icon: 'collections', noMedia: true, fields: [
     F.text('title', 'Título'),
     F.text('subtitle', 'Subtítulo'),
+    { key: 'ratio', label: 'Proporción de las fotos', type: 'select', options: [['4/3', 'Clásica 4:3'], ['1/1', 'Cuadrada 1:1'], ['16/9', 'Panorámica 16:9'], ['3/4', 'Vertical 3:4'], ['original', 'Original']] },
     { key: 'images', label: 'Imágenes', type: 'items', addLabel: 'Agregar imagen',
       item: [F.image('url', 'Imagen'), F.text('caption', 'Pie de foto')] },
   ]},
@@ -1185,27 +1199,32 @@ const SEC_SCHEMA = {
   'para-quien': { label: '¿Es para vos?', icon: 'group', fields: [
     F.text('title', 'Título de la sección'),
     F.text('yes_title', 'Título columna SÍ'),
+    { key: 'yes_icon', label: 'Icono columna SÍ', type: 'icon' },
     F.list('yes', 'Es para vos si…'),
     F.text('no_title', 'Título columna NO'),
+    { key: 'no_icon', label: 'Icono columna NO', type: 'icon' },
     F.list('no', 'No es para vos si…'),
   ]},
   'antes-despues': { label: 'Antes y después', icon: 'compare_arrows', fields: [
     F.text('title', 'Título de la sección'),
     F.text('before_title', 'Título del "antes"'),
+    { key: 'before_icon', label: 'Icono del "antes"', type: 'icon' },
     F.list('before', 'Situación actual'),
     F.text('after_title', 'Título del "después"'),
+    { key: 'after_icon', label: 'Icono del "después"', type: 'icon' },
     F.list('after', 'Resultados'),
   ]},
   beneficios: { label: 'Beneficios', icon: 'star', fields: [
     F.text('title', 'Título de la sección'),
     F.text('subtitle', 'Subtítulo'),
     { key: 'items', label: 'Beneficios', type: 'items', addLabel: 'Agregar beneficio',
-      item: [F.icon(), F.text('title', 'Título'), F.area('desc', 'Descripción')] },
+      item: [F.icon(), F.text('title', 'Título'), F.area('desc', 'Descripción'), F.image('image_url', 'Foto (opcional)')] },
   ]},
   modulos: { label: 'Módulos / contenido', icon: 'menu_book', fields: [
     F.text('title', 'Título de la sección'),
+    F.text('subtitle', 'Subtítulo'),
     { key: 'items', label: 'Módulos', type: 'items', addLabel: 'Agregar módulo',
-      item: [F.icon(), F.text('title', 'Título'), F.area('desc', 'Descripción')] },
+      item: [F.icon(), F.text('title', 'Título'), F.area('desc', 'Descripción'), F.image('image_url', 'Foto (opcional)')] },
   ]},
   'como-funciona': { label: 'Cómo funciona', icon: 'linear_scale', fields: [
     F.text('title', 'Título de la sección'),
@@ -1225,7 +1244,7 @@ const SEC_SCHEMA = {
   bonos: { label: 'Bonos', icon: 'card_giftcard', fields: [
     F.text('title', 'Título de la sección'),
     { key: 'items', label: 'Bonos', type: 'items', addLabel: 'Agregar bono',
-      item: [F.icon(), F.text('title', 'Nombre'), F.area('desc', 'Descripción'), F.text('value', 'Valor')] },
+      item: [F.icon(), F.text('title', 'Nombre'), F.area('desc', 'Descripción'), F.text('value', 'Valor'), F.image('image_url', 'Foto (opcional)')] },
   ]},
   precio: { label: 'Precio', icon: 'sell', fields: [
     F.text('title', 'Título de la sección'),
@@ -1252,16 +1271,29 @@ const SEC_SCHEMA = {
   ]},
 };
 
+// Botón CTA opcional al pie de una sección
+const CTA_FIELDS = [
+  F.text('cta', 'Botón al pie: texto', 'Dejalo vacío si no querés botón'),
+  F.text('cta_url', 'Botón al pie: link', 'Vacío = usa el link de pago general'),
+  F.text('cta_note', 'Texto chico bajo el botón'),
+];
+
 // Campos de media que se agregan a toda sección que no los maneje ya en su template
 const MEDIA_FIELDS = [
   F.image('image_url', 'Imagen de la sección'),
   F.text('video_url', 'Video de fondo (link .mp4)', 'Dejalo vacío si no querés video'),
 ];
 
+// Secciones que aceptan un botón CTA al pie (el hero, precio, cta-final y oferta ya tienen el suyo)
+const CTA_SECTIONS = ['beneficios', 'modulos', 'como-funciona', 'testimonios', 'bonos', 'garantia',
+                      'para-quien', 'antes-despues', 'texto', 'imagen', 'video', 'galeria', 'problema'];
+
 function secMeta(id) {
   const base = SEC_SCHEMA[id] || { label: id, icon: 'widgets', fields: [F.text('title', 'Título'), F.area('desc', 'Texto')] };
-  if (base.noMedia) return base;
-  return { ...base, fields: [...base.fields, ...MEDIA_FIELDS] };
+  let fields = base.fields;
+  if (CTA_SECTIONS.includes(id)) fields = [...fields, ...CTA_FIELDS];
+  if (!base.noMedia) fields = [...fields, ...MEDIA_FIELDS];
+  return { ...base, fields };
 }
 
 let activeSecIdx = -1;
@@ -1692,12 +1724,45 @@ async function createFunnelPage(type) {
   if (!landing) { showToast('Primero creá tu landing', true); return; }
   if (!currentUser) { showToast('Iniciá sesión para crear la página', true); return; }
   const meta = FUNNEL_STEPS.find(s => s.key === type) || { label: type };
+
+  // Para upsell/downsell: preguntar qué se ofrece, así el contenido tiene sentido
+  // con lo que se está vendiendo (y no queda un texto genérico).
+  let offerBrief = '';
+  if (type !== 'thanks') {
+    const ejemplo = type === 'upsell'
+      ? 'Ej: 4 sesiones en vivo por mes para acompañarlos + grupo privado de consultas, a $47'
+      : 'Ej: solo el recetario ampliado en PDF, sin las sesiones en vivo, a $17';
+    const r = prompt(`¿Qué querés ofrecer en el ${meta.label}?
+
+Describilo en una frase (podés incluir el precio).
+${ejemplo}
+
+Si lo dejás vacío, uso un texto de ejemplo que después editás a mano.`, '');
+    if (r === null) return; // canceló
+    offerBrief = (r || '').trim();
+  }
+
   setStatus('Creando…');
   try {
     const palId = landing.palette || getCurrentPalette() || 'blue-purple';
     const name = (landing.title || 'Mi producto').trim();
     const f = _funnelCfg();
     const sections = _funnelPageSections(type, palId, name);
+
+    // Contenido de la oferta basado en el producto real de esta landing
+    if (type !== 'thanks') {
+      const oi = sections.findIndex(s => s.id === 'oferta');
+      if (oi !== -1) {
+        try {
+          const mainPrice = (landing.sections || []).find(s => s.id === 'precio')?.content?.price || '';
+          const gen = await AI.generateOfferContent(type, landing.brief || landing.title || '', offerBrief, mainPrice);
+          if (gen) {
+            sections[oi].content = { ...sections[oi].content, ...gen };
+            sections[oi].html = AI.buildSection('oferta', sections[oi].content, palId);
+          }
+        } catch (e) { console.warn('[funnel] contenido IA falló, uso el de ejemplo:', e.message); }
+      }
+    }
     // Conectar el "no gracias" con el paso siguiente que ya exista
     const declineSlug = _declineTargetFor(type, f);
     if (declineSlug) {

@@ -31,9 +31,9 @@ chk('navLinksFor solo secciones reales', links.length===3 && links.every(l=>['#b
 
 console.log('Secciones nuevas');
 const txt=C._buildSection('texto',{title:'Sobre mí',body:'Linea 1\nLinea 2',align:'center'},pal);
-chk('texto con saltos de línea', txt.includes('white-space:pre-line') && txt.includes('Sobre mí'));
+chk('texto respeta saltos y espacios', txt.includes('white-space:pre-wrap') && txt.includes('Sobre mí'));
 const img=C._buildSection('imagen',{image_url:'data:image/png;base64,AAA',caption:'Pie',size:'medium'},pal);
-chk('imagen con caption y tamaño', img.includes('AAA') && img.includes('Pie') && img.includes('72%'));
+chk('imagen con caption y tamaño', img.includes('AAA') && img.includes('Pie') && img.includes('65%'));
 const vidYT=C._buildSection('video',{title:'Demo',video_url:'https://www.youtube.com/watch?v=dQw4w9WgXcQ'},pal);
 chk('video YouTube → iframe embed', vidYT.includes('youtube.com/embed/dQw4w9WgXcQ'));
 const vidMp4=C._buildSection('video',{video_url:'https://x.com/a.mp4'},pal);
@@ -69,6 +69,47 @@ chk('el checkout global NO pisa el "no gracias"', asm.includes('href="https://ne
 const of2=C._buildSection('oferta',{title:'X',price:'$47',cta:'SI'},pal);
 const asm2=C.assembleLanding([{id:'oferta',html:of2}],'blue-purple','t',{ctaUrl:'https://pay/PRINCIPAL'});
 chk('oferta sin link propio → usa el checkout global', asm2.includes('href="https://pay/PRINCIPAL"'));
+
+console.log('CTA al pie de secciones');
+const benCta=C._buildSection('beneficios',{title:'B',items:[{title:'a'}],cta:'Quiero esto',cta_url:'https://pay/X',cta_note:'Sin tarjeta'},pal);
+chk('botón CTA al pie con su link', benCta.includes('Quiero esto') && benCta.includes('href="https://pay/X"'));
+chk('nota bajo el botón', benCta.includes('Sin tarjeta'));
+const benSinCta=C._buildSection('beneficios',{title:'B',items:[{title:'a'}]},pal);
+chk('sin cta → no aparece botón', !benSinCta.includes('ld-btn'));
+
+console.log('Imágenes por ítem y proporciones');
+const bonImg=C._buildSection('bonos',{title:'B',items:[{title:'b1',image_url:'foto1.jpg'},{title:'b2',image_url:'foto2.jpg'}]},pal);
+chk('cada bono con su foto', bonImg.includes('foto1.jpg') && bonImg.includes('foto2.jpg'));
+const benItemImg=C._buildSection('beneficios',{title:'B',items:[{title:'a',image_url:'ben.jpg'}]},pal);
+chk('beneficio con foto propia', benItemImg.includes('ben.jpg'));
+const imgOrig=C._buildSection('imagen',{image_url:'x.jpg',ratio:'original',align:'left',size:'medium'},pal);
+chk('proporción original (sin recorte)', imgOrig.includes('height:auto') && !imgOrig.includes('aspect-ratio'));
+chk('alineada a la izquierda', imgOrig.includes('margin-right:auto') && !imgOrig.includes('margin-left:auto'));
+const imgSq=C._buildSection('imagen',{image_url:'x.jpg',ratio:'1/1'},pal);
+chk('proporción cuadrada', imgSq.includes('aspect-ratio:1/1'));
+const galR=C._buildSection('galeria',{images:[{url:'a'},{url:'b'}],ratio:'1/1'},pal);
+chk('galería con proporción elegida', galR.includes('aspect-ratio:1/1'));
+
+console.log('Iconos configurables');
+const pqIc=C._buildSection('para-quien',{title:'T',yes:['a'],no:['b'],yes_icon:'favorite',no_icon:'block'},pal);
+chk('iconos propios en para-quien', pqIc.includes('favorite') && pqIc.includes('block'));
+const adIc=C._buildSection('antes-despues',{title:'T',before:['a'],after:['b'],before_icon:'mood_bad',after_icon:'emoji_events'},pal);
+chk('iconos propios en antes-despues', adIc.includes('mood_bad') && adIc.includes('emoji_events'));
+const pqDef=C._buildSection('para-quien',{title:'T',yes:['a'],no:['b']},pal);
+chk('iconos por defecto si no se eligen', pqDef.includes('check_circle') && pqDef.includes('close'));
+
+console.log('Nav con logo y link');
+const navLogo=C._buildSection('nav',{brand:'Marca',logo_url:'logo.png',brand_href:'https://misitio.com',links:[]},pal);
+chk('logo como imagen', navLogo.includes('logo.png'));
+chk('link propio del logo', navLogo.includes('href="https://misitio.com"'));
+const navNoLogo=C._buildSection('nav',{brand:'Marca',links:[]},pal);
+chk('sin logo → solo el nombre', !navNoLogo.includes('<img') && navNoLogo.includes('Marca'));
+
+console.log('Video en celular');
+const vidBg=C._buildSection('beneficios',{title:'B',items:[{title:'a'}],video_url:'v.mp4'},pal);
+chk('atributos para autoplay en celular', vidBg.includes('playsinline') && vidBg.includes('webkit-playsinline') && vidBg.includes('muted'));
+const asmVid=C.assembleLanding([{id:'x',html:vidBg}],'blue-purple','t');
+chk('CSS que fuerza el video visible en celular', asmVid.includes('section > video'));
 
 console.log('\n'+(f===0?'🎉 TODOS PASAN':'⚠️ '+f+' FALLAN'));
 process.exit(f?1:0);

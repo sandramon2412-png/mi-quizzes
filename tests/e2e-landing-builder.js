@@ -110,11 +110,18 @@ function aiResponder(bodyStr) {
   aiCalls.push({ kind:
     msg.includes('Elegí las secciones ideales') ? 'plan' :
     msg.includes('REGLAS DE CLASIFICACIÓN') ? 'classify' :
+    msg.includes('página de UPSELL') || msg.includes('página de DOWNSELL') ? 'offer' :
     msg.includes('CONTENIDO ACTUAL') ? 'surgical' :
     msg.includes('SECCIÓN:') ? 'content' : 'other' });
   let text = '{}';
   if (msg.includes('Elegí las secciones ideales')) text = JSON.stringify(PLAN);
   else if (msg.includes('REGLAS DE CLASIFICACIÓN')) text = JSON.stringify({ action: 'edit', sectionId: 'hero', reply: 'Aplico ese cambio en el hero.' });
+  else if (msg.includes('página de UPSELL') || msg.includes('página de DOWNSELL')) {
+    text = JSON.stringify({ badge: 'Oferta única', title: 'Sumá las sesiones en vivo',
+      subtitle: 'Acompañamiento mensual para tu embarazo.', features: ['4 clases en vivo', 'Grupo privado'],
+      price_before: '$97', price: '$47', cta: 'SÍ, LO QUIERO SUMAR', decline: 'No gracias, continuar sin esto',
+      microcopy: 'Pago seguro' });
+  }
   else if (msg.includes('CONTENIDO ACTUAL')) {
     // surgical edit: devuelve el content actual con el título cambiado
     const jm = msg.match(/CONTENIDO ACTUAL \(JSON\):\n([\s\S]*?)\n\nPEDIDO DEL USUARIO/);
@@ -362,6 +369,8 @@ function aiResponder(bodyStr) {
 
   console.log('E2E 12 — embudo completo: upsell → downsell → gracias');
   const aiB3 = await settleAI();
+  // El builder pregunta qué se ofrece: respondemos automáticamente en el test
+  await page.evaluate(() => { window.prompt = () => 'Sesiones en vivo mensuales + comunidad, a $47'; });
   await page.evaluate(() => createFunnelPage('upsell'));
   await page.waitForFunction(() => landing.settings?.funnel?.upsell?.slug, null, { timeout: 15000 }).catch(() => {});
   await page.evaluate(() => createFunnelPage('downsell'));
@@ -383,6 +392,7 @@ function aiResponder(bodyStr) {
       upSaved: !!up, downSaved: !!down, thSaved: !!th,
       allPublished: [up, down, th].every(r => r && r.published),
       upHasOffer: !!(up && up.html && up.html.includes('SÍ, LO QUIERO SUMAR')),
+      upTitle: (() => { const secs = (up && (up.sections || (up.settings||{}).sections)) || []; return (secs.find(s => s.id === 'oferta')||{}).content?.title || ''; })(),
       downCheaper: !!(down && down.html && down.html.includes('$27')),
       upDecline: declineOf(up),
       downDecline: declineOf(down),
@@ -395,11 +405,14 @@ function aiResponder(bodyStr) {
   chk('página de gracias creada', fn.thSaved);
   chk('las tres quedan publicadas', fn.allPublished);
   chk('el upsell tiene su oferta con botón SÍ', fn.upHasOffer);
-  chk('el downsell ofrece un precio menor', fn.downCheaper);
+  chk('el contenido del upsell habla del producto real', !!(fn.upTitle && fn.upTitle.includes('sesiones en vivo')));
+  chk('el downsell tiene su propia oferta', !!fn.downSaved);
   chk('"no gracias" del upsell → downsell', fn.upDecline.includes(fn.downSlug));
   chk('"no gracias" del downsell → gracias', fn.downDecline.includes(fn.thSlug));
   chk('el panel muestra los 3 links listos para copiar', fn.stepsUi === 3);
-  chk('crear todo el embudo no usó IA', aiCalls.length === aiB3);
+  const offerCalls = aiCalls.slice(aiB3).filter(c => c.kind === 'offer').length;
+  chk('las ofertas se escriben con el producto real (1 llamada por oferta)', offerCalls === 2);
+  chk('la página de gracias no usa IA', aiCalls.slice(aiB3).filter(c => c.kind !== 'offer').length === 0);
 
   // El link de pago propio de la oferta manda: no lo pisa el de la landing madre
   const offerHtml = await page.evaluate(() => {
