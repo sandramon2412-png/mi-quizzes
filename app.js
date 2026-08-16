@@ -1567,8 +1567,8 @@ ${body}
       imagen: {title:'',image_prompt:'english+keywords+for+the+image+separated+by+plus',caption:'pie de foto opcional',size:'full',ratio:'16/9',align:'center'},
       video: {title:'Mirá cómo funciona',subtitle:'subtítulo opcional',video_url:''},
       galeria: {title:'Galería',subtitle:'',ratio:'4/3',images:[{url:'',caption:''},{url:'',caption:''},{url:'',caption:''}]},
-      oferta: {badge:'Espera — oferta única',title:'Sumá esto y potenciá tus resultados',subtitle:'Solo disponible en esta pantalla, no se repite después.',features:['qué incluye 1','qué incluye 2','qué incluye 3'],price_before:'$97',price:'$47',cta:'SÍ, LO QUIERO',cta_url:'',decline:'No gracias, continuar sin esto',decline_url:'',microcopy:'Pago seguro · Se suma a tu compra anterior'},
-      'para-quien': {title:'¿Este programa es para vos?',yes_title:'Es para vos si…',no_title:'No es para vos si…',yes:['frase específica sobre el cliente ideal 1','frase 2','frase 3'],no:['frase sobre quién NO debería comprarlo 1','frase 2','frase 3']},
+      oferta: {badge:'Espera — oferta única',title:'Suma esto y potencia tus resultados',subtitle:'Solo disponible en esta pantalla, no se repite después.',features:['qué incluye 1','qué incluye 2','qué incluye 3'],price_before:'$97',price:'$47',cta:'SÍ, LO QUIERO',cta_url:'',decline:'No gracias, continuar sin esto',decline_url:'',microcopy:'Pago seguro · Se suma a tu compra anterior'},
+      'para-quien': {title:'¿Este programa es para ti?',yes_title:'Es para ti si…',no_title:'No es para ti si…',yes:['frase específica sobre el cliente ideal 1','frase 2','frase 3'],no:['frase sobre quién NO debería comprarlo 1','frase 2','frase 3']},
       'antes-despues': {title:'Tu transformación',before_title:'Hoy',after_title:'Después del programa',before:['punto de dolor actual 1','punto 2','punto 3'],after:['resultado concreto 1','resultado 2','resultado 3']},
       problema: {title:'El problema real que tiene tu cliente ideal',items:[{icon:'sentiment_dissatisfied',title:'Dolor específico 1',desc:'descripción del dolor en 1-2 frases'},{icon:'sentiment_dissatisfied',title:'Dolor específico 2',desc:'descripción'},{icon:'sentiment_dissatisfied',title:'Dolor específico 3',desc:'descripción'}]},
       beneficios: {title:'título de la sección de beneficios',subtitle:'subtítulo opcional',items:[{icon:'star',title:'Beneficio 1',desc:'descripción concreta con resultado'},{icon:'check_circle',title:'Beneficio 2',desc:'descripción'},{icon:'trending_up',title:'Beneficio 3',desc:'descripción'}]},
@@ -1578,9 +1578,9 @@ ${body}
       testimonios: {title:'Lo que dicen ellas',items:[{initials:'ML',name:'María López',role:'Profesión · Ciudad',quote:'testimonio específico con resultado concreto medible que inspira a otros a comprar'},{initials:'AC',name:'Ana Cruz',role:'Profesión · Ciudad',quote:'testimonio diferente con otro ángulo del resultado'},{initials:'PG',name:'Paula Gómez',role:'Profesión · Ciudad',quote:'tercer testimonio con resultado específico y creíble'}]},
       bonos: {title:'Bonos exclusivos incluidos',items:[{icon:'card_giftcard',title:'Nombre del bono 1',desc:'qué incluye y para qué sirve',value:'Valor: $97'},{icon:'campaign',title:'Nombre del bono 2',desc:'descripción del bono',value:'Valor: $47'}]},
       precio: {title:'Tu inversión',price:'$97',period:'pago único / acceso de por vida',features:['Todo el contenido del programa','Comunidad privada de apoyo','Acceso de por vida','Actualizaciones incluidas','Soporte personalizado'],cta:'Quiero acceso ahora',microcopy:'Pago seguro · Garantía 30 días · Acceso inmediato'},
-      garantia: {title:'Garantía de 30 días sin preguntas',desc:'Si en 30 días no ves resultados concretos, te devolvemos el 100% de tu inversión. Sin preguntas, sin demoras, sin complicaciones. Probalo sin riesgo.',days:'30'},
+      garantia: {title:'Garantía de 30 días sin preguntas',desc:'Si en 30 días no ves resultados concretos, te devolvemos el 100% de tu inversión. Sin preguntas, sin demoras, sin complicaciones. Pruébalo sin riesgo.',days:'30'},
       faq: {title:'Preguntas frecuentes',items:[{q:'¿Para quién es este programa?',a:'respuesta específica'},{q:'¿Cuánto tiempo necesito por día?',a:'respuesta'},{q:'¿Qué pasa si no veo resultados?',a:'respuesta sobre la garantía'},{q:'¿Tengo acceso de por vida?',a:'respuesta'},{q:'¿Cómo accedo después de comprar?',a:'respuesta'}]},
-      'cta-final': {title:'¿Estás lista para cambiar tu vida?',subtitle:'Unite a las personas que ya dieron el primer paso y están transformando su realidad',cta:'Quiero empezar hoy',microcopy:'Sin tarjeta · Acceso inmediato · Garantía 30 días'},
+      'cta-final': {title:'¿Estás listo para cambiar tu vida?',subtitle:'Únete a las personas que ya dieron el primer paso y están transformando su realidad',cta:'Quiero empezar hoy',microcopy:'Sin tarjeta · Acceso inmediato · Garantía 30 días'},
       footer: {brand_name:'Nombre del Producto',tagline:'frase de 5-8 palabras que resume el valor',copyright:'© 2024 · Todos los derechos reservados'}
     };
     return JSON.parse(JSON.stringify(S[id] || S.beneficios));
@@ -1602,7 +1602,7 @@ ${body}
     const AVATAR = (init) => `<div style="width:44px;height:44px;border-radius:50%;background:${GRAD};display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:14px;flex-shrink:0">${e((init||'?').slice(0,2))}</div>`;
     const BTN = (text,href='#precio') => `<a href="${e(href)}" class="ld-btn" style="background:${GRAD};color:#fff;padding:16px 36px;border-radius:12px;font-weight:700;font-size:18px;display:inline-block;text-decoration:none;cursor:pointer">${e(text||'Empezar')}</a>`;
     const H2 = (text,align='center') => `<h2 style="color:var(--ink);font-size:clamp(1.6rem,3vw,2.4rem);font-weight:800;text-align:${align};margin:0 0 12px">${e(text)}</h2>`;
-    const SUB = (text,align='center') => text ? `<p style="color:var(--muted);text-align:${align};font-size:17px;line-height:1.6;margin:0 0 48px">${e(text)}</p>` : '<div style="margin-bottom:48px"></div>';
+    const SUB = (text,align='center') => text ? `<p style="color:var(--muted);text-align:${align};font-size:17px;line-height:1.6;margin:0 0 48px;white-space:pre-wrap">${e(text)}</p>` : '<div style="margin-bottom:48px"></div>';
     const SEC = (inner,bg='var(--bg)',py=80) => `<section id="${e(id)}" style="background:${bg};padding:${py}px 0"><div style="max-width:1152px;margin:0 auto;padding:0 24px">${inner}</div></section>`;
     // Botón CTA opcional al pie de cualquier sección
     const SEC_CTA = () => c.cta ? `<div style="text-align:center;margin-top:44px">${BTN(c.cta, c.cta_url || '#precio')}${c.cta_note?`<p style="color:var(--muted);font-size:13px;margin:12px 0 0">${e(c.cta_note)}</p>`:''}</div>` : '';
@@ -1617,7 +1617,7 @@ ${body}
         const navId = 'ldnav' + Math.random().toString(36).slice(2, 7);
         return `<header id="nav" style="position:sticky;top:0;z-index:50;background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom:1px solid var(--border)">
 <div style="max-width:1152px;margin:0 auto;padding:0 24px;height:66px;display:flex;align-items:center;gap:20px">
-<a href="${e(c.brand_href || '#hero')}" style="display:flex;align-items:center;gap:9px;font-weight:800;font-size:18px;color:var(--ink);text-decoration:none;flex-shrink:1;min-width:0;overflow:hidden;white-space:nowrap">${c.logo_url?`<img src="${e(c.logo_url)}" alt="${e(c.brand||'')}" style="height:34px;width:auto;max-width:150px;object-fit:contain;display:block"/>`:''}${c.brand?`<span style="overflow:hidden;text-overflow:ellipsis">${e(c.brand)}</span>`:''}</a>
+<a href="${e(c.brand_href || '#hero')}" style="display:flex;align-items:center;gap:9px;font-weight:800;font-size:18px;color:var(--ink);text-decoration:none;flex-shrink:1;min-width:0;overflow:hidden;white-space:nowrap">${c.logo_url?`<img src="${e(c.logo_url)}" alt="${e(c.brand||'')}" style="height:${Math.max(18, Math.min(72, parseInt(c.logo_size) || 34))}px;width:auto;max-width:190px;object-fit:contain;display:block"/>`:''}${c.brand?`<span style="overflow:hidden;text-overflow:ellipsis">${e(c.brand)}</span>`:''}</a>
 <nav class="ld-nav-links" style="margin-left:auto;display:flex;align-items:center;gap:26px">
 ${links.map(l => `<a href="${e(l.href || '#')}" style="color:var(--muted);font-size:15px;font-weight:500;text-decoration:none">${e(l.label || '')}</a>`).join('')}
 </nav>
@@ -1661,7 +1661,7 @@ ${c.caption ? `<figcaption style="color:var(--muted);font-size:14px;text-align:c
         if (c.video_url && c.layout !== 'center') {
           const vimg = c.image_url || this._imgUrl(c.image_prompt);
           return `<section id="hero" style="position:relative;overflow:hidden;background:#0a0a0f;padding:96px 0">
-<video autoplay muted loop playsinline webkit-playsinline disablepictureinpicture preload="auto" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:0"><source src="${e(c.video_url)}" type="video/mp4"/></video>
+<video autoplay muted loop playsinline webkit-playsinline disablepictureinpicture preload="auto" style="position:absolute;inset:0;width:100%;height:100%;object-fit:${c.video_fit === 'contain' ? 'contain' : 'cover'};object-position:${e(c.video_position || 'center')};background:#000;z-index:0"><source src="${e(c.video_url)}" type="video/mp4"/></video>
 <div style="position:absolute;inset:0;background:rgba(0,0,0,.58);z-index:1"></div>
 <div style="position:relative;z-index:2;max-width:1152px;margin:0 auto;padding:0 24px;display:flex;flex-wrap:wrap;align-items:center;gap:48px">
 <div style="flex:1;min-width:280px">
@@ -1680,7 +1680,7 @@ ${c.microcopy?`<p style="color:rgba(255,255,255,.7);font-size:13px;margin:12px 0
         if (c.video_url) {
           // Video de fondo con layout centrado
           return `<section id="hero" style="position:relative;overflow:hidden;background:#0a0a0f;padding:120px 0">
-<video autoplay muted loop playsinline webkit-playsinline disablepictureinpicture preload="auto" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:0"><source src="${e(c.video_url)}" type="video/mp4"/></video>
+<video autoplay muted loop playsinline webkit-playsinline disablepictureinpicture preload="auto" style="position:absolute;inset:0;width:100%;height:100%;object-fit:${c.video_fit === 'contain' ? 'contain' : 'cover'};object-position:${e(c.video_position || 'center')};background:#000;z-index:0"><source src="${e(c.video_url)}" type="video/mp4"/></video>
 <div style="position:absolute;inset:0;background:rgba(0,0,0,.55);z-index:1"></div>
 <div style="position:relative;z-index:2;max-width:860px;margin:0 auto;padding:0 24px;text-align:center">
 ${c.badge?`<p style="color:rgba(255,255,255,.85);font-weight:700;font-size:13px;text-transform:uppercase;letter-spacing:2px;margin:0 0 16px">${e(c.badge)}</p>`:''}
@@ -1714,7 +1714,7 @@ ${c.microcopy?`<p style="color:var(--muted);font-size:13px;margin:12px 0 0">${e(
 <div style="flex:1;min-width:280px">
 ${c.badge?`<p style="color:var(--brand);font-weight:700;font-size:13px;text-transform:uppercase;letter-spacing:2px;margin:0 0 16px">${e(c.badge)}</p>`:''}
 <h1 style="color:var(--ink);font-size:clamp(2rem,5vw,3.5rem);font-weight:800;line-height:1.1;margin:0 0 20px">${e(c.title||'Título')}</h1>
-<p style="color:var(--muted);font-size:18px;line-height:1.6;margin:0 0 32px">${e(c.subtitle||'')}</p>
+<p style="color:var(--muted);font-size:18px;line-height:1.6;margin:0 0 32px;white-space:pre-wrap">${e(c.subtitle||'')}</p>
 ${BTN(c.cta||'Empezar ahora')}
 ${c.microcopy?`<p style="color:var(--muted);font-size:13px;margin:12px 0 0">${e(c.microcopy)}</p>`:''}
 </div>
@@ -1726,20 +1726,20 @@ ${c.microcopy?`<p style="color:var(--muted);font-size:13px;margin:12px 0 0">${e(
       }
       case 'problema': {
         const items = arr(c.items);
-        return SEC(`${H2(c.title||'El problema')}${SUB('')}<div ${GRIDC(items.length)}>${items.map(it=>`<div class="ld-card" style="${CARD}">${ICON(it.icon||'sentiment_dissatisfied')}<h3 style="color:var(--ink);font-size:17px;font-weight:700;margin:12px 0 8px">${e(it.title||'')}</h3><p style="color:var(--muted);font-size:15px;line-height:1.6;margin:0">${e(it.desc||'')}</p></div>`).join('')}</div>`,'var(--surface)');
+        return SEC(`${H2(c.title||'El problema')}${SUB('')}<div ${GRIDC(items.length)}>${items.map(it=>`<div class="ld-card" style="${CARD}">${ICON(it.icon||'sentiment_dissatisfied')}<h3 style="color:var(--ink);font-size:17px;font-weight:700;margin:12px 0 8px">${e(it.title||'')}</h3><p style="color:var(--muted);font-size:15px;line-height:1.6;margin:0;white-space:pre-wrap">${e(it.desc||'')}</p></div>`).join('')}</div>`,'var(--surface)');
       }
       case 'beneficios': {
         const items = arr(c.items);
         const IMG_IT = (it) => it.image_url ? `<img src="${e(it.image_url)}" loading="lazy" alt="" style="width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:12px;margin:0 0 14px"/>` : '';
-        return SEC(`${H2(c.title||'Beneficios')}${SUB(c.subtitle||'')}<div ${GRIDC(items.length)}>${items.map(it=>`<div class="ld-card" style="${CARD}">${IMG_IT(it)}${ICON(it.icon||'check_circle')}<h3 style="color:var(--ink);font-size:17px;font-weight:700;margin:12px 0 8px">${e(it.title||'')}</h3><p style="color:var(--muted);font-size:15px;line-height:1.6;margin:0">${e(it.desc||'')}</p></div>`).join('')}</div>${SEC_CTA()}`);
+        return SEC(`${H2(c.title||'Beneficios')}${SUB(c.subtitle||'')}<div ${GRIDC(items.length)}>${items.map(it=>`<div class="ld-card" style="${CARD}">${IMG_IT(it)}${ICON(it.icon||'check_circle')}<h3 style="color:var(--ink);font-size:17px;font-weight:700;margin:12px 0 8px">${e(it.title||'')}</h3><p style="color:var(--muted);font-size:15px;line-height:1.6;margin:0;white-space:pre-wrap">${e(it.desc||'')}</p></div>`).join('')}</div>${SEC_CTA()}`);
       }
       case 'modulos': {
         const items = arr(c.items);
-        return SEC(`${H2(c.title||'Contenido')}${SUB(c.subtitle||'')}<div ${GRIDC(items.length)}>${items.map(it=>`<div class="ld-card" style="${CARD}">${it.image_url?`<img src="${e(it.image_url)}" loading="lazy" alt="" style="width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:12px;margin:0 0 14px"/>`:''}<div style="display:flex;gap:16px;align-items:flex-start"><div style="background:${GRAD};border-radius:10px;width:40px;height:40px;display:flex;align-items:center;justify-content:center;flex-shrink:0">${ICON_W(it.icon||'school')}</div><div><h3 style="color:var(--ink);font-weight:700;font-size:16px;margin:0 0 6px">${e(it.title||'')}</h3><p style="color:var(--muted);font-size:14px;line-height:1.5;margin:0">${e(it.desc||'')}</p></div></div></div>`).join('')}</div>${SEC_CTA()}`,'var(--surface)');
+        return SEC(`${H2(c.title||'Contenido')}${SUB(c.subtitle||'')}<div ${GRIDC(items.length)}>${items.map(it=>`<div class="ld-card" style="${CARD}">${it.image_url?`<img src="${e(it.image_url)}" loading="lazy" alt="" style="width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:12px;margin:0 0 14px"/>`:''}<div style="display:flex;gap:16px;align-items:flex-start"><div style="background:${GRAD};border-radius:10px;width:40px;height:40px;display:flex;align-items:center;justify-content:center;flex-shrink:0">${ICON_W(it.icon||'school')}</div><div><h3 style="color:var(--ink);font-weight:700;font-size:16px;margin:0 0 6px">${e(it.title||'')}</h3><p style="color:var(--muted);font-size:14px;line-height:1.5;margin:0;white-space:pre-wrap">${e(it.desc||'')}</p></div></div></div>`).join('')}</div>${SEC_CTA()}`,'var(--surface)');
       }
       case 'como-funciona': {
         const items = arr(c.items);
-        return SEC(`${H2(c.title||'Cómo funciona')}${SUB('')}<div ${GRIDC(items.length)}>${items.map((it,i)=>`<div style="text-align:center"><div style="width:56px;height:56px;border-radius:50%;background:${GRAD};display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:22px;margin:0 auto 16px">${e(it.step||String(i+1))}</div><h3 style="color:var(--ink);font-weight:700;font-size:17px;margin:0 0 8px">${e(it.title||'')}</h3><p style="color:var(--muted);font-size:15px;line-height:1.6;margin:0">${e(it.desc||'')}</p></div>`).join('')}</div>${SEC_CTA()}`);
+        return SEC(`${H2(c.title||'Cómo funciona')}${SUB('')}<div ${GRIDC(items.length)}>${items.map((it,i)=>`<div style="text-align:center"><div style="width:56px;height:56px;border-radius:50%;background:${GRAD};display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:22px;margin:0 auto 16px">${e(it.step||String(i+1))}</div><h3 style="color:var(--ink);font-weight:700;font-size:17px;margin:0 0 8px">${e(it.title||'')}</h3><p style="color:var(--muted);font-size:15px;line-height:1.6;margin:0;white-space:pre-wrap">${e(it.desc||'')}</p></div>`).join('')}</div>${SEC_CTA()}`);
       }
       case 'prueba-social': {
         const stats = arr(c.stats);
@@ -1751,7 +1751,7 @@ ${c.microcopy?`<p style="color:var(--muted);font-size:13px;margin:12px 0 0">${e(
       }
       case 'bonos': {
         const items = arr(c.items);
-        return SEC(`${H2(c.title||'Bonos')}${SUB('')}<div ${GRIDC(items.length)}>${items.map(it=>`<div class="ld-card" style="${CARD};display:flex;gap:16px;align-items:flex-start"><div style="background:${GRAD};border-radius:10px;width:44px;height:44px;display:flex;align-items:center;justify-content:center;flex-shrink:0">${ICON_W(it.icon||'card_giftcard',22)}</div><div style="flex:1"><h3 style="color:var(--ink);font-weight:700;font-size:16px;margin:0 0 6px">${e(it.title||'')}</h3><p style="color:var(--muted);font-size:14px;line-height:1.5;margin:0 0 8px">${e(it.desc||'')}</p>${it.value?`<p style="color:var(--brand);font-weight:700;font-size:14px;margin:0">${e(it.value)}</p>`:''}${it.image_url?`<img src="${e(it.image_url)}" loading="lazy" alt="" style="width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:10px;margin-top:10px"/>`:''}</div></div>`).join('')}</div>${SEC_CTA()}`);
+        return SEC(`${H2(c.title||'Bonos')}${SUB(c.subtitle||'')}<div ${GRIDC(items.length)}>${items.map(it=>`<div class="ld-card" style="${CARD}">${it.image_url?`<img src="${e(it.image_url)}" loading="lazy" alt="" style="width:100%;aspect-ratio:16/9;object-fit:cover;border-radius:12px;margin:0 0 16px;display:block"/>`:''}<div style="display:flex;gap:16px;align-items:flex-start"><div style="background:${GRAD};border-radius:10px;width:44px;height:44px;display:flex;align-items:center;justify-content:center;flex-shrink:0">${ICON_W(it.icon||'card_giftcard',22)}</div><div style="flex:1"><h3 style="color:var(--ink);font-weight:700;font-size:16px;margin:0 0 6px">${e(it.title||'')}</h3><p style="color:var(--muted);font-size:14px;line-height:1.5;margin:0 0 8px;white-space:pre-wrap">${e(it.desc||'')}</p>${it.value?`<p style="color:var(--brand);font-weight:700;font-size:14px;margin:0">${e(it.value)}</p>`:''}</div></div></div>`).join('')}</div>${SEC_CTA()}`);
       }
       case 'precio': {
         const features = arr(c.features);
@@ -1799,14 +1799,14 @@ ${c.microcopy?`<p style="color:var(--muted);font-size:13px;margin:12px 0 0">${e(
 </section>`;
       }
       case 'garantia': {
-        return `<section id="garantia" style="background:var(--bg);padding:64px 0"><div style="max-width:600px;margin:0 auto;padding:0 24px;text-align:center">${ICON('verified_user',56)}<h2 style="color:var(--ink);font-size:2rem;font-weight:800;margin:16px 0 12px">${e(c.title||'Garantía')}</h2><p style="color:var(--muted);font-size:17px;line-height:1.7;margin:0">${e(c.desc||'')}</p>${SEC_CTA()}</div></section>`;
+        return `<section id="garantia" style="background:var(--bg);padding:64px 0"><div style="max-width:600px;margin:0 auto;padding:0 24px;text-align:center">${ICON('verified_user',56)}<h2 style="color:var(--ink);font-size:2rem;font-weight:800;margin:16px 0 12px">${e(c.title||'Garantía')}</h2><p style="color:var(--muted);font-size:17px;line-height:1.7;margin:0;white-space:pre-wrap">${e(c.desc||'')}</p>${SEC_CTA()}</div></section>`;
       }
       case 'faq': {
         const items = arr(c.items);
-        return `<section id="faq" style="background:var(--surface);padding:80px 0"><div style="max-width:720px;margin:0 auto;padding:0 24px">${H2(c.title||'Preguntas frecuentes')}<div style="display:flex;flex-direction:column;gap:12px;margin-top:48px">${items.map(it=>`<details style="background:var(--bg);border:1px solid var(--border);border-radius:12px;overflow:hidden"><summary style="color:var(--ink);font-weight:600;font-size:16px;padding:20px 24px;cursor:pointer;list-style:none;display:block">${e(it.q||'')}</summary><p style="color:var(--muted);font-size:15px;line-height:1.6;padding:0 24px 20px;margin:0">${e(it.a||'')}</p></details>`).join('')}</div></div></section>`;
+        return `<section id="faq" style="background:var(--surface);padding:80px 0"><div style="max-width:720px;margin:0 auto;padding:0 24px">${H2(c.title||'Preguntas frecuentes')}<div style="display:flex;flex-direction:column;gap:12px;margin-top:48px">${items.map(it=>`<details style="background:var(--bg);border:1px solid var(--border);border-radius:12px;overflow:hidden"><summary style="color:var(--ink);font-weight:600;font-size:16px;padding:20px 24px;cursor:pointer;list-style:none;display:flex;align-items:flex-start;gap:11px"><span class="material-symbols-outlined" style="font-size:20px;color:var(--brand);flex-shrink:0">${e(okIcon(it.icon || c.icon, 'help'))}</span><span>${e(it.q||'')}</span></summary><p style="color:var(--muted);font-size:15px;line-height:1.6;padding:0 24px 20px 55px;margin:0;white-space:pre-wrap">${e(it.a||'')}</p></details>`).join('')}</div></div></section>`;
       }
       case 'cta-final': {
-        return `<section id="cta-final" style="background:${GRAD};padding:96px 0"><div style="max-width:640px;margin:0 auto;padding:0 24px;text-align:center"><h2 style="color:#fff;font-size:clamp(1.8rem,4vw,2.8rem);font-weight:800;margin:0 0 16px">${e(c.title||'¿Estás lista?')}</h2>${c.subtitle?`<p style="color:rgba(255,255,255,.85);font-size:18px;margin:0 0 36px">${e(c.subtitle)}</p>`:''}<a href="#precio" class="ld-btn" style="background:#fff;color:var(--brand);padding:16px 40px;border-radius:12px;font-weight:800;font-size:18px;display:inline-block;text-decoration:none">${e(c.cta||'Quiero empezar hoy')}</a>${c.microcopy?`<p style="color:rgba(255,255,255,.7);font-size:13px;margin:14px 0 0">${e(c.microcopy)}</p>`:''}</div></section>`;
+        return `<section id="cta-final" style="background:${GRAD};padding:96px 0"><div style="max-width:640px;margin:0 auto;padding:0 24px;text-align:center"><h2 style="color:#fff;font-size:clamp(1.8rem,4vw,2.8rem);font-weight:800;margin:0 0 16px">${e(c.title||'¿Estás listo?')}</h2>${c.subtitle?`<p style="color:rgba(255,255,255,.85);font-size:18px;margin:0 0 36px">${e(c.subtitle)}</p>`:''}<a href="#precio" class="ld-btn" style="background:#fff;color:var(--brand);padding:16px 40px;border-radius:12px;font-weight:800;font-size:18px;display:inline-block;text-decoration:none">${e(c.cta||'Quiero empezar hoy')}</a>${c.microcopy?`<p style="color:rgba(255,255,255,.7);font-size:13px;margin:14px 0 0">${e(c.microcopy)}</p>`:''}</div></section>`;
       }
       case 'footer': {
         return `<footer id="footer" style="background:var(--bg);border-top:1px solid var(--border);padding:40px 0"><div style="max-width:1152px;margin:0 auto;padding:0 24px;display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:16px"><div><p style="color:var(--ink);font-weight:700;font-size:16px;margin:0 0 4px">${e(c.brand_name||'Producto')}</p>${c.tagline?`<p style="color:var(--muted);font-size:13px;margin:0">${e(c.tagline)}</p>`:''}</div><p style="color:var(--muted);font-size:13px;margin:0">${e(c.copyright||'© 2024 · Todos los derechos reservados')}</p></div></footer>`;
@@ -1822,14 +1822,19 @@ ${c.microcopy?`<p style="color:var(--muted);font-size:13px;margin:12px 0 0">${e(
     const __endTag = '</div></section>';
     const __plain = ['hero', 'nav', 'imagen', 'video', 'galeria'].indexOf(id) === -1;
     if (c.image_url && __plain && !__out.includes(c.image_url) && __out.endsWith(__endTag)) {
+      const iw = { small: '40%', medium: '65%', large: '85%', full: '100%' }[c.image_size] || '100%';
+      const ir = c.image_ratio === 'original' ? 'height:auto'
+        : `aspect-ratio:${c.image_ratio || '16/9'};object-fit:cover`;
+      const ia = c.image_align === 'left' ? 'margin-right:auto'
+        : c.image_align === 'right' ? 'margin-left:auto' : 'margin-left:auto;margin-right:auto';
       __out = __out.slice(0, -__endTag.length) +
-        `<div style="margin-top:44px"><img src="${e(c.image_url)}" loading="lazy" alt="" style="width:100%;max-height:420px;object-fit:cover;border-radius:20px;box-shadow:0 20px 60px rgba(0,0,0,.3)"/></div>` + __endTag;
+        `<figure style="margin:44px 0 0;max-width:${iw};${ia}"><img src="${e(c.image_url)}" loading="lazy" alt="" style="width:100%;${ir};border-radius:20px;box-shadow:0 20px 60px rgba(0,0,0,.3);display:block"/></figure>` + __endTag;
     }
     // Video de fondo en cualquier sección: se envuelve con overlay para que el texto se lea
     if (c.video_url && __plain) {
       __out = __out.replace(/^<section([^>]*)style="([^"]*)"/, (m, attrs, css) =>
         `<section${attrs}style="${css};position:relative;overflow:hidden;background:#0a0a0f !important"`)
-        .replace(/^(<section[^>]*>)/, `$1<video autoplay muted loop playsinline webkit-playsinline disablepictureinpicture preload="auto" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:0"><source src="${e(c.video_url)}" type="video/mp4"/></video><div style="position:absolute;inset:0;background:rgba(0,0,0,.62);z-index:1"></div><div class="ld-onvideo" style="position:relative;z-index:2">`)
+        .replace(/^(<section[^>]*>)/, `$1<video autoplay muted loop playsinline webkit-playsinline disablepictureinpicture preload="auto" style="position:absolute;inset:0;width:100%;height:100%;object-fit:${c.video_fit === 'contain' ? 'contain' : 'cover'};object-position:${e(c.video_position || 'center')};background:#000;z-index:0"><source src="${e(c.video_url)}" type="video/mp4"/></video><div style="position:absolute;inset:0;background:rgba(0,0,0,.62);z-index:1"></div><div class="ld-onvideo" style="position:relative;z-index:2">`)
         .replace(/<\/section>$/, '</div></section>');
     }
     return __out;
@@ -1844,7 +1849,7 @@ ${c.microcopy?`<p style="color:var(--muted);font-size:13px;margin:12px 0 0">${e(
       faq: 'Las preguntas deben ser objeciones reales: precio, tiempo, resultados, garantía, si sirve para mí. Nada genérico.',
       precio: 'Usá EXACTAMENTE el precio que aparece en el brief del producto — NUNCA inventes un número. Los features deben ser beneficios reales y específicos del producto, no genéricos.',
     };
-    const user = `Sos experto en copywriting persuasivo en español latinoamericano.
+    const user = `Eres experto en copywriting persuasivo en español neutro latinoamericano.
 
 PRODUCTO / SERVICIO:
 ${sharedBrief}
@@ -1853,8 +1858,13 @@ SECCIÓN: "${spec.id}"
 OBJETIVO: ${spec.brief || this._sectionDefaultBrief(spec.id)}
 ${hints[spec.id] ? '\nNOTA IMPORTANTE: ' + hints[spec.id] : ''}
 
-Completá este JSON con contenido REAL y ESPECÍFICO para ESTE producto (no genérico).
-Respondé SOLO el JSON válido, sin markdown, sin texto extra, sin comentarios.
+IDIOMA — MUY IMPORTANTE: escribe en español NEUTRO latinoamericano, usando "tú" o formas
+impersonales. PROHIBIDO el voseo argentino: nunca uses "tenés", "podés", "querés", "sentís",
+"hacé", "armá", "sumá", "fijate", "vos". Escribe "tienes", "puedes", "quieres", "sientes",
+"haz", "arma", "suma", "fíjate", "tú".
+
+Completa este JSON con contenido REAL y ESPECÍFICO para ESTE producto (no genérico).
+Responde SOLO el JSON válido, sin markdown, sin texto extra, sin comentarios.
 
 ${JSON.stringify(schema, null, 2)}`;
     const text = await this._call([{role:'user',content:user}], 2000, {model:'claude-haiku-4-5-20251001'});
@@ -2031,7 +2041,7 @@ REGLA ABSOLUTA: NUNCA copies el layout de ejemplo literalmente — adaptá el co
   },
 
   async planLandingSections(instruction) {
-    const system = 'Sos un estratega de landing pages de alta conversión (CRO). Dado un producto, decidís qué secciones necesita la landing y en qué orden para maximizar conversión.';
+    const system = 'Eres estratega de landing pages de alta conversión (CRO). Dado un producto, decides qué secciones necesita la landing y en qué orden para maximizar conversión.';
     const user = `PRODUCTO / PEDIDO DEL USUARIO:
 ${instruction}
 
@@ -2155,7 +2165,7 @@ Respondé SOLO con este JSON (sin markdown, sin texto extra):
     const convo = (history || []).slice(-6)
       .map(m => `${m.role === 'user' ? 'USUARIO' : 'ASISTENTE'}: ${String(m.content).slice(0, 300)}`)
       .join('\n');
-    const user = `Sos editor de contenido de una landing page en español latinoamericano.
+    const user = `Eres editor de contenido de una landing page en español neutro latinoamericano.
 
 PRODUCTO: ${String(sharedBrief || '').slice(0, 1500)}
 ${convo ? `\nCONVERSACIÓN RECIENTE (para entender el contexto del pedido):\n${convo}\n` : ''}
@@ -2170,7 +2180,9 @@ REGLAS ESTRICTAS:
 2. Modificá ÚNICAMENTE lo que el pedido requiere. Todo lo demás queda EXACTAMENTE igual, palabra por palabra.
 3. NO toques video_url ni image_url si existen.
 4. Los iconos son nombres de Material Symbols en minúsculas (ej: check_circle) — NUNCA emojis.
-5. Respondé SOLO el JSON, sin markdown ni texto extra.`;
+5. Español NEUTRO latinoamericano ("tú" o impersonal). PROHIBIDO el voseo: nada de "tenés",
+   "podés", "querés", "hacé", "sumá", "vos".
+6. Responde SOLO el JSON, sin markdown ni texto extra.`;
     const text = await this._call([{ role: 'user', content: user }], 2500, { model: 'claude-haiku-4-5-20251001' });
     const parsed = this._parseJSONSafe(text);
     return (parsed && typeof parsed === 'object') ? parsed : null;
@@ -2180,7 +2192,7 @@ REGLAS ESTRICTAS:
   // de la landing madre. Si la IA falla, el caller usa su contenido por defecto.
   async generateOfferContent(kind, productBrief, offerBrief, mainPrice) {
     const isUp = kind === 'upsell';
-    const user = `Sos experto en embudos de venta en español latinoamericano.
+    const user = `Eres experto en embudos de venta en español neutro latinoamericano.
 
 PRODUCTO PRINCIPAL QUE LA PERSONA ACABA DE COMPRAR:
 ${String(productBrief || '').slice(0, 2000)}
@@ -2196,6 +2208,8 @@ Reglas:
 - Todo debe referirse al producto real descrito arriba, con su vocabulario y su nicho.
 - Precio coherente: el upsell vale menos que el producto principal; el downsell, bastante menos que el upsell.
 - Nada de promesas exageradas ni datos inventados con números falsos.
+- Español NEUTRO latinoamericano ("tú" o impersonal). PROHIBIDO el voseo argentino:
+  nada de "tenés", "podés", "querés", "sumá", "fijate", "vos".
 
 Respondé SOLO este JSON, sin markdown ni texto extra:
 ${JSON.stringify({
