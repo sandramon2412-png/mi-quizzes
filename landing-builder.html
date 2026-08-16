@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
+<meta http-equiv="Cache-Control" content="no-cache, must-revalidate"/>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
 <title>Landing Builder · Luminous Studio</title>
@@ -9,9 +10,9 @@
 <script src="https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.min.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
 <link href="https://fonts.googleapis.com/icon?family=Material+Symbols+Outlined" rel="stylesheet"/>
-<script src="./supabase-config.js?v=20260719g"></script>
-<script src="./app.js?v=20260719g"></script>
-<script src="./landing-blocks.js?v=20260719g"></script>
+<script src="./supabase-config.js?v=20260719h"></script>
+<script src="./app.js?v=20260719h"></script>
+<script src="./landing-blocks.js?v=20260719h"></script>
 <script>
   // Si el CDN de Tailwind no cargó, esta asignación tiraba y mataba todo el script
   // que sigue (incluida la UI del builder). Blindado para que la página funcione igual.
@@ -174,6 +175,8 @@
     <div class="w-8 h-8 rounded-lg primary-gradient flex items-center justify-center shrink-0">
       <span class="material-symbols-outlined text-white" style="font-size:16px">web</span>
     </div>
+    <span id="ld-version" title="Versión del builder — si no coincide con la última, hacé Ctrl+Shift+R"
+          style="font-size:9px;font-weight:700;letter-spacing:.04em;padding:3px 7px;border-radius:6px;background:rgba(46,91,255,.15);color:#7aa2ff;white-space:nowrap;flex-shrink:0"></span>
     <input id="ld-title" type="text" placeholder="Título de tu landing"
            class="text-sm font-bold tracking-tight flex-1 min-w-0"
            style="background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:9px;padding:7px 11px;color:#f4f4f6;outline:none"/>
@@ -1139,7 +1142,8 @@ const SEC_SCHEMA = {
   nav: { label: 'Barra de navegación', icon: 'menu', noMedia: true, fields: [
     F.text('brand', 'Nombre de la marca'),
     F.image('logo_url', 'Logo (imagen)'),
-    { key: 'logo_size', label: 'Alto del logo', type: 'select', options: [['26', 'Chico'], ['34', 'Normal'], ['46', 'Grande'], ['60', 'Muy grande']] },
+    { key: 'logo_size', label: 'Alto del logo', type: 'select', options: [['22', 'Muy chico'], ['30', 'Chico'], ['38', 'Normal'], ['48', 'Grande'], ['60', 'Muy grande']] },
+    { key: 'show_brand_text', label: 'Mostrar el nombre junto al logo', type: 'select', options: [['no', 'No, solo el logo'], ['si', 'Sí, logo y nombre']] },
     F.text('brand_href', 'Link del logo', '#hero o https://...'),
     F.text('cta', 'Texto del botón (vacío = sin botón)'),
     { key: 'links', label: 'Links del menú', type: 'items', addLabel: 'Agregar link',
@@ -4165,7 +4169,11 @@ async function init() {
   if (ldId) await loadLanding(ldId);
 }
 
+const BUILDER_VERSION = 'v20260719h';
+
 document.addEventListener('DOMContentLoaded', () => {
+  const vEl = document.getElementById('ld-version');
+  if (vEl) vEl.textContent = BUILDER_VERSION;
   initUI();   // sync — wires everything immediately
   init();     // async — auth / plan gate / load existing landing
 });

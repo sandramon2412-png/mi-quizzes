@@ -1553,7 +1553,7 @@ ${body}
     const icons = 'star|check_circle|favorite|school|trending_up|bolt|shield|people|rocket_launch|thumb_up|verified|psychology|emoji_events|lightbulb|timer|local_fire_department|health_and_safety|fitness_center|attach_money|savings|work|campaign|diversity_3|card_giftcard|sentiment_satisfied|self_improvement';
     const S = {
       hero: {badge:'frase corta de credibilidad (ej: +2.000 personas ya lo lograron)',title:'título H1 impactante y específico para este producto (6-12 palabras)',subtitle:'descripción del beneficio principal en 2-3 líneas que engancha al lector',cta:'texto del botón (verbo+resultado, ej: Quiero empezar hoy)',microcopy:'texto pequeño bajo el botón (ej: Sin tarjeta · Acceso inmediato · Garantía 30 días)',image_prompt:'relevant+english+keywords+describing+a+real+image+for+this+product+separated+by+plus',layout:'split o center — split: texto a la izquierda + imagen a la derecha (cursos, servicios con rostro humano). center: todo centrado con imagen ancha abajo (apps, productos digitales, comunidades)'},
-      nav: {brand:'Nombre de la marca o producto',logo_url:'',brand_href:'#hero',cta:'texto corto del botón (ej: Empezar)',links:[{label:'Beneficios',href:'#beneficios'},{label:'Contenido',href:'#modulos'},{label:'Precio',href:'#precio'},{label:'Preguntas',href:'#faq'}]},
+      nav: {brand:'Nombre de la marca o producto',logo_url:'',logo_size:'30',show_brand_text:'no',brand_href:'#hero',cta:'texto corto del botón (ej: Empezar)',links:[{label:'Beneficios',href:'#beneficios'},{label:'Contenido',href:'#modulos'},{label:'Precio',href:'#precio'},{label:'Preguntas',href:'#faq'}]},
       texto: {title:'Título de la sección (opcional)',body:'Párrafos de texto libre. Podés usar varias líneas.',align:'left'},
       imagen: {title:'',image_prompt:'english+keywords+for+the+image+separated+by+plus',caption:'pie de foto opcional',size:'full',ratio:'16/9',align:'center'},
       video: {title:'Mirá cómo funciona',subtitle:'subtítulo opcional',video_url:''},
@@ -1607,8 +1607,15 @@ ${body}
         const links = arr(c.links);
         const navId = 'ldnav' + Math.random().toString(36).slice(2, 7);
         return `<header id="nav" style="position:sticky;top:0;z-index:50;background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom:1px solid var(--border)">
-<div style="max-width:1152px;margin:0 auto;padding:0 24px;height:66px;display:flex;align-items:center;gap:20px">
-<a href="${e(c.brand_href || '#hero')}" style="display:flex;align-items:center;gap:9px;font-weight:800;font-size:18px;color:var(--ink);text-decoration:none;flex-shrink:1;min-width:0;overflow:hidden;white-space:nowrap">${c.logo_url?`<img src="${e(c.logo_url)}" alt="${e(c.brand||'')}" style="height:${Math.max(18, Math.min(72, parseInt(c.logo_size) || 34))}px;width:auto;max-width:190px;object-fit:contain;display:block"/>`:''}${c.brand?`<span style="overflow:hidden;text-overflow:ellipsis">${e(c.brand)}</span>`:''}</a>
+<div style="max-width:1152px;margin:0 auto;padding:0 24px;min-height:66px;display:flex;align-items:center;gap:20px;flex-wrap:nowrap">
+${(() => {
+  const h = Math.max(16, Math.min(64, parseInt(c.logo_size) || 30));
+  const conLogo = !!c.logo_url;
+  // Con logo, el nombre solo se muestra si se pide expresamente: si no, el texto
+  // competía con la imagen y terminaba tapando el título.
+  const mostrarNombre = c.brand && (!conLogo || c.show_brand_text === 'si');
+  return `<a href="${e(c.brand_href || '#hero')}" style="display:flex;align-items:center;gap:9px;font-weight:800;font-size:18px;color:var(--ink);text-decoration:none;flex:0 1 auto;min-width:0;max-width:52%;overflow:hidden;white-space:nowrap">${conLogo?`<img src="${e(c.logo_url)}" alt="${e(c.brand||'')}" style="height:${h}px;width:auto;max-width:100%;max-height:${h}px;object-fit:contain;display:block;flex-shrink:0"/>`:''}${mostrarNombre?`<span style="overflow:hidden;text-overflow:ellipsis">${e(c.brand)}</span>`:''}</a>`;
+})()}
 <nav class="ld-nav-links" style="margin-left:auto;display:flex;align-items:center;gap:26px">
 ${links.map(l => `<a href="${e(l.href || '#')}" style="color:var(--muted);font-size:15px;font-weight:500;text-decoration:none">${e(l.label || '')}</a>`).join('')}
 </nav>
@@ -2402,6 +2409,33 @@ ${JSON.stringify({
     return best;
   },
 
+  // Claves que representan cosas que cargó el usuario (archivos, links, ajustes visuales).
+  // La IA no puede inventarlas ni debe borrarlas: se preservan en TODOS los caminos de edición.
+  _USER_FIELDS: /^(logo_url|logo_size|image_url|image_size|image_ratio|image_align|item_image_ratio|video_url|video_fit|video_position|cta_url|decline_url|brand_href|layout)$/,
+
+  // Devuelve `next` con los campos del usuario de `prev` restaurados cuando el
+  // modelo los omitió o los devolvió vacíos.
+  _preserveUser(prev, next) {
+    if (!prev || typeof prev !== 'object') return next;
+    const out = { ...(next || {}) };
+    for (const k of Object.keys(prev)) {
+      if (!this._USER_FIELDS.test(k)) continue;
+      const before = prev[k];
+      const after = out[k];
+      const vacio = after === undefined || after === null || (typeof after === 'string' && !after.trim());
+      if (before && vacio) out[k] = before;
+    }
+    // Lo mismo dentro de cada ítem de una lista (fotos por bono/beneficio/módulo)
+    if (Array.isArray(prev.items) && Array.isArray(out.items)) {
+      out.items = out.items.map((it, i) => {
+        const old = prev.items[i];
+        if (!old || typeof old !== 'object' || !it || typeof it !== 'object') return it;
+        return this._preserveUser(old, it);
+      });
+    }
+    return out;
+  },
+
   async editLandingSectioned(instruction, sections, palId, brief, history) {
     const pal = this._landingPalette(palId);
     const ids = (sections || []).map(s => s.id);
@@ -2418,10 +2452,9 @@ ${JSON.stringify({
       const idx = sections.findIndex(s => s.id === named);
       const cur = sections[idx];
       if (cur && cur.content && Object.keys(cur.content).length) {
-        const edited = await this._editSectionContent(named, cur.content, instruction, brief || '', history);
+        let edited = await this._editSectionContent(named, cur.content, instruction, brief || '', history);
         if (edited) {
-          if (cur.content.video_url && !edited.video_url) edited.video_url = cur.content.video_url;
-          if (cur.content.image_url && !edited.image_url) edited.image_url = cur.content.image_url;
+          edited = this._preserveUser(cur.content, edited);
           const copy = sections.slice();
           copy[idx] = { ...cur, content: edited, html: this._buildSection(named, edited, pal) };
           return { sections: copy, reply: `Listo, apliqué ese cambio en "${named}".` };
@@ -2493,8 +2526,9 @@ reply debe ser una frase corta y amable explicando qué vas a hacer, coherente c
         const c = sec && sec.content;
         if (!c) return null;
         const keep = {};
-        if (c.video_url) keep.video_url = c.video_url;
-        if (c.image_url) keep.image_url = c.image_url;
+        for (const k of Object.keys(c)) {
+          if (this._USER_FIELDS.test(k) && c[k]) keep[k] = c[k];
+        }
         return Object.keys(keep).length ? keep : null;
       };
 
@@ -2505,7 +2539,10 @@ reply debe ser una frase corta y amable explicando qué vas a hacer, coherente c
         try {
           const r = await this.generateOneSection(spec, brief || '', pal, keepOf(cur));
           const i = fixed.findIndex(s => s.id === targetId);
-          if (i !== -1 && r.html) fixed[i] = { ...fixed[i], html: r.html, content: r.content };
+          if (i !== -1 && r.html) {
+            const merged = this._preserveUser(cur && cur.content, r.content);
+            fixed[i] = { ...fixed[i], content: merged, html: this._buildSection(targetId, merged, pal) };
+          }
         } catch (e) {}
         return { sections: fixed, reply: `Regeneré la sección "${targetId}" desde cero. Fijate cómo quedó.` };
       } else {
@@ -2514,7 +2551,10 @@ reply debe ser una frase corta y amable explicando qué vas a hacer, coherente c
           const spec = { id: sec.id, brief: sec.brief || this._sectionDefaultBrief(sec.id) };
           try {
             const r = await this.generateOneSection(spec, brief || '', pal, keepOf(sec));
-            if (r.html) fixed[i] = { ...sec, html: r.html, content: r.content };
+            if (r.html) {
+              const merged = this._preserveUser(sec.content, r.content);
+              fixed[i] = { ...sec, content: merged, html: this._buildSection(sec.id, merged, pal) };
+            }
           } catch (e) {}
         }));
         return { sections: fixed, reply: 'Regeneré todas las secciones desde cero con layouts corregidos. Fijate cómo quedó ahora.' };
@@ -2540,9 +2580,8 @@ reply debe ser una frase corta y amable explicando qué vas a hacer, coherente c
       };
       content = await this._getSectionContent(spec, brief || '', pal);
     }
-    // Preservar video/imagen del usuario si la sección los tenía y la IA no los devolvió
-    if (cur.content && cur.content.video_url && !content.video_url) content.video_url = cur.content.video_url;
-    if (cur.content && cur.content.image_url && !content.image_url) content.image_url = cur.content.image_url;
+    // Nada de lo que cargó el usuario se pierde, sin importar qué devuelva el modelo
+    content = this._preserveUser(cur.content, content);
     const newHtml = this._buildSection(targetId, content, pal);
     const copy = sections.slice();
     copy[idx] = { ...cur, html: newHtml, content };
@@ -3263,6 +3302,33 @@ const AI = {
   async generateLandingSectioned(instruction, palId, onProgress) {
     return Claude.generateLandingSectioned(instruction, palId, onProgress);
   },
+  // Claves que representan cosas que cargó el usuario (archivos, links, ajustes visuales).
+  // La IA no puede inventarlas ni debe borrarlas: se preservan en TODOS los caminos de edición.
+  _USER_FIELDS: /^(logo_url|logo_size|image_url|image_size|image_ratio|image_align|item_image_ratio|video_url|video_fit|video_position|cta_url|decline_url|brand_href|layout)$/,
+
+  // Devuelve `next` con los campos del usuario de `prev` restaurados cuando el
+  // modelo los omitió o los devolvió vacíos.
+  _preserveUser(prev, next) {
+    if (!prev || typeof prev !== 'object') return next;
+    const out = { ...(next || {}) };
+    for (const k of Object.keys(prev)) {
+      if (!this._USER_FIELDS.test(k)) continue;
+      const before = prev[k];
+      const after = out[k];
+      const vacio = after === undefined || after === null || (typeof after === 'string' && !after.trim());
+      if (before && vacio) out[k] = before;
+    }
+    // Lo mismo dentro de cada ítem de una lista (fotos por bono/beneficio/módulo)
+    if (Array.isArray(prev.items) && Array.isArray(out.items)) {
+      out.items = out.items.map((it, i) => {
+        const old = prev.items[i];
+        if (!old || typeof old !== 'object' || !it || typeof it !== 'object') return it;
+        return this._preserveUser(old, it);
+      });
+    }
+    return out;
+  },
+
   async editLandingSectioned(instruction, sections, palId, brief, history) {
     return Claude.editLandingSectioned(instruction, sections, palId, brief, history);
   },

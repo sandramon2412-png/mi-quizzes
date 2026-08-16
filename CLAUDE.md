@@ -2171,3 +2171,54 @@ animados, y el resto de los botones se deshabilitan mientras tanto (`_funnelBusy
 
 ### Pendientes
 - 🟡 Límites ebook: Pro=999, Growth=999 → REVERTIR a Pro→5, Growth→20
+
+---
+
+## SESIÓN 19 JUL 2026 (parte 9) — "No funciona nada de lo nuevo": era caché
+
+### El diagnóstico
+Sandra reportó que **nada de lo nuevo del video funcionaba** y que el logo seguía grande. Se verificó
+en el código que `video_fit` / `video_position` / `logo_size` **estaban correctamente aplicados** en
+los 3 branches de video y en el nav. Conclusión: el código está bien, **no le estaba llegando**.
+
+**Causa**: los cache-busters (`?v=`) viven DENTRO de `landing-builder.html`. Si el navegador o Vercel
+sirven el HTML cacheado, ese HTML sigue pidiendo `app.js?v=<versión vieja>` → ningún cambio llega,
+por más que se bumpee la versión.
+
+**Fix en 3 capas**:
+1. `vercel.json`: headers `Cache-Control: public, max-age=0, must-revalidate` para todos los `.html`
+   y para `app.js` / `landing-blocks.js` / `supabase-config.js`.
+2. `<meta http-equiv="Cache-Control" content="no-cache, must-revalidate">` en el builder.
+3. **Badge de versión visible** (`#ld-version`, constante `BUILDER_VERSION`) al lado del título.
+   Ahora se puede confirmar de un vistazo qué versión está corriendo — sin esto es imposible
+   distinguir "mi fix no funciona" de "el navegador tiene la versión vieja".
+
+### SOLUCIÓN DEFINITIVA DEL CHAT: campos protegidos del usuario ✅
+El merge de la parte 8 solo cubría `_editSectionContent`. Pero `editLandingSectioned` tiene **cuatro
+caminos** que reemplazan el content, y `keepOf` solo preservaba `video_url` e `image_url` — por eso
+el chat volvió a borrar el logo (cayó en el camino "fix", que regenera).
+
+Ahora hay un mecanismo central:
+- **`_USER_FIELDS`**: regex con las claves que son propiedad del usuario — `logo_url`, `logo_size`,
+  `image_url`, `image_size`, `image_ratio`, `image_align`, `item_image_ratio`, `video_url`,
+  `video_fit`, `video_position`, `cta_url`, `decline_url`, `brand_href`, `layout`.
+- **`_preserveUser(prev, next)`**: restaura esas claves cuando el modelo las omitió o las devolvió
+  vacías, **también dentro de `items[]`** (las fotos por bono/beneficio/módulo).
+- Aplicado en **los 4 caminos**: atajo determinista, edit quirúrgico, fix de una sección y fix total
+  (`keepOf` ahora recorre `_USER_FIELDS` completo).
+
+`tests/unit-chat-preserva.js` (NUEVO) prueba los 4 caminos: JSON incompleto, logo devuelto vacío,
+regeneración de la sección y regeneración de toda la landing. En todos el logo, su tamaño, su link,
+la foto y el video del usuario sobreviven.
+
+### Logo que quedaba grande y tapaba el título ✅
+- El `height` fijo con `max-width:190px` dejaba que un logo apaisado creciera a lo ancho y empujara
+  el título. Ahora: `max-width:100%` dentro de un `<a>` con `max-width:52%` y `flex:0 1 auto`.
+- Escala nueva más chica: 22 / 30 / 38 / 48 / 60 px (default 30, antes 34; tope 64).
+- **Con logo, el nombre de marca ya no se muestra por defecto** (competía por el espacio y terminaba
+  tapando el título). Nuevo campo "Mostrar el nombre junto al logo" para quien quiera ambos.
+
+### Versión: `?v=20260719h` (badge `v20260719h`)
+
+### Pendientes
+- 🟡 Límites ebook: Pro=999, Growth=999 → REVERTIR a Pro→5, Growth→20
