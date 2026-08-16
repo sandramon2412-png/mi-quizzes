@@ -1831,6 +1831,108 @@ ${c.microcopy?`<p style="color:var(--muted);font-size:13px;margin:12px 0 0">${e(
     return __out;
   },
 
+  // ── Corrector de voseo → español neutro ──────────────────────────────────
+  // Pedirle al modelo que no vosee no alcanza: a veces igual lo hace. Esto lo
+  // corrige por código sobre el contenido ya generado, así el resultado es seguro.
+  _VOS_MAP: {
+    // presente indicativo
+    sos:'eres', tenés:'tienes', podés:'puedes', querés:'quieres', sabés:'sabes',
+    hacés:'haces', decís:'dices', venís:'vienes', sentís:'sientes', vivís:'vives',
+    salís:'sales', seguís:'sigues', conseguís:'consigues', elegís:'eliges',
+    preferís:'prefieres', pedís:'pides', repetís:'repites', dormís:'duermes',
+    entendés:'entiendes', aprendés:'aprendes', vendés:'vendes', perdés:'pierdes',
+    volvés:'vuelves', comés:'comes', creés:'crees', leés:'lees', ponés:'pones',
+    necesitás:'necesitas', trabajás:'trabajas', buscás:'buscas', llegás:'llegas',
+    pensás:'piensas', empezás:'empiezas', terminás:'terminas', comprás:'compras',
+    pagás:'pagas', usás:'usas', tomás:'tomas', dejás:'dejas', llevás:'llevas',
+    pasás:'pasas', quedás:'quedas', ganás:'ganas', ahorrás:'ahorras',
+    publicás:'publicas', mostrás:'muestras', contás:'cuentas', encontrás:'encuentras',
+    recordás:'recuerdas', olvidás:'olvidas', intentás:'intentas', lográs:'logras',
+    armás:'armas', sumás:'sumas', mirás:'miras', hablás:'hablas', escuchás:'escuchas',
+    estudiás:'estudias', practicás:'practicas', respirás:'respiras', caminás:'caminas',
+    entrenás:'entrenas', cocinás:'cocinas', manejás:'manejas', elegís_:'eliges',
+    // imperativos
+    hacé:'haz', decí:'di', vení:'ven', poné:'pon', salí:'sal', tené:'ten',
+    andá:'ve', mirá:'mira', escuchá:'escucha', probá:'prueba', empezá:'empieza',
+    terminá:'termina', comprá:'compra', pagá:'paga', usá:'usa', tomá:'toma',
+    dejá:'deja', llevá:'lleva', pasá:'pasa', armá:'arma', sumá:'suma',
+    buscá:'busca', aprendé:'aprende', vendé:'vende', descargá:'descarga',
+    reservá:'reserva', elegí:'elige', seguí:'sigue', conseguí:'consigue',
+    pedí:'pide', viví:'vive', sentí:'siente', escribí:'escribe', leé:'lee',
+    corré:'corre', prepará:'prepara', planificá:'planifica', organizá:'organiza',
+    creá:'crea', diseñá:'diseña', ahorrá:'ahorra', invertí:'invierte',
+    cuidá:'cuida', disfrutá:'disfruta', entrená:'entrena', descansá:'descansa',
+    imaginá:'imagina', recordá:'recuerda', olvidá:'olvida', esperá:'espera',
+    // imperativos con pronombre
+    fijate:'fíjate', sumate:'súmate', unite:'únete', registrate:'regístrate',
+    anotate:'anótate', acordate:'acuérdate', olvidate:'olvídate', animate:'anímate',
+    quedate:'quédate', ponete:'ponte', hacete:'hazte', llevate:'llévate',
+    tomate:'tómate', movete:'muévete', prepárate:'prepárate', cuidate:'cuídate',
+    escribime:'escríbeme', contame:'cuéntame', decime:'dime', pedime:'pídeme',
+    mandame:'mándame', ayudame:'ayúdame', avisame:'avísame', mostrame:'muéstrame',
+    dejame:'déjame', llamame:'llámame', seguime:'sígueme', escribinos:'escríbenos',
+    contactanos:'contáctanos', consultanos:'consúltanos',
+  },
+
+  _deVos(str) {
+    if (typeof str !== 'string' || !str) return str;
+    // Nota: \b de JS no marca límite después de vocal acentuada ("empezá "), así que
+    // usamos lookarounds Unicode explícitos.
+    const L = '[\\p{L}\\p{N}]';
+    const wrap = (w) => new RegExp('(?<!' + L + ')(' + w + ')(?!' + L + ')', 'giu');
+    const keepCase = (match, neutro) => {
+      if (match === match.toUpperCase() && match !== match.toLowerCase()) return neutro.toUpperCase();
+      if (match[0] === match[0].toUpperCase()) return neutro.charAt(0).toUpperCase() + neutro.slice(1);
+      return neutro;
+    };
+    let out = str;
+    // Frases con el pronombre "vos"
+    const frases = [['para\\s+vos', 'para ti'], ['con\\s+vos', 'contigo'],
+                    ['a\\s+vos', 'a ti'], ['de\\s+vos', 'de ti'], ['vos', 'tú']];
+    for (const [pat, rep] of frases) out = out.replace(wrap(pat), (m) => keepCase(m, rep));
+    // Verbos: primero los más largos, para que "seguís" no se cruce con "seguí"
+    const pares = Object.entries(this._VOS_MAP)
+      .filter(([k]) => !k.endsWith('_'))
+      .sort((a, b) => b[0].length - a[0].length);
+    for (const [vos, neutro] of pares) out = out.replace(wrap(vos), (m) => keepCase(m, neutro));
+
+    // Regla general para los verbos regulares que no están en la tabla:
+    // -ás → -as, -és → -es, -ís → -es. Con lista de palabras que NO son voseo.
+    const NO_VOSEO = new Set([
+      'estás','vas','más','quizás','jamás','atrás','detrás','demás','además','compás','gas','tras',
+      'inglés','francés','después','través','interés','revés','cortés','estrés','mes','ves','pues','tres','res',
+      'país','maíz','raíz','anís','sois','seis',
+    ]);
+    const genericas = [[/(?<![\p{L}\p{N}])(\p{L}{3,})ás(?![\p{L}\p{N}])/giu, 'as'],
+                       [/(?<![\p{L}\p{N}])(\p{L}{3,})és(?![\p{L}\p{N}])/giu, 'es'],
+                       [/(?<![\p{L}\p{N}])(\p{L}{3,})ís(?![\p{L}\p{N}])/giu, 'es']];
+    for (const [re, fin] of genericas) {
+      out = out.replace(re, (m, raiz) => {
+        if (NO_VOSEO.has(m.toLowerCase())) return m;
+        // Verbos en -uir llevan "y": construís → construyes, incluís → incluyes
+        const sufijo = (fin === 'es' && /u$/i.test(raiz)) ? 'yes' : fin;
+        return keepCase(m, (raiz + sufijo).toLowerCase());
+      });
+    }
+    return out;
+  },
+
+  // Aplica el corrector a todos los textos de un objeto de contenido
+  _neutralize(obj) {
+    if (typeof obj === 'string') return this._deVos(obj);
+    if (Array.isArray(obj)) return obj.map(v => this._neutralize(v));
+    if (obj && typeof obj === 'object') {
+      const out = {};
+      for (const k of Object.keys(obj)) {
+        // No tocar URLs ni nombres de iconos
+        out[k] = /url|href|prompt|icon|ratio|align|size|layout|fit|position/i.test(k)
+          ? obj[k] : this._neutralize(obj[k]);
+      }
+      return out;
+    }
+    return obj;
+  },
+
   async _getSectionContent(spec, sharedBrief, pal) {
     const schema = this._sectionContentSchema(spec.id);
     const hints = {
@@ -1859,7 +1961,7 @@ Responde SOLO el JSON válido, sin markdown, sin texto extra, sin comentarios.
 
 ${JSON.stringify(schema, null, 2)}`;
     const text = await this._call([{role:'user',content:user}], 2000, {model:'claude-haiku-4-5-20251001'});
-    try { return this._parseJSONLoose(text) || schema; } catch(e) { return schema; }
+    try { return this._neutralize(this._parseJSONLoose(text) || schema); } catch(e) { return schema; }
   },
 
   // ── Legacy system prompt (kept for compatibility) ───────────────────────
@@ -2060,6 +2162,8 @@ Respondé SOLO con este JSON (sin markdown, sin texto extra):
     if (!plan.sections.some(s => s.id === 'hero')) plan.sections.unshift({ id: 'hero', brief: '' });
     if (!plan.sections.some(s => s.id === 'footer')) plan.sections.push({ id: 'footer', brief: '' });
     if (!plan.title) plan.title = 'Mi Landing';
+    plan.title = this._deVos(plan.title);
+    plan.sections = plan.sections.map(sec => ({ ...sec, brief: this._deVos(sec.brief || '') }));
     return plan;
   },
 
@@ -2176,7 +2280,7 @@ REGLAS ESTRICTAS:
 6. Responde SOLO el JSON, sin markdown ni texto extra.`;
     const text = await this._call([{ role: 'user', content: user }], 2500, { model: 'claude-haiku-4-5-20251001' });
     const parsed = this._parseJSONSafe(text);
-    return (parsed && typeof parsed === 'object') ? parsed : null;
+    return (parsed && typeof parsed === 'object') ? this._neutralize(parsed) : null;
   },
 
   // Genera el contenido de una oferta de upsell/downsell a partir del producto real
@@ -2216,7 +2320,7 @@ ${JSON.stringify({
 }, null, 2)}`;
     const text = await this._call([{ role: 'user', content: user }], 1200, { model: 'claude-haiku-4-5-20251001' });
     const parsed = this._parseJSONSafe(text);
-    return (parsed && parsed.title) ? parsed : null;
+    return (parsed && parsed.title) ? this._neutralize(parsed) : null;
   },
 
   // Pone o quita el video de fondo del hero SIN pedirle a la IA que edite HTML.

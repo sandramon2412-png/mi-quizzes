@@ -93,8 +93,8 @@ const PLAN = { title: 'Yoga Prenatal', sections: [
   { id: 'footer', brief: 'footer' },
 ]};
 const CONTENT = {
-  hero: { badge: '+300 mamás', title: 'Yoga prenatal desde tu casa', subtitle: 'Movete segura durante tu embarazo.', cta: 'Quiero empezar', microcopy: 'Sin tarjeta', image_prompt: 'pregnant+yoga', layout: 'split' },
-  beneficios: { title: 'Beneficios', items: [ { icon: 'favorite', title: 'Menos dolor de espalda', desc: 'A' }, { icon: 'self_improvement', title: 'Mejor descanso', desc: 'B' }, { icon: 'health_and_safety', title: 'Parto más preparado', desc: 'C' }, { icon: 'psychology', title: 'Calma mental', desc: 'D' } ] },
+  hero: { badge: '+300 mamás', title: 'Yoga prenatal desde tu casa', subtitle: 'Movete segura durante tu embarazo: vas a sentir que podés con todo.', cta: 'Quiero empezar', microcopy: 'Sin tarjeta', image_prompt: 'pregnant+yoga', layout: 'split' },
+  beneficios: { title: 'Beneficios', items: [ { icon: 'favorite', title: 'Menos dolor de espalda', desc: 'Sumate y vas a notar que tenés menos molestias.' }, { icon: 'self_improvement', title: 'Mejor descanso', desc: 'B' }, { icon: 'health_and_safety', title: 'Parto más preparado', desc: 'C' }, { icon: 'psychology', title: 'Calma mental', desc: 'D' } ] },
   modulos: { title: 'Módulos', items: [ { icon: 'school', title: 'M1', desc: 'x' }, { icon: 'school', title: 'M2', desc: 'y' }, { icon: 'school', title: 'M3', desc: 'z' }, { icon: 'school', title: 'M4', desc: 'w' } ] },
   testimonios: { title: 'Testimonios', items: [ { initials: 'ML', name: 'María', role: 'Mamá', quote: 'Genial' }, { initials: 'AC', name: 'Ana', role: 'Mamá', quote: 'Me cambió' }, { initials: 'PG', name: 'Pau', role: 'Mamá', quote: 'Lo amo' } ] },
   precio: { title: 'Tu inversión', price: '$120', period: 'pago único', features: ['Todo incluido'], cta: 'Quiero acceso', microcopy: 'Garantía 30 días' },
@@ -423,6 +423,15 @@ function aiResponder(bodyStr) {
   });
   chk('el botón usa el link de pago de su propia oferta', offerHtml.includes('href="https://pay.hotmart.com/UPSELL9"'));
   chk('el "no gracias" no se reescribe al checkout', offerHtml.includes('href="https://x.com/next"'));
+
+  console.log('E2E 11b — el copy sale en español neutro aunque la IA vosee');
+  const vos = await page.evaluate(() => {
+    const txt = JSON.stringify(landing.sections.map(s2 => s2.content));
+    const malas = ['tenés','podés','querés','sumate','movete','fijate','sos ','vos '];
+    return { encontradas: malas.filter(w => txt.toLowerCase().includes(w)), html: landing.html };
+  });
+  chk('sin formas voseantes en el contenido' + (vos.encontradas.length ? ' — halladas: ' + vos.encontradas.join(', ') : ''), vos.encontradas.length === 0);
+  chk('el texto neutro llegó al HTML', /tienes|puedes|súmate|muévete/i.test(vos.html));
 
   console.log('E2E 12b — saltos de línea y espacios en el editor');
   await page.evaluate(() => {
