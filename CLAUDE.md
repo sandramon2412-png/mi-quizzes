@@ -2066,3 +2066,48 @@ Sandra: *"Español normal, no que esté vos."*
 
 ### Pendientes
 - 🟡 Límites ebook: Pro=999, Growth=999 → REVERTIR a Pro→5, Growth→20
+
+---
+
+## SESIÓN 19 JUL 2026 (parte 7) — Voseo eliminado por código, no por prompt
+
+### El pedido
+Sandra: *"Que la landing la cree con lenguaje normal, que no use el español de Argentina diciendo vos."*
+
+En la parte 6 ya se había agregado la instrucción al prompt, pero **pedirle al modelo que no vosee
+no garantiza nada** — es el mismo problema que teníamos con los layouts. La solución correcta es
+la misma: **corregirlo por código sobre la salida**.
+
+### `_deVos(str)` + `_neutralize(obj)` en app.js
+- **Tabla explícita** (`_VOS_MAP`, ~150 entradas) para los irregulares y los imperativos con
+  pronombre, donde no hay regla derivable: `sos→eres`, `tenés→tienes`, `podés→puedes`,
+  `hacé→haz`, `fijate→fíjate`, `sumate→súmate`, `unite→únete`, `escribinos→escríbenos`…
+- **Pronombre**: `para vos→para ti`, `con vos→contigo`, `a vos→a ti`, `vos→tú`.
+- **Regla general** para los verbos regulares que no están en la tabla: `-ás→-as`, `-és→-es`,
+  `-ís→-es`, con **lista de excepciones** (`inglés`, `francés`, `después`, `interés`, `estás`,
+  `más`, `quizás`, `jamás`, `atrás`, `país`, `raíz`…) y caso especial de los verbos en **-uir**
+  (`construís→construyes`, `incluís→incluyes`).
+- **Preserva mayúsculas**: `PODÉS→PUEDES`, `Tenés→Tienes`.
+- `_neutralize(obj)` recorre el objeto de contenido completo (strings, arrays, objetos anidados)
+  y **no toca** claves de URL, iconos, prompts de imagen, proporciones ni layouts.
+
+**Detalle técnico importante**: `\b` de JavaScript NO marca límite de palabra después de una vocal
+acentuada ("empezá "), así que las primeras versiones no reemplazaban nada. Se usan lookarounds
+Unicode explícitos: `(?<![\p{L}\p{N}])(…)(?![\p{L}\p{N}])` con flag `u`.
+
+### Dónde se aplica
+Los 4 puntos donde el modelo devuelve texto: `_getSectionContent`, `_editSectionContent`,
+`generateOfferContent` y el título/briefs de `planLandingSections`.
+
+### Tests
+- `tests/unit-espanol-neutro.js` (NUEVO): 30 checks — frases típicas de landing, mayúsculas,
+  objeto completo como lo devuelve la IA, verbos fuera de la tabla, y las palabras que **no** son
+  voseo y no deben tocarse.
+- `tests/e2e-landing-builder.js`: **E2E 11b** — el mock de IA ahora devuelve voseo a propósito
+  ("Movete segura… vas a sentir que podés con todo") y se verifica que **ni el contenido guardado ni
+  el HTML final** contengan formas voseantes.
+
+### Versión: `?v=20260719f`
+
+### Pendientes
+- 🟡 Límites ebook: Pro=999, Growth=999 → REVERTIR a Pro→5, Growth→20
