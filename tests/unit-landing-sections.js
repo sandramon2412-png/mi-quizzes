@@ -114,8 +114,9 @@ chk('CSS que fuerza el video visible en celular', asmVid.includes('section > vid
 console.log('Ronda de pulido');
 const navBig=C._buildSection('nav',{brand:'M',logo_url:'l.png',logo_size:'60',links:[]},pal);
 chk('alto del logo configurable', navBig.includes('height:60px'));
+chk('el logo no invade el espacio del título', navBig.includes('max-width:52%'));
 const navClamp=C._buildSection('nav',{brand:'M',logo_url:'l.png',logo_size:'999',links:[]},pal);
-chk('alto del logo con tope de seguridad', navClamp.includes('height:72px'));
+chk('alto del logo con tope de seguridad', navClamp.includes('height:64px'));
 
 const faqIc=C._buildSection('faq',{title:'F',items:[{q:'P1',a:'R1',icon:'schedule'},{q:'P2',a:'R2'}]},pal);
 chk('icono propio en una pregunta', faqIc.includes('schedule'));
