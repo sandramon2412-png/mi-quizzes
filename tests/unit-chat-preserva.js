@@ -69,7 +69,7 @@ const secs = [{ id:'nav', brief:'', content: navContent, html: C._buildSection('
   const nChico = C._buildSection('nav', {...navContent, logo_size:'22'}, pal);
   const nGrande = C._buildSection('nav', {...navContent, logo_size:'60'}, pal);
   chk('respeta el alto chico', nChico.includes('height:22px'));
-  chk('respeta el alto grande', nGrande.includes('height:60px'));
+  chk('respeta el alto grande sin pasar del tope', nGrande.includes('height:44px'));
   chk('limita el ancho para no tapar el título', nChico.includes('max-width:52%'));
   chk('con logo, el nombre no compite por el espacio', !nChico.includes('>Mi Marca<'));
   const nAmbos = C._buildSection('nav', {...navContent, show_brand_text:'si'}, pal);

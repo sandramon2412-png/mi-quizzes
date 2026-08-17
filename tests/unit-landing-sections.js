@@ -113,10 +113,10 @@ chk('CSS que fuerza el video visible en celular', asmVid.includes('section > vid
 
 console.log('Ronda de pulido');
 const navBig=C._buildSection('nav',{brand:'M',logo_url:'l.png',logo_size:'60',links:[]},pal);
-chk('alto del logo configurable', navBig.includes('height:60px'));
+chk('alto del logo configurable', navBig.includes('height:44px'));
 chk('el logo no invade el espacio del título', navBig.includes('max-width:52%'));
 const navClamp=C._buildSection('nav',{brand:'M',logo_url:'l.png',logo_size:'999',links:[]},pal);
-chk('alto del logo con tope de seguridad', navClamp.includes('height:64px'));
+chk('alto del logo con tope de seguridad — no engorda la barra', navClamp.includes('height:44px') && navClamp.includes('height:68px'));
 
 const faqIc=C._buildSection('faq',{title:'F',items:[{q:'P1',a:'R1',icon:'schedule'},{q:'P2',a:'R2'}]},pal);
 chk('icono propio en una pregunta', faqIc.includes('schedule'));
@@ -165,6 +165,32 @@ chk('foto del beneficio con proporción elegida', itSq.includes('aspect-ratio:1/
 // Posición del video
 const vPos=C._buildSection('hero',{title:'T',video_url:'v.mp4',video_position:'top'},pal);
 chk('se puede elegir qué parte del video se ve', vPos.includes('object-position:top'));
+
+console.log('Ronda 9 — logo, alineación y fotos de tarjetas');
+// El respaldo de imágenes rotas imponía min-height:160px a TODAS las imágenes,
+// lo que inflaba el logo y la barra lo recortaba: parecía que el tamaño no servía.
+const asmLogo=C.assembleLanding([{id:'nav',html:C._buildSection('nav',{brand:'M',logo_url:'l.png',logo_size:'30',links:[]},pal)}],'blue-purple','t');
+chk('el respaldo NO se aplica a todas las imágenes', !/img\.ld-img\{/.test(asmLogo));
+chk('el respaldo solo actúa cuando una imagen falla', asmLogo.includes("classList.add('ld-fallback')"));
+chk('la barra tiene alto fijo', asmLogo.includes('height:68px'));
+chk('el logo respeta el alto elegido', asmLogo.includes('height:30px'));
+
+// Alineación de la imagen de sección
+const alI=C._buildSection('beneficios',{title:'B',items:[{title:'a'}],image_url:'x.jpg',image_align:'left'},pal);
+const alD=C._buildSection('beneficios',{title:'B',items:[{title:'a'}],image_url:'x.jpg',image_align:'right'},pal);
+const alC=C._buildSection('beneficios',{title:'B',items:[{title:'a'}],image_url:'x.jpg'},pal);
+chk('imagen a la izquierda', alI.includes('margin-left:0;margin-right:auto'));
+chk('imagen a la derecha', alD.includes('margin-left:auto;margin-right:0'));
+chk('imagen centrada', alC.includes('margin-left:auto;margin-right:auto'));
+
+// Fotos de módulos y bonos: mismo tamaño contenido
+const modF=C._buildSection('modulos',{title:'M',items:[{title:'a',image_url:'f.jpg'}]},pal);
+const bonF=C._buildSection('bonos',{title:'B',items:[{title:'b',image_url:'f.jpg'}]},pal);
+chk('módulos y bonos con el mismo tope de alto', modF.includes('max-height:190px') && bonF.includes('max-height:190px'));
+chk('y la misma proporción', modF.includes('aspect-ratio:16/9') && bonF.includes('aspect-ratio:16/9'));
+
+// Saltos de línea: regla global, no parche por sección
+chk('regla global de saltos de línea', asmLogo.includes('h1,h2,h3,h4,p,li,summary,figcaption,blockquote{white-space:pre-wrap}'));
 
 console.log('\n'+(f===0?'🎉 TODOS PASAN':'⚠️ '+f+' FALLAN'));
 process.exit(f?1:0);

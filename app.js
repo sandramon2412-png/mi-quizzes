@@ -1424,7 +1424,7 @@ INSTRUCCIÓN: ${instruction}`;
   .js-reveal.in{opacity:1;transform:none}
   section,footer{scroll-margin-top:80px}
   /* Image fallback: si Pollinations no carga, muestra gradiente de marca */
-  img.ld-img{background:${imgFallbackBg};min-height:160px;display:block}
+  img.ld-fallback{background:${imgFallbackBg};min-height:160px;display:block}
   /* ── Premium: glass cards con hover lift y glow de marca ── */
   .ld-card{position:relative;backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
     box-shadow:inset 0 1px 0 rgba(255,255,255,.08),0 8px 24px -14px rgba(0,0,0,.4);
@@ -1472,6 +1472,12 @@ INSTRUCCIÓN: ${instruction}`;
     #hero video{display:block !important}
     iframe{max-width:100%}
   }
+  /* Los saltos de línea que escribe el usuario se respetan en TODO el texto */
+  h1,h2,h3,h4,p,li,summary,figcaption,blockquote{white-space:pre-wrap}
+  /* …salvo donde el salto sería un error de maquetado */
+  #nav a,#nav span,.ld-btn,.ld-decline,.material-symbols-outlined{white-space:nowrap}
+  .ld-btn{white-space:normal}
+
   /* Sección con video de fondo: el texto siempre legible sobre el video */
   .ld-onvideo h2,.ld-onvideo h3,.ld-onvideo p,.ld-onvideo li,.ld-onvideo summary,.ld-onvideo figcaption{color:#fff !important}
   .ld-onvideo .ld-card,.ld-onvideo details{background:rgba(255,255,255,.09) !important;border-color:rgba(255,255,255,.2) !important}
@@ -1504,8 +1510,8 @@ ${body}
   try {
     // Image fallback: si una imagen no carga, mostrar gradiente
     document.querySelectorAll('img').forEach(function(img){
-      img.classList.add('ld-img');
       img.addEventListener('error', function(){
+        this.classList.add('ld-fallback');
         this.style.visibility='hidden';
         this.parentElement.style.background='${imgFallbackBg}';
         this.parentElement.style.minHeight='200px';
@@ -1596,10 +1602,19 @@ ${body}
     const SUB = (text,align='center') => text ? `<p style="color:var(--muted);text-align:${align};font-size:17px;line-height:1.6;margin:0 0 48px;white-space:pre-wrap">${e(text)}</p>` : '<div style="margin-bottom:48px"></div>';
     const SEC = (inner,bg='var(--bg)',py=80) => `<section id="${e(id)}" style="background:${bg};padding:${py}px 0"><div style="max-width:1152px;margin:0 auto;padding:0 24px">${inner}</div></section>`;
     // Botón CTA opcional al pie de cualquier sección
+    // Foto dentro de una tarjeta (módulo / bono / beneficio): siempre contenida
+    const ITEM_IMG = (it) => {
+      if (!it || !it.image_url) return '';
+      const r = it.image_ratio || c.item_image_ratio || '16/9';
+      const fit = r === 'original' ? 'height:auto' : `aspect-ratio:${r};object-fit:cover`;
+      return `<img src="${e(it.image_url)}" loading="lazy" alt="" style="width:100%;${fit};max-height:190px;border-radius:12px;margin:0 0 14px;display:block"/>`;
+    };
     const SEC_CTA = () => c.cta ? `<div style="text-align:center;margin-top:44px">${BTN(c.cta, c.cta_url || '#precio')}${c.cta_note?`<p style="color:var(--muted);font-size:13px;margin:12px 0 0">${e(c.cta_note)}</p>`:''}</div>` : '';
     // Proporción de imagen elegible
     const RATIO = (r) => ({'16/9':'aspect-ratio:16/9;object-fit:cover','4/3':'aspect-ratio:4/3;object-fit:cover','1/1':'aspect-ratio:1/1;object-fit:cover','3/4':'aspect-ratio:3/4;object-fit:cover','original':'height:auto'}[r] || 'aspect-ratio:16/9;object-fit:cover');
-    const ALIGN = (a) => a === 'left' ? 'margin-right:auto' : a === 'right' ? 'margin-left:auto' : 'margin-left:auto;margin-right:auto';
+    const ALIGN = (a) => a === 'left' ? 'margin-left:0;margin-right:auto'
+      : a === 'right' ? 'margin-left:auto;margin-right:0'
+      : 'margin-left:auto;margin-right:auto';
 
     const __built = (() => {
     switch(id) {
@@ -1607,14 +1622,15 @@ ${body}
         const links = arr(c.links);
         const navId = 'ldnav' + Math.random().toString(36).slice(2, 7);
         return `<header id="nav" style="position:sticky;top:0;z-index:50;background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom:1px solid var(--border)">
-<div style="max-width:1152px;margin:0 auto;padding:0 24px;min-height:66px;display:flex;align-items:center;gap:20px;flex-wrap:nowrap">
+<div style="max-width:1152px;margin:0 auto;padding:0 24px;height:68px;display:flex;align-items:center;gap:20px;flex-wrap:nowrap;overflow:hidden">
 ${(() => {
-  const h = Math.max(16, Math.min(64, parseInt(c.logo_size) || 30));
+  // Tope duro: el logo jamás puede engordar la barra (68px de alto)
+  const h = Math.max(16, Math.min(44, parseInt(c.logo_size) || 28));
   const conLogo = !!c.logo_url;
   // Con logo, el nombre solo se muestra si se pide expresamente: si no, el texto
   // competía con la imagen y terminaba tapando el título.
   const mostrarNombre = c.brand && (!conLogo || c.show_brand_text === 'si');
-  return `<a href="${e(c.brand_href || '#hero')}" style="display:flex;align-items:center;gap:9px;font-weight:800;font-size:18px;color:var(--ink);text-decoration:none;flex:0 1 auto;min-width:0;max-width:52%;overflow:hidden;white-space:nowrap">${conLogo?`<img src="${e(c.logo_url)}" alt="${e(c.brand||'')}" style="height:${h}px;width:auto;max-width:100%;max-height:${h}px;object-fit:contain;display:block;flex-shrink:0"/>`:''}${mostrarNombre?`<span style="overflow:hidden;text-overflow:ellipsis">${e(c.brand)}</span>`:''}</a>`;
+  return `<a href="${e(c.brand_href || '#hero')}" style="display:flex;align-items:center;gap:9px;font-weight:800;font-size:18px;color:var(--ink);text-decoration:none;flex:0 1 auto;min-width:0;max-width:52%;overflow:hidden;white-space:nowrap">${conLogo?`<img src="${e(c.logo_url)}" alt="${e(c.brand||'')}" style="height:${h}px;max-height:44px;width:auto;max-width:100%;object-fit:contain;display:block;flex-shrink:0"/>`:''}${mostrarNombre?`<span style="overflow:hidden;text-overflow:ellipsis">${e(c.brand)}</span>`:''}</a>`;
 })()}
 <nav class="ld-nav-links" style="margin-left:auto;display:flex;align-items:center;gap:26px">
 ${links.map(l => `<a href="${e(l.href || '#')}" style="color:var(--muted);font-size:15px;font-weight:500;text-decoration:none">${e(l.label || '')}</a>`).join('')}
@@ -1634,7 +1650,7 @@ ${c.cta ? `<a href="#precio" class="ld-btn" style="display:block;text-align:cent
       case 'imagen': {
         const src = c.image_url || this._imgUrl(c.image_prompt);
         const w = { small: '40%', medium: '65%', large: '85%', full: '100%' }[c.size] || '100%';
-        return SEC(`${c.title ? H2(c.title) : ''}<figure style="margin:0;max-width:${w};${ALIGN(c.align)}">
+        return SEC(`${c.title ? H2(c.title) : ''}<figure style="margin-top:0;margin-bottom:0;${ALIGN(c.align)};max-width:${w}">
 <img src="${src}" loading="lazy" alt="${e(c.caption || '')}" style="width:100%;${RATIO(c.ratio)};border-radius:20px;box-shadow:0 20px 60px rgba(0,0,0,.3);display:block"/>
 ${c.caption ? `<figcaption style="color:var(--muted);font-size:14px;text-align:center;margin-top:12px">${e(c.caption)}</figcaption>` : ''}
 </figure>${SEC_CTA()}`);
@@ -1728,12 +1744,12 @@ ${c.microcopy?`<p style="color:var(--muted);font-size:13px;margin:12px 0 0">${e(
       }
       case 'beneficios': {
         const items = arr(c.items);
-        const IMG_IT = (it) => it.image_url ? `<img src="${e(it.image_url)}" loading="lazy" alt="" style="width:100%;${(it.image_fit||c.item_image_fit)==='contain'?'height:auto;object-fit:contain':(it.image_ratio||c.item_image_ratio)==='original'?'height:auto':`aspect-ratio:${it.image_ratio||c.item_image_ratio||'4/3'};object-fit:cover`};border-radius:12px;margin:0 0 14px;display:block"/>` : '';
+        const IMG_IT = ITEM_IMG;
         return SEC(`${H2(c.title||'Beneficios')}${SUB(c.subtitle||'')}<div ${GRIDC(items.length)}>${items.map(it=>`<div class="ld-card" style="${CARD}">${IMG_IT(it)}${ICON(it.icon||'check_circle')}<h3 style="color:var(--ink);font-size:17px;font-weight:700;margin:12px 0 8px;white-space:pre-wrap">${e(it.title||'')}</h3><p style="color:var(--muted);font-size:15px;line-height:1.6;margin:0;white-space:pre-wrap">${e(it.desc||'')}</p></div>`).join('')}</div>${SEC_CTA()}`);
       }
       case 'modulos': {
         const items = arr(c.items);
-        return SEC(`${H2(c.title||'Contenido')}${SUB(c.subtitle||'')}<div ${GRIDC(items.length)}>${items.map(it=>`<div class="ld-card" style="${CARD}">${it.image_url?`<img src="${e(it.image_url)}" loading="lazy" alt="" style="width:100%;${(it.image_ratio||c.item_image_ratio)==='original'?'height:auto':`aspect-ratio:${it.image_ratio||c.item_image_ratio||'4/3'};object-fit:cover`};border-radius:12px;margin:0 0 14px;display:block"/>`:''}<div style="display:flex;gap:16px;align-items:flex-start"><div style="background:${GRAD};border-radius:10px;width:40px;height:40px;display:flex;align-items:center;justify-content:center;flex-shrink:0">${ICON_W(it.icon||'school')}</div><div><h3 style="color:var(--ink);font-weight:700;font-size:16px;margin:0 0 6px;white-space:pre-wrap">${e(it.title||'')}</h3><p style="color:var(--muted);font-size:14px;line-height:1.5;margin:0;white-space:pre-wrap">${e(it.desc||'')}</p></div></div></div>`).join('')}</div>${SEC_CTA()}`,'var(--surface)');
+        return SEC(`${H2(c.title||'Contenido')}${SUB(c.subtitle||'')}<div ${GRIDC(items.length)}>${items.map(it=>`<div class="ld-card" style="${CARD}">${ITEM_IMG(it)}<div style="display:flex;gap:16px;align-items:flex-start"><div style="background:${GRAD};border-radius:10px;width:40px;height:40px;display:flex;align-items:center;justify-content:center;flex-shrink:0">${ICON_W(it.icon||'school')}</div><div><h3 style="color:var(--ink);font-weight:700;font-size:16px;margin:0 0 6px;white-space:pre-wrap">${e(it.title||'')}</h3><p style="color:var(--muted);font-size:14px;line-height:1.5;margin:0;white-space:pre-wrap">${e(it.desc||'')}</p></div></div></div>`).join('')}</div>${SEC_CTA()}`,'var(--surface)');
       }
       case 'como-funciona': {
         const items = arr(c.items);
@@ -1749,7 +1765,7 @@ ${c.microcopy?`<p style="color:var(--muted);font-size:13px;margin:12px 0 0">${e(
       }
       case 'bonos': {
         const items = arr(c.items);
-        return SEC(`${H2(c.title||'Bonos')}${SUB(c.subtitle||'')}<div ${GRIDC(items.length)}>${items.map(it=>`<div class="ld-card" style="${CARD}">${it.image_url?`<img src="${e(it.image_url)}" loading="lazy" alt="" style="width:100%;${(it.image_ratio||c.item_image_ratio)==='original'?'height:auto':`aspect-ratio:${it.image_ratio||c.item_image_ratio||'16/9'};object-fit:cover`};border-radius:12px;margin:0 0 16px;display:block"/>`:''}<div style="display:flex;gap:16px;align-items:flex-start"><div style="background:${GRAD};border-radius:10px;width:44px;height:44px;display:flex;align-items:center;justify-content:center;flex-shrink:0">${ICON_W(it.icon||'card_giftcard',22)}</div><div style="flex:1"><h3 style="color:var(--ink);font-weight:700;font-size:16px;margin:0 0 6px;white-space:pre-wrap">${e(it.title||'')}</h3><p style="color:var(--muted);font-size:14px;line-height:1.5;margin:0 0 8px;white-space:pre-wrap">${e(it.desc||'')}</p>${it.value?`<p style="color:var(--brand);font-weight:700;font-size:14px;margin:0">${e(it.value)}</p>`:''}</div></div></div>`).join('')}</div>${SEC_CTA()}`);
+        return SEC(`${H2(c.title||'Bonos')}${SUB(c.subtitle||'')}<div ${GRIDC(items.length)}>${items.map(it=>`<div class="ld-card" style="${CARD}">${ITEM_IMG(it)}<div style="display:flex;gap:16px;align-items:flex-start"><div style="background:${GRAD};border-radius:10px;width:44px;height:44px;display:flex;align-items:center;justify-content:center;flex-shrink:0">${ICON_W(it.icon||'card_giftcard',22)}</div><div style="flex:1"><h3 style="color:var(--ink);font-weight:700;font-size:16px;margin:0 0 6px;white-space:pre-wrap">${e(it.title||'')}</h3><p style="color:var(--muted);font-size:14px;line-height:1.5;margin:0 0 8px;white-space:pre-wrap">${e(it.desc||'')}</p>${it.value?`<p style="color:var(--brand);font-weight:700;font-size:14px;margin:0">${e(it.value)}</p>`:''}</div></div></div>`).join('')}</div>${SEC_CTA()}`);
       }
       case 'precio': {
         const features = arr(c.features);
@@ -1822,9 +1838,8 @@ ${c.microcopy?`<p style="color:var(--muted);font-size:13px;margin:12px 0 0">${e(
       const iw = { small: '40%', medium: '65%', large: '85%', full: '100%' }[c.image_size] || '100%';
       const ir = c.image_ratio === 'original' ? 'height:auto'
         : `aspect-ratio:${c.image_ratio || '16/9'};object-fit:cover`;
-      const ia = c.image_align === 'left' ? 'margin-right:auto'
-        : c.image_align === 'right' ? 'margin-left:auto' : 'margin-left:auto;margin-right:auto';
-      const fig = `<figure style="margin:44px auto 0;max-width:${iw};${ia}"><img src="${e(c.image_url)}" loading="lazy" alt="" style="width:100%;${ir};border-radius:20px;box-shadow:0 20px 60px rgba(0,0,0,.3);display:block"/></figure>`;
+      const ia = ALIGN(c.image_align);
+      const fig = `<figure style="margin-top:44px;margin-bottom:0;${ia};max-width:${iw}"><img src="${e(c.image_url)}" loading="lazy" alt="" style="width:100%;${ir};border-radius:20px;box-shadow:0 20px 60px rgba(0,0,0,.3);display:block"/></figure>`;
       // Insertar justo antes de cerrar la sección. Tolerante a espacios/saltos de línea,
       // que antes hacían fallar el match exacto (por eso la oferta no aceptaba imagen).
       const ci = __out.lastIndexOf('</section>');
@@ -2434,6 +2449,102 @@ ${JSON.stringify({
       });
     }
     return out;
+  },
+
+  // ═══════════════════════════════════════════════════════════════════════
+  // CHAT DEL BUILDER — una sola llamada: el modelo ve el contenido real y
+  // devuelve SOLO los campos a cambiar. Sin clasificador previo y sin
+  // regenerar secciones: menos pasos, menos formas de equivocarse.
+  // ═══════════════════════════════════════════════════════════════════════
+  _SEC_NOMBRE: {
+    nav:'Barra de navegación', hero:'Portada', problema:'El problema',
+    'para-quien':'Es para ti', 'antes-despues':'Antes y después',
+    beneficios:'Beneficios', modulos:'Módulos / contenido',
+    'como-funciona':'Cómo funciona', 'prueba-social':'Métricas',
+    testimonios:'Testimonios', bonos:'Bonos', precio:'Precio',
+    garantia:'Garantía', faq:'Preguntas frecuentes', 'cta-final':'Cierre',
+    footer:'Pie de página', oferta:'Oferta (upsell/downsell)',
+    texto:'Texto libre', imagen:'Imagen', video:'Video', galeria:'Galería',
+  },
+
+  // Resumen legible del contenido de una sección (recorta imágenes y textos largos)
+  _resumenContent(c) {
+    const corto = (v) => {
+      if (typeof v === 'string') {
+        if (/^data:/.test(v)) return '[imagen que subió la usuaria]';
+        return v.length > 160 ? v.slice(0, 160) + '\u2026' : v;
+      }
+      if (Array.isArray(v)) return v.slice(0, 8).map(corto);
+      if (v && typeof v === 'object') {
+        const o = {};
+        for (const k of Object.keys(v)) o[k] = corto(v[k]);
+        return o;
+      }
+      return v;
+    };
+    return corto(c || {});
+  },
+
+  async chatEditLandingSections(instruction, sections, palId, brief, history) {
+    const pal = this._landingPalette(palId);
+    const mapa = (sections || []).map(s =>
+      `- id "${s.id}" (${this._SEC_NOMBRE[s.id] || s.id}): ${JSON.stringify(this._resumenContent(s.content))}`
+    ).join('\n');
+
+    const convo = (history || []).slice(-8)
+      .map(m => `${m.role === 'user' ? 'USUARIA' : 'ASISTENTE'}: ${String(m.content).replace(/<[^>]*>/g, ' ').slice(0, 300)}`)
+      .join('\n');
+
+    const system = `Eres el asistente de un constructor de landing pages. Ayudas a una creadora de contenido a ajustar su página. Hablas claro y directo, en español neutro latinoamericano (usa "tú" o formas impersonales; nunca "vos", "tenés", "podés").
+
+Recibes el contenido REAL de cada sección y devuelves ÚNICAMENTE los campos que hay que cambiar.
+
+Devuelve SIEMPRE un JSON con esta forma exacta, sin markdown ni texto fuera del JSON:
+{"reply":"lo que le respondes a la usuaria, 1-2 frases","ops":[{"section":"id_de_seccion","set":{"campo":"valor nuevo"}}]}
+
+REGLAS:
+1. "ops" contiene solo los campos que cambian. Todo lo que no menciones queda intacto.
+2. Nunca inventes ids de sección: usa exactamente los de la lista.
+3. Para listas (items, features, yes, no, links, images) devuelve el array COMPLETO ya modificado.
+4. NUNCA incluyas estos campos en "set": logo_url, image_url, video_url, cta_url, decline_url, brand_href. Son archivos y enlaces que cargó la usuaria y se perderían.
+5. Para ajustes visuales usa los campos que ya existen: logo_size (número en px, 22 a 44), image_size (full/large/medium/small), image_ratio (16/9, 4/3, 1/1, 3/4, original), image_align (center/left/right), video_fit (cover/contain), video_position (center/top/bottom), layout del hero (split/center).
+6. Los iconos son nombres de Material Symbols en minúscula (check_circle, star, favorite, school…). Nunca emojis.
+7. Si el pedido no es un cambio en la página (una pregunta, un saludo, algo confuso), responde con "ops": [] y algo útil en "reply".
+8. Si el pedido es ambiguo, elige la interpretación más razonable y explica en "reply" qué hiciste. Pregunta solo si es imposible adivinar.`;
+
+    const user = `PRODUCTO: ${String(brief || '').slice(0, 1200)}
+
+SECCIONES ACTUALES DE LA PÁGINA:
+${mapa}
+${convo ? `\nCONVERSACIÓN PREVIA:\n${convo}\n` : ''}
+PEDIDO DE LA USUARIA: "${instruction}"`;
+
+    const text = await this._call([{ role: 'user', content: user }], 3000, {
+      model: 'claude-sonnet-4-6', system,
+    });
+    const plan = this._parseJSONSafe(text);
+    if (!plan) {
+      return { sections, reply: 'No entendí bien ese pedido. ¿Puedes decírmelo de otra forma? También puedes editarlo a mano en el panel de la derecha.' };
+    }
+
+    const ops = Array.isArray(plan.ops) ? plan.ops : [];
+    const reply = String(plan.reply || 'Listo.').slice(0, 600);
+    if (!ops.length) return { sections, reply };
+
+    const out = sections.slice();
+    const tocadas = [];
+    for (const op of ops) {
+      if (!op || !op.section || !op.set || typeof op.set !== 'object') continue;
+      const i = out.findIndex(sec => sec.id === op.section);
+      if (i === -1) continue;
+      const prev = out[i].content || {};
+      let merged = { ...prev, ...this._neutralize(op.set) };
+      merged = this._preserveUser(prev, merged);   // los archivos del usuario nunca se pierden
+      out[i] = { ...out[i], content: merged, html: this._buildSection(op.section, merged, pal) };
+      tocadas.push(this._SEC_NOMBRE[op.section] || op.section);
+    }
+    if (!tocadas.length) return { sections, reply };
+    return { sections: out, reply, changed: tocadas };
   },
 
   async editLandingSectioned(instruction, sections, palId, brief, history) {
@@ -3331,6 +3442,9 @@ const AI = {
 
   async editLandingSectioned(instruction, sections, palId, brief, history) {
     return Claude.editLandingSectioned(instruction, sections, palId, brief, history);
+  },
+  async chatEditLandingSections(instruction, sections, palId, brief, history) {
+    return Claude.chatEditLandingSections(instruction, sections, palId, brief, history);
   },
   async setHeroVideo(sections, palId, videoUrl, productBrief) {
     return Claude.setHeroVideo(sections, palId, videoUrl, productBrief);
