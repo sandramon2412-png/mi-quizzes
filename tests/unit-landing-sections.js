@@ -192,5 +192,22 @@ chk('y la misma proporción', modF.includes('aspect-ratio:16/9') && bonF.include
 // Saltos de línea: regla global, no parche por sección
 chk('regla global de saltos de línea', asmLogo.includes('h1,h2,h3,h4,p,li,summary,figcaption,blockquote{white-space:pre-wrap}'));
 
+console.log('Ronda 10 — pasos, CTA y foto por paso');
+// El indicador del paso era un círculo fijo: "Semanas 1 y 2" se desbordaba
+const pasoLargo=C._buildSection('como-funciona',{title:'C',items:[{step:'Semanas 1 y 2',title:'T',desc:'d'}]},pal);
+const pasoCorto=C._buildSection('como-funciona',{title:'C',items:[{step:'1',title:'T',desc:'d'}]},pal);
+chk('etiqueta larga se dibuja como píldora', pasoLargo.includes('border-radius:99px') && pasoLargo.includes('Semanas 1 y 2'));
+chk('la píldora deja fluir el texto', pasoLargo.includes('white-space:normal'));
+chk('un número corto sigue en círculo', pasoCorto.includes('border-radius:50%') && pasoCorto.includes('width:56px'));
+// Foto por paso
+const pasoFoto=C._buildSection('como-funciona',{title:'C',items:[{step:'1',title:'T',desc:'d',image_url:'f.jpg'}]},pal);
+chk('cada paso admite su foto', pasoFoto.includes('f.jpg') && pasoFoto.includes('max-height:190px'));
+// CTA en las secciones que lo ofrecían pero no lo pintaban
+for (const [id,c] of [['problema',{title:'P',items:[{title:'a'}],cta:'Ir'}],
+                      ['prueba-social',{title:'S',stats:[{value:'1',label:'x'}],cta:'Ir'}],
+                      ['faq',{title:'F',items:[{q:'a',a:'b'}],cta:'Ir'}]]) {
+  chk('botón CTA en '+id, C._buildSection(id,c,pal).includes('>Ir</a>'));
+}
+
 console.log('\n'+(f===0?'🎉 TODOS PASAN':'⚠️ '+f+' FALLAN'));
 process.exit(f?1:0);
