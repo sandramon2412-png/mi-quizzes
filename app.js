@@ -1740,7 +1740,7 @@ ${c.microcopy?`<p style="color:var(--muted);font-size:13px;margin:12px 0 0">${e(
       }
       case 'problema': {
         const items = arr(c.items);
-        return SEC(`${H2(c.title||'El problema')}${SUB('')}<div ${GRIDC(items.length)}>${items.map(it=>`<div class="ld-card" style="${CARD}">${ICON(it.icon||'sentiment_dissatisfied')}<h3 style="color:var(--ink);font-size:17px;font-weight:700;margin:12px 0 8px;white-space:pre-wrap">${e(it.title||'')}</h3><p style="color:var(--muted);font-size:15px;line-height:1.6;margin:0;white-space:pre-wrap">${e(it.desc||'')}</p></div>`).join('')}</div>`,'var(--surface)');
+        return SEC(`${H2(c.title||'El problema')}${SUB('')}<div ${GRIDC(items.length)}>${items.map(it=>`<div class="ld-card" style="${CARD}">${ICON(it.icon||'sentiment_dissatisfied')}<h3 style="color:var(--ink);font-size:17px;font-weight:700;margin:12px 0 8px;white-space:pre-wrap">${e(it.title||'')}</h3><p style="color:var(--muted);font-size:15px;line-height:1.6;margin:0;white-space:pre-wrap">${e(it.desc||'')}</p></div>`).join('')}</div>${SEC_CTA()}`,'var(--surface)');
       }
       case 'beneficios': {
         const items = arr(c.items);
@@ -1753,11 +1753,20 @@ ${c.microcopy?`<p style="color:var(--muted);font-size:13px;margin:12px 0 0">${e(
       }
       case 'como-funciona': {
         const items = arr(c.items);
-        return SEC(`${H2(c.title||'Cómo funciona')}${SUB('')}<div ${GRIDC(items.length)}>${items.map((it,i)=>`<div style="text-align:center"><div style="width:56px;height:56px;border-radius:50%;background:${GRAD};display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:22px;margin:0 auto 16px">${e(it.step||String(i+1))}</div><h3 style="color:var(--ink);font-weight:700;font-size:17px;margin:0 0 8px">${e(it.title||'')}</h3><p style="color:var(--muted);font-size:15px;line-height:1.6;margin:0;white-space:pre-wrap">${e(it.desc||'')}</p></div>`).join('')}</div>${SEC_CTA()}`);
+        // El indicador se adapta al texto: círculo si es corto ("1"), píldora si
+        // es largo ("Semanas 1 y 2"). Antes el texto se salía del círculo.
+        const PASO = (txt) => {
+          const t = String(txt || '');
+          const corto = t.length <= 2;
+          return corto
+            ? `<div style="width:56px;height:56px;border-radius:50%;background:${GRAD};display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:22px;margin:0 auto 16px">${e(t)}</div>`
+            : `<div style="display:inline-block;max-width:100%;border-radius:99px;background:${GRAD};color:#fff;font-weight:800;font-size:15px;line-height:1.25;padding:9px 18px;margin:0 auto 16px;white-space:normal;overflow-wrap:anywhere">${e(t)}</div>`;
+        };
+        return SEC(`${H2(c.title||'Cómo funciona')}${SUB(c.subtitle||'')}<div ${GRIDC(items.length)}>${items.map((it,i)=>`<div style="text-align:center">${ITEM_IMG(it)}${PASO(it.step||String(i+1))}<h3 style="color:var(--ink);font-weight:700;font-size:17px;margin:0 0 8px">${e(it.title||'')}</h3><p style="color:var(--muted);font-size:15px;line-height:1.6;margin:0;white-space:pre-wrap">${e(it.desc||'')}</p></div>`).join('')}</div>${SEC_CTA()}`);
       }
       case 'prueba-social': {
         const stats = arr(c.stats);
-        return `<section id="prueba-social" style="background:${GRAD};padding:56px 0"><div style="max-width:1152px;margin:0 auto;padding:0 24px">${c.title?`<p style="color:rgba(255,255,255,.9);text-align:center;font-size:16px;font-weight:500;margin:0 0 32px">${e(c.title)}</p>`:''}<div style="display:flex;flex-wrap:wrap;justify-content:center;gap:56px">${stats.map(s=>`<div style="text-align:center"><p style="color:#fff;font-size:2.5rem;font-weight:800;margin:0 0 4px">${e(s.value||'')}</p><p style="color:rgba(255,255,255,.8);font-size:14px;margin:0">${e(s.label||'')}</p></div>`).join('')}</div></div></section>`;
+        return `<section id="prueba-social" style="background:${GRAD};padding:56px 0"><div style="max-width:1152px;margin:0 auto;padding:0 24px">${c.title?`<p style="color:rgba(255,255,255,.9);text-align:center;font-size:16px;font-weight:500;margin:0 0 32px">${e(c.title)}</p>`:''}<div style="display:flex;flex-wrap:wrap;justify-content:center;gap:56px">${stats.map(s=>`<div style="text-align:center"><p style="color:#fff;font-size:2.5rem;font-weight:800;margin:0 0 4px">${e(s.value||'')}</p><p style="color:rgba(255,255,255,.8);font-size:14px;margin:0">${e(s.label||'')}</p></div>`).join('')}</div>${SEC_CTA()}</div></section>`;
       }
       case 'testimonios': {
         const items = arr(c.items).slice(0,3);
@@ -1817,7 +1826,7 @@ ${c.microcopy?`<p style="color:var(--muted);font-size:13px;margin:12px 0 0">${e(
       }
       case 'faq': {
         const items = arr(c.items);
-        return `<section id="faq" style="background:var(--surface);padding:80px 0"><div style="max-width:720px;margin:0 auto;padding:0 24px">${H2(c.title||'Preguntas frecuentes')}<div style="display:flex;flex-direction:column;gap:12px;margin-top:48px">${items.map(it=>`<details style="background:var(--bg);border:1px solid var(--border);border-radius:12px;overflow:hidden"><summary style="color:var(--ink);font-weight:600;font-size:16px;padding:20px 24px;cursor:pointer;list-style:none;display:flex;align-items:flex-start;gap:11px"><span class="material-symbols-outlined" style="font-size:20px;color:var(--brand);flex-shrink:0">${e(okIcon(it.icon || c.icon, 'help'))}</span><span>${e(it.q||'')}</span></summary><p style="color:var(--muted);font-size:15px;line-height:1.6;padding:0 24px 20px 55px;margin:0;white-space:pre-wrap">${e(it.a||'')}</p></details>`).join('')}</div></div></section>`;
+        return `<section id="faq" style="background:var(--surface);padding:80px 0"><div style="max-width:720px;margin:0 auto;padding:0 24px">${H2(c.title||'Preguntas frecuentes')}<div style="display:flex;flex-direction:column;gap:12px;margin-top:48px">${items.map(it=>`<details style="background:var(--bg);border:1px solid var(--border);border-radius:12px;overflow:hidden"><summary style="color:var(--ink);font-weight:600;font-size:16px;padding:20px 24px;cursor:pointer;list-style:none;display:flex;align-items:flex-start;gap:11px"><span class="material-symbols-outlined" style="font-size:20px;color:var(--brand);flex-shrink:0">${e(okIcon(it.icon || c.icon, 'help'))}</span><span>${e(it.q||'')}</span></summary><p style="color:var(--muted);font-size:15px;line-height:1.6;padding:0 24px 20px 55px;margin:0;white-space:pre-wrap">${e(it.a||'')}</p></details>`).join('')}</div>${SEC_CTA()}</div></section>`;
       }
       case 'cta-final': {
         return `<section id="cta-final" style="background:${GRAD};padding:96px 0"><div style="max-width:640px;margin:0 auto;padding:0 24px;text-align:center"><h2 style="color:#fff;font-size:clamp(1.8rem,4vw,2.8rem);font-weight:800;margin:0 0 16px;white-space:pre-wrap">${e(c.title||'¿Estás listo?')}</h2>${c.subtitle?`<p style="color:rgba(255,255,255,.85);font-size:18px;margin:0 0 36px">${e(c.subtitle)}</p>`:''}<a href="#precio" class="ld-btn" style="background:#fff;color:var(--brand);padding:16px 40px;border-radius:12px;font-weight:800;font-size:18px;display:inline-block;text-decoration:none">${e(c.cta||'Quiero empezar hoy')}</a>${c.microcopy?`<p style="color:rgba(255,255,255,.7);font-size:13px;margin:14px 0 0">${e(c.microcopy)}</p>`:''}</div></section>`;
@@ -2485,10 +2494,36 @@ ${JSON.stringify({
     return corto(c || {});
   },
 
+  _CAMPOS_EDITABLES: {
+    nav: 'brand (nombre), logo_size (22-44), show_brand_text (si/no), cta (texto del botón), links[] con {label, href}',
+    hero: 'badge, title, subtitle, cta, microcopy, layout (split/center), image_size, image_ratio, image_align, video_fit, video_position',
+    problema: 'title, items[] con {icon, title, desc}, cta, cta_url, cta_note',
+    'para-quien': 'title, yes_title, yes_icon, yes[], no_title, no_icon, no[], cta',
+    'antes-despues': 'title, before_title, before_icon, before[], after_title, after_icon, after[], cta',
+    beneficios: 'title, subtitle, items[] con {icon, title, desc, image_url, image_ratio}, cta, cta_url, cta_note',
+    modulos: 'title, subtitle, items[] con {icon, title, desc, image_url, image_ratio}, cta, cta_url, cta_note',
+    'como-funciona': 'title, subtitle, items[] con {step, title, desc, image_url, image_ratio}, cta. OJO: "step" acepta texto largo ("Semanas 1 y 2"); se dibuja como píldora, no hace falta acortarlo.',
+    'prueba-social': 'title, stats[] con {value, label}, cta',
+    testimonios: 'title, items[] con {name, initials, role, quote}, cta',
+    bonos: 'title, subtitle, items[] con {icon, title, desc, value, image_url, image_ratio}, cta',
+    precio: 'title, price, period, features[], cta, microcopy',
+    garantia: 'title, desc, cta',
+    faq: 'title, icon, items[] con {icon, q, a}, cta',
+    'cta-final': 'title, subtitle, cta, microcopy',
+    footer: 'brand_name, tagline, copyright',
+    oferta: 'badge, title, subtitle, features[], price_before, price, cta, decline, microcopy',
+    texto: 'title, body, align (left/center), cta',
+    imagen: 'title, caption, size, ratio, align, cta',
+    video: 'title, subtitle, cta',
+    galeria: 'title, subtitle, ratio, images[] con {url, caption}, cta',
+  },
+
   async chatEditLandingSections(instruction, sections, palId, brief, history) {
     const pal = this._landingPalette(palId);
     const mapa = (sections || []).map(s =>
-      `- id "${s.id}" (${this._SEC_NOMBRE[s.id] || s.id}): ${JSON.stringify(this._resumenContent(s.content))}`
+      `- id "${s.id}" (${this._SEC_NOMBRE[s.id] || s.id})\n` +
+      `  campos que puedes cambiar: ${this._CAMPOS_EDITABLES[s.id] || 'title, subtitle, items[]'}\n` +
+      `  contenido actual: ${JSON.stringify(this._resumenContent(s.content))}`
     ).join('\n');
 
     const convo = (history || []).slice(-8)
@@ -2510,7 +2545,14 @@ REGLAS:
 5. Para ajustes visuales usa los campos que ya existen: logo_size (número en px, 22 a 44), image_size (full/large/medium/small), image_ratio (16/9, 4/3, 1/1, 3/4, original), image_align (center/left/right), video_fit (cover/contain), video_position (center/top/bottom), layout del hero (split/center).
 6. Los iconos son nombres de Material Symbols en minúscula (check_circle, star, favorite, school…). Nunca emojis.
 7. Si el pedido no es un cambio en la página (una pregunta, un saludo, algo confuso), responde con "ops": [] y algo útil en "reply".
-8. Si el pedido es ambiguo, elige la interpretación más razonable y explica en "reply" qué hiciste. Pregunta solo si es imposible adivinar.`;
+8. Si el pedido es ambiguo, elige la interpretación más razonable y explica en "reply" qué hiciste. Pregunta solo si es imposible adivinar.
+
+CÓMO RESPONDER (importante):
+- TÚ eres el soporte de esta herramienta. NUNCA digas que la usuaria contacte a soporte técnico, ni que no puedes verificar si los cambios se aplican, ni que el problema depende de otro sistema. Eso no ayuda y es falso: tus cambios se aplican en el momento.
+- Si algo se ve mal, primero mira los campos disponibles arriba y cámbialos. Los ajustes visuales (proporción de fotos, tamaño, alineación, encuadre) SON campos que puedes modificar.
+- Si de verdad no existe un campo para lo que piden, dilo con claridad y nombra el control exacto del panel derecho donde se hace, o propone una alternativa concreta. Nunca respondas con evasivas.
+- Si la usuaria dice que algo quedó mal después de tu cambio, revisa el contenido actual que recibes arriba y corrige de verdad; no repitas el mismo cambio.
+- Si el texto de un campo es largo y se ve apretado, NO lo acortes por tu cuenta salvo que te lo pidan: los diseños se adaptan al texto.`;
 
     const user = `PRODUCTO: ${String(brief || '').slice(0, 1200)}
 
@@ -3443,6 +3485,30 @@ const AI = {
   async editLandingSectioned(instruction, sections, palId, brief, history) {
     return Claude.editLandingSectioned(instruction, sections, palId, brief, history);
   },
+  _CAMPOS_EDITABLES: {
+    nav: 'brand (nombre), logo_size (22-44), show_brand_text (si/no), cta (texto del botón), links[] con {label, href}',
+    hero: 'badge, title, subtitle, cta, microcopy, layout (split/center), image_size, image_ratio, image_align, video_fit, video_position',
+    problema: 'title, items[] con {icon, title, desc}, cta, cta_url, cta_note',
+    'para-quien': 'title, yes_title, yes_icon, yes[], no_title, no_icon, no[], cta',
+    'antes-despues': 'title, before_title, before_icon, before[], after_title, after_icon, after[], cta',
+    beneficios: 'title, subtitle, items[] con {icon, title, desc, image_url, image_ratio}, cta, cta_url, cta_note',
+    modulos: 'title, subtitle, items[] con {icon, title, desc, image_url, image_ratio}, cta, cta_url, cta_note',
+    'como-funciona': 'title, subtitle, items[] con {step, title, desc, image_url, image_ratio}, cta. OJO: "step" acepta texto largo ("Semanas 1 y 2"); se dibuja como píldora, no hace falta acortarlo.',
+    'prueba-social': 'title, stats[] con {value, label}, cta',
+    testimonios: 'title, items[] con {name, initials, role, quote}, cta',
+    bonos: 'title, subtitle, items[] con {icon, title, desc, value, image_url, image_ratio}, cta',
+    precio: 'title, price, period, features[], cta, microcopy',
+    garantia: 'title, desc, cta',
+    faq: 'title, icon, items[] con {icon, q, a}, cta',
+    'cta-final': 'title, subtitle, cta, microcopy',
+    footer: 'brand_name, tagline, copyright',
+    oferta: 'badge, title, subtitle, features[], price_before, price, cta, decline, microcopy',
+    texto: 'title, body, align (left/center), cta',
+    imagen: 'title, caption, size, ratio, align, cta',
+    video: 'title, subtitle, cta',
+    galeria: 'title, subtitle, ratio, images[] con {url, caption}, cta',
+  },
+
   async chatEditLandingSections(instruction, sections, palId, brief, history) {
     return Claude.chatEditLandingSections(instruction, sections, palId, brief, history);
   },

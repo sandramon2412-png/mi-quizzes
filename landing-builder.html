@@ -10,9 +10,9 @@
 <script src="https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.min.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
 <link href="https://fonts.googleapis.com/icon?family=Material+Symbols+Outlined" rel="stylesheet"/>
-<script src="./supabase-config.js?v=20260719i"></script>
-<script src="./app.js?v=20260719i"></script>
-<script src="./landing-blocks.js?v=20260719i"></script>
+<script src="./supabase-config.js?v=20260719j"></script>
+<script src="./app.js?v=20260719j"></script>
+<script src="./landing-blocks.js?v=20260719j"></script>
 <script>
   // Si el CDN de Tailwind no cargó, esta asignación tiraba y mataba todo el script
   // que sigue (incluida la UI del builder). Blindado para que la página funcione igual.
@@ -1236,8 +1236,11 @@ const SEC_SCHEMA = {
   ]},
   'como-funciona': { label: 'Cómo funciona', icon: 'linear_scale', fields: [
     F.text('title', 'Título de la sección'),
+    F.text('subtitle', 'Subtítulo'),
     { key: 'items', label: 'Pasos', type: 'items', addLabel: 'Agregar paso',
-      item: [F.text('step', 'Número'), F.text('title', 'Título'), F.area('desc', 'Descripción')] },
+      item: [F.text('step', 'Etiqueta del paso', 'Ej: 1  ·  o  Semanas 1 y 2'),
+             F.text('title', 'Título'), F.area('desc', 'Descripción'),
+             F.image('image_url', 'Foto (opcional)'), { key: 'image_ratio', label: 'Ajuste de la foto', type: 'select', options: [['4/3', 'Clásica 4:3'], ['16/9', 'Panorámica 16:9'], ['1/1', 'Cuadrada'], ['original', 'Completa (sin recortar)']] }] },
   ]},
   'prueba-social': { label: 'Métricas / confianza', icon: 'insights', fields: [
     F.text('title', 'Frase de credibilidad'),
@@ -1301,7 +1304,8 @@ const MEDIA_FIELDS = [
 
 // Secciones que aceptan un botón CTA al pie (el hero, precio, cta-final y oferta ya tienen el suyo)
 const CTA_SECTIONS = ['beneficios', 'modulos', 'como-funciona', 'testimonios', 'bonos', 'garantia',
-                      'para-quien', 'antes-despues', 'texto', 'imagen', 'video', 'galeria', 'problema'];
+                      'para-quien', 'antes-despues', 'texto', 'imagen', 'video', 'galeria', 'problema',
+                      'prueba-social', 'faq'];
 
 function secMeta(id) {
   const base = SEC_SCHEMA[id] || { label: id, icon: 'widgets', fields: [F.text('title', 'Título'), F.area('desc', 'Texto')] };
@@ -4179,7 +4183,7 @@ async function init() {
   if (ldId) await loadLanding(ldId);
 }
 
-const BUILDER_VERSION = 'v20260719i';
+const BUILDER_VERSION = 'v20260719j';
 
 document.addEventListener('DOMContentLoaded', () => {
   const vEl = document.getElementById('ld-version');

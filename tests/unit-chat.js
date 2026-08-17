@@ -81,6 +81,16 @@ function mockIA(respuesta){
   hero = r.sections.find(s=>s.id==='hero');
   chk('sin voseo en el resultado', hero.content.title === 'Súmate y empieza hoy' && hero.content.subtitle === 'Vas a ver que puedes');
 
+  console.log('\nEl chat sabe qué puede cambiar (el problema de fondo)');
+  mockIA({reply:'Listo, ajusté la proporción de las fotos.',ops:[{section:'modulos',set:{items:[{title:'M',image_ratio:'16/9'}]}}]});
+  const conModulos = base().concat([mk('como-funciona',{title:'Cómo funciona',items:[{step:'Semanas 1 y 2',title:'Paso',desc:'d'}]})]);
+  await C.chatEditLandingSections('poné las fotos como las de bonos', conModulos, 'b', 'curso', []);
+  chk('el prompt le dice los campos de cada sección', /campos que puedes cambiar/.test(ultimoPrompt));
+  chk('conoce image_ratio de los ítems', /image_ratio/.test(ultimoPrompt));
+  chk('sabe que "step" acepta texto largo', /step.*acepta texto largo|acepta texto largo/i.test(ultimoPrompt));
+  chk('tiene PROHIBIDO derivar a soporte', /NUNCA digas que la usuaria contacte a soporte/.test(ultimoPrompt));
+  chk('no debe acortar textos por su cuenta', /NO lo acortes por tu cuenta/.test(ultimoPrompt));
+
   console.log('\n'+(f===0?'🎉 TODOS PASAN':'⚠️ '+f+' FALLAN'));
   process.exit(f?1:0);
 })();

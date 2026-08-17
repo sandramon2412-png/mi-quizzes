@@ -2280,3 +2280,44 @@ no es un cambio, y salida sin voseo.
 
 ### Pendientes
 - 🟡 Límites ebook: Pro=999, Growth=999 → REVERTIR a Pro→5, Growth→20
+
+---
+
+## SESIÓN 19 JUL 2026 (parte 11) — La sección de pasos + el chat que derivaba a soporte
+
+### El caso concreto: "Semanas 1 y 2" desbordando el círculo ✅
+La sección `como-funciona` dibujaba el paso en un **círculo fijo de 56×56 px**, asumiendo un número
+("1", "2"). Cuando la IA generó etiquetas como "Semanas 1 y 2", el texto se salía del círculo y se
+superponía al título. Sandra le pidió al chat que lo arreglara y el chat hizo lo único que podía:
+**acortar el texto** a "Sem. 1–2" — que también se veía mal.
+
+**Fix**: `PASO(txt)` elige la forma según el contenido — círculo si son 1-2 caracteres, **píldora
+que fluye con el texto** si es más largo. Verificado en Chromium con el caso real de 4 pasos.
+
+### El chat derivando a soporte — CAUSA RAÍZ ✅
+El chat respondió: *"desde aquí no puedo verificar si los cambios se están aplicando… contactá al
+soporte técnico de la plataforma"*. Dos causas:
+
+1. **No sabía qué campos podía tocar.** Recibía el contenido de cada sección pero no el catálogo de
+   campos editables, así que ante un problema visual no encontraba qué cambiar y se rendía.
+2. **Nada le impedía dar respuestas de call-center.**
+
+**Fix**: nuevo `_CAMPOS_EDITABLES` (catálogo por sección) que se inyecta en el prompt junto al
+contenido, más reglas de comportamiento explícitas:
+- "TÚ eres el soporte de esta herramienta. NUNCA digas que contacte a soporte técnico ni que no
+  puedes verificar si los cambios se aplican."
+- Si no existe un campo para lo pedido, nombrar el control exacto del panel derecho.
+- Si la usuaria dice que quedó mal, revisar el contenido actual y corregir de verdad, no repetir.
+- **No acortar textos por cuenta propia**: los diseños se adaptan al texto (el catálogo aclara que
+  `step` acepta etiquetas largas).
+
+### Campos que faltaban ✅
+- **Foto por paso** en `como-funciona` (existía en módulos y bonos, faltaba acá — por eso "se
+  desapareció la opción por cada módulo": la sección era otra) + subtítulo.
+- **Botón CTA** en `problema`, `prueba-social` y `faq`: estaban en la lista del editor pero el motor
+  no pintaba el botón, así que el campo aparecía y no hacía nada.
+
+### Versión: `?v=20260719j` (badge `v20260719j`)
+
+### Pendientes
+- 🟡 Límites ebook: Pro=999, Growth=999 → REVERTIR a Pro→5, Growth→20
