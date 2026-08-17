@@ -10,9 +10,9 @@
 <script src="https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.min.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
 <link href="https://fonts.googleapis.com/icon?family=Material+Symbols+Outlined" rel="stylesheet"/>
-<script src="./supabase-config.js?v=20260719h"></script>
-<script src="./app.js?v=20260719h"></script>
-<script src="./landing-blocks.js?v=20260719h"></script>
+<script src="./supabase-config.js?v=20260719i"></script>
+<script src="./app.js?v=20260719i"></script>
+<script src="./landing-blocks.js?v=20260719i"></script>
 <script>
   // Si el CDN de Tailwind no cargó, esta asignación tiraba y mataba todo el script
   // que sigue (incluida la UI del builder). Blindado para que la página funcione igual.
@@ -3176,7 +3176,15 @@ async function sendChat() {
       const sections = landing.sections || [];
       const _prev = { html: landing.html, sections: sections.length ? sections.slice() : null };
 
-      const res = await withTimeout(AI.editLandingSectioned(msg, sections, palId, landing.brief || landing.title || '', chatHistory.slice(-8)), 60000, 'El cambio');
+      // Motor nuevo: una sola llamada que devuelve los campos a cambiar.
+      // Si algo falla, se usa el motor anterior como respaldo.
+      let res;
+      try {
+        res = await withTimeout(AI.chatEditLandingSections(msg, sections, palId, landing.brief || landing.title || '', chatHistory.slice(-8)), 60000, 'El cambio');
+      } catch (e1) {
+        console.warn('[chat] motor nuevo falló, uso el anterior:', e1.message);
+        res = await withTimeout(AI.editLandingSectioned(msg, sections, palId, landing.brief || landing.title || '', chatHistory.slice(-8)), 60000, 'El cambio');
+      }
 
       // El usuario pidió explícitamente una landing nueva desde cero
       if (res.newLanding) {
@@ -3187,7 +3195,9 @@ async function sendChat() {
       }
 
       removeMsg(thinkingId);
-      addChatMsg(res.reply || 'Listo, apliqué el cambio.', 'assistant');
+      const detalle = (res.changed && res.changed.length)
+        ? `<br><span style="opacity:.65;font-size:11px">Cambié: ${res.changed.join(', ')}</span>` : '';
+      addChatMsg((res.reply || 'Listo, apliqué el cambio.') + detalle, 'assistant');
       chatHistory.push({ role: 'assistant', content: res.reply || 'Listo.' });
 
       if (res.sections) {
@@ -4169,7 +4179,7 @@ async function init() {
   if (ldId) await loadLanding(ldId);
 }
 
-const BUILDER_VERSION = 'v20260719h';
+const BUILDER_VERSION = 'v20260719i';
 
 document.addEventListener('DOMContentLoaded', () => {
   const vEl = document.getElementById('ld-version');

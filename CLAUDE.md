@@ -2222,3 +2222,61 @@ la foto y el video del usuario sobreviven.
 
 ### Pendientes
 - 🟡 Límites ebook: Pro=999, Growth=999 → REVERTIR a Pro→5, Growth→20
+
+---
+
+## SESIÓN 19 JUL 2026 (parte 10) — El chat reescrito + 4 bugs con causa raíz
+
+### EL BUG DEL LOGO: no era el tamaño, era el respaldo de imágenes ✅
+`assembleLanding` tenía `img.ld-img{...;min-height:160px}` y el script inyectado le ponía la clase
+`ld-img` a **todas** las imágenes al cargar la página. Resultado: el logo con `height:30px` se
+inflaba a 160px de alto y la barra (con `overflow:hidden`) lo recortaba → se veía enorme y parecía
+que el selector de tamaño no hacía nada.
+
+**Fix**: la clase pasó a llamarse `ld-fallback` y **solo se aplica dentro del handler de `error`**,
+o sea únicamente cuando una imagen realmente no carga. Medido en Chromium: logo `93x30 px`, barra
+`68 px` fija. Antes: logo inflado a 160 px recortado por la barra.
+
+### Alineación de la imagen de sección ✅
+`<figure style="margin:44px auto 0; ... ${ia}">` — el **shorthand** ya ponía `margin-left/right:auto`,
+así que el `margin-right:auto` de "izquierda" no cambiaba nada y todo quedaba centrado. Ahora se usan
+`margin-top` + `ALIGN()` con ambos lados explícitos (`margin-left:0;margin-right:auto`).
+
+### Fotos de módulos gigantes ✅
+Cada sección armaba su `<img>` con estilos propios. Se unificó en `ITEM_IMG(it)`: 16/9 por defecto,
+**`max-height:190px`** y proporción configurable por ítem. Módulos, bonos y beneficios ahora se ven
+iguales.
+
+### Saltos de línea: regla global en vez de parches ✅
+Se venían agregando `white-space:pre-wrap` tag por tag, y cada sección nueva volvía a romperlo
+(por eso "se dañó de nuevo"). Ahora hay **una regla global** en el CSS de la landing:
+`h1,h2,h3,h4,p,li,summary,figcaption,blockquote{white-space:pre-wrap}` con `nowrap` solo donde un
+salto sería un error de maquetado (nav, iconos).
+
+### EL CHAT, REESCRITO — `chatEditLandingSections` ✅
+El motor anterior encadenaba **clasificador (Haiku) → regenerar o editar**, y cada eslabón podía
+fallar: clasificaba mal, mandaba el cambio a otra sección, o regeneraba y perdía contenido.
+
+El motor nuevo es **una sola llamada a Sonnet** que recibe:
+- el brief del producto,
+- **el contenido real de cada sección** (con las imágenes reemplazadas por `[imagen que subió la
+  usuaria]` para no ensuciar el prompt),
+- los últimos 8 mensajes de la conversación;
+
+y devuelve **operaciones puntuales**:
+```json
+{"reply":"…","ops":[{"section":"nav","set":{"logo_size":"22"}}]}
+```
+El código aplica `{...contenidoActual, ...set}` + `_preserveUser` + `_neutralize`, y reconstruye
+solo esa sección. Ventajas: **1 llamada en vez de 2**, el modelo ve lo que hay de verdad, no puede
+regenerar de más, y si no entiende devuelve `ops: []` con una respuesta útil. El motor viejo quedó
+como respaldo automático si el nuevo falla. El chat además informa qué secciones tocó.
+
+`tests/unit-chat.js` (NUEVO): 20 checks — el pedido que fallaba ("baja el tamaño del logo"),
+preservación de archivos, cambios en listas, varias secciones a la vez, respuesta rota, pregunta que
+no es un cambio, y salida sin voseo.
+
+### Versión: `?v=20260719i` (badge `v20260719i`)
+
+### Pendientes
+- 🟡 Límites ebook: Pro=999, Growth=999 → REVERTIR a Pro→5, Growth→20

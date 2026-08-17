@@ -108,13 +108,20 @@ function aiResponder(bodyStr) {
   const body = JSON.parse(bodyStr);
   const msg = body.messages[body.messages.length - 1].content;
   aiCalls.push({ kind:
+    msg.includes('SECCIONES ACTUALES DE LA PÁGINA') ? 'chatops' :
     msg.includes('Elegí las secciones ideales') ? 'plan' :
     msg.includes('REGLAS DE CLASIFICACIÓN') ? 'classify' :
     msg.includes('página de UPSELL') || msg.includes('página de DOWNSELL') ? 'offer' :
     msg.includes('CONTENIDO ACTUAL') ? 'surgical' :
     msg.includes('SECCIÓN:') ? 'content' : 'other' });
   let text = '{}';
-  if (msg.includes('Elegí las secciones ideales')) text = JSON.stringify(PLAN);
+  if (msg.includes('SECCIONES ACTUALES DE LA PÁGINA')) {
+    // Motor nuevo del chat: devuelve operaciones puntuales. Omite todo lo demás
+    // e intenta vaciar el logo, para probar que nada del usuario se pierde.
+    text = JSON.stringify({ reply: 'Listo, cambié el título de la portada.',
+      ops: [{ section: 'hero', set: { title: 'TITULO EDITADO POR CHAT', logo_url: '' } }] });
+  }
+  else if (msg.includes('Elegí las secciones ideales')) text = JSON.stringify(PLAN);
   else if (msg.includes('REGLAS DE CLASIFICACIÓN')) text = JSON.stringify({ action: 'edit', sectionId: 'hero', reply: 'Aplico ese cambio en el hero.' });
   else if (msg.includes('página de UPSELL') || msg.includes('página de DOWNSELL')) {
     text = JSON.stringify({ badge: 'Oferta única', title: 'Sumá las sesiones en vivo',
@@ -199,7 +206,8 @@ function aiResponder(bodyStr) {
   const planCalls2 = aiCalls.filter(c => c.kind === 'plan').length;
   chk('hero editado con el cambio pedido', st3.heroEdited);
   chk('NO se generó un plan nuevo (no regeneró la landing)', planCalls2 === planCalls1);
-  chk('edición fue quirúrgica (prompt CONTENIDO ACTUAL usado)', aiCalls.some(c => c.kind === 'surgical'));
+  chk('el chat usó el motor de operaciones puntuales', aiCalls.some(c => c.kind === 'chatops'));
+  chk('una sola llamada por pedido (antes eran dos)', aiCalls.filter(c => c.kind === 'chatops').length === 1);
   chk('las demás secciones quedaron intactas', JSON.stringify(st3.others) === JSON.stringify(secsBefore.filter((h, i) => st1.ids[i] !== 'hero')));
 
   console.log('E2E 4 — guardado en DB y RELOAD (el ciclo que nunca se probó)');
