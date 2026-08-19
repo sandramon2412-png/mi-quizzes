@@ -91,6 +91,37 @@ function mockIA(respuesta){
   chk('tiene PROHIBIDO derivar a soporte', /NUNCA digas que la usuaria contacte a soporte/.test(ultimoPrompt));
   chk('no debe acortar textos por su cuenta', /NO lo acortes por tu cuenta/.test(ultimoPrompt));
 
+  console.log('\nCREAR una sección que no existe (el caso de los bonos)');
+  const sinBonos = base();
+  chk('la página no tiene bonos todavía', !sinBonos.some(x=>x.id==='bonos'));
+  mockIA({reply:'Agregué la sección de bonos con los tres que me diste.',ops:[
+    {op:'add',section:'bonos',after:'beneficios',set:{title:'Bonos incluidos',items:[
+      {icon:'card_giftcard',title:'Bono 1: Recetario',desc:'30 desayunos',value:'Valor: $27'},
+      {icon:'campaign',title:'Bono 2: Planilla',desc:'Lista de compras',value:'Valor: $19'},
+      {icon:'work',title:'Bono 3: Viandas',desc:'15 viandas',value:'Valor: $24'}]}}]});
+  r = await C.chatEditLandingSections('agregá una sección de bonos con estos 3 bonos', sinBonos, 'b', 'curso', []);
+  const bon = r.sections.find(x=>x.id==='bonos');
+  chk('creó la sección de bonos', !!bon);
+  chk('con los 3 bonos', bon && bon.content.items.length===3);
+  chk('con el HTML armado', bon && bon.html.includes('Bono 1: Recetario') && bon.html.includes('Valor: $27'));
+  chk('la ubicó donde corresponde', r.sections.findIndex(x=>x.id==='bonos') === r.sections.findIndex(x=>x.id==='beneficios')+1);
+  chk('avisa que la creó', (r.changed||[]).some(t=>t.startsWith('+')));
+  chk('no rompió las demás', r.sections.find(x=>x.id==='hero').content.title==='Título viejo');
+
+  console.log('\nQuitar y mover secciones');
+  mockIA({reply:'Quité los testimonios.',ops:[{op:'remove',section:'precio'}]});
+  r = await C.chatEditLandingSections('sacá la sección de precio', base(), 'b', 'curso', []);
+  chk('quitó la sección', !r.sections.some(x=>x.id==='precio'));
+  mockIA({reply:'Moví beneficios al final.',ops:[{op:'move',section:'beneficios',after:'precio'}]});
+  r = await C.chatEditLandingSections('poné beneficios después del precio', base(), 'b', 'curso', []);
+  chk('cambió el orden', r.sections.findIndex(x=>x.id==='beneficios') > r.sections.findIndex(x=>x.id==='precio'));
+  chk('mismo número de secciones', r.sections.length === base().length);
+
+  console.log('\nEl chat sabe que puede crear');
+  chk('el prompt le explica cómo crear', /CREAR una sección que no existe/.test(ultimoPrompt));
+  chk('le da la lista de secciones disponibles', /SECCIONES QUE PUEDES CREAR/.test(ultimoPrompt) && /bonos/.test(ultimoPrompt));
+  chk('le prohíbe decir que no puede', /Nunca respondas que no puedes crearla/.test(ultimoPrompt));
+
   console.log('\n'+(f===0?'🎉 TODOS PASAN':'⚠️ '+f+' FALLAN'));
   process.exit(f?1:0);
 })();
