@@ -2321,3 +2321,57 @@ contenido, más reglas de comportamiento explícitas:
 
 ### Pendientes
 - 🟡 Límites ebook: Pro=999, Growth=999 → REVERTIR a Pro→5, Growth→20
+
+---
+
+## SESIÓN 19 JUL 2026 (parte 12) — Bonos que nunca aparecían + chat que puede crear secciones
+
+### "¿Por qué no lo hizo desde el principio si el prompt lo decía?" — EL BUG ERA MÍO ✅
+Sandra generó con un brief que detallaba 3 bonos con su valor, y la landing salió **sin sección de
+bonos**. Después le pidió al chat que la creara y el chat respondió que no podía.
+
+**Causa raíz**: el filtro determinista de `generateLandingSectioned` era **de una sola dirección**:
+```js
+if (!hasBonus) plan.sections = plan.sections.filter(s => s.id !== 'bonos');
+```
+Quitaba la sección cuando el brief NO mencionaba bonos, pero **no la agregaba** cuando sí los
+mencionaba y el planificador (Sonnet) la omitía. El brief estaba bien; nada corregía al planificador.
+
+**Fix**: helper `asegurar(id, incluir)` que funciona en las dos direcciones, con un **orden canónico**
+de secciones para insertar en el lugar correcto. Ahora se garantizan según el brief:
+`precio`, `bonos`, `garantia`, `testimonios`, `faq` y `modulos`. Verificado con el caso real:
+plan sin bonos + brief con bonos → la landing sale con bonos entre módulos y precio.
+
+### El chat ahora puede CREAR, QUITAR y MOVER secciones ✅
+El motor `chatEditLandingSections` solo aceptaba operaciones de cambio de campos, así que la
+respuesta "no puedo crearla desde cero" era **cierta**. Ahora acepta 4 tipos de operación:
+
+```json
+{"op":"set","section":"beneficios","set":{…}}
+{"op":"add","section":"bonos","after":"modulos","set":{…}}
+{"op":"remove","section":"testimonios"}
+{"op":"move","section":"faq","after":"precio"}
+```
+
+Al crear parte del schema por defecto y le aplica lo que el modelo mande. El prompt lista los ids
+disponibles para crear y cierra con: *"Si la usuaria pide algo que necesita una sección que hoy no
+está en su página, CRÉALA con add. Nunca respondas que no puedes crearla."*
+El chat informa qué hizo con prefijos (`+ Bonos`, `- Testimonios`, `↕ Preguntas`).
+
+### Botón del menú en celular que se salía de la pantalla ✅
+La regla `#nav a{white-space:nowrap}` (para que los links del menú no se partieran) **le ganaba en
+especificidad** a `.ld-btn{white-space:normal}`, así que el botón del menú desplegable no podía
+cortar el texto y se salía. Fix: `.ld-btn,#nav .ld-btn,#nav a.ld-btn{white-space:normal;
+overflow-wrap:anywhere}` + `box-sizing:border-box` y `overflow-x:hidden` en el panel desplegable.
+Medido en Chromium a 390px: botón de 342px en dos líneas, sin scroll horizontal.
+
+### Tests
+- `tests/unit-plan-secciones.js` (NUEVO): el caso real (planificador olvida bonos → se agregan igual),
+  posición correcta de cada sección, y que un brief sin precio ni bonos no los invente.
+- `tests/unit-chat.js`: +12 checks de crear/quitar/mover secciones.
+- `tests/unit-landing-sections.js`: +3 checks del botón del menú móvil.
+
+### Versión: `?v=20260719k` (badge `v20260719k`)
+
+### Pendientes
+- 🟡 Límites ebook: Pro=999, Growth=999 → REVERTIR a Pro→5, Growth→20

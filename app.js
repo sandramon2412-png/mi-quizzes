@@ -1484,8 +1484,9 @@ INSTRUCCIÓN: ${instruction}`;
   /* Los saltos de línea que escribe el usuario se respetan en TODO el texto */
   h1,h2,h3,h4,p,li,summary,figcaption,blockquote{white-space:pre-wrap}
   /* …salvo donde el salto sería un error de maquetado */
-  #nav a,#nav span,.ld-btn,.ld-decline,.material-symbols-outlined{white-space:nowrap}
-  .ld-btn{white-space:normal}
+  #nav a,#nav span,.ld-decline,.material-symbols-outlined{white-space:nowrap}
+  /* Los botones sí pueden partir el texto en varias líneas (si no, se salen en el celular) */
+  .ld-btn,#nav .ld-btn,#nav a.ld-btn{white-space:normal;overflow-wrap:anywhere}
 
   /* Sección con video de fondo: el texto siempre legible sobre el video */
   .ld-onvideo h2,.ld-onvideo h3,.ld-onvideo p,.ld-onvideo li,.ld-onvideo summary,.ld-onvideo figcaption{color:#fff !important}
@@ -1647,9 +1648,9 @@ ${links.map(l => `<a href="${e(l.href || '#')}" style="color:var(--muted);font-s
 ${c.cta ? `<a href="#precio" class="ld-btn ld-nav-cta" style="background:${GRAD};color:#fff;padding:10px 20px;border-radius:10px;font-weight:700;font-size:14px;text-decoration:none;white-space:nowrap">${e(c.cta)}</a>` : ''}
 <button class="ld-burger" aria-label="Menú" onclick="var m=document.getElementById('${navId}');m.style.display=m.style.display==='block'?'none':'block'" style="display:none;background:none;border:1px solid var(--border);border-radius:8px;color:var(--ink);padding:7px 10px;font-size:13px;font-weight:700;cursor:pointer;margin-left:auto;flex-shrink:0">☰</button>
 </div>
-<div id="${navId}" style="display:none;border-top:1px solid var(--border);padding:12px 24px 18px">
+<div id="${navId}" style="display:none;border-top:1px solid var(--border);padding:12px 24px 18px;max-width:100%;overflow-x:hidden;box-sizing:border-box">
 ${links.map(l => `<a href="${e(l.href || '#')}" style="display:block;color:var(--ink);font-size:16px;font-weight:600;text-decoration:none;padding:11px 0">${e(l.label || '')}</a>`).join('')}
-${c.cta ? `<a href="#precio" class="ld-btn" style="display:block;text-align:center;background:${GRAD};color:#fff;padding:13px;border-radius:10px;font-weight:700;text-decoration:none;margin-top:10px">${e(c.cta)}</a>` : ''}
+${c.cta ? `<a href="#precio" class="ld-btn" style="display:block;text-align:center;background:${GRAD};color:#fff;padding:13px 16px;border-radius:10px;font-weight:700;text-decoration:none;margin-top:10px;line-height:1.3;box-sizing:border-box;max-width:100%">${e(c.cta)}</a>` : ''}
 </div>
 </header>`;
       }
@@ -2228,13 +2229,41 @@ Respondé SOLO con este JSON (sin markdown, sin texto extra):
     const pal = this._landingPalette(palId);
     if (onProgress) try { onProgress('plan'); } catch (e) {}
     const plan = await this.planLandingSections(instruction);
-    // Filtro determinístico: si el brief no menciona precio/bonos, esas secciones no van
-    // (la IA tiende a inventar "$97" genérico aunque se le pida que no).
+    // Ajuste determinístico de secciones según lo que dice el brief.
+    // Funciona en las DOS direcciones: quita lo que no corresponde y agrega lo que
+    // el planificador olvidó. Antes solo quitaba, así que un brief con bonos
+    // detallados podía terminar sin sección de bonos si la IA no la elegía.
     const lowT = instruction.toLowerCase();
     const hasPrice = /\$\s?\d|\d+\s?(usd|d[oó]lares|pesos|soles|euros|€)|precio|inversi[oó]n de|cuesta|paga[s]? \d/.test(lowT);
     const hasBonus = /bono|bonus|regalo incluido/.test(lowT);
-    if (!hasPrice) plan.sections = plan.sections.filter(s => s.id !== 'precio');
-    if (!hasBonus) plan.sections = plan.sections.filter(s => s.id !== 'bonos');
+    const hasGarantia = /garant[ií]a|devoluci[oó]n|reembolso/.test(lowT);
+    const hasTestimonios = /testimonio|opiniones|rese[ñn]as|lo que dicen/.test(lowT);
+    const hasFaq = /faq|preguntas frecuentes|objeciones|dudas/.test(lowT);
+    const hasModulos = /m[oó]dulo|temario|clases|lecciones|qu[eé] vas a aprender/.test(lowT);
+
+    // Orden de referencia para insertar una sección en un lugar sensato
+    const ORDEN = ['nav','hero','prueba-social','problema','para-quien','antes-despues',
+                   'beneficios','modulos','como-funciona','testimonios','bonos','precio',
+                   'garantia','faq','cta-final','footer'];
+    const asegurar = (id, incluir) => {
+      const existe = plan.sections.some(x => x.id === id);
+      if (!incluir) {
+        if (existe) plan.sections = plan.sections.filter(x => x.id !== id);
+        return;
+      }
+      if (existe) return;
+      const rank = (x) => { const k = ORDEN.indexOf(x); return k === -1 ? 999 : k; };
+      const mi = rank(id);
+      let at = plan.sections.findIndex(x => rank(x.id) > mi);
+      if (at === -1) at = Math.max(0, plan.sections.length - 1);   // antes del footer
+      plan.sections.splice(at, 0, { id, brief: '' });
+    };
+    asegurar('precio', hasPrice);
+    asegurar('bonos', hasBonus);
+    if (hasGarantia) asegurar('garantia', true);
+    if (hasTestimonios) asegurar('testimonios', true);
+    if (hasFaq) asegurar('faq', true);
+    if (hasModulos) asegurar('modulos', true);
     const brief = `${plan.title || ''}\n\n${instruction}`;
     const specs = plan.sections;
     // El form puede pedir video de fondo del hero — el código lo aplica, no la IA
@@ -2544,11 +2573,21 @@ ${JSON.stringify({
 Recibes el contenido REAL de cada sección y devuelves ÚNICAMENTE los campos que hay que cambiar.
 
 Devuelve SIEMPRE un JSON con esta forma exacta, sin markdown ni texto fuera del JSON:
-{"reply":"lo que le respondes a la usuaria, 1-2 frases","ops":[{"section":"id_de_seccion","set":{"campo":"valor nuevo"}}]}
+{"reply":"lo que le respondes a la usuaria, 1-2 frases","ops":[ … ]}
+
+Cada operación puede ser de cuatro tipos:
+- Cambiar campos:  {"op":"set","section":"beneficios","set":{"title":"Nuevo título"}}
+- CREAR una sección que no existe:  {"op":"add","section":"bonos","after":"modulos","set":{"title":"Bonos incluidos","items":[{"icon":"card_giftcard","title":"Bono 1","desc":"…","value":"Valor: $27"}]}}
+- Quitar una sección:  {"op":"remove","section":"testimonios"}
+- Mover una sección:  {"op":"move","section":"faq","after":"precio"}
+
+SECCIONES QUE PUEDES CREAR (usa exactamente estos ids):
+hero, nav, problema, para-quien, antes-despues, beneficios, modulos, como-funciona, prueba-social, testimonios, bonos, precio, garantia, faq, cta-final, footer, texto, imagen, video, galeria, oferta.
+Si la usuaria pide algo que necesita una sección que hoy no está en su página (bonos, testimonios, garantía…), CRÉALA con "add" y su contenido. Nunca respondas que no puedes crearla.
 
 REGLAS:
 1. "ops" contiene solo los campos que cambian. Todo lo que no menciones queda intacto.
-2. Nunca inventes ids de sección: usa exactamente los de la lista.
+2. Para cambiar o quitar, usa un id que exista en la página. Para crear, usa un id de la lista de secciones disponibles.
 3. Para listas (items, features, yes, no, links, images) devuelve el array COMPLETO ya modificado.
 4. NUNCA incluyas estos campos en "set": logo_url, image_url, video_url, cta_url, decline_url, brand_href. Son archivos y enlaces que cargó la usuaria y se perderían.
 5. Para ajustes visuales usa los campos que ya existen: logo_size (número en px, 22 a 44), image_size (full/large/medium/small), image_ratio (16/9, 4/3, 1/1, 3/4, original), image_align (center/left/right), video_fit (cover/contain), video_position (center/top/bottom), layout del hero (split/center).
@@ -2584,15 +2623,63 @@ PEDIDO DE LA USUARIA: "${instruction}"`;
 
     const out = sections.slice();
     const tocadas = [];
+    const nombre = (id) => this._SEC_NOMBRE[id] || id;
+    // Dónde insertar: después de la sección indicada, o antes del pie de página
+    const posicionPara = (after) => {
+      if (after) {
+        const j = out.findIndex(sec => sec.id === after);
+        if (j !== -1) return j + 1;
+      }
+      const fi = out.findIndex(sec => sec.id === 'footer');
+      return fi === -1 ? out.length : fi;
+    };
+
     for (const op of ops) {
-      if (!op || !op.section || !op.set || typeof op.set !== 'object') continue;
+      if (!op || !op.section) continue;
+      const tipo = op.op || (op.set ? 'set' : '');
       const i = out.findIndex(sec => sec.id === op.section);
-      if (i === -1) continue;
+
+      // ── Agregar una sección nueva ──
+      if (tipo === 'add') {
+        if (i !== -1) {   // ya existe: se trata como edición
+          if (!op.set) continue;
+        } else {
+          const base = this._sectionContentSchema(op.section);
+          const content = this._neutralize({ ...base, ...(op.set || {}) });
+          const at = posicionPara(op.after);
+          out.splice(at, 0, {
+            id: op.section, brief: '', content,
+            html: this._buildSection(op.section, content, pal),
+          });
+          tocadas.push('+ ' + nombre(op.section));
+          continue;
+        }
+      }
+
+      // ── Quitar una sección ──
+      if (tipo === 'remove') {
+        if (i === -1) continue;
+        out.splice(i, 1);
+        tocadas.push('- ' + nombre(op.section));
+        continue;
+      }
+
+      // ── Mover una sección ──
+      if (tipo === 'move') {
+        if (i === -1) continue;
+        const sec = out.splice(i, 1)[0];
+        out.splice(Math.min(posicionPara(op.after), out.length), 0, sec);
+        tocadas.push('↕ ' + nombre(op.section));
+        continue;
+      }
+
+      // ── Cambiar campos (comportamiento por defecto) ──
+      if (i === -1 || !op.set || typeof op.set !== 'object') continue;
       const prev = out[i].content || {};
       let merged = { ...prev, ...this._neutralize(op.set) };
       merged = this._preserveUser(prev, merged);   // los archivos del usuario nunca se pierden
       out[i] = { ...out[i], content: merged, html: this._buildSection(op.section, merged, pal) };
-      tocadas.push(this._SEC_NOMBRE[op.section] || op.section);
+      tocadas.push(nombre(op.section));
     }
     if (!tocadas.length) return { sections, reply };
     return { sections: out, reply, changed: tocadas };

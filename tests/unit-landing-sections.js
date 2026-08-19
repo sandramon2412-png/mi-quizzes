@@ -209,5 +209,12 @@ for (const [id,c] of [['problema',{title:'P',items:[{title:'a'}],cta:'Ir'}],
   chk('botón CTA en '+id, C._buildSection(id,c,pal).includes('>Ir</a>'));
 }
 
+console.log('Ronda 11 — botón del menú en celular');
+const navLargo=C._buildSection('nav',{brand:'M',links:[{label:'Precio',href:'#p'}],cta:'Quiero recibir consultas todas las semanas'},pal);
+const asmNav=C.assembleLanding([{id:'nav',html:navLargo}],'blue-purple','t');
+chk('los botones pueden partir el texto', /\.ld-btn,#nav \.ld-btn,#nav a\.ld-btn\{white-space:normal/.test(asmNav));
+chk('el menú desplegable no desborda', navLargo.includes('overflow-x:hidden') && navLargo.includes('box-sizing:border-box'));
+chk('los links del nav siguen en una línea', /#nav a,#nav span,\.ld-decline/.test(asmNav));
+
 console.log('\n'+(f===0?'🎉 TODOS PASAN':'⚠️ '+f+' FALLAN'));
 process.exit(f?1:0);
