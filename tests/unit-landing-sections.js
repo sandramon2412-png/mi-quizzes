@@ -186,7 +186,7 @@ chk('imagen centrada', alC.includes('margin-left:auto;margin-right:auto'));
 // Fotos de módulos y bonos: mismo tamaño contenido
 const modF=C._buildSection('modulos',{title:'M',items:[{title:'a',image_url:'f.jpg'}]},pal);
 const bonF=C._buildSection('bonos',{title:'B',items:[{title:'b',image_url:'f.jpg'}]},pal);
-chk('módulos y bonos con el mismo tope de alto', modF.includes('max-height:190px') && bonF.includes('max-height:190px'));
+chk('módulos y bonos usan el mismo criterio de foto', modF.includes('aspect-ratio:16/9') && bonF.includes('aspect-ratio:16/9') && modF.includes('margin:0 auto 14px') && bonF.includes('margin:0 auto 14px'));
 chk('y la misma proporción', modF.includes('aspect-ratio:16/9') && bonF.includes('aspect-ratio:16/9'));
 
 // Saltos de línea: regla global, no parche por sección
@@ -201,7 +201,7 @@ chk('la píldora deja fluir el texto', pasoLargo.includes('white-space:normal'))
 chk('un número corto sigue en círculo', pasoCorto.includes('border-radius:50%') && pasoCorto.includes('width:56px'));
 // Foto por paso
 const pasoFoto=C._buildSection('como-funciona',{title:'C',items:[{step:'1',title:'T',desc:'d',image_url:'f.jpg'}]},pal);
-chk('cada paso admite su foto', pasoFoto.includes('f.jpg') && pasoFoto.includes('max-height:190px'));
+chk('cada paso admite su foto', pasoFoto.includes('f.jpg') && pasoFoto.includes('aspect-ratio:16/9'));
 // CTA en las secciones que lo ofrecían pero no lo pintaban
 for (const [id,c] of [['problema',{title:'P',items:[{title:'a'}],cta:'Ir'}],
                       ['prueba-social',{title:'S',stats:[{value:'1',label:'x'}],cta:'Ir'}],
@@ -215,6 +215,35 @@ const asmNav=C.assembleLanding([{id:'nav',html:navLargo}],'blue-purple','t');
 chk('los botones pueden partir el texto', /\.ld-btn,#nav \.ld-btn,#nav a\.ld-btn\{white-space:normal/.test(asmNav));
 chk('el menú desplegable no desborda', navLargo.includes('overflow-x:hidden') && navLargo.includes('box-sizing:border-box'));
 chk('los links del nav siguen en una línea', /#nav a,#nav span,\.ld-decline/.test(asmNav));
+
+console.log('Ronda 12 — proporciones reales, fuente y botones de gracias');
+// El max-height fijo aplastaba las proporciones: una cuadrada salía horizontal
+const cuad=C._buildSection('bonos',{title:'B',items:[{title:'b',image_url:'f.jpg',image_ratio:'1/1'}]},pal);
+const vert=C._buildSection('modulos',{title:'M',items:[{title:'m',image_url:'f.jpg',image_ratio:'9/16'}]},pal);
+const pano=C._buildSection('bonos',{title:'B',items:[{title:'b',image_url:'f.jpg',image_ratio:'16/9'}]},pal);
+chk('la cuadrada se ve cuadrada (sin tope que la aplaste)', cuad.includes('aspect-ratio:1/1') && !cuad.includes('max-height:190px'));
+chk('la cuadrada se limita por ancho', cuad.includes('width:64%'));
+chk('existe la vertical de celular 9:16', vert.includes('aspect-ratio:9/16') && vert.includes('width:42%'));
+chk('la panorámica ocupa todo el ancho', pano.includes('width:100%') && pano.includes('aspect-ratio:16/9'));
+
+// Alineación en secciones de contenedor angosto (oferta / gracias)
+const ofIzq=C._buildSection('oferta',{title:'O',price:'$1',cta:'x',image_url:'f.jpg',image_align:'left'},pal);
+chk('la imagen de la oferta se alinea a la izquierda', ofIzq.includes('margin-left:0;margin-right:auto'));
+
+// Tipografía
+const conFuente=C.assembleLanding([{id:'hero',html:'<section id="hero"></section>'}],'blue-purple','t',{font:'playfair'});
+const script=C.assembleLanding([{id:'hero',html:'<section id="hero"></section>'}],'blue-purple','t',{font:'dancing'});
+chk('la fuente elegida se carga', conFuente.includes('Playfair+Display'));
+chk('y se aplica al cuerpo', conFuente.includes("font-family:'Playfair Display'"));
+chk('las decorativas solo en títulos', script.includes("h1,h2,h3{font-family:'Dancing Script'"));
+
+// Botones de la página de gracias
+const gSin=C._buildSection('cta-final',{title:'Ayuda',cta:'Escribirnos',cta_needs_url:true},pal);
+const gCon=C._buildSection('cta-final',{title:'Ayuda',cta:'Escribirnos',cta_needs_url:true,cta_url:'https://wa.me/1'},pal);
+const normalCta=C._buildSection('cta-final',{title:'Cierre',cta:'Comprar'},pal);
+chk('sin destino no se dibuja el botón', !gSin.includes('Escribirnos'));
+chk('con destino sí, y apunta ahí', gCon.includes('https://wa.me/1'));
+chk('la landing normal no se ve afectada', normalCta.includes('Comprar'));
 
 console.log('\n'+(f===0?'🎉 TODOS PASAN':'⚠️ '+f+' FALLAN'));
 process.exit(f?1:0);

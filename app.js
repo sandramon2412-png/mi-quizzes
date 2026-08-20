@@ -1391,8 +1391,19 @@ INSTRUCCIÓN: ${instruction}`;
     return b[id] || 'Sección relevante y persuasiva para el producto.';
   },
 
+  // Tipografías disponibles para la landing
+  _FUENTES: {
+    jakarta:    { nombre: 'Plus Jakarta Sans', google: 'Plus+Jakarta+Sans:wght@300;400;500;600;700;800' },
+    inter:      { nombre: 'Inter',             google: 'Inter:wght@300;400;500;600;700;800' },
+    playfair:   { nombre: 'Playfair Display',  google: 'Playfair+Display:wght@400;500;600;700;800' },
+    lato:       { nombre: 'Lato',              google: 'Lato:wght@300;400;700;900' },
+    dancing:    { nombre: 'Dancing Script',    google: 'Dancing+Script:wght@400;500;600;700' },
+    greatvibes: { nombre: 'Great Vibes',       google: 'Great+Vibes' },
+  },
+
   assembleLanding(sections, palId, title, opts) {
     const o = opts || {};
+    const fuente = this._FUENTES[o.font] || this._FUENTES.jakarta;
     const pal = this._landingPalette(palId);
     const vars = this._landingCssVars(pal);
     let body = (sections || []).map(s => (s && s.html) ? s.html : '').filter(Boolean).join('\n');
@@ -1422,12 +1433,16 @@ INSTRUCCIÓN: ${instruction}`;
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
 <title>${safeTitle}</title>
 <script src="https://cdn.tailwindcss.com"><\/script>
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=${fuente.google}&display=swap" rel="stylesheet"/>
 <link href="https://fonts.googleapis.com/icon?family=Material+Symbols+Outlined" rel="stylesheet"/>${fbPixel}
 <style>
   :root{${vars}}
   html{scroll-behavior:smooth}
-  body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(--ink);margin:0}
+  body{font-family:'${fuente.nombre}','Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(--ink);margin:0}
+  /* Las fuentes decorativas solo en los títulos: en textos largos no se leen */
+  ${['dancing','greatvibes'].indexOf(o.font) !== -1
+    ? `body,p,li,summary,figcaption,.ld-btn{font-family:'Plus Jakarta Sans',sans-serif}
+  h1,h2,h3{font-family:'${fuente.nombre}',cursive;letter-spacing:.5px}` : ''}
   .material-symbols-outlined{font-variation-settings:'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 24}
   .js-reveal{opacity:0;transform:translateY(24px);transition:opacity .6s ease,transform .6s ease}
   .js-reveal.in{opacity:1;transform:none}
@@ -1616,12 +1631,24 @@ ${body}
     const ITEM_IMG = (it) => {
       if (!it || !it.image_url) return '';
       const r = it.image_ratio || c.item_image_ratio || '16/9';
-      const fit = r === 'original' ? 'height:auto' : `aspect-ratio:${r};object-fit:cover`;
-      return `<img src="${e(it.image_url)}" loading="lazy" alt="" style="width:100%;${fit};max-height:190px;border-radius:12px;margin:0 0 14px;display:block"/>`;
+      // Para que la forma elegida se vea de verdad, las verticales se limitan
+      // por ANCHO. Un max-height fijo las aplastaba y quedaban horizontales.
+      const ANCHO = { '1/1': '64%', '3/4': '54%', '9/16': '42%' };
+      const w = ANCHO[r] || '100%';
+      const fit = r === 'original'
+        ? 'height:auto;max-height:220px;object-fit:cover'
+        : `aspect-ratio:${r};object-fit:cover`;
+      return `<img src="${e(it.image_url)}" loading="lazy" alt="" style="width:${w};${fit};border-radius:12px;margin:0 auto 14px;display:block"/>`;
     };
-    const SEC_CTA = () => c.cta ? `<div style="text-align:center;margin-top:44px">${BTN(c.cta, c.cta_url || '#precio')}${c.cta_note?`<p style="color:var(--muted);font-size:13px;margin:12px 0 0">${e(c.cta_note)}</p>`:''}</div>` : '';
+    // Si la sección exige link propio (páginas de gracias) y está vacío, no se
+    // dibuja el botón: antes quedaba un botón que no llevaba a ninguna parte.
+    const SEC_CTA = () => {
+      if (!c.cta) return '';
+      if (c.cta_needs_url && !c.cta_url) return '';
+      return `<div style="text-align:center;margin-top:44px">${BTN(c.cta, c.cta_url || '#precio')}${c.cta_note?`<p style="color:var(--muted);font-size:13px;margin:12px 0 0">${e(c.cta_note)}</p>`:''}</div>`;
+    };
     // Proporción de imagen elegible
-    const RATIO = (r) => ({'16/9':'aspect-ratio:16/9;object-fit:cover','4/3':'aspect-ratio:4/3;object-fit:cover','1/1':'aspect-ratio:1/1;object-fit:cover','3/4':'aspect-ratio:3/4;object-fit:cover','original':'height:auto'}[r] || 'aspect-ratio:16/9;object-fit:cover');
+    const RATIO = (r) => ({'16/9':'aspect-ratio:16/9;object-fit:cover','4/3':'aspect-ratio:4/3;object-fit:cover','1/1':'aspect-ratio:1/1;object-fit:cover','3/4':'aspect-ratio:3/4;object-fit:cover','9/16':'aspect-ratio:9/16;object-fit:cover','original':'height:auto'}[r] || 'aspect-ratio:16/9;object-fit:cover');
     const ALIGN = (a) => a === 'left' ? 'margin-left:0;margin-right:auto'
       : a === 'right' ? 'margin-left:auto;margin-right:0'
       : 'margin-left:auto;margin-right:auto';
@@ -1725,7 +1752,7 @@ ${c.image_url?`<div style="max-width:640px;margin:48px auto 0"><img src="${e(c.i
 ${c.badge?`<p style="color:var(--brand);font-weight:700;font-size:13px;text-transform:uppercase;letter-spacing:2px;margin:0 0 16px">${e(c.badge)}</p>`:''}
 <h1 style="color:var(--ink);font-size:clamp(2rem,5vw,3.6rem);font-weight:800;line-height:1.1;margin:0 0 20px;white-space:pre-wrap">${e(c.title||'Título')}</h1>
 <p style="color:var(--muted);font-size:18px;line-height:1.6;margin:0 auto 32px;max-width:620px">${e(c.subtitle||'')}</p>
-${BTN(c.cta||'Empezar ahora')}
+${(c.cta_needs_url && !c.cta_url) ? '' : BTN(c.cta||'Empezar ahora', c.cta_url || '#precio')}
 ${c.microcopy?`<p style="color:var(--muted);font-size:13px;margin:12px 0 0">${e(c.microcopy)}</p>`:''}
 </div>
 <div style="max-width:900px;margin:56px auto 0;padding:0 24px">
@@ -1839,7 +1866,7 @@ ${c.microcopy?`<p style="color:var(--muted);font-size:13px;margin:12px 0 0">${e(
         return `<section id="faq" style="background:var(--surface);padding:80px 0"><div style="max-width:720px;margin:0 auto;padding:0 24px">${H2(c.title||'Preguntas frecuentes')}<div style="display:flex;flex-direction:column;gap:12px;margin-top:48px">${items.map(it=>`<details style="background:var(--bg);border:1px solid var(--border);border-radius:12px;overflow:hidden"><summary style="color:var(--ink);font-weight:600;font-size:16px;padding:20px 24px;cursor:pointer;list-style:none;display:flex;align-items:flex-start;gap:11px"><span class="material-symbols-outlined" style="font-size:20px;color:var(--brand);flex-shrink:0">${e(okIcon(it.icon || c.icon, 'help'))}</span><span>${e(it.q||'')}</span></summary><p style="color:var(--muted);font-size:15px;line-height:1.6;padding:0 24px 20px 55px;margin:0;white-space:pre-wrap">${e(it.a||'')}</p></details>`).join('')}</div>${SEC_CTA()}</div></section>`;
       }
       case 'cta-final': {
-        return `<section id="cta-final" style="background:${GRAD};padding:96px 0"><div style="max-width:640px;margin:0 auto;padding:0 24px;text-align:center"><h2 style="color:#fff;font-size:clamp(1.8rem,4vw,2.8rem);font-weight:800;margin:0 0 16px;white-space:pre-wrap">${e(c.title||'¿Estás listo?')}</h2>${c.subtitle?`<p style="color:rgba(255,255,255,.85);font-size:18px;margin:0 0 36px">${e(c.subtitle)}</p>`:''}<a href="#precio" class="ld-btn" style="background:#fff;color:var(--brand);padding:16px 40px;border-radius:12px;font-weight:800;font-size:18px;display:inline-block;text-decoration:none">${e(c.cta||'Quiero empezar hoy')}</a>${c.microcopy?`<p style="color:rgba(255,255,255,.7);font-size:13px;margin:14px 0 0">${e(c.microcopy)}</p>`:''}</div></section>`;
+        return `<section id="cta-final" style="background:${GRAD};padding:96px 0"><div style="max-width:640px;margin:0 auto;padding:0 24px;text-align:center"><h2 style="color:#fff;font-size:clamp(1.8rem,4vw,2.8rem);font-weight:800;margin:0 0 16px;white-space:pre-wrap">${e(c.title||'¿Estás listo?')}</h2>${c.subtitle?`<p style="color:rgba(255,255,255,.85);font-size:18px;margin:0 0 36px">${e(c.subtitle)}</p>`:''}${(c.cta_needs_url && !c.cta_url) ? '' : `<a href="${e(c.cta_url || '#precio')}" class="ld-btn" style="background:#fff;color:var(--brand);padding:16px 40px;border-radius:12px;font-weight:800;font-size:18px;display:inline-block;text-decoration:none">${e(c.cta||'Quiero empezar hoy')}</a>`}${c.microcopy?`<p style="color:rgba(255,255,255,.7);font-size:13px;margin:14px 0 0">${e(c.microcopy)}</p>`:''}</div></section>`;
       }
       case 'footer': {
         return `<footer id="footer" style="background:var(--bg);border-top:1px solid var(--border);padding:40px 0"><div style="max-width:1152px;margin:0 auto;padding:0 24px;display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:16px"><div><p style="color:var(--ink);font-weight:700;font-size:16px;margin:0 0 4px">${e(c.brand_name||'Producto')}</p>${c.tagline?`<p style="color:var(--muted);font-size:13px;margin:0">${e(c.tagline)}</p>`:''}</div><p style="color:var(--muted);font-size:13px;margin:0">${e(c.copyright||'© 2024 · Todos los derechos reservados')}</p></div></footer>`;
@@ -1858,7 +1885,8 @@ ${c.microcopy?`<p style="color:var(--muted);font-size:13px;margin:12px 0 0">${e(
       const ir = c.image_ratio === 'original' ? 'height:auto'
         : `aspect-ratio:${c.image_ratio || '16/9'};object-fit:cover`;
       const ia = ALIGN(c.image_align);
-      const fig = `<figure style="margin-top:44px;margin-bottom:0;${ia};max-width:${iw}"><img src="${e(c.image_url)}" loading="lazy" alt="" style="width:100%;${ir};border-radius:20px;box-shadow:0 20px 60px rgba(0,0,0,.3);display:block"/></figure>`;
+      const ancho = (c.image_align === 'left' || c.image_align === 'right') && iw === '100%' ? '70%' : iw;
+      const fig = `<figure style="margin-top:44px;margin-bottom:0;${ia};max-width:${ancho}"><img src="${e(c.image_url)}" loading="lazy" alt="" style="width:100%;${ir};border-radius:20px;box-shadow:0 20px 60px rgba(0,0,0,.3);display:block"/></figure>`;
       // Insertar justo antes de cerrar la sección. Tolerante a espacios/saltos de línea,
       // que antes hacían fallar el match exacto (por eso la oferta no aceptaba imagen).
       const ci = __out.lastIndexOf('</section>');

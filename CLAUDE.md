@@ -2375,3 +2375,47 @@ Medido en Chromium a 390px: botón de 342px en dos líneas, sin scroll horizonta
 
 ### Pendientes
 - 🟡 Límites ebook: Pro=999, Growth=999 → REVERTIR a Pro→5, Growth→20
+
+---
+
+## SESIÓN 19 JUL 2026 (parte 13) — 5 arreglos puntuales (sin tocar el resto)
+
+### 1. Las proporciones de foto en módulos/bonos no se veían — CAUSA RAÍZ ✅
+`ITEM_IMG` tenía `width:100%` + `aspect-ratio` + **`max-height:190px`**. El tope de altura
+**anulaba la proporción**: al elegir 1:1 en una tarjeta de ~450px, el navegador quería 450×450 pero
+lo recortaba a 190 → siempre se veía horizontal y cortada. Por eso "el recuadro queda igual".
+
+**Fix**: las proporciones verticales se limitan por **ancho**, no por alto:
+`1/1 → 64%`, `3/4 → 54%`, `9/16 → 42%`, centradas. `16/9` y `4/3` siguen a ancho completo.
+`original` conserva un tope de 220px. Medido en Chromium: 456×257 (1.78), 292×292 (1.00),
+246×328 (0.75), 192×340 (0.56) — las cuatro exactas.
+
+### 2. Faltaba 9:16 ✅
+Agregado a los 4 selectores de proporción (foto por ítem, imagen de sección, sección imagen,
+galería) como "Vertical de celular 9:16".
+
+### 3. Alineación en páginas de upsell/downsell/gracias ✅
+Esas secciones tienen contenedor angosto y centrado, así que alinear dentro de él no se notaba.
+Ahora, si se elige izquierda o derecha y el ancho es 100%, la imagen pasa a 70% para que el
+desplazamiento sea visible.
+
+### 4. El selector de tipografía no hacía nada — CAUSA RAÍZ ✅
+`onFontChange()` guardaba `landing.settings.font` y llamaba `renderPreview()`, pero en modo
+secciones el HTML lo arma `assembleLanding`, que **no recibía ni usaba la fuente**.
+
+**Fix**: nuevo `_FUENTES` (6 tipografías con su URL de Google Fonts), `assembleLanding` acepta
+`opts.font`, carga la fuente y la aplica al body. Las decorativas (Dancing Script, Great Vibes)
+se aplican **solo a los títulos** — en párrafos no se leen. `_landingOpts()` pasa la fuente y
+`onFontChange` rearma el HTML.
+
+### 5. Botones de la página de gracias sin destino ✅
+"Revisar mi correo" y "Contactar soporte" apuntaban a `#precio`, que no existe en esa página.
+Ahora esas secciones llevan `cta_needs_url: true`: **si el link está vacío, el botón no se dibuja**.
+Los textos pasaron a "Entrar al programa" y "Escribirnos", y al crear la página el chat explica que
+hay que completar el destino de cada uno (acceso al producto / WhatsApp o `mailto:`).
+La landing principal no se ve afectada: ahí un CTA sin link sigue yendo al precio o al checkout.
+
+### Versión: `?v=20260719l` (badge `v20260719l`)
+
+### Pendientes
+- 🟡 Límites ebook: Pro=999, Growth=999 → REVERTIR a Pro→5, Growth→20
