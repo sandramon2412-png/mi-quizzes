@@ -531,6 +531,33 @@ function aiResponder(bodyStr) {
   chk('publicar termina y muestra el link', pub && pub.linkVisible && /prueba-publicar/.test(pub.url || ''));
   chk('el botón vuelve a quedar disponible', pub && pub.btnEnabled);
 
+  console.log('E2E 15 — botón de la página de gracias: aviso, campo de link y aparición');
+  const gracias = await page.evaluate(async () => {
+    // Simulamos una sección tal como la crea la página de gracias del embudo
+    const i = landing.sections.findIndex(s => s.id === 'hero');
+    landing.sections[i].content = { ...landing.sections[i].content,
+      cta: 'Entrar al programa', cta_url: '', cta_needs_url: true };
+    landing.sections[i].html = AI.buildSection('hero', landing.sections[i].content, landing.palette);
+    openSectionEditor(i);
+    const editor = document.getElementById('sec-editor').innerText;
+    const labels = [...document.querySelectorAll('#sec-editor label')].map(l => l.textContent);
+    const sinLink = landing.sections[i].html;
+    // Ahora la usuaria completa el destino
+    setSecField('cta_url', 'https://acceso.miproducto.com');
+    await new Promise(r => setTimeout(r, 700));
+    return {
+      avisa: /todavía no se muestra/i.test(editor),
+      tieneCampo: labels.some(l => /Link del botón/i.test(l)),
+      sinLinkNoHayBoton: !/Entrar al programa/.test(sinLink),
+      conLink: landing.sections[i].html,
+    };
+  });
+  chk('el editor avisa por qué no se ve el botón', gracias.avisa);
+  chk('el editor tiene el campo "Link del botón"', gracias.tieneCampo);
+  chk('sin destino el botón no se dibuja', gracias.sinLinkNoHayBoton);
+  chk('al poner el destino el botón aparece', /Entrar al programa/.test(gracias.conLink));
+  chk('y apunta al destino escrito', gracias.conLink.includes('https://acceso.miproducto.com'));
+
   console.log('\nLlamadas IA por tipo:', JSON.stringify(aiCalls.reduce((a, c) => { a[c.kind] = (a[c.kind] || 0) + 1; return a; }, {})));
   console.log(fails.length === 0 ? '\n🎉 E2E COMPLETO: TODO PASA' : '\n⚠️ FALLARON: ' + fails.join(' | '));
   await browser.close();
