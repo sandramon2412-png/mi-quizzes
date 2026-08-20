@@ -10,9 +10,9 @@
 <script src="https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.min.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
 <link href="https://fonts.googleapis.com/icon?family=Material+Symbols+Outlined" rel="stylesheet"/>
-<script src="./supabase-config.js?v=20260719k"></script>
-<script src="./app.js?v=20260719k"></script>
-<script src="./landing-blocks.js?v=20260719k"></script>
+<script src="./supabase-config.js?v=20260719l"></script>
+<script src="./app.js?v=20260719l"></script>
+<script src="./landing-blocks.js?v=20260719l"></script>
 <script>
   // Si el CDN de Tailwind no cargó, esta asignación tiraba y mataba todo el script
   // que sigue (incluida la UI del builder). Blindado para que la página funcione igual.
@@ -1019,12 +1019,18 @@ function setSpacing(val, btn) {
 
 function onFontChange() {
   const val = document.getElementById('fld-font').value;
-  if (landing) {
-    if (!landing.settings) landing.settings = {};
-    landing.settings.font = val;
-    renderPreview();
-    autosave();
+  if (!landing) return;
+  if (!landing.settings) landing.settings = {};
+  landing.settings.font = val;
+  // En modo secciones el HTML se arma con assembleLanding: hay que rearmarlo
+  // para que la tipografía se aplique (antes solo se guardaba y no cambiaba nada).
+  if (landing.sections && landing.sections.length) {
+    const palId = landing.palette || getCurrentPalette() || 'blue-purple';
+    landing.html = AI.assembleLanding(landing.sections, palId, landing.title, _landingOpts());
   }
+  renderPreview();
+  autosave();
+  setStatus('Guardado');
 }
 
 function _updateChatIndicator() {
@@ -1172,7 +1178,7 @@ const SEC_SCHEMA = {
     F.image('image_url', 'Imagen'),
     F.text('caption', 'Pie de foto'),
     { key: 'size', label: 'Tamaño', type: 'select', options: [['full', 'Ancho completo'], ['large', 'Grande (85%)'], ['medium', 'Mediana (65%)'], ['small', 'Chica (40%)']] },
-    { key: 'ratio', label: 'Proporción', type: 'select', options: [['original', 'Original (sin recortar)'], ['16/9', 'Panorámica 16:9'], ['4/3', 'Clásica 4:3'], ['1/1', 'Cuadrada 1:1'], ['3/4', 'Vertical 3:4']] },
+    { key: 'ratio', label: 'Proporción', type: 'select', options: [['original', 'Original (sin recortar)'], ['16/9', 'Panorámica 16:9'], ['4/3', 'Clásica 4:3'], ['1/1', 'Cuadrada 1:1'], ['3/4', 'Vertical 3:4'], ['9/16', 'Vertical de celular 9:16']] },
     { key: 'align', label: 'Posición', type: 'select', options: [['center', 'Centrada'], ['left', 'A la izquierda'], ['right', 'A la derecha']] },
   ]},
   video: { label: 'Video', icon: 'play_circle', noMedia: true, fields: [
@@ -1183,7 +1189,7 @@ const SEC_SCHEMA = {
   galeria: { label: 'Galería de imágenes', icon: 'collections', noMedia: true, fields: [
     F.text('title', 'Título'),
     F.text('subtitle', 'Subtítulo'),
-    { key: 'ratio', label: 'Proporción de las fotos', type: 'select', options: [['4/3', 'Clásica 4:3'], ['1/1', 'Cuadrada 1:1'], ['16/9', 'Panorámica 16:9'], ['3/4', 'Vertical 3:4'], ['original', 'Original']] },
+    { key: 'ratio', label: 'Proporción de las fotos', type: 'select', options: [['4/3', 'Clásica 4:3'], ['1/1', 'Cuadrada 1:1'], ['16/9', 'Panorámica 16:9'], ['3/4', 'Vertical 3:4'], ['9/16', 'Vertical de celular 9:16'], ['original', 'Original']] },
     { key: 'images', label: 'Imágenes', type: 'items', addLabel: 'Agregar imagen',
       item: [F.image('url', 'Imagen'), F.text('caption', 'Pie de foto')] },
   ]},
@@ -1226,13 +1232,13 @@ const SEC_SCHEMA = {
     F.text('title', 'Título de la sección'),
     F.text('subtitle', 'Subtítulo'),
     { key: 'items', label: 'Beneficios', type: 'items', addLabel: 'Agregar beneficio',
-      item: [F.icon(), F.text('title', 'Título'), F.area('desc', 'Descripción'), F.image('image_url', 'Foto (opcional)'), { key: 'image_ratio', label: 'Ajuste de la foto', type: 'select', options: [['4/3', 'Clásica 4:3'], ['16/9', 'Panorámica 16:9'], ['1/1', 'Cuadrada'], ['original', 'Completa (sin recortar)']] }] },
+      item: [F.icon(), F.text('title', 'Título'), F.area('desc', 'Descripción'), F.image('image_url', 'Foto (opcional)'), { key: 'image_ratio', label: 'Ajuste de la foto', type: 'select', options: [['16/9', 'Panorámica 16:9'], ['4/3', 'Clásica 4:3'], ['1/1', 'Cuadrada'], ['3/4', 'Vertical 3:4'], ['9/16', 'Vertical de celular 9:16'], ['original', 'Completa (sin recortar)']] }] },
   ]},
   modulos: { label: 'Módulos / contenido', icon: 'menu_book', fields: [
     F.text('title', 'Título de la sección'),
     F.text('subtitle', 'Subtítulo'),
     { key: 'items', label: 'Módulos', type: 'items', addLabel: 'Agregar módulo',
-      item: [F.icon(), F.text('title', 'Título'), F.area('desc', 'Descripción'), F.image('image_url', 'Foto (opcional)'), { key: 'image_ratio', label: 'Ajuste de la foto', type: 'select', options: [['4/3', 'Clásica 4:3'], ['16/9', 'Panorámica 16:9'], ['1/1', 'Cuadrada'], ['original', 'Completa (sin recortar)']] }] },
+      item: [F.icon(), F.text('title', 'Título'), F.area('desc', 'Descripción'), F.image('image_url', 'Foto (opcional)'), { key: 'image_ratio', label: 'Ajuste de la foto', type: 'select', options: [['16/9', 'Panorámica 16:9'], ['4/3', 'Clásica 4:3'], ['1/1', 'Cuadrada'], ['3/4', 'Vertical 3:4'], ['9/16', 'Vertical de celular 9:16'], ['original', 'Completa (sin recortar)']] }] },
   ]},
   'como-funciona': { label: 'Cómo funciona', icon: 'linear_scale', fields: [
     F.text('title', 'Título de la sección'),
@@ -1240,7 +1246,7 @@ const SEC_SCHEMA = {
     { key: 'items', label: 'Pasos', type: 'items', addLabel: 'Agregar paso',
       item: [F.text('step', 'Etiqueta del paso', 'Ej: 1  ·  o  Semanas 1 y 2'),
              F.text('title', 'Título'), F.area('desc', 'Descripción'),
-             F.image('image_url', 'Foto (opcional)'), { key: 'image_ratio', label: 'Ajuste de la foto', type: 'select', options: [['4/3', 'Clásica 4:3'], ['16/9', 'Panorámica 16:9'], ['1/1', 'Cuadrada'], ['original', 'Completa (sin recortar)']] }] },
+             F.image('image_url', 'Foto (opcional)'), { key: 'image_ratio', label: 'Ajuste de la foto', type: 'select', options: [['16/9', 'Panorámica 16:9'], ['4/3', 'Clásica 4:3'], ['1/1', 'Cuadrada'], ['3/4', 'Vertical 3:4'], ['9/16', 'Vertical de celular 9:16'], ['original', 'Completa (sin recortar)']] }] },
   ]},
   'prueba-social': { label: 'Métricas / confianza', icon: 'insights', fields: [
     F.text('title', 'Frase de credibilidad'),
@@ -1256,7 +1262,7 @@ const SEC_SCHEMA = {
     F.text('title', 'Título de la sección'),
     F.text('subtitle', 'Subtítulo'),
     { key: 'items', label: 'Bonos', type: 'items', addLabel: 'Agregar bono',
-      item: [F.icon(), F.text('title', 'Nombre'), F.area('desc', 'Descripción'), F.text('value', 'Valor'), F.image('image_url', 'Foto (opcional)'), { key: 'image_ratio', label: 'Ajuste de la foto', type: 'select', options: [['4/3', 'Clásica 4:3'], ['16/9', 'Panorámica 16:9'], ['1/1', 'Cuadrada'], ['original', 'Completa (sin recortar)']] }] },
+      item: [F.icon(), F.text('title', 'Nombre'), F.area('desc', 'Descripción'), F.text('value', 'Valor'), F.image('image_url', 'Foto (opcional)'), { key: 'image_ratio', label: 'Ajuste de la foto', type: 'select', options: [['16/9', 'Panorámica 16:9'], ['4/3', 'Clásica 4:3'], ['1/1', 'Cuadrada'], ['3/4', 'Vertical 3:4'], ['9/16', 'Vertical de celular 9:16'], ['original', 'Completa (sin recortar)']] }] },
   ]},
   precio: { label: 'Precio', icon: 'sell', fields: [
     F.text('title', 'Título de la sección'),
@@ -1295,7 +1301,7 @@ const CTA_FIELDS = [
 const MEDIA_FIELDS = [
   F.image('image_url', 'Imagen de la sección'),
   { key: 'image_size', label: 'Tamaño de la imagen', type: 'select', options: [['full', 'Ancho completo'], ['large', 'Grande (85%)'], ['medium', 'Mediana (65%)'], ['small', 'Chica (40%)']] },
-  { key: 'image_ratio', label: 'Proporción de la imagen', type: 'select', options: [['16/9', 'Panorámica 16:9'], ['4/3', 'Clásica 4:3'], ['1/1', 'Cuadrada 1:1'], ['3/4', 'Vertical 3:4'], ['original', 'Original (sin recortar)']] },
+  { key: 'image_ratio', label: 'Proporción de la imagen', type: 'select', options: [['16/9', 'Panorámica 16:9'], ['4/3', 'Clásica 4:3'], ['1/1', 'Cuadrada 1:1'], ['3/4', 'Vertical 3:4'], ['9/16', 'Vertical de celular 9:16'], ['original', 'Original (sin recortar)']] },
   { key: 'image_align', label: 'Posición de la imagen', type: 'select', options: [['center', 'Centrada'], ['left', 'A la izquierda'], ['right', 'A la derecha']] },
   F.text('video_url', 'Video de fondo (link .mp4)', 'Déjalo vacío si no quieres video'),
   { key: 'video_fit', label: 'Encuadre del video', type: 'select', options: [['cover', 'Cubrir (recorta los bordes)'], ['contain', 'Mostrar completo (sin recortar)']] },
@@ -1751,7 +1757,9 @@ function _funnelPageSections(type, palId, productName) {
       _mkSec('hero', {
         layout: 'center', badge: 'Pago confirmado', title: '¡Gracias por tu compra!',
         subtitle: `Ya tienes acceso a ${name}. Te enviamos un correo con todos los detalles — revisa tu bandeja de entrada (y la carpeta de spam, por si acaso).`,
-        cta: 'Revisar mi correo', microcopy: 'Si en 10 minutos no te llega, escríbenos.',
+        // Sin link no se muestra botón: se completa con el acceso real al producto
+        cta: 'Entrar al programa', cta_url: '', cta_needs_url: true,
+        microcopy: 'Si en 10 minutos no te llega el correo, escríbenos.',
         image_prompt: 'happy+woman+celebrating+laptop+success+bright',
       }, palId),
       _mkSec('como-funciona', { title: 'Tus próximos pasos', items: [
@@ -1759,7 +1767,8 @@ function _funnelPageSections(type, palId, productName) {
         { step: '2', title: 'Entra a la plataforma', desc: 'Usa el enlace del correo para entrar y crear tu contraseña.' },
         { step: '3', title: 'Empieza hoy mismo', desc: 'Comienza por el primer módulo — no necesitas nada más para empezar.' },
       ]}, palId),
-      _mkSec('cta-final', { title: '¿Necesitas ayuda?', subtitle: 'Escríbenos y te respondemos a la brevedad.', cta: 'Contactar soporte', microcopy: 'Respondemos de lunes a viernes.' }, palId),
+      _mkSec('cta-final', { title: '¿Necesitas ayuda?', subtitle: 'Escríbenos y te respondemos a la brevedad.',
+        cta: 'Escribirnos', cta_url: '', cta_needs_url: true, microcopy: 'Respondemos de lunes a viernes.' }, palId),
       _mkSec('footer', { brand_name: name, tagline: 'Gracias por confiar en nosotros', copyright: `© ${new Date().getFullYear()} · Todos los derechos reservados` }, palId),
     ];
   }
@@ -1899,7 +1908,7 @@ Si lo dejás vacío, uso un texto de ejemplo que después editás a mano.`, '');
     setStatus('Guardado');
     showToast(`Página de ${meta.label} creada y publicada`);
     const extra = type === 'thanks'
-      ? 'Pegá su link en tu pasarela como página de retorno tras la compra.'
+      ? 'Pegá su link en tu pasarela como página de retorno tras la compra. Ojo: los dos botones ("Entrar al programa" y "Escribirnos") están sin destino a propósito — abrí la página con "Editar" y completá el campo "Link" de cada uno (el acceso a tu producto y tu WhatsApp o mailto:tucorreo). Mientras estén vacíos, el botón no se muestra.'
       : `Pegá su link en tu pasarela como página posterior al pago, y cargá el link de pago de esa oferta dentro de la página (campo "Link de pago" al editarla).`;
     addChatMsg(`Creé tu página de ${meta.label} y ya está publicada. ${extra}`, 'assistant');
   } catch (e) {
@@ -1944,6 +1953,7 @@ function _landingOpts() {
   return {
     ctaUrl: (landing && landing.settings && landing.settings.cta_url) || '',
     fbPixel: (landing && landing.settings && landing.settings.fb_pixel_id) || '',
+    font: (landing && landing.settings && landing.settings.font) || 'jakarta',
   };
 }
 
@@ -4183,7 +4193,7 @@ async function init() {
   if (ldId) await loadLanding(ldId);
 }
 
-const BUILDER_VERSION = 'v20260719k';
+const BUILDER_VERSION = 'v20260719l';
 
 document.addEventListener('DOMContentLoaded', () => {
   const vEl = document.getElementById('ld-version');
