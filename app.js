@@ -1623,6 +1623,9 @@ ${body}
     const ICON_W = (name,sz=20) => `<span class="material-symbols-outlined" style="font-size:${sz}px;color:#fff">${e(okIcon(name,'star'))}</span>`;
     const AVATAR = (init) => `<div style="width:44px;height:44px;border-radius:50%;background:${GRAD};display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:14px;flex-shrink:0">${e((init||'?').slice(0,2))}</div>`;
     const BTN = (text,href='#precio') => `<a href="${e(href)}" class="ld-btn" style="background:${GRAD};color:#fff;padding:16px 36px;border-radius:12px;font-weight:700;font-size:18px;display:inline-block;text-decoration:none;cursor:pointer">${e(text||'Empezar')}</a>`;
+    // Botón principal de la sección (hero / precio): usa el link propio si lo hay
+    // y, si la sección exige link (páginas del embudo), no se dibuja sin él.
+    const MBTN = (def) => (c.cta_needs_url && !c.cta_url) ? '' : BTN(c.cta || def, c.cta_url || '#precio');
     const H2 = (text,align='center') => `<h2 style="color:var(--ink);font-size:clamp(1.6rem,3vw,2.4rem);font-weight:800;text-align:${align};margin:0 0 12px;white-space:pre-wrap">${e(text)}</h2>`;
     const SUB = (text,align='center') => text ? `<p style="color:var(--muted);text-align:${align};font-size:17px;line-height:1.6;margin:0 0 48px;white-space:pre-wrap">${e(text)}</p>` : '<div style="margin-bottom:48px"></div>';
     const SEC = (inner,bg='var(--bg)',py=80) => `<section id="${e(id)}" style="background:${bg};padding:${py}px 0"><div style="max-width:1152px;margin:0 auto;padding:0 24px">${inner}</div></section>`;
@@ -1719,7 +1722,7 @@ ${c.caption ? `<figcaption style="color:var(--muted);font-size:14px;text-align:c
 ${c.badge?`<p style="color:rgba(255,255,255,.85);font-weight:700;font-size:13px;text-transform:uppercase;letter-spacing:2px;margin:0 0 16px">${e(c.badge)}</p>`:''}
 <h1 style="color:#fff;font-size:clamp(2rem,5vw,3.5rem);font-weight:800;line-height:1.1;margin:0 0 20px;text-shadow:0 2px 20px rgba(0,0,0,.4);white-space:pre-wrap">${e(c.title||'Título')}</h1>
 <p style="color:rgba(255,255,255,.88);font-size:18px;line-height:1.6;margin:0 0 32px">${e(c.subtitle||'')}</p>
-${BTN(c.cta||'Empezar ahora')}
+${MBTN('Empezar ahora')}
 ${c.microcopy?`<p style="color:rgba(255,255,255,.7);font-size:13px;margin:12px 0 0">${e(c.microcopy)}</p>`:''}
 </div>
 <div style="flex:1;min-width:280px;max-width:520px">
@@ -1737,7 +1740,7 @@ ${c.microcopy?`<p style="color:rgba(255,255,255,.7);font-size:13px;margin:12px 0
 ${c.badge?`<p style="color:rgba(255,255,255,.85);font-weight:700;font-size:13px;text-transform:uppercase;letter-spacing:2px;margin:0 0 16px">${e(c.badge)}</p>`:''}
 <h1 style="color:#fff;font-size:clamp(2rem,5vw,3.6rem);font-weight:800;line-height:1.1;margin:0 0 20px;text-shadow:0 2px 20px rgba(0,0,0,.4);white-space:pre-wrap">${e(c.title||'Título')}</h1>
 <p style="color:rgba(255,255,255,.88);font-size:18px;line-height:1.6;margin:0 auto 32px;max-width:620px">${e(c.subtitle||'')}</p>
-${BTN(c.cta||'Empezar ahora')}
+${MBTN('Empezar ahora')}
 ${c.microcopy?`<p style="color:rgba(255,255,255,.7);font-size:13px;margin:12px 0 0">${e(c.microcopy)}</p>`:''}
 ${c.image_url?`<div style="max-width:640px;margin:48px auto 0"><img src="${e(c.image_url)}" loading="lazy" alt="" style="width:100%;max-height:360px;object-fit:cover;border-radius:20px;box-shadow:0 24px 64px rgba(0,0,0,.5);border:1px solid rgba(255,255,255,.15)"/></div>`:''}
 </div>
@@ -1752,7 +1755,7 @@ ${c.image_url?`<div style="max-width:640px;margin:48px auto 0"><img src="${e(c.i
 ${c.badge?`<p style="color:var(--brand);font-weight:700;font-size:13px;text-transform:uppercase;letter-spacing:2px;margin:0 0 16px">${e(c.badge)}</p>`:''}
 <h1 style="color:var(--ink);font-size:clamp(2rem,5vw,3.6rem);font-weight:800;line-height:1.1;margin:0 0 20px;white-space:pre-wrap">${e(c.title||'Título')}</h1>
 <p style="color:var(--muted);font-size:18px;line-height:1.6;margin:0 auto 32px;max-width:620px">${e(c.subtitle||'')}</p>
-${(c.cta_needs_url && !c.cta_url) ? '' : BTN(c.cta||'Empezar ahora', c.cta_url || '#precio')}
+${MBTN('Empezar ahora')}
 ${c.microcopy?`<p style="color:var(--muted);font-size:13px;margin:12px 0 0">${e(c.microcopy)}</p>`:''}
 </div>
 <div style="max-width:900px;margin:56px auto 0;padding:0 24px">
@@ -1766,7 +1769,7 @@ ${c.microcopy?`<p style="color:var(--muted);font-size:13px;margin:12px 0 0">${e(
 ${c.badge?`<p style="color:var(--brand);font-weight:700;font-size:13px;text-transform:uppercase;letter-spacing:2px;margin:0 0 16px">${e(c.badge)}</p>`:''}
 <h1 style="color:var(--ink);font-size:clamp(2rem,5vw,3.5rem);font-weight:800;line-height:1.1;margin:0 0 20px;white-space:pre-wrap">${e(c.title||'Título')}</h1>
 <p style="color:var(--muted);font-size:18px;line-height:1.6;margin:0 0 32px;white-space:pre-wrap">${e(c.subtitle||'')}</p>
-${BTN(c.cta||'Empezar ahora')}
+${MBTN('Empezar ahora')}
 ${c.microcopy?`<p style="color:var(--muted);font-size:13px;margin:12px 0 0">${e(c.microcopy)}</p>`:''}
 </div>
 <div style="flex:1;min-width:280px;max-width:520px">
@@ -1815,7 +1818,7 @@ ${c.microcopy?`<p style="color:var(--muted);font-size:13px;margin:12px 0 0">${e(
       }
       case 'precio': {
         const features = arr(c.features);
-        return `<section id="precio" style="background:var(--surface);padding:80px 0"><div style="max-width:480px;margin:0 auto;padding:0 24px;text-align:center">${H2(c.title||'Tu inversión','center')}<div class="ld-price-card" style="background:var(--bg);border:2px solid var(--brand);border-radius:20px;padding:40px;margin-top:32px"><p style="color:var(--muted);font-size:13px;text-transform:uppercase;letter-spacing:1px;margin:0 0 8px">${e(c.period||'pago único')}</p><p style="color:var(--ink);font-size:56px;font-weight:800;margin:0 0 8px;line-height:1">${e(c.price||'$97')}</p><ul style="list-style:none;margin:24px 0 32px;padding:0;text-align:left;display:flex;flex-direction:column;gap:10px">${features.map(f=>`<li style="color:var(--ink);font-size:15px;display:flex;align-items:flex-start;gap:8px"><span class="material-symbols-outlined" style="font-size:18px;color:var(--brand);flex-shrink:0;margin-top:1px">check_circle</span><span>${e(f)}</span></li>`).join('')}</ul>${BTN(c.cta||'Quiero acceso ahora')}${c.microcopy?`<p style="color:var(--muted);font-size:13px;margin:12px 0 0">${e(c.microcopy)}</p>`:''}</div></div></section>`;
+        return `<section id="precio" style="background:var(--surface);padding:80px 0"><div style="max-width:480px;margin:0 auto;padding:0 24px;text-align:center">${H2(c.title||'Tu inversión','center')}<div class="ld-price-card" style="background:var(--bg);border:2px solid var(--brand);border-radius:20px;padding:40px;margin-top:32px"><p style="color:var(--muted);font-size:13px;text-transform:uppercase;letter-spacing:1px;margin:0 0 8px">${e(c.period||'pago único')}</p><p style="color:var(--ink);font-size:56px;font-weight:800;margin:0 0 8px;line-height:1">${e(c.price||'$97')}</p><ul style="list-style:none;margin:24px 0 32px;padding:0;text-align:left;display:flex;flex-direction:column;gap:10px">${features.map(f=>`<li style="color:var(--ink);font-size:15px;display:flex;align-items:flex-start;gap:8px"><span class="material-symbols-outlined" style="font-size:18px;color:var(--brand);flex-shrink:0;margin-top:1px">check_circle</span><span>${e(f)}</span></li>`).join('')}</ul>${MBTN('Quiero acceso ahora')}${c.microcopy?`<p style="color:var(--muted);font-size:13px;margin:12px 0 0">${e(c.microcopy)}</p>`:''}</div></div></section>`;
       }
       case 'para-quien': {
         const yes = arr(c.yes), no = arr(c.no);
@@ -2562,7 +2565,7 @@ ${JSON.stringify({
 
   _CAMPOS_EDITABLES: {
     nav: 'brand (nombre), logo_size (22-44), show_brand_text (si/no), cta (texto del botón), links[] con {label, href}',
-    hero: 'badge, title, subtitle, cta, microcopy, layout (split/center), image_size, image_ratio, image_align, video_fit, video_position',
+    hero: 'badge, title, subtitle, cta, cta_url (destino del botón), microcopy, layout (split/center), image_size, image_ratio, image_align, video_fit, video_position',
     problema: 'title, items[] con {icon, title, desc}, cta, cta_url, cta_note',
     'para-quien': 'title, yes_title, yes_icon, yes[], no_title, no_icon, no[], cta',
     'antes-despues': 'title, before_title, before_icon, before[], after_title, after_icon, after[], cta',
@@ -2572,10 +2575,10 @@ ${JSON.stringify({
     'prueba-social': 'title, stats[] con {value, label}, cta',
     testimonios: 'title, items[] con {name, initials, role, quote}, cta',
     bonos: 'title, subtitle, items[] con {icon, title, desc, value, image_url, image_ratio}, cta',
-    precio: 'title, price, period, features[], cta, microcopy',
-    garantia: 'title, desc, cta',
+    precio: 'title, price, period, features[], cta, cta_url (destino del botón), microcopy',
+    garantia: 'title, desc, cta, cta_url, cta_note',
     faq: 'title, icon, items[] con {icon, q, a}, cta',
-    'cta-final': 'title, subtitle, cta, microcopy',
+    'cta-final': 'title, subtitle, cta, cta_url (destino del botón), microcopy',
     footer: 'brand_name, tagline, copyright',
     oferta: 'badge, title, subtitle, features[], price_before, price, cta, decline, microcopy',
     texto: 'title, body, align (left/center), cta',
@@ -2617,7 +2620,9 @@ REGLAS:
 1. "ops" contiene solo los campos que cambian. Todo lo que no menciones queda intacto.
 2. Para cambiar o quitar, usa un id que exista en la página. Para crear, usa un id de la lista de secciones disponibles.
 3. Para listas (items, features, yes, no, links, images) devuelve el array COMPLETO ya modificado.
-4. NUNCA incluyas estos campos en "set": logo_url, image_url, video_url, cta_url, decline_url, brand_href. Son archivos y enlaces que cargó la usuaria y se perderían.
+4. NUNCA incluyas estos campos en "set": logo_url, image_url, video_url, brand_href. Son archivos que cargó la usuaria y se perderían.
+4b. cta_url y decline_url SÍ puedes ponerlos, pero SOLO cuando la usuaria te da la dirección concreta en su mensaje (un https://…, un mailto:… o un wa.me/…). Nunca los inventes ni los dejes vacíos.
+4c. En las páginas del embudo (gracias, upsell, downsell) el botón NO se dibuja hasta que tenga su propio destino. Si la usuaria dice que el botón no aparece: pídele la dirección exacta a la que debe llevar y, cuando te la dé, ponla en cta_url de esa sección. También puedes indicarle el campo "Link del botón" del panel derecho.
 5. Para ajustes visuales usa los campos que ya existen: logo_size (número en px, 22 a 44), image_size (full/large/medium/small), image_ratio (16/9, 4/3, 1/1, 3/4, original), image_align (center/left/right), video_fit (cover/contain), video_position (center/top/bottom), layout del hero (split/center).
 6. Los iconos son nombres de Material Symbols en minúscula (check_circle, star, favorite, school…). Nunca emojis.
 7. Si el pedido no es un cambio en la página (una pregunta, un saludo, algo confuso), responde con "ops": [] y algo útil en "reply".

@@ -2419,3 +2419,57 @@ La landing principal no se ve afectada: ahí un CTA sin link sigue yendo al prec
 
 ### Pendientes
 - 🟡 Límites ebook: Pro=999, Growth=999 → REVERTIR a Pro→5, Growth→20
+
+---
+
+## SESIÓN 20 AGO 2026 — Los botones de la página de gracias que nunca aparecían
+
+### El reporte
+Sandra: *"los botones de redirigir de la página de gracias nunca aparecieron y el chat no me pudo
+ayudar tampoco; en la sección de editar solo había una parte que decía texto del botón"*.
+
+### La causa raíz — un error propio de la ronda anterior
+En la parte 13 se agregó `cta_needs_url: true` a las secciones de la página de gracias para que un
+botón sin destino no se dibujara (antes apuntaban a `#precio`, que no existe en esa página). **Pero
+nunca se agregó el campo para escribir ese destino en el editor visual.** Resultado: la regla
+"sin link no hay botón" estaba activa y no había forma de cumplirla — los botones no podían aparecer
+nunca. El chat tampoco podía ayudar: la regla 4 de su prompt le **prohibía** tocar `cta_url`.
+
+Además, `cta_needs_url` solo se respetaba en **una** de las cuatro variantes del hero (la centrada) y
+en `cta-final`; las otras tres (split, video-split, video-center) y `precio` ignoraban tanto
+`cta_needs_url` como `cta_url`.
+
+### Los arreglos
+
+**`app.js`**
+- Nuevo helper `MBTN(def)` junto a `BTN`: aplica en un solo lugar las dos reglas del botón principal
+  (usar `cta_url` propio si existe; no dibujar nada si la sección exige link y está vacío).
+  Reemplaza los 4 usos del hero y el de `precio`. `cta-final` y `SEC_CTA` ya lo hacían.
+- `_CAMPOS_EDITABLES`: `cta_url` agregado al catálogo de hero, precio y cta-final (y `cta_url` /
+  `cta_note` en garantía) para que el chat sepa que puede tocarlos.
+- Regla 4 del prompt del chat dividida: sigue prohibido tocar `logo_url`, `image_url`, `video_url`
+  y `brand_href`, pero **`cta_url` y `decline_url` ahora se pueden poner cuando la usuaria da la
+  dirección concreta** (nunca inventarla ni vaciarla). Nueva regla 4c: si dice que el botón no
+  aparece, pedirle la dirección y ponerla. `_preserveUser` sigue protegiendo el valor anterior
+  cuando el modelo devuelve vacío, así que esto no puede borrar nada.
+
+**`landing-builder.html`**
+- Campo `F.text('cta_url', 'Link del botón', 'Vacío = usa el link de pago general')` en los schemas
+  de `hero`, `precio` y `cta-final`.
+- `openSectionEditor()` muestra un **aviso ámbar** cuando la sección exige link y está vacío:
+  explica que por eso el botón no se ve y qué escribir (acceso al producto, WhatsApp o `mailto:`).
+- El mensaje que aparece al crear la página de gracias ahora nombra las secciones exactas
+  (Portada y Cierre / CTA final) y el campo exacto ("Link del botón").
+
+### Tests
+- `tests/unit-landing-sections.js`: +10 checks — las 3 variantes del hero y `precio`, con y sin
+  destino, y que la landing normal siga yendo a `#precio`.
+- `tests/e2e-landing-builder.js`: **E2E 15** — abre el editor con una sección tipo página de gracias,
+  verifica el aviso y el campo "Link del botón", que sin destino el botón no está, y que al escribir
+  el destino el botón aparece apuntando ahí.
+- Las 7 suites unitarias + el E2E completo pasan.
+
+### Versión: `?v=20260719m` (badge `v20260719m`)
+
+### Pendientes
+- 🟡 Límites ebook: Pro=999, Growth=999 en `app.js → PlanLimits` — REVERTIR a Pro→5, Growth→20

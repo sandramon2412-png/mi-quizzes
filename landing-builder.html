@@ -10,9 +10,9 @@
 <script src="https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.min.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
 <link href="https://fonts.googleapis.com/icon?family=Material+Symbols+Outlined" rel="stylesheet"/>
-<script src="./supabase-config.js?v=20260719l"></script>
-<script src="./app.js?v=20260719l"></script>
-<script src="./landing-blocks.js?v=20260719l"></script>
+<script src="./supabase-config.js?v=20260719m"></script>
+<script src="./app.js?v=20260719m"></script>
+<script src="./landing-blocks.js?v=20260719m"></script>
 <script>
   // Si el CDN de Tailwind no cargó, esta asignación tiraba y mataba todo el script
   // que sigue (incluida la UI del builder). Blindado para que la página funcione igual.
@@ -1198,6 +1198,7 @@ const SEC_SCHEMA = {
     F.area('title', 'Título principal'),
     F.area('subtitle', 'Subtítulo'),
     F.text('cta', 'Texto del botón'),
+    F.text('cta_url', 'Link del botón', 'Vacío = usa el link de pago general'),
     F.text('microcopy', 'Texto chico bajo el botón'),
     F.image('image_url', 'Imagen de la portada'),
     F.text('video_url', 'Video de fondo (opcional)', 'Link .mp4 — o usa el botón Video de fondo'),
@@ -1270,6 +1271,7 @@ const SEC_SCHEMA = {
     F.text('period', 'Detalle', 'Ej: pago único · acceso de por vida'),
     F.list('features', 'Qué incluye'),
     F.text('cta', 'Texto del botón'),
+    F.text('cta_url', 'Link del botón', 'Vacío = usa el link de pago general'),
     F.text('microcopy', 'Texto chico bajo el botón'),
   ]},
   garantia: { label: 'Garantía', icon: 'verified_user', fields: [
@@ -1283,7 +1285,9 @@ const SEC_SCHEMA = {
   ]},
   'cta-final': { label: 'Cierre / CTA final', icon: 'campaign', fields: [
     F.area('title', 'Título'), F.area('subtitle', 'Subtítulo'),
-    F.text('cta', 'Texto del botón'), F.text('microcopy', 'Texto chico bajo el botón'),
+    F.text('cta', 'Texto del botón'),
+    F.text('cta_url', 'Link del botón', 'Vacío = usa el link de pago general'),
+    F.text('microcopy', 'Texto chico bajo el botón'),
   ]},
   footer: { label: 'Pie de página', icon: 'horizontal_rule', fields: [
     F.text('brand_name', 'Nombre de la marca'), F.text('tagline', 'Frase corta'), F.text('copyright', 'Derechos'),
@@ -1368,6 +1372,17 @@ function openSectionEditor(idx) {
     <span class="text-xs font-bold flex-1">${meta.label}</span>
     <button onclick="scrollPreviewTo('${sec.id}')" class="text-[10px] font-semibold hover:opacity-80" style="color:#4d7cff;background:none;border:none;cursor:pointer">Ver ↓</button>
   </div>`];
+
+  // Páginas del embudo: el botón solo se dibuja si tiene destino propio.
+  // Sin este aviso la usuaria no entiende por qué el botón "no aparece".
+  if (c.cta_needs_url && !c.cta_url) {
+    parts.push(`<div style="background:rgba(255,180,60,.12);border:1px solid rgba(255,180,60,.3);border-radius:8px;padding:9px 10px;margin-bottom:12px">
+      <p style="font-size:11px;line-height:1.5;color:#ffd8a0;margin:0">
+        <strong>El botón "${escHtml(c.cta || 'CTA')}" todavía no se muestra.</strong><br>
+        Completá abajo <em>Link del botón</em> con el destino real (el acceso al producto, tu WhatsApp
+        o <code>mailto:tucorreo@dominio.com</code>) y aparece al instante.
+      </p></div>`);
+  }
 
   meta.fields.forEach(f => { parts.push(renderSecField(f, c[f.key], f.key)); });
   box.innerHTML = parts.join('');
@@ -1908,7 +1923,7 @@ Si lo dejás vacío, uso un texto de ejemplo que después editás a mano.`, '');
     setStatus('Guardado');
     showToast(`Página de ${meta.label} creada y publicada`);
     const extra = type === 'thanks'
-      ? 'Pegá su link en tu pasarela como página de retorno tras la compra. Ojo: los dos botones ("Entrar al programa" y "Escribirnos") están sin destino a propósito — abrí la página con "Editar" y completá el campo "Link" de cada uno (el acceso a tu producto y tu WhatsApp o mailto:tucorreo). Mientras estén vacíos, el botón no se muestra.'
+      ? 'Pegá su link en tu pasarela como página de retorno tras la compra. Ojo: los dos botones ("Entrar al programa" y "Escribirnos") están sin destino a propósito — abrí la página con "Editar", entrá a la sección Portada y a Cierre / CTA final, y completá el campo "Link del botón" de cada una (el acceso a tu producto y tu WhatsApp o mailto:tucorreo). Mientras esté vacío, el botón no se muestra.'
       : `Pegá su link en tu pasarela como página posterior al pago, y cargá el link de pago de esa oferta dentro de la página (campo "Link de pago" al editarla).`;
     addChatMsg(`Creé tu página de ${meta.label} y ya está publicada. ${extra}`, 'assistant');
   } catch (e) {
@@ -4193,7 +4208,7 @@ async function init() {
   if (ldId) await loadLanding(ldId);
 }
 
-const BUILDER_VERSION = 'v20260719l';
+const BUILDER_VERSION = 'v20260719m';
 
 document.addEventListener('DOMContentLoaded', () => {
   const vEl = document.getElementById('ld-version');

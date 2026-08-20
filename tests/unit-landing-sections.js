@@ -245,5 +245,19 @@ chk('sin destino no se dibuja el botón', !gSin.includes('Escribirnos'));
 chk('con destino sí, y apunta ahí', gCon.includes('https://wa.me/1'));
 chk('la landing normal no se ve afectada', normalCta.includes('Comprar'));
 
+// El botón principal (hero / precio) también respeta link propio y "sin link, sin botón"
+const H=(c)=>C._buildSection('hero',c,pal);
+const hrefDe=(h)=>((h.match(/<a href="([^"]*)" class="ld-btn"/)||[])[1])||'';
+chk('hero split sin destino → sin botón',   !hrefDe(H({layout:'split',title:'T',cta:'Entrar',cta_needs_url:true})));
+chk('hero center sin destino → sin botón',  !hrefDe(H({layout:'center',title:'T',cta:'Entrar',cta_needs_url:true})));
+chk('hero con video sin destino → sin botón', !hrefDe(H({layout:'split',video_url:'v.mp4',title:'T',cta:'Entrar',cta_needs_url:true})));
+chk('hero split con destino → apunta ahí',  hrefDe(H({layout:'split',title:'T',cta:'Entrar',cta_needs_url:true,cta_url:'https://acceso.com'}))==='https://acceso.com');
+chk('hero center con destino → apunta ahí', hrefDe(H({layout:'center',title:'T',cta:'Entrar',cta_needs_url:true,cta_url:'https://acceso.com'}))==='https://acceso.com');
+chk('hero con video y destino → apunta ahí',hrefDe(H({layout:'center',video_url:'v.mp4',title:'T',cta:'Entrar',cta_needs_url:true,cta_url:'https://acceso.com'}))==='https://acceso.com');
+chk('landing normal: hero sigue yendo al precio', hrefDe(H({layout:'split',title:'T',cta:'Comprar'}))==='#precio');
+chk('hero con link de pago propio lo respeta', hrefDe(H({layout:'split',title:'T',cta:'Comprar',cta_url:'https://pay.hotmart.com/x'}))==='https://pay.hotmart.com/x');
+chk('precio con link propio lo respeta', hrefDe(C._buildSection('precio',{title:'P',price:'$97',cta:'Comprar',cta_url:'https://pay.com'},pal))==='https://pay.com');
+chk('precio sin link sigue igual que antes', hrefDe(C._buildSection('precio',{title:'P',price:'$97',cta:'Comprar'},pal))==='#precio');
+
 console.log('\n'+(f===0?'🎉 TODOS PASAN':'⚠️ '+f+' FALLAN'));
 process.exit(f?1:0);
