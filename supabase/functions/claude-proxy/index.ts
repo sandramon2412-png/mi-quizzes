@@ -6,6 +6,17 @@ const CORS = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
+// ── Plan capabilities (server-side copy of PlanLimits in app.js) ──
+// The browser also gates these, but that check is trivially bypassed from the
+// console, so the paid features are enforced here where the master key lives.
+const PLAN_CAPS: Record<string, { ai: boolean; botLab: boolean }> = {
+  free:    { ai: false, botLab: false },
+  starter: { ai: false, botLab: true  },
+  pro:     { ai: true,  botLab: true  },
+  growth:  { ai: true,  botLab: true  },
+  elite:   { ai: true,  botLab: true  },
+};
+
 // ── In-memory rate limiter: 15 requests per user per minute ──
 const rateMap = new Map<string, { count: number; reset: number }>();
 const RATE_LIMIT = 15;
@@ -60,8 +71,51 @@ serve(async (req) => {
       );
     }
 
-    // Forward request to Anthropic
     const body = await req.json();
+
+    // ── Plan gate ────────────────────────────────────────────
+    // `feature` says which paid capability the caller needs: "botLab" for the
+    // Bot Lab chat, "ai" (default) for everything that generates content.
+    const feature = body.feature === "botLab" ? "botLab" : "ai";
+    delete body.feature; // Anthropic rejects unknown top-level fields
+
+    // Read the plan with the caller's own token — the "profiles_select_own" RLS
+    // policy allows exactly this, so no service-role key is needed here.
+    const { data: profile, error: profileError } = await supabase
+      .from("profiles")
+      .select("plan")
+      .eq("id", user.id)
+      .single();
+
+    // Couldn't read it: never charge the master key on an unverified plan, but
+    // don't tell a paying customer to upgrade either — this is a transient fault.
+    if (profileError) {
+      console.error("claude-proxy: could not read plan for", user.id, profileError.message);
+      return new Response(
+        JSON.stringify({ error: { message: "No pudimos verificar tu plan. Intenta de nuevo en un momento." } }),
+        { status: 503, headers: { ...CORS, "Content-Type": "application/json" } }
+      );
+    }
+
+    const plan = profile?.plan || "free";
+    const caps = PLAN_CAPS[plan] || PLAN_CAPS.free;
+    if (!caps[feature]) {
+      return new Response(
+        JSON.stringify({
+          error: {
+            code: "plan_required",
+            plan,
+            feature,
+            message: feature === "botLab"
+              ? "Bot Lab está disponible desde el plan Starter. Actualiza tu plan para usarlo."
+              : "La creación con IA está disponible desde el plan Pro. Actualiza tu plan para usarla.",
+          },
+        }),
+        { status: 403, headers: { ...CORS, "Content-Type": "application/json" } }
+      );
+    }
+
+    // Forward request to Anthropic
     const apiKey = Deno.env.get("ANTHROPIC_API_KEY");
     if (!apiKey) {
       return new Response(JSON.stringify({ error: { message: "API key no configurada" } }), {

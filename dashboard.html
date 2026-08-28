@@ -285,28 +285,6 @@
     min-height: 44px;
     box-shadow: 0 16px 42px rgba(0,0,0,.25), inset 0 1px 0 rgba(255,255,255,.16) !important;
   }
-  body.dashboard-polish #skinglow-project-card,
-  body.dashboard-polish #skinglow-showcase-card {
-    border-radius: 28px !important;
-    background:
-      linear-gradient(135deg, rgba(255,255,255,.10), rgba(255,255,255,.025)),
-      radial-gradient(circle at 12% 0%, rgba(236,72,153,.24), transparent 20rem),
-      radial-gradient(circle at 95% 10%, rgba(45,212,191,.16), transparent 22rem) !important;
-    border-color: rgba(255,255,255,.13) !important;
-    box-shadow: 0 24px 90px rgba(0,0,0,.35), inset 0 1px 0 rgba(255,255,255,.10);
-  }
-  body.dashboard-polish #skinglow-project-card .grid > a,
-  body.dashboard-polish #skinglow-project-card .grid > button {
-    border-radius: 20px !important;
-    background: rgba(255,255,255,.065) !important;
-    border-color: rgba(255,255,255,.12) !important;
-    box-shadow: inset 0 1px 0 rgba(255,255,255,.08);
-  }
-  body.dashboard-polish #skinglow-project-card .grid > a:hover,
-  body.dashboard-polish #skinglow-project-card .grid > button:hover {
-    transform: translateY(-2px);
-    background: rgba(255,255,255,.095) !important;
-  }
   body.dashboard-polish .stats-bar {
     display: grid !important;
     grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -431,7 +409,6 @@
     <a class="text-on-surface-variant hover:text-primary transition-colors" href="./dashboard.html?create_miniapp=1">Mini-Apps</a>
     <a class="text-on-surface-variant hover:text-primary transition-colors" href="./plantillas.html">Plantillas</a>
     <a class="text-on-surface-variant hover:text-primary transition-colors" href="./leads.html">Leads</a>
-    <a class="text-on-surface-variant hover:text-primary transition-colors" href="./market-research-demo.html">Spy Lab</a>
     <a class="text-on-surface-variant hover:text-primary transition-colors" href="./bots.html">Bot Lab</a>
     <a class="text-on-surface-variant hover:text-primary transition-colors" href="./precios.html">Plan</a>
     <a class="text-on-surface-variant hover:text-primary transition-colors" href="./settings.html">Ajustes</a>
@@ -467,86 +444,17 @@
     </div>
   </div>
 
-  <!-- Demo proyecto completo -->
-  <div id="skinglow-project-card" class="mb-6 rounded-2xl overflow-hidden relative border border-pink-400/20 bg-surface-container">
-    <div class="absolute inset-0 pointer-events-none" style="background:radial-gradient(circle at 10% 0%,rgba(219,39,119,.22),transparent 34%),radial-gradient(circle at 96% 20%,rgba(15,159,147,.18),transparent 30%),linear-gradient(135deg,rgba(255,255,255,.035),transparent);"></div>
-    <div class="relative z-10 p-5 md:p-6 space-y-5">
-      <div class="flex flex-col lg:flex-row lg:items-start justify-between gap-5">
-        <div class="flex items-start gap-4">
-          <div class="w-12 h-12 rounded-2xl flex items-center justify-center shrink-0" style="background:linear-gradient(135deg,#c84f78,#6f9d92);box-shadow:0 16px 34px rgba(200,79,120,.22);">
-            <span class="material-symbols-outlined text-white" style="font-size:25px;font-variation-settings:'FILL' 1">auto_awesome</span>
-          </div>
-          <div>
-            <p class="text-[11px] font-black uppercase tracking-[.16em] text-pink-300/80 mb-1">Proyecto demo completo</p>
-            <h2 class="text-xl md:text-2xl font-black tracking-tight text-on-surface">SkinGlow AI: workspace + vista cliente final</h2>
-            <p class="text-sm text-on-surface-variant/70 mt-1 max-w-3xl">Usalo para mostrar la promesa completa de Luminous: una creadora puede modelar oferta, crear mini app premium, ebook, quiz, landing y preparar creativos para Facebook Ads.</p>
-          </div>
-        </div>
-        <div class="flex flex-wrap gap-2">
-          <a href="./skinglow-creator-workspace.html?v=workspace2" class="px-4 py-2.5 rounded-xl text-white text-xs font-black flex items-center gap-1.5 hover:brightness-110 transition" style="background:linear-gradient(135deg,#c84f78,#70405d);">
-            <span class="material-symbols-outlined" style="font-size:15px">dashboard_customize</span>Abrir workspace
-          </a>
-          <a href="./skinglow-client-demo.html?v=gridfix2" class="px-4 py-2.5 rounded-xl bg-white text-[#20151b] text-xs font-black flex items-center gap-1.5 hover:opacity-90 transition">
-            <span class="material-symbols-outlined" style="font-size:15px">visibility</span>Ver cliente final
-          </a>
-        </div>
-      </div>
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
-        <a href="./skinglow-creator-workspace.html?v=workspace2" class="rounded-2xl border border-white/10 bg-white/[.035] hover:bg-white/[.06] transition p-4 flex items-start gap-3">
-          <span class="material-symbols-outlined text-pink-300" style="font-size:24px;font-variation-settings:'FILL' 1">edit_square</span>
-          <span><strong class="block text-sm text-on-surface">1. Workspace creadora</strong><small class="block text-xs text-on-surface-variant/65 mt-1 leading-relaxed">Centro de control del negocio: oferta, activos, landing y Ads.</small></span>
-        </a>
-        <a href="./skinglow-client-demo.html?v=gridfix2" class="rounded-2xl border border-white/10 bg-white/[.035] hover:bg-white/[.06] transition p-4 flex items-start gap-3">
-          <span class="material-symbols-outlined text-secondary" style="font-size:24px;font-variation-settings:'FILL' 1">person_search</span>
-          <span><strong class="block text-sm text-on-surface">2. Vista compradora final</strong><small class="block text-xs text-on-surface-variant/65 mt-1 leading-relaxed">Anuncio, quiz, resultado, landing/contacto, compra y entrega.</small></span>
-        </a>
-        <button type="button" onclick="installSkinGlowDemo()" class="text-left rounded-2xl border border-white/10 bg-white/[.035] hover:bg-white/[.06] transition p-4 flex items-start gap-3">
-          <span class="material-symbols-outlined text-primary" style="font-size:24px;font-variation-settings:'FILL' 1">add_circle</span>
-          <span><strong class="block text-sm text-on-surface">3. Instalar activos</strong><small class="block text-xs text-on-surface-variant/65 mt-1 leading-relaxed">Agrega quiz, landing, ebook, mini app y proyecto demo al panel.</small></span>
-        </button>
-      </div>
-    </div>
-  </div>
-
-  <section id="installed-projects-section" class="hidden mb-8">
+    <section id="installed-projects-section" class="hidden mb-8">
     <div class="flex items-end justify-between gap-4 mb-4">
       <div class="section-head border-secondary">
         <h2 class="text-lg font-black text-on-surface tracking-tight">Proyectos completos</h2>
         <p class="text-xs text-on-surface-variant/55 mt-0.5">Negocio conectado: oferta, mini app, ebook, quiz, landing, venta, entrega y Ads.</p>
       </div>
-      <a href="./skinglow-creator-workspace.html?v=workspace2" class="hidden sm:inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-secondary/10 border border-secondary/25 text-secondary text-xs font-bold hover:bg-secondary/15 transition-colors">
-        <span class="material-symbols-outlined text-sm">dashboard_customize</span>Ver demo madre
-      </a>
     </div>
     <div id="installed-projects-grid" class="grid grid-cols-1 lg:grid-cols-2 gap-4"></div>
   </section>
 
-  <!-- Demo madre -->
-  <div id="skinglow-showcase-card" class="hidden mb-6 rounded-2xl overflow-hidden relative border border-pink-400/20 bg-surface-container">
-    <div class="absolute inset-0 pointer-events-none" style="background:radial-gradient(circle at 10% 0%,rgba(219,39,119,.22),transparent 34%),radial-gradient(circle at 96% 20%,rgba(15,159,147,.18),transparent 30%);"></div>
-    <div class="relative z-10 p-5 md:p-6 flex flex-col md:flex-row md:items-center justify-between gap-5">
-      <div class="flex items-start gap-4">
-        <div class="w-12 h-12 rounded-2xl flex items-center justify-center shrink-0" style="background:linear-gradient(135deg,#db2777,#0f9f93);box-shadow:0 16px 34px rgba(219,39,119,.22);">
-          <span class="material-symbols-outlined text-white" style="font-size:25px;font-variation-settings:'FILL' 1">spa</span>
-        </div>
-        <div>
-          <p class="text-[11px] font-black uppercase tracking-[.16em] text-pink-300/80 mb-1">Demo madre lista para vender</p>
-          <h2 class="text-xl md:text-2xl font-black tracking-tight text-on-surface">SkinGlow AI: oferta + mini app + ebook + quiz + Ads</h2>
-          <p class="text-sm text-on-surface-variant/70 mt-1 max-w-2xl">Usala como ejemplo para mostrar que Luminous no solo crea quizzes: ayuda a modelar el producto, empaquetar la oferta, publicar y preparar publicidad.</p>
-        </div>
-      </div>
-      <div class="flex flex-wrap md:flex-nowrap gap-2">
-        <a href="./skinglow-demo.html" class="px-4 py-2.5 rounded-xl bg-white text-[#20151b] text-xs font-black flex items-center gap-1.5 hover:opacity-90 transition">
-          <span class="material-symbols-outlined" style="font-size:15px">open_in_new</span>Ver demo
-        </a>
-        <button type="button" onclick="installSkinGlowDemo()" class="px-4 py-2.5 rounded-xl text-white text-xs font-black flex items-center gap-1.5 hover:brightness-110 transition" style="background:linear-gradient(135deg,#db2777,#7c3aed);">
-          <span class="material-symbols-outlined" style="font-size:15px">add_circle</span>Instalar en mi panel
-        </button>
-      </div>
-    </div>
-  </div>
-
-  <!-- ── Upgrade Banner (shown only to free users) ── -->
+    <!-- ── Upgrade Banner (shown only to free users) ── -->
   <div id="upgrade-banner" class="hidden mb-6 rounded-2xl overflow-hidden relative" style="background:linear-gradient(135deg,#0d0d2e 0%,#120828 100%);border:1px solid rgba(124,58,237,0.3);">
     <div class="absolute inset-0" style="background:radial-gradient(ellipse at 0% 50%,rgba(46,91,255,0.15) 0%,transparent 60%),radial-gradient(ellipse at 100% 50%,rgba(124,58,237,0.12) 0%,transparent 60%);pointer-events:none;"></div>
     <div class="relative z-10 px-6 py-4 flex flex-wrap items-center justify-between gap-4">

@@ -555,6 +555,8 @@ const Claude = {
     if (!res.ok) {
       const err = await res.json().catch(() => ({}));
       const msg = err.error?.message || `Error ${res.status}`;
+      // 403 = the account's plan doesn't include this feature (checked server-side).
+      if (res.status === 403) throw new Error(err.error?.message || 'Tu plan no incluye la creación con IA. Actualiza a Pro para usarla.');
       if (res.status === 429) throw new Error('Límite de peticiones alcanzado. Espera un momento e intenta de nuevo.');
       if (res.status === 504 || res.status === 502 || res.status === 524 || res.status === 546) {
         throw new Error('La IA excedió el tiempo permitido. Reducí los capítulos (probá 6) o acortá el material de entrada.');
