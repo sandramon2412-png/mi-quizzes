@@ -2473,3 +2473,87 @@ en `cta-final`; las otras tres (split, video-split, video-center) y `precio` ign
 
 ### Pendientes
 - 🟡 Límites ebook: Pro=999, Growth=999 en `app.js → PlanLimits` — REVERTIR a Pro→5, Growth→20
+
+### Confirmado por Sandra
+*"listo todo ok, algunas cositas más pero ya lo arreglaré después"* — los botones de la página de
+gracias aparecen y el flujo del embudo quedó funcionando. Es la primera vez en la serie de sesiones
+del landing-builder que se cierra sin bugs bloqueantes abiertos.
+
+---
+
+# ESTADO AL CIERRE — 20 AGO 2026 (leer esto primero en el próximo chat)
+
+## Landing-builder: FUNCIONAL ✅
+Después de ~13 rondas de arreglos (18 jul → 20 ago), el builder está operativo de punta a punta:
+generar → editar por chat → editar a mano en el panel visual → publicar → armar el embudo
+(upsell → downsell → gracias) con píxel de Facebook y links de pago.
+
+**Los dos principios que sacaron esto adelante** (violarlos es lo que rompía todo antes):
+1. **El layout NUNCA depende de la IA.** La IA llena un JSON de contenido; `_buildSection` en
+   `app.js` construye el HTML con templates de código. Grids balanceados, proporciones, alineación,
+   responsive: todo determinístico.
+2. **El chat NUNCA es el único camino de edición.** El panel derecho (editor visual, schema-driven,
+   `SEC_SCHEMA` en `landing-builder.html`) edita todo sin una sola llamada a la IA. Si el chat falla,
+   la usuaria edita a mano y sigue.
+
+## Regla obligatoria antes de decir "está arreglado"
+```bash
+npm i playwright                      # solo la primera vez (NO está en package.json a propósito:
+                                      #  es un site estático y no queremos que Vercel lo instale)
+for t in tests/unit-*.js; do node "$t"; done
+node tests/e2e-landing-builder.js
+```
+El E2E levanta el repo en un server local, abre `landing-builder.html` en Chromium real, mockea
+Supabase y el proxy de Claude, y opera la UI como la usuaria. **Si no pasa, no está arreglado.**
+
+| Suite | Qué cubre |
+|---|---|
+| `tests/e2e-landing-builder.js` | 15 escenarios sobre la página real (generar, chat, guardar, recargar, editor visual, embudo, imágenes pesadas, publicar) |
+| `tests/unit-landing.js` | generación, paleta, edición, video, robustez |
+| `tests/unit-landing-round2.js` | grids balanceados, iconos, edición quirúrgica, píxel/CTA |
+| `tests/unit-landing-sections.js` | cada tipo de sección: layouts, media, proporciones, botones |
+| `tests/unit-chat.js` | el motor de ops del chat (set/add/remove/move) |
+| `tests/unit-chat-preserva.js` | que ningún camino del chat borre archivos de la usuaria |
+| `tests/unit-espanol-neutro.js` | `_deVos` — voseo corregido por código |
+| `tests/unit-plan-secciones.js` | que el brief mande sobre el planificador (bonos, precio, etc.) |
+
+## Diagnóstico rápido cuando Sandra dice "no funciona"
+1. **¿Qué versión está corriendo?** El badge al lado del título del builder dice `v20260719m`.
+   Si dice otra cosa → es caché, no el código. (`vercel.json` ya manda `must-revalidate`
+   en los `.html` y en `app.js`; un Ctrl+Shift+R resuelve.)
+2. **¿El código llegó a `main`?** `git log origin/main --oneline -5`.
+3. **¿Falla la lógica o la página?** Las suites unitarias prueban la lógica; el E2E prueba la página.
+   Si las unitarias pasan y el E2E falla, el bug está en la UI del builder, no en el motor.
+
+## Mapa del código del landing-builder
+| Dónde | Qué |
+|---|---|
+| `app.js` ~1600-1900 | `_buildSection` — el switch que construye cada sección. Helpers: `MBTN`, `SEC_CTA`, `ITEM_IMG`, `GRIDC`/`COLS`, `okIcon`, `RATIO`, `ALIGN`, `PASO` |
+| `app.js` ~1950-2100 | `assembleLanding(sections, palId, title, opts)` — CSS global, fuentes, píxel, reescritura de links de pago |
+| `app.js` ~2500-2560 | `_USER_FIELDS` + `_preserveUser` — los campos que son propiedad de la usuaria y ningún camino de la IA puede pisar |
+| `app.js` ~2590+ | `chatEditLandingSections` — el chat: **una sola llamada** a Sonnet que devuelve ops puntuales |
+| `app.js` | `_deVos` / `_neutralize` — voseo → español neutro, por código |
+| `app.js` | `generateLandingSectioned` con `asegurar(id, incluir)` — el brief manda sobre el planificador |
+| `landing-builder.html` ~1150-1300 | `SEC_SCHEMA` — los campos editables de cada sección (el editor visual se genera de acá) |
+| `landing-builder.html` ~1359 | `openSectionEditor` / `renderSecField` / `setSecField` — el editor visual |
+| `landing-builder.html` ~1750-1930 | El embudo: `_funnelPageSections`, `createFunnelPage`, `_relinkFunnel` |
+| `landing-builder.html` | `compressImage` (4 MB → ~180 KB), `withTimeout` (la UI nunca queda colgada) |
+
+## Lo único pendiente conocido
+- 🟡 **Límites de ebooks**: `app.js → PlanLimits` tiene Pro=999 y Growth=999 (temporales de testing
+  desde mayo). **REVERTIR a Pro→5, Growth→20** cuando Sandra confirme que el flujo de PDF va bien.
+- 🟡 Sandra dijo *"algunas cositas más pero ya lo arreglaré después"* — no las detalló. Si las trae
+  en el próximo chat, pedirle captura o el pedido concreto antes de tocar nada.
+
+## Lecciones acumuladas (las que más veces se pagaron caro)
+- **Si un fix visual no se ve después de 2-3 intentos, dejar de tocar valores** y revisar: el
+  stacking/overflow del ancestro, qué regla CSS gana de verdad, o si el navegador tiene versión
+  vieja. Casi nunca el problema está donde uno lo está buscando.
+- **Cuando algo "no cambia" pese a muchos fixes, mirar la capa de persistencia.** El bug del tema del
+  ebook eran 3 líneas en `Ebooks.create` después de 10 commits de CSS.
+- **Un filtro determinista tiene que funcionar en las dos direcciones.** El de bonos solo quitaba la
+  sección, nunca la agregaba: por eso "el prompt lo decía claramente" y aun así no salían.
+- **Cuando se agrega una regla del tipo "sin X no se muestra Y", agregar en el mismo commit la forma
+  de proveer X.** Ese fue exactamente el bug de los botones de la página de gracias.
+- **Los prompts no garantizan nada** (layouts, voseo, iconos, precios). Lo que tiene que salir siempre
+  igual se corrige por código sobre la salida del modelo.
