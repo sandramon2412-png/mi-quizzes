@@ -24,3 +24,13 @@ Verifica, entre otras cosas:
 node tests/unit-landing.js
 node tests/unit-landing-round2.js
 ```
+
+## Candado de plan (protege la API que pagas tú)
+```bash
+npm i typescript --no-save   # solo la primera vez
+node tests/unit-plan-gate.js
+```
+Verifica que `claude-proxy` bloquee en el SERVIDOR lo que el navegador ya bloquea:
+Free no genera con IA ni usa Bot Lab, Starter usa Bot Lab pero no genera, y Pro en
+adelante hace todo. Cuando bloquea, no gasta la API. El candado del navegador se
+saltea desde la consola; este es el que cuenta.

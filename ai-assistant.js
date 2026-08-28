@@ -914,6 +914,17 @@ TONO: cercano, directo, entusiasta pero sin exagerar. Respuestas cortas (2-4 ora
               _renderMessages();
               return;
             }
+            if (res.status === 403) {
+              _activeSession.messages.push({
+                role: 'assistant',
+                content: `${data.error?.message || 'Tu plan no incluye la creación con IA.'}\n\n[Ver planes](./precios.html)`,
+                _isError: true,
+              });
+              _isThinking = false;
+              document.getElementById('lsa-send-btn').disabled = false;
+              _renderMessages();
+              return;
+            }
             if (res.status === 429) throw new Error('Demasiadas solicitudes. Espera un momento.');
             throw new Error(data.error?.message || data.message || `Error ${res.status}`);
           }

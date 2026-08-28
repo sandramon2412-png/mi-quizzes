@@ -2557,3 +2557,98 @@ Supabase y el proxy de Claude, y opera la UI como la usuaria. **Si no pasa, no e
   de proveer X.** Ese fue exactamente el bug de los botones de la página de gracias.
 - **Los prompts no garantizan nada** (layouts, voseo, iconos, precios). Lo que tiene que salir siempre
   igual se corrige por código sobre la salida del modelo.
+
+---
+
+## SESIÓN 28 AGO 2026 — Revisión previa al lanzamiento + los 3 bloqueadores
+
+### Contexto
+Sandra pidió una revisión completa del proyecto para saber qué faltaba para salir a
+vender, más el flujo de demostración y el de prueba propia. La revisión encontró 3
+bloqueadores de cobro y 5 puntos que restan ventas. Sandra pidió arreglar los 3.
+
+### 1. El webhook de Hotmart no podía arrancar — RESUELTO ✅
+`api/hotmart-webhook.js` importa `@supabase/supabase-js` y **esa dependencia no estaba
+en `package.json`** (solo estaban las de PDF). En Vercel la función se caía con
+`ERR_MODULE_NOT_FOUND` apenas la llamaban: alguien pagaba, Hotmart avisaba, el aviso
+fallaba y la persona se quedaba en Free.
+
+**Verificado reproduciendo el fallo**: se ejecutó el handler con Node antes del arreglo
+(mismo `ERR_MODULE_NOT_FOUND`) y después (carga y responde).
+
+**Extra encontrado al verificar**: `HOTMART_SECRET` se lee al cargar el módulo y el
+chequeo era `if (HOTMART_SECRET && signature !== HOTMART_SECRET)`. Es decir, **si la
+variable no estaba configurada, el webhook aceptaba cualquier POST sin firma** — se
+podía regalar un plan Elite a cualquier email. Ahora falla cerrado: sin secreto
+configurado responde 503.
+
+### 2. La IA no estaba protegida por plan en el servidor — RESUELTO ✅
+`claude-proxy` validaba sesión y limitaba a 15 pedidos/minuto, pero **nunca miraba el
+plan**. El candado de "Free y Starter sin IA" vivía solo en el navegador
+(`canUsePlanFeature`), que se saltea desde la consola. Cualquier cuenta gratuita podía
+consumir la master key de Anthropic.
+
+**El matiz que evitó romper a quien paga**: Starter tiene `ai:false` pero `botLab:true`.
+Un bloqueo global habría dejado sin Bot Lab a los Starter. El candado es por capacidad:
+el cliente declara `feature` (`"botLab"` o `"ai"` por defecto) y el servidor lo valida
+contra `PLAN_CAPS`, su copia de `PlanLimits`.
+
+- `bot-chat.html` ahora manda `feature:'botLab'`.
+- `feature` se borra del body antes de reenviar a Anthropic (rechaza campos desconocidos).
+- El plan se lee **con el token del propio usuario** (política RLS `profiles_select_own`),
+  no con service-role: una dependencia menos y no se rompe si esa variable falta.
+- Si no se puede leer el plan → **503 "no pudimos verificar tu plan"**, no 403. A un
+  cliente Pro nunca se le dice "actualiza tu plan" por un fallo transitorio, y la API
+  no se gasta sin verificar.
+- `app.js` y `ai-assistant.js` manejan el 403 con el mensaje del servidor (Lloyd además
+  enlaza a precios).
+
+### 3. El cliente veía demos de otro proyecto — RESUELTO ✅
+Se quitaron de `dashboard.html`: el banner **«SkinGlow AI: workspace + vista cliente
+final»**, la tarjeta **«Demo madre»**, el enlace «Ver demo madre» y el ítem **«Spy Lab»**
+del menú (apuntaba a `market-research-demo.html`, una página de demostración, no una
+función real). También el CSS que quedó huérfano.
+
+**No se borró nada más**: los archivos de demo siguen en el repo y `installSkinGlowDemo()`
+sigue disponible desde la consola para preparar demostraciones. Solo dejaron de aparecer
+en el panel del cliente.
+
+El corte de HTML se hizo por balance de etiquetas (script Python), no por número de
+línea, y **se verificó cargando el dashboard en Chromium**: menú correcto sin «Spy Lab»,
+sin divs sin cerrar, y el resto de la página intacto.
+
+### Test nuevo: `tests/unit-plan-gate.js`
+Transpila la Edge Function y la corre con stubs. Cubre los 5 planes × 2 capacidades,
+el perfil sin plan, el fallo de lectura, que al bloquear **no se gaste la API**, y que
+`feature` no viaje a Anthropic. 10 casos, todos pasan.
+
+```bash
+npm i typescript --no-save
+node tests/unit-plan-gate.js
+```
+
+### Verificación completa de la sesión
+Las 8 suites unitarias + el E2E en Chromium: **todo verde**.
+
+### Hallazgo pendiente encontrado al verificar (NO arreglado)
+`dashboard.html` tiene `tailwind.config = {...}` en un script inline **sin el blindaje**
+`window.tailwind = window.tailwind || {}` que sí tiene `landing-builder.html`. Si el CDN
+de Tailwind no carga (red lenta, adblock), es un `ReferenceError` que mata el resto del
+script: **el panel entero deja de funcionar**. Es el mismo bug que ya se arregló en el
+builder. Se detectó al cargar el dashboard con la red bloqueada. Arreglo de una línea.
+
+### Lo demás de la revisión (sin tocar)
+- Falta `og:image` → al compartir el link no aparece imagen. Faltan favicon, robots.txt,
+  sitemap.xml.
+- `precios.html` manda "Actualizar a Pro" al panel, no al checkout.
+- La ventana de planes del panel todavía dice "14 días gratis", contradiciendo el
+  "plan gratuito para siempre" de la portada y precios.
+- Pasarse del límite de respuestas avisa pero no bloquea.
+- Los correos (Resend, `noreply@luminous-studio.com`) dependen de que el dominio esté
+  verificado.
+- **Lloyd anónimo ya está roto**: usa la anon key como token y `claude-proxy` responde
+  401. Comprobado contra el servidor real. No lo tocó esta sesión.
+
+### Ya resuelto de antes (el CLAUDE.md estaba desactualizado)
+Los límites de ebooks **ya están bien**: `PlanLimits` tiene Pro=5 y Growth=20, no 999.
+El pendiente anotado desde mayo se puede dar por cerrado.

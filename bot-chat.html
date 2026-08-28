@@ -299,6 +299,7 @@ async function callAI(userMsg){
     method:'POST',
     headers:{'Authorization':'Bearer '+token,'Content-Type':'application/json'},
     body:JSON.stringify({
+      feature:'botLab',
       model:'claude-haiku-4-5-20251001',
       system:systemPrompt,
       messages:history,

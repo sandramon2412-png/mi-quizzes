@@ -29,8 +29,14 @@ export default async function handler(req, res) {
   }
 
   // ── 1. Verify Hotmart signature ──────────────────────────
+  // Fail closed: without a configured secret anyone could POST here and grant
+  // themselves any plan, so a missing secret is a misconfiguration, not a bypass.
+  if (!HOTMART_SECRET) {
+    console.error('Hotmart webhook: HOTMART_WEBHOOK_SECRET is not set — rejecting');
+    return res.status(503).json({ error: 'Webhook not configured' });
+  }
   const signature = req.headers['x-hotmart-webhook-token'];
-  if (HOTMART_SECRET && signature !== HOTMART_SECRET) {
+  if (signature !== HOTMART_SECRET) {
     console.error('Hotmart webhook: invalid token');
     return res.status(401).json({ error: 'Unauthorized' });
   }
