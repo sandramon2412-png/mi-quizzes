@@ -3,9 +3,17 @@
 <html class="dark" lang="es"><head>
 <title>Luminous Studio | Quizzes · Mini-Apps · Bots · Ebooks con IA</title>
 <meta charset="utf-8"/>
+<link rel="icon" href="/favicon.svg" type="image/svg+xml"/>
+<link rel="icon" href="/favicon-32.png" sizes="32x32" type="image/png"/>
+<link rel="apple-touch-icon" href="/apple-touch-icon.png"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
 <meta name="description" content="Luminous Studio: quizzes de alta conversión, mini-apps interactivas, bots IA especializados y ebooks profesionales — todo en español, sin código. Plataforma líder para creadores digitales."/>
 <meta property="og:type" content="website"/>
+<meta property="og:image" content="https://luminous-studio.com/og-image.png"/>
+<meta property="og:image:width" content="1200"/>
+<meta property="og:image:height" content="630"/>
+<meta property="og:image:alt" content="Luminous Studio — todo para crecer en digital, con IA y sin código"/>
+<meta name="twitter:image" content="https://luminous-studio.com/og-image.png"/>
 <meta property="og:title" content="Luminous Studio — La plataforma completa para creadores con IA"/>
 <meta property="og:description" content="Quizzes que capturan leads, mini-apps que retienen, bots IA especializados y ebooks profesionales. Todo sin código, todo en español."/>
 <meta property="og:url" content="https://luminous-studio.com"/>
@@ -20,6 +28,9 @@
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@100..700,0..1&amp;display=swap" rel="stylesheet"/>
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
 <script id="tailwind-config">
+  // Si el CDN de Tailwind no cargó, esta asignación tiraba y mataba todo el
+  // script que sigue. Blindado para que la página funcione igual sin el CDN.
+  window.tailwind = window.tailwind || {};
       tailwind.config = {
         darkMode: "class",
         theme: {

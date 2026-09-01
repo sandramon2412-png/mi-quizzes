@@ -2652,3 +2652,100 @@ builder. Se detectó al cargar el dashboard con la red bloqueada. Arreglo de una
 ### Ya resuelto de antes (el CLAUDE.md estaba desactualizado)
 Los límites de ebooks **ya están bien**: `PlanLimits` tiene Pro=5 y Growth=20, no 999.
 El pendiente anotado desde mayo se puede dar por cerrado.
+
+---
+
+## SESIÓN 1 SEP 2026 — Ronda 2: todo lo demás para salir a vender
+
+Sandra pidió arreglar todo lo necesario para lanzar. Sigue de la sesión anterior
+(los 3 bloqueadores). Esta ronda cubre los 5 puntos que restaban ventas más lo que
+apareció al verificar.
+
+### 1. El bug de Tailwind, en 18 páginas (no solo el panel) — RESUELTO ✅
+`landing-builder.html` y `quiz.html` ya tenían `window.tailwind = window.tailwind || {}`.
+**Las otras 18 páginas no.** Si el CDN de Tailwind no carga (red lenta, adblock), la
+asignación `tailwind.config = {...}` lanza `ReferenceError` y mata **todo el script que
+sigue** — la página entera deja de funcionar, no solo los estilos.
+
+Blindadas las 18 y verificado en Chromium **con la red externa bloqueada**: todas cargan
+sin errores fatales. Esa es la única forma de probarlo; con el CDN disponible el bug no
+se ve nunca.
+
+### 2. Imagen al compartir + favicon — RESUELTO ✅
+- `og-image.png` (1200×630) **generada** con Chromium: fondo #0e0e0e, gradiente de marca,
+  el titular real de la portada y las 5 categorías. El HTML fuente quedó en `/tmp`, si hay
+  que regenerarla se rehace igual (esperar `document.fonts.ready` o sale con fuente genérica).
+- `favicon.svg` + `favicon-32.png` + `apple-touch-icon.png` + `icon-512.png`: destello con
+  el gradiente azul→púrpura sobre fondo oscuro redondeado.
+- Enlaces de favicon en **26 páginas** del producto; tarjetas sociales completas en
+  `index.html`, `dashboard.html` y `precios.html` (esta última no tenía ninguna).
+
+**Cuidado importante — regla para el futuro**: ni la imagen social ni el favicon de
+Luminous van en `mini-app-player.html`, `quiz.html`, `landing-view.html` ni
+`resultado-quiz.html`. Esas páginas muestran contenido del creador a SUS clientes, y el
+player ya des-marca título y descripción para los Elite (white-label): meter la marca de
+Luminous ahí es justo lo que ellos pagan por evitar. Si algún día se quiere favicon en
+esas páginas, tiene que ser el del creador (o ninguno), nunca el de la plataforma.
+
+### 3. robots.txt + sitemap.xml + noindex en demos — RESUELTO ✅
+- `robots.txt`: bloquea demos (skinglow, manna, market-research, petvoice) y zonas privadas.
+- `sitemap.xml`: 10 páginas públicas con prioridad y frecuencia.
+- `<meta name="robots" content="noindex,nofollow">` en las **19 páginas de demostración**.
+  robots.txt evita el rastreo; el noindex evita que aparezcan si alguien las enlaza.
+
+### 4. Los botones de precios llevan al checkout — RESUELTO ✅
+Antes los 4 CTA iban a `dashboard.html`. Ahora van al checkout real de Hotmart en pestaña
+nueva, con la nota **"Usa el mismo correo de tu cuenta"** debajo (el trigger
+`apply_pending_upgrade` casa la compra con la cuenta por email — si usan otro correo, el
+plan no se aplica y es el problema de soporte más previsible).
+El botón del plan Free pasó de «Plan actual» (que no significa nada para un visitante) a
+**«Empezar gratis» → registro.html**.
+
+`precios.html` es estática (no carga `app.js`), así que las URLs están escritas ahí.
+**Si cambian los productos de Hotmart hay que tocar dos lugares**: `precios.html` y
+`getHotmartUrl()` en `app.js`.
+
+### 5. «14 días gratis» fuera del panel — RESUELTO ✅
+La ventana de planes decía «14 días gratis · Sin tarjeta · Cancela cuando quieras»,
+contradiciendo el «plan gratuito para siempre» de portada y precios. Ahora dice
+«Cambia o cancela cuando quieras · Pago mensual».
+El «14 días» de `terminos.html` **se dejó**: es la garantía de reembolso, es correcta y
+además vende.
+
+### 6. Lloyd: CORRECCIÓN de un diagnóstico mío + dos bugs reales
+
+**Me equivoqué antes**: escribí que «Lloyd anónimo está roto (401)». **No lo está.** Probé
+el proxy directamente con la anon key, vi el 401 y asumí que Lloyd hacía esa llamada. El
+flujo real tiene un `return` en `ai-assistant.js:842` que responde con el FAQ local y
+**nunca llega al proxy**. Verificado en la landing real: 0 llamadas a la API.
+
+Pero al probarlo aparecieron dos bugs de verdad:
+
+**a) Lloyd daba precios equivocados a los visitantes.** El FAQ decía que Starter trae
+3 quizzes (son 5), que Pro es «ilimitado» (son 10) y que Bot Lab es de Growth/Elite
+(está desde Starter). Prometer de menos pierde ventas; prometer de más causa reembolsos.
+Corregido contra `PlanLimits`.
+
+**b) Los enlaces de Lloyd no eran clicables.** `_md()` convertía negritas, código y listas,
+pero **no** `[texto](url)`: el CTA se veía como `[gratis acá](./registro.html)` en crudo —
+texto técnico, no un enlace, justo en la landing pública donde Lloyd existe para convertir.
+Agregada la conversión, con lista blanca de destinos (`http(s)`, rutas relativas, `#`,
+`mailto:`): `javascript:` y `data:` se muestran como texto, nunca como enlace. El CSS
+`.lsa-bubble a` ya existía.
+
+### Lo que NO se tocó, y por qué
+- **El límite de respuestas sigue avisando sin bloquear.** Es una decisión de negocio, no
+  un bug: bloquear a alguien que ya publicó su quiz es agresivo. Queda a criterio de Sandra.
+- **Correos (Resend)**: depende de verificar el dominio en el panel de Resend, no del código.
+- **Desplegar `claude-proxy`**: `supabase functions deploy claude-proxy`. Vercel no despliega
+  las funciones de Supabase; hasta que se corra, el candado de plan no está activo.
+
+### Verificación
+8 suites unitarias + E2E en Chromium: verde. Sintaxis de los 5 JS y de **todos** los
+scripts inline de las 45 páginas: OK. 14 páginas clave cargadas con la red bloqueada:
+ninguna con error fatal.
+
+### Lección
+**Un bug que solo aparece cuando algo externo falla no se encuentra mirando el código.**
+El de Tailwind llevaba meses en 18 páginas y solo salió al cargarlas con la red cortada.
+Vale la pena repetir esa prueba cada tanto.

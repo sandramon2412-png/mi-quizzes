@@ -2,6 +2,9 @@
 <html class="dark" lang="es">
 <head>
 <meta charset="utf-8"/>
+<link rel="icon" href="/favicon.svg" type="image/svg+xml"/>
+<link rel="icon" href="/favicon-32.png" sizes="32x32" type="image/png"/>
+<link rel="apple-touch-icon" href="/apple-touch-icon.png"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
 <title>Mis Leads | Luminous Studio</title>
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
@@ -12,6 +15,9 @@
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
 <script id="tailwind-config">
+  // Si el CDN de Tailwind no cargó, esta asignación tiraba y mataba todo el
+  // script que sigue. Blindado para que la página funcione igual sin el CDN.
+  window.tailwind = window.tailwind || {};
   tailwind.config = {
     darkMode: "class",
     theme: {

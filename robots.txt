@@ -1,0 +1,29 @@
+User-agent: *
+
+# Páginas de demostración y proyectos de ejemplo: no son producto.
+Disallow: /skinglow-
+Disallow: /manna-
+Disallow: /market-research-demo.html
+Disallow: /demo-ingles.html
+Disallow: /quiz-captura-demo.html
+Disallow: /web-captura-demo.html
+Disallow: /petvoice-export/
+
+# Zonas privadas: requieren sesión, no aportan nada en buscadores.
+Disallow: /dashboard.html
+Disallow: /settings.html
+Disallow: /leads.html
+Disallow: /landing-builder.html
+Disallow: /ebook-builder.html
+Disallow: /ebook-print.html
+Disallow: /generador-ia.html
+Disallow: /bot-chat.html
+Disallow: /reset-password.html
+Disallow: /recuperar-contrasena.html
+Disallow: /acceso-exito.html
+Disallow: /pago-exitoso.html
+Disallow: /api/
+
+Allow: /
+
+Sitemap: https://luminous-studio.com/sitemap.xml
