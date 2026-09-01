@@ -2,10 +2,18 @@
 <html class="dark" lang="es">
 <head>
 <meta charset="utf-8"/>
+<link rel="icon" href="/favicon.svg" type="image/svg+xml"/>
+<link rel="icon" href="/favicon-32.png" sizes="32x32" type="image/png"/>
+<link rel="apple-touch-icon" href="/apple-touch-icon.png"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
 <title>Dashboard | Luminous Studio</title>
 <meta name="description" content="Panel de control para crear y gestionar quizzes y mini-apps interactivas con IA."/>
 <meta property="og:title" content="Dashboard | Luminous Studio"/>
+<meta property="og:image" content="https://luminous-studio.com/og-image.png"/>
+<meta property="og:image:width" content="1200"/>
+<meta property="og:image:height" content="630"/>
+<meta property="og:image:alt" content="Luminous Studio — todo para crecer en digital, con IA y sin código"/>
+<meta name="twitter:image" content="https://luminous-studio.com/og-image.png"/>
 <meta property="og:description" content="Crea quizzes de alta conversión y mini-apps interactivas con inteligencia artificial."/>
 <meta name="theme-color" content="#2E5BFF"/>
 <script>
@@ -23,6 +31,9 @@
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
 <script id="tailwind-config">
+  // Si el CDN de Tailwind no cargó, esta asignación tiraba y mataba todo el
+  // script que sigue. Blindado para que la página funcione igual sin el CDN.
+  window.tailwind = window.tailwind || {};
   tailwind.config = {
     darkMode: "class",
     theme: {
@@ -939,7 +950,7 @@ function toggleFbGuide() {
     <div class="px-7 pt-6 pb-4 flex items-center justify-between">
       <div>
         <h2 class="text-xl font-extrabold text-white tracking-tight">Elige tu plan</h2>
-        <p id="upgrade-modal-ctx" class="text-sm mt-0.5" style="color:rgba(255,255,255,0.4);">14 días gratis · Sin tarjeta · Cancela cuando quieras</p>
+        <p id="upgrade-modal-ctx" class="text-sm mt-0.5" style="color:rgba(255,255,255,0.4);">Cambia o cancela cuando quieras · Pago mensual</p>
       </div>
       <button onclick="closeUpgradeModal()" class="w-8 h-8 rounded-lg flex items-center justify-center transition-colors" style="background:rgba(255,255,255,0.06);color:rgba(255,255,255,0.5);">
         <span class="material-symbols-outlined text-base">close</span>
@@ -2708,7 +2719,7 @@ function guardAiNav(e, href) {
 
 function showUpgradeModal() {
   const ctxEl = document.getElementById('upgrade-modal-ctx');
-  if (ctxEl) ctxEl.textContent = _upgradeModalContext || '14 días gratis · Sin tarjeta · Cancela cuando quieras';
+  if (ctxEl) ctxEl.textContent = _upgradeModalContext || 'Cambia o cancela cuando quieras · Pago mensual';
   _upgradeModalContext = '';
   const grid = document.getElementById('upgrade-plans-grid');
   grid.innerHTML = UPGRADE_PLANS.map(p => {

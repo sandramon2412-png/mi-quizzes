@@ -705,6 +705,15 @@ TONO: cercano, directo, entusiasta pero sin exagerar. Respuestas cortas (2-4 ora
       .replace(/^#{1,3} (.+)$/gm,'<strong>$1</strong>')
       .replace(/^[\*\-] (.+)$/gm,'• $1')
       .replace(/^\d+\. (.+)$/gm,'• $1')
+      // Enlaces [texto](destino). Sin esto, el CTA de Lloyd se veía como texto
+      // crudo en vez de un enlace en el que se pueda hacer clic.
+      .replace(/\[([^\]\n]+)\]\(([^)\s]+)\)/g, (m, txt, url) => {
+        const seguro = /^(https?:\/\/|\.?\/|#|mailto:)/i.test(url);
+        if (!seguro) return txt;                       // nunca javascript: ni similares
+        const externo = /^https?:\/\//i.test(url);
+        const attrs = externo ? ' target="_blank" rel="noopener noreferrer"' : '';
+        return `<a href="${url}"${attrs}>${txt}</a>`;
+      })
       .replace(/\n{2,}/g,'<br><br>').replace(/\n/g,'<br>');
   }
 
@@ -953,7 +962,7 @@ TONO: cercano, directo, entusiasta pero sin exagerar. Respuestas cortas (2-4 ora
     },
     {
       keys: ['precio', 'costo', 'cuánto', 'cuanto', 'plan', 'pagar', 'cuesta', 'tarifa', 'suscripción'],
-      answer: `Tenemos 5 planes:\n\n• **Free** — $0 · 1 quiz, 2 mini-apps, 500 respuestas/mes\n• **Starter** — $5/mes · 3 quizzes, 5 mini-apps, sin IA\n• **Pro** — $9/mes · ilimitado + IA generativa + leads\n• **Growth** — $19/mes · + dominio propio + Bot Lab\n• **Elite** — $49/mes · + white-label + subdominios\n\nPodés empezar [gratis acá](./registro.html) y subir cuando lo necesites.`
+      answer: `Tenemos 5 planes:\n\n• **Free** — $0 · 1 quiz, 2 mini-apps, 1 ebook, 500 respuestas/mes\n• **Starter** — $5/mes · 5 quizzes, 5 mini-apps, 1 landing, 3 ebooks, leads y Bot Lab (sin IA)\n• **Pro** — $9/mes · 10 quizzes, 10 mini-apps, 5 landings, 5 ebooks + IA generativa + dominio propio\n• **Growth** — $19/mes · 30 de cada cosa, 20 landings y ebooks\n• **Elite** — $49/mes · todo ilimitado + white-label + subdominios\n\nPodés empezar [gratis acá](./registro.html) y subir cuando lo necesites.`
     },
     {
       keys: ['ia', 'inteligencia artificial', 'ai', 'claude', 'groq', 'chatgpt', 'gpt'],
@@ -977,7 +986,7 @@ TONO: cercano, directo, entusiasta pero sin exagerar. Respuestas cortas (2-4 ora
     },
     {
       keys: ['bot', 'bots', 'chatbot', 'bot lab', 'asistente'],
-      answer: `**Bot Lab** (plan Growth/Elite) es una biblioteca de **16 bots IA especializados** en copywriting, ads, ofertas, VSL, lanzamientos, email, contenido, y más. Cada uno con un prompt afinado para su tarea.\n\nAdemás, podés crear chatbots personalizados para tus propios infoproductos (tu cliente chatea con un bot entrenado con tu contenido).`
+      answer: `**Bot Lab** (desde el plan Starter) es una biblioteca de **16 bots IA especializados** en copywriting, ads, ofertas, VSL, lanzamientos, email, contenido, y más. Cada uno con un prompt afinado para su tarea.\n\nAdemás, podés crear chatbots personalizados para tus propios infoproductos (tu cliente chatea con un bot entrenado con tu contenido).`
     },
     {
       keys: ['lead', 'leads', 'contacto', 'email', 'lista', 'captura'],
